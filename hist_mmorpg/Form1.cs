@@ -12,25 +12,47 @@ namespace hist_mmorpg
 {
     public partial class Form1 : Form, Mmorpg_View
     {
-        public Form1()
+
+        /// <summary>
+        /// Holds CharacterModel
+        /// </summary>
+        private CharacterModel charModel;
+        /// <summary>
+        /// Holds FiefModel
+        /// </summary>
+        private FiefModel fModel;
+        /// <summary>
+        /// Holds initial Character to view
+        /// </summary>
+        private Character initialCharacter;
+        /// <summary>
+        /// Holds initial Fief to view
+        /// </summary>
+        private Fief initialFief;
+
+        /// <summary>
+        /// Constructor for Form1
+        /// </summary>
+        /// <param name="cm">CharacterModel holding model</param>
+        /// <param name="nam">FiefModel holding model</param>
+        public Form1(CharacterModel cm, FiefModel fm)
         {
+            this.charModel = cm;
+            this.fModel = fm;
+            // registers as view of models
+            cm.registerObserver(this);
+            fm.registerObserver(this);
+            // initialise display
             InitializeComponent();
-            TestProg();
+            // create game objects
+            this.initGameObjects();
+            // inform models of initial game objects
+            cm.changeCurrent(initialCharacter);
+            fm.changeCurrent(initialFief);
         }
 
-        // to be placed in controller class
-        public Fief moveCharacter(Fief f, string whereTo)
+        public void initGameObjects()
         {
-            Fief current = f;
-
-            return current;
-        }
-
-        public void TestProg()
-        {
-
-            string toDisplay = "";
-
             // create skills
 
             // Dictionary to hold collection of skills
@@ -148,22 +170,7 @@ namespace hist_mmorpg
             // 2. Add edge and auto create vertices
             myHexMap.addHexesAndRoute(myFief1, myFief2, "W");
 
-
-            toDisplay += "myHexMap edges from myFief1: " + "\r\n";
-            foreach (var e in myHexMap.myMap.Edges)
-                if (e.Source == myFief1)
-                {
-                    toDisplay += e.Tag + " " + e.Source.fiefID + " -> " + e.Target.fiefID + "\r\n";
-                }
-
             myHexMap.addHexesAndRoute(myFief2, myFief1, "E");
-
-            toDisplay += "myHexMap edges from myFief2: " + "\r\n";
-            foreach (var e in myHexMap.myMap.Edges)
-                if (e.Source == myFief2)
-                {
-                    toDisplay += e.Tag + " " + e.Source.fiefID + " -> " + e.Target.fiefID + "\r\n";
-                }
 
             // create entourages for PCs
             List<Character> myEnt1 = new List<Character>();
@@ -177,7 +184,7 @@ namespace hist_mmorpg
 
             // add NPC to entourage
             myChar1.addToEntourage(myNPC2);
-            
+
             // add some characters to myFief1
             myFief1.addCharacter(myChar1);
             myFief1.addCharacter(myChar2);
@@ -187,113 +194,204 @@ namespace hist_mmorpg
             // bar a character from the myFief1 keep
             myFief1.barCharacter(myNPC2.charID);
 
-            toDisplay += "myFief1 Province: " + myFief1.province.name + "\r\n";
-            toDisplay += "myFief1 GDP: " + myFief1.calcGDP() + "\r\n";
-            toDisplay += "myFief2 Province: " + myFief2.province.name + "\r\n\r\n";
+            // set inital character to display
+            this.initialCharacter = myChar1;
 
-            myProv.name = "Suffolk, England";
+            // set inital fief to display
+            this.initialFief = myChar1.location;
+        }
 
-            toDisplay += "myFief1 Province: " + myFief1.province.name + "\r\n";
-            toDisplay += "myFief2 Province: " + myFief2.province.name + "\r\n\r\n";
+        // TODO
+        public void displayCharacter(Character ch)
+        {
+            string charText = "";
 
-            myFief2.province.name = "Norfolk, England";
-
-            toDisplay += "myProv name: " + myProv.name + "\r\n\r\n";
-            
-            Boolean dead = myChar1.checkDeath();
-            if (dead)
+            charText += "ID: " + ch.charID + "\r\n";
+            charText += "Name: " + ch.name + "\r\n";
+            charText += "Age: " + ch.age + "\r\n";
+            charText += "Sex: ";
+            if (ch.isMale)
             {
-                toDisplay += "myChar1 is dead!\r\n\r\n";
+                charText += "Male";
             }
             else
             {
-                toDisplay += "Gordon's alive!\r\n\r\n";
+                charText += "Female";
             }
-
-            int totModifier = 0;
-            for (int i = 0; i < myChar1.skills.Length; i++)
+            charText += "\r\n";
+            charText += "Nationality: " + ch.nationality + "\r\n";
+            charText += "Health: " + ch.health + " (max. health: " + ch.maxHealth + ")\r\n";
+            charText += "Virility: " + ch.virility + "\r\n";
+            charText += "Current location: " + ch.location.name + " (" + ch.location.province.name + ")\r\n";
+            charText += "Language: " + ch.language + "\r\n";
+            charText += "Days remaining: " + ch.days + "\r\n";
+            charText += "Stature: " + ch.stature + "\r\n";
+            charText += "Skills:";
+            for (int i = 0; i < ch.skills.Length; i++)
             {
-                toDisplay += "myChar1 Skill " + i + " = " + myChar1.skills[i].name + "\r\n";
-                foreach (KeyValuePair<string, int> entry in myChar1.skills[i].effects)
+                charText += " " + ch.skills[i].name;
+                if (i < (ch.skills.Length - 1))
                 {
-                    if (entry.Key.Equals("death"))
-                    {
-                        totModifier += entry.Value;
-                    }
+                    charText += ",";
+                }
+                else
+                {
+                    charText += "\r\n";
                 }
             }
-            toDisplay += "myChar1 Total 'death' modifier = " + totModifier + "\r\n\r\n";
-
-            bool enteredKeep = myChar1.enterKeep();
-            toDisplay += "myChar1's attempt to enter the keep was ";
-            if (enteredKeep)
+            charText += "You are ";
+            if (ch.inKeep)
             {
-                toDisplay += "successful.";
+                charText += "inside";
             }
             else
             {
-                toDisplay += "unsuccessful (barred).";
+                charText += "outside";
             }
-
-            toDisplay += "\r\n\r\n";
-
-            toDisplay += "Characters in myFief1 (keep): ";
-            for (int i = 0; i < myFief1.characters.Count; i++)
+            charText += " the keep\r\n";
+            charText += "You are ";
+            if (ch.married)
             {
-                if (myFief1.characters[i].inKeep) 
+                charText += "happily married";
+            }
+            else
+            {
+                charText += "single and lonely";
+            }
+            charText += "\r\n";
+            if (ch.married)
+            {
+                charText += "Your wife's ID is: " + ch.spouseID + "\r\n";
+            }
+            if (!ch.isMale)
+            {
+                charText += "You are ";
+                if (!ch.pregnant)
                 {
-                    toDisplay += myFief1.characters[i].charID + " ";
+                    charText += "not ";
+                }
+                charText += "pregnant\r\n";
+            }
+            charText += "Father's ID: " + ch.father + "\r\n";
+            charText += "Head of family's ID: " + ch.familyHead + "\r\n";
+
+            this.characterTextBox.Text = charText;
+
+            bool isPC = ch is PlayerCharacter;
+            if (isPC)
+            {
+                this.displayPlayerCharacter((PlayerCharacter)ch);
+            }
+            else
+            {
+                this.displayNonPlayerCharacter((NonPlayerCharacter)ch);
+            }
+        }
+
+        // TODO
+        public void displayPlayerCharacter(PlayerCharacter ch)
+        {
+            string pcText = "";
+
+            pcText += "You are ";
+            if (!ch.outlawed)
+            {
+                pcText += "not ";
+            }
+            pcText += "outlawed\r\n";
+            pcText += "Purse: " + ch.purse + "\r\n";
+            pcText += "Entourage:";
+            for (int i = 0; i < ch.entourage.Count; i++)
+            {
+                pcText += " " + ch.entourage[i].name;
+                if (i < (ch.entourage.Count - 1))
+                {
+                    pcText += ",";
+                }
+                else
+                {
+                    pcText += "\r\n";
                 }
             }
-            toDisplay += "\r\n\r\n";
 
-            toDisplay += "Characters in myChar1's entourage: ";
-            for (int i = 0; i < myChar1.entourage.Count; i++)
-            {
-                toDisplay += myChar1.entourage[i].charID + " ";
-            }
-            toDisplay += "\r\n\r\n";
+            this.characterTextBox.Text += pcText;
+        }
 
-            toDisplay += "Characters in myFief1 (outside keep): ";
-            for (int i = 0; i < myFief1.characters.Count; i++)
+        // TODO
+        public void displayNonPlayerCharacter(NonPlayerCharacter ch)
+        {
+            string npcText = "";
+
+            npcText += "Hired by (ID): " + ch.hiredBy + "\r\n";
+            npcText += "Go to (Fief ID): " + ch.goTo + "\r\n";
+            npcText += "Salary: " + ch.wage + "\r\n";
+
+            this.characterTextBox.Text += npcText;
+        }
+
+        // TODO
+        public void displayFief(Fief f)
+        {
+            string fiefText = "";
+
+            fiefText += "ID: " + f.fiefID + "\r\n";
+            fiefText += "Name: " + f.name + " (Province: " + f.province.name + ")\r\n";
+            fiefText += "Population: " + f.population + "\r\n";
+            fiefText += "Owner (ID): " + f.owner + "\r\n";
+            fiefText += "Ancestral owner (ID): " + f.ancestralOwner + "\r\n";
+            fiefText += "Bailiff (ID): " + f.bailiff + "\r\n";
+            fiefText += "Fields level: " + f.fields + "\r\n";
+            fiefText += "Industry level: " + f.industry + "\r\n";
+            fiefText += "Troops: " + f.troops + "\r\n";
+            fiefText += "Tax rate: " + f.taxRate + "\r\n";
+            fiefText += "Officials expenditure: " + f.officialsSpend + "\r\n";
+            fiefText += "Garrison expenditure: " + f.garrisonSpend + "\r\n";
+            fiefText += "Infrastructure expenditure: " + f.infrastructureSpend + "\r\n";
+            fiefText += "Keep expenditure: " + f.keepSpend + "\r\n";
+            fiefText += "Keep level: " + f.keepLevel + "\r\n";
+            fiefText += "Loyalty: " + f.keepLevel + "\r\n";
+            fiefText += "Status: " + f.keepLevel + "\r\n";
+            fiefText += "Terrain: " + f.keepLevel + "\r\n";
+            fiefText += "Characters present:";
+            for (int i = 0; i < f.characters.Count; i++)
             {
-                if (! myFief1.characters[i].inKeep)
+                fiefText += " " + f.characters[i].name;
+                if (i < (f.characters.Count - 1))
                 {
-                    toDisplay += myFief1.characters[i].charID + " ";
+                    fiefText += ",";
+                }
+                else
+                {
+                    fiefText += "\r\n";
                 }
             }
-            toDisplay += "\r\n\r\n";
-
-            toDisplay += "myChar2 location: " + myChar2.location.fiefID + "\r\n\r\n";
-
-            myHexMap.moveCharacter(myChar1,myFief1, "W");
-            myHexMap.moveCharacter(myNPC1, myFief1, "W");
-
-            // toDisplay += "myChar2 location: " + myChar2.location.data.fiefID + "\r\n\r\n";
-
-            toDisplay += "All characters in myFief1: ";
-            for (int i = 0; i < myFief1.characters.Count; i++)
+            fiefText += "Characters barred from keep (IDs):";
+            for (int i = 0; i < f.barredCharacters.Count; i++)
             {
-                toDisplay += myFief1.characters[i].charID + " ";
+                fiefText += " " + f.barredCharacters[i];
+                if (i < (f.barredCharacters.Count - 1))
+                {
+                    fiefText += ",";
+                }
+                else
+                {
+                    fiefText += "\r\n";
+                }
             }
-            toDisplay += "\r\n";
-            toDisplay += "All characters in myFief2: ";
-            for (int i = 0; i < myFief2.characters.Count; i++)
+            fiefText += "The French are ";
+            if (!f.frenchBarred)
             {
-                toDisplay += myFief2.characters[i].charID + " ";
+                fiefText += "not";
             }
-            toDisplay += "\r\n";
-            toDisplay += "myChar2 location: " + myChar2.location.fiefID + "\r\n\r\n";
-
-            toDisplay += "Effects in skill command: ";
-            foreach (KeyValuePair<string, int> entry in command.effects)
+            fiefText += " barred from the keep\r\n";
+            fiefText += "The English are ";
+            if (!f.englishBarred)
             {
-                toDisplay += " " + entry.Key;
+                fiefText += "not";
             }
+            fiefText += " barred from the keep\r\n";
 
-            this.textBox1.Text = toDisplay;
-
-
+            this.fiefTextBox.Text = fiefText;
         }
 
         /// <summary>
@@ -302,7 +400,43 @@ namespace hist_mmorpg
         /// <param name="info">String containing data about display element to update</param>
         public void update(String info)
         {
-            // update UI components
+            switch (info)
+            {
+                case "refreshChar":
+                    this.displayCharacter(this.charModel.currentCharacter);
+                    break;
+                case "refreshFief":
+                    this.displayFief(this.fModel.currentFief);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void personalCharacteristicsAndAffairsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.fiefContainer.Visible)
+            {
+                this.fiefContainer.Visible = false;
+            }
+
+            if (!this.characterContainer.Visible)
+            {
+                this.characterContainer.Visible = true;
+            }
+        }
+
+        private void fiefManagementToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.characterContainer.Visible)
+            {
+                this.characterContainer.Visible = false;
+            }
+
+            if (! this.fiefContainer.Visible)
+            {
+                this.fiefContainer.Visible = true;
+            }
         }
 
     }

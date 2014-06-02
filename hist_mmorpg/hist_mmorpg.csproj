@@ -60,7 +60,9 @@
   <ItemGroup>
     <Compile Include="Army.cs" />
     <Compile Include="Character.cs" />
+    <Compile Include="CharacterModel.cs" />
     <Compile Include="Fief.cs" />
+    <Compile Include="FiefModel.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
