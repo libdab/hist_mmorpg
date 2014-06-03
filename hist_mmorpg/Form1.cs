@@ -160,8 +160,8 @@ namespace hist_mmorpg
             // create province for fiefs
             Province myProv = new Province("ESX00", "Sussex, England", 100, 6.2, "E1");
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, "100", "200", "4001", 3.0, 3.0, 50, 9.10, 1000, 1000, 2000, 2000, 9.10, 1000, 1000, 2000, 100000, 5.63, 5.20, 'U', 'P', fief1Chars, keep1BarChars, false, false);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, "100", "200", "4001", 3.50, 0.20, 50, 9.10, 1000, 1000, 2000, 2000, 9.10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', 'P', fief2Chars, keep2BarChars, false, false);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 1000, 1000, 2000, 2000, 9.10, 1000, 1000, 2000, 100000, 5.63, 5.5, 'C', 'P', fief1Chars, keep1BarChars, false, false);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 9.10, 1000, 1000, 2000, 2000, 9.10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', 'P', fief2Chars, keep2BarChars, false, false);
             Army myArmy = new Army(0, 0, 0, 0, 100, 0, "101", "401", 90);
 
             // create QuickGraph undirected graph
@@ -176,14 +176,40 @@ namespace hist_mmorpg
             List<Character> myEnt1 = new List<Character>();
             List<Character> myEnt2 = new List<Character>();
 
+            // create lists of fiefs owned by PCs and add some fiefs
+            List<Fief> myFiefsOwned1 = new List<Fief>();
+            List<Fief> myFiefsOwned2 = new List<Fief>();
+
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, skillsArray1, false, true, "101", false, "99", "98", false, 13000, myEnt1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, skillsArray1, true, false, "NA", false, "99", "98", false, 13000, myEnt2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, skillsArray1, false, false, "NA", false, "99", "98", "100", "ESX05", 10000);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, skillsArray1, false, false, "NA", false, "99", "98", "100", "ESX05", 10000);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.2, 6.1, skillsArray1, false, true, false, false, 13000, myEnt1, myFiefsOwned1);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 5.0, 4.5, skillsArray1, true, false, false, false, 13000, myEnt2, myFiefsOwned2);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 3.3, 6.7, skillsArray1, false, false, false, "100", "ESX05", 10000);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.1, 5.2, skillsArray1, false, false, false, "100", "ESX05", 10000);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 4.0, 6.0, skillsArray1, false, true, true, "100", "ESX05", 0);
+
+            // Add me a wife
+            myChar1.spouse = myWife;
+            // And my wife a husband
+            myWife.spouse = myChar1;
+            
+            // set fief owners
+            myFief1.owner = myChar1;
+            myFief2.owner = myChar2;
+
+            // set fief ancestral owners
+            myFief1.ancestralOwner = myChar2;
+            myFief2.ancestralOwner = myChar1;
+
+            // set fief bailiffs
+            myFief1.bailiff = myNPC1;
+            myFief2.bailiff = myNPC2;
 
             // add NPC to entourage
             myChar1.addToEntourage(myNPC2);
+
+            // Add fiefs to list of fiefs owned 
+            myChar1.addToOwnedFiefs(myFief1);
+            myChar2.addToOwnedFiefs(myFief2);
 
             // add some characters to myFief1
             myFief1.addCharacter(myChar1);
@@ -195,7 +221,7 @@ namespace hist_mmorpg
             myFief1.barCharacter(myNPC2.charID);
 
             // set inital character to display
-            this.initialCharacter = myChar1;
+            this.initialCharacter = myWife;
 
             // set inital fief to display
             this.initialFief = myChar1.location;
@@ -235,6 +261,8 @@ namespace hist_mmorpg
             charText += "Language: " + ch.language + "\r\n";
             charText += "Days remaining: " + ch.days + "\r\n";
             charText += "Stature: " + ch.stature + "\r\n";
+            charText += "Management: " + ch.management + "\r\n";
+            charText += "Combat: " + ch.combat + "\r\n";
             charText += "Skills:";
             for (int i = 0; i < ch.skills.Length; i++)
             {
@@ -270,7 +298,7 @@ namespace hist_mmorpg
             charText += "\r\n";
             if (ch.married)
             {
-                charText += "Your wife's ID is: " + ch.spouseID + "\r\n";
+                charText += "Your spouse's ID is: " + ch.spouse.charID + "\r\n";
             }
             if (!ch.isMale)
             {
@@ -281,8 +309,40 @@ namespace hist_mmorpg
                 }
                 charText += "pregnant\r\n";
             }
-            charText += "Father's ID: " + ch.father + "\r\n";
-            charText += "Head of family's ID: " + ch.familyHead + "\r\n";
+            else
+            {
+                if (ch.married)
+                {
+                    if (ch.spouse.pregnant)
+                    {
+                        charText += "Your wife is pregnant (congratulations!)\r\n";
+                    }
+                    else
+                    {
+                        charText += "Your wife is not pregnant (try harder!)\r\n";
+                    }
+                }
+            }
+            charText += "Father's ID: ";
+            if (ch.father != null)
+            {
+                charText += ch.father.charID;
+            }
+            else
+            {
+                charText += "N/A";
+            }
+            charText += "\r\n";
+            charText += "Head of family's ID: ";
+            if (ch.familyHead != null)
+            {
+                charText += ch.familyHead.charID;
+            }
+            else
+            {
+                charText += "N/A";
+            }
+            charText += "\r\n";
 
             this.characterTextBox.Text = charText;
 
@@ -322,6 +382,19 @@ namespace hist_mmorpg
                     pcText += "\r\n";
                 }
             }
+            pcText += "Fiefs owned:";
+            for (int i = 0; i < ch.ownedFiefs.Count; i++)
+            {
+                pcText += " " + ch.ownedFiefs[i].name;
+                if (i < (ch.ownedFiefs.Count - 1))
+                {
+                    pcText += ",";
+                }
+                else
+                {
+                    pcText += "\r\n";
+                }
+            }
 
             this.characterTextBox.Text += pcText;
         }
@@ -346,13 +419,26 @@ namespace hist_mmorpg
             fiefText += "ID: " + f.fiefID + "\r\n";
             fiefText += "Name: " + f.name + " (Province: " + f.province.name + ")\r\n";
             fiefText += "Population: " + f.population + "\r\n";
-            fiefText += "Owner (ID): " + f.owner + "\r\n";
-            fiefText += "Ancestral owner (ID): " + f.ancestralOwner + "\r\n";
-            fiefText += "Bailiff (ID): " + f.bailiff + "\r\n";
+            fiefText += "Owner (ID): " + f.owner.charID + "\r\n";
+            fiefText += "Ancestral owner (ID): " + f.ancestralOwner.charID + "\r\n";
+            fiefText += "Bailiff (ID): " + f.bailiff.charID + "\r\n";
             fiefText += "Troops: " + f.troops + "\r\n";
-            fiefText += "Loyalty: " + f.keepLevel + "\r\n";
-            fiefText += "Status: " + f.keepLevel + "\r\n";
-            fiefText += "Terrain: " + f.keepLevel + "\r\n";
+            fiefText += "Status: ";
+            switch (f.status)
+            {
+                case 'U':
+                    fiefText += "Unrest";
+                    break;
+                case 'R':
+                    fiefText += "Rebellion!";
+                    break;
+                default:
+                    fiefText += "Calm";
+                     break;
+            }
+            fiefText += "\r\n";
+
+            fiefText += "Terrain: " + f.terrain + "\r\n";
             fiefText += "Characters present:";
             for (int i = 0; i < f.characters.Count; i++)
             {
@@ -394,6 +480,7 @@ namespace hist_mmorpg
 
             fiefText += "========= Management ==========\r\n\r\n";
 
+            fiefText += "Loyalty: " + (f.loyalty + (f.loyalty * f.calcBlfLoyMod())) + "\r\n";
             fiefText += "Fields level: " + f.fields + "\r\n";
             fiefText += "Industry level: " + f.industry + "\r\n";
             fiefText += "GDP: " + f.calcGDP("this") + "\r\n";
@@ -406,23 +493,26 @@ namespace hist_mmorpg
             fiefText += "Income: " + f.calcIncome("this") + "\r\n";
             fiefText += "Family expenses: 0\r\n";
             fiefText += "Total expenses: " + f.calcExpenses("this") + "\r\n";
+            fiefText += "Overlord taxes: " + f.calcOlordTaxes("this") + "\r\n";
             fiefText += "Bottom line: " + f.calcBottomLine("this") + "\r\n\r\n";
 
             fiefText += "========= Next season =========\r\n";
-            fiefText += "==== (with current bailiff) ===\r\n\r\n";
+            fiefText += "(with current bailiff & unchanged oLord tax)\r\n\r\n";
 
-            fiefText += "Fields level: " + f.calcFieldLevel() + "\r\n";
-            fiefText += "Industry level: " + f.calcIndustryLevel() + "\r\n";
+            fiefText += "Loyalty: " + (f.calcNewLoyalty() + (f.calcNewLoyalty() * f.calcBlfLoyMod())) + "\r\n";
+            fiefText += "Fields level: " + f.calcNewFieldLevel() + "\r\n";
+            fiefText += "Industry level: " + f.calcNewIndustryLevel() + "\r\n";
             fiefText += "GDP: " + f.calcGDP("next") + "\r\n";
             fiefText += "Tax rate: " + f.taxRateNext + "\r\n";
             fiefText += "Officials expenditure: " + f.officialsSpendNext + "\r\n";
             fiefText += "Garrison expenditure: " + f.garrisonSpendNext + "\r\n";
             fiefText += "Infrastructure expenditure: " + f.infrastructureSpendNext + "\r\n";
             fiefText += "Keep expenditure: " + f.keepSpendNext + "\r\n";
-            fiefText += "Keep level: " + f.calcKeepLevel() + "\r\n";
+            fiefText += "Keep level: " + f.calcNewKeepLevel() + "\r\n";
             fiefText += "Income: " + f.calcIncome("next") + "\r\n";
             fiefText += "Family expenses: 0\r\n";
             fiefText += "Total expenses: " + f.calcExpenses("next") + "\r\n";
+            fiefText += "Overlord taxes: " + f.calcOlordTaxes("next") + "\r\n";
             fiefText += "Bottom line: " + f.calcBottomLine("next") + "\r\n\r\n";
 
             this.fiefTextBox.Text = fiefText;
@@ -506,6 +596,11 @@ namespace hist_mmorpg
         private void adjustKeepSpendBtn_Click(object sender, EventArgs e)
         {
             this.fModel.adjustKpSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
+        }
+
+        private void updateFiefBtn_Click(object sender, EventArgs e)
+        {
+            this.fModel.updateFief();
         }
 
     }

@@ -134,6 +134,15 @@ namespace hist_mmorpg
             this.notifyObservers("refreshFief");
         }
 
+        /// <summary>
+        /// Updates fief data at the end/beginning of the season
+        /// </summary>
+        public void updateFief()
+        {
+            this.currentFief.updateFief();
+            this.notifyObservers("refreshFief");
+        }
+
         /*
         /// <summary>
         /// Sets new fief field level (from next season's spend)

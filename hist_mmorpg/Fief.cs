@@ -30,18 +30,6 @@ namespace hist_mmorpg
         /// </summary>
         public uint population { get; set; }
         /// <summary>
-        /// Holds fief owner (ID)
-        /// </summary>
-        public string owner { get; set; }
-        /// <summary>
-        /// Holds fief ancestral owner (ID)
-        /// </summary>
-        public string ancestralOwner { get; set; }
-        /// <summary>
-        /// Holds fief bailiff (ID)
-        /// </summary>
-        public string bailiff { get; set; }
-        /// <summary>
         /// Holds fief field level
         /// </summary>
         public Double fields { get; set; }
@@ -125,6 +113,18 @@ namespace hist_mmorpg
         /// Indicates whether French nationality barred from keep
         /// </summary>
         public bool frenchBarred { get; set; }
+        /// <summary>
+        /// Holds fief owner (Character)
+        /// </summary>
+        public Character owner { get; set; }
+        /// <summary>
+        /// Holds fief ancestral owner (Character)
+        /// </summary>
+        public Character ancestralOwner { get; set; }
+        /// <summary>
+        /// Holds fief bailiff (Character)
+        /// </summary>
+        public Character bailiff { get; set; }
 
         /// <summary>
         /// Constructor for Fief
@@ -133,9 +133,6 @@ namespace hist_mmorpg
         /// <param name="nam">String holding fief name</param>
         /// <param name="prov">Fief's Province object</param>
         /// <param name="pop">uint holding fief population</param>
-        /// <param name="own">string holding fief owner ID</param>
-        /// <param name="ancOwn">string holding fief ancestral owner ID</param>
-        /// <param name="bail">string holding fief bailiff ID</param>
         /// <param name="fld">Double holding fief field level</param>
         /// <param name="fld">Double holding fief industry level</param>
         /// <param name="trp">uint holding no. of troops in fief</param>
@@ -157,9 +154,12 @@ namespace hist_mmorpg
         /// <param name="barChars">List<string> holding IDs of characters barred from keep</param>
         /// <param name="engBarr">bool indicating whether English nationality barred from keep</param>
         /// <param name="frBarr">bool indicating whether French nationality barred from keep</param>
-        public Fief(String id, String nam, Province prov, uint pop, string own, string ancOwn, string bail, Double fld, Double ind, uint trp,
-            Double tx, uint off, uint garr, uint infra, uint keep, Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, Double kpLvl, 
-            Double loy, char stat, char terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr)
+        /// <param name="own">Character holding fief owner</param>
+        /// <param name="ancOwn">Character holding fief ancestral owner</param>
+        /// <param name="bail">Character holding fief bailiff</param>
+        public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp,
+            Double tx, uint off, uint garr, uint infra, uint keep, Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, Double kpLvl,
+            Double loy, char stat, char terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr, Character own = null, Character ancOwn = null, Character bail = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -282,9 +282,9 @@ namespace hist_mmorpg
             {
                 case "next":
                     // calculate production from fields
-                    fldProd = Convert.ToUInt32((this.calcFieldLevel() * 8997));
+                    fldProd = Convert.ToUInt32((this.calcNewFieldLevel() * 8997));
                     // calculate production from industry
-                    indProd = Convert.ToUInt32(this.calcIndustryLevel() * (290 * Math.Pow(1.2, ((this.calcNewPop() / 1000) - 1))));
+                    indProd = Convert.ToUInt32(this.calcNewIndustryLevel() * (290 * Math.Pow(1.2, ((this.calcNewPop() / 1000) - 1))));
                     // calculate final gdp
                     gdp = (fldProd + indProd) / (this.calcNewPop() / 1000);
                     break;
@@ -297,7 +297,7 @@ namespace hist_mmorpg
                     gdp = (fldProd + indProd) / (this.population / 1000);
                     break;
             }
-
+            gdp = (gdp * 1000);
             return gdp;
         }
 
@@ -328,6 +328,23 @@ namespace hist_mmorpg
                     fiefIncome = Convert.ToUInt32(this.calcGDP("this") * (this.taxRate / 100));
                     break;
             }
+
+            // factor in effect of fief status
+            switch (this.status)
+            {
+                case 'U':
+                    fiefIncome = (fiefIncome / 2);
+                    break;
+                case 'R':
+                    fiefIncome = 0;
+                    break;
+                default:
+                    break;
+            }
+
+            // factor in bailiff modifier
+            fiefIncome = fiefIncome + Convert.ToUInt32(fiefIncome * this.calcBlfIncmMod());
+
             return fiefIncome;
         }
 
@@ -420,9 +437,17 @@ namespace hist_mmorpg
         /// Calculates new fief field level (from next season's spend)
         /// </summary>
         /// <returns>double containing new field level</returns>
-        public double calcFieldLevel()
+        public double calcNewFieldLevel()
         {
-            double fldLvl = this.fields = this.fields + ((this.infrastructureSpendNext / 1000.00) / 500.00);
+            double fldLvl = 0;
+            if (this.infrastructureSpendNext == 0)
+            {
+                fldLvl = this.fields - (this.fields / 100);
+            }
+            else
+            {
+                fldLvl = this.fields + (this.infrastructureSpendNext / 500000.00);
+            }
             return fldLvl;
         }
 
@@ -430,9 +455,17 @@ namespace hist_mmorpg
         /// Calculates new fief industry level (from next season's spend)
         /// </summary>
         /// <returns>double containing new industry level</returns>
-        public double calcIndustryLevel()
+        public double calcNewIndustryLevel()
         {
-            double indLvl = this.industry = this.industry + ((this.infrastructureSpendNext / 1000.00) / 400.00);
+            double indLvl = 0;
+            if (this.infrastructureSpendNext == 0)
+            {
+                indLvl = this.industry - (this.industry / 100);
+            }
+            else
+            {
+                indLvl = this.industry + (this.infrastructureSpendNext / 1000000.00);
+            }
             return indLvl;
         }
 
@@ -440,10 +473,204 @@ namespace hist_mmorpg
         /// Calculates new fief keep level (from next season's spend)
         /// </summary>
         /// <returns>double containing new keep level</returns>
-        public double calcKeepLevel()
+        public double calcNewKeepLevel()
         {
-            double kpLvl = this.keepLevel +((this.keepSpendNext / 1000.00) / 400.00);
+            double kpLvl = 0;
+            if (this.keepSpendNext == 0)
+            {
+                kpLvl = this.keepLevel - 0.15;
+            }
+            else
+            {
+                kpLvl = this.keepLevel + (this.keepSpendNext / 400000.00);
+            }
             return kpLvl;
+        }
+
+        /// <summary>
+        /// Calculates overlord taxes
+        /// </summary>
+        /// <returns>uint containing overlord taxes</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</returns>
+        public uint calcOlordTaxes(string season)
+        {
+            uint oTaxes = Convert.ToUInt32(this.calcIncome(season) * (this.province.overlordTaxRate / 100));
+            return oTaxes;
+        }
+
+        /// <summary>
+        /// Calculates new fief loyalty level (i.e. for next season)
+        /// </summary>
+        /// <returns>double containing new fief loyalty</returns>
+        public double calcNewLoyalty()
+        {
+            // calculate effect of tax rate change
+            double newLoy = this.loyalty + (this.loyalty * (((this.taxRateNext - this.taxRate) / 100) * -1));
+            
+            // calculate effect of surplus
+            if (this.calcBottomLine("next") > 0)
+            {
+                newLoy = newLoy - (this.calcBottomLine("next") / Convert.ToDouble(this.calcIncome("next")));
+            }
+
+            return newLoy;
+        }
+
+        /// <summary>
+        /// Calculates effect of bailiff on fief loyalty level
+        /// </summary>
+        /// <returns>double containing fief loyalty modifier</returns>
+        public double calcBlfLoyMod()
+        {
+            double loyModif = 0;
+            double statPlusMan = 0;
+
+            if (this.bailiff == null)
+            {
+                statPlusMan = 6;
+            }
+            else
+            {
+                statPlusMan = this.bailiff.stature + this.bailiff.management;
+            }
+
+            loyModif = Convert.ToUInt32(((statPlusMan / 2) - 1)) * 1.25;
+            loyModif = loyModif / 100;
+
+            return loyModif;
+        }
+
+        /// <summary>
+        /// Calculates effect of bailiff on fief income
+        /// </summary>
+        /// <returns>double containing fief income modifier</returns>
+        public double calcBlfIncmMod()
+        {
+            double incomeModif = 0;
+            double man = 0;
+
+            if (this.bailiff == null)
+            {
+                man = 3;
+            }
+            else
+            {
+                man = this.bailiff.management;
+            }
+
+            incomeModif = Convert.ToUInt32(man - 1) * 2.5;
+            incomeModif = incomeModif / 100;
+
+            return incomeModif;
+        }
+
+        /// <summary>
+        /// Updates fief data at the end/beginning of the season
+        /// </summary>
+        public void updateFief()
+        {
+            // update loyalty level
+            this.loyalty = this.calcNewLoyalty();
+            // update fields level (based on next season infrastructure spend)
+            this.fields = this.calcNewFieldLevel();
+            // update industry level (based on next season infrastructure spend)
+            this.industry = this.calcNewIndustryLevel();
+            // update keep level (based on next season keep spend)
+            this.keepLevel = this.calcNewKeepLevel();
+            // update tax rate
+            this.taxRate = this.taxRateNext;
+            // update officials spend
+            this.officialsSpend = this.officialsSpendNext;
+            // update garrison spend
+            this.garrisonSpend = this.garrisonSpendNext;
+            // update infrastructure spend
+            this.infrastructureSpend = this.infrastructureSpendNext;
+            // update keep spend
+            this.keepSpend = this.keepSpendNext;
+            // check for unrest/rebellion
+            this.status = this.checkFiefStatus();
+        }
+
+        /// <summary>
+        /// Checks for unrest/rebellion
+        /// </summary>
+        /// <returns>char indicating fief status</returns>
+        public char checkFiefStatus()
+        {
+            char stat = this.status;
+            Random rand = new Random();
+
+            // method 1 (depends on tax rate and surplus)
+            if ((this.taxRate > 20) && (this.calcBottomLine("this") > (this.calcIncome("this") * 0.1)))
+            {
+                if ((rand.NextDouble() * 100) <= (this.taxRate - 20))
+                {
+                    stat = 'R';
+                }
+            }
+
+            // method 2 (depends on fief loyalty level)
+            if (!stat.Equals('R'))
+            {
+                double chance = (rand.NextDouble() * 100);
+                if ((this.loyalty > 3) && (this.loyalty <= 4))
+                {
+                    if (chance <= 2)
+                    {
+                        stat = 'R';
+                    }
+                    else if (chance <= 10)
+                    {
+                        stat = 'U';
+                    }
+                }
+                else if ((this.loyalty > 2) && (this.loyalty <= 3))
+                {
+                    if (chance <= 14)
+                    {
+                        stat = 'R';
+                    }
+                    else if (chance <= 30)
+                    {
+                        stat = 'U';
+                    }
+                }
+                else if ((this.loyalty > 1) && (this.loyalty <= 2))
+                {
+                    if (chance <= 26)
+                    {
+                        stat = 'R';
+                    }
+                    else if (chance <= 50)
+                    {
+                        stat = 'U';
+                    }
+                }
+                else if ((this.loyalty > 0) && (this.loyalty <= 1))
+                {
+                    if (chance <= 38)
+                    {
+                        stat = 'R';
+                    }
+                    else if (chance <= 70)
+                    {
+                        stat = 'U';
+                    }
+                }
+                else if (this.loyalty == 0)
+                {
+                    if (chance <= 50)
+                    {
+                        stat = 'R';
+                    }
+                    else if (chance <= 90)
+                    {
+                        stat = 'U';
+                    }
+                }
+            }
+
+            return stat;
         }
 
         /// <summary>

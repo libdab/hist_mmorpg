@@ -61,6 +61,14 @@ namespace hist_mmorpg
         /// </summary>
         public Double stature { get; set; }
         /// <summary>
+        /// Holds character's management rating
+        /// </summary>
+        public Double management { get; set; }
+        /// <summary>
+        /// Holds character's combat rating
+        /// </summary>
+        public Double combat { get; set; }
+        /// <summary>
         /// Array holding character's skills
         /// </summary>
         public Skill[] skills { get; set; }
@@ -73,21 +81,21 @@ namespace hist_mmorpg
         /// </summary>
         public bool married { get; set; }
         /// <summary>
-        /// Holds ID of spouse
-        /// </summary>
-        public string spouseID { get; set; }
-        /// <summary>
         /// Holds character pregnancy status
         /// </summary>
         public bool pregnant { get; set; }
         /// <summary>
-        /// Holds ID of father
+        /// Holds spouse (Character)
         /// </summary>
-        public string father { get; set; }
+        public Character spouse { get; set; }
         /// <summary>
-        /// Holds ID of head of family
+        /// Holds father (Character)
         /// </summary>
-        public string familyHead { get; set; }
+        public Character father { get; set; }
+        /// <summary>
+        /// Holds head of family (Character)
+        /// </summary>
+        public Character familyHead { get; set; }
 
         /// <summary>
         /// Constructor for Character
@@ -104,15 +112,17 @@ namespace hist_mmorpg
         /// <param name="lang">String holding character language code</param>
         /// <param name="day">uint holding character remaining days in season</param>
         /// <param name="stat">Double holding character status rating</param>
+        /// <param name="mngmnt">Double holding character management rating</param>
+        /// <param name="cbt">Double holding character combat rating</param>
         /// <param name="inK">bool indicating if character is in the keep</param>
         /// <param name="marr">char holding character marital status</param>
-        /// <param name="spID">string holding spouse ID</param>
         /// <param name="preg">bool holding character pregnancy status</param>
-        /// <param name="fath">string holding father ID</param>
-        /// <param name="famHead">string holding head of family ID</param>
+        /// <param name="sp">Character holding spouse</param>
+        /// <param name="fath">Character holding father</param>
+        /// <param name="famHead">Character holding head of family</param>
         public Character(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Fief loc, string lang, uint day, Double stat, Skill[] skl, bool inK, bool marr, string spID, bool preg,
-            string fath, string famHead)
+            Fief loc, string lang, uint day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
+            Character sp = null, Character fath = null, Character famHead = null)
         {
 
             // validation
@@ -175,17 +185,20 @@ namespace hist_mmorpg
                 throw new InvalidDataException("Character stature must be a double between 0 and 9");
             }
 
-            // TODO: validate spID = 1-10000?
-            // ensure married characters have a spID and unmarried ones don't
-            if ((! marr) && (! spID.Equals("NA")))
+            // validate mngmnt = 0-9.00
+            if (mngmnt > 9)
             {
-                throw new InvalidDataException("For unmarried characters, spouseID must be 'NA'");
-            }
-            if ((marr) && (spID.Equals("NA")))
-            {
-                throw new InvalidDataException("Married characters should have a spouseID");
+                throw new InvalidDataException("Character stature must be a double between 0 and 9");
             }
 
+            // validate cbt = 0-9.00
+            if (cbt > 9)
+            {
+                throw new InvalidDataException("Character stature must be a double between 0 and 9");
+            }
+
+            // TODO: validate spID = 1-10000?
+            // TODO: ensure married characters have a sp and unmarried ones don't? (but may initially be null)
             // TODO: validate fath ID = 1-10000?
 
             // TODO: validate famHead ID = 1-10000?
@@ -202,11 +215,13 @@ namespace hist_mmorpg
             this.language = lang;
             this.days = day;
             this.stature = stat;
+            this.management = mngmnt;
+            this.combat = cbt;
             this.skills = skl;
             this.inKeep = inK;
             this.married = marr;
-            this.spouseID = spID;
             this.pregnant = preg;
+            this.spouse = sp;
             this.father = fath;
             this.familyHead = famHead;
         }
@@ -320,16 +335,21 @@ namespace hist_mmorpg
         /// Holds character's entourage
         /// </summary>
         public List<Character> entourage = new List<Character>();
+        /// <summary>
+        /// Holds character's entourage
+        /// </summary>
+        public List<Fief> ownedFiefs = new List<Fief>();
 
         /// <summary>
         /// Constructor for PlayerCharacter
         /// </summary>
         /// <param name="outl">bool holding character outlawed status</param>
         /// <param name="pur">uint holding character purse</param>
+        /// <param name="kps">List<Fief> holding fiefs owned by character</param>
         public PlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Fief loc, string lang, uint day, Double stat, Skill[] skl, bool inK, bool marr, string spID, bool preg, string fath,
-            string famHead, bool outl, uint pur, List<Character> ent)
-            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, skl, inK, marr, spID, preg, fath, famHead)
+            Fief loc, string lang, uint day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
+            bool outl, uint pur, List<Character> ent, List<Fief> kps, Character sp = null, Character fath = null, Character famHead = null)
+            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, sp, fath, famHead)
         {
 
             this.outlawed = outl;
@@ -349,10 +369,28 @@ namespace hist_mmorpg
         /// <summary>
         /// Removes an NPC from the character's entourage
         /// </summary>
-        /// <param name="ch">NPC to be added</param>
+        /// <param name="ch">NPC to be removed</param>
         public void removeFromEntourage(Character ch)
         {
             this.entourage.Remove(ch);
+        }
+
+        /// <summary>
+        /// Adds a Fief to the character's list of owned fiefs
+        /// </summary>
+        /// <param name="f">Fief to be added</param>
+        public void addToOwnedFiefs(Fief f)
+        {
+            this.ownedFiefs.Add(f);
+        }
+
+        /// <summary>
+        /// Removes a Fief from the character's list of owned fiefs
+        /// </summary>
+        /// <param name="f">Fief to be removed</param>
+        public void removeFromOwnedFiefs(Fief f)
+        {
+            this.ownedFiefs.Remove(f);
         }
 
         /// <summary>
@@ -414,9 +452,9 @@ namespace hist_mmorpg
         /// <param name="go">String holding fief ID for destination (specified by NPC's boss)</param>
         /// <param name="wa">string holding NPC's wages</param>
         public NonPlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Fief loc, string lang, uint day, Double stat, Skill[] skl, bool inK, bool marr, string spID, bool preg, string fath,
-            string famHead, string hb, string go, uint wa)
-            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, skl, inK, marr, spID, preg, fath, famHead)
+            Fief loc, string lang, uint day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
+            string hb, string go, uint wa, Character sp = null, Character fath = null, Character famHead = null)
+            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, sp, fath, famHead)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
