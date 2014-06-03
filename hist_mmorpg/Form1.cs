@@ -160,8 +160,8 @@ namespace hist_mmorpg
             // create province for fiefs
             Province myProv = new Province("ESX00", "Sussex, England", 100, 6.2, "E1");
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, "100", "200", "4001", 3.0, 3.0, 50, 9.10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', 'P', fief1Chars, keep1BarChars, false, false);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, "100", "200", "4001", 3.50, 0.20, 50, 9.10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', 'P', fief2Chars, keep2BarChars, false, false);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, "100", "200", "4001", 3.0, 3.0, 50, 9.10, 1000, 1000, 2000, 2000, 9.10, 1000, 1000, 2000, 100000, 5.63, 5.20, 'U', 'P', fief1Chars, keep1BarChars, false, false);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, "100", "200", "4001", 3.50, 0.20, 50, 9.10, 1000, 1000, 2000, 2000, 9.10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', 'P', fief2Chars, keep2BarChars, false, false);
             Army myArmy = new Army(0, 0, 0, 0, 100, 0, "101", "401", 90);
 
             // create QuickGraph undirected graph
@@ -220,7 +220,16 @@ namespace hist_mmorpg
             }
             charText += "\r\n";
             charText += "Nationality: " + ch.nationality + "\r\n";
-            charText += "Health: " + ch.health + " (max. health: " + ch.maxHealth + ")\r\n";
+            charText += "Health: ";
+            if (ch.health == 0)
+            {
+                charText += "You're Dead!";
+            }
+            else
+            {
+                charText += ch.health + " (max. health: " + ch.maxHealth + ")";
+            }
+            charText += "\r\n";
             charText += "Virility: " + ch.virility + "\r\n";
             charText += "Current location: " + ch.location.name + " (" + ch.location.province.name + ")\r\n";
             charText += "Language: " + ch.language + "\r\n";
@@ -340,15 +349,7 @@ namespace hist_mmorpg
             fiefText += "Owner (ID): " + f.owner + "\r\n";
             fiefText += "Ancestral owner (ID): " + f.ancestralOwner + "\r\n";
             fiefText += "Bailiff (ID): " + f.bailiff + "\r\n";
-            fiefText += "Fields level: " + f.fields + "\r\n";
-            fiefText += "Industry level: " + f.industry + "\r\n";
             fiefText += "Troops: " + f.troops + "\r\n";
-            fiefText += "Tax rate: " + f.taxRate + "\r\n";
-            fiefText += "Officials expenditure: " + f.officialsSpend + "\r\n";
-            fiefText += "Garrison expenditure: " + f.garrisonSpend + "\r\n";
-            fiefText += "Infrastructure expenditure: " + f.infrastructureSpend + "\r\n";
-            fiefText += "Keep expenditure: " + f.keepSpend + "\r\n";
-            fiefText += "Keep level: " + f.keepLevel + "\r\n";
             fiefText += "Loyalty: " + f.keepLevel + "\r\n";
             fiefText += "Status: " + f.keepLevel + "\r\n";
             fiefText += "Terrain: " + f.keepLevel + "\r\n";
@@ -389,7 +390,40 @@ namespace hist_mmorpg
             {
                 fiefText += "not";
             }
-            fiefText += " barred from the keep\r\n";
+            fiefText += " barred from the keep\r\n\r\n";
+
+            fiefText += "========= Management ==========\r\n\r\n";
+
+            fiefText += "Fields level: " + f.fields + "\r\n";
+            fiefText += "Industry level: " + f.industry + "\r\n";
+            fiefText += "GDP: " + f.calcGDP("this") + "\r\n";
+            fiefText += "Tax rate: " + f.taxRate + "\r\n";
+            fiefText += "Officials expenditure: " + f.officialsSpend + "\r\n";
+            fiefText += "Garrison expenditure: " + f.garrisonSpend + "\r\n";
+            fiefText += "Infrastructure expenditure: " + f.infrastructureSpend + "\r\n";
+            fiefText += "Keep expenditure: " + f.keepSpend + "\r\n";
+            fiefText += "Keep level: " + f.keepLevel + "\r\n";
+            fiefText += "Income: " + f.calcIncome("this") + "\r\n";
+            fiefText += "Family expenses: 0\r\n";
+            fiefText += "Total expenses: " + f.calcExpenses("this") + "\r\n";
+            fiefText += "Bottom line: " + f.calcBottomLine("this") + "\r\n\r\n";
+
+            fiefText += "========= Next season =========\r\n";
+            fiefText += "==== (with current bailiff) ===\r\n\r\n";
+
+            fiefText += "Fields level: " + f.calcFieldLevel() + "\r\n";
+            fiefText += "Industry level: " + f.calcIndustryLevel() + "\r\n";
+            fiefText += "GDP: " + f.calcGDP("next") + "\r\n";
+            fiefText += "Tax rate: " + f.taxRateNext + "\r\n";
+            fiefText += "Officials expenditure: " + f.officialsSpendNext + "\r\n";
+            fiefText += "Garrison expenditure: " + f.garrisonSpendNext + "\r\n";
+            fiefText += "Infrastructure expenditure: " + f.infrastructureSpendNext + "\r\n";
+            fiefText += "Keep expenditure: " + f.keepSpendNext + "\r\n";
+            fiefText += "Keep level: " + f.calcKeepLevel() + "\r\n";
+            fiefText += "Income: " + f.calcIncome("next") + "\r\n";
+            fiefText += "Family expenses: 0\r\n";
+            fiefText += "Total expenses: " + f.calcExpenses("next") + "\r\n";
+            fiefText += "Bottom line: " + f.calcBottomLine("next") + "\r\n\r\n";
 
             this.fiefTextBox.Text = fiefText;
         }
@@ -437,6 +471,41 @@ namespace hist_mmorpg
             {
                 this.fiefContainer.Visible = true;
             }
+        }
+
+        private void checkDeath_Click(object sender, EventArgs e)
+        {
+            this.charModel.checkDeath();
+        }
+
+        private void calcPop_Click(object sender, EventArgs e)
+        {
+            this.fModel.calcNewPop();
+        }
+
+        private void adjustTaxButton_Click(object sender, EventArgs e)
+        {
+            this.fModel.adjustTx(Convert.ToDouble(this.adjustTaxTextBox.Text));
+        }
+
+        private void adjOffSpend_Click(object sender, EventArgs e)
+        {
+            this.fModel.adjustOffSpend(Convert.ToUInt32(this.adjOffSpendTextBox.Text));
+        }
+
+        private void adjGarrSpendBtn_Click(object sender, EventArgs e)
+        {
+            this.fModel.adjustGarrSpend(Convert.ToUInt32(this.adjGarrSpendTextBox.Text));
+        }
+
+        private void adjInfrSpendBtn_Click(object sender, EventArgs e)
+        {
+            this.fModel.adjustInfSpend(Convert.ToUInt32(this.adjInfrSpendTextBox.Text));
+        }
+
+        private void adjustKeepSpendBtn_Click(object sender, EventArgs e)
+        {
+            this.fModel.adjustKpSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
         }
 
     }

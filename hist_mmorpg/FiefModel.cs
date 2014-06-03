@@ -44,6 +44,126 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Calculates fief population increase of current Fief
+        /// </summary>
+        /// <param name="ch">Character to check for death</param>
+        public void calcNewPop()
+        {
+            uint newPop = this.currentFief.calcNewPop();
+            this.currentFief.population = newPop;
+            this.notifyObservers("refreshFief");
+        }
+
+        /// <summary>
+        /// Calculates fief income of current Fief
+        /// </summary>
+        /// <returns>uint containing fief income</returns>
+        public uint calcIncome()
+        {
+            uint fiefIncome = this.currentFief.calcIncome("this");
+            return fiefIncome;
+        }
+
+        /// <summary>
+        /// Calculates fief expenses of current Fief
+        /// </summary>
+        /// <returns>uint containing fief income</returns>
+        public uint calcExpenses()
+        {
+            uint fiefExpenses = this.currentFief.calcExpenses("this");
+            return fiefExpenses;
+        }
+
+        /// <summary>
+        /// Calculates fief bottom line of current Fief
+        /// </summary>
+        /// <returns>uint containing fief income</returns>
+        public int calcBottomLine()
+        {
+            int fiefBottomLine = this.currentFief.calcBottomLine("this");
+            return fiefBottomLine;
+        }
+
+        /// <summary>
+        /// Adjusts fief tax rate
+        /// </summary>
+        /// <param name="tx">double containing new tax rate</returns>
+        public void adjustTx(double tx)
+        {
+            this.currentFief.adjustTaxRate(tx);
+            this.notifyObservers("refreshFief");
+        }
+
+        /// <summary>
+        /// Adjusts fief officials expenditure
+        /// </summary>
+        /// <param name="os">uint containing new officials expenditure</returns>
+        public void adjustOffSpend(uint os)
+        {
+            this.currentFief.adjustOfficialsSpend(os);
+            this.notifyObservers("refreshFief");
+        }
+
+        /// <summary>
+        /// Adjusts fief infrastructure expenditure
+        /// </summary>
+        /// <param name="infs">uint containing new infrastructure expenditure</returns>
+        public void adjustInfSpend(uint infs)
+        {
+            this.currentFief.adjustInfraSpend(infs);
+            this.notifyObservers("refreshFief");
+        }
+
+        /// <summary>
+        /// Adjusts fief garrison expenditure
+        /// </summary>
+        /// <param name="gs">uint containing new garrison expenditure</returns>
+        public void adjustGarrSpend(uint gs)
+        {
+            this.currentFief.adjustGarrisonSpend(gs);
+            this.notifyObservers("refreshFief");
+        }
+
+        /// <summary>
+        /// Adjusts fief keep expenditure
+        /// </summary>
+        /// <param name="ks">uint containing new keep expenditure</returns>
+        public void adjustKpSpend(uint ks)
+        {
+            this.currentFief.adjustKeepSpend(ks);
+            this.notifyObservers("refreshFief");
+        }
+
+        /*
+        /// <summary>
+        /// Sets new fief field level (from next season's spend)
+        /// </summary>
+        public void setNewFieldLvl()
+        {
+            this.currentFief.fields = this.currentFief.calcFieldLevel();
+            this.notifyObservers("refreshFief");
+        }
+
+        /// <summary>
+        /// Sets new fief industry level (from next season's spend)
+        /// </summary>
+        public void calcIndustryLvl()
+        {
+            this.currentFief.industry = this.currentFief.calcIndustryLevel();
+            this.notifyObservers("refreshFief");
+        }
+
+        /// <summary>
+        /// Sets new fief keep level (from next season's spend)
+        /// </summary>
+        public void calcKeepLvl()
+        {
+            this.currentFief.keepLevel = this.currentFief.calcKeepLevel();
+            this.notifyObservers("refreshFief");
+        }
+        */
+
+        /// <summary>
         /// Adds a view (Form1 object) to the list of registered views
         /// </summary>
         /// <param name="obs">Form1 object to be added</param>

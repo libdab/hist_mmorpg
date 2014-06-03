@@ -44,6 +44,20 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Checks for death of current Character
+        /// </summary>
+        /// <param name="ch">Character to check for death</param>
+        public void checkDeath()
+        {
+            bool dead = this.currentCharacter.checkDeath();
+            if (dead)
+            {
+                this.currentCharacter.health = 0;
+                this.notifyObservers("refreshChar");
+            }
+        }
+
+        /// <summary>
         /// Adds a view (Form1 object) to the list of registered views
         /// </summary>
         /// <param name="obs">Form1 object to be added</param>
