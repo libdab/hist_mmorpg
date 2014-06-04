@@ -160,8 +160,8 @@ namespace hist_mmorpg
             // create province for fiefs
             Province myProv = new Province("ESX00", "Sussex, England", 100, 6.2, "E1");
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 1000, 1000, 2000, 2000, 9.10, 1000, 1000, 2000, 100000, 5.63, 5.5, 'C', 'P', fief1Chars, keep1BarChars, false, false);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 9.10, 1000, 1000, 2000, 2000, 9.10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', 'P', fief2Chars, keep2BarChars, false, false);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'R', 'P', fief1Chars, keep1BarChars, false, false);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', 'P', fief2Chars, keep2BarChars, false, false);
             Army myArmy = new Army(0, 0, 0, 0, 100, 0, "101", "401", 90);
 
             // create QuickGraph undirected graph
@@ -221,7 +221,7 @@ namespace hist_mmorpg
             myFief1.barCharacter(myNPC2.charID);
 
             // set inital character to display
-            this.initialCharacter = myWife;
+            this.initialCharacter = myNPC1;
 
             // set inital fief to display
             this.initialFief = myChar1.location;
@@ -481,25 +481,38 @@ namespace hist_mmorpg
             fiefText += "========= Management ==========\r\n\r\n";
 
             fiefText += "Loyalty: " + (f.loyalty + (f.loyalty * f.calcBlfLoyMod())) + "\r\n";
+            fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod("this") + ")\r\n";
+            fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod("this") + ")\r\n";
+            fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyMod() + ")\r\n";
+            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier)\r\n";
             fiefText += "Fields level: " + f.fields + "\r\n";
             fiefText += "Industry level: " + f.industry + "\r\n";
             fiefText += "GDP: " + f.calcGDP("this") + "\r\n";
             fiefText += "Tax rate: " + f.taxRate + "\r\n";
-            fiefText += "Officials expenditure: " + f.officialsSpend + "\r\n";
+            fiefText += "Officials expenditure: " + f.officialsSpend + " (modifier: " + f.calcOffIncMod("this") + ")\r\n";
             fiefText += "Garrison expenditure: " + f.garrisonSpend + "\r\n";
             fiefText += "Infrastructure expenditure: " + f.infrastructureSpend + "\r\n";
             fiefText += "Keep expenditure: " + f.keepSpend + "\r\n";
             fiefText += "Keep level: " + f.keepLevel + "\r\n";
-            fiefText += "Income: " + f.calcIncome("this") + "\r\n";
-            fiefText += "Family expenses: 0\r\n";
+            fiefText += "Income: " + (f.calcIncome("this") * f.calcStatusIncmMod()) + "\r\n";
+            fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod() + ")\r\n";
+            fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod("this") + ")\r\n";
+            fiefText += "  (including fief status income modifier: " + f.calcStatusIncmMod() + ")\r\n";
+            fiefText += "Family expenses: 0 (not yet implemented)\r\n";
             fiefText += "Total expenses: " + f.calcExpenses("this") + "\r\n";
+            fiefText += "  (which may include a Bailiff fiefExpense skills modifier)\r\n";
             fiefText += "Overlord taxes: " + f.calcOlordTaxes("this") + "\r\n";
             fiefText += "Bottom line: " + f.calcBottomLine("this") + "\r\n\r\n";
 
             fiefText += "========= Next season =========\r\n";
-            fiefText += "(with current bailiff & unchanged oLord tax)\r\n\r\n";
+            fiefText += "(with current bailiff & oLord tax)\r\n";
+            fiefText += " (NOT including effects of status)\r\n\r\n";
 
             fiefText += "Loyalty: " + (f.calcNewLoyalty() + (f.calcNewLoyalty() * f.calcBlfLoyMod())) + "\r\n";
+            fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod("next") + ")\r\n";
+            fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod("next") + ")\r\n";
+            fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyMod() + ")\r\n";
+            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier)\r\n";
             fiefText += "Fields level: " + f.calcNewFieldLevel() + "\r\n";
             fiefText += "Industry level: " + f.calcNewIndustryLevel() + "\r\n";
             fiefText += "GDP: " + f.calcGDP("next") + "\r\n";
@@ -510,8 +523,11 @@ namespace hist_mmorpg
             fiefText += "Keep expenditure: " + f.keepSpendNext + "\r\n";
             fiefText += "Keep level: " + f.calcNewKeepLevel() + "\r\n";
             fiefText += "Income: " + f.calcIncome("next") + "\r\n";
-            fiefText += "Family expenses: 0\r\n";
+            fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod() + ")\r\n";
+            fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod("next") + ")\r\n";
+            fiefText += "Family expenses: 0 (not yet implemented)\r\n";
             fiefText += "Total expenses: " + f.calcExpenses("next") + "\r\n";
+            fiefText += "  (which may include a Bailiff fiefExpense skills modifier)\r\n";
             fiefText += "Overlord taxes: " + f.calcOlordTaxes("next") + "\r\n";
             fiefText += "Bottom line: " + f.calcBottomLine("next") + "\r\n\r\n";
 
@@ -563,9 +579,9 @@ namespace hist_mmorpg
             }
         }
 
-        private void checkDeath_Click(object sender, EventArgs e)
+        private void updateCharacter_Click(object sender, EventArgs e)
         {
-            this.charModel.checkDeath();
+            this.charModel.updateCharacter();
         }
 
         private void calcPop_Click(object sender, EventArgs e)

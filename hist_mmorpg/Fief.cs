@@ -312,40 +312,112 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates fief income
+        /// Calculates fief income (NOT including income loss due to unrest/rebellion)
         /// </summary>
         /// <returns>uint containing fief income</returns>
         /// <param name="season">string specifying whether to calculate for this or next season</returns>
-        public uint calcIncome(string season)
+        public int calcIncome(string season)
         {
-            uint fiefIncome = 0;
+            int fiefBaseIncome = 0;
+            int fiefIncome = 0;
             switch (season)
             {
                 case "next":
-                    fiefIncome = Convert.ToUInt32(this.calcGDP("next") * (this.taxRateNext / 100));
+                    fiefBaseIncome = Convert.ToInt32(this.calcGDP(season) * (this.taxRateNext / 100));
                     break;
                 default:
-                    fiefIncome = Convert.ToUInt32(this.calcGDP("this") * (this.taxRate / 100));
+                    fiefBaseIncome = Convert.ToInt32(this.calcGDP(season) * (this.taxRate / 100));
+                    break;
+            }
+            fiefIncome = fiefBaseIncome;
+
+            // factor in bailiff modifier
+            fiefIncome = fiefIncome + Convert.ToInt32(fiefBaseIncome * this.calcBlfIncMod());
+
+            // factor in officials spend modifier
+            fiefIncome = fiefIncome + Convert.ToInt32(fiefBaseIncome * this.calcOffIncMod(season));
+
+            return fiefIncome;
+        }
+
+        /// <summary>
+        /// Calculates effect of bailiff on fief income
+        /// </summary>
+        /// <returns>double containing fief income modifier</returns>
+        public double calcBlfIncMod()
+        {
+            double incomeModif = 0;
+            double man = 0;
+
+            if (this.bailiff == null)
+            {
+                man = 3;
+            }
+            else
+            {
+                man = this.bailiff.management;
+            }
+
+            incomeModif = Convert.ToUInt32(man - 1) * 2.5;
+
+            incomeModif = incomeModif / 100;
+
+            return incomeModif;
+        }
+
+        /// <summary>
+        /// Calculates effect of officials spend on fief income
+        /// </summary>
+        /// <returns>double containing fief income modifier</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</returns>
+        public double calcOffIncMod(string season)
+        {
+            double incomeModif = 0;
+
+            switch (season)
+            {
+                case "next":
+                    incomeModif = ((this.officialsSpendNext - ((double)this.calcNewPop() * 2)) / (this.calcNewPop() * 2)) / 10;
+                    break;
+                default:
+                    incomeModif = ((this.officialsSpend - ((double)this.population * 2)) / (this.population * 2)) / 10;
                     break;
             }
 
-            // factor in effect of fief status
+            return incomeModif;
+        }
+
+        /// <summary>
+        /// Calculates effect of unrest/rebellion on fief income
+        /// </summary>
+        /// <returns>double containing fief income modifier</returns>
+        public double calcStatusIncmMod()
+        {
+            double incomeModif = 1;
             switch (this.status)
             {
                 case 'U':
-                    fiefIncome = (fiefIncome / 2);
+                    incomeModif = 0.5;
                     break;
                 case 'R':
-                    fiefIncome = 0;
+                    incomeModif = 0;
                     break;
                 default:
                     break;
             }
 
-            // factor in bailiff modifier
-            fiefIncome = fiefIncome + Convert.ToUInt32(fiefIncome * this.calcBlfIncmMod());
+            return incomeModif;
+        }
 
-            return fiefIncome;
+        /// <summary>
+        /// Calculates overlord taxes
+        /// </summary>
+        /// <returns>uint containing overlord taxes</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</returns>
+        public uint calcOlordTaxes(string season)
+        {
+            uint oTaxes = Convert.ToUInt32(this.calcIncome(season) * (this.province.overlordTaxRate / 100));
+            return oTaxes;
         }
 
         /// <summary>
@@ -353,21 +425,57 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>uint containing fief income</returns>
         /// <param name="season">string specifying whether to calculate for this or next season</returns>
-        public uint calcExpenses(string season)
+        public int calcExpenses(string season)
         {
-            uint fiefExpenses = 0;
+            int fiefExpenses = 0;
             switch (season)
             {
                 case "next":
-                    fiefExpenses = this.officialsSpendNext + this.infrastructureSpendNext + this.garrisonSpendNext + this.keepSpendNext;
+                    fiefExpenses = (int)this.officialsSpendNext + (int)this.infrastructureSpendNext + (int)this.garrisonSpendNext + (int)this.keepSpendNext;
                     break;
                 default:
-                    fiefExpenses = this.officialsSpend + this.infrastructureSpend + this.garrisonSpend + this.keepSpend;
+                    fiefExpenses = (int)this.officialsSpend + (int)this.infrastructureSpend + (int)this.garrisonSpend + (int)this.keepSpend;
                     break;
             }
+
+            // factor in bailiff skills modifier for fief expenses
+            double bailiffModif = 0;
+            bailiffModif = this.calcBailExpModif();
+            if (bailiffModif != 0 )
+            {
+                fiefExpenses = fiefExpenses + Convert.ToInt32(fiefExpenses * bailiffModif);
+            }
+
             return fiefExpenses;
         }
 
+        /// <summary>
+        /// Calculates effect of bailiff skills on fief expenses
+        /// </summary>
+        /// <returns>double containing fief expenses modifier</returns>
+        public double calcBailExpModif()
+        {
+            double expSkillsModifier = 0;
+
+            for (int i = 0; i < this.bailiff.skills.Length; i++)
+            {
+                foreach (KeyValuePair<string, int> entry in this.bailiff.skills[i].effects)
+                {
+                    if (entry.Key.Equals("fiefExpense"))
+                    {
+                        expSkillsModifier += entry.Value;
+                    }
+                }
+            }
+
+            if (expSkillsModifier != 0)
+            {
+                expSkillsModifier = expSkillsModifier / 100;
+            }
+
+            return expSkillsModifier;
+        }
+        
         /// <summary>
         /// Calculates fief bottom line
         /// </summary>
@@ -379,10 +487,12 @@ namespace hist_mmorpg
             switch (season)
             {
                 case "next":
-                    fiefBottomLine = (int)this.calcIncome("next") - (int)this.calcExpenses("next");
+                    fiefBottomLine = ((int)this.calcIncome("next") - (int)this.calcExpenses("next")) - (int)this.calcOlordTaxes("next");
                     break;
                 default:
-                    fiefBottomLine = (int)this.calcIncome("this") - (int)this.calcExpenses("this");
+                    // factor in effect of fief status on income
+                    int fiefIncome = Convert.ToInt32(this.calcIncome("this") * this.calcStatusIncmMod());
+                    fiefBottomLine = (fiefIncome - (int)this.calcExpenses("this")) - (int)this.calcOlordTaxes("this");
                     break;
             }
             return fiefBottomLine;
@@ -488,30 +598,28 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates overlord taxes
-        /// </summary>
-        /// <returns>uint containing overlord taxes</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</returns>
-        public uint calcOlordTaxes(string season)
-        {
-            uint oTaxes = Convert.ToUInt32(this.calcIncome(season) * (this.province.overlordTaxRate / 100));
-            return oTaxes;
-        }
-
-        /// <summary>
         /// Calculates new fief loyalty level (i.e. for next season)
         /// </summary>
         /// <returns>double containing new fief loyalty</returns>
         public double calcNewLoyalty()
         {
+            double newBaseLoy = 0;
+            double newLoy = 0;
+
             // calculate effect of tax rate change
-            double newLoy = this.loyalty + (this.loyalty * (((this.taxRateNext - this.taxRate) / 100) * -1));
+            newBaseLoy = this.loyalty + (this.loyalty * (((this.taxRateNext - this.taxRate) / 100) * -1));
             
             // calculate effect of surplus
             if (this.calcBottomLine("next") > 0)
             {
-                newLoy = newLoy - (this.calcBottomLine("next") / Convert.ToDouble(this.calcIncome("next")));
+                newLoy = newBaseLoy - (this.calcBottomLine("next") / Convert.ToDouble(this.calcIncome("next")));
             }
+
+            // calculate effect of officials spend
+            newLoy = newLoy + (newBaseLoy * this.calcOffLoyMod("next"));
+
+            // calculate effect of garrison spend
+            newLoy = newLoy + (newBaseLoy * this.calcGarrLoyMod("next"));
 
             return newLoy;
         }
@@ -535,33 +643,73 @@ namespace hist_mmorpg
             }
 
             loyModif = Convert.ToUInt32(((statPlusMan / 2) - 1)) * 1.25;
+
+            // Check if loyalty effected by character skills
+            double loySkillsModifier = 0;
+            for (int i = 0; i < this.bailiff.skills.Length; i++)
+            {
+                foreach (KeyValuePair<string, int> entry in this.bailiff.skills[i].effects)
+                {
+                    if (entry.Key.Equals("fiefLoy"))
+                    {
+                        loySkillsModifier += entry.Value;
+                    }
+                }
+            }
+
+            // apply skills modifier (if exists)
+            if (loySkillsModifier != 0)
+            {
+                loyModif = loyModif + (loyModif * (loySkillsModifier / 100));
+            }
+
             loyModif = loyModif / 100;
 
             return loyModif;
         }
 
         /// <summary>
-        /// Calculates effect of bailiff on fief income
+        /// Calculates effect of officials spend on fief loyalty
         /// </summary>
-        /// <returns>double containing fief income modifier</returns>
-        public double calcBlfIncmMod()
+        /// <returns>double containing fief loyalty modifier</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</returns>
+        public double calcOffLoyMod(string season)
         {
-            double incomeModif = 0;
-            double man = 0;
+            double loyaltyModif = 0;
 
-            if (this.bailiff == null)
+            switch (season)
             {
-                man = 3;
+                case "next":
+                    loyaltyModif = ((this.officialsSpendNext - ((double)this.calcNewPop() * 2)) / (this.calcNewPop() * 2)) / 10;
+                    break;
+                default:
+                    loyaltyModif = ((this.officialsSpend - ((double)this.population * 2)) / (this.population * 2)) / 10;
+                    break;
             }
-            else
+
+            return loyaltyModif;
+        }
+
+        /// <summary>
+        /// Calculates effect of garrison spend on fief loyalty
+        /// </summary>
+        /// <returns>double containing fief loyalty modifier</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</returns>
+        public double calcGarrLoyMod(string season)
+        {
+            double loyaltyModif = 0;
+
+            switch (season)
             {
-                man = this.bailiff.management;
+                case "next":
+                    loyaltyModif = ((this.garrisonSpendNext - ((double)this.calcNewPop() * 7)) / (this.calcNewPop() * 7)) / 10;
+                    break;
+                default:
+                    loyaltyModif = ((this.garrisonSpend - ((double)this.population * 7)) / (this.population * 7)) / 10;
+                    break;
             }
 
-            incomeModif = Convert.ToUInt32(man - 1) * 2.5;
-            incomeModif = incomeModif / 100;
-
-            return incomeModif;
+            return loyaltyModif;
         }
 
         /// <summary>

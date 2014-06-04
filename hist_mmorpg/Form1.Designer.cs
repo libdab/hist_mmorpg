@@ -36,7 +36,7 @@ namespace hist_mmorpg
             this.fiefToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fiefManagementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterContainer = new System.Windows.Forms.SplitContainer();
-            this.checkDeath = new System.Windows.Forms.Button();
+            this.updateCharBtn = new System.Windows.Forms.Button();
             this.characterTextBox = new System.Windows.Forms.TextBox();
             this.fiefContainer = new System.Windows.Forms.SplitContainer();
             this.updateFiefBtn = new System.Windows.Forms.Button();
@@ -69,7 +69,7 @@ namespace hist_mmorpg
             this.fiefToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(560, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(727, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -111,24 +111,24 @@ namespace hist_mmorpg
             // 
             // characterContainer.Panel1
             // 
-            this.characterContainer.Panel1.Controls.Add(this.checkDeath);
+            this.characterContainer.Panel1.Controls.Add(this.updateCharBtn);
             // 
             // characterContainer.Panel2
             // 
             this.characterContainer.Panel2.Controls.Add(this.characterTextBox);
-            this.characterContainer.Size = new System.Drawing.Size(560, 434);
-            this.characterContainer.SplitterDistance = 185;
+            this.characterContainer.Size = new System.Drawing.Size(727, 434);
+            this.characterContainer.SplitterDistance = 240;
             this.characterContainer.TabIndex = 2;
             // 
-            // checkDeath
+            // updateCharBtn
             // 
-            this.checkDeath.Location = new System.Drawing.Point(13, 4);
-            this.checkDeath.Name = "checkDeath";
-            this.checkDeath.Size = new System.Drawing.Size(101, 23);
-            this.checkDeath.TabIndex = 0;
-            this.checkDeath.Text = "Check for death!";
-            this.checkDeath.UseVisualStyleBackColor = true;
-            this.checkDeath.Click += new System.EventHandler(this.checkDeath_Click);
+            this.updateCharBtn.Location = new System.Drawing.Point(13, 4);
+            this.updateCharBtn.Name = "updateCharBtn";
+            this.updateCharBtn.Size = new System.Drawing.Size(101, 23);
+            this.updateCharBtn.TabIndex = 0;
+            this.updateCharBtn.Text = "Update Character";
+            this.updateCharBtn.UseVisualStyleBackColor = true;
+            this.updateCharBtn.Click += new System.EventHandler(this.updateCharacter_Click);
             // 
             // characterTextBox
             // 
@@ -137,7 +137,7 @@ namespace hist_mmorpg
             this.characterTextBox.Multiline = true;
             this.characterTextBox.Name = "characterTextBox";
             this.characterTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.characterTextBox.Size = new System.Drawing.Size(371, 434);
+            this.characterTextBox.Size = new System.Drawing.Size(483, 434);
             this.characterTextBox.TabIndex = 0;
             // 
             // fiefContainer
@@ -163,8 +163,8 @@ namespace hist_mmorpg
             // fiefContainer.Panel2
             // 
             this.fiefContainer.Panel2.Controls.Add(this.fiefTextBox);
-            this.fiefContainer.Size = new System.Drawing.Size(560, 434);
-            this.fiefContainer.SplitterDistance = 222;
+            this.fiefContainer.Size = new System.Drawing.Size(727, 434);
+            this.fiefContainer.SplitterDistance = 288;
             this.fiefContainer.TabIndex = 3;
             // 
             // updateFiefBtn
@@ -269,14 +269,14 @@ namespace hist_mmorpg
             this.fiefTextBox.Multiline = true;
             this.fiefTextBox.Name = "fiefTextBox";
             this.fiefTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.fiefTextBox.Size = new System.Drawing.Size(334, 434);
+            this.fiefTextBox.Size = new System.Drawing.Size(435, 434);
             this.fiefTextBox.TabIndex = 0;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(560, 458);
+            this.ClientSize = new System.Drawing.Size(727, 458);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
@@ -308,7 +308,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.ToolStripMenuItem fiefToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem personalCharacteristicsAndAffairsToolStripMenuItem;
         private System.Windows.Forms.SplitContainer characterContainer;
-        private System.Windows.Forms.Button checkDeath;
+        private System.Windows.Forms.Button updateCharBtn;
         private System.Windows.Forms.TextBox characterTextBox;
         private System.Windows.Forms.SplitContainer fiefContainer;
         private System.Windows.Forms.ToolStripMenuItem fiefManagementToolStripMenuItem;

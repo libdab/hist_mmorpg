@@ -58,9 +58,9 @@ namespace hist_mmorpg
         /// Calculates fief income of current Fief
         /// </summary>
         /// <returns>uint containing fief income</returns>
-        public uint calcIncome()
+        public int calcIncome()
         {
-            uint fiefIncome = this.currentFief.calcIncome("this");
+            int fiefIncome = this.currentFief.calcIncome("this");
             return fiefIncome;
         }
 
@@ -68,9 +68,9 @@ namespace hist_mmorpg
         /// Calculates fief expenses of current Fief
         /// </summary>
         /// <returns>uint containing fief income</returns>
-        public uint calcExpenses()
+        public int calcExpenses()
         {
-            uint fiefExpenses = this.currentFief.calcExpenses("this");
+            int fiefExpenses = this.currentFief.calcExpenses("this");
             return fiefExpenses;
         }
 

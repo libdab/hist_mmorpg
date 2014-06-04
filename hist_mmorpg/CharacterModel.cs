@@ -58,6 +58,15 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Updates character data at the end/beginning of the season
+        /// </summary>
+        public void updateCharacter()
+        {
+            this.currentCharacter.updateCharacter();
+            this.notifyObservers("refreshChar");
+        }
+
+        /// <summary>
         /// Adds a view (Form1 object) to the list of registered views
         /// </summary>
         /// <param name="obs">Form1 object to be added</param>

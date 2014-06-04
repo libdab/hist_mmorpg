@@ -234,7 +234,7 @@ namespace hist_mmorpg
         {
 
             // Check if chance of death effected by character skills
-            int deathModifier = 0;
+            double deathModifier = 0;
             for (int i = 0; i < skills.Length; i++)
             {
                 foreach (KeyValuePair<string, int> entry in skills[i].effects)
@@ -249,7 +249,7 @@ namespace hist_mmorpg
             // calculate base chance of death
             Double deathChance = (10 - this.health) * 2.8;
 
-            // apply modifier (if exists)
+            // apply skills modifier (if exists)
             if (deathModifier != 0)
             {
                 deathChance = deathChance + (deathChance * (deathModifier / 100));
@@ -312,6 +312,22 @@ namespace hist_mmorpg
 
             this.inKeep = success;
             return success;
+        }
+
+        /// <summary>
+        /// Updates character data at the end/beginning of the season
+        /// </summary>
+        public void updateCharacter()
+        {
+            // check for character death
+            if (this.checkDeath())
+            {
+                this.health = 0;
+            }
+            // advance character age
+            // adjust stature (due to age)
+            // childbirth (and associated chance of death for mother/baby)
+            // Movement of NPCs (maybe this goes in NPC class)
         }
 
 
