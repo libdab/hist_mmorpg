@@ -24,11 +24,19 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds initial Character to view
         /// </summary>
-        private Character initialCharacter;
+        private PlayerCharacter initialCharacter;
         /// <summary>
         /// Holds initial Fief to view
         /// </summary>
         private Fief initialFief;
+        /// <summary>
+        /// Holds HexMapGraph
+        /// </summary>
+        private HexMapGraph gameMap;
+        /// <summary>
+        /// Holds army's GameClock (season)
+        /// </summary>
+        public GameClock clock { get; set; }
 
         /// <summary>
         /// Constructor for Form1
@@ -49,12 +57,16 @@ namespace hist_mmorpg
             // inform models of initial game objects
             cm.changeCurrent(initialCharacter);
             fm.changeCurrent(initialFief);
+            this.setUpFiefsList();
         }
 
         public void initGameObjects()
         {
-            // create skills
+            // creat GameClock
+            GameClock myGameClock = new GameClock();
+            this.clock = myGameClock;
 
+            // create skills
             // Dictionary to hold collection of skills
             Dictionary<string, Skill> skillsCollection = new Dictionary<string, Skill>();
 
@@ -160,13 +172,14 @@ namespace hist_mmorpg
             // create province for fiefs
             Province myProv = new Province("ESX00", "Sussex, England", 100, 6.2, "E1");
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'R', 'P', fief1Chars, keep1BarChars, false, false);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', 'P', fief2Chars, keep2BarChars, false, false);
-            Army myArmy = new Army(0, 0, 0, 0, 100, 0, "101", "401", 90);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'R', 'P', fief1Chars, keep1BarChars, false, false, this.clock);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', 'F', fief2Chars, keep2BarChars, false, false, this.clock);
+            Army myArmy = new Army(0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
             // create QuickGraph undirected graph
             // 1. create graph
             var myHexMap = new HexMapGraph();
+            this.gameMap = myHexMap;
             // 2. Add edge and auto create vertices
             myHexMap.addHexesAndRoute(myFief1, myFief2, "W");
 
@@ -181,11 +194,11 @@ namespace hist_mmorpg
             List<Fief> myFiefsOwned2 = new List<Fief>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.2, 6.1, skillsArray1, false, true, false, false, 13000, myEnt1, myFiefsOwned1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 5.0, 4.5, skillsArray1, true, false, false, false, 13000, myEnt2, myFiefsOwned2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 3.3, 6.7, skillsArray1, false, false, false, "100", "ESX05", 10000);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.1, 5.2, skillsArray1, false, false, false, "100", "ESX05", 10000);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 4.0, 6.0, skillsArray1, false, true, true, "100", "ESX05", 0);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.2, 6.1, skillsArray1, false, true, false, this.clock, false, 13000, myEnt1, myFiefsOwned1);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 5.0, 4.5, skillsArray1, true, false, false, this.clock, false, 13000, myEnt2, myFiefsOwned2);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 3.3, 6.7, skillsArray1, false, false, false, this.clock, "100", "ESX05", 10000);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.1, 5.2, skillsArray1, false, false, false, this.clock, "100", "ESX05", 10000);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 4.0, 6.0, skillsArray1, false, true, true, this.clock, "100", "ESX05", 0);
 
             // Add me a wife
             myChar1.spouse = myWife;
@@ -221,10 +234,35 @@ namespace hist_mmorpg
             myFief1.barCharacter(myNPC2.charID);
 
             // set inital character to display
-            this.initialCharacter = myNPC1;
+            this.initialCharacter = myChar1;
 
             // set inital fief to display
             this.initialFief = myChar1.location;
+
+        }
+
+        // TODO
+        public void setUpFiefsList()
+        {
+            // set up fiefs list
+            this.fiefsListView.Columns.Add("Favourite Name", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("URL", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Where am I?", -2, HorizontalAlignment.Left);
+
+            ListViewItem[] fiefsOwned = new ListViewItem[this.charModel.currentCharacter.ownedFiefs.Count];
+            // iterates through favList
+            for (int i = 0; i < this.charModel.currentCharacter.ownedFiefs.Count; i++)
+            {
+                // Create an item and subitem for each Fav
+                fiefsOwned[i] = new ListViewItem(this.charModel.currentCharacter.ownedFiefs[i].name);
+                fiefsOwned[i].SubItems.Add(this.charModel.currentCharacter.ownedFiefs[i].fiefID);
+                if (this.charModel.currentCharacter.ownedFiefs[i] == this.charModel.currentCharacter.location)
+                {
+                    fiefsOwned[i].SubItems.Add("You are here");
+                }
+                // add item to favListView
+                this.fiefsListView.Items.Add(fiefsOwned[i]);
+            }
         }
 
         // TODO
@@ -438,7 +476,27 @@ namespace hist_mmorpg
             }
             fiefText += "\r\n";
 
-            fiefText += "Terrain: " + f.terrain + "\r\n";
+            fiefText += "Terrain: ";
+            switch (f.terrain)
+            {
+                case 'P':
+                    fiefText += "Plains";
+                    break;
+                case 'H':
+                    fiefText += "Hills";
+                    break;
+                case 'F':
+                    fiefText += "Forrest";
+                    break;
+                case 'M':
+                    fiefText += "Mountains";
+                    break;
+                default:
+                    fiefText += "Plains";
+                    break;
+            }
+            fiefText += "\r\n";
+
             fiefText += "Characters present:";
             for (int i = 0; i < f.characters.Count; i++)
             {
@@ -535,6 +593,17 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Updates fief and character models and GameClock
+        /// </summary>
+        /// <param name="info">String containing data about display element to update</param>
+        public void nextTurn()
+        {
+            this.fModel.updateFief();
+            this.charModel.updateCharacter();
+            this.clock.advanceSeason();
+        }
+
+        /// <summary>
         /// Updates appropriate display elements when data received from model
         /// </summary>
         /// <param name="info">String containing data about display element to update</param>
@@ -555,28 +624,47 @@ namespace hist_mmorpg
 
         private void personalCharacteristicsAndAffairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.fiefContainer.Visible)
+            /* if (this.fiefContainer.Visible)
             {
                 this.fiefContainer.Visible = false;
             }
 
+            if (this.travelContainer.Visible)
+            {
+                this.travelContainer.Visible = false;
+            }
+            
             if (!this.characterContainer.Visible)
             {
+                this.displayCharacter(this.charModel.currentCharacter);
                 this.characterContainer.Visible = true;
-            }
+            } */
+
+            this.displayCharacter(this.charModel.currentCharacter);
+            this.characterContainer.BringToFront();
         }
 
         private void fiefManagementToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
+            /*
             if (this.characterContainer.Visible)
             {
                 this.characterContainer.Visible = false;
             }
 
-            if (! this.fiefContainer.Visible)
+            if (this.travelContainer.Visible)
+            {
+                this.travelContainer.Visible = false;
+            }
+
+            if (!this.fiefContainer.Visible)
             {
                 this.fiefContainer.Visible = true;
-            }
+            } */
+
+            this.displayFief(this.fModel.currentFief);
+            this.fiefContainer.BringToFront();
         }
 
         private void updateCharacter_Click(object sender, EventArgs e)
@@ -617,6 +705,158 @@ namespace hist_mmorpg
         private void updateFiefBtn_Click(object sender, EventArgs e)
         {
             this.fModel.updateFief();
+        }
+
+        private void navigateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            /*
+            if (this.fiefContainer.Visible)
+            {
+                this.fiefContainer.Visible = false;
+            }
+
+            if (!this.characterContainer.Visible)
+            {
+                this.characterContainer.Visible = false;
+            }
+
+            if (!this.travelContainer.Visible)
+            {
+                this.refreshTravelContainer();
+                this.travelContainer.Visible = true;
+            } */
+
+            this.refreshTravelContainer();
+            this.travelContainer.BringToFront();
+        }
+
+        /// <summary>
+        /// Gtes travel cost (in days) to move to a fief
+        /// </summary>
+        /// <returns>double containing travel cost</returns>
+        /// <param name="f">Target fief</param>
+        private double getTravelCost(Fief f)
+        {
+            double cost = 0;
+            cost = (1 + f.calcTerrainTravMod()) * this.clock.calcSeasonTravMod();
+            return cost;
+        }
+
+        private void refreshTravelContainer()
+        {
+            // get text for home button
+            this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + this.charModel.currentCharacter.location.name + "\r\n(" + this.charModel.currentCharacter.location.province.name + ")";
+
+            // get text for directional buttons
+            // NE
+            Fief targetNE = this.gameMap.getFief(this.charModel.currentCharacter.location, "NE");
+            if (targetNE != null)
+            {
+                this.travel_NE_btn.Text = "NE FIEF:\r\n\r\n";
+                this.travel_NE_btn.Text += targetNE.name + " (" + targetNE.fiefID + ")\r\n";
+                this.travel_NE_btn.Text += "(" + targetNE.province.name + ")\r\n\r\n";
+                this.travel_NE_btn.Text += "Cost: " + this.getTravelCost(targetNE);
+            }
+            else
+            {
+                this.travel_NE_btn.Text = "NE FIEF:\r\n\r\nNo fief present";
+            }
+
+            // E
+            Fief targetE = this.gameMap.getFief(this.charModel.currentCharacter.location, "E");
+            if (targetE != null)
+            {
+                this.travel_E_btn.Text = "E FIEF:\r\n\r\n";
+                this.travel_E_btn.Text += targetE.name + " (" + targetE.fiefID + ")\r\n";
+                this.travel_E_btn.Text += "(" + targetE.province.name + ")\r\n\r\n";
+                this.travel_E_btn.Text += "Cost: " + this.getTravelCost(targetE);
+            }
+            else
+            {
+                this.travel_E_btn.Text = "E FIEF:\r\n\r\nNo fief present";
+            }
+
+            // SE
+            Fief targetSE = this.gameMap.getFief(this.charModel.currentCharacter.location, "SE");
+            if (targetSE != null)
+            {
+                this.travel_SE_btn.Text = "SE FIEF:\r\n\r\n";
+                this.travel_SE_btn.Text += targetSE.name + " (" + targetSE.fiefID + ")\r\n";
+                this.travel_SE_btn.Text += "(" + targetSE.province.name + ")\r\n\r\n";
+                this.travel_SE_btn.Text += "Cost: " + this.getTravelCost(targetSE);
+            }
+            else
+            {
+                this.travel_SE_btn.Text = "SE FIEF:\r\n\r\nNo fief present";
+            }
+
+            // SW
+            Fief targetSW = this.gameMap.getFief(this.charModel.currentCharacter.location, "SW");
+            if (targetSW != null)
+            {
+                this.travel_SW_btn.Text = "SW FIEF:\r\n\r\n";
+                this.travel_SW_btn.Text += targetSW.name + " (" + targetSW.fiefID + ")\r\n";
+                this.travel_SW_btn.Text += "(" + targetSW.province.name + ")\r\n\r\n";
+                this.travel_SW_btn.Text += "Cost: " + this.getTravelCost(targetSW);
+            }
+            else
+            {
+                this.travel_SW_btn.Text = "SW FIEF:\r\n\r\nNo fief present";
+            }
+
+            // W
+            Fief targetW = this.gameMap.getFief(this.charModel.currentCharacter.location, "W");
+            if (targetW != null)
+            {
+                this.travel_W_btn.Text = "W FIEF:\r\n\r\n";
+                this.travel_W_btn.Text += targetW.name + " (" + targetW.fiefID + ")\r\n";
+                this.travel_W_btn.Text += "(" + targetW.province.name + ")\r\n\r\n";
+                this.travel_W_btn.Text += "Cost: " + this.getTravelCost(targetW);
+            }
+            else
+            {
+                this.travel_W_btn.Text = "W FIEF:\r\n\r\nNo fief present";
+            }
+
+            // NW
+            Fief targetNW = this.gameMap.getFief(this.charModel.currentCharacter.location, "NW");
+            if (targetNW != null)
+            {
+                this.travel_NW_btn.Text = "NW FIEF:\r\n\r\n";
+                this.travel_NW_btn.Text += targetNW.name + " (" + targetNW.fiefID + ")\r\n";
+                this.travel_NW_btn.Text += "(" + targetNW.province.name + ")\r\n\r\n";
+                this.travel_NW_btn.Text += "Cost: " + this.getTravelCost(targetNW);
+            }
+            else
+            {
+                this.travel_NW_btn.Text = "NW FIEF:\r\n\r\nNo fief present";
+            }
+
+        }
+
+        private void travel_W_btn_Click(object sender, EventArgs e)
+        {
+            Fief newFief = this.gameMap.moveCharacter(this.charModel.currentCharacter, this.charModel.currentCharacter.location, "W");
+            if (newFief != null)
+            {
+                this.fModel.currentFief = newFief;
+                this.refreshTravelContainer();
+            }
+        }
+
+        private void myFiefsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.fiefsOwnedContainer.BringToFront();
+        }
+
+        private void travel_E_btn_Click(object sender, EventArgs e)
+        {
+            Fief newFief = this.gameMap.moveCharacter(this.charModel.currentCharacter, this.charModel.currentCharacter.location, "E");
+            if (newFief != null)
+            {
+                this.fModel.currentFief = newFief;
+                this.refreshTravelContainer();
+            }
         }
 
     }

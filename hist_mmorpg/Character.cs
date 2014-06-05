@@ -85,6 +85,10 @@ namespace hist_mmorpg
         /// </summary>
         public bool pregnant { get; set; }
         /// <summary>
+        /// Holds army's GameClock (season)
+        /// </summary>
+        public GameClock clock { get; set; }
+        /// <summary>
         /// Holds spouse (Character)
         /// </summary>
         public Character spouse { get; set; }
@@ -117,12 +121,13 @@ namespace hist_mmorpg
         /// <param name="inK">bool indicating if character is in the keep</param>
         /// <param name="marr">char holding character marital status</param>
         /// <param name="preg">bool holding character pregnancy status</param>
+        /// <param name="cl">GameClock holding season</param>
         /// <param name="sp">Character holding spouse</param>
         /// <param name="fath">Character holding father</param>
         /// <param name="famHead">Character holding head of family</param>
         public Character(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Fief loc, string lang, uint day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
-            Character sp = null, Character fath = null, Character famHead = null)
+            GameClock cl, Character sp = null, Character fath = null, Character famHead = null)
         {
 
             // validation
@@ -221,6 +226,7 @@ namespace hist_mmorpg
             this.inKeep = inK;
             this.married = marr;
             this.pregnant = preg;
+            this.clock = cl;
             this.spouse = sp;
             this.father = fath;
             this.familyHead = famHead;
@@ -364,13 +370,14 @@ namespace hist_mmorpg
         /// <param name="kps">List<Fief> holding fiefs owned by character</param>
         public PlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Fief loc, string lang, uint day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
-            bool outl, uint pur, List<Character> ent, List<Fief> kps, Character sp = null, Character fath = null, Character famHead = null)
-            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, sp, fath, famHead)
+            GameClock cl, bool outl, uint pur, List<Character> ent, List<Fief> kps, Character sp = null, Character fath = null, Character famHead = null)
+            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, sp, fath, famHead)
         {
 
             this.outlawed = outl;
             this.purse = pur;
             this.entourage = ent;
+            this.ownedFiefs = kps;
         }
 
         /// <summary>
@@ -469,8 +476,8 @@ namespace hist_mmorpg
         /// <param name="wa">string holding NPC's wages</param>
         public NonPlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Fief loc, string lang, uint day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
-            string hb, string go, uint wa, Character sp = null, Character fath = null, Character famHead = null)
-            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, sp, fath, famHead)
+            GameClock cl, string hb, string go, uint wa, Character sp = null, Character fath = null, Character famHead = null)
+            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, sp, fath, famHead)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,

@@ -35,6 +35,9 @@ namespace hist_mmorpg
             this.personalCharacteristicsAndAffairsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fiefToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fiefManagementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.myFiefsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.travelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.navigateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterContainer = new System.Windows.Forms.SplitContainer();
             this.updateCharBtn = new System.Windows.Forms.Button();
             this.characterTextBox = new System.Windows.Forms.TextBox();
@@ -51,6 +54,17 @@ namespace hist_mmorpg
             this.adjustTaxButton = new System.Windows.Forms.Button();
             this.adjOffSpendBtn = new System.Windows.Forms.Button();
             this.fiefTextBox = new System.Windows.Forms.TextBox();
+            this.travelContainer = new System.Windows.Forms.SplitContainer();
+            this.travelNavigationPanel = new System.Windows.Forms.Panel();
+            this.travel_SE_btn = new System.Windows.Forms.Button();
+            this.travel_SW_btn = new System.Windows.Forms.Button();
+            this.travel_E_btn = new System.Windows.Forms.Button();
+            this.travel_Home_btn = new System.Windows.Forms.Button();
+            this.travel_W_btn = new System.Windows.Forms.Button();
+            this.travel_NE_btn = new System.Windows.Forms.Button();
+            this.travel_NW_btn = new System.Windows.Forms.Button();
+            this.fiefsOwnedContainer = new System.Windows.Forms.SplitContainer();
+            this.fiefsListView = new System.Windows.Forms.ListView();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -60,13 +74,21 @@ namespace hist_mmorpg
             this.fiefContainer.Panel1.SuspendLayout();
             this.fiefContainer.Panel2.SuspendLayout();
             this.fiefContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.travelContainer)).BeginInit();
+            this.travelContainer.Panel2.SuspendLayout();
+            this.travelContainer.SuspendLayout();
+            this.travelNavigationPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fiefsOwnedContainer)).BeginInit();
+            this.fiefsOwnedContainer.Panel2.SuspendLayout();
+            this.fiefsOwnedContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.characterToolStripMenuItem,
-            this.fiefToolStripMenuItem});
+            this.fiefToolStripMenuItem,
+            this.travelToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(727, 24);
@@ -91,7 +113,8 @@ namespace hist_mmorpg
             // fiefToolStripMenuItem
             // 
             this.fiefToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fiefManagementToolStripMenuItem});
+            this.fiefManagementToolStripMenuItem,
+            this.myFiefsToolStripMenuItem});
             this.fiefToolStripMenuItem.Name = "fiefToolStripMenuItem";
             this.fiefToolStripMenuItem.Size = new System.Drawing.Size(38, 20);
             this.fiefToolStripMenuItem.Text = "Fief";
@@ -99,9 +122,31 @@ namespace hist_mmorpg
             // fiefManagementToolStripMenuItem
             // 
             this.fiefManagementToolStripMenuItem.Name = "fiefManagementToolStripMenuItem";
-            this.fiefManagementToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-            this.fiefManagementToolStripMenuItem.Text = "Fief management";
+            this.fiefManagementToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.fiefManagementToolStripMenuItem.Text = "Current fief";
             this.fiefManagementToolStripMenuItem.Click += new System.EventHandler(this.fiefManagementToolStripMenuItem_Click);
+            // 
+            // myFiefsToolStripMenuItem
+            // 
+            this.myFiefsToolStripMenuItem.Name = "myFiefsToolStripMenuItem";
+            this.myFiefsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.myFiefsToolStripMenuItem.Text = "My fiefs";
+            this.myFiefsToolStripMenuItem.Click += new System.EventHandler(this.myFiefsToolStripMenuItem_Click);
+            // 
+            // travelToolStripMenuItem
+            // 
+            this.travelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.navigateToolStripMenuItem});
+            this.travelToolStripMenuItem.Name = "travelToolStripMenuItem";
+            this.travelToolStripMenuItem.Size = new System.Drawing.Size(51, 20);
+            this.travelToolStripMenuItem.Text = "Travel";
+            // 
+            // navigateToolStripMenuItem
+            // 
+            this.navigateToolStripMenuItem.Name = "navigateToolStripMenuItem";
+            this.navigateToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.navigateToolStripMenuItem.Text = "Navigate";
+            this.navigateToolStripMenuItem.Click += new System.EventHandler(this.navigateToolStripMenuItem_Click);
             // 
             // characterContainer
             // 
@@ -272,11 +317,130 @@ namespace hist_mmorpg
             this.fiefTextBox.Size = new System.Drawing.Size(435, 434);
             this.fiefTextBox.TabIndex = 0;
             // 
+            // travelContainer
+            // 
+            this.travelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.travelContainer.Location = new System.Drawing.Point(0, 24);
+            this.travelContainer.Name = "travelContainer";
+            // 
+            // travelContainer.Panel2
+            // 
+            this.travelContainer.Panel2.Controls.Add(this.travelNavigationPanel);
+            this.travelContainer.Size = new System.Drawing.Size(727, 434);
+            this.travelContainer.SplitterDistance = 242;
+            this.travelContainer.TabIndex = 4;
+            // 
+            // travelNavigationPanel
+            // 
+            this.travelNavigationPanel.Controls.Add(this.travel_SE_btn);
+            this.travelNavigationPanel.Controls.Add(this.travel_SW_btn);
+            this.travelNavigationPanel.Controls.Add(this.travel_E_btn);
+            this.travelNavigationPanel.Controls.Add(this.travel_Home_btn);
+            this.travelNavigationPanel.Controls.Add(this.travel_W_btn);
+            this.travelNavigationPanel.Controls.Add(this.travel_NE_btn);
+            this.travelNavigationPanel.Controls.Add(this.travel_NW_btn);
+            this.travelNavigationPanel.Location = new System.Drawing.Point(3, 6);
+            this.travelNavigationPanel.Name = "travelNavigationPanel";
+            this.travelNavigationPanel.Size = new System.Drawing.Size(475, 416);
+            this.travelNavigationPanel.TabIndex = 0;
+            // 
+            // travel_SE_btn
+            // 
+            this.travel_SE_btn.Location = new System.Drawing.Point(231, 265);
+            this.travel_SE_btn.Name = "travel_SE_btn";
+            this.travel_SE_btn.Size = new System.Drawing.Size(137, 123);
+            this.travel_SE_btn.TabIndex = 6;
+            this.travel_SE_btn.Text = "Go SE";
+            this.travel_SE_btn.UseVisualStyleBackColor = true;
+            // 
+            // travel_SW_btn
+            // 
+            this.travel_SW_btn.Location = new System.Drawing.Point(88, 265);
+            this.travel_SW_btn.Name = "travel_SW_btn";
+            this.travel_SW_btn.Size = new System.Drawing.Size(137, 123);
+            this.travel_SW_btn.TabIndex = 5;
+            this.travel_SW_btn.Text = "Go SW";
+            this.travel_SW_btn.UseVisualStyleBackColor = true;
+            // 
+            // travel_E_btn
+            // 
+            this.travel_E_btn.Location = new System.Drawing.Point(299, 136);
+            this.travel_E_btn.Name = "travel_E_btn";
+            this.travel_E_btn.Size = new System.Drawing.Size(137, 123);
+            this.travel_E_btn.TabIndex = 4;
+            this.travel_E_btn.Text = "Go E";
+            this.travel_E_btn.UseVisualStyleBackColor = true;
+            this.travel_E_btn.Click += new System.EventHandler(this.travel_E_btn_Click);
+            // 
+            // travel_Home_btn
+            // 
+            this.travel_Home_btn.Location = new System.Drawing.Point(156, 136);
+            this.travel_Home_btn.Name = "travel_Home_btn";
+            this.travel_Home_btn.Size = new System.Drawing.Size(137, 123);
+            this.travel_Home_btn.TabIndex = 3;
+            this.travel_Home_btn.Text = "You are here";
+            this.travel_Home_btn.UseVisualStyleBackColor = true;
+            // 
+            // travel_W_btn
+            // 
+            this.travel_W_btn.Location = new System.Drawing.Point(13, 136);
+            this.travel_W_btn.Name = "travel_W_btn";
+            this.travel_W_btn.Size = new System.Drawing.Size(137, 123);
+            this.travel_W_btn.TabIndex = 2;
+            this.travel_W_btn.Text = "Go W";
+            this.travel_W_btn.UseVisualStyleBackColor = true;
+            this.travel_W_btn.Click += new System.EventHandler(this.travel_W_btn_Click);
+            // 
+            // travel_NE_btn
+            // 
+            this.travel_NE_btn.Location = new System.Drawing.Point(231, 7);
+            this.travel_NE_btn.Name = "travel_NE_btn";
+            this.travel_NE_btn.Size = new System.Drawing.Size(137, 123);
+            this.travel_NE_btn.TabIndex = 1;
+            this.travel_NE_btn.Text = "Go NE";
+            this.travel_NE_btn.UseVisualStyleBackColor = true;
+            // 
+            // travel_NW_btn
+            // 
+            this.travel_NW_btn.Location = new System.Drawing.Point(88, 7);
+            this.travel_NW_btn.Name = "travel_NW_btn";
+            this.travel_NW_btn.Size = new System.Drawing.Size(137, 123);
+            this.travel_NW_btn.TabIndex = 0;
+            this.travel_NW_btn.Text = "Go NW";
+            this.travel_NW_btn.UseVisualStyleBackColor = true;
+            // 
+            // fiefsOwnedContainer
+            // 
+            this.fiefsOwnedContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fiefsOwnedContainer.Location = new System.Drawing.Point(0, 24);
+            this.fiefsOwnedContainer.Name = "fiefsOwnedContainer";
+            // 
+            // fiefsOwnedContainer.Panel2
+            // 
+            this.fiefsOwnedContainer.Panel2.Controls.Add(this.fiefsListView);
+            this.fiefsOwnedContainer.Size = new System.Drawing.Size(727, 434);
+            this.fiefsOwnedContainer.SplitterDistance = 242;
+            this.fiefsOwnedContainer.TabIndex = 5;
+            // 
+            // fiefsListView
+            // 
+            this.fiefsListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fiefsListView.FullRowSelect = true;
+            this.fiefsListView.GridLines = true;
+            this.fiefsListView.Location = new System.Drawing.Point(0, 0);
+            this.fiefsListView.Name = "fiefsListView";
+            this.fiefsListView.Size = new System.Drawing.Size(481, 434);
+            this.fiefsListView.TabIndex = 0;
+            this.fiefsListView.UseCompatibleStateImageBehavior = false;
+            this.fiefsListView.View = System.Windows.Forms.View.Details;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(727, 458);
+            this.Controls.Add(this.travelContainer);
+            this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
@@ -296,6 +460,13 @@ namespace hist_mmorpg
             this.fiefContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fiefContainer)).EndInit();
             this.fiefContainer.ResumeLayout(false);
+            this.travelContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.travelContainer)).EndInit();
+            this.travelContainer.ResumeLayout(false);
+            this.travelNavigationPanel.ResumeLayout(false);
+            this.fiefsOwnedContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.fiefsOwnedContainer)).EndInit();
+            this.fiefsOwnedContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -324,6 +495,20 @@ namespace hist_mmorpg
         private System.Windows.Forms.TextBox adjustKeepSpendTextBox;
         private System.Windows.Forms.Button adjustKeepSpendBtn;
         private System.Windows.Forms.Button updateFiefBtn;
+        private System.Windows.Forms.ToolStripMenuItem travelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem navigateToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer travelContainer;
+        private System.Windows.Forms.Panel travelNavigationPanel;
+        private System.Windows.Forms.Button travel_SE_btn;
+        private System.Windows.Forms.Button travel_SW_btn;
+        private System.Windows.Forms.Button travel_E_btn;
+        private System.Windows.Forms.Button travel_Home_btn;
+        private System.Windows.Forms.Button travel_W_btn;
+        private System.Windows.Forms.Button travel_NE_btn;
+        private System.Windows.Forms.Button travel_NW_btn;
+        private System.Windows.Forms.ToolStripMenuItem myFiefsToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer fiefsOwnedContainer;
+        private System.Windows.Forms.ListView fiefsListView;
 
     }
 }

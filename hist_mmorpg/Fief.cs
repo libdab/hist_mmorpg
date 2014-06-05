@@ -114,6 +114,10 @@ namespace hist_mmorpg
         /// </summary>
         public bool frenchBarred { get; set; }
         /// <summary>
+        /// Holds fief's GameClock (season)
+        /// </summary>
+        public GameClock clock { get; set; }
+        /// <summary>
         /// Holds fief owner (Character)
         /// </summary>
         public Character owner { get; set; }
@@ -154,12 +158,13 @@ namespace hist_mmorpg
         /// <param name="barChars">List<string> holding IDs of characters barred from keep</param>
         /// <param name="engBarr">bool indicating whether English nationality barred from keep</param>
         /// <param name="frBarr">bool indicating whether French nationality barred from keep</param>
+        /// <param name="cl">GameClock holding season</param>
         /// <param name="own">Character holding fief owner</param>
         /// <param name="ancOwn">Character holding fief ancestral owner</param>
         /// <param name="bail">Character holding fief bailiff</param>
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp,
             Double tx, uint off, uint garr, uint infra, uint keep, Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, Double kpLvl,
-            Double loy, char stat, char terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr, Character own = null, Character ancOwn = null, Character bail = null)
+            Double loy, char stat, char terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr, GameClock cl, Character own = null, Character ancOwn = null, Character bail = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -236,7 +241,7 @@ namespace hist_mmorpg
                 throw new InvalidDataException("Fief status must be 'C', 'U' or 'R'");
             }
 
-            // TODO: validate terr = P,H,F,M,S
+            // TODO: validate terr = P,H,F,M
 
             this.fiefID = id;
             this.name = nam;
@@ -266,6 +271,7 @@ namespace hist_mmorpg
             this.barredCharacters = barChars;
             this.englishBarred = engBarr;
             this.frenchBarred = frBarr;
+            this.clock = cl;
         }
 
         /// <summary>
@@ -713,6 +719,33 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Calculates travel modifier for terrain
+        /// </summary>
+        /// <returns>double containing travel modifier</returns>
+        public double calcTerrainTravMod()
+        {
+            double travelModifier = 0;
+
+            switch (this.terrain)
+            {
+                case 'H':
+                    travelModifier = 0.5;
+                    break;
+                case 'F':
+                    travelModifier = 0.5;
+                    break;
+                case 'M':
+                    travelModifier = 91;
+                    break;
+                default:
+                    travelModifier = 0;
+                    break;
+            }
+
+            return travelModifier;
+        }
+
+        /// <summary>
         /// Updates fief data at the end/beginning of the season
         /// </summary>
         public void updateFief()
@@ -740,7 +773,8 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Checks for unrest/rebellion
+        /// Checks for transition from calm to unrest/rebellion
+        /// Or from unrest to calm
         /// </summary>
         /// <returns>char indicating fief status</returns>
         public char checkFiefStatus()
@@ -748,72 +782,97 @@ namespace hist_mmorpg
             char stat = this.status;
             Random rand = new Random();
 
-            // method 1 (depends on tax rate and surplus)
-            if ((this.taxRate > 20) && (this.calcBottomLine("this") > (this.calcIncome("this") * 0.1)))
+            // if fief in rebellion it can only be recovered by combat or bribe,
+            // so don't run check
+            if (! stat.Equals('R'))
             {
-                if ((rand.NextDouble() * 100) <= (this.taxRate - 20))
+                // method 1 (depends on tax rate and surplus)
+                if ((this.taxRate > 20) && (this.calcBottomLine("this") > (this.calcIncome("this") * 0.1)))
                 {
-                    stat = 'R';
+                    if ((rand.NextDouble() * 100) <= (this.taxRate - 20))
+                    {
+                        stat = 'R';
+                    }
                 }
-            }
 
-            // method 2 (depends on fief loyalty level)
-            if (!stat.Equals('R'))
-            {
-                double chance = (rand.NextDouble() * 100);
-                if ((this.loyalty > 3) && (this.loyalty <= 4))
+                // method 2 (depends on fief loyalty level)
+                if (!stat.Equals('R'))
                 {
-                    if (chance <= 2)
+                    double chance = (rand.NextDouble() * 100);
+                    if ((this.loyalty > 3) && (this.loyalty <= 4))
                     {
-                        stat = 'R';
+                        if (chance <= 2)
+                        {
+                            stat = 'R';
+                        }
+                        else if (chance <= 10)
+                        {
+                            stat = 'U';
+                        }
+                        else
+                        {
+                            stat = 'C';
+                        }
                     }
-                    else if (chance <= 10)
+                    else if ((this.loyalty > 2) && (this.loyalty <= 3))
                     {
-                        stat = 'U';
+                        if (chance <= 14)
+                        {
+                            stat = 'R';
+                        }
+                        else if (chance <= 30)
+                        {
+                            stat = 'U';
+                        }
+                        else
+                        {
+                            stat = 'C';
+                        }
                     }
-                }
-                else if ((this.loyalty > 2) && (this.loyalty <= 3))
-                {
-                    if (chance <= 14)
+                    else if ((this.loyalty > 1) && (this.loyalty <= 2))
                     {
-                        stat = 'R';
+                        if (chance <= 26)
+                        {
+                            stat = 'R';
+                        }
+                        else if (chance <= 50)
+                        {
+                            stat = 'U';
+                        }
+                        else
+                        {
+                            stat = 'C';
+                        }
                     }
-                    else if (chance <= 30)
+                    else if ((this.loyalty > 0) && (this.loyalty <= 1))
                     {
-                        stat = 'U';
+                        if (chance <= 38)
+                        {
+                            stat = 'R';
+                        }
+                        else if (chance <= 70)
+                        {
+                            stat = 'U';
+                        }
+                        else
+                        {
+                            stat = 'C';
+                        }
                     }
-                }
-                else if ((this.loyalty > 1) && (this.loyalty <= 2))
-                {
-                    if (chance <= 26)
+                    else if (this.loyalty == 0)
                     {
-                        stat = 'R';
-                    }
-                    else if (chance <= 50)
-                    {
-                        stat = 'U';
-                    }
-                }
-                else if ((this.loyalty > 0) && (this.loyalty <= 1))
-                {
-                    if (chance <= 38)
-                    {
-                        stat = 'R';
-                    }
-                    else if (chance <= 70)
-                    {
-                        stat = 'U';
-                    }
-                }
-                else if (this.loyalty == 0)
-                {
-                    if (chance <= 50)
-                    {
-                        stat = 'R';
-                    }
-                    else if (chance <= 90)
-                    {
-                        stat = 'U';
+                        if (chance <= 50)
+                        {
+                            stat = 'R';
+                        }
+                        else if (chance <= 90)
+                        {
+                            stat = 'U';
+                        }
+                        else
+                        {
+                            stat = 'C';
+                        }
                     }
                 }
             }

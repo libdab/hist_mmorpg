@@ -16,7 +16,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds current Character
         /// </summary>
-        internal Character currentCharacter;
+        internal PlayerCharacter currentCharacter;
 
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace hist_mmorpg
         /// Changes current Character
         /// </summary>
         /// <param name="ch">Character to set as current</param>
-        public void changeCurrent(Character ch)
+        public void changeCurrent(PlayerCharacter ch)
         {
             this.currentCharacter = ch;
             this.notifyObservers("refreshChar");

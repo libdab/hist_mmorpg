@@ -48,6 +48,10 @@ namespace hist_mmorpg
         /// Holds army's remaining days in season
         /// </summary>
         public uint days { get; set; }
+        /// <summary>
+        /// Holds army's GameClock (season)
+        /// </summary>
+        public GameClock clock { get; set; }
 
         /// <summary>
         /// Constructor for Army
@@ -61,7 +65,8 @@ namespace hist_mmorpg
         /// <param name="ldr">string holding ID of army leader</param>
         /// <param name="own">string holding ID of army owner</param>
         /// <param name="day">uint holding remaining days in season for army</param>
-        public Army(uint kni, uint maa, uint ltCav, uint yeo, uint ft, uint rbl, string ldr, string own, uint day)
+        /// <param name="cl">GameClock holding season</param>
+        public Army(uint kni, uint maa, uint ltCav, uint yeo, uint ft, uint rbl, string ldr, string own, uint day, GameClock cl)
         {
 
             // TODO: validate kni = (upper limit?)
@@ -87,7 +92,35 @@ namespace hist_mmorpg
             this.leader = ldr;
             this.owner = own;
             this.days = day;
+            this.clock = cl;
 
         }
+
+        /// <summary>
+        /// Calculates travel modifier for army size
+        /// </summary>
+        /// <returns>double containing travel modifier</returns>
+        public double calcTerrainTravMod()
+        {
+            double travelModifier = 0;
+
+            travelModifier = (this.calcArmySize() / 1000) * 0.25;
+
+            return travelModifier;
+        }
+
+        /// <summary>
+        /// Calculates total army size
+        /// </summary>
+        /// <returns>uint containing army size</returns>
+        public uint calcArmySize()
+        {
+            uint armySize = 0;
+
+            armySize = this.foot + this.knights + this.lightCavalry + this.menAtArms + this.rabble + this.yeomen;
+
+            return armySize;
+        }
+
     }
 }

@@ -86,8 +86,10 @@ namespace hist_mmorpg
         }
 
         // TODO
-        public void moveCharacter(Character ch, Fief f, string whereTo)
+        public Fief moveCharacter(Character ch, Fief f, string whereTo)
         {
+            Fief newFief = null;
+
             f.removeCharacter(ch);
             foreach (var e in this.myMap.Edges)
             {
@@ -96,6 +98,7 @@ namespace hist_mmorpg
                     if (e.Tag.Equals(whereTo))
                     {
                         ch.location = e.Target;
+                        newFief = e.Target;
                     }
                 }
             }
@@ -107,6 +110,8 @@ namespace hist_mmorpg
             {
                 this.moveEntourage((PlayerCharacter)ch, f);
             }
+
+            return newFief;
         }
 
         // TODO
@@ -120,6 +125,26 @@ namespace hist_mmorpg
                 ch.entourage[i].location = to;
                 ch.entourage[i].inKeep = false;
             }
+
+        }
+
+        // TODO
+        public Fief getFief(Fief f, string direction)
+        {
+            Fief myFief = null;
+
+            foreach (var e in this.myMap.Edges)
+            {
+                if (e.Source == f)
+                {
+                    if (e.Tag.Equals(direction))
+                    {
+                        myFief = e.Target;
+                    }
+                }
+            }
+
+            return myFief;
 
         }
 
