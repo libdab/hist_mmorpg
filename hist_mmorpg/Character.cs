@@ -240,25 +240,15 @@ namespace hist_mmorpg
         {
 
             // Check if chance of death effected by character skills
-            double deathModifier = 0;
-            for (int i = 0; i < skills.Length; i++)
-            {
-                foreach (KeyValuePair<string, int> entry in skills[i].effects)
-                {
-                    if (entry.Key.Equals("death"))
-                    {
-                        deathModifier += entry.Value;
-                    }
-                }
-            }
+            double deathSkillsModifier = this.getDeathSkillsMod();
 
             // calculate base chance of death
             Double deathChance = (10 - this.health) * 2.8;
 
             // apply skills modifier (if exists)
-            if (deathModifier != 0)
+            if (deathSkillsModifier != 0)
             {
-                deathChance = deathChance + (deathChance * (deathModifier / 100));
+                deathChance = deathChance + (deathChance * deathSkillsModifier);
             }
 
             // generate a rndom double between 0-100 and compare to deathChance
@@ -271,6 +261,33 @@ namespace hist_mmorpg
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Checks for skills death modifier
+        /// </summary>
+        /// <returns>double containing death modifier</returns>
+        public double getDeathSkillsMod()
+        {
+            double deathModifier = 0;
+
+            for (int i = 0; i < skills.Length; i++)
+            {
+                foreach (KeyValuePair<string, int> entry in skills[i].effects)
+                {
+                    if (entry.Key.Equals("death"))
+                    {
+                        deathModifier += entry.Value;
+                    }
+                }
+            }
+
+            if (deathModifier != 0)
+            {
+                deathModifier = (deathModifier / 100);
+            }
+
+            return deathModifier;
         }
 
         /// <summary>
@@ -305,15 +322,6 @@ namespace hist_mmorpg
                     success = false;
                 }
 
-                /* for (int i = 0; i < location.data.barredCharacters.Count; i++)
-                {
-
-                    if (this.charID.Equals(location.data.barredCharacters[i]))
-                    {
-                        success = false;
-                        break;
-                    }
-                } */
             }
 
             this.inKeep = success;

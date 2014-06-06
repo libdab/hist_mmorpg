@@ -463,20 +463,24 @@ namespace hist_mmorpg
         {
             double expSkillsModifier = 0;
 
-            for (int i = 0; i < this.bailiff.skills.Length; i++)
+            if (this.bailiff != null)
             {
-                foreach (KeyValuePair<string, int> entry in this.bailiff.skills[i].effects)
+                for (int i = 0; i < this.bailiff.skills.Length; i++)
                 {
-                    if (entry.Key.Equals("fiefExpense"))
+                    foreach (KeyValuePair<string, int> entry in this.bailiff.skills[i].effects)
                     {
-                        expSkillsModifier += entry.Value;
+                        if (entry.Key.Equals("fiefExpense"))
+                        {
+                            expSkillsModifier += entry.Value;
+                        }
                     }
                 }
-            }
 
-            if (expSkillsModifier != 0)
-            {
-                expSkillsModifier = expSkillsModifier / 100;
+                if (expSkillsModifier != 0)
+                {
+                    expSkillsModifier = expSkillsModifier / 100;
+                }
+
             }
 
             return expSkillsModifier;
@@ -651,27 +655,47 @@ namespace hist_mmorpg
             loyModif = Convert.ToUInt32(((statPlusMan / 2) - 1)) * 1.25;
 
             // Check if loyalty effected by character skills
-            double loySkillsModifier = 0;
-            for (int i = 0; i < this.bailiff.skills.Length; i++)
-            {
-                foreach (KeyValuePair<string, int> entry in this.bailiff.skills[i].effects)
-                {
-                    if (entry.Key.Equals("fiefLoy"))
-                    {
-                        loySkillsModifier += entry.Value;
-                    }
-                }
-            }
-
+            double loySkillsModifier = this.calcBailLoySkillMod();
             // apply skills modifier (if exists)
             if (loySkillsModifier != 0)
             {
-                loyModif = loyModif + (loyModif * (loySkillsModifier / 100));
+                loyModif = loyModif + (loyModif * loySkillsModifier);
             }
 
             loyModif = loyModif / 100;
 
             return loyModif;
+        }
+
+
+        /// <summary>
+        /// Calculates bailiff's skill modifier for fief loyalty
+        /// </summary>
+        /// <returns>double containing fief loyalty modifier</returns>
+        public double calcBailLoySkillMod()
+        {
+            double loySkillsModifier = 0;
+
+            if (this.bailiff != null)
+            {
+                for (int i = 0; i < this.bailiff.skills.Length; i++)
+                {
+                    foreach (KeyValuePair<string, int> entry in this.bailiff.skills[i].effects)
+                    {
+                        if (entry.Key.Equals("fiefLoy"))
+                        {
+                            loySkillsModifier += entry.Value;
+                        }
+                    }
+                }
+
+                if (loySkillsModifier != 0)
+                {
+                    loySkillsModifier = (loySkillsModifier / 100);
+                }
+            }
+
+            return loySkillsModifier;
         }
 
         /// <summary>

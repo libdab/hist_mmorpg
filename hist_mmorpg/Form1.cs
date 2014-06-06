@@ -164,16 +164,32 @@ namespace hist_mmorpg
             // create keep barred lists for fiefs
             List<string> keep1BarChars = new List<string>();
             List<string> keep2BarChars = new List<string>();
+            List<string> keep3BarChars = new List<string>();
+            List<string> keep4BarChars = new List<string>();
+            List<string> keep5BarChars = new List<string>();
+            List<string> keep6BarChars = new List<string>();
+            List<string> keep7BarChars = new List<string>();
 
             // create chars lists for fiefs
             List<Character> fief1Chars = new List<Character>();
             List<Character> fief2Chars = new List<Character>();
+            List<Character> fief3Chars = new List<Character>();
+            List<Character> fief4Chars = new List<Character>();
+            List<Character> fief5Chars = new List<Character>();
+            List<Character> fief6Chars = new List<Character>();
+            List<Character> fief7Chars = new List<Character>();
 
             // create province for fiefs
             Province myProv = new Province("ESX00", "Sussex, England", 100, 6.2, "E1");
+            Province myProv2 = new Province("ESR00", "Surrey, England", 100, 6.2, "E1");
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'R', 'P', fief1Chars, keep1BarChars, false, false, this.clock);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief1Chars, keep1BarChars, false, false, this.clock);
             Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', 'F', fief2Chars, keep2BarChars, false, false, this.clock);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief3Chars, keep3BarChars, false, false, this.clock);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief4Chars, keep4BarChars, false, false, this.clock);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief5Chars, keep5BarChars, false, false, this.clock);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief6Chars, keep6BarChars, false, false, this.clock);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief7Chars, keep7BarChars, false, false, this.clock);
             Army myArmy = new Army(0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
             // create QuickGraph undirected graph
@@ -181,9 +197,37 @@ namespace hist_mmorpg
             var myHexMap = new HexMapGraph();
             this.gameMap = myHexMap;
             // 2. Add edge and auto create vertices
+            // from myFief1
             myHexMap.addHexesAndRoute(myFief1, myFief2, "W");
-
+            myHexMap.addHexesAndRoute(myFief1, myFief3, "E");
+            myHexMap.addHexesAndRoute(myFief1, myFief6, "NE");
+            myHexMap.addHexesAndRoute(myFief1, myFief4, "SE");
+            myHexMap.addHexesAndRoute(myFief1, myFief5, "SW");
+            myHexMap.addHexesAndRoute(myFief1, myFief7, "NW");
+            // from myFief2
             myHexMap.addHexesAndRoute(myFief2, myFief1, "E");
+            myHexMap.addHexesAndRoute(myFief2, myFief7, "NE");
+            myHexMap.addHexesAndRoute(myFief2, myFief5, "SE");
+            // from myFief3
+            myHexMap.addHexesAndRoute(myFief3, myFief4, "SW");
+            myHexMap.addHexesAndRoute(myFief3, myFief6, "NW");
+            myHexMap.addHexesAndRoute(myFief3, myFief1, "W");
+            // from myFief4
+            myHexMap.addHexesAndRoute(myFief4, myFief3, "NE");
+            myHexMap.addHexesAndRoute(myFief4, myFief1, "NW");
+            myHexMap.addHexesAndRoute(myFief4, myFief5, "W");
+            // from myFief5
+            myHexMap.addHexesAndRoute(myFief5, myFief1, "NE");
+            myHexMap.addHexesAndRoute(myFief5, myFief2, "NW");
+            myHexMap.addHexesAndRoute(myFief5, myFief4, "E");
+            // from myFief6
+            myHexMap.addHexesAndRoute(myFief6, myFief3, "SE");
+            myHexMap.addHexesAndRoute(myFief6, myFief1, "SW");
+            myHexMap.addHexesAndRoute(myFief6, myFief7, "W");
+            // from myFief7
+            myHexMap.addHexesAndRoute(myFief7, myFief6, "E");
+            myHexMap.addHexesAndRoute(myFief7, myFief1, "SE");
+            myHexMap.addHexesAndRoute(myFief7, myFief2, "SW");
 
             // create entourages for PCs
             List<Character> myEnt1 = new List<Character>();
@@ -208,10 +252,20 @@ namespace hist_mmorpg
             // set fief owners
             myFief1.owner = myChar1;
             myFief2.owner = myChar2;
+            myFief3.owner = myChar1;
+            myFief4.owner = myChar1;
+            myFief5.owner = myChar2;
+            myFief6.owner = myChar1;
+            myFief7.owner = myChar2;
 
             // set fief ancestral owners
             myFief1.ancestralOwner = myChar2;
             myFief2.ancestralOwner = myChar1;
+            myFief3.ancestralOwner = myChar1;
+            myFief4.ancestralOwner = myChar1;
+            myFief5.ancestralOwner = myChar2;
+            myFief6.ancestralOwner = myChar1;
+            myFief7.ancestralOwner = myChar2;
 
             // set fief bailiffs
             myFief1.bailiff = myNPC1;
@@ -222,7 +276,12 @@ namespace hist_mmorpg
 
             // Add fiefs to list of fiefs owned 
             myChar1.addToOwnedFiefs(myFief1);
+            myChar1.addToOwnedFiefs(myFief3);
+            myChar1.addToOwnedFiefs(myFief4);
+            myChar1.addToOwnedFiefs(myFief6);
             myChar2.addToOwnedFiefs(myFief2);
+            myChar2.addToOwnedFiefs(myFief5);
+            myChar2.addToOwnedFiefs(myFief7);
 
             // add some characters to myFief1
             myFief1.addCharacter(myChar1);
@@ -245,22 +304,28 @@ namespace hist_mmorpg
         public void setUpFiefsList()
         {
             // set up fiefs list
-            this.fiefsListView.Columns.Add("Favourite Name", -2, HorizontalAlignment.Left);
-            this.fiefsListView.Columns.Add("URL", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Fief Name", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
             this.fiefsListView.Columns.Add("Where am I?", -2, HorizontalAlignment.Left);
 
+            this.refreshMyFiefs();
+        }
+
+        // TODO
+        public void refreshMyFiefs()
+        {
             ListViewItem[] fiefsOwned = new ListViewItem[this.charModel.currentCharacter.ownedFiefs.Count];
-            // iterates through favList
+            // iterates through fiefsOwned
             for (int i = 0; i < this.charModel.currentCharacter.ownedFiefs.Count; i++)
             {
-                // Create an item and subitem for each Fav
+                // Create an item and subitem for each fief
                 fiefsOwned[i] = new ListViewItem(this.charModel.currentCharacter.ownedFiefs[i].name);
                 fiefsOwned[i].SubItems.Add(this.charModel.currentCharacter.ownedFiefs[i].fiefID);
                 if (this.charModel.currentCharacter.ownedFiefs[i] == this.charModel.currentCharacter.location)
                 {
                     fiefsOwned[i].SubItems.Add("You are here");
                 }
-                // add item to favListView
+                // add item to fiefsListView
                 this.fiefsListView.Items.Add(fiefsOwned[i]);
             }
         }
@@ -294,6 +359,7 @@ namespace hist_mmorpg
                 charText += ch.health + " (max. health: " + ch.maxHealth + ")";
             }
             charText += "\r\n";
+            charText += "  (Death modifier from skills: " + ch.getDeathSkillsMod() + ")\r\n";
             charText += "Virility: " + ch.virility + "\r\n";
             charText += "Current location: " + ch.location.name + " (" + ch.location.province.name + ")\r\n";
             charText += "Language: " + ch.language + "\r\n";
@@ -459,7 +525,17 @@ namespace hist_mmorpg
             fiefText += "Population: " + f.population + "\r\n";
             fiefText += "Owner (ID): " + f.owner.charID + "\r\n";
             fiefText += "Ancestral owner (ID): " + f.ancestralOwner.charID + "\r\n";
-            fiefText += "Bailiff (ID): " + f.bailiff.charID + "\r\n";
+            fiefText += "Bailiff (ID): ";
+            if (f.bailiff != null)
+            {
+                fiefText += f.bailiff.charID;
+            }
+            else
+            {
+                fiefText += "auto-bailiff";
+            }
+            fiefText += "\r\n";
+
             fiefText += "Troops: " + f.troops + "\r\n";
             fiefText += "Status: ";
             switch (f.status)
@@ -542,7 +618,7 @@ namespace hist_mmorpg
             fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod("this") + ")\r\n";
             fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod("this") + ")\r\n";
             fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyMod() + ")\r\n";
-            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier)\r\n";
+            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod() + ")\r\n";
             fiefText += "Fields level: " + f.fields + "\r\n";
             fiefText += "Industry level: " + f.industry + "\r\n";
             fiefText += "GDP: " + f.calcGDP("this") + "\r\n";
@@ -558,7 +634,7 @@ namespace hist_mmorpg
             fiefText += "  (including fief status income modifier: " + f.calcStatusIncmMod() + ")\r\n";
             fiefText += "Family expenses: 0 (not yet implemented)\r\n";
             fiefText += "Total expenses: " + f.calcExpenses("this") + "\r\n";
-            fiefText += "  (which may include a Bailiff fiefExpense skills modifier)\r\n";
+            fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif() + ")\r\n";
             fiefText += "Overlord taxes: " + f.calcOlordTaxes("this") + "\r\n";
             fiefText += "Bottom line: " + f.calcBottomLine("this") + "\r\n\r\n";
 
@@ -570,7 +646,7 @@ namespace hist_mmorpg
             fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod("next") + ")\r\n";
             fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod("next") + ")\r\n";
             fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyMod() + ")\r\n";
-            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier)\r\n";
+            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod() + ")\r\n";
             fiefText += "Fields level: " + f.calcNewFieldLevel() + "\r\n";
             fiefText += "Industry level: " + f.calcNewIndustryLevel() + "\r\n";
             fiefText += "GDP: " + f.calcGDP("next") + "\r\n";
@@ -585,7 +661,7 @@ namespace hist_mmorpg
             fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod("next") + ")\r\n";
             fiefText += "Family expenses: 0 (not yet implemented)\r\n";
             fiefText += "Total expenses: " + f.calcExpenses("next") + "\r\n";
-            fiefText += "  (which may include a Bailiff fiefExpense skills modifier)\r\n";
+            fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif() + ")\r\n";
             fiefText += "Overlord taxes: " + f.calcOlordTaxes("next") + "\r\n";
             fiefText += "Bottom line: " + f.calcBottomLine("next") + "\r\n\r\n";
 
@@ -846,6 +922,8 @@ namespace hist_mmorpg
 
         private void myFiefsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            this.fiefsListView.Items.Clear();
+            this.refreshMyFiefs();
             this.fiefsOwnedContainer.BringToFront();
         }
 
@@ -856,6 +934,78 @@ namespace hist_mmorpg
             {
                 this.fModel.currentFief = newFief;
                 this.refreshTravelContainer();
+            }
+        }
+
+        private void viewBailiffBtn_Click(object sender, EventArgs e)
+        {
+            this.displayCharacter(this.fModel.currentFief.bailiff);
+            this.characterContainer.BringToFront();
+        }
+
+        private void travel_NW_btn_Click(object sender, EventArgs e)
+        {
+            Fief newFief = this.gameMap.moveCharacter(this.charModel.currentCharacter, this.charModel.currentCharacter.location, "NW");
+            if (newFief != null)
+            {
+                this.fModel.currentFief = newFief;
+                this.refreshTravelContainer();
+            }
+        }
+
+        private void travel_NE_btn_Click(object sender, EventArgs e)
+        {
+            Fief newFief = this.gameMap.moveCharacter(this.charModel.currentCharacter, this.charModel.currentCharacter.location, "NE");
+            if (newFief != null)
+            {
+                this.fModel.currentFief = newFief;
+                this.refreshTravelContainer();
+            }
+        }
+
+        private void travel_SW_btn_Click(object sender, EventArgs e)
+        {
+            Fief newFief = this.gameMap.moveCharacter(this.charModel.currentCharacter, this.charModel.currentCharacter.location, "SW");
+            if (newFief != null)
+            {
+                this.fModel.currentFief = newFief;
+                this.refreshTravelContainer();
+            }
+        }
+
+        private void travel_SE_btn_Click(object sender, EventArgs e)
+        {
+            Fief newFief = this.gameMap.moveCharacter(this.charModel.currentCharacter, this.charModel.currentCharacter.location, "SE");
+            if (newFief != null)
+            {
+                this.fModel.currentFief = newFief;
+                this.refreshTravelContainer();
+            }
+        }
+
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of the fiefsListView ListView object,
+        /// invoking the displayFief method, passing a Fief to indicate the fief to display
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefsListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            Fief fiefToDisplay = null;
+
+            for (int i = 0; i < this.charModel.currentCharacter.ownedFiefs.Count; i++ )
+            {
+                if (this.charModel.currentCharacter.ownedFiefs[i].fiefID.Equals(this.fiefsListView.SelectedItems[0].SubItems[1].Text))
+                {
+                    fiefToDisplay = this.charModel.currentCharacter.ownedFiefs[i];
+                }
+
+            }
+
+            if (fiefToDisplay != null)
+            {
+                this.displayFief(fiefToDisplay);
+                this.fiefContainer.BringToFront();
             }
         }
 

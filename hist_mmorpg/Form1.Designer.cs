@@ -42,6 +42,7 @@ namespace hist_mmorpg
             this.updateCharBtn = new System.Windows.Forms.Button();
             this.characterTextBox = new System.Windows.Forms.TextBox();
             this.fiefContainer = new System.Windows.Forms.SplitContainer();
+            this.viewBailiffBtn = new System.Windows.Forms.Button();
             this.updateFiefBtn = new System.Windows.Forms.Button();
             this.adjustKeepSpendTextBox = new System.Windows.Forms.TextBox();
             this.adjustKeepSpendBtn = new System.Windows.Forms.Button();
@@ -193,6 +194,7 @@ namespace hist_mmorpg
             // 
             // fiefContainer.Panel1
             // 
+            this.fiefContainer.Panel1.Controls.Add(this.viewBailiffBtn);
             this.fiefContainer.Panel1.Controls.Add(this.updateFiefBtn);
             this.fiefContainer.Panel1.Controls.Add(this.adjustKeepSpendTextBox);
             this.fiefContainer.Panel1.Controls.Add(this.adjustKeepSpendBtn);
@@ -212,9 +214,19 @@ namespace hist_mmorpg
             this.fiefContainer.SplitterDistance = 288;
             this.fiefContainer.TabIndex = 3;
             // 
+            // viewBailiffBtn
+            // 
+            this.viewBailiffBtn.Location = new System.Drawing.Point(13, 168);
+            this.viewBailiffBtn.Name = "viewBailiffBtn";
+            this.viewBailiffBtn.Size = new System.Drawing.Size(124, 23);
+            this.viewBailiffBtn.TabIndex = 11;
+            this.viewBailiffBtn.Text = "View Bailiff";
+            this.viewBailiffBtn.UseVisualStyleBackColor = true;
+            this.viewBailiffBtn.Click += new System.EventHandler(this.viewBailiffBtn_Click);
+            // 
             // updateFiefBtn
             // 
-            this.updateFiefBtn.Location = new System.Drawing.Point(13, 168);
+            this.updateFiefBtn.Location = new System.Drawing.Point(15, 197);
             this.updateFiefBtn.Name = "updateFiefBtn";
             this.updateFiefBtn.Size = new System.Drawing.Size(122, 23);
             this.updateFiefBtn.TabIndex = 10;
@@ -231,7 +243,7 @@ namespace hist_mmorpg
             // 
             // adjustKeepSpendBtn
             // 
-            this.adjustKeepSpendBtn.Location = new System.Drawing.Point(12, 138);
+            this.adjustKeepSpendBtn.Location = new System.Drawing.Point(14, 138);
             this.adjustKeepSpendBtn.Name = "adjustKeepSpendBtn";
             this.adjustKeepSpendBtn.Size = new System.Drawing.Size(123, 23);
             this.adjustKeepSpendBtn.TabIndex = 8;
@@ -352,6 +364,7 @@ namespace hist_mmorpg
             this.travel_SE_btn.TabIndex = 6;
             this.travel_SE_btn.Text = "Go SE";
             this.travel_SE_btn.UseVisualStyleBackColor = true;
+            this.travel_SE_btn.Click += new System.EventHandler(this.travel_SE_btn_Click);
             // 
             // travel_SW_btn
             // 
@@ -361,6 +374,7 @@ namespace hist_mmorpg
             this.travel_SW_btn.TabIndex = 5;
             this.travel_SW_btn.Text = "Go SW";
             this.travel_SW_btn.UseVisualStyleBackColor = true;
+            this.travel_SW_btn.Click += new System.EventHandler(this.travel_SW_btn_Click);
             // 
             // travel_E_btn
             // 
@@ -399,6 +413,7 @@ namespace hist_mmorpg
             this.travel_NE_btn.TabIndex = 1;
             this.travel_NE_btn.Text = "Go NE";
             this.travel_NE_btn.UseVisualStyleBackColor = true;
+            this.travel_NE_btn.Click += new System.EventHandler(this.travel_NE_btn_Click);
             // 
             // travel_NW_btn
             // 
@@ -408,6 +423,7 @@ namespace hist_mmorpg
             this.travel_NW_btn.TabIndex = 0;
             this.travel_NW_btn.Text = "Go NW";
             this.travel_NW_btn.UseVisualStyleBackColor = true;
+            this.travel_NW_btn.Click += new System.EventHandler(this.travel_NW_btn_Click);
             // 
             // fiefsOwnedContainer
             // 
@@ -433,14 +449,15 @@ namespace hist_mmorpg
             this.fiefsListView.TabIndex = 0;
             this.fiefsListView.UseCompatibleStateImageBehavior = false;
             this.fiefsListView.View = System.Windows.Forms.View.Details;
+            this.fiefsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.fiefsListView_ItemSelectionChanged);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(727, 458);
-            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
+            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
@@ -509,6 +526,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.ToolStripMenuItem myFiefsToolStripMenuItem;
         private System.Windows.Forms.SplitContainer fiefsOwnedContainer;
         private System.Windows.Forms.ListView fiefsListView;
+        private System.Windows.Forms.Button viewBailiffBtn;
 
     }
 }
