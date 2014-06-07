@@ -23,7 +23,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds province overlord (ID)
         /// </summary>
-        public uint overlord { get; set; }
+        public Character overlord { get; set; }
         /// <summary>
         /// Holds province overlord tax rate
         /// </summary>
@@ -38,10 +38,10 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="id">String holding province ID</param>
         /// <param name="nam">String holding province name</param>
-        /// <param name="olord">uint holding province overlord ID</param>
+        /// <param name="olord">Character holding province overlord</param>
         /// <param name="otax">Double holding province overlord tax rate</param>
         /// <param name="lang">String holding province language code</param>
-        public Province(String id, String nam, uint olord, Double otax, string lang)
+        public Province(String id, String nam, Double otax, string lang, Character olord = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -51,12 +51,6 @@ namespace hist_mmorpg
             if ((nam.Length < 1) || (nam.Length > 40))
             {
                 throw new InvalidDataException("Province name must be between 1 and 40 characters in length");
-            }
-
-            // validate olord ID = 1-10000
-            if ((olord < 1) || (olord > 10000))
-            {
-                throw new InvalidDataException("Province overlord ID must be an integer between 1 and 10000");
             }
 
             // validate otax = 0-100.00

@@ -66,6 +66,14 @@ namespace hist_mmorpg
             this.travel_NW_btn = new System.Windows.Forms.Button();
             this.fiefsOwnedContainer = new System.Windows.Forms.SplitContainer();
             this.fiefsListView = new System.Windows.Forms.ListView();
+            this.courtContainer = new System.Windows.Forms.SplitContainer();
+            this.courtCharsContainer = new System.Windows.Forms.SplitContainer();
+            this.courtCharsListContainer = new System.Windows.Forms.SplitContainer();
+            this.courtCharsListView = new System.Windows.Forms.ListView();
+            this.courtTextBox = new System.Windows.Forms.TextBox();
+            this.enterKeepBtn = new System.Windows.Forms.Button();
+            this.visitCourtBtn1 = new System.Windows.Forms.Button();
+            this.visitTavernBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -76,12 +84,23 @@ namespace hist_mmorpg
             this.fiefContainer.Panel2.SuspendLayout();
             this.fiefContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.travelContainer)).BeginInit();
+            this.travelContainer.Panel1.SuspendLayout();
             this.travelContainer.Panel2.SuspendLayout();
             this.travelContainer.SuspendLayout();
             this.travelNavigationPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fiefsOwnedContainer)).BeginInit();
             this.fiefsOwnedContainer.Panel2.SuspendLayout();
             this.fiefsOwnedContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.courtContainer)).BeginInit();
+            this.courtContainer.Panel2.SuspendLayout();
+            this.courtContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.courtCharsContainer)).BeginInit();
+            this.courtCharsContainer.Panel2.SuspendLayout();
+            this.courtCharsContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.courtCharsListContainer)).BeginInit();
+            this.courtCharsListContainer.Panel1.SuspendLayout();
+            this.courtCharsListContainer.Panel2.SuspendLayout();
+            this.courtCharsListContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -92,7 +111,7 @@ namespace hist_mmorpg
             this.travelToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(727, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(801, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -162,8 +181,8 @@ namespace hist_mmorpg
             // characterContainer.Panel2
             // 
             this.characterContainer.Panel2.Controls.Add(this.characterTextBox);
-            this.characterContainer.Size = new System.Drawing.Size(727, 434);
-            this.characterContainer.SplitterDistance = 240;
+            this.characterContainer.Size = new System.Drawing.Size(801, 434);
+            this.characterContainer.SplitterDistance = 264;
             this.characterContainer.TabIndex = 2;
             // 
             // updateCharBtn
@@ -183,7 +202,7 @@ namespace hist_mmorpg
             this.characterTextBox.Multiline = true;
             this.characterTextBox.Name = "characterTextBox";
             this.characterTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.characterTextBox.Size = new System.Drawing.Size(483, 434);
+            this.characterTextBox.Size = new System.Drawing.Size(533, 434);
             this.characterTextBox.TabIndex = 0;
             // 
             // fiefContainer
@@ -210,8 +229,8 @@ namespace hist_mmorpg
             // fiefContainer.Panel2
             // 
             this.fiefContainer.Panel2.Controls.Add(this.fiefTextBox);
-            this.fiefContainer.Size = new System.Drawing.Size(727, 434);
-            this.fiefContainer.SplitterDistance = 288;
+            this.fiefContainer.Size = new System.Drawing.Size(801, 434);
+            this.fiefContainer.SplitterDistance = 317;
             this.fiefContainer.TabIndex = 3;
             // 
             // viewBailiffBtn
@@ -326,7 +345,7 @@ namespace hist_mmorpg
             this.fiefTextBox.Multiline = true;
             this.fiefTextBox.Name = "fiefTextBox";
             this.fiefTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.fiefTextBox.Size = new System.Drawing.Size(435, 434);
+            this.fiefTextBox.Size = new System.Drawing.Size(480, 434);
             this.fiefTextBox.TabIndex = 0;
             // 
             // travelContainer
@@ -335,11 +354,17 @@ namespace hist_mmorpg
             this.travelContainer.Location = new System.Drawing.Point(0, 24);
             this.travelContainer.Name = "travelContainer";
             // 
+            // travelContainer.Panel1
+            // 
+            this.travelContainer.Panel1.Controls.Add(this.visitTavernBtn);
+            this.travelContainer.Panel1.Controls.Add(this.visitCourtBtn1);
+            this.travelContainer.Panel1.Controls.Add(this.enterKeepBtn);
+            // 
             // travelContainer.Panel2
             // 
             this.travelContainer.Panel2.Controls.Add(this.travelNavigationPanel);
-            this.travelContainer.Size = new System.Drawing.Size(727, 434);
-            this.travelContainer.SplitterDistance = 242;
+            this.travelContainer.Size = new System.Drawing.Size(801, 434);
+            this.travelContainer.SplitterDistance = 266;
             this.travelContainer.TabIndex = 4;
             // 
             // travelNavigationPanel
@@ -434,8 +459,8 @@ namespace hist_mmorpg
             // fiefsOwnedContainer.Panel2
             // 
             this.fiefsOwnedContainer.Panel2.Controls.Add(this.fiefsListView);
-            this.fiefsOwnedContainer.Size = new System.Drawing.Size(727, 434);
-            this.fiefsOwnedContainer.SplitterDistance = 242;
+            this.fiefsOwnedContainer.Size = new System.Drawing.Size(801, 434);
+            this.fiefsOwnedContainer.SplitterDistance = 266;
             this.fiefsOwnedContainer.TabIndex = 5;
             // 
             // fiefsListView
@@ -445,20 +470,115 @@ namespace hist_mmorpg
             this.fiefsListView.GridLines = true;
             this.fiefsListView.Location = new System.Drawing.Point(0, 0);
             this.fiefsListView.Name = "fiefsListView";
-            this.fiefsListView.Size = new System.Drawing.Size(481, 434);
+            this.fiefsListView.Size = new System.Drawing.Size(531, 434);
             this.fiefsListView.TabIndex = 0;
             this.fiefsListView.UseCompatibleStateImageBehavior = false;
             this.fiefsListView.View = System.Windows.Forms.View.Details;
             this.fiefsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.fiefsListView_ItemSelectionChanged);
             // 
+            // courtContainer
+            // 
+            this.courtContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.courtContainer.Location = new System.Drawing.Point(0, 24);
+            this.courtContainer.Name = "courtContainer";
+            // 
+            // courtContainer.Panel2
+            // 
+            this.courtContainer.Panel2.Controls.Add(this.courtCharsContainer);
+            this.courtContainer.Size = new System.Drawing.Size(801, 434);
+            this.courtContainer.SplitterDistance = 267;
+            this.courtContainer.TabIndex = 6;
+            // 
+            // courtCharsContainer
+            // 
+            this.courtCharsContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.courtCharsContainer.Location = new System.Drawing.Point(0, 0);
+            this.courtCharsContainer.Name = "courtCharsContainer";
+            // 
+            // courtCharsContainer.Panel2
+            // 
+            this.courtCharsContainer.Panel2.Controls.Add(this.courtCharsListContainer);
+            this.courtCharsContainer.Size = new System.Drawing.Size(530, 434);
+            this.courtCharsContainer.SplitterDistance = 176;
+            this.courtCharsContainer.TabIndex = 0;
+            // 
+            // courtCharsListContainer
+            // 
+            this.courtCharsListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.courtCharsListContainer.Location = new System.Drawing.Point(0, 0);
+            this.courtCharsListContainer.Name = "courtCharsListContainer";
+            this.courtCharsListContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // courtCharsListContainer.Panel1
+            // 
+            this.courtCharsListContainer.Panel1.Controls.Add(this.courtTextBox);
+            // 
+            // courtCharsListContainer.Panel2
+            // 
+            this.courtCharsListContainer.Panel2.Controls.Add(this.courtCharsListView);
+            this.courtCharsListContainer.Size = new System.Drawing.Size(350, 434);
+            this.courtCharsListContainer.SplitterDistance = 191;
+            this.courtCharsListContainer.TabIndex = 0;
+            // 
+            // courtCharsListView
+            // 
+            this.courtCharsListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.courtCharsListView.FullRowSelect = true;
+            this.courtCharsListView.GridLines = true;
+            this.courtCharsListView.Location = new System.Drawing.Point(0, 0);
+            this.courtCharsListView.Name = "courtCharsListView";
+            this.courtCharsListView.Size = new System.Drawing.Size(350, 239);
+            this.courtCharsListView.TabIndex = 0;
+            this.courtCharsListView.UseCompatibleStateImageBehavior = false;
+            this.courtCharsListView.View = System.Windows.Forms.View.Details;
+            // 
+            // courtTextBox
+            // 
+            this.courtTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.courtTextBox.Location = new System.Drawing.Point(0, 0);
+            this.courtTextBox.Multiline = true;
+            this.courtTextBox.Name = "courtTextBox";
+            this.courtTextBox.Size = new System.Drawing.Size(350, 191);
+            this.courtTextBox.TabIndex = 0;
+            // 
+            // enterKeepBtn
+            // 
+            this.enterKeepBtn.Location = new System.Drawing.Point(15, 13);
+            this.enterKeepBtn.Name = "enterKeepBtn";
+            this.enterKeepBtn.Size = new System.Drawing.Size(122, 23);
+            this.enterKeepBtn.TabIndex = 0;
+            this.enterKeepBtn.Text = "Enter Keep";
+            this.enterKeepBtn.UseVisualStyleBackColor = true;
+            this.enterKeepBtn.Click += new System.EventHandler(this.enterKeepBtn_Click);
+            // 
+            // visitCourtBtn1
+            // 
+            this.visitCourtBtn1.Location = new System.Drawing.Point(15, 43);
+            this.visitCourtBtn1.Name = "visitCourtBtn1";
+            this.visitCourtBtn1.Size = new System.Drawing.Size(122, 23);
+            this.visitCourtBtn1.TabIndex = 1;
+            this.visitCourtBtn1.Text = "Visit Court";
+            this.visitCourtBtn1.UseVisualStyleBackColor = true;
+            this.visitCourtBtn1.Click += new System.EventHandler(this.visitCourtBtn1_Click);
+            // 
+            // visitTavernBtn
+            // 
+            this.visitTavernBtn.Location = new System.Drawing.Point(15, 72);
+            this.visitTavernBtn.Name = "visitTavernBtn";
+            this.visitTavernBtn.Size = new System.Drawing.Size(122, 23);
+            this.visitTavernBtn.TabIndex = 2;
+            this.visitTavernBtn.Text = "Visit Tavern";
+            this.visitTavernBtn.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(727, 458);
-            this.Controls.Add(this.fiefsOwnedContainer);
+            this.ClientSize = new System.Drawing.Size(801, 458);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.fiefContainer);
+            this.Controls.Add(this.courtContainer);
+            this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -477,6 +597,7 @@ namespace hist_mmorpg
             this.fiefContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fiefContainer)).EndInit();
             this.fiefContainer.ResumeLayout(false);
+            this.travelContainer.Panel1.ResumeLayout(false);
             this.travelContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.travelContainer)).EndInit();
             this.travelContainer.ResumeLayout(false);
@@ -484,6 +605,17 @@ namespace hist_mmorpg
             this.fiefsOwnedContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.fiefsOwnedContainer)).EndInit();
             this.fiefsOwnedContainer.ResumeLayout(false);
+            this.courtContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.courtContainer)).EndInit();
+            this.courtContainer.ResumeLayout(false);
+            this.courtCharsContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.courtCharsContainer)).EndInit();
+            this.courtCharsContainer.ResumeLayout(false);
+            this.courtCharsListContainer.Panel1.ResumeLayout(false);
+            this.courtCharsListContainer.Panel1.PerformLayout();
+            this.courtCharsListContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.courtCharsListContainer)).EndInit();
+            this.courtCharsListContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -527,6 +659,14 @@ namespace hist_mmorpg
         private System.Windows.Forms.SplitContainer fiefsOwnedContainer;
         private System.Windows.Forms.ListView fiefsListView;
         private System.Windows.Forms.Button viewBailiffBtn;
+        private System.Windows.Forms.SplitContainer courtContainer;
+        private System.Windows.Forms.SplitContainer courtCharsContainer;
+        private System.Windows.Forms.SplitContainer courtCharsListContainer;
+        private System.Windows.Forms.ListView courtCharsListView;
+        private System.Windows.Forms.TextBox courtTextBox;
+        private System.Windows.Forms.Button visitCourtBtn1;
+        private System.Windows.Forms.Button enterKeepBtn;
+        private System.Windows.Forms.Button visitTavernBtn;
 
     }
 }

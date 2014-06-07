@@ -47,7 +47,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds army's remaining days in season
         /// </summary>
-        public uint days { get; set; }
+        public double days { get; set; }
         /// <summary>
         /// Holds army's GameClock (season)
         /// </summary>
@@ -64,9 +64,9 @@ namespace hist_mmorpg
         /// <param name="rbl">uint holding no. of rabble in army</param>
         /// <param name="ldr">string holding ID of army leader</param>
         /// <param name="own">string holding ID of army owner</param>
-        /// <param name="day">uint holding remaining days in season for army</param>
+        /// <param name="day">double holding remaining days in season for army</param>
         /// <param name="cl">GameClock holding season</param>
-        public Army(uint kni, uint maa, uint ltCav, uint yeo, uint ft, uint rbl, string ldr, string own, uint day, GameClock cl)
+        public Army(uint kni, uint maa, uint ltCav, uint yeo, uint ft, uint rbl, string ldr, string own, double day, GameClock cl)
         {
 
             // TODO: validate kni = (upper limit?)
@@ -78,7 +78,7 @@ namespace hist_mmorpg
             // TODO: validate ldr ID = 1-10000?
 
             // validate day > 90
-            if (day > 90)
+            if ((day > 90) || (day < 0))
             {
                 throw new InvalidDataException("Army remaining days must be an integer between 0 and 90");
             }

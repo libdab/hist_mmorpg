@@ -55,7 +55,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds character's remaining days in season
         /// </summary>
-        public uint days { get; set; }
+        public double days { get; set; }
         /// <summary>
         /// Holds character's stature
         /// </summary>
@@ -114,7 +114,7 @@ namespace hist_mmorpg
         /// <param name="vir">Double holding character virility rating</param>
         /// <param name="loc">Fief holding character location (fief ID)</param>
         /// <param name="lang">String holding character language code</param>
-        /// <param name="day">uint holding character remaining days in season</param>
+        /// <param name="day">double holding character remaining days in season</param>
         /// <param name="stat">Double holding character status rating</param>
         /// <param name="mngmnt">Double holding character management rating</param>
         /// <param name="cbt">Double holding character combat rating</param>
@@ -126,7 +126,7 @@ namespace hist_mmorpg
         /// <param name="fath">Character holding father</param>
         /// <param name="famHead">Character holding head of family</param>
         public Character(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Fief loc, string lang, uint day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
+            Fief loc, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
             GameClock cl, Character sp = null, Character fath = null, Character famHead = null)
         {
 
@@ -179,9 +179,9 @@ namespace hist_mmorpg
             // TODO: validate lang = string B,C,D,E,F,G,H,I,L/1-3
 
             // validate day = 0-90
-            if (day > 90)
+            if ((day > 90) || (day < 0))
             {
-                throw new InvalidDataException("Character remaining days must be an integer between 0 and 90");
+                throw new InvalidDataException("Character remaining days must be a double between 0 and 90");
             }
 
             // validate stat = 0-9.00
@@ -329,6 +329,15 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Enables character to exit keep
+        /// </summary>
+        public virtual void exitKeep()
+        {
+
+            this.inKeep = false;
+        }
+
+        /// <summary>
         /// Updates character data at the end/beginning of the season
         /// </summary>
         public void updateCharacter()
@@ -377,7 +386,7 @@ namespace hist_mmorpg
         /// <param name="pur">uint holding character purse</param>
         /// <param name="kps">List<Fief> holding fiefs owned by character</param>
         public PlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Fief loc, string lang, uint day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
+            Fief loc, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
             GameClock cl, bool outl, uint pur, List<Character> ent, List<Fief> kps, Character sp = null, Character fath = null, Character famHead = null)
             : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, sp, fath, famHead)
         {
@@ -455,6 +464,19 @@ namespace hist_mmorpg
 
         }
 
+        /// <summary>
+        /// Calls base method to enable character to exit keep, then moves entourage
+        /// </summary>
+        public override void exitKeep()
+        {
+            base.exitKeep();
+
+            for (int i = 0; i < this.entourage.Count; i++)
+            {
+                this.entourage[i].inKeep = false;
+            }
+        }
+
     }
 
     /// <summary>
@@ -464,9 +486,9 @@ namespace hist_mmorpg
     {
 
         /// <summary>
-        /// Holds NPC's boss (ID)
+        /// Holds NPC's boss
         /// </summary>
-        public string hiredBy { get; set; }
+        public Character myBoss { get; set; }
         /// <summary>
         /// Holds fief ID for destination (specified by NPC's boss)
         /// </summary>
@@ -479,19 +501,19 @@ namespace hist_mmorpg
         /// <summary>
         /// Constructor for NonPlayerCharacter
         /// </summary>
-        /// <param name="hb">uint holding NPC's boss (ID)</param>
+        /// <param name="mb">uint holding NPC's boss (ID)</param>
         /// <param name="go">String holding fief ID for destination (specified by NPC's boss)</param>
         /// <param name="wa">string holding NPC's wages</param>
         public NonPlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Fief loc, string lang, uint day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
-            GameClock cl, string hb, string go, uint wa, Character sp = null, Character fath = null, Character famHead = null)
+            Fief loc, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
+            GameClock cl, string go, uint wa, Character mb = null, Character sp = null, Character fath = null, Character famHead = null)
             : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, sp, fath, famHead)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
             // TODO: validate wa = uint
 
-            this.hiredBy = hb;
+            this.myBoss = mb;
             this.goTo = go;
             this.wage = wa;
         }

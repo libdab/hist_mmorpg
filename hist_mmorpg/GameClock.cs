@@ -13,14 +13,24 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds seasons
         /// </summary>
-        public string[] seasons = new string[4];
+        public string[] seasons = new string[4] { "Spring", "Summer", "Autumn", "Winter" };
+        /// <summary>
+        /// Holds current year
+        /// </summary>
+        public uint currentYear { get; set; }
         /// <summary>
         /// Holds current season
         /// </summary>
-        public int currentSeason { get; set; }
+        public uint currentSeason { get; set; }
 
-        public GameClock(int s = 0)
+        /// <summary>
+        /// Constructor for GameClock
+        /// </summary>
+        /// <param name="yr">uint holding starting year</param>
+        /// <param name="s">int holding current season (default: 0)</param>
+        public GameClock(uint yr, uint s = 0)
         {
+            this.currentYear = yr;
             this.currentSeason = s;
         }
 

@@ -128,6 +128,37 @@ namespace hist_mmorpg
 
         }
 
+        /// <summary>
+        /// Selects random adjoining hex (also equal chance to select current hex)
+        /// </summary>
+        /// <param name="npc">NonPlayerCharacter to be moved (or not)</param>
+        /// <param name="f">Current location of NPC</param>
+        public void randomNPCmove(NonPlayerCharacter npc, Fief f)
+        {
+            List<TaggedUndirectedEdge<Fief, string>> choices = new List<TaggedUndirectedEdge<Fief, string>>();
+
+            // identify and store all target hexes from source hex
+            foreach (var e in this.myMap.Edges)
+            {
+                if (e.Source == f)
+                {
+                    choices.Add(e);
+                }
+            }
+
+            // generate random int between 0 and no. of targets
+            Random rnd = new Random();
+            int selection = rnd.Next(0, choices.Count);
+
+            // get tag from selected edge
+            string tag = choices[selection].Tag;
+
+            if (selection != 0)
+            {
+                this.moveCharacter(npc, f, tag);
+            }
+        }
+
         // TODO
         public Fief getFief(Fief f, string direction)
         {

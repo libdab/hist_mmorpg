@@ -14,6 +14,14 @@ namespace hist_mmorpg
     {
 
         /// <summary>
+        /// Holds all Character objects
+        /// </summary>
+        private List<Character> charMasterList = new List<Character>();
+        /// <summary>
+        /// Holds all Fief objects
+        /// </summary>
+        private List<Fief> fiefMasterList = new List<Fief>();
+        /// <summary>
         /// Holds CharacterModel
         /// </summary>
         private CharacterModel charModel;
@@ -22,13 +30,13 @@ namespace hist_mmorpg
         /// </summary>
         private FiefModel fModel;
         /// <summary>
-        /// Holds initial Character to view
+        /// Holds Character to view
         /// </summary>
-        private PlayerCharacter initialCharacter;
+        private PlayerCharacter charToView;
         /// <summary>
-        /// Holds initial Fief to view
+        /// Holds Fief to view
         /// </summary>
-        private Fief initialFief;
+        private Fief fiefToView;
         /// <summary>
         /// Holds HexMapGraph
         /// </summary>
@@ -55,15 +63,17 @@ namespace hist_mmorpg
             // create game objects
             this.initGameObjects();
             // inform models of initial game objects
-            cm.changeCurrent(initialCharacter);
-            fm.changeCurrent(initialFief);
+            cm.changeCurrent(charToView);
+            fm.changeCurrent(fiefToView);
             this.setUpFiefsList();
+            this.setUpCourtCharsList();
+            this.characterContainer.BringToFront();
         }
 
         public void initGameObjects()
         {
             // creat GameClock
-            GameClock myGameClock = new GameClock();
+            GameClock myGameClock = new GameClock(1320);
             this.clock = myGameClock;
 
             // create skills
@@ -180,16 +190,23 @@ namespace hist_mmorpg
             List<Character> fief7Chars = new List<Character>();
 
             // create province for fiefs
-            Province myProv = new Province("ESX00", "Sussex, England", 100, 6.2, "E1");
-            Province myProv2 = new Province("ESR00", "Surrey, England", 100, 6.2, "E1");
+            Province myProv = new Province("ESX00", "Sussex, England", 6.2, "E1");
+            Province myProv2 = new Province("ESR00", "Surrey, England", 6.2, "E1");
 
             Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief1Chars, keep1BarChars, false, false, this.clock);
+            fiefMasterList.Add(myFief1);
             Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', 'F', fief2Chars, keep2BarChars, false, false, this.clock);
+            fiefMasterList.Add(myFief2);
             Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief3Chars, keep3BarChars, false, false, this.clock);
+            fiefMasterList.Add(myFief3);
             Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief4Chars, keep4BarChars, false, false, this.clock);
+            fiefMasterList.Add(myFief4);
             Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief5Chars, keep5BarChars, false, false, this.clock);
+            fiefMasterList.Add(myFief5);
             Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief6Chars, keep6BarChars, false, false, this.clock);
+            fiefMasterList.Add(myFief6);
             Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief7Chars, keep7BarChars, false, false, this.clock);
+            fiefMasterList.Add(myFief7);
             Army myArmy = new Army(0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
             // create QuickGraph undirected graph
@@ -239,10 +256,15 @@ namespace hist_mmorpg
 
             // create some characters
             PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.2, 6.1, skillsArray1, false, true, false, this.clock, false, 13000, myEnt1, myFiefsOwned1);
+            charMasterList.Add(myChar1);
             PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 5.0, 4.5, skillsArray1, true, false, false, this.clock, false, 13000, myEnt2, myFiefsOwned2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 3.3, 6.7, skillsArray1, false, false, false, this.clock, "100", "ESX05", 10000);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.1, 5.2, skillsArray1, false, false, false, this.clock, "100", "ESX05", 10000);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 4.0, 6.0, skillsArray1, false, true, true, this.clock, "100", "ESX05", 0);
+            charMasterList.Add(myChar2);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 3.3, 6.7, skillsArray1, false, false, false, this.clock, "ESX05", 10000);
+            charMasterList.Add(myNPC1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.1, 5.2, skillsArray1, false, false, false, this.clock, "ESX05", 10000, mb: myChar1);
+            charMasterList.Add(myNPC2);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 4.0, 6.0, skillsArray1, false, true, true, this.clock, "ESX05", 0);
+            charMasterList.Add(myWife);
 
             // Add me a wife
             myChar1.spouse = myWife;
@@ -267,6 +289,10 @@ namespace hist_mmorpg
             myFief6.ancestralOwner = myChar1;
             myFief7.ancestralOwner = myChar2;
 
+            // set province overlords
+            myProv.overlord = myChar1;
+            myProv2.overlord = myChar2;
+
             // set fief bailiffs
             myFief1.bailiff = myNPC1;
             myFief2.bailiff = myNPC2;
@@ -290,14 +316,48 @@ namespace hist_mmorpg
             myFief1.addCharacter(myNPC2);
 
             // bar a character from the myFief1 keep
-            myFief1.barCharacter(myNPC2.charID);
+            // myFief1.barCharacter(myNPC2.charID);
 
             // set inital character to display
-            this.initialCharacter = myChar1;
+            this.charToView = myChar1;
 
             // set inital fief to display
-            this.initialFief = myChar1.location;
+            this.fiefToView = myChar1.location;
 
+        }
+
+        /// <summary>
+        /// Updates game objects at end/start of season
+        /// </summary>
+        public void seasonUpdate()
+        {
+            // fiefs
+            for (int i = 0; i < fiefMasterList.Count; i++ )
+            {
+                fiefMasterList[i].updateFief();
+            }
+
+            // characters
+            for (int i = 0; i < charMasterList.Count; i++)
+            {
+                charMasterList[i].updateCharacter();
+                if ((charMasterList[i].health != 0) && (charMasterList[i] is NonPlayerCharacter))
+                {
+                    this.seasonUpdateNPC((NonPlayerCharacter)charMasterList[i]);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// End/start of season updates specific to NPC objects
+        /// </summary>
+        public void seasonUpdateNPC(NonPlayerCharacter npc)
+        {
+            if (npc.myBoss == null)
+            {
+                gameMap.randomNPCmove(npc, npc.location);
+            }
         }
 
         // TODO
@@ -309,6 +369,18 @@ namespace hist_mmorpg
             this.fiefsListView.Columns.Add("Where am I?", -2, HorizontalAlignment.Left);
 
             this.refreshMyFiefs();
+        }
+        
+        // TODO
+        public void setUpCourtCharsList()
+        {
+            // set up court characters list
+            this.courtCharsListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.courtCharsListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.courtCharsListView.Columns.Add("Household", -2, HorizontalAlignment.Left);
+            this.courtCharsListView.Columns.Add("Sex", -2, HorizontalAlignment.Left);
+            this.courtCharsListView.Columns.Add("Type", -2, HorizontalAlignment.Left);
+            this.courtCharsListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
         }
 
         // TODO
@@ -327,6 +399,73 @@ namespace hist_mmorpg
                 }
                 // add item to fiefsListView
                 this.fiefsListView.Items.Add(fiefsOwned[i]);
+            }
+        }
+
+        // TODO
+        public void refreshCourtDisplay()
+        {
+            this.refreshCourtDisplayText();
+            this.refreshCourtDisplayList();
+        }
+
+        // TODO
+        public void refreshCourtDisplayText()
+        {
+            string textToDisplay = "";
+            textToDisplay += this.clock.seasons[this.clock.currentSeason] + ", " + this.clock.currentYear + ".  Your days left: " + this.charModel.currentCharacter.days + "\r\n\r\n";
+            textToDisplay += "Fief: " + this.fiefToView.name + "(" + this.fiefToView.fiefID + ")  in " + this.fiefToView.province.name + "\r\n\r\n";
+            textToDisplay += "Owner: " + this.fiefToView.owner.name + "\r\n";
+            textToDisplay += "Overlord: " + this.fiefToView.province.overlord.name + "\r\n";
+
+            this.courtTextBox.Text = textToDisplay;
+        }
+
+        // TODO
+        public void refreshCourtDisplayList()
+        {
+            ListViewItem[] charsInCourt = new ListViewItem[this.fiefToView.characters.Count];
+            // iterates through characters
+            for (int i = 0; i < this.fiefToView.characters.Count; i++)
+            {
+                // only show characters in the keep
+                if (this.fiefToView.characters[i].inKeep)
+                {
+                    // don't show this PlayerCharacter
+                    if (this.fiefToView.characters[i] != this.charModel.currentCharacter)
+                    {
+                        // Create an item and subitems for each character
+                        charsInCourt[i] = new ListViewItem(this.fiefToView.characters[i].name);
+                        charsInCourt[i].SubItems.Add(this.fiefToView.characters[i].charID);
+                        charsInCourt[i].SubItems.Add("A household");
+                        if (this.fiefToView.characters[i].isMale)
+                        {
+                            charsInCourt[i].SubItems.Add("Male");
+                        }
+                        else
+                        {
+                            charsInCourt[i].SubItems.Add("Female");
+                        }
+                        charsInCourt[i].SubItems.Add("A type");
+
+                        bool isCompanion = false;
+                        for (int ii = 0; ii < this.charToView.entourage.Count; ii++)
+                        {
+                            if (this.charToView.entourage[ii] == this.fiefToView.characters[i])
+                            {
+                                isCompanion = true;
+                            }
+                        }
+
+                        if (isCompanion)
+                        {
+                            charsInCourt[i].SubItems.Add("Yes");
+                        }
+
+                        // add item to fiefsListView
+                        this.courtCharsListView.Items.Add(charsInCourt[i]);
+                    }
+                }
             }
         }
 
@@ -508,7 +647,7 @@ namespace hist_mmorpg
         {
             string npcText = "";
 
-            npcText += "Hired by (ID): " + ch.hiredBy + "\r\n";
+            npcText += "Hired by (ID): " + ch.myBoss.charID + "\r\n";
             npcText += "Go to (Fief ID): " + ch.goTo + "\r\n";
             npcText += "Salary: " + ch.wage + "\r\n";
 
@@ -908,6 +1047,16 @@ namespace hist_mmorpg
                 this.travel_NW_btn.Text = "NW FIEF:\r\n\r\nNo fief present";
             }
 
+            // set text for 'enter/exit keep' button
+            if (this.charModel.currentCharacter.inKeep)
+            {
+                this.enterKeepBtn.Text = "Exit Keep";
+            }
+            else
+            {
+                this.enterKeepBtn.Text = "Enter Keep";
+            }
+
         }
 
         private void travel_W_btn_Click(object sender, EventArgs e)
@@ -939,8 +1088,11 @@ namespace hist_mmorpg
 
         private void viewBailiffBtn_Click(object sender, EventArgs e)
         {
-            this.displayCharacter(this.fModel.currentFief.bailiff);
-            this.characterContainer.BringToFront();
+            if (this.fModel.currentFief.bailiff != null)
+            {
+                this.displayCharacter(this.fModel.currentFief.bailiff);
+                this.characterContainer.BringToFront();
+            }
         }
 
         private void travel_NW_btn_Click(object sender, EventArgs e)
@@ -1004,9 +1156,44 @@ namespace hist_mmorpg
 
             if (fiefToDisplay != null)
             {
-                this.displayFief(fiefToDisplay);
+                this.fiefToView = fiefToDisplay;
+                this.displayFief(fiefToView);
                 this.fiefContainer.BringToFront();
             }
+        }
+
+        private void visitTavernBtn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void visitCourtBtn_Click(object sender, EventArgs e)
+        {
+            this.refreshCourtDisplay();
+            this.courtContainer.BringToFront();
+        }
+
+        private void enterKeepBtn_Click(object sender, EventArgs e)
+        {
+            if (this.charModel.currentCharacter.inKeep)
+            {
+                this.charModel.currentCharacter.exitKeep();
+                this.enterKeepBtn.Text = "Enter Keep";
+                this.refreshTravelContainer();
+            }
+            else
+            {
+                this.charModel.currentCharacter.enterKeep();
+                this.enterKeepBtn.Text = "Exit Keep";
+                this.refreshTravelContainer();
+            }
+        }
+
+        private void visitCourtBtn1_Click(object sender, EventArgs e)
+        {
+            this.charModel.currentCharacter.enterKeep();
+            this.refreshCourtDisplay();
+            this.courtContainer.BringToFront();
         }
 
     }
