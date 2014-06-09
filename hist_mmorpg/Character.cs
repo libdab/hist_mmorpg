@@ -290,6 +290,34 @@ namespace hist_mmorpg
             return deathModifier;
         }
 
+        /* 
+        /// <summary>
+        /// Calculates fief manager rating based on characteristics/skills
+        /// </summary>
+        /// <returns>double containing death modifier</returns>
+        public double getFiefMngRating()
+        {
+            double mngRating = 0;
+
+            for (int i = 0; i < skills.Length; i++)
+            {
+                foreach (KeyValuePair<string, int> entry in skills[i].effects)
+                {
+                    if (entry.Key.Equals("death"))
+                    {
+                        deathModifier += entry.Value;
+                    }
+                }
+            }
+
+            if (deathModifier != 0)
+            {
+                deathModifier = (deathModifier / 100);
+            }
+
+            return deathModifier;
+        } */
+
         /// <summary>
         /// Enables character to enter keep (if not barred)
         /// </summary>
@@ -335,6 +363,258 @@ namespace hist_mmorpg
         {
 
             this.inKeep = false;
+        }
+
+        /// <summary>
+        /// Calculates potential salary (per season) for NPC, taking into account hiring player's stature
+        /// </summary>
+        /// <returns>uint containing wage</returns>
+        public uint calcNPCwage(NonPlayerCharacter npc)
+        {
+            double salary = 0;
+            double basicSalary = 1500;
+
+            // calculate management rating
+            double fiefMgt = (npc.management + npc.stature) / 2;
+            double fiefLoySkills = npc.calcFiefLoySkillMod();
+            double fiefExpSkill = npc.calcFiefExpModif();
+            double mgtSkills = (fiefLoySkills + (-1 * fiefExpSkill));
+            fiefMgt = fiefMgt + (fiefMgt * mgtSkills);
+
+            // calculate combat rating
+            double combat = (npc.management + npc.stature + npc.combat) / 3;
+            double battleSkills = npc.calcBattleSkillMod();
+            double siegeSkills = npc.calcSiegeSkillMod();
+            double combatSkills = battleSkills + siegeSkills;
+            combat = combat + (combat * combatSkills);
+
+            if (fiefMgt > combat)
+            {
+                salary = (basicSalary * fiefMgt) + (basicSalary * (combat / 2));
+            }
+            else
+            {
+                salary = (basicSalary * combat) + (basicSalary * (fiefMgt / 2));
+            }
+
+            // factor in hiring player's stature
+            if (this.stature > 4)
+            {
+                double statMod = 1 - ((this.stature - 4) * 0.04);
+                salary = salary * statMod;
+            }
+
+            return Convert.ToUInt32(salary);
+        }
+
+        /// <summary>
+        /// Processes an offer for employment
+        /// </summary>
+        /// <returns>bool containing wage</returns>
+        public bool processEmployOffer(NonPlayerCharacter npc, uint offer)
+        {
+            bool accepted = false;
+            // get NPC's potential salary
+            double potentialSalary = npc.calcNPCwage(npc);
+            // generate random (0 - 100) to see if accepts offer
+            Random rand = new Random();
+            double chance = rand.NextDouble() * 100;
+
+            // get range of acceptable offers
+            // minimum = 90% of potential salary
+            double minAcceptable = potentialSalary - (potentialSalary / 10);
+            // maximum = 110% of potential salary
+            double maxAcceptable = potentialSalary + (potentialSalary / 10);
+            // get increments
+            double increment = (maxAcceptable - minAcceptable) / 10;
+
+            // ensure this offer is more than the last from this PC
+            bool offerLess = false;
+            if (npc.lastOffer.ContainsKey(this.charID))
+            {
+                if (!(offer > npc.lastOffer[this.charID]))
+                {
+                    offerLess = true;
+                }
+                else
+                {
+                    npc.lastOffer[this.charID] = offer;
+                }
+            }
+            else
+            {
+                npc.lastOffer.Add(this.charID, offer);
+            }
+
+            if (offerLess)
+            {
+                accepted = false;
+            }
+            else if (offer > maxAcceptable)
+            {
+                accepted = true;
+            }
+            else if (offer < minAcceptable)
+            {
+                accepted = false;
+            }
+
+            else
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    if ((offer >= minAcceptable + (increment * (i))) && (offer < minAcceptable + (increment * (i + 1))))
+                    {
+                        if (chance <= 10 * (i + 1))
+                        {
+                            accepted = true;
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            if (accepted)
+            {
+                npc.myBoss = this;
+                npc.wage = offer;
+                npc.lastOffer.Clear();
+            }
+
+            return accepted;
+        }
+
+        /// <summary>
+        /// Calculates effect of character's stats on fief income
+        /// </summary>
+        /// <returns>double containing fief income modifier</returns>
+        public double calcFiefIncMod()
+        {
+            double incomeModif = 0;
+            incomeModif = (this.management - 1) * 2.5;
+            incomeModif = incomeModif / 100;
+            return incomeModif;
+        }
+
+        /// <summary>
+        /// Calculates effect of character's stats on fief loyalty
+        /// </summary>
+        /// <returns>double containing fief loyalty modifier</returns>
+        public double calcFiefLoyMod()
+        {
+            double loyModif = 0;
+            loyModif = (((this.stature + this.management) / 2) - 1) * 1.25;
+            loyModif = loyModif / 100;
+            return loyModif;
+        }
+
+        /// <summary>
+        /// Calculates effect of character skills on fief expenses
+        /// </summary>
+        /// <returns>double containing fief expenses modifier</returns>
+        public double calcFiefExpModif()
+        {
+            double fiefExpModifier = 0;
+
+            for (int i = 0; i < this.skills.Length; i++)
+            {
+                foreach (KeyValuePair<string, int> entry in this.skills[i].effects)
+                {
+                    if (entry.Key.Equals("fiefExpense"))
+                    {
+                        fiefExpModifier += entry.Value;
+                    }
+                }
+            }
+
+            if (fiefExpModifier != 0)
+            {
+                fiefExpModifier = fiefExpModifier / 100;
+            }
+
+            return fiefExpModifier;
+        }
+
+        /// <summary>
+        /// Calculates effect of character skills on fief loyalty
+        /// </summary>
+        /// <returns>double containing fief loyalty modifier</returns>
+        public double calcFiefLoySkillMod()
+        {
+            double loySkillsModifier = 0;
+
+            for (int i = 0; i < this.skills.Length; i++)
+            {
+                foreach (KeyValuePair<string, int> entry in this.skills[i].effects)
+                {
+                    if (entry.Key.Equals("fiefLoy"))
+                    {
+                        loySkillsModifier += entry.Value;
+                    }
+                }
+            }
+
+            if (loySkillsModifier != 0)
+            {
+                loySkillsModifier = (loySkillsModifier / 100);
+            }
+
+            return loySkillsModifier;
+        }
+
+        /// <summary>
+        /// Calculates effect of character skills on army leadership value in battle
+        /// </summary>
+        /// <returns>double containing battle modifier</returns>
+        public double calcBattleSkillMod()
+        {
+            double battleSkillsModifier = 0;
+
+            for (int i = 0; i < this.skills.Length; i++)
+            {
+                foreach (KeyValuePair<string, int> entry in this.skills[i].effects)
+                {
+                    if (entry.Key.Equals("battle"))
+                    {
+                        battleSkillsModifier += entry.Value;
+                    }
+                }
+            }
+
+            if (battleSkillsModifier != 0)
+            {
+                battleSkillsModifier = (battleSkillsModifier / 100);
+            }
+
+            return battleSkillsModifier;
+        }
+
+        /// <summary>
+        /// Calculates effect of character skills on army leadership value in siege
+        /// </summary>
+        /// <returns>double containing siege modifier</returns>
+        public double calcSiegeSkillMod()
+        {
+            double siegeSkillsModifier = 0;
+
+            for (int i = 0; i < this.skills.Length; i++)
+            {
+                foreach (KeyValuePair<string, int> entry in this.skills[i].effects)
+                {
+                    if (entry.Key.Equals("siege")) 
+                    {
+                        siegeSkillsModifier += entry.Value;
+                    }
+                }
+            }
+
+            if (siegeSkillsModifier != 0)
+            {
+                siegeSkillsModifier = (siegeSkillsModifier / 100);
+            }
+
+            return siegeSkillsModifier;
         }
 
         /// <summary>
@@ -497,6 +777,10 @@ namespace hist_mmorpg
         /// Holds NPC's wages
         /// </summary>
         public uint wage { get; set; }
+        /// <summary>
+        /// Holds last wage offer
+        /// </summary>
+        public Dictionary<string, uint> lastOffer { get; set; }
 
         /// <summary>
         /// Constructor for NonPlayerCharacter
@@ -516,6 +800,7 @@ namespace hist_mmorpg
             this.myBoss = mb;
             this.goTo = go;
             this.wage = wa;
+            this.lastOffer = new Dictionary<string, uint>();
         }
 
     }

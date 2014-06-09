@@ -353,20 +353,16 @@ namespace hist_mmorpg
         public double calcBlfIncMod()
         {
             double incomeModif = 0;
-            double man = 0;
 
+            // check if auto-bailiff
             if (this.bailiff == null)
             {
-                man = 3;
+                incomeModif = ((3 - 1) * 2.5) / 100;
             }
             else
             {
-                man = this.bailiff.management;
+                incomeModif = this.bailiff.calcFiefIncMod();
             }
-
-            incomeModif = Convert.ToUInt32(man - 1) * 2.5;
-
-            incomeModif = incomeModif / 100;
 
             return incomeModif;
         }
@@ -465,22 +461,7 @@ namespace hist_mmorpg
 
             if (this.bailiff != null)
             {
-                for (int i = 0; i < this.bailiff.skills.Length; i++)
-                {
-                    foreach (KeyValuePair<string, int> entry in this.bailiff.skills[i].effects)
-                    {
-                        if (entry.Key.Equals("fiefExpense"))
-                        {
-                            expSkillsModifier += entry.Value;
-                        }
-                    }
-                }
-
-                if (expSkillsModifier != 0)
-                {
-                    expSkillsModifier = expSkillsModifier / 100;
-                }
-
+                expSkillsModifier = this.bailiff.calcFiefExpModif();
             }
 
             return expSkillsModifier;
@@ -636,37 +617,45 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Calculates effect of bailiff on fief loyalty level
+        /// Also includes effect of skills
+        /// </summary>
+        /// <returns>double containing fief loyalty modifier</returns>
+        public double calcBlfLoyAdjusted()
+        {
+            double loyModif = 0;
+            double loySkillModif = 0;
+
+            loyModif = this.calcBlfLoyMod();
+            loySkillModif = this.calcBailLoySkillMod();
+
+            // Check if loyalty effected by character skills
+            if (loySkillModif != 0)
+            {
+                loyModif = loyModif + (loyModif * loySkillModif);
+            }
+
+            return loyModif;
+        }
+
+        /// <summary>
+        /// Calculates effect of bailiff on fief loyalty level
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
         public double calcBlfLoyMod()
         {
             double loyModif = 0;
-            double statPlusMan = 0;
 
             if (this.bailiff == null)
             {
-                statPlusMan = 6;
+                loyModif = (((6 / 2) - 1) * 1.25) / 100;
             }
             else
             {
-                statPlusMan = this.bailiff.stature + this.bailiff.management;
+                loyModif = this.bailiff.calcFiefLoyMod();
             }
-
-            loyModif = Convert.ToUInt32(((statPlusMan / 2) - 1)) * 1.25;
-
-            // Check if loyalty effected by character skills
-            double loySkillsModifier = this.calcBailLoySkillMod();
-            // apply skills modifier (if exists)
-            if (loySkillsModifier != 0)
-            {
-                loyModif = loyModif + (loyModif * loySkillsModifier);
-            }
-
-            loyModif = loyModif / 100;
 
             return loyModif;
         }
-
 
         /// <summary>
         /// Calculates bailiff's skill modifier for fief loyalty
@@ -678,21 +667,7 @@ namespace hist_mmorpg
 
             if (this.bailiff != null)
             {
-                for (int i = 0; i < this.bailiff.skills.Length; i++)
-                {
-                    foreach (KeyValuePair<string, int> entry in this.bailiff.skills[i].effects)
-                    {
-                        if (entry.Key.Equals("fiefLoy"))
-                        {
-                            loySkillsModifier += entry.Value;
-                        }
-                    }
-                }
-
-                if (loySkillsModifier != 0)
-                {
-                    loySkillsModifier = (loySkillsModifier / 100);
-                }
+                loySkillsModifier = this.bailiff.calcFiefLoySkillMod();
             }
 
             return loySkillsModifier;

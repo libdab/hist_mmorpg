@@ -56,6 +56,9 @@ namespace hist_mmorpg
             this.adjOffSpendBtn = new System.Windows.Forms.Button();
             this.fiefTextBox = new System.Windows.Forms.TextBox();
             this.travelContainer = new System.Windows.Forms.SplitContainer();
+            this.visitTavernBtn = new System.Windows.Forms.Button();
+            this.visitCourtBtn1 = new System.Windows.Forms.Button();
+            this.enterKeepBtn = new System.Windows.Forms.Button();
             this.travelNavigationPanel = new System.Windows.Forms.Panel();
             this.travel_SE_btn = new System.Windows.Forms.Button();
             this.travel_SW_btn = new System.Windows.Forms.Button();
@@ -66,14 +69,14 @@ namespace hist_mmorpg
             this.travel_NW_btn = new System.Windows.Forms.Button();
             this.fiefsOwnedContainer = new System.Windows.Forms.SplitContainer();
             this.fiefsListView = new System.Windows.Forms.ListView();
-            this.courtContainer = new System.Windows.Forms.SplitContainer();
-            this.courtCharsContainer = new System.Windows.Forms.SplitContainer();
-            this.courtCharsListContainer = new System.Windows.Forms.SplitContainer();
-            this.courtCharsListView = new System.Windows.Forms.ListView();
-            this.courtTextBox = new System.Windows.Forms.TextBox();
-            this.enterKeepBtn = new System.Windows.Forms.Button();
-            this.visitCourtBtn1 = new System.Windows.Forms.Button();
-            this.visitTavernBtn = new System.Windows.Forms.Button();
+            this.meetingPlaceContainer = new System.Windows.Forms.SplitContainer();
+            this.hireNPC_TextBox = new System.Windows.Forms.TextBox();
+            this.hireNPC_Btn = new System.Windows.Forms.Button();
+            this.meetingPlaceCharsContainer = new System.Windows.Forms.SplitContainer();
+            this.meetingPlaceCharDisplayTextBox = new System.Windows.Forms.TextBox();
+            this.meetingPlaceCharsListContainer = new System.Windows.Forms.SplitContainer();
+            this.meetingPlaceTextBox = new System.Windows.Forms.TextBox();
+            this.meetingPlaceCharsListView = new System.Windows.Forms.ListView();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -91,16 +94,18 @@ namespace hist_mmorpg
             ((System.ComponentModel.ISupportInitialize)(this.fiefsOwnedContainer)).BeginInit();
             this.fiefsOwnedContainer.Panel2.SuspendLayout();
             this.fiefsOwnedContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.courtContainer)).BeginInit();
-            this.courtContainer.Panel2.SuspendLayout();
-            this.courtContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.courtCharsContainer)).BeginInit();
-            this.courtCharsContainer.Panel2.SuspendLayout();
-            this.courtCharsContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.courtCharsListContainer)).BeginInit();
-            this.courtCharsListContainer.Panel1.SuspendLayout();
-            this.courtCharsListContainer.Panel2.SuspendLayout();
-            this.courtCharsListContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.meetingPlaceContainer)).BeginInit();
+            this.meetingPlaceContainer.Panel1.SuspendLayout();
+            this.meetingPlaceContainer.Panel2.SuspendLayout();
+            this.meetingPlaceContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.meetingPlaceCharsContainer)).BeginInit();
+            this.meetingPlaceCharsContainer.Panel1.SuspendLayout();
+            this.meetingPlaceCharsContainer.Panel2.SuspendLayout();
+            this.meetingPlaceCharsContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.meetingPlaceCharsListContainer)).BeginInit();
+            this.meetingPlaceCharsListContainer.Panel1.SuspendLayout();
+            this.meetingPlaceCharsListContainer.Panel2.SuspendLayout();
+            this.meetingPlaceCharsListContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -367,6 +372,36 @@ namespace hist_mmorpg
             this.travelContainer.SplitterDistance = 266;
             this.travelContainer.TabIndex = 4;
             // 
+            // visitTavernBtn
+            // 
+            this.visitTavernBtn.Location = new System.Drawing.Point(15, 72);
+            this.visitTavernBtn.Name = "visitTavernBtn";
+            this.visitTavernBtn.Size = new System.Drawing.Size(122, 23);
+            this.visitTavernBtn.TabIndex = 2;
+            this.visitTavernBtn.Text = "Visit Tavern";
+            this.visitTavernBtn.UseVisualStyleBackColor = true;
+            this.visitTavernBtn.Click += new System.EventHandler(this.visitTavernBtn_Click_1);
+            // 
+            // visitCourtBtn1
+            // 
+            this.visitCourtBtn1.Location = new System.Drawing.Point(15, 43);
+            this.visitCourtBtn1.Name = "visitCourtBtn1";
+            this.visitCourtBtn1.Size = new System.Drawing.Size(122, 23);
+            this.visitCourtBtn1.TabIndex = 1;
+            this.visitCourtBtn1.Text = "Visit Court";
+            this.visitCourtBtn1.UseVisualStyleBackColor = true;
+            this.visitCourtBtn1.Click += new System.EventHandler(this.visitCourtBtn1_Click);
+            // 
+            // enterKeepBtn
+            // 
+            this.enterKeepBtn.Location = new System.Drawing.Point(15, 13);
+            this.enterKeepBtn.Name = "enterKeepBtn";
+            this.enterKeepBtn.Size = new System.Drawing.Size(122, 23);
+            this.enterKeepBtn.TabIndex = 0;
+            this.enterKeepBtn.Text = "Enter Keep";
+            this.enterKeepBtn.UseVisualStyleBackColor = true;
+            this.enterKeepBtn.Click += new System.EventHandler(this.enterKeepBtn_Click);
+            // 
             // travelNavigationPanel
             // 
             this.travelNavigationPanel.Controls.Add(this.travel_SE_btn);
@@ -476,110 +511,117 @@ namespace hist_mmorpg
             this.fiefsListView.View = System.Windows.Forms.View.Details;
             this.fiefsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.fiefsListView_ItemSelectionChanged);
             // 
-            // courtContainer
+            // meetingPlaceContainer
             // 
-            this.courtContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.courtContainer.Location = new System.Drawing.Point(0, 24);
-            this.courtContainer.Name = "courtContainer";
+            this.meetingPlaceContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.meetingPlaceContainer.Location = new System.Drawing.Point(0, 24);
+            this.meetingPlaceContainer.Name = "meetingPlaceContainer";
             // 
-            // courtContainer.Panel2
+            // meetingPlaceContainer.Panel1
             // 
-            this.courtContainer.Panel2.Controls.Add(this.courtCharsContainer);
-            this.courtContainer.Size = new System.Drawing.Size(801, 434);
-            this.courtContainer.SplitterDistance = 267;
-            this.courtContainer.TabIndex = 6;
+            this.meetingPlaceContainer.Panel1.Controls.Add(this.hireNPC_TextBox);
+            this.meetingPlaceContainer.Panel1.Controls.Add(this.hireNPC_Btn);
             // 
-            // courtCharsContainer
+            // meetingPlaceContainer.Panel2
             // 
-            this.courtCharsContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.courtCharsContainer.Location = new System.Drawing.Point(0, 0);
-            this.courtCharsContainer.Name = "courtCharsContainer";
+            this.meetingPlaceContainer.Panel2.Controls.Add(this.meetingPlaceCharsContainer);
+            this.meetingPlaceContainer.Size = new System.Drawing.Size(801, 434);
+            this.meetingPlaceContainer.SplitterDistance = 214;
+            this.meetingPlaceContainer.TabIndex = 6;
             // 
-            // courtCharsContainer.Panel2
+            // hireNPC_TextBox
             // 
-            this.courtCharsContainer.Panel2.Controls.Add(this.courtCharsListContainer);
-            this.courtCharsContainer.Size = new System.Drawing.Size(530, 434);
-            this.courtCharsContainer.SplitterDistance = 176;
-            this.courtCharsContainer.TabIndex = 0;
+            this.hireNPC_TextBox.Location = new System.Drawing.Point(132, 13);
+            this.hireNPC_TextBox.Name = "hireNPC_TextBox";
+            this.hireNPC_TextBox.Size = new System.Drawing.Size(60, 20);
+            this.hireNPC_TextBox.TabIndex = 1;
             // 
-            // courtCharsListContainer
+            // hireNPC_Btn
             // 
-            this.courtCharsListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.courtCharsListContainer.Location = new System.Drawing.Point(0, 0);
-            this.courtCharsListContainer.Name = "courtCharsListContainer";
-            this.courtCharsListContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.hireNPC_Btn.Location = new System.Drawing.Point(15, 13);
+            this.hireNPC_Btn.Name = "hireNPC_Btn";
+            this.hireNPC_Btn.Size = new System.Drawing.Size(111, 23);
+            this.hireNPC_Btn.TabIndex = 0;
+            this.hireNPC_Btn.Text = "Hire NPC";
+            this.hireNPC_Btn.UseVisualStyleBackColor = true;
+            this.hireNPC_Btn.Click += new System.EventHandler(this.hireNPC_Btn_Click);
             // 
-            // courtCharsListContainer.Panel1
+            // meetingPlaceCharsContainer
             // 
-            this.courtCharsListContainer.Panel1.Controls.Add(this.courtTextBox);
+            this.meetingPlaceCharsContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.meetingPlaceCharsContainer.Location = new System.Drawing.Point(0, 0);
+            this.meetingPlaceCharsContainer.Name = "meetingPlaceCharsContainer";
             // 
-            // courtCharsListContainer.Panel2
+            // meetingPlaceCharsContainer.Panel1
             // 
-            this.courtCharsListContainer.Panel2.Controls.Add(this.courtCharsListView);
-            this.courtCharsListContainer.Size = new System.Drawing.Size(350, 434);
-            this.courtCharsListContainer.SplitterDistance = 191;
-            this.courtCharsListContainer.TabIndex = 0;
+            this.meetingPlaceCharsContainer.Panel1.Controls.Add(this.meetingPlaceCharDisplayTextBox);
             // 
-            // courtCharsListView
+            // meetingPlaceCharsContainer.Panel2
             // 
-            this.courtCharsListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.courtCharsListView.FullRowSelect = true;
-            this.courtCharsListView.GridLines = true;
-            this.courtCharsListView.Location = new System.Drawing.Point(0, 0);
-            this.courtCharsListView.Name = "courtCharsListView";
-            this.courtCharsListView.Size = new System.Drawing.Size(350, 239);
-            this.courtCharsListView.TabIndex = 0;
-            this.courtCharsListView.UseCompatibleStateImageBehavior = false;
-            this.courtCharsListView.View = System.Windows.Forms.View.Details;
+            this.meetingPlaceCharsContainer.Panel2.Controls.Add(this.meetingPlaceCharsListContainer);
+            this.meetingPlaceCharsContainer.Size = new System.Drawing.Size(583, 434);
+            this.meetingPlaceCharsContainer.SplitterDistance = 234;
+            this.meetingPlaceCharsContainer.TabIndex = 0;
             // 
-            // courtTextBox
+            // meetingPlaceCharDisplayTextBox
             // 
-            this.courtTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.courtTextBox.Location = new System.Drawing.Point(0, 0);
-            this.courtTextBox.Multiline = true;
-            this.courtTextBox.Name = "courtTextBox";
-            this.courtTextBox.Size = new System.Drawing.Size(350, 191);
-            this.courtTextBox.TabIndex = 0;
+            this.meetingPlaceCharDisplayTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.meetingPlaceCharDisplayTextBox.Location = new System.Drawing.Point(0, 0);
+            this.meetingPlaceCharDisplayTextBox.Multiline = true;
+            this.meetingPlaceCharDisplayTextBox.Name = "meetingPlaceCharDisplayTextBox";
+            this.meetingPlaceCharDisplayTextBox.Size = new System.Drawing.Size(234, 434);
+            this.meetingPlaceCharDisplayTextBox.TabIndex = 0;
             // 
-            // enterKeepBtn
+            // meetingPlaceCharsListContainer
             // 
-            this.enterKeepBtn.Location = new System.Drawing.Point(15, 13);
-            this.enterKeepBtn.Name = "enterKeepBtn";
-            this.enterKeepBtn.Size = new System.Drawing.Size(122, 23);
-            this.enterKeepBtn.TabIndex = 0;
-            this.enterKeepBtn.Text = "Enter Keep";
-            this.enterKeepBtn.UseVisualStyleBackColor = true;
-            this.enterKeepBtn.Click += new System.EventHandler(this.enterKeepBtn_Click);
+            this.meetingPlaceCharsListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.meetingPlaceCharsListContainer.Location = new System.Drawing.Point(0, 0);
+            this.meetingPlaceCharsListContainer.Name = "meetingPlaceCharsListContainer";
+            this.meetingPlaceCharsListContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // visitCourtBtn1
+            // meetingPlaceCharsListContainer.Panel1
             // 
-            this.visitCourtBtn1.Location = new System.Drawing.Point(15, 43);
-            this.visitCourtBtn1.Name = "visitCourtBtn1";
-            this.visitCourtBtn1.Size = new System.Drawing.Size(122, 23);
-            this.visitCourtBtn1.TabIndex = 1;
-            this.visitCourtBtn1.Text = "Visit Court";
-            this.visitCourtBtn1.UseVisualStyleBackColor = true;
-            this.visitCourtBtn1.Click += new System.EventHandler(this.visitCourtBtn1_Click);
+            this.meetingPlaceCharsListContainer.Panel1.Controls.Add(this.meetingPlaceTextBox);
             // 
-            // visitTavernBtn
+            // meetingPlaceCharsListContainer.Panel2
             // 
-            this.visitTavernBtn.Location = new System.Drawing.Point(15, 72);
-            this.visitTavernBtn.Name = "visitTavernBtn";
-            this.visitTavernBtn.Size = new System.Drawing.Size(122, 23);
-            this.visitTavernBtn.TabIndex = 2;
-            this.visitTavernBtn.Text = "Visit Tavern";
-            this.visitTavernBtn.UseVisualStyleBackColor = true;
+            this.meetingPlaceCharsListContainer.Panel2.Controls.Add(this.meetingPlaceCharsListView);
+            this.meetingPlaceCharsListContainer.Size = new System.Drawing.Size(345, 434);
+            this.meetingPlaceCharsListContainer.SplitterDistance = 191;
+            this.meetingPlaceCharsListContainer.TabIndex = 0;
+            // 
+            // meetingPlaceTextBox
+            // 
+            this.meetingPlaceTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.meetingPlaceTextBox.Location = new System.Drawing.Point(0, 0);
+            this.meetingPlaceTextBox.Multiline = true;
+            this.meetingPlaceTextBox.Name = "meetingPlaceTextBox";
+            this.meetingPlaceTextBox.Size = new System.Drawing.Size(345, 191);
+            this.meetingPlaceTextBox.TabIndex = 0;
+            // 
+            // meetingPlaceCharsListView
+            // 
+            this.meetingPlaceCharsListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.meetingPlaceCharsListView.FullRowSelect = true;
+            this.meetingPlaceCharsListView.GridLines = true;
+            this.meetingPlaceCharsListView.Location = new System.Drawing.Point(0, 0);
+            this.meetingPlaceCharsListView.Name = "meetingPlaceCharsListView";
+            this.meetingPlaceCharsListView.Size = new System.Drawing.Size(345, 239);
+            this.meetingPlaceCharsListView.TabIndex = 0;
+            this.meetingPlaceCharsListView.UseCompatibleStateImageBehavior = false;
+            this.meetingPlaceCharsListView.View = System.Windows.Forms.View.Details;
+            this.meetingPlaceCharsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.meetingPlaceCharsListView_ItemSelectionChanged);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(801, 458);
-            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.fiefContainer);
-            this.Controls.Add(this.courtContainer);
-            this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.characterContainer);
+            this.Controls.Add(this.meetingPlaceContainer);
+            this.Controls.Add(this.fiefsOwnedContainer);
+            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
@@ -605,17 +647,21 @@ namespace hist_mmorpg
             this.fiefsOwnedContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.fiefsOwnedContainer)).EndInit();
             this.fiefsOwnedContainer.ResumeLayout(false);
-            this.courtContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.courtContainer)).EndInit();
-            this.courtContainer.ResumeLayout(false);
-            this.courtCharsContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.courtCharsContainer)).EndInit();
-            this.courtCharsContainer.ResumeLayout(false);
-            this.courtCharsListContainer.Panel1.ResumeLayout(false);
-            this.courtCharsListContainer.Panel1.PerformLayout();
-            this.courtCharsListContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.courtCharsListContainer)).EndInit();
-            this.courtCharsListContainer.ResumeLayout(false);
+            this.meetingPlaceContainer.Panel1.ResumeLayout(false);
+            this.meetingPlaceContainer.Panel1.PerformLayout();
+            this.meetingPlaceContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.meetingPlaceContainer)).EndInit();
+            this.meetingPlaceContainer.ResumeLayout(false);
+            this.meetingPlaceCharsContainer.Panel1.ResumeLayout(false);
+            this.meetingPlaceCharsContainer.Panel1.PerformLayout();
+            this.meetingPlaceCharsContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.meetingPlaceCharsContainer)).EndInit();
+            this.meetingPlaceCharsContainer.ResumeLayout(false);
+            this.meetingPlaceCharsListContainer.Panel1.ResumeLayout(false);
+            this.meetingPlaceCharsListContainer.Panel1.PerformLayout();
+            this.meetingPlaceCharsListContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.meetingPlaceCharsListContainer)).EndInit();
+            this.meetingPlaceCharsListContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -659,14 +705,17 @@ namespace hist_mmorpg
         private System.Windows.Forms.SplitContainer fiefsOwnedContainer;
         private System.Windows.Forms.ListView fiefsListView;
         private System.Windows.Forms.Button viewBailiffBtn;
-        private System.Windows.Forms.SplitContainer courtContainer;
-        private System.Windows.Forms.SplitContainer courtCharsContainer;
-        private System.Windows.Forms.SplitContainer courtCharsListContainer;
-        private System.Windows.Forms.ListView courtCharsListView;
-        private System.Windows.Forms.TextBox courtTextBox;
+        private System.Windows.Forms.SplitContainer meetingPlaceContainer;
+        private System.Windows.Forms.SplitContainer meetingPlaceCharsContainer;
+        private System.Windows.Forms.SplitContainer meetingPlaceCharsListContainer;
+        private System.Windows.Forms.ListView meetingPlaceCharsListView;
+        private System.Windows.Forms.TextBox meetingPlaceTextBox;
         private System.Windows.Forms.Button visitCourtBtn1;
         private System.Windows.Forms.Button enterKeepBtn;
         private System.Windows.Forms.Button visitTavernBtn;
+        private System.Windows.Forms.TextBox meetingPlaceCharDisplayTextBox;
+        private System.Windows.Forms.Button hireNPC_Btn;
+        private System.Windows.Forms.TextBox hireNPC_TextBox;
 
     }
 }
