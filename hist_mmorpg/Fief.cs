@@ -94,9 +94,9 @@ namespace hist_mmorpg
         /// </summary>
         public char status { get; set; }
         /// <summary>
-        /// Holds terrain code
+        /// Holds terrain object
         /// </summary>
-        public char terrain { get; set; }
+        public Terrain terrain { get; set; }
         /// <summary>
         /// Holds list of characters present in fief
         /// </summary>
@@ -153,7 +153,7 @@ namespace hist_mmorpg
         /// <param name="kpLvl">Double holding fief keep level</param>
         /// <param name="loy">Double holding fief loyalty rating</param>
         /// <param name="stat">char holding fief status</param>
-        /// <param name="terr">char holding terrain code for fief</param>
+        /// <param name="terr">Terrain object for fief</param>
         /// <param name="chars">List<Character> holding characters present in fief</param>
         /// <param name="barChars">List<string> holding IDs of characters barred from keep</param>
         /// <param name="engBarr">bool indicating whether English nationality barred from keep</param>
@@ -164,7 +164,7 @@ namespace hist_mmorpg
         /// <param name="bail">Character holding fief bailiff</param>
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp,
             Double tx, uint off, uint garr, uint infra, uint keep, Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, Double kpLvl,
-            Double loy, char stat, char terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr, GameClock cl, Character own = null, Character ancOwn = null, Character bail = null)
+            Double loy, char stat, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr, GameClock cl, Character own = null, Character ancOwn = null, Character bail = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -240,8 +240,6 @@ namespace hist_mmorpg
             {
                 throw new InvalidDataException("Fief status must be 'C', 'U' or 'R'");
             }
-
-            // TODO: validate terr = P,H,F,M
 
             this.fiefID = id;
             this.name = nam;
@@ -723,24 +721,7 @@ namespace hist_mmorpg
         /// <returns>double containing travel modifier</returns>
         public double calcTerrainTravMod()
         {
-            double travelModifier = 0;
-
-            switch (this.terrain)
-            {
-                case 'H':
-                    travelModifier = 0.5;
-                    break;
-                case 'F':
-                    travelModifier = 0.5;
-                    break;
-                case 'M':
-                    travelModifier = 91;
-                    break;
-                default:
-                    travelModifier = 0;
-                    break;
-            }
-
+            double travelModifier = this.terrain.travelCost - 1;
             return travelModifier;
         }
 

@@ -366,126 +366,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates potential salary (per season) for NPC, taking into account hiring player's stature
-        /// </summary>
-        /// <returns>uint containing wage</returns>
-        public uint calcNPCwage(NonPlayerCharacter npc)
-        {
-            double salary = 0;
-            double basicSalary = 1500;
-
-            // calculate management rating
-            double fiefMgt = (npc.management + npc.stature) / 2;
-            double fiefLoySkills = npc.calcFiefLoySkillMod();
-            double fiefExpSkill = npc.calcFiefExpModif();
-            double mgtSkills = (fiefLoySkills + (-1 * fiefExpSkill));
-            fiefMgt = fiefMgt + (fiefMgt * mgtSkills);
-
-            // calculate combat rating
-            double combat = (npc.management + npc.stature + npc.combat) / 3;
-            double battleSkills = npc.calcBattleSkillMod();
-            double siegeSkills = npc.calcSiegeSkillMod();
-            double combatSkills = battleSkills + siegeSkills;
-            combat = combat + (combat * combatSkills);
-
-            if (fiefMgt > combat)
-            {
-                salary = (basicSalary * fiefMgt) + (basicSalary * (combat / 2));
-            }
-            else
-            {
-                salary = (basicSalary * combat) + (basicSalary * (fiefMgt / 2));
-            }
-
-            // factor in hiring player's stature
-            if (this.stature > 4)
-            {
-                double statMod = 1 - ((this.stature - 4) * 0.04);
-                salary = salary * statMod;
-            }
-
-            return Convert.ToUInt32(salary);
-        }
-
-        /// <summary>
-        /// Processes an offer for employment
-        /// </summary>
-        /// <returns>bool containing wage</returns>
-        public bool processEmployOffer(NonPlayerCharacter npc, uint offer)
-        {
-            bool accepted = false;
-            // get NPC's potential salary
-            double potentialSalary = npc.calcNPCwage(npc);
-            // generate random (0 - 100) to see if accepts offer
-            Random rand = new Random();
-            double chance = rand.NextDouble() * 100;
-
-            // get range of acceptable offers
-            // minimum = 90% of potential salary
-            double minAcceptable = potentialSalary - (potentialSalary / 10);
-            // maximum = 110% of potential salary
-            double maxAcceptable = potentialSalary + (potentialSalary / 10);
-            // get increments
-            double increment = (maxAcceptable - minAcceptable) / 10;
-
-            // ensure this offer is more than the last from this PC
-            bool offerLess = false;
-            if (npc.lastOffer.ContainsKey(this.charID))
-            {
-                if (!(offer > npc.lastOffer[this.charID]))
-                {
-                    offerLess = true;
-                }
-                else
-                {
-                    npc.lastOffer[this.charID] = offer;
-                }
-            }
-            else
-            {
-                npc.lastOffer.Add(this.charID, offer);
-            }
-
-            if (offerLess)
-            {
-                accepted = false;
-            }
-            else if (offer > maxAcceptable)
-            {
-                accepted = true;
-            }
-            else if (offer < minAcceptable)
-            {
-                accepted = false;
-            }
-
-            else
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    if ((offer >= minAcceptable + (increment * (i))) && (offer < minAcceptable + (increment * (i + 1))))
-                    {
-                        if (chance <= 10 * (i + 1))
-                        {
-                            accepted = true;
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            if (accepted)
-            {
-                npc.myBoss = this;
-                npc.wage = offer;
-                npc.lastOffer.Clear();
-            }
-
-            return accepted;
-        }
-
-        /// <summary>
         /// Calculates effect of character's stats on fief income
         /// </summary>
         /// <returns>double containing fief income modifier</returns>
@@ -653,7 +533,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds character's entourage
         /// </summary>
-        public List<Character> entourage = new List<Character>();
+        public List<NonPlayerCharacter> employees = new List<NonPlayerCharacter>();
         /// <summary>
         /// Holds character's entourage
         /// </summary>
@@ -664,35 +544,140 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="outl">bool holding character outlawed status</param>
         /// <param name="pur">uint holding character purse</param>
+        /// <param name="emp">List<NonPlayerCharacter> holding employees of character</param>
         /// <param name="kps">List<Fief> holding fiefs owned by character</param>
         public PlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Fief loc, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
-            GameClock cl, bool outl, uint pur, List<Character> ent, List<Fief> kps, Character sp = null, Character fath = null, Character famHead = null)
+            GameClock cl, bool outl, uint pur, List<NonPlayerCharacter> emp, List<Fief> kps, Character sp = null, Character fath = null, Character famHead = null)
             : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, sp, fath, famHead)
         {
 
             this.outlawed = outl;
             this.purse = pur;
-            this.entourage = ent;
+            this.employees = emp;
             this.ownedFiefs = kps;
+        }
+
+        /// <summary>
+        /// Processes an offer for employment
+        /// </summary>
+        /// <returns>bool containing wage</returns>
+        public bool processEmployOffer(NonPlayerCharacter npc, uint offer)
+        {
+            bool accepted = false;
+            // get NPC's potential salary
+            double potentialSalary = npc.calcNPCwage();
+            // generate random (0 - 100) to see if accepts offer
+            Random rand = new Random();
+            double chance = rand.NextDouble() * 100;
+
+            // get range of acceptable offers
+            // minimum = 90% of potential salary
+            double minAcceptable = potentialSalary - (potentialSalary / 10);
+            // maximum = 110% of potential salary
+            double maxAcceptable = potentialSalary + (potentialSalary / 10);
+            // get increments
+            double increment = (maxAcceptable - minAcceptable) / 10;
+
+            // ensure this offer is more than the last from this PC
+            bool offerLess = false;
+            if (npc.lastOffer.ContainsKey(this.charID))
+            {
+                if (!(offer > npc.lastOffer[this.charID]))
+                {
+                    offerLess = true;
+                }
+                else
+                {
+                    npc.lastOffer[this.charID] = offer;
+                }
+            }
+            else
+            {
+                npc.lastOffer.Add(this.charID, offer);
+            }
+
+            if (offerLess)
+            {
+                accepted = false;
+            }
+            else if (offer > maxAcceptable)
+            {
+                accepted = true;
+            }
+            else if (offer < minAcceptable)
+            {
+                accepted = false;
+            }
+
+            else
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    if ((offer >= minAcceptable + (increment * (i))) && (offer < minAcceptable + (increment * (i + 1))))
+                    {
+                        if (chance <= 10 * (i + 1))
+                        {
+                            accepted = true;
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            if (accepted)
+            {
+                this.hireNPC(npc, offer);
+                /* npc.myBoss = this;
+                npc.wage = offer;
+                npc.lastOffer.Clear(); */
+            }
+
+            return accepted;
+        }
+
+        /// <summary>
+        /// Adds an NPC to PC's employees list
+        /// </summary>
+        /// <param name="npc">NPC to hire</param>
+        /// <param name="wage">NPC's wage</param>
+        public void hireNPC(NonPlayerCharacter npc, uint wage)
+        {
+            this.employees.Add(npc);
+            npc.wage = wage;
+            npc.myBoss = this;
+            npc.lastOffer.Clear();
+        }
+
+        /// <summary>
+        /// Removes an NPC from PC's employees list
+        /// </summary>
+        /// <param name="npc">NPC to fire</param>
+        public void fireNPC(NonPlayerCharacter npc)
+        {
+            this.employees.Remove(npc);
+            npc.wage = 0;
+            npc.myBoss = null;
+            npc.inEntourage = false;
         }
 
         /// <summary>
         /// Adds an NPC to the character's entourage
         /// </summary>
         /// <param name="ch">NPC to be added</param>
-        public void addToEntourage(Character ch)
+        public void addToEntourage(NonPlayerCharacter ch)
         {
-            this.entourage.Add(ch);
+            ch.inEntourage = true;
         }
 
         /// <summary>
         /// Removes an NPC from the character's entourage
         /// </summary>
         /// <param name="ch">NPC to be removed</param>
-        public void removeFromEntourage(Character ch)
+        public void removeFromEntourage(NonPlayerCharacter ch)
         {
-            this.entourage.Remove(ch);
+            ch.inEntourage = false;
         }
 
         /// <summary>
@@ -725,15 +710,18 @@ namespace hist_mmorpg
 
             if (success)
             {
-                for (int i = 0; i < this.entourage.Count; i++)
+                for (int i = 0; i < this.employees.Count; i++)
                 {
-                    if (location.barredCharacters.Contains(this.entourage[i].charID))
+                    if (this.employees[i].inEntourage)
                     {
-                        this.entourage[i].inKeep = false;
-                    }
-                    else
-                    {
-                        this.entourage[i].inKeep = true;
+                        if (location.barredCharacters.Contains(this.employees[i].charID))
+                        {
+                            this.employees[i].inKeep = false;
+                        }
+                        else
+                        {
+                            this.employees[i].inKeep = true;
+                        }
                     }
 
                 }
@@ -751,9 +739,12 @@ namespace hist_mmorpg
         {
             base.exitKeep();
 
-            for (int i = 0; i < this.entourage.Count; i++)
+            for (int i = 0; i < this.employees.Count; i++)
             {
-                this.entourage[i].inKeep = false;
+                if (this.employees[i].inEntourage)
+                {
+                    this.employees[i].inKeep = false;
+                }
             }
         }
 
@@ -781,6 +772,10 @@ namespace hist_mmorpg
         /// Holds last wage offer
         /// </summary>
         public Dictionary<string, uint> lastOffer { get; set; }
+        /// <summary>
+        /// Denotes if in/out of boss's entourage
+        /// </summary>
+        public bool inEntourage { get; set; }
 
         /// <summary>
         /// Constructor for NonPlayerCharacter
@@ -788,9 +783,10 @@ namespace hist_mmorpg
         /// <param name="mb">uint holding NPC's boss (ID)</param>
         /// <param name="go">String holding fief ID for destination (specified by NPC's boss)</param>
         /// <param name="wa">string holding NPC's wages</param>
+        /// <param name="inEnt">bool denoting if in/out of boss's entourage</param>
         public NonPlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Fief loc, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
-            GameClock cl, string go, uint wa, Character mb = null, Character sp = null, Character fath = null, Character famHead = null)
+            GameClock cl, string go, uint wa, bool inEnt, Character mb = null, Character sp = null, Character fath = null, Character famHead = null)
             : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, sp, fath, famHead)
         {
             // TODO: validate hb = 1-10000
@@ -800,7 +796,50 @@ namespace hist_mmorpg
             this.myBoss = mb;
             this.goTo = go;
             this.wage = wa;
+            this.inEntourage = inEnt;
             this.lastOffer = new Dictionary<string, uint>();
+        }
+
+        /// <summary>
+        /// Calculates potential salary (per season) for NPC, taking into account hiring player's stature
+        /// </summary>
+        /// <returns>uint containing salary</returns>
+        public uint calcNPCwage()
+        {
+            double salary = 0;
+            double basicSalary = 1500;
+
+            // calculate management rating
+            double fiefMgt = (this.management + this.stature) / 2;
+            double fiefLoySkills = this.calcFiefLoySkillMod();
+            double fiefExpSkill = this.calcFiefExpModif();
+            double mgtSkills = (fiefLoySkills + (-1 * fiefExpSkill));
+            fiefMgt = fiefMgt + (fiefMgt * mgtSkills);
+
+            // calculate combat rating
+            double combat = (this.management + this.stature + this.combat) / 3;
+            double battleSkills = this.calcBattleSkillMod();
+            double siegeSkills = this.calcSiegeSkillMod();
+            double combatSkills = battleSkills + siegeSkills;
+            combat = combat + (combat * combatSkills);
+
+            if (fiefMgt > combat)
+            {
+                salary = (basicSalary * fiefMgt) + (basicSalary * (combat / 2));
+            }
+            else
+            {
+                salary = (basicSalary * combat) + (basicSalary * (fiefMgt / 2));
+            }
+
+            // factor in hiring player's stature
+            if (this.stature > 4)
+            {
+                double statMod = 1 - ((this.stature - 4) * 0.04);
+                salary = salary * statMod;
+            }
+
+            return Convert.ToUInt32(salary);
         }
 
     }

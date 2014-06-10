@@ -169,7 +169,12 @@ namespace hist_mmorpg
                 skillsArray1[i] = skillsCollection[skillsKeysCopy[randChoice]];
                 skillsKeysCopy.RemoveAt(randChoice);
             }
-
+        
+            // create terrain objects
+            Terrain plains = new Terrain('P', "Plains", 1);
+            Terrain hills = new Terrain('H', "Hills", 1.5);
+            Terrain forrest = new Terrain('F', "Forrest", 1.5);
+            Terrain mountains = new Terrain('M', "Mountains", 90);
 
             // create keep barred lists for fiefs
             List<string> keep1BarChars = new List<string>();
@@ -193,19 +198,19 @@ namespace hist_mmorpg
             Province myProv = new Province("ESX00", "Sussex, England", 6.2, "E1");
             Province myProv2 = new Province("ESR00", "Surrey, England", 6.2, "E1");
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief1Chars, keep1BarChars, false, false, this.clock);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief1Chars, keep1BarChars, false, false, this.clock);
             fiefMasterList.Add(myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', 'F', fief2Chars, keep2BarChars, false, false, this.clock);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', hills, fief2Chars, keep2BarChars, false, false, this.clock);
             fiefMasterList.Add(myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief3Chars, keep3BarChars, false, false, this.clock);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief3Chars, keep3BarChars, false, false, this.clock);
             fiefMasterList.Add(myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief4Chars, keep4BarChars, false, false, this.clock);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief4Chars, keep4BarChars, false, false, this.clock);
             fiefMasterList.Add(myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief5Chars, keep5BarChars, false, false, this.clock);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief5Chars, keep5BarChars, false, false, this.clock);
             fiefMasterList.Add(myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief6Chars, keep6BarChars, false, false, this.clock);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief6Chars, keep6BarChars, false, false, this.clock);
             fiefMasterList.Add(myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', 'P', fief7Chars, keep7BarChars, false, false, this.clock);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', forrest, fief7Chars, keep7BarChars, false, false, this.clock);
             fiefMasterList.Add(myFief7);
             Army myArmy = new Army(0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
@@ -215,55 +220,55 @@ namespace hist_mmorpg
             this.gameMap = myHexMap;
             // 2. Add edge and auto create vertices
             // from myFief1
-            myHexMap.addHexesAndRoute(myFief1, myFief2, "W");
-            myHexMap.addHexesAndRoute(myFief1, myFief3, "E");
-            myHexMap.addHexesAndRoute(myFief1, myFief6, "NE");
-            myHexMap.addHexesAndRoute(myFief1, myFief4, "SE");
-            myHexMap.addHexesAndRoute(myFief1, myFief5, "SW");
-            myHexMap.addHexesAndRoute(myFief1, myFief7, "NW");
+            myHexMap.addHexesAndRoute(myFief1, myFief2, "W", myFief2.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief1, myFief3, "E", myFief3.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief1, myFief6, "NE", myFief6.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief1, myFief4, "SE", myFief4.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief1, myFief5, "SW", myFief5.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief1, myFief7, "NW", myFief7.terrain.travelCost);
             // from myFief2
-            myHexMap.addHexesAndRoute(myFief2, myFief1, "E");
-            myHexMap.addHexesAndRoute(myFief2, myFief7, "NE");
-            myHexMap.addHexesAndRoute(myFief2, myFief5, "SE");
+            myHexMap.addHexesAndRoute(myFief2, myFief1, "E", myFief1.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief2, myFief7, "NE", myFief7.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief2, myFief5, "SE", myFief5.terrain.travelCost);
             // from myFief3
-            myHexMap.addHexesAndRoute(myFief3, myFief4, "SW");
-            myHexMap.addHexesAndRoute(myFief3, myFief6, "NW");
-            myHexMap.addHexesAndRoute(myFief3, myFief1, "W");
+            myHexMap.addHexesAndRoute(myFief3, myFief4, "SW", myFief4.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief3, myFief6, "NW", myFief6.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief3, myFief1, "W", myFief1.terrain.travelCost);
             // from myFief4
-            myHexMap.addHexesAndRoute(myFief4, myFief3, "NE");
-            myHexMap.addHexesAndRoute(myFief4, myFief1, "NW");
-            myHexMap.addHexesAndRoute(myFief4, myFief5, "W");
+            myHexMap.addHexesAndRoute(myFief4, myFief3, "NE", myFief3.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief4, myFief1, "NW", myFief1.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief4, myFief5, "W", myFief5.terrain.travelCost);
             // from myFief5
-            myHexMap.addHexesAndRoute(myFief5, myFief1, "NE");
-            myHexMap.addHexesAndRoute(myFief5, myFief2, "NW");
-            myHexMap.addHexesAndRoute(myFief5, myFief4, "E");
+            myHexMap.addHexesAndRoute(myFief5, myFief1, "NE", myFief1.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief5, myFief2, "NW", myFief2.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief5, myFief4, "E", myFief4.terrain.travelCost);
             // from myFief6
-            myHexMap.addHexesAndRoute(myFief6, myFief3, "SE");
-            myHexMap.addHexesAndRoute(myFief6, myFief1, "SW");
-            myHexMap.addHexesAndRoute(myFief6, myFief7, "W");
+            myHexMap.addHexesAndRoute(myFief6, myFief3, "SE", myFief3.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief6, myFief1, "SW", myFief1.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief6, myFief7, "W", myFief7.terrain.travelCost);
             // from myFief7
-            myHexMap.addHexesAndRoute(myFief7, myFief6, "E");
-            myHexMap.addHexesAndRoute(myFief7, myFief1, "SE");
-            myHexMap.addHexesAndRoute(myFief7, myFief2, "SW");
+            myHexMap.addHexesAndRoute(myFief7, myFief6, "E", myFief6.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief7, myFief1, "SE", myFief1.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief7, myFief2, "SW", myFief2.terrain.travelCost);
 
             // create entourages for PCs
-            List<Character> myEnt1 = new List<Character>();
-            List<Character> myEnt2 = new List<Character>();
+            List<NonPlayerCharacter> myEmployees1 = new List<NonPlayerCharacter>();
+            List<NonPlayerCharacter> myEmployees2 = new List<NonPlayerCharacter>();
 
             // create lists of fiefs owned by PCs and add some fiefs
             List<Fief> myFiefsOwned1 = new List<Fief>();
             List<Fief> myFiefsOwned2 = new List<Fief>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.2, 6.1, skillsArray1, false, true, false, this.clock, false, 13000, myEnt1, myFiefsOwned1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.2, 6.1, skillsArray1, false, true, false, this.clock, false, 13000, myEmployees1, myFiefsOwned1);
             charMasterList.Add(myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 5.0, 4.5, skillsArray1, true, false, false, this.clock, false, 13000, myEnt2, myFiefsOwned2);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 5.0, 4.5, skillsArray1, true, false, false, this.clock, false, 13000, myEmployees2, myFiefsOwned2);
             charMasterList.Add(myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 3.3, 6.7, skillsArray1, false, false, false, this.clock, "ESX05", 0);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 3.3, 6.7, skillsArray1, false, false, false, this.clock, "", 0, false);
             charMasterList.Add(myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.1, 5.2, skillsArray1, false, false, false, this.clock, "ESX05", 10000, mb: myChar1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.1, 5.2, skillsArray1, false, false, false, this.clock, "", 10000, true, mb: myChar1);
             charMasterList.Add(myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 4.0, 6.0, skillsArray1, false, true, true, this.clock, "ESX05", 0);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 4.0, 6.0, skillsArray1, false, true, true, this.clock, "", 0, false);
             charMasterList.Add(myWife);
 
             // Add me a wife
@@ -297,7 +302,9 @@ namespace hist_mmorpg
             myFief1.bailiff = myNPC1;
             myFief2.bailiff = myNPC2;
 
-            // add NPC to entourage
+            // add NPC to employees
+            myChar1.hireNPC(myNPC2, 10000);
+            // set employee as travelling companion
             myChar1.addToEntourage(myNPC2);
 
             // Add fiefs to list of fiefs owned 
@@ -323,6 +330,10 @@ namespace hist_mmorpg
 
             // set inital fief to display
             this.fiefToView = myChar1.location;
+
+            // try shortest path
+            string toDisplayNow = myHexMap.PrintShortestPath(myFief2, myFief3);
+            System.Windows.Forms.MessageBox.Show(toDisplayNow);
 
             return myChar1;
 
@@ -419,9 +430,9 @@ namespace hist_mmorpg
         {
             string textToDisplay = "";
             textToDisplay += this.clock.seasons[this.clock.currentSeason] + ", " + this.clock.currentYear + ".  Your days left: " + this.charModel.currentCharacter.days + "\r\n\r\n";
-            textToDisplay += "Fief: " + this.fiefToView.name + " (" + this.fiefToView.fiefID + ")  in " + this.fiefToView.province.name + "\r\n\r\n";
-            textToDisplay += "Owner: " + this.fiefToView.owner.name + "\r\n";
-            textToDisplay += "Overlord: " + this.fiefToView.province.overlord.name + "\r\n";
+            textToDisplay += "Fief: " + this.fModel.currentFief.name + " (" + this.fModel.currentFief.fiefID + ")  in " + this.fModel.currentFief.province.name + "\r\n\r\n";
+            textToDisplay += "Owner: " + this.fModel.currentFief.owner.name + "\r\n";
+            textToDisplay += "Overlord: " + this.fModel.currentFief.province.overlord.name + "\r\n";
 
             this.meetingPlaceTextBox.Text = textToDisplay;
         }
@@ -439,20 +450,20 @@ namespace hist_mmorpg
                 ifInKeep = true;
             }
 
-            ListViewItem[] charsInCourt = new ListViewItem[this.fiefToView.characters.Count];
+            ListViewItem[] charsInCourt = new ListViewItem[this.fModel.currentFief.characters.Count];
             // iterates through characters
-            for (int i = 0; i < this.fiefToView.characters.Count; i++)
+            for (int i = 0; i < this.fModel.currentFief.characters.Count; i++)
             {
-                if (this.fiefToView.characters[i].inKeep == ifInKeep)
+                if (this.fModel.currentFief.characters[i].inKeep == ifInKeep)
                 {
                     // don't show this PlayerCharacter
-                    if (this.fiefToView.characters[i] != this.charModel.currentCharacter)
+                    if (this.fModel.currentFief.characters[i] != this.charModel.currentCharacter)
                     {
                         // Create an item and subitems for each character
-                        charsInCourt[i] = new ListViewItem(this.fiefToView.characters[i].name);
-                        charsInCourt[i].SubItems.Add(this.fiefToView.characters[i].charID);
+                        charsInCourt[i] = new ListViewItem(this.fModel.currentFief.characters[i].name);
+                        charsInCourt[i].SubItems.Add(this.fModel.currentFief.characters[i].charID);
                         charsInCourt[i].SubItems.Add("A household");
-                        if (this.fiefToView.characters[i].isMale)
+                        if (this.fModel.currentFief.characters[i].isMale)
                         {
                             charsInCourt[i].SubItems.Add("Male");
                         }
@@ -463,11 +474,14 @@ namespace hist_mmorpg
                         charsInCourt[i].SubItems.Add("A type");
 
                         bool isCompanion = false;
-                        for (int ii = 0; ii < this.charModel.currentCharacter.entourage.Count; ii++)
+                        for (int ii = 0; ii < this.charModel.currentCharacter.employees.Count; ii++)
                         {
-                            if (this.charModel.currentCharacter.entourage[ii] == this.fiefToView.characters[i])
+                            if (this.charModel.currentCharacter.employees[ii] == this.fModel.currentFief.characters[i])
                             {
-                                isCompanion = true;
+                                if (this.charModel.currentCharacter.employees[ii].inEntourage)
+                                {
+                                    isCompanion = true;
+                                }
                             }
                         }
 
@@ -620,18 +634,15 @@ namespace hist_mmorpg
             }
             pcText += "outlawed\r\n";
             pcText += "Purse: " + ch.purse + "\r\n";
-            pcText += "Entourage:";
-            for (int i = 0; i < ch.entourage.Count; i++)
+            pcText += "Employees:\r\n";
+            for (int i = 0; i < ch.employees.Count; i++)
             {
-                pcText += " " + ch.entourage[i].name;
-                if (i < (ch.entourage.Count - 1))
+                pcText += "  - " + ch.employees[i].name;
+                if (ch.employees[i].inEntourage)
                 {
-                    pcText += ",";
+                    pcText += " (travelling companion)";
                 }
-                else
-                {
-                    pcText += "\r\n";
-                }
+                pcText += "\r\n";
             }
             pcText += "Fiefs owned:\r\n";
             for (int i = 0; i < ch.ownedFiefs.Count; i++)
@@ -652,7 +663,7 @@ namespace hist_mmorpg
                 npcText += "Hired by (ID): " + ch.myBoss.charID + "\r\n";
             }
             npcText += "Go to (Fief ID): " + ch.goTo + "\r\n";
-            npcText += "Potential salary: " + ch.calcNPCwage(ch) + "\r\n";
+            npcText += "Potential salary: " + ch.calcNPCwage() + "\r\n";
             npcText += "Last offer from this PC: ";
             if (ch.lastOffer.ContainsKey(this.charModel.currentCharacter.charID))
             {
@@ -705,27 +716,7 @@ namespace hist_mmorpg
             }
             fiefText += "\r\n";
 
-            fiefText += "Terrain: ";
-            switch (f.terrain)
-            {
-                case 'P':
-                    fiefText += "Plains";
-                    break;
-                case 'H':
-                    fiefText += "Hills";
-                    break;
-                case 'F':
-                    fiefText += "Forrest";
-                    break;
-                case 'M':
-                    fiefText += "Mountains";
-                    break;
-                default:
-                    fiefText += "Plains";
-                    break;
-            }
-            fiefText += "\r\n";
-
+            fiefText += "Terrain: " + f.terrain.description + "\r\n";
             fiefText += "Characters present:";
             for (int i = 0; i < f.characters.Count; i++)
             {
@@ -739,18 +730,10 @@ namespace hist_mmorpg
                     fiefText += "\r\n";
                 }
             }
-            fiefText += "Characters barred from keep (IDs):";
+            fiefText += "Characters barred from keep (IDs):\r\n";
             for (int i = 0; i < f.barredCharacters.Count; i++)
             {
-                fiefText += " " + f.barredCharacters[i];
-                if (i < (f.barredCharacters.Count - 1))
-                {
-                    fiefText += ",";
-                }
-                else
-                {
-                    fiefText += "\r\n";
-                }
+                fiefText += " " + f.barredCharacters[i] + "\r\n";
             }
             fiefText += "The French are ";
             if (!f.frenchBarred)
@@ -1239,7 +1222,20 @@ namespace hist_mmorpg
                     if (this.fiefToView.characters[i].charID.Equals(this.meetingPlaceCharsListView.SelectedItems[0].SubItems[1].Text))
                     {
                         charToDisplay = this.fiefToView.characters[i];
+
+                        // set text for hire/fire button
+                        if (this.charModel.currentCharacter.employees.Contains(this.fiefToView.characters[i]))
+                        {
+                            this.hireNPC_Btn.Text = "Fire NPC";
+                            this.hireNPC_TextBox.Visible = false;
+                        }
+                        else
+                        {
+                            this.hireNPC_Btn.Text = "Hire NPC";
+                            this.hireNPC_TextBox.Visible = true;
+                        }
                     }
+
                 }
 
             }
@@ -1255,7 +1251,15 @@ namespace hist_mmorpg
 
         private void hireNPC_Btn_Click(object sender, EventArgs e)
         {
-            bool offerAccepted = this.charModel.currentCharacter.processEmployOffer((NonPlayerCharacter)charToView, Convert.ToUInt32(this.hireNPC_TextBox.Text));
+            if (! this.charModel.currentCharacter.employees.Contains(charToView))
+            {
+                bool offerAccepted = this.charModel.currentCharacter.processEmployOffer((NonPlayerCharacter)charToView, Convert.ToUInt32(this.hireNPC_TextBox.Text));
+            }
+            else
+            {
+                this.charModel.currentCharacter.fireNPC((NonPlayerCharacter)charToView);
+            }
+
             string textToDisplay = "";
             textToDisplay += this.displayCharacter(charToView);
             this.meetingPlaceCharDisplayTextBox.Text = textToDisplay;

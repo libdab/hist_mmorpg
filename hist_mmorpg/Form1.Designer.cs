@@ -542,7 +542,7 @@ namespace hist_mmorpg
             this.hireNPC_Btn.Name = "hireNPC_Btn";
             this.hireNPC_Btn.Size = new System.Drawing.Size(111, 23);
             this.hireNPC_Btn.TabIndex = 0;
-            this.hireNPC_Btn.Text = "Hire NPC";
+            this.hireNPC_Btn.Text = "Hire/Fire NPC";
             this.hireNPC_Btn.UseVisualStyleBackColor = true;
             this.hireNPC_Btn.Click += new System.EventHandler(this.hireNPC_Btn_Click);
             // 
@@ -617,11 +617,11 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(801, 458);
+            this.Controls.Add(this.meetingPlaceContainer);
+            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.characterContainer);
-            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
-            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
