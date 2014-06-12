@@ -49,6 +49,10 @@ namespace hist_mmorpg
         /// </summary>
         public Fief location { get; set; }
         /// <summary>
+        /// Queue of Fiefs to auto-travel to
+        /// </summary>
+        public Queue<Fief> goTo { get; set; }
+        /// <summary>
         /// Holds character language
         /// </summary>
         public string language { get; set; }
@@ -113,6 +117,7 @@ namespace hist_mmorpg
         /// <param name="mxHea">Double holding character maximum health</param>
         /// <param name="vir">Double holding character virility rating</param>
         /// <param name="loc">Fief holding character location (fief ID)</param>
+        /// <param name="go">Queue<Fief> of Fiefs to auto-travel to</param>
         /// <param name="lang">String holding character language code</param>
         /// <param name="day">double holding character remaining days in season</param>
         /// <param name="stat">Double holding character status rating</param>
@@ -126,7 +131,7 @@ namespace hist_mmorpg
         /// <param name="fath">Character holding father</param>
         /// <param name="famHead">Character holding head of family</param>
         public Character(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Fief loc, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
+            Fief loc, Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
             GameClock cl, Character sp = null, Character fath = null, Character famHead = null)
         {
 
@@ -217,6 +222,7 @@ namespace hist_mmorpg
             this.maxHealth = mxHea;
             this.virility = vir;
             this.location = loc;
+            this.goTo = go;
             this.language = lang;
             this.days = day;
             this.stature = stat;
@@ -569,9 +575,9 @@ namespace hist_mmorpg
         /// <param name="emp">List<NonPlayerCharacter> holding employees of character</param>
         /// <param name="kps">List<Fief> holding fiefs owned by character</param>
         public PlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Fief loc, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
+            Fief loc, Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
             GameClock cl, bool outl, uint pur, List<NonPlayerCharacter> emp, List<Fief> kps, Character sp = null, Character fath = null, Character famHead = null)
-            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, sp, fath, famHead)
+            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, sp, fath, famHead)
         {
 
             this.outlawed = outl;
@@ -813,10 +819,6 @@ namespace hist_mmorpg
         /// </summary>
         public Character myBoss { get; set; }
         /// <summary>
-        /// Holds fief ID for destination (specified by NPC's boss)
-        /// </summary>
-        public string goTo { get; set; }
-        /// <summary>
         /// Holds NPC's wages
         /// </summary>
         public uint wage { get; set; }
@@ -837,16 +839,15 @@ namespace hist_mmorpg
         /// <param name="wa">string holding NPC's wages</param>
         /// <param name="inEnt">bool denoting if in/out of boss's entourage</param>
         public NonPlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Fief loc, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
-            GameClock cl, string go, uint wa, bool inEnt, Character mb = null, Character sp = null, Character fath = null, Character famHead = null)
-            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, sp, fath, famHead)
+            Fief loc, Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
+            GameClock cl, uint wa, bool inEnt, Character mb = null, Character sp = null, Character fath = null, Character famHead = null)
+            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, sp, fath, famHead)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
             // TODO: validate wa = uint
 
             this.myBoss = mb;
-            this.goTo = go;
             this.wage = wa;
             this.inEntourage = inEnt;
             this.lastOffer = new Dictionary<string, uint>();

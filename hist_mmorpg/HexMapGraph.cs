@@ -216,7 +216,25 @@ namespace hist_mmorpg
 
         }
 
-        public string PrintShortestPath(Fief @from, Fief to)
+        public Queue<Fief> getShortestPath(Fief @from, Fief to)
+        {
+            Queue<Fief> pathNodes = new Queue<Fief>();
+            var edgeCost = AlgorithmExtensions.GetIndexer(costs);
+            var tryGetPath = myMap.ShortestPathsDijkstra(edgeCost, @from);
+
+            IEnumerable<TaggedEdge<Fief, string>> path;
+            if (tryGetPath(to, out path))
+            {
+                foreach (var e in path)
+                {
+                    pathNodes.Enqueue(e.Target);
+                }
+            }
+
+            return pathNodes;
+        }
+
+        public string getShortestPathString(Fief @from, Fief to)
         {
             string output = "";
             var edgeCost = AlgorithmExtensions.GetIndexer(costs);
@@ -241,12 +259,9 @@ namespace hist_mmorpg
             string output = "";
             output += "Path found from " + @from.fiefID + " to " + to.fiefID + "is\r\n";
             foreach (var e in path)
+            {
                 output += e.Tag + " to (" + e.Target.fiefID + ") ";
-                // output += " > " + e.Target.fiefID;
-            /* Console.Write("Path found from {0} to {1}: {0}", @from, to);
-            foreach (var e in path)
-                Console.Write(" > {0}", e.Target);
-            Console.WriteLine(); */
+            }
             return output;
         }
     }

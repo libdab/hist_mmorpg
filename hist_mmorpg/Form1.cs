@@ -251,6 +251,13 @@ namespace hist_mmorpg
             myHexMap.addHexesAndRoute(myFief7, myFief1, "SE", (myFief7.terrain.travelCost + myFief1.terrain.travelCost) / 2);
             myHexMap.addHexesAndRoute(myFief7, myFief2, "SW", (myFief7.terrain.travelCost + myFief2.terrain.travelCost) / 2);
 
+            // create goTo queues for characters
+            Queue<Fief> myGoTo1 = new Queue<Fief>();
+            Queue<Fief> myGoTo2 = new Queue<Fief>();
+            Queue<Fief> myGoTo3 = new Queue<Fief>();
+            Queue<Fief> myGoTo4 = new Queue<Fief>();
+            Queue<Fief> myGoTo5 = new Queue<Fief>();
+
             // create entourages for PCs
             List<NonPlayerCharacter> myEmployees1 = new List<NonPlayerCharacter>();
             List<NonPlayerCharacter> myEmployees2 = new List<NonPlayerCharacter>();
@@ -260,15 +267,15 @@ namespace hist_mmorpg
             List<Fief> myFiefsOwned2 = new List<Fief>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myFief1, "E1", 1, 4.0, 7.2, 6.1, skillsArray1, false, true, false, this.clock, false, 13000, myEmployees1, myFiefsOwned1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myFief1, myGoTo1, "E1", 90, 4.0, 7.2, 6.1, skillsArray1, false, true, false, this.clock, false, 13000, myEmployees1, myFiefsOwned1);
             charMasterList.Add(myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 90, 4.0, 5.0, 4.5, skillsArray1, true, false, false, this.clock, false, 13000, myEmployees2, myFiefsOwned2);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, myGoTo2, "E1", 90, 4.0, 5.0, 4.5, skillsArray1, true, false, false, this.clock, false, 13000, myEmployees2, myFiefsOwned2);
             charMasterList.Add(myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 90, 4.0, 3.3, 6.7, skillsArray1, false, false, false, this.clock, "", 0, false);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, myGoTo3, "E1", 90, 4.0, 3.3, 6.7, skillsArray1, false, false, false, this.clock, 0, false);
             charMasterList.Add(myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 1, 4.0, 7.1, 5.2, skillsArray1, false, false, false, this.clock, "", 10000, true, mb: myChar1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, myGoTo4, "E1", 90, 4.0, 7.1, 5.2, skillsArray1, false, false, false, this.clock, 10000, true, mb: myChar1);
             charMasterList.Add(myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 90, 4.0, 4.0, 6.0, skillsArray1, false, true, true, this.clock, "", 0, false);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myFief1, myGoTo5, "E1", 90, 4.0, 4.0, 6.0, skillsArray1, false, true, true, this.clock, 0, false);
             charMasterList.Add(myWife);
 
             // Add me a wife
@@ -331,9 +338,16 @@ namespace hist_mmorpg
             // set inital fief to display
             this.fiefToView = myChar1.location;
 
+            // try retrieving fief from masterlist using fiefID
+            Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
+            Fief target = fiefMasterList.Find(x => x.fiefID == "ESX01");
+            // string fiefName = result.name;
+            // System.Windows.Forms.MessageBox.Show(fiefName);
+
             // try shortest path
-            string toDisplayNow = myHexMap.PrintShortestPath(myFief2, myFief3);
-            System.Windows.Forms.MessageBox.Show(toDisplayNow);
+            // string toDisplayNow = myHexMap.getShortestPathString(source, target);
+            // System.Windows.Forms.MessageBox.Show(toDisplayNow);
+            myChar1.goTo = myHexMap.getShortestPath(myChar1.location, target);
 
             return myChar1;
 
@@ -538,6 +552,10 @@ namespace hist_mmorpg
             charText += "  (Death modifier from skills: " + ch.getDeathSkillsMod() + ")\r\n";
             charText += "Virility: " + ch.virility + "\r\n";
             charText += "Current location: " + ch.location.name + " (" + ch.location.province.name + ")\r\n";
+            if (ch.goTo.Count != 0)
+            {
+                charText += "Next Fief (if auto-moving): " + ch.goTo.Peek().fiefID + "\r\n";
+            }
             charText += "Language: " + ch.language + "\r\n";
             charText += "Days remaining: " + ch.days + "\r\n";
             charText += "Stature: " + ch.stature + "\r\n";
@@ -671,7 +689,6 @@ namespace hist_mmorpg
             {
                 npcText += "Hired by (ID): " + ch.myBoss.charID + "\r\n";
             }
-            npcText += "Go to (Fief ID): " + ch.goTo + "\r\n";
             npcText += "Potential salary: " + ch.calcNPCwage() + "\r\n";
             npcText += "Last offer from this PC: ";
             if (ch.lastOffer.ContainsKey(this.charModel.currentCharacter.charID))
