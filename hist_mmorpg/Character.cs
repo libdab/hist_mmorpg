@@ -498,6 +498,28 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Moves character to target fief
+        /// </summary>
+        /// <param name="target">Target fief</param>
+        /// <param name="cost">Travel cost (days)</param>
+        public virtual bool moveCharacter(Fief target, double cost)
+        {
+            bool success = false;
+
+            if (this.days >= cost)
+            {
+                this.location.removeCharacter(this);
+                this.location = target;
+                this.location.addCharacter(this);
+                this.inKeep = false;
+                this.days = this.days - cost;
+                success = true;
+            }
+
+            return success;
+        }
+
+        /// <summary>
         /// Updates character data at the end/beginning of the season
         /// </summary>
         public void updateCharacter()
@@ -665,19 +687,23 @@ namespace hist_mmorpg
         /// <summary>
         /// Adds an NPC to the character's entourage
         /// </summary>
-        /// <param name="ch">NPC to be added</param>
-        public void addToEntourage(NonPlayerCharacter ch)
+        /// <param name="npc">NPC to be added</param>
+        public void addToEntourage(NonPlayerCharacter npc)
         {
-            ch.inEntourage = true;
+            // ensure days is set to lesser of PC/NPC days
+            double minDays = Math.Min(this.days, npc.days);
+            this.days = minDays;
+            npc.days = minDays;
+            npc.inEntourage = true;
         }
 
         /// <summary>
         /// Removes an NPC from the character's entourage
         /// </summary>
-        /// <param name="ch">NPC to be removed</param>
-        public void removeFromEntourage(NonPlayerCharacter ch)
+        /// <param name="npc">NPC to be removed</param>
+        public void removeFromEntourage(NonPlayerCharacter npc)
         {
-            ch.inEntourage = false;
+            npc.inEntourage = false;
         }
 
         /// <summary>
@@ -746,6 +772,32 @@ namespace hist_mmorpg
                     this.employees[i].inKeep = false;
                 }
             }
+        }
+
+        /// <summary>
+        /// Moves character's entourage to target fief
+        /// </summary>
+        /// <param name="target">Target fief</param>
+        /// <param name="cost">Travel cost (days)</param>
+        public override bool moveCharacter(Fief target, double cost)
+        {
+
+            // use base method to move character
+            bool success = base.moveCharacter(target, cost);
+
+            if (success)
+            {
+                for (int i = 0; i < this.employees.Count; i++)
+                {
+                    if (this.employees[i].inEntourage)
+                    {
+                        this.employees[i].moveCharacter(target, cost);
+                    }
+                }
+            }
+
+            return success;
+
         }
 
     }

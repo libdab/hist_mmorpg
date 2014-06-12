@@ -422,9 +422,10 @@ namespace hist_mmorpg
             this.travel_SE_btn.Name = "travel_SE_btn";
             this.travel_SE_btn.Size = new System.Drawing.Size(137, 123);
             this.travel_SE_btn.TabIndex = 6;
+            this.travel_SE_btn.Tag = "SE";
             this.travel_SE_btn.Text = "Go SE";
             this.travel_SE_btn.UseVisualStyleBackColor = true;
-            this.travel_SE_btn.Click += new System.EventHandler(this.travel_SE_btn_Click);
+            this.travel_SE_btn.Click += new System.EventHandler(this.travelBtnClick);
             // 
             // travel_SW_btn
             // 
@@ -432,9 +433,10 @@ namespace hist_mmorpg
             this.travel_SW_btn.Name = "travel_SW_btn";
             this.travel_SW_btn.Size = new System.Drawing.Size(137, 123);
             this.travel_SW_btn.TabIndex = 5;
+            this.travel_SW_btn.Tag = "SW";
             this.travel_SW_btn.Text = "Go SW";
             this.travel_SW_btn.UseVisualStyleBackColor = true;
-            this.travel_SW_btn.Click += new System.EventHandler(this.travel_SW_btn_Click);
+            this.travel_SW_btn.Click += new System.EventHandler(this.travelBtnClick);
             // 
             // travel_E_btn
             // 
@@ -442,9 +444,10 @@ namespace hist_mmorpg
             this.travel_E_btn.Name = "travel_E_btn";
             this.travel_E_btn.Size = new System.Drawing.Size(137, 123);
             this.travel_E_btn.TabIndex = 4;
+            this.travel_E_btn.Tag = "E";
             this.travel_E_btn.Text = "Go E";
             this.travel_E_btn.UseVisualStyleBackColor = true;
-            this.travel_E_btn.Click += new System.EventHandler(this.travel_E_btn_Click);
+            this.travel_E_btn.Click += new System.EventHandler(this.travelBtnClick);
             // 
             // travel_Home_btn
             // 
@@ -461,9 +464,10 @@ namespace hist_mmorpg
             this.travel_W_btn.Name = "travel_W_btn";
             this.travel_W_btn.Size = new System.Drawing.Size(137, 123);
             this.travel_W_btn.TabIndex = 2;
+            this.travel_W_btn.Tag = "W";
             this.travel_W_btn.Text = "Go W";
             this.travel_W_btn.UseVisualStyleBackColor = true;
-            this.travel_W_btn.Click += new System.EventHandler(this.travel_W_btn_Click);
+            this.travel_W_btn.Click += new System.EventHandler(this.travelBtnClick);
             // 
             // travel_NE_btn
             // 
@@ -471,9 +475,10 @@ namespace hist_mmorpg
             this.travel_NE_btn.Name = "travel_NE_btn";
             this.travel_NE_btn.Size = new System.Drawing.Size(137, 123);
             this.travel_NE_btn.TabIndex = 1;
+            this.travel_NE_btn.Tag = "NE";
             this.travel_NE_btn.Text = "Go NE";
             this.travel_NE_btn.UseVisualStyleBackColor = true;
-            this.travel_NE_btn.Click += new System.EventHandler(this.travel_NE_btn_Click);
+            this.travel_NE_btn.Click += new System.EventHandler(this.travelBtnClick);
             // 
             // travel_NW_btn
             // 
@@ -481,9 +486,10 @@ namespace hist_mmorpg
             this.travel_NW_btn.Name = "travel_NW_btn";
             this.travel_NW_btn.Size = new System.Drawing.Size(137, 123);
             this.travel_NW_btn.TabIndex = 0;
+            this.travel_NW_btn.Tag = "NW";
             this.travel_NW_btn.Text = "Go NW";
             this.travel_NW_btn.UseVisualStyleBackColor = true;
-            this.travel_NW_btn.Click += new System.EventHandler(this.travel_NW_btn_Click);
+            this.travel_NW_btn.Click += new System.EventHandler(this.travelBtnClick);
             // 
             // fiefsOwnedContainer
             // 
@@ -617,8 +623,8 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(801, 458);
-            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.travelContainer);
+            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.fiefsOwnedContainer);

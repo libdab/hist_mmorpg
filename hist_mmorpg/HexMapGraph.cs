@@ -116,6 +116,7 @@ namespace hist_mmorpg
             return myEdge;
         }
 
+        /*
         // TODO
         public Fief moveCharacter(Character ch, Fief f, string whereTo)
         {
@@ -160,16 +161,19 @@ namespace hist_mmorpg
                 }
             }
 
-        }
+        } */
 
         /// <summary>
         /// Selects random adjoining hex (also equal chance to select current hex)
         /// </summary>
         /// <param name="npc">NonPlayerCharacter to be moved (or not)</param>
         /// <param name="f">Current location of NPC</param>
-        public void randomNPCmove(NonPlayerCharacter npc, Fief f)
+        public Fief chooseRandomHex(Fief f)
         {
+            // list to store all out edges
             List<TaggedEdge<Fief, string>> choices = new List<TaggedEdge<Fief, string>>();
+            // string to contain chosen move direction
+            Fief goTo = null;
 
             // identify and store all target hexes from source hex
             foreach (var e in this.myMap.Edges)
@@ -182,15 +186,14 @@ namespace hist_mmorpg
 
             // generate random int between 0 and no. of targets
             Random rnd = new Random();
-            int selection = rnd.Next(0, choices.Count);
+            int selection = rnd.Next(0, (choices.Count + 1));
 
-            // get tag from selected edge
-            string tag = choices[selection].Tag;
-
-            if (selection != 0)
+            if (selection != choices.Count)
             {
-                this.moveCharacter(npc, f, tag);
+                goTo = choices[selection].Target;
             }
+
+            return goTo;
         }
 
         // TODO

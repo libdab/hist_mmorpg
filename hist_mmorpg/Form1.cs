@@ -220,36 +220,36 @@ namespace hist_mmorpg
             this.gameMap = myHexMap;
             // 2. Add edge and auto create vertices
             // from myFief1
-            myHexMap.addHexesAndRoute(myFief1, myFief2, "W", myFief2.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief1, myFief3, "E", myFief3.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief1, myFief6, "NE", myFief6.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief1, myFief4, "SE", myFief4.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief1, myFief5, "SW", myFief5.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief1, myFief7, "NW", myFief7.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief1, myFief2, "W", (myFief1.terrain.travelCost + myFief2.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief1, myFief3, "E", (myFief1.terrain.travelCost + myFief3.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief1, myFief6, "NE", (myFief1.terrain.travelCost + myFief6.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief1, myFief4, "SE", (myFief1.terrain.travelCost + myFief4.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief1, myFief5, "SW", (myFief1.terrain.travelCost + myFief5.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief1, myFief7, "NW", (myFief1.terrain.travelCost + myFief7.terrain.travelCost) / 2);
             // from myFief2
-            myHexMap.addHexesAndRoute(myFief2, myFief1, "E", myFief1.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief2, myFief7, "NE", myFief7.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief2, myFief5, "SE", myFief5.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief2, myFief1, "E", (myFief2.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief2, myFief7, "NE", (myFief2.terrain.travelCost + myFief7.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief2, myFief5, "SE", (myFief2.terrain.travelCost + myFief5.terrain.travelCost) / 2);
             // from myFief3
-            myHexMap.addHexesAndRoute(myFief3, myFief4, "SW", myFief4.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief3, myFief6, "NW", myFief6.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief3, myFief1, "W", myFief1.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief3, myFief4, "SW", (myFief3.terrain.travelCost + myFief4.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief3, myFief6, "NW", (myFief3.terrain.travelCost + myFief6.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief3, myFief1, "W", (myFief3.terrain.travelCost + myFief1.terrain.travelCost) / 2);
             // from myFief4
-            myHexMap.addHexesAndRoute(myFief4, myFief3, "NE", myFief3.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief4, myFief1, "NW", myFief1.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief4, myFief5, "W", myFief5.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief4, myFief3, "NE", (myFief4.terrain.travelCost + myFief3.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief4, myFief1, "NW", (myFief4.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief4, myFief5, "W", (myFief4.terrain.travelCost + myFief5.terrain.travelCost) / 2);
             // from myFief5
-            myHexMap.addHexesAndRoute(myFief5, myFief1, "NE", myFief1.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief5, myFief2, "NW", myFief2.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief5, myFief4, "E", myFief4.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief5, myFief1, "NE", (myFief5.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief5, myFief2, "NW", (myFief5.terrain.travelCost + myFief2.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief5, myFief4, "E", (myFief5.terrain.travelCost + myFief4.terrain.travelCost) / 2);
             // from myFief6
-            myHexMap.addHexesAndRoute(myFief6, myFief3, "SE", myFief3.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief6, myFief1, "SW", myFief1.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief6, myFief7, "W", myFief7.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief6, myFief3, "SE", (myFief6.terrain.travelCost + myFief3.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief6, myFief1, "SW", (myFief6.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief6, myFief7, "W", (myFief6.terrain.travelCost + myFief7.terrain.travelCost) / 2);
             // from myFief7
-            myHexMap.addHexesAndRoute(myFief7, myFief6, "E", myFief6.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief7, myFief1, "SE", myFief1.terrain.travelCost);
-            myHexMap.addHexesAndRoute(myFief7, myFief2, "SW", myFief2.terrain.travelCost);
+            myHexMap.addHexesAndRoute(myFief7, myFief6, "E", (myFief7.terrain.travelCost + myFief6.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief7, myFief1, "SE", (myFief7.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+            myHexMap.addHexesAndRoute(myFief7, myFief2, "SW", (myFief7.terrain.travelCost + myFief2.terrain.travelCost) / 2);
 
             // create entourages for PCs
             List<NonPlayerCharacter> myEmployees1 = new List<NonPlayerCharacter>();
@@ -260,15 +260,15 @@ namespace hist_mmorpg
             List<Fief> myFiefsOwned2 = new List<Fief>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.2, 6.1, skillsArray1, false, true, false, this.clock, false, 13000, myEmployees1, myFiefsOwned1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myFief1, "E1", 1, 4.0, 7.2, 6.1, skillsArray1, false, true, false, this.clock, false, 13000, myEmployees1, myFiefsOwned1);
             charMasterList.Add(myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 5.0, 4.5, skillsArray1, true, false, false, this.clock, false, 13000, myEmployees2, myFiefsOwned2);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 90, 4.0, 5.0, 4.5, skillsArray1, true, false, false, this.clock, false, 13000, myEmployees2, myFiefsOwned2);
             charMasterList.Add(myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 3.3, 6.7, skillsArray1, false, false, false, this.clock, "", 0, false);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 90, 4.0, 3.3, 6.7, skillsArray1, false, false, false, this.clock, "", 0, false);
             charMasterList.Add(myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 7.1, 5.2, skillsArray1, false, false, false, this.clock, "", 10000, true, mb: myChar1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 1, 4.0, 7.1, 5.2, skillsArray1, false, false, false, this.clock, "", 10000, true, mb: myChar1);
             charMasterList.Add(myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 0, 4.0, 4.0, 6.0, skillsArray1, false, true, true, this.clock, "", 0, false);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myFief1, "E1", 90, 4.0, 4.0, 6.0, skillsArray1, false, true, true, this.clock, "", 0, false);
             charMasterList.Add(myWife);
 
             // Add me a wife
@@ -353,10 +353,13 @@ namespace hist_mmorpg
             // characters
             for (int i = 0; i < charMasterList.Count; i++)
             {
-                charMasterList[i].updateCharacter();
-                if ((charMasterList[i].health != 0) && (charMasterList[i] is NonPlayerCharacter))
+                if (charMasterList[i].health != 0)
                 {
-                    this.seasonUpdateNPC((NonPlayerCharacter)charMasterList[i]);
+                    charMasterList[i].updateCharacter();
+                    if (charMasterList[i] is NonPlayerCharacter)
+                    {
+                        this.seasonUpdateNPC((NonPlayerCharacter)charMasterList[i]);
+                    }
                 }
             }
 
@@ -369,7 +372,13 @@ namespace hist_mmorpg
         {
             if (npc.myBoss == null)
             {
-                gameMap.randomNPCmove(npc, npc.location);
+                bool success = false;
+                Fief target = this.gameMap.chooseRandomHex(npc.location);
+                if (target != null)
+                {
+                    double travelCost = this.getTravelCost(npc.location, target);
+                    success = npc.moveCharacter(target, travelCost);
+                }
             }
         }
 
@@ -951,15 +960,18 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>double containing travel cost</returns>
         /// <param name="f">Target fief</param>
-        private double getTravelCost(Fief f)
+        private double getTravelCost(Fief source, Fief target)
         {
             double cost = 0;
-            cost = (1 + f.calcTerrainTravMod()) * this.clock.calcSeasonTravMod();
+            cost = ((2 + source.calcTerrainTravMod() + target.calcTerrainTravMod()) / 2) * this.clock.calcSeasonTravMod();
             return cost;
         }
 
         private void refreshTravelContainer()
         {
+            // setup array for direction tags
+            // string[] directions = new string[] {"NE", "E", "SE", "SW", "W", "NW"};
+
             // get text for home button
             this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + this.charModel.currentCharacter.location.name + "\r\n(" + this.charModel.currentCharacter.location.province.name + ")";
 
@@ -971,7 +983,7 @@ namespace hist_mmorpg
                 this.travel_NE_btn.Text = "NE FIEF:\r\n\r\n";
                 this.travel_NE_btn.Text += targetNE.name + " (" + targetNE.fiefID + ")\r\n";
                 this.travel_NE_btn.Text += "(" + targetNE.province.name + ")\r\n\r\n";
-                this.travel_NE_btn.Text += "Cost: " + this.getTravelCost(targetNE);
+                this.travel_NE_btn.Text += "Cost: " + this.getTravelCost(this.charModel.currentCharacter.location, targetNE);
             }
             else
             {
@@ -985,7 +997,7 @@ namespace hist_mmorpg
                 this.travel_E_btn.Text = "E FIEF:\r\n\r\n";
                 this.travel_E_btn.Text += targetE.name + " (" + targetE.fiefID + ")\r\n";
                 this.travel_E_btn.Text += "(" + targetE.province.name + ")\r\n\r\n";
-                this.travel_E_btn.Text += "Cost: " + this.getTravelCost(targetE);
+                this.travel_E_btn.Text += "Cost: " + this.getTravelCost(this.charModel.currentCharacter.location, targetE);
             }
             else
             {
@@ -999,7 +1011,7 @@ namespace hist_mmorpg
                 this.travel_SE_btn.Text = "SE FIEF:\r\n\r\n";
                 this.travel_SE_btn.Text += targetSE.name + " (" + targetSE.fiefID + ")\r\n";
                 this.travel_SE_btn.Text += "(" + targetSE.province.name + ")\r\n\r\n";
-                this.travel_SE_btn.Text += "Cost: " + this.getTravelCost(targetSE);
+                this.travel_SE_btn.Text += "Cost: " + this.getTravelCost(this.charModel.currentCharacter.location, targetSE);
             }
             else
             {
@@ -1013,7 +1025,7 @@ namespace hist_mmorpg
                 this.travel_SW_btn.Text = "SW FIEF:\r\n\r\n";
                 this.travel_SW_btn.Text += targetSW.name + " (" + targetSW.fiefID + ")\r\n";
                 this.travel_SW_btn.Text += "(" + targetSW.province.name + ")\r\n\r\n";
-                this.travel_SW_btn.Text += "Cost: " + this.getTravelCost(targetSW);
+                this.travel_SW_btn.Text += "Cost: " + this.getTravelCost(this.charModel.currentCharacter.location, targetSW);
             }
             else
             {
@@ -1027,7 +1039,7 @@ namespace hist_mmorpg
                 this.travel_W_btn.Text = "W FIEF:\r\n\r\n";
                 this.travel_W_btn.Text += targetW.name + " (" + targetW.fiefID + ")\r\n";
                 this.travel_W_btn.Text += "(" + targetW.province.name + ")\r\n\r\n";
-                this.travel_W_btn.Text += "Cost: " + this.getTravelCost(targetW);
+                this.travel_W_btn.Text += "Cost: " + this.getTravelCost(this.charModel.currentCharacter.location, targetW);
             }
             else
             {
@@ -1041,7 +1053,7 @@ namespace hist_mmorpg
                 this.travel_NW_btn.Text = "NW FIEF:\r\n\r\n";
                 this.travel_NW_btn.Text += targetNW.name + " (" + targetNW.fiefID + ")\r\n";
                 this.travel_NW_btn.Text += "(" + targetNW.province.name + ")\r\n\r\n";
-                this.travel_NW_btn.Text += "Cost: " + this.getTravelCost(targetNW);
+                this.travel_NW_btn.Text += "Cost: " + this.getTravelCost(this.charModel.currentCharacter.location, targetNW);
             }
             else
             {
@@ -1060,13 +1072,21 @@ namespace hist_mmorpg
 
         }
 
-        private void travel_W_btn_Click(object sender, EventArgs e)
+        private void travelBtnClick(object sender, EventArgs e)
         {
-            Fief newFief = this.gameMap.moveCharacter(this.charModel.currentCharacter, this.charModel.currentCharacter.location, "W");
-            if (newFief != null)
+            bool success = false;
+            Button button = sender as Button;
+            Fief targetFief = this.gameMap.getFief(this.charModel.currentCharacter.location, button.Tag.ToString());
+            if (targetFief != null)
             {
-                this.fModel.currentFief = newFief;
-                this.refreshTravelContainer();
+                double travelCost = this.getTravelCost(this.charModel.currentCharacter.location, targetFief);
+                success = this.charModel.currentCharacter.moveCharacter(targetFief, travelCost);
+                if (success)
+                {
+                    this.fModel.currentFief = targetFief;
+                    this.fiefToView = this.fModel.currentFief;
+                    this.refreshTravelContainer();
+                }
             }
         }
 
@@ -1074,16 +1094,6 @@ namespace hist_mmorpg
         {
             this.refreshMyFiefs();
             this.fiefsOwnedContainer.BringToFront();
-        }
-
-        private void travel_E_btn_Click(object sender, EventArgs e)
-        {
-            Fief newFief = this.gameMap.moveCharacter(this.charModel.currentCharacter, this.charModel.currentCharacter.location, "E");
-            if (newFief != null)
-            {
-                this.fModel.currentFief = newFief;
-                this.refreshTravelContainer();
-            }
         }
 
         private void viewBailiffBtn_Click(object sender, EventArgs e)
@@ -1094,46 +1104,6 @@ namespace hist_mmorpg
                 textToDisplay += this.displayCharacter(this.fModel.currentFief.bailiff);
                 this.characterTextBox.Text = textToDisplay;
                 this.characterContainer.BringToFront();
-            }
-        }
-
-        private void travel_NW_btn_Click(object sender, EventArgs e)
-        {
-            Fief newFief = this.gameMap.moveCharacter(this.charModel.currentCharacter, this.charModel.currentCharacter.location, "NW");
-            if (newFief != null)
-            {
-                this.fModel.currentFief = newFief;
-                this.refreshTravelContainer();
-            }
-        }
-
-        private void travel_NE_btn_Click(object sender, EventArgs e)
-        {
-            Fief newFief = this.gameMap.moveCharacter(this.charModel.currentCharacter, this.charModel.currentCharacter.location, "NE");
-            if (newFief != null)
-            {
-                this.fModel.currentFief = newFief;
-                this.refreshTravelContainer();
-            }
-        }
-
-        private void travel_SW_btn_Click(object sender, EventArgs e)
-        {
-            Fief newFief = this.gameMap.moveCharacter(this.charModel.currentCharacter, this.charModel.currentCharacter.location, "SW");
-            if (newFief != null)
-            {
-                this.fModel.currentFief = newFief;
-                this.refreshTravelContainer();
-            }
-        }
-
-        private void travel_SE_btn_Click(object sender, EventArgs e)
-        {
-            Fief newFief = this.gameMap.moveCharacter(this.charModel.currentCharacter, this.charModel.currentCharacter.location, "SE");
-            if (newFief != null)
-            {
-                this.fModel.currentFief = newFief;
-                this.refreshTravelContainer();
             }
         }
 
@@ -1164,17 +1134,6 @@ namespace hist_mmorpg
             }
         }
 
-        private void visitTavernBtn_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void visitCourtBtn_Click(object sender, EventArgs e)
-        {
-            this.refreshMeetingPlaceDisplay("court");
-            this.meetingPlaceContainer.BringToFront();
-        }
-
         private void enterKeepBtn_Click(object sender, EventArgs e)
         {
             if (this.charModel.currentCharacter.inKeep)
@@ -1197,7 +1156,9 @@ namespace hist_mmorpg
             {
                 this.charModel.currentCharacter.enterKeep();
             }
+
             this.refreshMeetingPlaceDisplay("court");
+            this.meetingPlaceCharDisplayTextBox.Text = "";
             this.meetingPlaceContainer.BringToFront();
         }
 
@@ -1208,6 +1169,7 @@ namespace hist_mmorpg
                 this.charModel.currentCharacter.exitKeep();
             }
             this.refreshMeetingPlaceDisplay("tavern");
+            this.meetingPlaceCharDisplayTextBox.Text = "";
             this.meetingPlaceContainer.BringToFront();
         }
 
