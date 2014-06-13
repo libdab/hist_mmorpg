@@ -67,6 +67,7 @@ namespace hist_mmorpg
             fm.changeCurrent(thisPC.location);
             this.setUpFiefsList();
             this.setUpCourtCharsList();
+            this.charToView = this.charModel.currentCharacter;
             this.characterContainer.BringToFront();
         }
 
@@ -862,6 +863,14 @@ namespace hist_mmorpg
             }
         }
 
+        public void refreshCharacterContainer()
+        {
+            string textToDisplay = "";
+            textToDisplay += this.displayCharacter(this.charToView);
+            this.characterTextBox.Text = textToDisplay;
+            this.characterContainer.BringToFront();
+        }
+        
         private void personalCharacteristicsAndAffairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             /* if (this.fiefContainer.Visible)
@@ -880,10 +889,8 @@ namespace hist_mmorpg
                 this.characterContainer.Visible = true;
             } */
 
-            string textToDisplay = "";
-            textToDisplay += this.displayCharacter(this.charModel.currentCharacter);
-            this.characterTextBox.Text = textToDisplay;            
-            this.characterContainer.BringToFront();
+            this.charToView = this.charModel.currentCharacter;
+            this.refreshCharacterContainer();
         }
 
         private void fiefManagementToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1107,6 +1114,40 @@ namespace hist_mmorpg
             }
         }
 
+        private bool characterMultiMove(Character ch)
+        {
+            bool success = false;
+            double travelCost = 0;
+            int steps = ch.goTo.Count;
+
+            for (int i = 0; i < steps; i++)
+            {
+                travelCost = this.getTravelCost(ch.location, ch.goTo.Peek());
+                success = ch.moveCharacter(ch.goTo.Peek(), travelCost);
+                if (success)
+                {
+                    ch.goTo.Dequeue();
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (ch == this.charModel.currentCharacter)
+            {
+                if (ch.goTo.Count < steps)
+                {
+                    this.fModel.currentFief = this.charModel.currentCharacter.location;
+                    this.fiefToView = this.fModel.currentFief;
+                    this.refreshCharacterContainer();
+                }
+            }
+
+            return success;
+
+        }
+
         private void myFiefsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.refreshMyFiefs();
@@ -1242,6 +1283,17 @@ namespace hist_mmorpg
             string textToDisplay = "";
             textToDisplay += this.displayCharacter(charToView);
             this.meetingPlaceCharDisplayTextBox.Text = textToDisplay;
+        }
+
+        private void charMultiMoveBtn_Click(object sender, EventArgs e)
+        {
+            bool success = false;
+            Fief target = fiefMasterList.Find(x => x.fiefID == this.charMultiMoveTextBox.Text);
+            this.charToView.goTo = this.gameMap.getShortestPath(this.charToView.location, target);
+            if (this.charToView.goTo.Count > 0)
+            {
+                success = this.characterMultiMove(this.charToView);
+            }
         }
 
     }
