@@ -868,27 +868,15 @@ namespace hist_mmorpg
             string textToDisplay = "";
             textToDisplay += this.displayCharacter(this.charToView);
             this.characterTextBox.Text = textToDisplay;
+            if (! this.charModel.currentCharacter.employees.Contains(this.charToView))
+            {
+                this.charMultiMoveBtn.Enabled = false;
+            }
             this.characterContainer.BringToFront();
         }
         
         private void personalCharacteristicsAndAffairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            /* if (this.fiefContainer.Visible)
-            {
-                this.fiefContainer.Visible = false;
-            }
-
-            if (this.travelContainer.Visible)
-            {
-                this.travelContainer.Visible = false;
-            }
-            
-            if (!this.characterContainer.Visible)
-            {
-                this.displayCharacter(this.charModel.currentCharacter);
-                this.characterContainer.Visible = true;
-            } */
-
             this.charToView = this.charModel.currentCharacter;
             this.refreshCharacterContainer();
         }
