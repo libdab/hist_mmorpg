@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using QuickGraph;
+using CorrugatedIron;
+using CorrugatedIron.Models;
 
 namespace hist_mmorpg
 {
@@ -45,6 +47,14 @@ namespace hist_mmorpg
         /// Holds army's GameClock (season)
         /// </summary>
         public GameClock clock { get; set; }
+		/// <summary>
+		/// Holds target RiakCluster 
+		/// </summary>
+		RiakCluster cluster;
+		/// <summary>
+		/// Holds client to communicate with Riak cluster
+		/// </summary>
+		RiakClient client;
 
         /// <summary>
         /// Constructor for Form1
@@ -60,6 +70,9 @@ namespace hist_mmorpg
             fm.registerObserver(this);
             // initialise display
             InitializeComponent();
+			// initialise Riak elements
+			cluster = (RiakCluster)RiakCluster.FromConfig("riakConfig");
+			client = (RiakClient)cluster.CreateClient();
             // create game objects
             PlayerCharacter thisPC = this.initGameObjects();
             // inform models of initial game objects
@@ -268,15 +281,15 @@ namespace hist_mmorpg
             List<Fief> myFiefsOwned2 = new List<Fief>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myFief1, myGoTo1, "E1", 90, 4.0, 7.2, 6.1, skillsArray1, false, true, false, this.clock, false, 13000, myEmployees1, myFiefsOwned1);
+			PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, "E1", 90, 4.0, 7.2, 6.1, skillsArray1, false, true, false, false, 13000, myEmployees1, myFiefsOwned1, cl: this.clock, loc: myFief1);
             charMasterList.Add(myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, myGoTo2, "E1", 90, 4.0, 5.0, 4.5, skillsArray1, true, false, false, this.clock, false, 13000, myEmployees2, myFiefsOwned2);
+			PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, "E1", 90, 4.0, 5.0, 4.5, skillsArray1, true, false, false, false, 13000, myEmployees2, myFiefsOwned2, cl: this.clock, loc: myFief1);
             charMasterList.Add(myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, myGoTo3, "E1", 90, 4.0, 3.3, 6.7, skillsArray1, false, false, false, this.clock, 0, false);
+			NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, "E1", 90, 4.0, 3.3, 6.7, skillsArray1, false, false, false, 0, false, cl: this.clock, loc: myFief1);
             charMasterList.Add(myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myFief1, myGoTo4, "E1", 90, 4.0, 7.1, 5.2, skillsArray1, false, false, false, this.clock, 10000, true, mb: myChar1);
+			NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, "E1", 90, 4.0, 7.1, 5.2, skillsArray1, false, false, false, 10000, true, mb: myChar1, cl: this.clock, loc: myFief1);
             charMasterList.Add(myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myFief1, myGoTo5, "E1", 90, 4.0, 4.0, 6.0, skillsArray1, false, true, true, this.clock, 0, false);
+			NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myGoTo5, "E1", 90, 4.0, 4.0, 6.0, skillsArray1, false, true, true, 0, false, cl: this.clock, loc: myFief1);
             charMasterList.Add(myWife);
 
             // Add me a wife
@@ -340,21 +353,218 @@ namespace hist_mmorpg
             this.fiefToView = myChar1.location;
 
             // try retrieving fief from masterlist using fiefID
-            Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
-            Fief target = fiefMasterList.Find(x => x.fiefID == "ESX01");
+			//  Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
+			// Fief target = fiefMasterList.Find(x => x.fiefID == "ESX01");
             // string fiefName = result.name;
             // System.Windows.Forms.MessageBox.Show(fiefName);
 
             // try shortest path
             // string toDisplayNow = myHexMap.getShortestPathString(source, target);
             // System.Windows.Forms.MessageBox.Show(toDisplayNow);
-            myChar1.goTo = myHexMap.getShortestPath(myChar1.location, target);
+			// myChar1.goTo = myHexMap.getShortestPath(myChar1.location, target);
 
-            return myChar1;
+			// var cluster = RiakCluster.FromConfig("riakConfig");
+			// var client = cluster.CreateClient();
+
+			/*
+			// TEST RIAK SUFF
+			// test writing skill to Riak
+			var o = new RiakObject("skills", command.name, command);
+			var putResult = client.Put(o);
+
+			if (putResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Successfully saved " + o.Key + " to bucket " + o.Bucket);
+				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Are you *really* sure Riak is running?");
+				// Console.WriteLine("Are you *really* sure Riak is running?");
+				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
+			}
+
+			// test creating new skill from Riak
+			var ojResult = client.Get("skills", "Command");
+			var oj = new Skill();
+
+			if (ojResult.IsSuccess)
+			{
+				oj = ojResult.Value.GetObject<Skill>();
+				string displaySkill = "";
+				displaySkill += "Successfully retrieved " + oj.name + " from skills bucket \r\n";
+				foreach (KeyValuePair<string, int> entry in oj.effects)
+				{
+					displaySkill += entry.Key + ": " + entry.Value + "\r\n";
+				}
+				System.Windows.Forms.MessageBox.Show(displaySkill);
+				// Console.WriteLine("I found {0} in {1}", oj.EmailAddress, contributors);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Something went wrong!");
+				// Console.WriteLine("{0}: {1}", ojResult.ResultCode, ojResult.ErrorMessage);
+			}
+
+			// test writing terrain to Riak
+			var oo = new RiakObject("terrains", Convert.ToString(mountains.terrainCode), mountains);
+			var ooPutResult = client.Put(oo);
+
+			if (ooPutResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Successfully saved " + oo.Key + " to bucket " + oo.Bucket);
+				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Are you *really* sure Riak is running?");
+				// Console.WriteLine("Are you *really* sure Riak is running?");
+				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
+			}
+
+			// test writing province to Riak
+			Province_Riak riakProv = this.ProvinceToRiak (myProv2);
+			var p = new RiakObject("provinces", riakProv.provinceID, riakProv);
+			var pPutResult = client.Put(p);
+
+			if (pPutResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Successfully saved " + p.Key + " to bucket " + p.Bucket);
+				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Are you *really* sure Riak is running?");
+				// Console.WriteLine("Are you *really* sure Riak is running?");
+				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
+			}
+
+			// test getting province from Riak
+			var prResult = client.Get("provinces", "ESX00");
+			var pr = new Province_Riak();
+			pr = prResult.Value.GetObject<Province_Riak>();
+			Province myProv3 = this.ProvinceFromRiak (pr);
+
+			if (prResult.IsSuccess) {
+				string toDisplay = "";
+				toDisplay += "New Province " + myProv3.name + " extracted from Riak\r\n";
+				toDisplay += "Overlord: " + myProv3.overlord.name;
+				System.Windows.Forms.MessageBox.Show (toDisplay);
+			} else {
+				System.Windows.Forms.MessageBox.Show ("problem extracting Province from Riak!");
+			}
+
+			// test writing PlayerCharacter to Riak
+			NonPlayerCharacter_Riak riakNPC = this.NPCtoRiak (myNPC2);
+			var ppp = new RiakObject("characters", riakNPC.charID, riakNPC);
+			var pppPutResult = client.Put(ppp);
+
+			if (pppPutResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Successfully saved " + ppp.Key + " to bucket " + ppp.Bucket);
+				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Are you *really* sure Riak is running?");
+				// Console.WriteLine("Are you *really* sure Riak is running?");
+				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
+			}
+			*/
+
+			return myChar1;
 
         }
 
-        /// <summary>
+		/// <summary>
+		/// Converts PlayerCharacter objects (containing nested objects) into suitable format for JSON serialisation
+		/// </summary>
+		/// <param name="pc">PlayerCharacter to be converted</param>
+		public PlayerCharacter_Riak PCtoRiak(PlayerCharacter pc)
+		{
+			PlayerCharacter_Riak pcOut = null;
+			pcOut = new PlayerCharacter_Riak (pc);
+			return pcOut;
+		}
+
+		/// <summary>
+		/// Converts NonPlayerCharacter objects (containing nested objects) into suitable format for JSON serialisation
+		/// </summary>
+		/// <param name="npc">NonPlayerCharacter to be converted</param>
+		public NonPlayerCharacter_Riak NPCtoRiak(NonPlayerCharacter npc)
+		{
+			NonPlayerCharacter_Riak npcOut = null;
+			npcOut = new NonPlayerCharacter_Riak (npc);
+			return npcOut;
+		}
+
+		/// <summary>
+		/// Converts PlayerCharacter_Riak objects into PlayerCharacter game objects
+		/// </summary>
+		/// <param name="pcr">PlayerCharacter_Riak object to be converted</param>
+		public PlayerCharacter PCfromRiak(PlayerCharacter_Riak pcr)
+		{
+			PlayerCharacter pcOut = null;
+			// create PlayerCharacter from PlayerCharacter_Riak
+			pcOut = new PlayerCharacter (pcr);
+
+			// insert game clock
+			pcOut.clock = this.clock;
+
+			// insert skills
+
+			// insert
+
+			// insert employees
+			if (pcr.employees.Count > 0)
+			{
+				for (int i = 0; i < pcr.employees.Count; i++)
+				{
+					NonPlayerCharacter employee = (NonPlayerCharacter)charMasterList.Find(x => x.charID == pcr.employees[i]);
+					pcOut.employees.Add (employee);
+				}
+			}
+
+			// insert owned fiefs
+			if (pcr.ownedFiefs.Count > 0)
+			{
+				for (int i = 0; i < pcr.ownedFiefs.Count; i++)
+				{
+					Fief owned = fiefMasterList.Find(x => x.fiefID == pcr.ownedFiefs[i]);
+					pcOut.ownedFiefs.Add (owned);
+				}
+			}
+			return pcOut;
+		}
+
+		/// <summary>
+		/// Converts Province object into suitable format for JSON serialisation
+		/// </summary>
+		/// <param name="p">Province to be converted</param>
+		public Province_Riak ProvinceToRiak(Province p)
+		{
+			Province_Riak oOut = null;
+			oOut = new Province_Riak (p);
+			return oOut;
+		}
+
+		/// <summary>
+		/// Converts Province_Riak objects into Province game objects
+		/// </summary>
+		/// <param name="pr">Province_Riak to be converted</param>
+		public Province ProvinceFromRiak(Province_Riak pr)
+		{
+			Province oOut = null;
+			oOut = new Province (pr);
+			if (pr.overlordID != null)
+			{
+				Character oLord = charMasterList.Find(x => x.charID == pr.overlordID);
+				oOut.overlord = oLord;
+			}
+			return oOut;
+		}
+
+		/// <summary>
         /// Updates game objects at end/start of season
         /// </summary>
         public void seasonUpdate()
@@ -868,10 +1078,14 @@ namespace hist_mmorpg
             string textToDisplay = "";
             textToDisplay += this.displayCharacter(this.charToView);
             this.characterTextBox.Text = textToDisplay;
-            if (! this.charModel.currentCharacter.employees.Contains(this.charToView))
-            {
-                this.charMultiMoveBtn.Enabled = false;
-            }
+
+			if (this.charModel.currentCharacter != this.charToView)
+			{
+				if (! this.charModel.currentCharacter.employees.Contains(this.charToView))
+				{
+					this.charMultiMoveBtn.Enabled = false;
+				}
+			}
             this.characterContainer.BringToFront();
         }
         

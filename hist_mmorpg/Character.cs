@@ -51,7 +51,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Queue of Fiefs to auto-travel to
         /// </summary>
-        public Queue<Fief> goTo { get; set; }
+		public Queue<Fief> goTo = new Queue<Fief> ();
         /// <summary>
         /// Holds character language
         /// </summary>
@@ -116,7 +116,6 @@ namespace hist_mmorpg
         /// <param name="hea">Double holding character current health</param>
         /// <param name="mxHea">Double holding character maximum health</param>
         /// <param name="vir">Double holding character virility rating</param>
-        /// <param name="loc">Fief holding character location (fief ID)</param>
         /// <param name="go">Queue<Fief> of Fiefs to auto-travel to</param>
         /// <param name="lang">String holding character language code</param>
         /// <param name="day">double holding character remaining days in season</param>
@@ -127,12 +126,13 @@ namespace hist_mmorpg
         /// <param name="marr">char holding character marital status</param>
         /// <param name="preg">bool holding character pregnancy status</param>
         /// <param name="cl">GameClock holding season</param>
+		/// <param name="loc">Fief holding character location (fief ID)</param>
         /// <param name="sp">Character holding spouse</param>
         /// <param name="fath">Character holding father</param>
         /// <param name="famHead">Character holding head of family</param>
         public Character(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Fief loc, Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
-            GameClock cl, Character sp = null, Character fath = null, Character famHead = null)
+            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
+			GameClock cl = null, Fief loc = null, Character sp = null, Character fath = null, Character famHead = null)
         {
 
             // validation
@@ -221,7 +221,6 @@ namespace hist_mmorpg
             this.health = hea;
             this.maxHealth = mxHea;
             this.virility = vir;
-            this.location = loc;
             this.goTo = go;
             this.language = lang;
             this.days = day;
@@ -233,10 +232,56 @@ namespace hist_mmorpg
             this.married = marr;
             this.pregnant = preg;
             this.clock = cl;
+			this.location = loc;
             this.spouse = sp;
             this.father = fath;
             this.familyHead = famHead;
         }
+
+		/// <summary>
+		/// Constructor for Character using PlayerCharacter_Riak or NonPlayerCharacter_Riak object
+		/// </summary>
+		/// <param name="pcr">PlayerCharacter_Riak object to use as source</param>
+		/// <param name="npcr">NonPlayerCharacter_Riak object to use as source</param>
+		public Character(PlayerCharacter_Riak pcr = null, NonPlayerCharacter_Riak npcr = null)
+		{
+			Character_Riak charToUse = null;
+
+			if (pcr != null)
+			{
+				charToUse = pcr;
+			}
+			else if (npcr != null)
+			{
+				charToUse = npcr;
+			}
+
+			if (charToUse != null)
+			{
+				this.charID = charToUse.charID;
+				this.name = charToUse.name;
+				this.age = charToUse.age;
+				this.isMale = charToUse.isMale;
+				this.nationality = charToUse.nationality;
+				this.health = charToUse.health;
+				this.maxHealth = charToUse.maxHealth;
+				this.virility = charToUse.virility;
+				this.language = charToUse.language;
+				this.days = charToUse.days;
+				this.stature = charToUse.stature;
+				this.management = charToUse.management;
+				this.combat = charToUse.combat;
+				this.skills = new Skill[charToUse.skills.Length];
+				this.inKeep = charToUse.inKeep;
+				this.married = charToUse.married;
+				this.pregnant = charToUse.pregnant;
+				this.clock = null;
+				this.location = null;
+				this.spouse = null;
+				this.father = null;
+				this.familyHead = null;
+			}
+		}
 
         /// <summary>
         /// Checks for character death
@@ -575,9 +620,9 @@ namespace hist_mmorpg
         /// <param name="emp">List<NonPlayerCharacter> holding employees of character</param>
         /// <param name="kps">List<Fief> holding fiefs owned by character</param>
         public PlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Fief loc, Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
-            GameClock cl, bool outl, uint pur, List<NonPlayerCharacter> emp, List<Fief> kps, Character sp = null, Character fath = null, Character famHead = null)
-            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, sp, fath, famHead)
+            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
+			bool outl, uint pur, List<NonPlayerCharacter> emp, List<Fief> kps, GameClock cl = null, Fief loc = null, Character sp = null, Character fath = null, Character famHead = null)
+			: base(id, nam, ag, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, loc, sp, fath, famHead)
         {
 
             this.outlawed = outl;
@@ -585,6 +630,18 @@ namespace hist_mmorpg
             this.employees = emp;
             this.ownedFiefs = kps;
         }
+
+		/// <summary>
+		/// Constructor for PlayerCharacter using PlayerCharacter_Riak object
+		/// </summary>
+		/// <param name="pcr">PlayerCharacter_Riak object to use as source</param>
+		public PlayerCharacter(PlayerCharacter_Riak pcr)
+			: base(pcr: pcr)
+		{
+
+			this.outlawed = pcr.outlawed;
+			this.purse = pcr.purse;
+		}
 
         /// <summary>
         /// Processes an offer for employment
@@ -839,9 +896,9 @@ namespace hist_mmorpg
         /// <param name="wa">string holding NPC's wages</param>
         /// <param name="inEnt">bool denoting if in/out of boss's entourage</param>
         public NonPlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Fief loc, Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
-            GameClock cl, uint wa, bool inEnt, Character mb = null, Character sp = null, Character fath = null, Character famHead = null)
-            : base(id, nam, ag, isM, nat, hea, mxHea, vir, loc, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, sp, fath, famHead)
+            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
+			uint wa, bool inEnt, Character mb = null, GameClock cl = null, Fief loc = null, Character sp = null, Character fath = null, Character famHead = null)
+			: base(id, nam, ag, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, loc, sp, fath, famHead)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -852,6 +909,19 @@ namespace hist_mmorpg
             this.inEntourage = inEnt;
             this.lastOffer = new Dictionary<string, uint>();
         }
+
+		/// <summary>
+		/// Constructor for NonPlayerCharacter using NonPlayerCharacter_Riak object
+		/// </summary>
+		/// <param name="npcr">NonPlayerCharacter_Riak object to use as source</param>
+		public NonPlayerCharacter(NonPlayerCharacter_Riak npcr)
+			: base(npcr: npcr)
+		{
+			this.myBoss = null;
+			this.wage = npcr.wage;
+			this.inEntourage = npcr.inEntourage;
+			this.lastOffer = npcr.lastOffer;
+		}
 
         /// <summary>
         /// Calculates potential salary (per season) for NPC, taking into account hiring player's stature
@@ -896,5 +966,269 @@ namespace hist_mmorpg
         }
 
     }
+
+	/// <summary>
+	/// Class used to convert Character to/from format suitable for Riak
+	/// </summary>
+	public class Character_Riak
+	{
+
+		/// <summary>
+		/// Holds character ID
+		/// </summary>
+		public string charID { get; set; }
+		/// <summary>
+		/// Holds character name
+		/// </summary>
+		public String name { get; set; }
+		/// <summary>
+		/// Holds character age
+		/// </summary>
+		public uint age { get; set; }
+		/// <summary>
+		/// Holds if character male
+		/// </summary>
+		public bool isMale { get; set; }
+		/// <summary>
+		/// Holds character nationality
+		/// </summary>
+		public String nationality { get; set; }
+		/// <summary>
+		/// Holds character current health
+		/// </summary>
+		public Double health { get; set; }
+		/// <summary>
+		/// Holds character maximum health
+		/// </summary>
+		public Double maxHealth { get; set; }
+		/// <summary>
+		/// Holds character virility
+		/// </summary>
+		public Double virility { get; set; }
+		/// <summary>
+		/// Queue of Fiefs to auto-travel to
+		/// </summary>
+		public Queue<String> goTo { get; set; }
+		/// <summary>
+		/// Holds character language
+		/// </summary>
+		public string language { get; set; }
+		/// <summary>
+		/// Holds character's remaining days in season
+		/// </summary>
+		public double days { get; set; }
+		/// <summary>
+		/// Holds character's stature
+		/// </summary>
+		public Double stature { get; set; }
+		/// <summary>
+		/// Holds character's management rating
+		/// </summary>
+		public Double management { get; set; }
+		/// <summary>
+		/// Holds character's combat rating
+		/// </summary>
+		public Double combat { get; set; }
+		/// <summary>
+		/// Array holding character's skills
+		/// </summary>
+		public String[] skills { get; set; }
+		/// <summary>
+		/// bool indicating if character is in the keep
+		/// </summary>
+		public bool inKeep { get; set; }
+		/// <summary>
+		/// Holds character marital status
+		/// </summary>
+		public bool married { get; set; }
+		/// <summary>
+		/// Holds character pregnancy status
+		/// </summary>
+		public bool pregnant { get; set; }
+		/// <summary>
+		/// Holds army's GameClock (season)
+		/// </summary>
+		public GameClock clock { get; set; }
+		/// <summary>
+		/// Holds current location (Fief ID)
+		/// </summary>
+		public String location { get; set; }
+		/// <summary>
+		/// Holds spouse (Character ID)
+		/// </summary>
+		public String spouse { get; set; }
+		/// <summary>
+		/// Holds father (Character ID)
+		/// </summary>
+		public String father { get; set; }
+		/// <summary>
+		/// Holds head of family (Character ID)
+		/// </summary>
+		public String familyHead { get; set; }
+
+		/// <summary>
+		/// Constructor for Character_Riak
+		/// </summary>
+		/// <param name="pc">PlayerCharacter object to use as source</param>
+		/// <param name="npc">NonPlayerCharacter object to use as source</param>
+		public Character_Riak(PlayerCharacter pc = null, NonPlayerCharacter npc = null)
+		{
+			Character charToUse = null;
+
+			if (pc != null)
+			{
+				charToUse = pc;
+			}
+			else if (npc != null)
+			{
+				charToUse = npc;
+			}
+
+			if (charToUse != null)
+			{
+				this.charID = charToUse.charID;
+				this.name = charToUse.name;
+				this.age = charToUse.age;
+				this.isMale = charToUse.isMale;
+				this.nationality = charToUse.nationality;
+				this.health = charToUse.health;
+				this.maxHealth = charToUse.maxHealth;
+				this.virility = charToUse.virility;
+				if (charToUse.goTo.Count > 0)
+				{
+					foreach (Fief value in charToUse.goTo)
+						// for (int i = 0; i < pc.goTo.Count; i++)
+					{
+						this.goTo.Enqueue (value.fiefID);
+					}
+				}
+				this.language = charToUse.language;
+				this.days = charToUse.days;
+				this.stature = charToUse.stature;
+				this.management = charToUse.management;
+				this.combat = charToUse.combat;
+				this.skills = new String[charToUse.skills.Length];
+				for (int i = 0; i < charToUse.skills.Length; i++)
+				{
+					this.skills [i] = charToUse.skills [i].name;
+				}
+				this.inKeep = charToUse.inKeep;
+				this.married = charToUse.married;
+				this.pregnant = charToUse.pregnant;
+				this.clock = null;
+				this.location = charToUse.location.fiefID;
+				if (charToUse.spouse != null) {
+					this.spouse = charToUse.spouse.charID;
+				} else {
+					this.spouse = null;
+				}
+				if (charToUse.father != null) {
+					this.father = charToUse.father.charID;
+				} else {
+					this.father = null;
+				}
+				if (charToUse.familyHead != null) {
+					this.familyHead = charToUse.familyHead.charID;
+				} else {
+					this.familyHead = null;
+				}
+			}
+		}
+
+	}
+
+	/// <summary>
+	/// Class used to convert PlayerCharacter to/from format suitable for Riak
+	/// </summary>
+	public class PlayerCharacter_Riak : Character_Riak
+	{
+
+		/// <summary>
+		/// Holds character outlawed status
+		/// </summary>
+		public bool outlawed { get; set; }
+		/// <summary>
+		/// Holds character's finances
+		/// </summary>
+		public uint purse { get; set; }
+		/// <summary>
+		/// Holds character's entourage
+		/// </summary>
+		public List<String> employees = new List<String>();
+		/// <summary>
+		/// Holds character's entourage
+		/// </summary>
+		public List<String> ownedFiefs = new List<String>();
+
+		/// <summary>
+		/// Constructor for PlayerCharacter_Riak
+		/// </summary>
+		/// <param name="pc">PlayerCharacter object</param>
+		public PlayerCharacter_Riak(PlayerCharacter pc)
+			: base(pc: pc)
+		{
+
+			this.outlawed = pc.outlawed;
+			this.purse = pc.purse;
+			if (pc.employees.Count > 0)
+			{
+				for (int i = 0; i < pc.employees.Count; i++)
+				{
+					this.employees.Add (pc.employees[i].charID);
+				}
+			}
+			if (pc.ownedFiefs.Count > 0)
+			{
+				for (int i = 0; i < pc.ownedFiefs.Count; i++)
+				{
+					this.ownedFiefs.Add (pc.ownedFiefs[i].fiefID);
+				}
+			}
+		}
+	}
+
+	/// <summary>
+	/// Class used to convert NonPlayerCharacter to/from format suitable for Riak
+	/// </summary>
+	public class NonPlayerCharacter_Riak : Character_Riak
+	{
+
+		/// <summary>
+		/// Holds NPC's boss
+		/// </summary>
+		public String myBoss { get; set; }
+		/// <summary>
+		/// Holds NPC's wages
+		/// </summary>
+		public uint wage { get; set; }
+		/// <summary>
+		/// Holds last wage offer
+		/// </summary>
+		public Dictionary<string, uint> lastOffer { get; set; }
+		/// <summary>
+		/// Denotes if in/out of boss's entourage
+		/// </summary>
+		public bool inEntourage { get; set; }
+
+
+		/// <summary>
+		/// Constructor for NonPlayerCharacter_Riak
+		/// </summary>
+		/// <param name="npc">NonPlayerCharacter object</param>
+		public NonPlayerCharacter_Riak(NonPlayerCharacter npc)
+			: base(npc: npc)
+		{
+
+			if (npc.myBoss != null)
+			{
+				this.myBoss = npc.myBoss.charID;
+			}
+			this.wage = npc.wage;
+			this.inEntourage = npc.inEntourage;
+			this.lastOffer = npc.lastOffer;
+		}
+	}
+
+
 
 }

@@ -39,5 +39,9 @@ namespace hist_mmorpg
             this.effects = effs;
 
         }
+
+		public Skill()
+		{
+		}
     }
 }

@@ -21,7 +21,7 @@ namespace hist_mmorpg
         /// </summary>
         public String name { get; set; }
         /// <summary>
-        /// Holds province overlord (ID)
+		/// Holds province overlord (Character object)
         /// </summary>
         public Character overlord { get; set; }
         /// <summary>
@@ -68,5 +68,65 @@ namespace hist_mmorpg
             this.language = lang;
 
         }
+
+		/// <summary>
+		/// Constructor for Province using Province_Riak object
+		/// </summary>
+		/// <param name="pr">Province_Riak object</param>
+		public Province(Province_Riak pr)
+		{
+			this.provinceID = pr.provinceID;
+			this.name = pr.name;
+			this.overlord = null;
+			this.overlordTaxRate = pr.overlordTaxRate;
+			this.language = pr.language;
+		}
     }
+
+	/// <summary>
+	/// Class converting province data into format suitable for Riak (JSON) storage
+	/// </summary>
+	public class Province_Riak
+	{
+
+		/// <summary>
+		/// Holds province ID
+		/// </summary>
+		public String provinceID { get; set; }
+		/// <summary>
+		/// Holds province name
+		/// </summary>
+		public String name { get; set; }
+		/// <summary>
+		/// Holds province overlord (ID)
+		/// </summary>
+		public String overlordID { get; set; }
+		/// <summary>
+		/// Holds province overlord tax rate
+		/// </summary>
+		public Double overlordTaxRate { get; set; }
+		/// <summary>
+		/// Holds province language
+		/// </summary>
+		public string language { get; set; }
+
+		/// <summary>
+		/// Constructor for Province_Riak
+		/// </summary>
+		/// <param name="prov">Province object</param>
+		public Province_Riak(Province prov)
+		{
+
+			this.provinceID = prov.provinceID;
+			this.name = prov.name;
+			this.overlordID = prov.overlord.charID;
+			this.overlordTaxRate = prov.overlordTaxRate;
+			this.language = prov.language;
+
+		}
+
+		public Province_Riak()
+		{
+		}
+	}
 }
