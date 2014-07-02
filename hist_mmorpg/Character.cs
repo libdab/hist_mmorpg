@@ -9,7 +9,7 @@ namespace hist_mmorpg
     /// <summary>
     /// Class storing data on character
     /// </summary>
-    public class Character
+    public abstract class Character
     {
 
         /// <summary>
@@ -44,10 +44,6 @@ namespace hist_mmorpg
         /// Holds character virility
         /// </summary>
         public Double virility { get; set; }
-        /// <summary>
-        /// Holds current location (Fief object)
-        /// </summary>
-        public Fief location { get; set; }
         /// <summary>
         /// Queue of Fiefs to auto-travel to
         /// </summary>
@@ -89,21 +85,25 @@ namespace hist_mmorpg
         /// </summary>
         public bool pregnant { get; set; }
         /// <summary>
+        /// Holds head of family (charID)
+        /// </summary>
+        public String familyHead { get; set; }
+        /// <summary>
+        /// Holds spouse (charID)
+        /// </summary>
+        public String spouse { get; set; }
+        /// <summary>
+        /// Holds father (CharID)
+        /// </summary>
+        public String father { get; set; }
+        /// <summary>
+        /// Holds current location (Fief object)
+        /// </summary>
+        public Fief location { get; set; }
+        /// <summary>
         /// Holds army's GameClock (season)
         /// </summary>
         public GameClock clock { get; set; }
-        /// <summary>
-        /// Holds spouse (Character)
-        /// </summary>
-        public Character spouse { get; set; }
-        /// <summary>
-        /// Holds father (Character)
-        /// </summary>
-        public Character father { get; set; }
-        /// <summary>
-        /// Holds head of family (Character)
-        /// </summary>
-        public Character familyHead { get; set; }
 
         /// <summary>
         /// Constructor for Character
@@ -125,14 +125,14 @@ namespace hist_mmorpg
         /// <param name="inK">bool indicating if character is in the keep</param>
         /// <param name="marr">char holding character marital status</param>
         /// <param name="preg">bool holding character pregnancy status</param>
+        /// <param name="famHead">String holding head of family (ID)</param>
+        /// <param name="sp">String holding spouse (ID)</param>
+        /// <param name="fath">String holding father</param>
         /// <param name="cl">GameClock holding season</param>
-		/// <param name="loc">Fief holding character location (fief ID)</param>
-        /// <param name="sp">Character holding spouse</param>
-        /// <param name="fath">Character holding father</param>
-        /// <param name="famHead">Character holding head of family</param>
+		/// <param name="loc">Fief holding current location</param>
         public Character(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
-			GameClock cl = null, Fief loc = null, Character sp = null, Character fath = null, Character famHead = null)
+            String famHead, String sp, String fath, GameClock cl = null, Fief loc = null)
         {
 
             // validation
@@ -620,9 +620,9 @@ namespace hist_mmorpg
         /// <param name="emp">List<NonPlayerCharacter> holding employees of character</param>
         /// <param name="kps">List<Fief> holding fiefs owned by character</param>
         public PlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
-			bool outl, uint pur, List<NonPlayerCharacter> emp, List<Fief> kps, GameClock cl = null, Fief loc = null, Character sp = null, Character fath = null, Character famHead = null)
-			: base(id, nam, ag, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, loc, sp, fath, famHead)
+            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg, String famHead,
+            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> emp, List<Fief> kps, GameClock cl = null, Fief loc = null)
+            : base(id, nam, ag, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
         {
 
             this.outlawed = outl;
@@ -731,7 +731,7 @@ namespace hist_mmorpg
         {
             this.employees.Add(npc);
             npc.wage = wage;
-            npc.myBoss = this;
+            npc.myBoss = this.charID;
             npc.lastOffer.Clear();
         }
 
@@ -872,9 +872,9 @@ namespace hist_mmorpg
     {
 
         /// <summary>
-        /// Holds NPC's boss
+        /// Holds NPC's boss (charID)
         /// </summary>
-        public Character myBoss { get; set; }
+        public String myBoss { get; set; }
         /// <summary>
         /// Holds NPC's wages
         /// </summary>
@@ -891,14 +891,14 @@ namespace hist_mmorpg
         /// <summary>
         /// Constructor for NonPlayerCharacter
         /// </summary>
-        /// <param name="mb">uint holding NPC's boss (ID)</param>
+        /// <param name="mb">String holding NPC's boss (ID)</param>
         /// <param name="go">String holding fief ID for destination (specified by NPC's boss)</param>
         /// <param name="wa">string holding NPC's wages</param>
         /// <param name="inEnt">bool denoting if in/out of boss's entourage</param>
-        public NonPlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
-			uint wa, bool inEnt, Character mb = null, GameClock cl = null, Fief loc = null, Character sp = null, Character fath = null, Character famHead = null)
-			: base(id, nam, ag, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, cl, loc, sp, fath, famHead)
+        public NonPlayerCharacter(String id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
+            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg, String famHead,
+            String sp, String fath, uint wa, bool inEnt, String mb = null, GameClock cl = null, Fief loc = null)
+            : base(id, nam, ag, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -1118,17 +1118,17 @@ namespace hist_mmorpg
 				this.clock = null;
 				this.location = charToUse.location.fiefID;
 				if (charToUse.spouse != null) {
-					this.spouse = charToUse.spouse.charID;
+					this.spouse = charToUse.spouse;
 				} else {
 					this.spouse = null;
 				}
 				if (charToUse.father != null) {
-					this.father = charToUse.father.charID;
+					this.father = charToUse.father;
 				} else {
 					this.father = null;
 				}
 				if (charToUse.familyHead != null) {
-					this.familyHead = charToUse.familyHead.charID;
+					this.familyHead = charToUse.familyHead;
 				} else {
 					this.familyHead = null;
 				}
@@ -1221,7 +1221,7 @@ namespace hist_mmorpg
 
 			if (npc.myBoss != null)
 			{
-				this.myBoss = npc.myBoss.charID;
+				this.myBoss = npc.myBoss;
 			}
 			this.wage = npc.wage;
 			this.inEntourage = npc.inEntourage;

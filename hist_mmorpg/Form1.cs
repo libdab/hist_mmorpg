@@ -16,13 +16,17 @@ namespace hist_mmorpg
     {
 
         /// <summary>
-        /// Holds all Character objects
+        /// Holds all NonPlayerCharacter objects
         /// </summary>
-        private List<Character> charMasterList = new List<Character>();
+        public Dictionary<string, NonPlayerCharacter> npcMasterList = new Dictionary<string, NonPlayerCharacter>();
+        /// <summary>
+        /// Holds all PlayerCharacter objects
+        /// </summary>
+        public Dictionary<string, PlayerCharacter> pcMasterList = new Dictionary<string, PlayerCharacter>();
         /// <summary>
         /// Holds all Fief objects
         /// </summary>
-        private List<Fief> fiefMasterList = new List<Fief>();
+        public Dictionary<string, Fief> fiefMasterList = new Dictionary<string, Fief>();
         /// <summary>
         /// Holds CharacterModel
         /// </summary>
@@ -213,19 +217,19 @@ namespace hist_mmorpg
             Province myProv2 = new Province("ESR00", "Surrey, England", 6.2, "E1");
 
             Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief1Chars, keep1BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief1);
+            fiefMasterList.Add(myFief1.fiefID, myFief1);
             Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', hills, fief2Chars, keep2BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief2);
+            fiefMasterList.Add(myFief2.fiefID, myFief2);
             Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief3Chars, keep3BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief3);
+            fiefMasterList.Add(myFief3.fiefID, myFief3);
             Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief4Chars, keep4BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief4);
+            fiefMasterList.Add(myFief4.fiefID, myFief4);
             Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief5Chars, keep5BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief5);
+            fiefMasterList.Add(myFief5.fiefID, myFief5);
             Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief6Chars, keep6BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief6);
+            fiefMasterList.Add(myFief6.fiefID, myFief6);
             Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', forrest, fief7Chars, keep7BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief7);
+            fiefMasterList.Add(myFief7.fiefID, myFief7);
             Army myArmy = new Army(0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
             // create QuickGraph undirected graph
@@ -281,22 +285,17 @@ namespace hist_mmorpg
             List<Fief> myFiefsOwned2 = new List<Fief>();
 
             // create some characters
-			PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, "E1", 90, 4.0, 7.2, 6.1, skillsArray1, false, true, false, false, 13000, myEmployees1, myFiefsOwned1, cl: this.clock, loc: myFief1);
-            charMasterList.Add(myChar1);
-			PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, "E1", 90, 4.0, 5.0, 4.5, skillsArray1, true, false, false, false, 13000, myEmployees2, myFiefsOwned2, cl: this.clock, loc: myFief1);
-            charMasterList.Add(myChar2);
-			NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, "E1", 90, 4.0, 3.3, 6.7, skillsArray1, false, false, false, 0, false, cl: this.clock, loc: myFief1);
-            charMasterList.Add(myNPC1);
-			NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, "E1", 90, 4.0, 7.1, 5.2, skillsArray1, false, false, false, 10000, true, mb: myChar1, cl: this.clock, loc: myFief1);
-            charMasterList.Add(myNPC2);
-			NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myGoTo5, "E1", 90, 4.0, 4.0, 6.0, skillsArray1, false, true, true, 0, false, cl: this.clock, loc: myFief1);
-            charMasterList.Add(myWife);
+			PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, "E1", 90, 4.0, 7.2, 6.1, skillsArray1, false, true, false, "200", "403", "", false, 13000, myEmployees1, myFiefsOwned1, cl: this.clock, loc: myFief1);
+            pcMasterList.Add(myChar1.charID, myChar1);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, "E1", 90, 4.0, 5.0, 4.5, skillsArray1, true, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, cl: this.clock, loc: myFief1);
+            pcMasterList.Add(myChar2.charID, myChar2);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, "E1", 90, 4.0, 3.3, 6.7, skillsArray1, false, false, false, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
+            npcMasterList.Add(myNPC1.charID, myNPC1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, "E1", 90, 4.0, 7.1, 5.2, skillsArray1, false, false, false, "200", "", "", 10000, true, mb: myChar1.charID, cl: this.clock, loc: myFief1);
+            npcMasterList.Add(myNPC2.charID, myNPC2);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myGoTo5, "E1", 90, 4.0, 4.0, 6.0, skillsArray1, false, true, true, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
+            npcMasterList.Add(myWife.charID, myWife);
 
-            // Add me a wife
-            myChar1.spouse = myWife;
-            // And my wife a husband
-            myWife.spouse = myChar1;
-            
             // set fief owners
             myFief1.owner = myChar1;
             myFief2.owner = myChar2;
@@ -520,7 +519,7 @@ namespace hist_mmorpg
 			{
 				for (int i = 0; i < pcr.employees.Count; i++)
 				{
-					NonPlayerCharacter employee = (NonPlayerCharacter)charMasterList.Find(x => x.charID == pcr.employees[i]);
+					NonPlayerCharacter employee = npcMasterList[pcr.employees[i]];
 					pcOut.employees.Add (employee);
 				}
 			}
@@ -530,7 +529,7 @@ namespace hist_mmorpg
 			{
 				for (int i = 0; i < pcr.ownedFiefs.Count; i++)
 				{
-					Fief owned = fiefMasterList.Find(x => x.fiefID == pcr.ownedFiefs[i]);
+					Fief owned = fiefMasterList[pcr.ownedFiefs[i]];
 					pcOut.ownedFiefs.Add (owned);
 				}
 			}
@@ -558,7 +557,7 @@ namespace hist_mmorpg
 			oOut = new Province (pr);
 			if (pr.overlordID != null)
 			{
-				Character oLord = charMasterList.Find(x => x.charID == pr.overlordID);
+				Character oLord = pcMasterList[pr.overlordID];
 				oOut.overlord = oLord;
 			}
 			return oOut;
@@ -570,21 +569,26 @@ namespace hist_mmorpg
         public void seasonUpdate()
         {
             // fiefs
-            for (int i = 0; i < fiefMasterList.Count; i++ )
+            foreach (KeyValuePair<string, Fief> fief in this.fiefMasterList)
             {
-                fiefMasterList[i].updateFief();
+                fief.Value.updateFief();
             }
 
-            // characters
-            for (int i = 0; i < charMasterList.Count; i++)
+            // player characters
+            foreach (KeyValuePair<string, PlayerCharacter> pc in this.pcMasterList)
             {
-                if (charMasterList[i].health != 0)
+                if (pc.Value.health != 0)
                 {
-                    charMasterList[i].updateCharacter();
-                    if (charMasterList[i] is NonPlayerCharacter)
-                    {
-                        this.seasonUpdateNPC((NonPlayerCharacter)charMasterList[i]);
-                    }
+                    pc.Value.updateCharacter();
+                }
+            }
+
+            // player characters
+            foreach (KeyValuePair<string, NonPlayerCharacter> npc in this.npcMasterList)
+            {
+                if (npc.Value.health != 0)
+                {
+                    this.seasonUpdateNPC(npc.Value);
                 }
             }
 
@@ -799,7 +803,7 @@ namespace hist_mmorpg
             charText += "\r\n";
             if (ch.married)
             {
-                charText += "Your spouse's ID is: " + ch.spouse.charID + "\r\n";
+                charText += "Your spouse's ID is: " + ch.spouse + "\r\n";
             }
             if (!ch.isMale)
             {
@@ -814,20 +818,21 @@ namespace hist_mmorpg
             {
                 if (ch.married)
                 {
-                    if (ch.spouse.pregnant)
+                    NonPlayerCharacter thisSpouse = npcMasterList[ch.spouse];
+                    if (thisSpouse.pregnant)
                     {
-                        charText += "Your wife is pregnant (congratulations!)\r\n";
+                        charText += "Your spouse is pregnant (congratulations!)\r\n";
                     }
                     else
                     {
-                        charText += "Your wife is not pregnant (try harder!)\r\n";
+                        charText += "Your spouse is not pregnant (try harder!)\r\n";
                     }
                 }
             }
             charText += "Father's ID: ";
             if (ch.father != null)
             {
-                charText += ch.father.charID;
+                charText += ch.father;
             }
             else
             {
@@ -837,7 +842,7 @@ namespace hist_mmorpg
             charText += "Head of family's ID: ";
             if (ch.familyHead != null)
             {
-                charText += ch.familyHead.charID;
+                charText += ch.familyHead;
             }
             else
             {
@@ -898,7 +903,7 @@ namespace hist_mmorpg
 
             if (ch.myBoss != null)
             {
-                npcText += "Hired by (ID): " + ch.myBoss.charID + "\r\n";
+                npcText += "Hired by (ID): " + ch.myBoss + "\r\n";
             }
             npcText += "Potential salary: " + ch.calcNPCwage() + "\r\n";
             npcText += "Last offer from this PC: ";
@@ -1490,7 +1495,7 @@ namespace hist_mmorpg
         private void charMultiMoveBtn_Click(object sender, EventArgs e)
         {
             bool success = false;
-            Fief target = fiefMasterList.Find(x => x.fiefID == this.charMultiMoveTextBox.Text);
+            Fief target = fiefMasterList[this.charMultiMoveTextBox.Text];
             this.charToView.goTo = this.gameMap.getShortestPath(this.charToView.location, target);
             if (this.charToView.goTo.Count > 0)
             {
