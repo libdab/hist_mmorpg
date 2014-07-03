@@ -12,6 +12,10 @@ namespace hist_mmorpg
     public class Skill
     {
 
+		/// <summary>
+		/// Holds skill ID
+		/// </summary>
+		public String skillID { get; set; }
         /// <summary>
         /// Holds skill name
         /// </summary>
@@ -24,9 +28,10 @@ namespace hist_mmorpg
         /// <summary>
         /// Constructor for Skill
         /// </summary>
-        /// <param name="nam">String holding skill name</param>
+		/// <param name="id">String holding skill ID</param>
+		/// <param name="nam">String holding skill name</param>
         /// <param name="effs">Dictionary<string name, int effect> holding skill effects</param>
-        public Skill(String nam, Dictionary<string, int> effs)
+		public Skill(String id, String nam, Dictionary<string, int> effs)
         {
 
             // validate nam length = 1-20
@@ -35,7 +40,8 @@ namespace hist_mmorpg
                 throw new InvalidDataException("Skill name must be between 1 and 20 characters in length");
             }
 
-            this.name = nam;
+			this.skillID = id;
+			this.name = nam;
             this.effects = effs;
 
         }

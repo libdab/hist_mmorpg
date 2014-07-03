@@ -266,6 +266,7 @@ namespace hist_mmorpg
 				this.health = charToUse.health;
 				this.maxHealth = charToUse.maxHealth;
 				this.virility = charToUse.virility;
+				this.goTo = new Queue<Fief> ();
 				this.language = charToUse.language;
 				this.days = charToUse.days;
 				this.stature = charToUse.stature;
@@ -275,11 +276,20 @@ namespace hist_mmorpg
 				this.inKeep = charToUse.inKeep;
 				this.married = charToUse.married;
 				this.pregnant = charToUse.pregnant;
+				if ((charToUse.spouse != null) && (charToUse.spouse.Length > 0))
+				{
+					this.spouse = charToUse.spouse;
+				}
+				if ((charToUse.father != null) && (charToUse.father.Length > 0))
+				{
+					this.father = charToUse.father;
+				}
+				if ((charToUse.familyHead != null) && (charToUse.familyHead.Length > 0))
+				{
+					this.familyHead = charToUse.familyHead;
+				}
 				this.clock = null;
 				this.location = null;
-				this.spouse = null;
-				this.father = null;
-				this.familyHead = null;
 			}
 		}
 
@@ -641,6 +651,8 @@ namespace hist_mmorpg
 
 			this.outlawed = pcr.outlawed;
 			this.purse = pcr.purse;
+			this.employees = new List<NonPlayerCharacter> ();
+			this.ownedFiefs = new List<Fief> ();
 		}
 
         /// <summary>
@@ -917,7 +929,10 @@ namespace hist_mmorpg
 		public NonPlayerCharacter(NonPlayerCharacter_Riak npcr)
 			: base(npcr: npcr)
 		{
-			this.myBoss = null;
+			if ((npcr.myBoss != null) && (npcr.myBoss.Length > 0))
+			{
+				this.myBoss = npcr.myBoss;
+			}
 			this.wage = npcr.wage;
 			this.inEntourage = npcr.inEntourage;
 			this.lastOffer = npcr.lastOffer;
@@ -1097,7 +1112,6 @@ namespace hist_mmorpg
 				if (charToUse.goTo.Count > 0)
 				{
 					foreach (Fief value in charToUse.goTo)
-						// for (int i = 0; i < pc.goTo.Count; i++)
 					{
 						this.goTo.Enqueue (value.fiefID);
 					}
@@ -1110,7 +1124,7 @@ namespace hist_mmorpg
 				this.skills = new String[charToUse.skills.Length];
 				for (int i = 0; i < charToUse.skills.Length; i++)
 				{
-					this.skills [i] = charToUse.skills [i].name;
+					this.skills [i] = charToUse.skills [i].skillID;
 				}
 				this.inKeep = charToUse.inKeep;
 				this.married = charToUse.married;
@@ -1185,6 +1199,10 @@ namespace hist_mmorpg
 				}
 			}
 		}
+
+		public PlayerCharacter_Riak()
+		{
+		}
 	}
 
 	/// <summary>
@@ -1226,6 +1244,10 @@ namespace hist_mmorpg
 			this.wage = npc.wage;
 			this.inEntourage = npc.inEntourage;
 			this.lastOffer = npc.lastOffer;
+		}
+
+		public NonPlayerCharacter_Riak()
+		{
 		}
 	}
 

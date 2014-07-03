@@ -12,6 +12,10 @@ namespace hist_mmorpg
     public class Army 
     {
 
+		/// <summary>
+		/// Holds army ID
+		/// </summary>
+		public String armyID { get; set; }
         /// <summary>
         /// Holds no. knights in army
         /// </summary>
@@ -56,6 +60,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Constructor for Army
         /// </summary>
+		/// <param name="own">String holding ID of army</param>
         /// <param name="kni">uint holding no. of knights in army</param>
         /// <param name="maa">uint holding no. of men-at-arms in army</param>
         /// <param name="ltCav">uint holding no. of light cavalry in army</param>
@@ -66,7 +71,7 @@ namespace hist_mmorpg
         /// <param name="own">string holding ID of army owner</param>
         /// <param name="day">double holding remaining days in season for army</param>
         /// <param name="cl">GameClock holding season</param>
-        public Army(uint kni, uint maa, uint ltCav, uint yeo, uint ft, uint rbl, string ldr, string own, double day, GameClock cl)
+		public Army(String id, uint kni, uint maa, uint ltCav, uint yeo, uint ft, uint rbl, string ldr, string own, double day, GameClock cl)
         {
 
             // TODO: validate kni = (upper limit?)
@@ -83,6 +88,7 @@ namespace hist_mmorpg
                 throw new InvalidDataException("Army remaining days must be an integer between 0 and 90");
             }
 
+			this.armyID = id;
             this.knights = kni;
             this.menAtArms = maa;
             this.lightCavalry = ltCav;

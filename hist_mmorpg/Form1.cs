@@ -27,6 +27,18 @@ namespace hist_mmorpg
         /// Holds all Fief objects
         /// </summary>
         public Dictionary<string, Fief> fiefMasterList = new Dictionary<string, Fief>();
+		/// <summary>
+		/// Holds all Province objects
+		/// </summary>
+		public Dictionary<string, Province> provinceMasterList = new Dictionary<string, Province>();
+		/// <summary>
+		/// Holds all Terrain objects
+		/// </summary>
+		public Dictionary<string, Terrain> terrainMasterList = new Dictionary<string, Terrain>();
+		/// <summary>
+		/// Holds all Skill objects
+		/// </summary>
+		public Dictionary<string, Skill> skillMasterList = new Dictionary<string, Skill>();
         /// <summary>
         /// Holds CharacterModel
         /// </summary>
@@ -91,12 +103,12 @@ namespace hist_mmorpg
         public PlayerCharacter initGameObjects()
         {
             // creat GameClock
-            GameClock myGameClock = new GameClock(1320);
+			GameClock myGameClock = new GameClock("clock001", 1320);
             this.clock = myGameClock;
 
             // create skills
             // Dictionary to hold collection of skills
-            Dictionary<string, Skill> skillsCollection = new Dictionary<string, Skill>();
+			// Dictionary<string, Skill> skillsCollection = new Dictionary<string, Skill>();
 
             // List to holds skill keys (for random selection)
             List<string> skillsKeys = new List<string>();
@@ -107,9 +119,9 @@ namespace hist_mmorpg
             effectsCommand.Add("siege", 40);
             effectsCommand.Add("npcHire", 20);
             // create skill
-            Skill command = new Skill("Command", effectsCommand);
+			Skill command = new Skill("sk001", "Command", effectsCommand);
             // add to skillsCollection
-            skillsCollection.Add(command.name, command);
+			this.skillMasterList.Add(command.skillID, command);
 
             Dictionary<string, int> effectsChivalry = new Dictionary<string, int>();
             effectsChivalry.Add("famExpense", 20);
@@ -117,8 +129,8 @@ namespace hist_mmorpg
             effectsChivalry.Add("fiefLoy", 20);
             effectsChivalry.Add("npcHire", 10);
             effectsChivalry.Add("siege", 10);
-            Skill chivalry = new Skill("Chivalry", effectsChivalry);
-            skillsCollection.Add(chivalry.name, chivalry);
+			Skill chivalry = new Skill("sk002", "Chivalry", effectsChivalry);
+			this.skillMasterList.Add(chivalry.skillID, chivalry);
 
             Dictionary<string, int> effectsAbrasiveness = new Dictionary<string, int>();
             effectsAbrasiveness.Add("battle", 15);
@@ -127,16 +139,16 @@ namespace hist_mmorpg
             effectsAbrasiveness.Add("famExpense", 5);
             effectsAbrasiveness.Add("time", 5);
             effectsAbrasiveness.Add("siege", -10);
-            Skill abrasiveness = new Skill("Abrasiveness", effectsAbrasiveness);
-            skillsCollection.Add(abrasiveness.name, abrasiveness);
+			Skill abrasiveness = new Skill("sk003", "Abrasiveness", effectsAbrasiveness);
+			this.skillMasterList.Add(abrasiveness.skillID, abrasiveness);
 
             Dictionary<string, int> effectsAccountancy = new Dictionary<string, int>();
             effectsAccountancy.Add("time", 10);
             effectsAccountancy.Add("fiefExpense", -20);
             effectsAccountancy.Add("famExpense", -20);
             effectsAccountancy.Add("fiefLoy", -5);
-            Skill accountancy = new Skill("Accountancy", effectsAccountancy);
-            skillsCollection.Add(accountancy.name, accountancy);
+			Skill accountancy = new Skill("sk004", "Accountancy", effectsAccountancy);
+			this.skillMasterList.Add(accountancy.skillID, accountancy);
 
             Dictionary<string, int> effectsStupidity = new Dictionary<string, int>();
             effectsStupidity.Add("battle", -40);
@@ -147,27 +159,27 @@ namespace hist_mmorpg
             effectsStupidity.Add("npcHire", -10);
             effectsStupidity.Add("time", -10);
             effectsStupidity.Add("siege", -40);
-            Skill stupidity = new Skill("Stupidity", effectsStupidity);
-            skillsCollection.Add(stupidity.name, stupidity);
+			Skill stupidity = new Skill("sk005", "Stupidity", effectsStupidity);
+			this.skillMasterList.Add(stupidity.skillID, stupidity);
 
             Dictionary<string, int> effectsRobust = new Dictionary<string, int>();
             effectsRobust.Add("virility", 20);
             effectsRobust.Add("npcHire", 5);
             effectsRobust.Add("fiefLoy", 5);
             effectsRobust.Add("death", -20);
-            Skill robust = new Skill("Robust", effectsRobust);
-            skillsCollection.Add(robust.name, robust);
+			Skill robust = new Skill("sk006", "Robust", effectsRobust);
+			this.skillMasterList.Add(robust.skillID, robust);
 
             Dictionary<string, int> effectsPious = new Dictionary<string, int>();
             effectsPious.Add("virility", -20);
             effectsPious.Add("npcHire", 10);
             effectsPious.Add("fiefLoy", 10);
             effectsPious.Add("time", -10);
-            Skill pious = new Skill("Pious", effectsPious);
-            skillsCollection.Add(pious.name, pious);
+			Skill pious = new Skill("sk007", "Pious", effectsPious);
+			this.skillMasterList.Add(pious.skillID, pious);
 
             // add each skillsCollection key to skillsKeys
-            foreach (KeyValuePair<string, Skill> entry in skillsCollection)
+			foreach (KeyValuePair<string, Skill> entry in this.skillMasterList)
             {
                 skillsKeys.Add(entry.Key);
             }
@@ -184,15 +196,19 @@ namespace hist_mmorpg
             for (int i = 0; i < skillsArray1.Length; i++)
             {
                 int randChoice = rndSkills.Next(0, skillsKeysCopy.Count - 1);
-                skillsArray1[i] = skillsCollection[skillsKeysCopy[randChoice]];
+				skillsArray1[i] = this.skillMasterList[skillsKeysCopy[randChoice]];
                 skillsKeysCopy.RemoveAt(randChoice);
             }
         
             // create terrain objects
             Terrain plains = new Terrain('P', "Plains", 1);
+			this.terrainMasterList.Add (plains.terrainCode, plains);
             Terrain hills = new Terrain('H', "Hills", 1.5);
+			this.terrainMasterList.Add (hills.terrainCode, hills);
             Terrain forrest = new Terrain('F', "Forrest", 1.5);
+			this.terrainMasterList.Add (forrest.terrainCode, forrest);
             Terrain mountains = new Terrain('M', "Mountains", 90);
+			this.terrainMasterList.Add (mountains.terrainCode, mountains);
 
             // create keep barred lists for fiefs
             List<string> keep1BarChars = new List<string>();
@@ -214,7 +230,9 @@ namespace hist_mmorpg
 
             // create province for fiefs
             Province myProv = new Province("ESX00", "Sussex, England", 6.2, "E1");
+			this.provinceMasterList.Add (myProv.provinceID, myProv);
             Province myProv2 = new Province("ESR00", "Surrey, England", 6.2, "E1");
+			this.provinceMasterList.Add (myProv2.provinceID, myProv2);
 
             Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief1Chars, keep1BarChars, false, false, this.clock);
             fiefMasterList.Add(myFief1.fiefID, myFief1);
@@ -230,7 +248,7 @@ namespace hist_mmorpg
             fiefMasterList.Add(myFief6.fiefID, myFief6);
             Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', forrest, fief7Chars, keep7BarChars, false, false, this.clock);
             fiefMasterList.Add(myFief7.fiefID, myFief7);
-            Army myArmy = new Army(0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
+			Army myArmy = new Army("army001", 0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
             // create QuickGraph undirected graph
             // 1. create graph
@@ -365,10 +383,46 @@ namespace hist_mmorpg
 			// var cluster = RiakCluster.FromConfig("riakConfig");
 			// var client = cluster.CreateClient();
 
-			/*
+
 			// TEST RIAK SUFF
+
+			//test writing clock to Riak
+			var rClock = new RiakObject("clock", clock.clockID, clock);
+			var putClockResult = client.Put(rClock);
+
+			if (putClockResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Successfully saved " + rClock.Key + " to bucket " + rClock.Bucket);
+				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Are you *really* sure Riak is running?");
+				// Console.WriteLine("Are you *really* sure Riak is running?");
+				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
+			}
+				
+			// test reading clock from Riak
+			var clockResult = client.Get("clock", "clock001");
+			var newClock = new GameClock();
+
+			if (clockResult.IsSuccess)
+			{
+				newClock = clockResult.Value.GetObject<GameClock>();
+				string displayClock = "";
+				displayClock += "Successfully retrieved " + newClock.clockID + " from clock bucket \r\n";
+				displayClock += "Year: " + newClock.currentYear + ", Season: " + newClock.currentSeason;
+				System.Windows.Forms.MessageBox.Show(displayClock);
+				// Console.WriteLine("I found {0} in {1}", oj.EmailAddress, contributors);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Something went wrong!");
+				// Console.WriteLine("{0}: {1}", ojResult.ResultCode, ojResult.ErrorMessage);
+			}
+
 			// test writing skill to Riak
-			var o = new RiakObject("skills", command.name, command);
+			var o = new RiakObject("skills", command.skillID, command);
 			var putResult = client.Put(o);
 
 			if (putResult.IsSuccess)
@@ -453,7 +507,7 @@ namespace hist_mmorpg
 				System.Windows.Forms.MessageBox.Show ("problem extracting Province from Riak!");
 			}
 
-			// test writing PlayerCharacter to Riak
+			// test writing NonPlayerCharacter to Riak
 			NonPlayerCharacter_Riak riakNPC = this.NPCtoRiak (myNPC2);
 			var ppp = new RiakObject("characters", riakNPC.charID, riakNPC);
 			var pppPutResult = client.Put(ppp);
@@ -469,11 +523,216 @@ namespace hist_mmorpg
 				// Console.WriteLine("Are you *really* sure Riak is running?");
 				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
 			}
-			*/
+
+			// test writing PlayerCharacter to Riak
+			PlayerCharacter_Riak riakPC = this.PCtoRiak (myChar1);
+			var rpcObj = new RiakObject("characters", riakPC.charID, riakPC);
+			var rpcObjPutResult = client.Put(rpcObj);
+
+			if (rpcObjPutResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Successfully saved " + rpcObj.Key + " to bucket " + rpcObj.Bucket);
+				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Are you *really* sure Riak is running?");
+				// Console.WriteLine("Are you *really* sure Riak is running?");
+				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
+			}
+
+			// test getting PC from Riak
+			var pcResult = client.Get("characters", "101");
+			var pcRiak = new PlayerCharacter_Riak();
+			pcRiak = pcResult.Value.GetObject<PlayerCharacter_Riak>();
+			PlayerCharacter myChar3 = this.PCfromRiakPC (pcRiak);
+
+			if (pcResult.IsSuccess) {
+				string toDisplay = "";
+				toDisplay += "New PC " + myChar3.charID + " extracted from Riak\r\n";
+				toDisplay += "Name: " + myChar3.name + "\r\nSkills: ";
+				for (int i = 0; i < myChar3.skills.Length; i++)
+				{
+					toDisplay += myChar3.skills [i].name + " ";
+				}
+				toDisplay += "\r\nEmployees: ";
+				for (int i = 0; i < myChar3.employees.Count; i++)
+				{
+					toDisplay += myChar3.employees [i].name + " ";
+				}
+				System.Windows.Forms.MessageBox.Show (toDisplay);
+			} else {
+				System.Windows.Forms.MessageBox.Show ("Problem extracting PlayerCharacter from Riak!");
+			}
+
+			// test getting NPC from Riak
+			var npcResult = client.Get("characters", "402");
+			var npcRiak = new NonPlayerCharacter_Riak();
+			npcRiak = npcResult.Value.GetObject<NonPlayerCharacter_Riak>();
+			NonPlayerCharacter myNPC3 = this.NPCfromRiakNPC (npcRiak);
+
+			if (npcResult.IsSuccess) {
+				string toDisplay = "";
+				toDisplay += "New NPC " + myNPC3.charID + " extracted from Riak\r\n";
+				toDisplay += "Name: " + myNPC3.name + "\r\nSkills: ";
+				for (int i = 0; i < myNPC3.skills.Length; i++)
+				{
+					toDisplay += myNPC3.skills [i].name + " ";
+				}
+				if ((myNPC3.myBoss != null) && (myNPC3.myBoss.Length > 0))
+				{
+					toDisplay += "\r\nBoss: " + myNPC3.myBoss;
+				}
+				System.Windows.Forms.MessageBox.Show (toDisplay);
+			} else {
+				System.Windows.Forms.MessageBox.Show ("Problem extracting PlayerCharacter from Riak!");
+			}
 
 			return myChar1;
 
         }
+
+		/// <summary>
+		/// Loads all objects for a particular game from database
+		/// </summary>
+		/// <param name="gameID">ID of game</param>
+		public void initialDBload(String gameID)
+		{
+			// load clock
+			clock = this.initialDBload_clock (gameID, "clock001");
+
+			// load skills
+			Skill skill = this.initialDBload_skill (gameID, "skill001");
+
+			// load NPCs
+			NonPlayerCharacter npc = this.initialDBload_NPC (gameID, "402");
+
+			// load PCs
+			PlayerCharacter pc = this.initialDBload_PC (gameID, "101");
+
+			// load provinces
+			Province prov = this.initialDBload_Province (gameID, "ESX00");
+
+			// load terrains
+
+			// load fiefs
+		}
+
+		/// <summary>
+		/// Loads GameClock for a particular game from database
+		/// </summary>
+		/// <param name="gameID">Game for which clock to be retrieved</param>
+		/// <param name="clockID">ID of clock to be retrieved</param>
+		public GameClock initialDBload_clock(String gameID, String clockID)
+		{
+			var clockResult = client.Get(gameID, clockID);
+			var newClock = new GameClock();
+
+			if (clockResult.IsSuccess)
+			{
+				newClock = clockResult.Value.GetObject<GameClock>();
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve GameClock " + clockID);
+			}
+
+			return newClock;
+		}
+
+		/// <summary>
+		/// Loads a skill for a particular game from database
+		/// </summary>
+		/// <param name="gameID">Game for which skill to be retrieved</param>
+		/// <param name="skillID">ID of skill to be retrieved</param>
+		public Skill initialDBload_skill(String gameID, String skillID)
+		{
+			var skillResult = client.Get(gameID, skillID);
+			var newSkill = new Skill();
+
+			if (skillResult.IsSuccess)
+			{
+				newSkill = skillResult.Value.GetObject<Skill>();
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve skill " + skillID);
+			}
+
+			return newSkill;
+		}
+
+		/// <summary>
+		/// Loads an NPC for a particular game from database
+		/// </summary>
+		/// <param name="gameID">Game for which skill to be retrieved</param>
+		/// <param name="npcID">ID of NPC to be retrieved</param>
+		public NonPlayerCharacter initialDBload_NPC(String gameID, String npcID)
+		{
+			var npcResult = client.Get(gameID, npcID);
+			var npcRiak = new NonPlayerCharacter_Riak();
+			NonPlayerCharacter myNPC = new NonPlayerCharacter ();
+
+			if (npcResult.IsSuccess)
+			{
+				npcRiak = npcResult.Value.GetObject<NonPlayerCharacter_Riak>();
+				myNPC = this.NPCfromRiakNPC (npcRiak);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show ("InitialDBload: Unable to retrieve NonPlayerCharacter " + npcID);
+			}
+
+			return myNPC;
+		}
+
+		/// <summary>
+		/// Loads a PC for a particular game from database
+		/// </summary>
+		/// <param name="gameID">Game for which skill to be retrieved</param>
+		/// <param name="pcID">ID of PC to be retrieved</param>
+		public PlayerCharacter initialDBload_PC(String gameID, String pcID)
+		{
+			var pcResult = client.Get(gameID, pcID);
+			var pcRiak = new PlayerCharacter_Riak();
+			PlayerCharacter myPC = new PlayerCharacter ();
+
+			if (pcResult.IsSuccess)
+			{
+				pcRiak = pcResult.Value.GetObject<PlayerCharacter_Riak>();
+				myPC = this.PCfromRiakPC (pcRiak);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show ("InitialDBload: Unable to retrieve PlayerCharacter " + pcID);
+			}
+
+			return myPC;
+		}
+
+		/// <summary>
+		/// Loads a Province for a particular game from database
+		/// </summary>
+		/// <param name="gameID">Game for which skill to be retrieved</param>
+		/// <param name="provID">ID of Province to be retrieved</param>
+		public Province initialDBload_Province(String gameID, String provID)
+		{
+			var provResult = client.Get(gameID, provID);
+			var provRiak = new Province_Riak();
+			Province myProv = new Province ();
+
+			if (provResult.IsSuccess)
+			{
+				provRiak = provResult.Value.GetObject<Province_Riak>();
+				Province myProv3 = this.ProvinceFromRiak (provRiak);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show ("InitialDBload: Unable to retrieve Province " + provID);
+			}
+
+			return myProv;
+		}
 
 		/// <summary>
 		/// Converts PlayerCharacter objects (containing nested objects) into suitable format for JSON serialisation
@@ -501,7 +760,7 @@ namespace hist_mmorpg
 		/// Converts PlayerCharacter_Riak objects into PlayerCharacter game objects
 		/// </summary>
 		/// <param name="pcr">PlayerCharacter_Riak object to be converted</param>
-		public PlayerCharacter PCfromRiak(PlayerCharacter_Riak pcr)
+		public PlayerCharacter PCfromRiakPC(PlayerCharacter_Riak pcr)
 		{
 			PlayerCharacter pcOut = null;
 			// create PlayerCharacter from PlayerCharacter_Riak
@@ -511,8 +770,14 @@ namespace hist_mmorpg
 			pcOut.clock = this.clock;
 
 			// insert skills
-
-			// insert
+			if (pcr.skills.Length > 0)
+			{
+				for (int i = 0; i < pcr.skills.Length; i++)
+				{
+					Skill skill = this.skillMasterList[pcr.skills[i]];
+					pcOut.skills[i] = skill;
+				}
+			}
 
 			// insert employees
 			if (pcr.employees.Count > 0)
@@ -524,6 +789,7 @@ namespace hist_mmorpg
 				}
 			}
 
+			/*
 			// insert owned fiefs
 			if (pcr.ownedFiefs.Count > 0)
 			{
@@ -533,10 +799,46 @@ namespace hist_mmorpg
 					pcOut.ownedFiefs.Add (owned);
 				}
 			}
+
+			// insert goTo
+			if (pcr.goTo.Count > 0)
+			{
+				foreach (string value in pcr.goTo)
+				{
+					pcOut.goTo.Enqueue (this.fiefMasterList[value]);
+				}
+			} */
+
 			return pcOut;
 		}
 
 		/// <summary>
+		/// Converts NonPlayerCharacter_Riak objects into NonPlayerCharacter game objects
+		/// </summary>
+		/// <param name="npcr">NonPlayerCharacter_Riak object to be converted</param>
+		public NonPlayerCharacter NPCfromRiakNPC(NonPlayerCharacter_Riak npcr)
+		{
+			NonPlayerCharacter npcOut = null;
+			// create PlayerCharacter from PlayerCharacter_Riak
+			npcOut = new NonPlayerCharacter (npcr);
+
+			// insert game clock
+			npcOut.clock = this.clock;
+
+			// insert skills
+			if (npcr.skills.Length > 0)
+			{
+				for (int i = 0; i < npcr.skills.Length; i++)
+				{
+					Skill skill = this.skillMasterList[npcr.skills[i]];
+					npcOut.skills[i] = skill;
+				}
+			}
+
+			return npcOut;
+		}
+
+				/// <summary>
 		/// Converts Province object into suitable format for JSON serialisation
 		/// </summary>
 		/// <param name="p">Province to be converted</param>

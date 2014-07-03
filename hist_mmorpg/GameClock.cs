@@ -10,6 +10,10 @@ namespace hist_mmorpg
     /// </summary>
     public class GameClock
     {
+		/// <summary>
+		/// Holds clock ID
+		/// </summary>
+		public String clockID { get; set; }
         /// <summary>
         /// Holds seasons
         /// </summary>
@@ -26,13 +30,19 @@ namespace hist_mmorpg
         /// <summary>
         /// Constructor for GameClock
         /// </summary>
+		/// <param name="id">String holding clock ID</param>
         /// <param name="yr">uint holding starting year</param>
         /// <param name="s">int holding current season (default: 0)</param>
-        public GameClock(uint yr, uint s = 0)
+		public GameClock(String id, uint yr, uint s = 0)
         {
+			this.clockID = id;
             this.currentYear = yr;
             this.currentSeason = s;
         }
+
+		public GameClock()
+		{
+		}
 
         /// <summary>
         /// Calculates travel modifier for season
