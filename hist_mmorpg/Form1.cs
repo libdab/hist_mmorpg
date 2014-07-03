@@ -201,13 +201,13 @@ namespace hist_mmorpg
             }
         
             // create terrain objects
-            Terrain plains = new Terrain('P', "Plains", 1);
+			Terrain plains = new Terrain("P", "Plains", 1);
 			this.terrainMasterList.Add (plains.terrainCode, plains);
-            Terrain hills = new Terrain('H', "Hills", 1.5);
+			Terrain hills = new Terrain("H", "Hills", 1.5);
 			this.terrainMasterList.Add (hills.terrainCode, hills);
-            Terrain forrest = new Terrain('F', "Forrest", 1.5);
+			Terrain forrest = new Terrain("F", "Forrest", 1.5);
 			this.terrainMasterList.Add (forrest.terrainCode, forrest);
-            Terrain mountains = new Terrain('M', "Mountains", 90);
+			Terrain mountains = new Terrain("M", "Mountains", 90);
 			this.terrainMasterList.Add (mountains.terrainCode, mountains);
 
             // create keep barred lists for fiefs
@@ -475,6 +475,53 @@ namespace hist_mmorpg
 				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
 			}
 
+			// test writing Fief to Riak
+			Fief_Riak riakFief = this.FieftoRiak (myFief1);
+			var riakObj = new RiakObject("fiefs", riakFief.fiefID, riakFief);
+			var riakObjPutResult = client.Put(riakObj);
+
+			if (riakObjPutResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Successfully saved " + riakObj.Key + " to bucket " + riakObj.Bucket);
+				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Error writing Fief to Riak");
+				// Console.WriteLine("Are you *really* sure Riak is running?");
+				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
+			}
+
+			// test getting fief from Riak
+			var frResult = client.Get("fiefs", "ESX02");
+			var fr = new Fief_Riak();
+			fr = frResult.Value.GetObject<Fief_Riak>();
+			Fief myFief8 = this.FiefFromRiakFief(fr);
+
+			if (frResult.IsSuccess) {
+				string toDisplay = "";
+				toDisplay += "New Fief " + myFief8.name + " extracted from Riak\r\n";
+				toDisplay += "Owner: " + myFief8.owner.name + "\r\n";
+				toDisplay += "Ancestral owner: " + myFief8.ancestralOwner.name + "\r\n";
+				if (myFief8.bailiff != null)
+				{
+					toDisplay += "Bailiff: " + myFief8.bailiff.name + "\r\n";
+				}
+				toDisplay += "Province: " + myFief8.province.name + "\r\n";
+				toDisplay += "Terrain: " + myFief8.terrain.description + "\r\n";
+				if (myFief8.characters.Count > 0)
+				{
+					toDisplay += "Characters present: ";
+					for (int i = 0; i < myFief8.characters.Count; i++)
+					{
+						toDisplay += myFief8.characters[i].charID + " ";
+					}
+				}
+				System.Windows.Forms.MessageBox.Show (toDisplay);
+			} else {
+				System.Windows.Forms.MessageBox.Show ("problem extracting Fief from Riak!");
+			}
+
 			// test writing province to Riak
 			Province_Riak riakProv = this.ProvinceToRiak (myProv2);
 			var p = new RiakObject("provinces", riakProv.provinceID, riakProv);
@@ -603,19 +650,27 @@ namespace hist_mmorpg
 
 			// load skills
 			Skill skill = this.initialDBload_skill (gameID, "skill001");
+			this.skillMasterList.Add(skill.skillID, skill);
 
 			// load NPCs
 			NonPlayerCharacter npc = this.initialDBload_NPC (gameID, "402");
+			this.npcMasterList.Add(npc.charID, npc);
 
 			// load PCs
 			PlayerCharacter pc = this.initialDBload_PC (gameID, "101");
+			this.pcMasterList.Add(pc.charID, pc);
 
 			// load provinces
 			Province prov = this.initialDBload_Province (gameID, "ESX00");
+			this.provinceMasterList.Add (prov.provinceID, prov);
 
 			// load terrains
+			Terrain terr = this.initialDBload_terrain (gameID, "P");
+			this.terrainMasterList.Add (terr.terrainCode, terr);
 
 			// load fiefs
+			Fief f = this.initialDBload_Fief (gameID, "ESX02");
+			this.fiefMasterList.Add (f.fiefID, f);
 		}
 
 		/// <summary>
@@ -724,7 +779,7 @@ namespace hist_mmorpg
 			if (provResult.IsSuccess)
 			{
 				provRiak = provResult.Value.GetObject<Province_Riak>();
-				Province myProv3 = this.ProvinceFromRiak (provRiak);
+				myProv = this.ProvinceFromRiak (provRiak);
 			}
 			else
 			{
@@ -735,7 +790,133 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
-		/// Converts PlayerCharacter objects (containing nested objects) into suitable format for JSON serialisation
+		/// Loads a Terrain for a particular game from database
+		/// </summary>
+		/// <param name="gameID">Game for which Terrain to be retrieved</param>
+		/// <param name="terrID">ID of Terrain to be retrieved</param>
+		public Terrain initialDBload_terrain(String gameID, String terrID)
+		{
+			var terrainResult = client.Get(gameID, terrID);
+			var newTerrain = new Terrain();
+
+			if (terrainResult.IsSuccess)
+			{
+				newTerrain = terrainResult.Value.GetObject<Terrain>();
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Terrain " + terrID);
+			}
+
+			return newTerrain;
+		}
+
+		/// <summary>
+		/// Loads a Fief for a particular game from database
+		/// </summary>
+		/// <param name="gameID">Game for which skill to be retrieved</param>
+		/// <param name="fiefID">ID of Fief to be retrieved</param>
+		public Fief initialDBload_Fief(String gameID, String fiefID)
+		{
+			var fiefResult = client.Get(gameID, fiefID);
+			var fiefRiak = new Fief_Riak();
+			Fief myFief = new Fief ();
+
+			if (fiefResult.IsSuccess)
+			{
+				fiefRiak = fiefResult.Value.GetObject<Fief_Riak>();
+				myFief = this.FiefFromRiakFief (fiefRiak);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show ("InitialDBload: Unable to retrieve Fief " + fiefID);
+			}
+
+			return myFief;
+		}
+
+		/// <summary>
+		/// Converts Fief object (containing nested objects) into suitable format for JSON serialisation
+		/// </summary>
+		/// <param name="f">Fief to be converted</param>
+		public Fief_Riak FieftoRiak(Fief f)
+		{
+			Fief_Riak fOut = null;
+			fOut = new Fief_Riak (f);
+			return fOut;
+		}
+
+		/// <summary>
+		/// Converts Fief_Riak object into Fief object.
+		/// Also inserts Fief into appropriate PlayerCharacter and NonPlayerCharacter objects.
+		/// </summary>
+		/// <param name="fr">Fief_Riak object to be converted</param>
+		public Fief FiefFromRiakFief(Fief_Riak fr)
+		{
+			Fief fOut = null;
+			// create Fief from Fief_Riak
+			fOut = new Fief (fr);
+
+			// insert game clock
+			fOut.clock = this.clock;
+
+			// insert province
+			fOut.province = this.provinceMasterList[fr.province];
+
+			// insert owner
+			fOut.owner = this.pcMasterList[fr.owner];
+			// Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
+			// check if fief is in owner's list of fiefs owned
+			bool fiefInList = fOut.owner.ownedFiefs.Any(item => item.fiefID == fOut.fiefID);
+			// if not, add it
+			if(! fiefInList)
+			{
+				fOut.owner.ownedFiefs.Add(fOut);
+			}
+
+			// insert ancestral owner
+			fOut.ancestralOwner = this.pcMasterList[fr.ancestralOwner];
+
+			// insert bailiff (PC or NPC)
+			if (fr.bailiff != null)
+			{
+				if (this.npcMasterList.ContainsKey (fr.bailiff)) {
+					fOut.bailiff = this.npcMasterList [fr.bailiff];
+				} else if (this.pcMasterList.ContainsKey (fr.bailiff)) {
+					fOut.bailiff = this.pcMasterList [fr.bailiff];
+				} else {
+					fOut.bailiff = null;
+					System.Windows.Forms.MessageBox.Show ("Unable to identify bailiff for Fief " + fOut.fiefID);
+				}
+			}
+				
+			//insert terrain
+			fOut.terrain = this.terrainMasterList[fr.terrain];
+
+			// insert characters
+			if (fr.characters.Count > 0)
+			{
+				for (int i = 0; i < fr.characters.Count; i++)
+				{
+					if (this.npcMasterList.ContainsKey (fr.characters[i]))
+					{
+						fOut.characters.Add(this.npcMasterList[fr.characters[i]]);
+						this.npcMasterList[fr.characters[i]].location = fOut;
+					}
+					else if (this.pcMasterList.ContainsKey (fr.characters[i]))
+					{
+						fOut.characters.Add(this.pcMasterList[fr.characters[i]]);
+						this.pcMasterList[fr.characters[i]].location = fOut;
+					}
+
+				}
+			}
+
+			return fOut;
+		}
+
+				/// <summary>
+		/// Converts PlayerCharacter object (containing nested objects) into suitable format for JSON serialisation
 		/// </summary>
 		/// <param name="pc">PlayerCharacter to be converted</param>
 		public PlayerCharacter_Riak PCtoRiak(PlayerCharacter pc)
@@ -746,7 +927,7 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
-		/// Converts NonPlayerCharacter objects (containing nested objects) into suitable format for JSON serialisation
+		/// Converts NonPlayerCharacter object (containing nested objects) into suitable format for JSON serialisation
 		/// </summary>
 		/// <param name="npc">NonPlayerCharacter to be converted</param>
 		public NonPlayerCharacter_Riak NPCtoRiak(NonPlayerCharacter npc)

@@ -641,6 +641,10 @@ namespace hist_mmorpg
             this.ownedFiefs = kps;
         }
 
+		public PlayerCharacter()
+		{
+		}
+
 		/// <summary>
 		/// Constructor for PlayerCharacter using PlayerCharacter_Riak object
 		/// </summary>
@@ -921,6 +925,10 @@ namespace hist_mmorpg
             this.inEntourage = inEnt;
             this.lastOffer = new Dictionary<string, uint>();
         }
+
+		public NonPlayerCharacter()
+		{
+		}
 
 		/// <summary>
 		/// Constructor for NonPlayerCharacter using NonPlayerCharacter_Riak object

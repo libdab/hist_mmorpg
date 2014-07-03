@@ -69,6 +69,10 @@ namespace hist_mmorpg
 
         }
 
+		public Province()
+		{
+		}
+
 		/// <summary>
 		/// Constructor for Province using Province_Riak object
 		/// </summary>

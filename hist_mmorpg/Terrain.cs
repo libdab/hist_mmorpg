@@ -13,7 +13,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds terrain code
         /// </summary>
-        public char terrainCode { get; set; }
+		public String terrainCode { get; set; }
         /// <summary>
         /// Holds terrain description
         /// </summary>
@@ -26,14 +26,18 @@ namespace hist_mmorpg
         /// <summary>
         /// Constructor for Terrain
         /// </summary>
-        /// <param name="c">char holding terrain code</param>
+		/// <param name="c">String holding terrain code</param>
         /// <param name="desc">String holding terrain description</param>
         /// <param name="tc">double holding terrain travel cost</param>
-        public Terrain(char c, string desc, double tc)
+		public Terrain(String c, string desc, double tc)
         {
             this.terrainCode = c;
             this.description = desc;
             this.travelCost = tc;
         }
+
+		public Terrain()
+		{
+		}
     }
 }

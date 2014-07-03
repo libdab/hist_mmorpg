@@ -102,7 +102,7 @@ namespace hist_mmorpg
         /// </summary>
         public List<Character> characters = new List<Character>();
         /// <summary>
-        /// Holds fief's FiefKeep object
+		/// Holds list of characters banned from keep (IDs)
         /// </summary>
         public List<string> barredCharacters = new List<string>();
         /// <summary>
@@ -120,11 +120,11 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds fief owner (Character)
         /// </summary>
-        public Character owner { get; set; }
+		public PlayerCharacter owner { get; set; }
         /// <summary>
         /// Holds fief ancestral owner (Character)
         /// </summary>
-        public Character ancestralOwner { get; set; }
+		public PlayerCharacter ancestralOwner { get; set; }
         /// <summary>
         /// Holds fief bailiff (Character)
         /// </summary>
@@ -159,12 +159,12 @@ namespace hist_mmorpg
         /// <param name="engBarr">bool indicating whether English nationality barred from keep</param>
         /// <param name="frBarr">bool indicating whether French nationality barred from keep</param>
         /// <param name="cl">GameClock holding season</param>
-        /// <param name="own">Character holding fief owner</param>
-        /// <param name="ancOwn">Character holding fief ancestral owner</param>
+		/// <param name="own">PlayerCharacter holding fief owner</param>
+		/// <param name="ancOwn">PlayerCharacter holding fief ancestral owner</param>
         /// <param name="bail">Character holding fief bailiff</param>
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp,
             Double tx, uint off, uint garr, uint infra, uint keep, Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, Double kpLvl,
-            Double loy, char stat, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr, GameClock cl, Character own = null, Character ancOwn = null, Character bail = null)
+			Double loy, char stat, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr, GameClock cl, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -271,6 +271,48 @@ namespace hist_mmorpg
             this.frenchBarred = frBarr;
             this.clock = cl;
         }
+
+		/// <summary>
+		/// Constructor for Fief using Fief_Riak object
+		/// </summary>
+		/// <param name="fr">Fief_Riak object to use as source</param>
+		public Fief(Fief_Riak fr)
+		{
+		
+			this.fiefID = fr.fiefID;
+			this.name = fr.name;
+			this.province = null;
+			this.population = fr.population;
+			this.owner = null;
+			this.ancestralOwner = null;
+			this.bailiff = null;
+			this.fields = fr.fields;
+			this.industry = fr.industry;
+			this.troops = fr.troops;
+			this.taxRate = fr.taxRate;
+			this.officialsSpend = fr.officialsSpend;
+			this.garrisonSpend = fr.garrisonSpend;
+			this.infrastructureSpend = fr.infrastructureSpend;
+			this.keepSpend = fr.keepSpend;
+			this.taxRateNext = fr.taxRateNext;
+			this.officialsSpendNext = fr.officialsSpendNext;
+			this.garrisonSpendNext = fr.garrisonSpendNext;
+			this.infrastructureSpendNext = fr.infrastructureSpendNext;
+			this.keepSpendNext = fr.keepSpendNext;
+			this.keepLevel = fr.keepLevel;
+			this.loyalty = fr.loyalty;
+			this.status = fr.status;
+			this.terrain = null;
+			this.characters = new List<Character>();
+			this.barredCharacters = fr.barredCharacters;
+			this.englishBarred = fr.englishBarred;
+			this.frenchBarred = fr.frenchBarred;
+			this.clock = null;
+		}
+
+		public Fief()
+		{
+		}
 
         /// <summary>
         /// Calculates fief GDP
@@ -911,4 +953,181 @@ namespace hist_mmorpg
         }
 
     }
+
+	/// <summary>
+	/// Class used to convert Fief to/from format suitable for Riak
+	/// </summary>
+	public class Fief_Riak
+	{
+
+		/// <summary>
+		/// Holds fief ID
+		/// </summary>
+		public String fiefID { get; set; }
+		/// <summary>
+		/// Holds fief name
+		/// </summary>
+		public String name { get; set; }
+		/// <summary>
+		/// Holds fief's Province object (ID)
+		/// </summary>
+		// public String province { get; set; }
+		public String province { get; set; }
+		/// <summary>
+		/// Holds fief population
+		/// </summary>
+		public uint population { get; set; }
+		/// <summary>
+		/// Holds fief field level
+		/// </summary>
+		public Double fields { get; set; }
+		/// <summary>
+		/// Holds fief industry level
+		/// </summary>
+		public Double industry { get; set; }
+		/// <summary>
+		/// Holds no. trrops in fief
+		/// </summary>
+		public uint troops { get; set; }
+		/// <summary>
+		/// Holds fief tax rate
+		/// </summary>
+		public Double taxRate { get; set; }
+		/// <summary>
+		/// Holds expenditure on officials
+		/// </summary>
+		public uint officialsSpend { get; set; }
+		/// <summary>
+		/// Holds expenditure on garrison
+		/// </summary>
+		public uint garrisonSpend { get; set; }
+		/// <summary>
+		/// Holds expenditure on infrastructure
+		/// </summary>
+		public uint infrastructureSpend { get; set; }
+		/// <summary>
+		/// Holds expenditure on keep
+		/// </summary>
+		public uint keepSpend { get; set; }
+		/// <summary>
+		/// Holds fief tax rate (next season)
+		/// </summary>
+		public Double taxRateNext { get; set; }
+		/// <summary>
+		/// Holds expenditure on officials (next season)
+		/// </summary>
+		public uint officialsSpendNext { get; set; }
+		/// <summary>
+		/// Holds expenditure on garrison (next season)
+		/// </summary>
+		public uint garrisonSpendNext { get; set; }
+		/// <summary>
+		/// Holds expenditure on infrastructure (next season)
+		/// </summary>
+		public uint infrastructureSpendNext { get; set; }
+		/// <summary>
+		/// Holds expenditure on keep (next season)
+		/// </summary>
+		public uint keepSpendNext { get; set; }
+		/// <summary>
+		/// Holds fief keep level
+		/// </summary>
+		public Double keepLevel { get; set; }
+		/// <summary>
+		/// Holds fief loyalty
+		/// </summary>
+		public Double loyalty { get; set; }
+		/// <summary>
+		/// Holds fief status (calm, unrest, rebellion)
+		/// </summary>
+		public char status { get; set; }
+		/// <summary>
+		/// Holds terrain object (ID)
+		/// </summary>
+		public String terrain { get; set; }
+		/// <summary>
+		/// Holds list of characters present in fief (IDs)
+		/// </summary>
+		public List<String> characters = new List<String>();
+		/// <summary>
+		/// Holds list of characters banned from keep (IDs)
+		/// </summary>
+		public List<string> barredCharacters = new List<string>();
+		/// <summary>
+		/// Indicates whether English nationality barred from keep
+		/// </summary>
+		public bool englishBarred { get; set; }
+		/// <summary>
+		/// Indicates whether French nationality barred from keep
+		/// </summary>
+		public bool frenchBarred { get; set; }
+		/// <summary>
+		/// Holds fief's GameClock (ID)
+		/// </summary>
+		public String clock { get; set; }
+		/// <summary>
+		/// Holds fief owner (ID)
+		/// </summary>
+		public String owner { get; set; }
+		/// <summary>
+		/// Holds fief ancestral owner (ID)
+		/// </summary>
+		public String ancestralOwner { get; set; }
+		/// <summary>
+		/// Holds fief bailiff (ID)
+		/// </summary>
+		public String bailiff { get; set; }
+
+		/// <summary>
+		/// Constructor for Fief_Riak
+		/// </summary>
+		/// <param name="f">Fief object to use as source</param>
+		public Fief_Riak(Fief f)
+		{
+
+			this.fiefID = f.fiefID;
+			this.name = f.name;
+			this.province = f.province.provinceID;
+			this.population = f.population;
+			this.owner = f.owner.charID;
+			this.ancestralOwner = f.ancestralOwner.charID;
+			if (f.bailiff != null) {
+				this.bailiff = f.bailiff.charID;
+			} else {
+				this.bailiff = null;
+			}
+			this.fields = f.fields;
+			this.industry = f.industry;
+			this.troops = f.troops;
+			this.taxRate = f.taxRate;
+			this.officialsSpend = f.officialsSpend;
+			this.garrisonSpend = f.garrisonSpend;
+			this.infrastructureSpend = f.infrastructureSpend;
+			this.keepSpend = f.keepSpend;
+			this.taxRateNext = f.taxRateNext;
+			this.officialsSpendNext = f.officialsSpendNext;
+			this.garrisonSpendNext = f.garrisonSpendNext;
+			this.infrastructureSpendNext = f.infrastructureSpendNext;
+			this.keepSpendNext = f.keepSpendNext;
+			this.keepLevel = f.keepLevel;
+			this.loyalty = f.loyalty;
+			this.status = f.status;
+			this.terrain = f.terrain.terrainCode;
+			if (f.characters.Count > 0)
+			{
+				for (int i = 0; i < f.characters.Count; i++)
+				{
+					this.characters.Add (f.characters[i].charID);
+				}
+			}
+			this.barredCharacters = f.barredCharacters;
+			this.englishBarred = f.englishBarred;
+			this.frenchBarred = f.frenchBarred;
+			this.clock = f.clock.clockID;
+		}
+
+		public Fief_Riak()
+		{
+		}
+	}
 }
