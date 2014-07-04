@@ -19,26 +19,54 @@ namespace hist_mmorpg
         /// Holds all NonPlayerCharacter objects
         /// </summary>
         public Dictionary<string, NonPlayerCharacter> npcMasterList = new Dictionary<string, NonPlayerCharacter>();
+		/// <summary>
+		/// Holds keys for NonPlayerCharacter objects
+		/// </summary>
+		List<String> npcKeys = new List<String> ();
         /// <summary>
         /// Holds all PlayerCharacter objects
         /// </summary>
         public Dictionary<string, PlayerCharacter> pcMasterList = new Dictionary<string, PlayerCharacter>();
+		/// <summary>
+		/// Holds keys for PlayerCharacter objects
+		/// </summary>
+		List<String> pcKeys = new List<String> ();
         /// <summary>
         /// Holds all Fief objects
         /// </summary>
         public Dictionary<string, Fief> fiefMasterList = new Dictionary<string, Fief>();
 		/// <summary>
+		/// Holds keys for Fief objects
+		/// </summary>
+		List<String> fiefKeys = new List<String> ();
+		/// <summary>
 		/// Holds all Province objects
 		/// </summary>
 		public Dictionary<string, Province> provinceMasterList = new Dictionary<string, Province>();
+		/// <summary>
+		/// Holds keys for Province objects
+		/// </summary>
+		List<String> provKeys = new List<String> ();
 		/// <summary>
 		/// Holds all Terrain objects
 		/// </summary>
 		public Dictionary<string, Terrain> terrainMasterList = new Dictionary<string, Terrain>();
 		/// <summary>
+		/// Holds keys for Terrain objects
+		/// </summary>
+		List<String> terrKeys = new List<String> ();
+		/// <summary>
 		/// Holds all Skill objects
 		/// </summary>
 		public Dictionary<string, Skill> skillMasterList = new Dictionary<string, Skill>();
+		/// <summary>
+		/// Holds keys for Skill objects
+		/// </summary>
+		List<String> skillKeys = new List<String> ();
+		/// <summary>
+		/// Holds Character_Riak objects with existing goTo queues (for initial load)
+		/// </summary>
+		List<Character_Riak> goToList = new List<Character_Riak> ();
         /// <summary>
         /// Holds CharacterModel
         /// </summary>
@@ -252,7 +280,7 @@ namespace hist_mmorpg
 
             // create QuickGraph undirected graph
             // 1. create graph
-            var myHexMap = new HexMapGraph();
+			var myHexMap = new HexMapGraph("map001");
             this.gameMap = myHexMap;
             // 2. Add edge and auto create vertices
             // from myFief1
@@ -293,6 +321,10 @@ namespace hist_mmorpg
             Queue<Fief> myGoTo3 = new Queue<Fief>();
             Queue<Fief> myGoTo4 = new Queue<Fief>();
             Queue<Fief> myGoTo5 = new Queue<Fief>();
+
+			// add some goTo entries for myChar1
+			myGoTo1.Enqueue (myFief2);
+			myGoTo1.Enqueue (myFief7);
 
             // create entourages for PCs
             List<NonPlayerCharacter> myEmployees1 = new List<NonPlayerCharacter>();
@@ -383,7 +415,7 @@ namespace hist_mmorpg
 			// var cluster = RiakCluster.FromConfig("riakConfig");
 			// var client = cluster.CreateClient();
 
-
+			/*
 			// TEST RIAK SUFF
 
 			//test writing clock to Riak
@@ -578,8 +610,13 @@ namespace hist_mmorpg
 
 			if (rpcObjPutResult.IsSuccess)
 			{
-				System.Windows.Forms.MessageBox.Show("Successfully saved " + rpcObj.Key + " to bucket " + rpcObj.Bucket);
-				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
+				String toDisplay = "";
+				toDisplay += "Successfully saved " + rpcObj.Key + " to bucket " + rpcObj.Bucket;
+				if (riakPC.goTo.Count > 0)
+				{
+					toDisplay += "\r\n(" + riakPC.goTo.Count + " fiefs in goTo queue)";
+				}
+				System.Windows.Forms.MessageBox.Show(toDisplay);
 			}
 			else
 			{
@@ -634,10 +671,126 @@ namespace hist_mmorpg
 			} else {
 				System.Windows.Forms.MessageBox.Show ("Problem extracting PlayerCharacter from Riak!");
 			}
+			*/
+
+			this.writeToDB ("testGame");
 
 			return myChar1;
 
         }
+
+		/// <summary>
+		/// Writes all objects for a particular game to database
+		/// </summary>
+		/// <param name="gameID">ID of game</param>
+		public void writeToDB(String gameID)
+		{
+			// write clock
+			this.writeClock (gameID, this.clock);
+
+			// write skills
+			if (this.skillKeys.Count > 0)
+			{
+				this.skillKeys.Clear ();
+			}
+
+			foreach (KeyValuePair<String, Skill> pair in this.skillMasterList)
+			{
+				bool success = this.writeSkill (gameID, pair.Value);
+				if (success)
+				{
+					this.skillKeys.Add (pair.Key);
+				}
+			}
+
+			this.writeKeyList (gameID, "skillKeys", this.skillKeys);
+
+			// write NPCs
+			if (this.npcKeys.Count > 0)
+			{
+				this.npcKeys.Clear ();
+			}
+
+			foreach (KeyValuePair<String, NonPlayerCharacter> pair in this.npcMasterList)
+			{
+				bool success = this.writeNPC (gameID, pair.Value);
+				if (success)
+				{
+					this.npcKeys.Add (pair.Key);
+				}
+			}
+
+			this.writeKeyList (gameID, "npcKeys", this.npcKeys);
+
+			// write PCs
+			if (this.pcKeys.Count > 0)
+			{
+				this.pcKeys.Clear ();
+			}
+
+			foreach (KeyValuePair<String, PlayerCharacter> pair in this.pcMasterList)
+			{
+				bool success = this.writePC (gameID, pair.Value);
+				if (success)
+				{
+					this.pcKeys.Add (pair.Key);
+				}
+			}
+
+			this.writeKeyList (gameID, "pcKeys", this.pcKeys);
+
+			// write Provinces
+			if (this.provKeys.Count > 0)
+			{
+				this.provKeys.Clear ();
+			}
+
+			foreach (KeyValuePair<String, Province> pair in this.provinceMasterList)
+			{
+				bool success = this.writeProvince (gameID, pair.Value);
+				if (success)
+				{
+					this.provKeys.Add (pair.Key);
+				}
+			}
+
+			this.writeKeyList (gameID, "provKeys", this.provKeys);
+
+			// write Terrains
+			if (this.terrKeys.Count > 0)
+			{
+				this.terrKeys.Clear ();
+			}
+
+			foreach (KeyValuePair<String, Terrain> pair in this.terrainMasterList)
+			{
+				bool success = this.writeTerrain (gameID, pair.Value);
+				if (success)
+				{
+					this.terrKeys.Add (pair.Key);
+				}
+			}
+
+			this.writeKeyList (gameID, "terrKeys", this.terrKeys);
+
+			// write Fiefs
+			if (this.fiefKeys.Count > 0)
+			{
+				this.fiefKeys.Clear ();
+			}
+
+			foreach (KeyValuePair<String, Fief> pair in this.fiefMasterList)
+			{
+				bool success = this.writeFief (gameID, pair.Value);
+				if (success)
+				{
+					this.fiefKeys.Add (pair.Key);
+				}
+			}
+
+			this.writeKeyList (gameID, "fiefKeys", this.fiefKeys);
+
+		}
 
 		/// <summary>
 		/// Loads all objects for a particular game from database
@@ -645,6 +798,7 @@ namespace hist_mmorpg
 		/// <param name="gameID">ID of game</param>
 		public void initialDBload(String gameID)
 		{
+
 			// load clock
 			clock = this.initialDBload_clock (gameID, "clock001");
 
@@ -671,6 +825,16 @@ namespace hist_mmorpg
 			// load fiefs
 			Fief f = this.initialDBload_Fief (gameID, "ESX02");
 			this.fiefMasterList.Add (f.fiefID, f);
+
+			// process Character goTo queue
+			if (this.goToList.Count > 0)
+			{
+				for (int i = 0; i < this.goToList.Count; i++)
+				{
+					this.populate_goTo (this.goToList[i]);
+				}
+				this.goToList.Clear();
+			}
 		}
 
 		/// <summary>
@@ -731,6 +895,10 @@ namespace hist_mmorpg
 			if (npcResult.IsSuccess)
 			{
 				npcRiak = npcResult.Value.GetObject<NonPlayerCharacter_Riak>();
+				if (npcRiak.goTo.Count > 0)
+				{
+					goToList.Add (npcRiak);
+				}
 				myNPC = this.NPCfromRiakNPC (npcRiak);
 			}
 			else
@@ -755,6 +923,10 @@ namespace hist_mmorpg
 			if (pcResult.IsSuccess)
 			{
 				pcRiak = pcResult.Value.GetObject<PlayerCharacter_Riak>();
+				if (pcRiak.goTo.Count > 0)
+				{
+					goToList.Add (pcRiak);
+				}
 				myPC = this.PCfromRiakPC (pcRiak);
 			}
 			else
@@ -970,26 +1142,6 @@ namespace hist_mmorpg
 				}
 			}
 
-			/*
-			// insert owned fiefs
-			if (pcr.ownedFiefs.Count > 0)
-			{
-				for (int i = 0; i < pcr.ownedFiefs.Count; i++)
-				{
-					Fief owned = fiefMasterList[pcr.ownedFiefs[i]];
-					pcOut.ownedFiefs.Add (owned);
-				}
-			}
-
-			// insert goTo
-			if (pcr.goTo.Count > 0)
-			{
-				foreach (string value in pcr.goTo)
-				{
-					pcOut.goTo.Enqueue (this.fiefMasterList[value]);
-				}
-			} */
-
 			return pcOut;
 		}
 
@@ -1019,7 +1171,50 @@ namespace hist_mmorpg
 			return npcOut;
 		}
 
-				/// <summary>
+		/// <summary>
+		/// Inserts Fiefs from a Character_Riak's goTo Queue into a Character's goTo Queue
+		/// (used with load from database)
+		/// </summary>
+		/// <param name="cr">Character_Riak containing goTo Queue</param>
+		public bool populate_goTo(Character_Riak cr)
+		{
+			bool success = false;
+			Character myChar = null;
+
+			if (cr is PlayerCharacter_Riak)
+			{
+				if (this.pcMasterList.ContainsKey(cr.charID))
+				{
+					myChar = this.pcMasterList [cr.charID];
+					success = true;
+				}
+				else
+				{
+					System.Windows.Forms.MessageBox.Show ("PlayerCharacter not found: " + cr.charID);
+				}
+			}
+			else if (cr is NonPlayerCharacter_Riak)
+			{
+				if (this.npcMasterList.ContainsKey(cr.charID))
+				{
+					myChar = this.npcMasterList [cr.charID];
+					success = true;
+				}
+				else
+				{
+					System.Windows.Forms.MessageBox.Show ("NonPlayerCharacter not found: " + cr.charID);
+				}
+			}
+
+			foreach (String value in cr.goTo)
+			{
+				myChar.goTo.Enqueue (this.fiefMasterList[value]);
+			}
+
+			return success;
+		}
+
+		/// <summary>
 		/// Converts Province object into suitable format for JSON serialisation
 		/// </summary>
 		/// <param name="p">Province to be converted</param>
@@ -1047,35 +1242,192 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
-        /// Updates game objects at end/start of season
-        /// </summary>
-        public void seasonUpdate()
-        {
-            // fiefs
-            foreach (KeyValuePair<string, Fief> fief in this.fiefMasterList)
-            {
-                fief.Value.updateFief();
-            }
+		/// Writes key list (List object) to Riak
+		/// </summary>
+		/// <param name="gameID">Game (bucket) to write to</param>
+		/// <param name="key">key of key list</param>
+		/// <param name="kl">key list to write</param>
+		public bool writeKeyList(String gameID, String k, List<String> kl)
+		{
 
-            // player characters
-            foreach (KeyValuePair<string, PlayerCharacter> pc in this.pcMasterList)
-            {
-                if (pc.Value.health != 0)
-                {
-                    pc.Value.updateCharacter();
-                }
-            }
+			var rList = new RiakObject(gameID, k, kl);
+			var putListResult = client.Put(rList);
 
-            // player characters
-            foreach (KeyValuePair<string, NonPlayerCharacter> npc in this.npcMasterList)
-            {
-                if (npc.Value.health != 0)
-                {
-                    this.seasonUpdateNPC(npc.Value);
-                }
-            }
+			if (! putListResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Write failed: Key list " + rList.Key + " to bucket " + rList.Bucket);
+			}
 
-        }
+			return putListResult.IsSuccess;
+		}
+
+		/// <summary>
+		/// Writes GameClock object to Riak
+		/// </summary>
+		/// <param name="gameID">Game (bucket) to write to</param>
+		/// <param name="gc">GameClock to write</param>
+		public bool writeClock(String gameID, GameClock gc)
+		{
+
+			var rClock = new RiakObject(gameID, gc.clockID, gc);
+			var putClockResult = client.Put(rClock);
+
+			if (! putClockResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Write failed: GameClock " + rClock.Key + " to bucket " + rClock.Bucket);
+			}
+
+			return putClockResult.IsSuccess;
+		}
+
+		/// <summary>
+		/// Writes Skill object to Riak
+		/// </summary>
+		/// <param name="gameID">Game (bucket) to write to</param>
+		/// <param name="s">Skill to write</param>
+		public bool writeSkill(String gameID, Skill s)
+		{
+
+			var rSkill = new RiakObject(gameID, s.skillID, s);
+			var putSkillResult = client.Put(rSkill);
+
+			if (! putSkillResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Write failed: Skill " + rSkill.Key + " to bucket " + rSkill.Bucket);
+			}
+
+			return putSkillResult.IsSuccess;
+		}
+
+		/// <summary>
+		/// Writes NonPlayerCharacter object to Riak
+		/// </summary>
+		/// <param name="gameID">Game (bucket) to write to</param>
+		/// <param name="npc">NonPlayerCharacter to write</param>
+		public bool writeNPC(String gameID, NonPlayerCharacter npc)
+		{
+
+			NonPlayerCharacter_Riak riakNPC = this.NPCtoRiak (npc);
+			var rNPC = new RiakObject(gameID, riakNPC.charID, riakNPC);
+			var putNPCresult = client.Put(rNPC);
+
+			if (! putNPCresult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Write failed: NPC " + rNPC.Key + " to bucket " + rNPC.Bucket);
+			}
+
+			return putNPCresult.IsSuccess;
+		}
+
+		/// <summary>
+		/// Writes PlayerCharacter object to Riak
+		/// </summary>
+		/// <param name="gameID">Game (bucket) to write to</param>
+		/// <param name="pc">PlayerCharacter to write</param>
+		public bool writePC(String gameID, PlayerCharacter pc)
+		{
+
+			PlayerCharacter_Riak riakPC = this.PCtoRiak (pc);
+			var rPC = new RiakObject(gameID, riakPC.charID, riakPC);
+			var putPCresult = client.Put(rPC);
+
+			if (! putPCresult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Write failed: PC " + rPC.Key + " to bucket " + rPC.Bucket);
+			}
+
+			return putPCresult.IsSuccess;
+		}
+
+		/// <summary>
+		/// Writes Province object to Riak
+		/// </summary>
+		/// <param name="gameID">Game (bucket) to write to</param>
+		/// <param name="p">Province to write</param>
+		public bool writeProvince(String gameID, Province p)
+		{
+
+			Province_Riak riakProv = this.ProvinceToRiak (p);
+			var rProv = new RiakObject(gameID, riakProv.provinceID, riakProv);
+			var putProvResult = client.Put(rProv);
+
+			if (! putProvResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Write failed: Province " + rProv.Key + " to bucket " + rProv.Bucket);
+			}
+
+			return putProvResult.IsSuccess;
+		}
+
+		/// <summary>
+		/// Writes Terrain object to Riak
+		/// </summary>
+		/// <param name="gameID">Game (bucket) to write to</param>
+		/// <param name="t">Terrain to write</param>
+		public bool writeTerrain(String gameID, Terrain t)
+		{
+
+			var rTerrain = new RiakObject(gameID, t.terrainCode, t);
+			var putTerrainResult = client.Put(rTerrain);
+
+			if (! putTerrainResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Write failed: Terrain " + rTerrain.Key + " to bucket " + rTerrain.Bucket);
+			}
+
+			return putTerrainResult.IsSuccess;
+		}
+
+		/// <summary>
+		/// Writes Fief object to Riak
+		/// </summary>
+		/// <param name="gameID">Game (bucket) to write to</param>
+		/// <param name="f">Fief to write</param>
+		public bool writeFief(String gameID, Fief f)
+		{
+
+			Fief_Riak riakFief = this.FieftoRiak (f);
+			var rFief = new RiakObject(gameID, riakFief.fiefID, riakFief);
+			var putFiefResult = client.Put(rFief);
+
+			if (! putFiefResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Write failed: Fief " + rFief.Key + " to bucket " + rFief.Bucket);
+			}
+
+			return putFiefResult.IsSuccess;
+		}
+
+		/// <summary>
+		/// Updates game objects at end/start of season
+		/// </summary>
+		public void seasonUpdate()
+		{
+			// fiefs
+			foreach (KeyValuePair<string, Fief> fief in this.fiefMasterList)
+			{
+				fief.Value.updateFief();
+			}
+
+			// player characters
+			foreach (KeyValuePair<string, PlayerCharacter> pc in this.pcMasterList)
+			{
+				if (pc.Value.health != 0)
+				{
+					pc.Value.updateCharacter();
+				}
+			}
+
+			// player characters
+			foreach (KeyValuePair<string, NonPlayerCharacter> npc in this.npcMasterList)
+			{
+				if (npc.Value.health != 0)
+				{
+					this.seasonUpdateNPC(npc.Value);
+				}
+			}
+
+		}
 
         /// <summary>
         /// End/start of season updates specific to NPC objects

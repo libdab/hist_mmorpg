@@ -1031,7 +1031,7 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Queue of Fiefs to auto-travel to
 		/// </summary>
-		public Queue<String> goTo { get; set; }
+		public List<String> goTo { get; set; }
 		/// <summary>
 		/// Holds character language
 		/// </summary>
@@ -1117,11 +1117,12 @@ namespace hist_mmorpg
 				this.health = charToUse.health;
 				this.maxHealth = charToUse.maxHealth;
 				this.virility = charToUse.virility;
+				this.goTo = new List<string> ();
 				if (charToUse.goTo.Count > 0)
 				{
 					foreach (Fief value in charToUse.goTo)
 					{
-						this.goTo.Enqueue (value.fiefID);
+						this.goTo.Add (value.fiefID);
 					}
 				}
 				this.language = charToUse.language;

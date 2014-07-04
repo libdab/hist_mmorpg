@@ -14,20 +14,26 @@ namespace hist_mmorpg
     class HexMapGraph
     {
 
+		/// <summary>
+		/// Map ID
+		/// </summary>
+		public String mapID { get; set; }
         /// <summary>
         /// Map object - AdjacencyGraph (i.e. directed)
         /// </summary>
-        // public UndirectedGraph<Fief, TaggedUndirectedEdge<Fief, string>> myMap { get; set; }
         public AdjacencyGraph<Fief, TaggedEdge<Fief, string>> myMap { get; set; }
         /// <summary>
         /// Dictionary holding edge costs
         /// </summary>
         private Dictionary<TaggedEdge<Fief, string>, double> costs { get; set; }
-        /// <summary>
+
+		/// <summary>
         /// Constructor for HexMapGraph
         /// </summary>
-        public HexMapGraph()
+		/// <param name="id">String holding map ID</param>
+		public HexMapGraph(String id)
         {
+			this.mapID = id;
             myMap = new AdjacencyGraph<Fief, TaggedEdge<Fief, string>>();
             costs = new Dictionary<TaggedEdge<Fief, string>, double>();
         }
