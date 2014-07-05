@@ -50,6 +50,10 @@ namespace hist_mmorpg
 			}
 		}
 
+		public HexMapGraph()
+		{
+		}
+
         // TODO
         public bool addHexesAndRoute(Fief s, Fief t, string tag, double cost)
         {

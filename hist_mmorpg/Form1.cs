@@ -130,6 +130,7 @@ namespace hist_mmorpg
 
         public PlayerCharacter initGameObjects()
         {
+			/* 
             // creat GameClock
 			GameClock myGameClock = new GameClock("clock001", 1320);
             this.clock = myGameClock;
@@ -350,7 +351,7 @@ namespace hist_mmorpg
 			myHexMapString.addHexesAndRoute(myFief7.fiefID, myFief6.fiefID, "E", (myFief7.terrain.travelCost + myFief6.terrain.travelCost) / 2);
 			myHexMapString.addHexesAndRoute(myFief7.fiefID, myFief1.fiefID, "SE", (myFief7.terrain.travelCost + myFief1.terrain.travelCost) / 2);
 			myHexMapString.addHexesAndRoute(myFief7.fiefID, myFief2.fiefID, "SW", (myFief7.terrain.travelCost + myFief2.terrain.travelCost) / 2);
-
+			*/
 			/* foreach (KeyValuePair<TaggedEdge<String, string>, double> pair in myHexMapString.costs)
 			{
 				System.Windows.Forms.MessageBox.Show("First cost: " + pair.Key + " = " + pair.Value);
@@ -440,6 +441,7 @@ namespace hist_mmorpg
 			System.Windows.Forms.MessageBox.Show("Travelling W from ESX02, you first arrive at " + targetFief);
 			*/
 
+			/*
 			// create goTo queues for characters
             Queue<Fief> myGoTo1 = new Queue<Fief>();
             Queue<Fief> myGoTo2 = new Queue<Fief>();
@@ -525,6 +527,7 @@ namespace hist_mmorpg
 
             // set inital fief to display
             this.fiefToView = myChar1.location;
+			*/
 
             // try retrieving fief from masterlist using fiefID
 			//  Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
@@ -798,9 +801,15 @@ namespace hist_mmorpg
 			}
 			*/
 
-			this.writeToDB ("testGame");
+			// this.writeToDB ("testGame");
 
-			return myChar1;
+			this.initialDBload ("testGame");
+
+			// set inital fief to display
+			this.fiefToView = this.pcMasterList["101"].location;
+
+			// return PC;
+			return this.pcMasterList["101"];
 
         }
 
@@ -927,32 +936,53 @@ namespace hist_mmorpg
 		public void initialDBload(String gameID)
 		{
 
+			// load key lists
+			this.initialDBload_keyLists (gameID);
+
 			// load clock
-			clock = this.initialDBload_clock (gameID, "clock001");
+			this.clock = this.initialDBload_clock (gameID, "clock001");
 
 			// load skills
-			Skill skill = this.initialDBload_skill (gameID, "skill001");
-			this.skillMasterList.Add(skill.skillID, skill);
-
+			foreach (String element in this.skillKeys)
+			{
+				Skill skill = this.initialDBload_skill (gameID, element);
+				this.skillMasterList.Add(skill.skillID, skill);
+			}
+				
 			// load NPCs
-			NonPlayerCharacter npc = this.initialDBload_NPC (gameID, "402");
-			this.npcMasterList.Add(npc.charID, npc);
+			foreach (String element in this.npcKeys)
+			{
+				NonPlayerCharacter npc = this.initialDBload_NPC (gameID, element);
+				this.npcMasterList.Add(npc.charID, npc);
+			}
 
 			// load PCs
-			PlayerCharacter pc = this.initialDBload_PC (gameID, "101");
-			this.pcMasterList.Add(pc.charID, pc);
+			foreach (String element in this.pcKeys)
+			{
+				PlayerCharacter pc = this.initialDBload_PC (gameID, element);
+				this.pcMasterList.Add(pc.charID, pc);
+			}
 
 			// load provinces
-			Province prov = this.initialDBload_Province (gameID, "ESX00");
-			this.provinceMasterList.Add (prov.provinceID, prov);
+			foreach (String element in this.provKeys)
+			{
+				Province prov = this.initialDBload_Province (gameID, element);
+				this.provinceMasterList.Add (prov.provinceID, prov);
+			}
 
 			// load terrains
-			Terrain terr = this.initialDBload_terrain (gameID, "P");
-			this.terrainMasterList.Add (terr.terrainCode, terr);
+			foreach (String element in this.terrKeys)
+			{
+				Terrain terr = this.initialDBload_terrain (gameID, element);
+				this.terrainMasterList.Add (terr.terrainCode, terr);
+			}
 
 			// load fiefs
-			Fief f = this.initialDBload_Fief (gameID, "ESX02");
-			this.fiefMasterList.Add (f.fiefID, f);
+			foreach (String element in this.fiefKeys)
+			{
+				Fief f = this.initialDBload_Fief (gameID, element);
+				this.fiefMasterList.Add (f.fiefID, f);
+			}
 
 			// process Character goTo queue
 			if (this.goToList.Count > 0)
@@ -966,6 +996,80 @@ namespace hist_mmorpg
 
 			// load map
 			this.gameMap = this.initialDBload_map (gameID, "map001E");
+		}
+
+		/// <summary>
+		/// Loads all Riak key lists for a particular game from database
+		/// </summary>
+		/// <param name="gameID">Game for which key lists to be retrieved</param>
+		public void initialDBload_keyLists(String gameID)
+		{
+			// get Skill Keys
+			var skillKeyResult = client.Get(gameID, "skillKeys");
+			if (skillKeyResult.IsSuccess)
+			{
+				this.skillKeys = skillKeyResult.Value.GetObject<List<String>>();
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve skillKeys from database.");
+			}
+
+			// get NPC Keys
+			var npcKeyResult = client.Get(gameID, "npcKeys");
+			if (npcKeyResult.IsSuccess)
+			{
+				this.npcKeys = npcKeyResult.Value.GetObject<List<String>>();
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve npcKeys from database.");
+			}
+				
+			// get PC Keys
+			var pcKeyResult = client.Get(gameID, "pcKeys");
+			if (pcKeyResult.IsSuccess)
+			{
+				this.pcKeys = pcKeyResult.Value.GetObject<List<String>>();
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve pcKeys from database.");
+			}
+
+			// get Province Keys
+			var provKeyResult = client.Get(gameID, "provKeys");
+			if (provKeyResult.IsSuccess)
+			{
+				this.provKeys = provKeyResult.Value.GetObject<List<String>>();
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve provKeys from database.");
+			}
+
+			// get Terrain Keys
+			var terrKeyResult = client.Get(gameID, "terrKeys");
+			if (terrKeyResult.IsSuccess)
+			{
+				this.terrKeys = terrKeyResult.Value.GetObject<List<String>>();
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve terrKeys from database.");
+			}
+
+			// get Fief Keys
+			var fiefKeyResult = client.Get(gameID, "fiefKeys");
+			if (fiefKeyResult.IsSuccess)
+			{
+				this.fiefKeys = fiefKeyResult.Value.GetObject<List<String>>();
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve fiefKeys from database.");
+			}
+
 		}
 
 		/// <summary>
