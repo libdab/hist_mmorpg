@@ -11,7 +11,7 @@ namespace hist_mmorpg
     /// <summary>
     /// Class defining HexMapGraph
     /// </summary>
-    class HexMapGraph
+	public class HexMapGraph
     {
 
 		/// <summary>
@@ -37,6 +37,18 @@ namespace hist_mmorpg
             myMap = new AdjacencyGraph<Fief, TaggedEdge<Fief, string>>();
             costs = new Dictionary<TaggedEdge<Fief, string>, double>();
         }
+
+		public HexMapGraph(String id, TaggedEdge<Fief, string>[] myEdges)
+		{
+			this.mapID = id;
+			myMap = myEdges.ToAdjacencyGraph<Fief, TaggedEdge<Fief, string>>();
+			costs = new Dictionary<TaggedEdge<Fief, string>, double>();
+			foreach (var e in this.myMap.Edges)
+			{
+				// add costs based on Fief terrain costs
+				this.addCost (e, (e.Source.terrain.travelCost + e.Target.terrain.travelCost) / 2);
+			}
+		}
 
         // TODO
         public bool addHexesAndRoute(Fief s, Fief t, string tag, double cost)
@@ -271,5 +283,284 @@ namespace hist_mmorpg
             return output;
         }
     }
+
+	/// <summary>
+	/// Class defining HexMapGraph
+	/// </summary>
+	class HexMapGraphString
+	{
+
+		/// <summary>
+		/// Map ID
+		/// </summary>
+		public String mapID { get; set; }
+		/// <summary>
+		/// Dictionary holding edge costs
+		/// </summary>
+		public Dictionary<TaggedEdge<String, string>, double> costs { get; set; }
+		/// <summary>
+		/// Map object - AdjacencyGraph (i.e. directed)
+		/// </summary>
+		public AdjacencyGraph<String, TaggedEdge<String, string>> myMap { get; set; }
+
+		/// <summary>
+		/// Constructor for HexMapGraph
+		/// </summary>
+		/// <param name="id">String holding map ID</param>
+		public HexMapGraphString(String id)
+		{
+			this.mapID = id;
+			costs = new Dictionary<TaggedEdge<String, string>, double>();
+			myMap = new AdjacencyGraph<String, TaggedEdge<String, string>>();
+		}
+
+		public HexMapGraphString(String id, TaggedEdge<String, string>[] myEdges)
+		{
+			this.mapID = id;
+			costs = new Dictionary<TaggedEdge<String, string>, double>();
+			myMap = myEdges.ToAdjacencyGraph<String, TaggedEdge<String, string>>();
+			foreach (var e in this.myMap.Edges)
+			{
+				// add costs based on Fief terrain costs
+			}
+		}
+
+		public HexMapGraphString()
+		{
+		}
+
+		// TODO
+		public bool addHexesAndRoute(String s, String t, string tag, double cost)
+		{
+			bool success = false;
+			TaggedEdge<String, string> myEdge = this.createEdge(s, t, tag);
+			success = this.myMap.AddVerticesAndEdge(myEdge);
+			if (success)
+			{
+				this.addCost(myEdge, cost);
+			}
+			return success;
+		}
+
+		// TODO
+		public bool addRoute(String s, String t, string tag, double cost)
+		{
+			bool success = false;
+			TaggedEdge<String, string> myEdge = this.createEdge(s, t, tag);
+			success = this.myMap.AddEdge(myEdge);
+			if (success)
+			{
+				this.addCost(myEdge, cost);
+			}
+			return success;
+		}
+
+		// TODO
+		public bool removeRoute(String s, string tag)
+		{
+			bool success = false;
+			foreach (var e in this.myMap.Edges)
+			{
+				if (e.Source == s)
+				{
+					if (e.Tag.Equals(tag))
+					{
+						success = this.myMap.RemoveEdge(e);
+						if (success)
+						{
+							this.removeCost(e);
+						}
+						break;
+					}
+				}
+			}
+
+			return success;
+		}
+
+		// TODO
+		public bool addHex(String f)
+		{
+			bool success = false;
+			success = this.myMap.AddVertex(f);
+			return success;
+		}
+
+		// TODO
+		public bool removeHex(String f)
+		{
+			bool success = false;
+			success = this.myMap.RemoveVertex(f);
+			return success;
+		}
+
+		// TODO
+		public void addCost(TaggedEdge<String, string> e, double cost)
+		{
+			costs.Add(e, cost);
+		}
+
+		// TODO
+		public void removeCost(TaggedEdge<String, string> e)
+		{
+			costs.Remove(e);
+		}
+
+		// TODO
+		public TaggedEdge<String, string> createEdge(String s, String t, string tag)
+		{
+			TaggedEdge<String, string> myEdge = new TaggedEdge<String, string>(s, t, tag);
+			return myEdge;
+		}
+
+		// TODO
+		public String getFief(String f, string direction)
+		{
+			String myFief = null;
+
+			foreach (var e in this.myMap.Edges)
+			{
+				if (e.Source == f)
+				{
+					if (e.Tag.Equals(direction))
+					{
+						myFief = e.Target;
+					}
+				}
+			}
+
+			return myFief;
+
+		}
+
+		/*
+        // TODO
+		public Fief moveCharacter(Character ch, Fief f, string whereTo)
+		{
+			Fief newFief = null;
+
+			f.removeCharacter(ch);
+			foreach (var e in this.myMap.Edges)
+			{
+				if (e.Source == f)
+				{
+					if (e.Tag.Equals(whereTo))
+					{
+						ch.location = e.Target;
+						newFief = e.Target;
+					}
+				}
+			}
+			ch.location.addCharacter(ch);
+			ch.inKeep = false;
+
+			bool isPC = ch is PlayerCharacter;
+			if (isPC)
+			{
+				this.moveEntourage((PlayerCharacter)ch, f);
+			}
+
+			return newFief;
+		}
+
+		// TODO
+		public void moveEntourage(PlayerCharacter ch, Fief from)
+		{
+			Fief to = ch.location;
+			for (int i = 0; i < ch.employees.Count; i++)
+			{
+				if (ch.employees[i].inEntourage)
+				{
+					from.removeCharacter(ch.employees[i]);
+					to.addCharacter(ch.employees[i]);
+					ch.employees[i].location = to;
+					ch.employees[i].inKeep = false;
+				}
+			}
+
+		} 
+
+		/// <summary>
+		/// Selects random adjoining hex (also equal chance to select current hex)
+		/// </summary>
+		/// <param name="npc">NonPlayerCharacter to be moved (or not)</param>
+		/// <param name="f">Current location of NPC</param>
+		public Fief chooseRandomHex(Fief f)
+		{
+			// list to store all out edges
+			List<TaggedEdge<Fief, string>> choices = new List<TaggedEdge<Fief, string>>();
+			// string to contain chosen move direction
+			Fief goTo = null;
+
+			// identify and store all target hexes from source hex
+			foreach (var e in this.myMap.Edges)
+			{
+				if (e.Source == f)
+				{
+					choices.Add(e);
+				}
+			}
+
+			// generate random int between 0 and no. of targets
+			Random rnd = new Random();
+			int selection = rnd.Next(0, (choices.Count + 1));
+
+			if (selection != choices.Count)
+			{
+				goTo = choices[selection].Target;
+			}
+
+			return goTo;
+		}
+
+		public Queue<Fief> getShortestPath(Fief @from, Fief to)
+		{
+			Queue<Fief> pathNodes = new Queue<Fief>();
+			var edgeCost = AlgorithmExtensions.GetIndexer(costs);
+			var tryGetPath = myMap.ShortestPathsDijkstra(edgeCost, @from);
+
+			IEnumerable<TaggedEdge<Fief, string>> path;
+			if (tryGetPath(to, out path))
+			{
+				foreach (var e in path)
+				{
+					pathNodes.Enqueue(e.Target);
+				}
+			}
+
+			return pathNodes;
+		}
+
+		public string getShortestPathString(Fief @from, Fief to)
+		{
+			string output = "";
+			var edgeCost = AlgorithmExtensions.GetIndexer(costs);
+			var tryGetPath = myMap.ShortestPathsDijkstra(edgeCost, @from);
+
+			IEnumerable<TaggedEdge<Fief, string>> path;
+			if (tryGetPath(to, out path))
+			{
+				output = PrintPath(@from, to, path);
+				//  PrintPath(@from, to, path);
+			}
+			else
+			{
+				output = "No path found from " + @from.fiefID + " to " + to.fiefID;
+				// Console.WriteLine("No path found from {0} to {1}.");
+			}
+			return output;
+		}
+
+		private static string PrintPath(Fief @from, Fief to, IEnumerable<TaggedEdge<Fief, string>> path)
+		{
+			string output = "";
+			output += "Path found from " + @from.fiefID + " to " + to.fiefID + "is\r\n";
+			foreach (var e in path)
+			{
+				output += e.Tag + " to (" + e.Target.fiefID + ") ";
+			}
+			return output;
+		} */
+	}
 
 }

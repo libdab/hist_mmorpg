@@ -315,7 +315,132 @@ namespace hist_mmorpg
             myHexMap.addHexesAndRoute(myFief7, myFief1, "SE", (myFief7.terrain.travelCost + myFief1.terrain.travelCost) / 2);
             myHexMap.addHexesAndRoute(myFief7, myFief2, "SW", (myFief7.terrain.travelCost + myFief2.terrain.travelCost) / 2);
 
-            // create goTo queues for characters
+			// test reading/writing HexMapGraph to/from Riak
+			// 1. create graph
+			var myHexMapString = new HexMapGraphString("map002");
+			// 2. Add edge and auto create vertices
+			// from myFief1
+			myHexMapString.addHexesAndRoute(myFief1.fiefID, myFief2.fiefID, "W", (myFief1.terrain.travelCost + myFief2.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief1.fiefID, myFief3.fiefID, "E", (myFief1.terrain.travelCost + myFief3.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief1.fiefID, myFief6.fiefID, "NE", (myFief1.terrain.travelCost + myFief6.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief1.fiefID, myFief4.fiefID, "SE", (myFief1.terrain.travelCost + myFief4.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief1.fiefID, myFief5.fiefID, "SW", (myFief1.terrain.travelCost + myFief5.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief1.fiefID, myFief7.fiefID, "NW", (myFief1.terrain.travelCost + myFief7.terrain.travelCost) / 2);
+			// from myFief2
+			myHexMapString.addHexesAndRoute(myFief2.fiefID, myFief1.fiefID, "E", (myFief2.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief2.fiefID, myFief7.fiefID, "NE", (myFief2.terrain.travelCost + myFief7.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief2.fiefID, myFief5.fiefID, "SE", (myFief2.terrain.travelCost + myFief5.terrain.travelCost) / 2);
+			// from myFief3
+			myHexMapString.addHexesAndRoute(myFief3.fiefID, myFief4.fiefID, "SW", (myFief3.terrain.travelCost + myFief4.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief3.fiefID, myFief6.fiefID, "NW", (myFief3.terrain.travelCost + myFief6.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief3.fiefID, myFief1.fiefID, "W", (myFief3.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+			// from myFief4
+			myHexMapString.addHexesAndRoute(myFief4.fiefID, myFief3.fiefID, "NE", (myFief4.terrain.travelCost + myFief3.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief4.fiefID, myFief1.fiefID, "NW", (myFief4.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief4.fiefID, myFief5.fiefID, "W", (myFief4.terrain.travelCost + myFief5.terrain.travelCost) / 2);
+			// from myFief5
+			myHexMapString.addHexesAndRoute(myFief5.fiefID, myFief1.fiefID, "NE", (myFief5.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief5.fiefID, myFief2.fiefID, "NW", (myFief5.terrain.travelCost + myFief2.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief5.fiefID, myFief4.fiefID, "E", (myFief5.terrain.travelCost + myFief4.terrain.travelCost) / 2);
+			// from myFief6
+			myHexMapString.addHexesAndRoute(myFief6.fiefID, myFief3.fiefID, "SE", (myFief6.terrain.travelCost + myFief3.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief6.fiefID, myFief1.fiefID, "SW", (myFief6.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief6.fiefID, myFief7.fiefID, "W", (myFief6.terrain.travelCost + myFief7.terrain.travelCost) / 2);
+			// from myFief7
+			myHexMapString.addHexesAndRoute(myFief7.fiefID, myFief6.fiefID, "E", (myFief7.terrain.travelCost + myFief6.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief7.fiefID, myFief1.fiefID, "SE", (myFief7.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+			myHexMapString.addHexesAndRoute(myFief7.fiefID, myFief2.fiefID, "SW", (myFief7.terrain.travelCost + myFief2.terrain.travelCost) / 2);
+
+			/* foreach (KeyValuePair<TaggedEdge<String, string>, double> pair in myHexMapString.costs)
+			{
+				System.Windows.Forms.MessageBox.Show("First cost: " + pair.Key + " = " + pair.Value);
+				break;
+			}
+			for (int i = 0; i < 1; i++)
+			{
+				System.Windows.Forms.MessageBox.Show("First edge: " + myHexMapString.myMap.Edges.ElementAt(i));
+			}
+
+			// test writing map to Riak
+			var rMap = new RiakObject("maps", myHexMapString.mapID, myHexMapString);
+			var putMapResult = client.Put(rMap);
+			if (putMapResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Successfully saved " + rMap.Key + " to bucket " + rMap.Bucket);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Failed to write HexMapGraphString vertices" + rMap.Key + " to bucket " + rMap.Bucket);
+			} 
+			var rMapV = new RiakObject("maps", myHexMapString.mapID + "V", myHexMapString.myMap.Vertices);
+			var putMapResultV = client.Put(rMapV);
+			if (putMapResultV.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Successfully saved " + rMapV.Key + " to bucket " + rMapV.Bucket);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Failed to write HexMapGraphString vertices" + rMapV.Key + " to bucket " + rMapV.Bucket);
+			}
+			var rMapE = new RiakObject("maps", myHexMapString.mapID + "E", myHexMapString.myMap.Edges);
+			var putMapResultE = client.Put(rMapE);
+			if (putMapResultE.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Successfully saved " + rMapE.Key + " to bucket " + rMapE.Bucket);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Failed to write HexMapGraphString vertices" + rMapE.Key + " to bucket " + rMapE.Bucket);
+			}
+			var rMapC = new RiakObject("maps", myHexMapString.mapID + "C", myHexMapString.costs);
+			var putMapResultC = client.Put(rMapC);
+			if (putMapResultC.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Successfully saved " + rMapC.Key + " to bucket " + rMapC.Bucket);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Failed to write HexMapGraphString vertices" + rMapC.Key + " to bucket " + rMapC.Bucket);
+			}
+			var mapResult = client.Get("maps", "map002E");
+			var newMap = new IEnumerab();
+			newMap = mapResult.Value.GetObject<HexMapGraphString>();
+			var mapResult = client.Get("maps", "map002");
+			var newMap = new HexMapGraphString();
+			newMap = mapResult.Value.GetObject<HexMapGraphString>();
+			var mapResult = client.Get("maps", "map002");
+			var newMap = new HexMapGraphString();
+			newMap = mapResult.Value.GetObject<HexMapGraphString>();
+
+
+			// test reading map from Riak
+			var mapResult = client.Get("maps", "map002E");
+			var newMapE = new List<TaggedEdge<String, string>>();
+
+			if (mapResult.IsSuccess)
+			{
+				newMapE = mapResult.Value.GetObject<List<TaggedEdge<String, string>>>();
+				string displayClock = "";
+				displayClock += "Successfully retrieved map edges:\r\n";
+				foreach (TaggedEdge<String, string> element in newMapE)
+				{
+					displayClock += element.Source + " > " + element.Target + "\r\n";
+				}
+				System.Windows.Forms.MessageBox.Show(displayClock);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Failed to read map edges");
+			} 
+
+			TaggedEdge<String, string>[] newMapE_array = newMapE.ToArray ();
+
+			var myHexMapString002 = new HexMapGraphString("map003", newMapE_array);
+			String targetFief = myHexMapString002.getFief ("ESX02", "W");
+			System.Windows.Forms.MessageBox.Show("Travelling W from ESX02, you first arrive at " + targetFief);
+			*/
+
+			// create goTo queues for characters
             Queue<Fief> myGoTo1 = new Queue<Fief>();
             Queue<Fief> myGoTo2 = new Queue<Fief>();
             Queue<Fief> myGoTo3 = new Queue<Fief>();
@@ -790,6 +915,9 @@ namespace hist_mmorpg
 
 			this.writeKeyList (gameID, "fiefKeys", this.fiefKeys);
 
+			// write map (edges)
+			this.writeMapEdges (gameID, this.gameMap);
+
 		}
 
 		/// <summary>
@@ -835,6 +963,9 @@ namespace hist_mmorpg
 				}
 				this.goToList.Clear();
 			}
+
+			// load map
+			this.gameMap = this.initialDBload_map (gameID, "map001E");
 		}
 
 		/// <summary>
@@ -1008,6 +1139,32 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
+		/// Creates HexMapGraph for a particular game,
+		/// using map edges collection retrieved from database
+		/// </summary>
+		/// <param name="gameID">Game for which map to be created</param>
+		/// <param name="mapEdgesID">ID of map edges collection to be retrieved</param>
+		public HexMapGraph initialDBload_map(String gameID, String mapEdgesID)
+		{
+			var mapResult = client.Get(gameID, mapEdgesID);
+			List<TaggedEdge<String, string>> edgesList = new List<TaggedEdge<string, string>>();
+			var newMap = new HexMapGraph();
+
+			if (mapResult.IsSuccess)
+			{
+				edgesList = mapResult.Value.GetObject<List<TaggedEdge<String, string>>>();
+				TaggedEdge<Fief, string>[] edgesArray = this.EdgeCollection_from_Riak (edgesList);
+				newMap = new HexMapGraph ("map001", edgesArray);
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve map edges " + mapEdgesID);
+			}
+
+			return newMap;
+		}
+
+		/// <summary>
 		/// Converts Fief object (containing nested objects) into suitable format for JSON serialisation
 		/// </summary>
 		/// <param name="f">Fief to be converted</param>
@@ -1087,7 +1244,7 @@ namespace hist_mmorpg
 			return fOut;
 		}
 
-				/// <summary>
+		/// <summary>
 		/// Converts PlayerCharacter object (containing nested objects) into suitable format for JSON serialisation
 		/// </summary>
 		/// <param name="pc">PlayerCharacter to be converted</param>
@@ -1169,6 +1326,63 @@ namespace hist_mmorpg
 			}
 
 			return npcOut;
+		}
+
+		/// <summary>
+		/// Converts HexMapGraph edge collection into suitable format for JSON serialisation
+		/// </summary>
+		/// <param name="edgesIn">List<TaggedEdge<Fief, string>> to be converted</param>
+		public List<TaggedEdge<String, string>> EdgeCollection_to_Riak(List<TaggedEdge<Fief, string>> edgesIn)
+		{
+			List<TaggedEdge<String, string>> edgesOut = new List<TaggedEdge<string, string>> ();
+
+			foreach (TaggedEdge<Fief, string> element in edgesIn)
+			{
+				TaggedEdge<String, string> newElement = this.EdgeFief_to_EdgeString (element);
+				edgesOut.Add (newElement);
+			}
+
+			return edgesOut;
+		}
+
+		/// <summary>
+		/// Converts List<TaggedEdge<String, string>> into TaggedEdge<Fief, string>[]
+		/// </summary>
+		/// <param name="edgesIn">List<TaggedEdge<String, string>> to be converted</param>
+		public TaggedEdge<Fief, string>[] EdgeCollection_from_Riak(List<TaggedEdge<String, string>> edgesIn)
+		{
+			TaggedEdge<Fief, string>[] edgesOut = new TaggedEdge<Fief, string>[edgesIn.Count];
+
+			int i = 0;
+			foreach (TaggedEdge<String, string> element in edgesIn)
+			{
+				TaggedEdge<Fief, string> newElement = this.EdgeString_to_EdgeFief (element);
+				edgesOut [i] = newElement;
+				i++;
+			}
+
+			return edgesOut;
+		}
+
+		/// <summary>
+		/// Converts TaggedEdge<Fief, string> object into suitable format for JSON serialisation
+		/// (i.e. TaggedEdge<String, string>)
+		/// </summary>
+		/// <param name="te">TaggedEdge<Fief, string> to be converted</param>
+		public TaggedEdge<String, string> EdgeFief_to_EdgeString(TaggedEdge<Fief, string> te)
+		{
+			TaggedEdge<String, string> edgeOut = new TaggedEdge<String, string>(te.Source.fiefID, te.Target.fiefID, te.Tag);
+			return edgeOut;
+		}
+
+		/// <summary>
+		/// Converts TaggedEdge<String, string> object into TaggedEdge<Fief, string>
+		/// </summary>
+		/// <param name="te">TaggedEdge<String, string> to be converted</param>
+		public TaggedEdge<Fief, string> EdgeString_to_EdgeFief(TaggedEdge<String, string> te)
+		{
+			TaggedEdge<Fief, string> edgeOut = new TaggedEdge<Fief, string>(this.fiefMasterList[te.Source], this.fiefMasterList[te.Target], te.Tag);
+			return edgeOut;
 		}
 
 		/// <summary>
@@ -1396,6 +1610,27 @@ namespace hist_mmorpg
 			}
 
 			return putFiefResult.IsSuccess;
+		}
+
+		/// <summary>
+		/// Writes HexMapGraph edges collection to Riak
+		/// </summary>
+		/// <param name="gameID">Game (bucket) to write to</param>
+		/// <param name="map">HexMapGraph containing edges collection</param>
+		public bool writeMapEdges(String gameID, HexMapGraph map)
+		{
+
+			List<TaggedEdge<String, string>> riakMapEdges = this.EdgeCollection_to_Riak (map.myMap.Edges.ToList());
+
+			var rMapE = new RiakObject(gameID, map.mapID + "E", riakMapEdges);
+			var putMapResultE = client.Put(rMapE);
+
+			if (! putMapResultE.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Write failed: Map edges collection " + rMapE.Key + " to bucket " + rMapE.Bucket);
+			}
+
+			return putMapResultE.IsSuccess;
 		}
 
 		/// <summary>
@@ -2339,4 +2574,5 @@ namespace hist_mmorpg
         }
 
     }
+
 }
