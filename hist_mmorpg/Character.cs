@@ -150,10 +150,10 @@ namespace hist_mmorpg
                 throw new InvalidDataException("Character age must be an integer between 0 and 100");
             }
 
-            // validate preg = only if character female
-            if ((isM) && (preg))
+			// validate preg = not if male
+            if (isM)
             {
-                throw new InvalidDataException("Male characters cannot be pregnant!");
+				this.pregnant = false;
             }
 
             // validate nat = Eng/Fr

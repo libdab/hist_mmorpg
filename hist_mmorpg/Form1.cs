@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Xml;
 using QuickGraph;
 using CorrugatedIron;
 using CorrugatedIron.Models;
@@ -118,7 +121,10 @@ namespace hist_mmorpg
 			cluster = (RiakCluster)RiakCluster.FromConfig("riakConfig");
 			client = (RiakClient)cluster.CreateClient();
             // create game objects
-            PlayerCharacter thisPC = this.initGameObjects();
+			PlayerCharacter thisPC = this.initGameObjects("db");
+
+			this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
+
             // inform models of initial game objects
             cm.changeCurrent(thisPC);
             fm.changeCurrent(thisPC.location);
@@ -128,108 +134,207 @@ namespace hist_mmorpg
             this.characterContainer.BringToFront();
         }
 
-        public PlayerCharacter initGameObjects()
+		public String[][] ArrayFromCSV (String csvFilename, bool writeToDB, String bucket = "", String key = "")
+		{
+			var linesIn = new List<string[]>();
+
+			StreamReader sr = new StreamReader(csvFilename);
+
+			int Row = 0;
+			while (!sr.EndOfStream)
+			{
+				string[] line = sr.ReadLine().Split(',');
+				if (line.Length != 67)
+				{
+					System.Windows.Forms.MessageBox.Show("row " + Row + " = " + line.Length);
+				}
+				/* string toDisplay = "";
+				for (int i = 0; i < line.Length; i++)
+				{
+					toDisplay += line [i] + " ";
+				}
+				toDisplay += line.Length;
+				System.Windows.Forms.MessageBox.Show(toDisplay); */
+				linesIn.Add(line);
+				Row++;
+			}
+
+			var outArray = linesIn.ToArray();
+
+			if(writeToDB)
+			{
+				var arrayToDB = new RiakObject(bucket, key, outArray);
+				var putArrayResult = client.Put(arrayToDB);
+
+				if (! putArrayResult.IsSuccess)
+				{
+					System.Windows.Forms.MessageBox.Show("Write failed: " + arrayToDB.Key + " to bucket " + arrayToDB.Bucket);
+				}
+			}
+
+			/*
+			// test read from Riak
+			var fiefArrayResult = client.Get(bucket, key);
+
+			if (fiefArrayResult.IsSuccess)
+			{
+				string toDisplay = "";
+				var fiefArrayRiak = fiefArrayResult.Value.GetObject<string[,]>();
+				System.Windows.Forms.MessageBox.Show(fiefArrayRiak.GetLength(0) + " ; " + fiefArrayRiak.GetLength(1) + "   .");
+				for (int i = 0; i < fiefArrayRiak.GetLength(0); i++)
+				{
+					for (int ii = 0; ii < fiefArrayRiak.GetLength(1); ii++)
+					{
+						toDisplay += fiefArrayRiak [i,ii] + " ";
+					}
+					System.Windows.Forms.MessageBox.Show(toDisplay);
+					toDisplay = "";
+				}
+			}
+			else
+			{
+				// System.Windows.Forms.MessageBox.Show ("InitialDBload: Unable to retrieve PlayerCharacter " + pcID);
+			} */
+
+			return outArray;
+		}
+
+		public static bool IsOdd(int value)
+		{
+			return value % 2 != 0;
+		}
+
+		/// <summary>
+		/// Creates all game objects from code
+		/// </summary>
+		/// <param name="source">Where to get object data</param>
+		public PlayerCharacter initGameObjects(String source)
         {
-			/* 
+
+			if (source == "db")
+			{
+				// load objects from database
+				this.initialDBload ("testGame");
+			}
+			else
+			{
+				// create from code
+				this.initialLoad ();
+			}
+				
+			// set inital fief to display
+			this.fiefToView = this.pcMasterList["101"].location;
+
+			// return PC;
+			return this.pcMasterList["101"];
+
+        }
+
+		/// <summary>
+		/// Creates all game objects from code
+		/// </summary>
+		public void initialLoad()
+		{
+
             // creat GameClock
 			GameClock myGameClock = new GameClock("clock001", 1320);
-            this.clock = myGameClock;
+			this.clock = myGameClock;
 
-            // create skills
-            // Dictionary to hold collection of skills
+			// create skills
+			// Dictionary to hold collection of skills
 			// Dictionary<string, Skill> skillsCollection = new Dictionary<string, Skill>();
 
-            // List to holds skill keys (for random selection)
-            List<string> skillsKeys = new List<string>();
+			// List to holds skill keys (for random selection)
+			List<string> skillsKeys = new List<string>();
 
-            // Dictionary of skill effects
-            Dictionary<string, int> effectsCommand = new Dictionary<string, int>();
-            effectsCommand.Add("battle", 40);
-            effectsCommand.Add("siege", 40);
-            effectsCommand.Add("npcHire", 20);
-            // create skill
+			// Dictionary of skill effects
+			Dictionary<string, int> effectsCommand = new Dictionary<string, int>();
+			effectsCommand.Add("battle", 40);
+			effectsCommand.Add("siege", 40);
+			effectsCommand.Add("npcHire", 20);
+			// create skill
 			Skill command = new Skill("sk001", "Command", effectsCommand);
-            // add to skillsCollection
+			// add to skillsCollection
 			this.skillMasterList.Add(command.skillID, command);
 
-            Dictionary<string, int> effectsChivalry = new Dictionary<string, int>();
-            effectsChivalry.Add("famExpense", 20);
-            effectsChivalry.Add("fiefExpense", 10);
-            effectsChivalry.Add("fiefLoy", 20);
-            effectsChivalry.Add("npcHire", 10);
-            effectsChivalry.Add("siege", 10);
+			Dictionary<string, int> effectsChivalry = new Dictionary<string, int>();
+			effectsChivalry.Add("famExpense", 20);
+			effectsChivalry.Add("fiefExpense", 10);
+			effectsChivalry.Add("fiefLoy", 20);
+			effectsChivalry.Add("npcHire", 10);
+			effectsChivalry.Add("siege", 10);
 			Skill chivalry = new Skill("sk002", "Chivalry", effectsChivalry);
 			this.skillMasterList.Add(chivalry.skillID, chivalry);
 
-            Dictionary<string, int> effectsAbrasiveness = new Dictionary<string, int>();
-            effectsAbrasiveness.Add("battle", 15);
-            effectsAbrasiveness.Add("death", 5);
-            effectsAbrasiveness.Add("fiefExpense", -5);
-            effectsAbrasiveness.Add("famExpense", 5);
-            effectsAbrasiveness.Add("time", 5);
-            effectsAbrasiveness.Add("siege", -10);
+			Dictionary<string, int> effectsAbrasiveness = new Dictionary<string, int>();
+			effectsAbrasiveness.Add("battle", 15);
+			effectsAbrasiveness.Add("death", 5);
+			effectsAbrasiveness.Add("fiefExpense", -5);
+			effectsAbrasiveness.Add("famExpense", 5);
+			effectsAbrasiveness.Add("time", 5);
+			effectsAbrasiveness.Add("siege", -10);
 			Skill abrasiveness = new Skill("sk003", "Abrasiveness", effectsAbrasiveness);
 			this.skillMasterList.Add(abrasiveness.skillID, abrasiveness);
 
-            Dictionary<string, int> effectsAccountancy = new Dictionary<string, int>();
-            effectsAccountancy.Add("time", 10);
-            effectsAccountancy.Add("fiefExpense", -20);
-            effectsAccountancy.Add("famExpense", -20);
-            effectsAccountancy.Add("fiefLoy", -5);
+			Dictionary<string, int> effectsAccountancy = new Dictionary<string, int>();
+			effectsAccountancy.Add("time", 10);
+			effectsAccountancy.Add("fiefExpense", -20);
+			effectsAccountancy.Add("famExpense", -20);
+			effectsAccountancy.Add("fiefLoy", -5);
 			Skill accountancy = new Skill("sk004", "Accountancy", effectsAccountancy);
 			this.skillMasterList.Add(accountancy.skillID, accountancy);
 
-            Dictionary<string, int> effectsStupidity = new Dictionary<string, int>();
-            effectsStupidity.Add("battle", -40);
-            effectsStupidity.Add("death", 5);
-            effectsStupidity.Add("fiefExpense", 20);
-            effectsStupidity.Add("famExpense", 20);
-            effectsStupidity.Add("fiefLoy", -10);
-            effectsStupidity.Add("npcHire", -10);
-            effectsStupidity.Add("time", -10);
-            effectsStupidity.Add("siege", -40);
+			Dictionary<string, int> effectsStupidity = new Dictionary<string, int>();
+			effectsStupidity.Add("battle", -40);
+			effectsStupidity.Add("death", 5);
+			effectsStupidity.Add("fiefExpense", 20);
+			effectsStupidity.Add("famExpense", 20);
+			effectsStupidity.Add("fiefLoy", -10);
+			effectsStupidity.Add("npcHire", -10);
+			effectsStupidity.Add("time", -10);
+			effectsStupidity.Add("siege", -40);
 			Skill stupidity = new Skill("sk005", "Stupidity", effectsStupidity);
 			this.skillMasterList.Add(stupidity.skillID, stupidity);
 
-            Dictionary<string, int> effectsRobust = new Dictionary<string, int>();
-            effectsRobust.Add("virility", 20);
-            effectsRobust.Add("npcHire", 5);
-            effectsRobust.Add("fiefLoy", 5);
-            effectsRobust.Add("death", -20);
+			Dictionary<string, int> effectsRobust = new Dictionary<string, int>();
+			effectsRobust.Add("virility", 20);
+			effectsRobust.Add("npcHire", 5);
+			effectsRobust.Add("fiefLoy", 5);
+			effectsRobust.Add("death", -20);
 			Skill robust = new Skill("sk006", "Robust", effectsRobust);
 			this.skillMasterList.Add(robust.skillID, robust);
 
-            Dictionary<string, int> effectsPious = new Dictionary<string, int>();
-            effectsPious.Add("virility", -20);
-            effectsPious.Add("npcHire", 10);
-            effectsPious.Add("fiefLoy", 10);
-            effectsPious.Add("time", -10);
+			Dictionary<string, int> effectsPious = new Dictionary<string, int>();
+			effectsPious.Add("virility", -20);
+			effectsPious.Add("npcHire", 10);
+			effectsPious.Add("fiefLoy", 10);
+			effectsPious.Add("time", -10);
 			Skill pious = new Skill("sk007", "Pious", effectsPious);
 			this.skillMasterList.Add(pious.skillID, pious);
 
-            // add each skillsCollection key to skillsKeys
+			// add each skillsCollection key to skillsKeys
 			foreach (KeyValuePair<string, Skill> entry in this.skillMasterList)
-            {
-                skillsKeys.Add(entry.Key);
-            }
+			{
+				skillsKeys.Add(entry.Key);
+			}
 
-            // create new random for generating skills for Character
-            Random rndSkills = new Random();
+			// create new random for generating skills for Character
+			Random rndSkills = new Random();
 
-            // create array of skills between 2-3 in length
-            Skill[] skillsArray1 = new Skill[rndSkills.Next(2, 4)];
+			// create array of skills between 2-3 in length
+			Skill[] skillsArray1 = new Skill[rndSkills.Next(2, 4)];
 
-            // populate array of skills with randomly chosen skills
-            // make temporary copy of skillsKeys
-            List<string> skillsKeysCopy = new List<string>(skillsKeys);
-            for (int i = 0; i < skillsArray1.Length; i++)
-            {
-                int randChoice = rndSkills.Next(0, skillsKeysCopy.Count - 1);
+			// populate array of skills with randomly chosen skills
+			// make temporary copy of skillsKeys
+			List<string> skillsKeysCopy = new List<string>(skillsKeys);
+			for (int i = 0; i < skillsArray1.Length; i++)
+			{
+				int randChoice = rndSkills.Next(0, skillsKeysCopy.Count - 1);
 				skillsArray1[i] = this.skillMasterList[skillsKeysCopy[randChoice]];
-                skillsKeysCopy.RemoveAt(randChoice);
-            }
-        
-            // create terrain objects
+				skillsKeysCopy.RemoveAt(randChoice);
+			}
+
+			// create terrain objects
 			Terrain plains = new Terrain("P", "Plains", 1);
 			this.terrainMasterList.Add (plains.terrainCode, plains);
 			Terrain hills = new Terrain("H", "Hills", 1.5);
@@ -239,579 +344,167 @@ namespace hist_mmorpg
 			Terrain mountains = new Terrain("M", "Mountains", 90);
 			this.terrainMasterList.Add (mountains.terrainCode, mountains);
 
-            // create keep barred lists for fiefs
-            List<string> keep1BarChars = new List<string>();
-            List<string> keep2BarChars = new List<string>();
-            List<string> keep3BarChars = new List<string>();
-            List<string> keep4BarChars = new List<string>();
-            List<string> keep5BarChars = new List<string>();
-            List<string> keep6BarChars = new List<string>();
-            List<string> keep7BarChars = new List<string>();
+			// create keep barred lists for fiefs
+			List<string> keep1BarChars = new List<string>();
+			List<string> keep2BarChars = new List<string>();
+			List<string> keep3BarChars = new List<string>();
+			List<string> keep4BarChars = new List<string>();
+			List<string> keep5BarChars = new List<string>();
+			List<string> keep6BarChars = new List<string>();
+			List<string> keep7BarChars = new List<string>();
 
-            // create chars lists for fiefs
-            List<Character> fief1Chars = new List<Character>();
-            List<Character> fief2Chars = new List<Character>();
-            List<Character> fief3Chars = new List<Character>();
-            List<Character> fief4Chars = new List<Character>();
-            List<Character> fief5Chars = new List<Character>();
-            List<Character> fief6Chars = new List<Character>();
-            List<Character> fief7Chars = new List<Character>();
+			// create chars lists for fiefs
+			List<Character> fief1Chars = new List<Character>();
+			List<Character> fief2Chars = new List<Character>();
+			List<Character> fief3Chars = new List<Character>();
+			List<Character> fief4Chars = new List<Character>();
+			List<Character> fief5Chars = new List<Character>();
+			List<Character> fief6Chars = new List<Character>();
+			List<Character> fief7Chars = new List<Character>();
 
-            // create province for fiefs
-            Province myProv = new Province("ESX00", "Sussex, England", 6.2, "E1");
+			// create province for fiefs
+			Province myProv = new Province("ESX00", "Sussex, England", 6.2, "E1");
 			this.provinceMasterList.Add (myProv.provinceID, myProv);
-            Province myProv2 = new Province("ESR00", "Surrey, England", 6.2, "E1");
+			Province myProv2 = new Province("ESR00", "Surrey, England", 6.2, "E1");
 			this.provinceMasterList.Add (myProv2.provinceID, myProv2);
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief1Chars, keep1BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', hills, fief2Chars, keep2BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief2.fiefID, myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief3Chars, keep3BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief3.fiefID, myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief4Chars, keep4BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief4.fiefID, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief5Chars, keep5BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief5.fiefID, myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief6Chars, keep6BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief6.fiefID, myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', forrest, fief7Chars, keep7BarChars, false, false, this.clock);
-            fiefMasterList.Add(myFief7.fiefID, myFief7);
+			Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief1Chars, keep1BarChars, false, false, this.clock);
+			fiefMasterList.Add(myFief1.fiefID, myFief1);
+			Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', hills, fief2Chars, keep2BarChars, false, false, this.clock);
+			fiefMasterList.Add(myFief2.fiefID, myFief2);
+			Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief3Chars, keep3BarChars, false, false, this.clock);
+			fiefMasterList.Add(myFief3.fiefID, myFief3);
+			Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief4Chars, keep4BarChars, false, false, this.clock);
+			fiefMasterList.Add(myFief4.fiefID, myFief4);
+			Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief5Chars, keep5BarChars, false, false, this.clock);
+			fiefMasterList.Add(myFief5.fiefID, myFief5);
+			Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief6Chars, keep6BarChars, false, false, this.clock);
+			fiefMasterList.Add(myFief6.fiefID, myFief6);
+			Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', forrest, fief7Chars, keep7BarChars, false, false, this.clock);
+			fiefMasterList.Add(myFief7.fiefID, myFief7);
 			Army myArmy = new Army("army001", 0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
-            // create QuickGraph undirected graph
-            // 1. create graph
-			var myHexMap = new HexMapGraph("map001");
-            this.gameMap = myHexMap;
-            // 2. Add edge and auto create vertices
-            // from myFief1
-            myHexMap.addHexesAndRoute(myFief1, myFief2, "W", (myFief1.terrain.travelCost + myFief2.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief1, myFief3, "E", (myFief1.terrain.travelCost + myFief3.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief1, myFief6, "NE", (myFief1.terrain.travelCost + myFief6.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief1, myFief4, "SE", (myFief1.terrain.travelCost + myFief4.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief1, myFief5, "SW", (myFief1.terrain.travelCost + myFief5.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief1, myFief7, "NW", (myFief1.terrain.travelCost + myFief7.terrain.travelCost) / 2);
-            // from myFief2
-            myHexMap.addHexesAndRoute(myFief2, myFief1, "E", (myFief2.terrain.travelCost + myFief1.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief2, myFief7, "NE", (myFief2.terrain.travelCost + myFief7.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief2, myFief5, "SE", (myFief2.terrain.travelCost + myFief5.terrain.travelCost) / 2);
-            // from myFief3
-            myHexMap.addHexesAndRoute(myFief3, myFief4, "SW", (myFief3.terrain.travelCost + myFief4.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief3, myFief6, "NW", (myFief3.terrain.travelCost + myFief6.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief3, myFief1, "W", (myFief3.terrain.travelCost + myFief1.terrain.travelCost) / 2);
-            // from myFief4
-            myHexMap.addHexesAndRoute(myFief4, myFief3, "NE", (myFief4.terrain.travelCost + myFief3.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief4, myFief1, "NW", (myFief4.terrain.travelCost + myFief1.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief4, myFief5, "W", (myFief4.terrain.travelCost + myFief5.terrain.travelCost) / 2);
-            // from myFief5
-            myHexMap.addHexesAndRoute(myFief5, myFief1, "NE", (myFief5.terrain.travelCost + myFief1.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief5, myFief2, "NW", (myFief5.terrain.travelCost + myFief2.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief5, myFief4, "E", (myFief5.terrain.travelCost + myFief4.terrain.travelCost) / 2);
-            // from myFief6
-            myHexMap.addHexesAndRoute(myFief6, myFief3, "SE", (myFief6.terrain.travelCost + myFief3.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief6, myFief1, "SW", (myFief6.terrain.travelCost + myFief1.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief6, myFief7, "W", (myFief6.terrain.travelCost + myFief7.terrain.travelCost) / 2);
-            // from myFief7
-            myHexMap.addHexesAndRoute(myFief7, myFief6, "E", (myFief7.terrain.travelCost + myFief6.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief7, myFief1, "SE", (myFief7.terrain.travelCost + myFief1.terrain.travelCost) / 2);
-            myHexMap.addHexesAndRoute(myFief7, myFief2, "SW", (myFief7.terrain.travelCost + myFief2.terrain.travelCost) / 2);
-
-			// test reading/writing HexMapGraph to/from Riak
+			// create QuickGraph undirected graph
 			// 1. create graph
-			var myHexMapString = new HexMapGraphString("map002");
+			var myHexMap = new HexMapGraph("map001");
+			this.gameMap = myHexMap;
 			// 2. Add edge and auto create vertices
 			// from myFief1
-			myHexMapString.addHexesAndRoute(myFief1.fiefID, myFief2.fiefID, "W", (myFief1.terrain.travelCost + myFief2.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief1.fiefID, myFief3.fiefID, "E", (myFief1.terrain.travelCost + myFief3.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief1.fiefID, myFief6.fiefID, "NE", (myFief1.terrain.travelCost + myFief6.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief1.fiefID, myFief4.fiefID, "SE", (myFief1.terrain.travelCost + myFief4.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief1.fiefID, myFief5.fiefID, "SW", (myFief1.terrain.travelCost + myFief5.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief1.fiefID, myFief7.fiefID, "NW", (myFief1.terrain.travelCost + myFief7.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief1, myFief2, "W", (myFief1.terrain.travelCost + myFief2.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief1, myFief3, "E", (myFief1.terrain.travelCost + myFief3.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief1, myFief6, "NE", (myFief1.terrain.travelCost + myFief6.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief1, myFief4, "SE", (myFief1.terrain.travelCost + myFief4.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief1, myFief5, "SW", (myFief1.terrain.travelCost + myFief5.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief1, myFief7, "NW", (myFief1.terrain.travelCost + myFief7.terrain.travelCost) / 2);
 			// from myFief2
-			myHexMapString.addHexesAndRoute(myFief2.fiefID, myFief1.fiefID, "E", (myFief2.terrain.travelCost + myFief1.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief2.fiefID, myFief7.fiefID, "NE", (myFief2.terrain.travelCost + myFief7.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief2.fiefID, myFief5.fiefID, "SE", (myFief2.terrain.travelCost + myFief5.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief2, myFief1, "E", (myFief2.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief2, myFief7, "NE", (myFief2.terrain.travelCost + myFief7.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief2, myFief5, "SE", (myFief2.terrain.travelCost + myFief5.terrain.travelCost) / 2);
 			// from myFief3
-			myHexMapString.addHexesAndRoute(myFief3.fiefID, myFief4.fiefID, "SW", (myFief3.terrain.travelCost + myFief4.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief3.fiefID, myFief6.fiefID, "NW", (myFief3.terrain.travelCost + myFief6.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief3.fiefID, myFief1.fiefID, "W", (myFief3.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief3, myFief4, "SW", (myFief3.terrain.travelCost + myFief4.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief3, myFief6, "NW", (myFief3.terrain.travelCost + myFief6.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief3, myFief1, "W", (myFief3.terrain.travelCost + myFief1.terrain.travelCost) / 2);
 			// from myFief4
-			myHexMapString.addHexesAndRoute(myFief4.fiefID, myFief3.fiefID, "NE", (myFief4.terrain.travelCost + myFief3.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief4.fiefID, myFief1.fiefID, "NW", (myFief4.terrain.travelCost + myFief1.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief4.fiefID, myFief5.fiefID, "W", (myFief4.terrain.travelCost + myFief5.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief4, myFief3, "NE", (myFief4.terrain.travelCost + myFief3.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief4, myFief1, "NW", (myFief4.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief4, myFief5, "W", (myFief4.terrain.travelCost + myFief5.terrain.travelCost) / 2);
 			// from myFief5
-			myHexMapString.addHexesAndRoute(myFief5.fiefID, myFief1.fiefID, "NE", (myFief5.terrain.travelCost + myFief1.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief5.fiefID, myFief2.fiefID, "NW", (myFief5.terrain.travelCost + myFief2.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief5.fiefID, myFief4.fiefID, "E", (myFief5.terrain.travelCost + myFief4.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief5, myFief1, "NE", (myFief5.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief5, myFief2, "NW", (myFief5.terrain.travelCost + myFief2.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief5, myFief4, "E", (myFief5.terrain.travelCost + myFief4.terrain.travelCost) / 2);
 			// from myFief6
-			myHexMapString.addHexesAndRoute(myFief6.fiefID, myFief3.fiefID, "SE", (myFief6.terrain.travelCost + myFief3.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief6.fiefID, myFief1.fiefID, "SW", (myFief6.terrain.travelCost + myFief1.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief6.fiefID, myFief7.fiefID, "W", (myFief6.terrain.travelCost + myFief7.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief6, myFief3, "SE", (myFief6.terrain.travelCost + myFief3.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief6, myFief1, "SW", (myFief6.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief6, myFief7, "W", (myFief6.terrain.travelCost + myFief7.terrain.travelCost) / 2);
 			// from myFief7
-			myHexMapString.addHexesAndRoute(myFief7.fiefID, myFief6.fiefID, "E", (myFief7.terrain.travelCost + myFief6.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief7.fiefID, myFief1.fiefID, "SE", (myFief7.terrain.travelCost + myFief1.terrain.travelCost) / 2);
-			myHexMapString.addHexesAndRoute(myFief7.fiefID, myFief2.fiefID, "SW", (myFief7.terrain.travelCost + myFief2.terrain.travelCost) / 2);
-			*/
-			/* foreach (KeyValuePair<TaggedEdge<String, string>, double> pair in myHexMapString.costs)
-			{
-				System.Windows.Forms.MessageBox.Show("First cost: " + pair.Key + " = " + pair.Value);
-				break;
-			}
-			for (int i = 0; i < 1; i++)
-			{
-				System.Windows.Forms.MessageBox.Show("First edge: " + myHexMapString.myMap.Edges.ElementAt(i));
-			}
+			myHexMap.addHexesAndRoute(myFief7, myFief6, "E", (myFief7.terrain.travelCost + myFief6.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief7, myFief1, "SE", (myFief7.terrain.travelCost + myFief1.terrain.travelCost) / 2);
+			myHexMap.addHexesAndRoute(myFief7, myFief2, "SW", (myFief7.terrain.travelCost + myFief2.terrain.travelCost) / 2);
 
-			// test writing map to Riak
-			var rMap = new RiakObject("maps", myHexMapString.mapID, myHexMapString);
-			var putMapResult = client.Put(rMap);
-			if (putMapResult.IsSuccess)
-			{
-				System.Windows.Forms.MessageBox.Show("Successfully saved " + rMap.Key + " to bucket " + rMap.Bucket);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Failed to write HexMapGraphString vertices" + rMap.Key + " to bucket " + rMap.Bucket);
-			} 
-			var rMapV = new RiakObject("maps", myHexMapString.mapID + "V", myHexMapString.myMap.Vertices);
-			var putMapResultV = client.Put(rMapV);
-			if (putMapResultV.IsSuccess)
-			{
-				System.Windows.Forms.MessageBox.Show("Successfully saved " + rMapV.Key + " to bucket " + rMapV.Bucket);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Failed to write HexMapGraphString vertices" + rMapV.Key + " to bucket " + rMapV.Bucket);
-			}
-			var rMapE = new RiakObject("maps", myHexMapString.mapID + "E", myHexMapString.myMap.Edges);
-			var putMapResultE = client.Put(rMapE);
-			if (putMapResultE.IsSuccess)
-			{
-				System.Windows.Forms.MessageBox.Show("Successfully saved " + rMapE.Key + " to bucket " + rMapE.Bucket);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Failed to write HexMapGraphString vertices" + rMapE.Key + " to bucket " + rMapE.Bucket);
-			}
-			var rMapC = new RiakObject("maps", myHexMapString.mapID + "C", myHexMapString.costs);
-			var putMapResultC = client.Put(rMapC);
-			if (putMapResultC.IsSuccess)
-			{
-				System.Windows.Forms.MessageBox.Show("Successfully saved " + rMapC.Key + " to bucket " + rMapC.Bucket);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Failed to write HexMapGraphString vertices" + rMapC.Key + " to bucket " + rMapC.Bucket);
-			}
-			var mapResult = client.Get("maps", "map002E");
-			var newMap = new IEnumerab();
-			newMap = mapResult.Value.GetObject<HexMapGraphString>();
-			var mapResult = client.Get("maps", "map002");
-			var newMap = new HexMapGraphString();
-			newMap = mapResult.Value.GetObject<HexMapGraphString>();
-			var mapResult = client.Get("maps", "map002");
-			var newMap = new HexMapGraphString();
-			newMap = mapResult.Value.GetObject<HexMapGraphString>();
-
-
-			// test reading map from Riak
-			var mapResult = client.Get("maps", "map002E");
-			var newMapE = new List<TaggedEdge<String, string>>();
-
-			if (mapResult.IsSuccess)
-			{
-				newMapE = mapResult.Value.GetObject<List<TaggedEdge<String, string>>>();
-				string displayClock = "";
-				displayClock += "Successfully retrieved map edges:\r\n";
-				foreach (TaggedEdge<String, string> element in newMapE)
-				{
-					displayClock += element.Source + " > " + element.Target + "\r\n";
-				}
-				System.Windows.Forms.MessageBox.Show(displayClock);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Failed to read map edges");
-			} 
-
-			TaggedEdge<String, string>[] newMapE_array = newMapE.ToArray ();
-
-			var myHexMapString002 = new HexMapGraphString("map003", newMapE_array);
-			String targetFief = myHexMapString002.getFief ("ESX02", "W");
-			System.Windows.Forms.MessageBox.Show("Travelling W from ESX02, you first arrive at " + targetFief);
-			*/
-
-			/*
 			// create goTo queues for characters
-            Queue<Fief> myGoTo1 = new Queue<Fief>();
-            Queue<Fief> myGoTo2 = new Queue<Fief>();
-            Queue<Fief> myGoTo3 = new Queue<Fief>();
-            Queue<Fief> myGoTo4 = new Queue<Fief>();
-            Queue<Fief> myGoTo5 = new Queue<Fief>();
+			Queue<Fief> myGoTo1 = new Queue<Fief>();
+			Queue<Fief> myGoTo2 = new Queue<Fief>();
+			Queue<Fief> myGoTo3 = new Queue<Fief>();
+			Queue<Fief> myGoTo4 = new Queue<Fief>();
+			Queue<Fief> myGoTo5 = new Queue<Fief>();
 
 			// add some goTo entries for myChar1
 			myGoTo1.Enqueue (myFief2);
 			myGoTo1.Enqueue (myFief7);
 
-            // create entourages for PCs
-            List<NonPlayerCharacter> myEmployees1 = new List<NonPlayerCharacter>();
-            List<NonPlayerCharacter> myEmployees2 = new List<NonPlayerCharacter>();
+			// create entourages for PCs
+			List<NonPlayerCharacter> myEmployees1 = new List<NonPlayerCharacter>();
+			List<NonPlayerCharacter> myEmployees2 = new List<NonPlayerCharacter>();
 
-            // create lists of fiefs owned by PCs and add some fiefs
-            List<Fief> myFiefsOwned1 = new List<Fief>();
-            List<Fief> myFiefsOwned2 = new List<Fief>();
+			// create lists of fiefs owned by PCs and add some fiefs
+			List<Fief> myFiefsOwned1 = new List<Fief>();
+			List<Fief> myFiefsOwned2 = new List<Fief>();
 
-            // create some characters
+			// create some characters
 			PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, "E1", 90, 4.0, 7.2, 6.1, skillsArray1, false, true, false, "200", "403", "", false, 13000, myEmployees1, myFiefsOwned1, cl: this.clock, loc: myFief1);
-            pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, "E1", 90, 4.0, 5.0, 4.5, skillsArray1, true, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, cl: this.clock, loc: myFief1);
-            pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, "E1", 90, 4.0, 3.3, 6.7, skillsArray1, false, false, false, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
-            npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, "E1", 90, 4.0, 7.1, 5.2, skillsArray1, false, false, false, "200", "", "", 10000, true, mb: myChar1.charID, cl: this.clock, loc: myFief1);
-            npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myGoTo5, "E1", 90, 4.0, 4.0, 6.0, skillsArray1, false, true, true, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
-            npcMasterList.Add(myWife.charID, myWife);
+			pcMasterList.Add(myChar1.charID, myChar1);
+			PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, "E1", 90, 4.0, 5.0, 4.5, skillsArray1, true, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, cl: this.clock, loc: myFief1);
+			pcMasterList.Add(myChar2.charID, myChar2);
+			NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, "E1", 90, 4.0, 3.3, 6.7, skillsArray1, false, false, false, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
+			npcMasterList.Add(myNPC1.charID, myNPC1);
+			NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, "E1", 90, 4.0, 7.1, 5.2, skillsArray1, false, false, false, "200", "", "", 10000, true, mb: myChar1.charID, cl: this.clock, loc: myFief1);
+			npcMasterList.Add(myNPC2.charID, myNPC2);
+			NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myGoTo5, "E1", 90, 4.0, 4.0, 6.0, skillsArray1, false, true, true, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
+			npcMasterList.Add(myWife.charID, myWife);
 
-            // set fief owners
-            myFief1.owner = myChar1;
-            myFief2.owner = myChar2;
-            myFief3.owner = myChar1;
-            myFief4.owner = myChar1;
-            myFief5.owner = myChar2;
-            myFief6.owner = myChar1;
-            myFief7.owner = myChar2;
+			// set fief owners
+			myFief1.owner = myChar1;
+			myFief2.owner = myChar2;
+			myFief3.owner = myChar1;
+			myFief4.owner = myChar1;
+			myFief5.owner = myChar2;
+			myFief6.owner = myChar1;
+			myFief7.owner = myChar2;
 
-            // set fief ancestral owners
-            myFief1.ancestralOwner = myChar2;
-            myFief2.ancestralOwner = myChar1;
-            myFief3.ancestralOwner = myChar1;
-            myFief4.ancestralOwner = myChar1;
-            myFief5.ancestralOwner = myChar2;
-            myFief6.ancestralOwner = myChar1;
-            myFief7.ancestralOwner = myChar2;
+			// set fief ancestral owners
+			myFief1.ancestralOwner = myChar2;
+			myFief2.ancestralOwner = myChar1;
+			myFief3.ancestralOwner = myChar1;
+			myFief4.ancestralOwner = myChar1;
+			myFief5.ancestralOwner = myChar2;
+			myFief6.ancestralOwner = myChar1;
+			myFief7.ancestralOwner = myChar2;
 
-            // set province overlords
-            myProv.overlord = myChar1;
-            myProv2.overlord = myChar2;
+			// set province overlords
+			myProv.overlord = myChar1;
+			myProv2.overlord = myChar2;
 
-            // set fief bailiffs
-            myFief1.bailiff = myNPC1;
-            myFief2.bailiff = myNPC2;
+			// set fief bailiffs
+			myFief1.bailiff = myNPC1;
+			myFief2.bailiff = myNPC2;
 
-            // add NPC to employees
-            myChar1.hireNPC(myNPC2, 10000);
-            // set employee as travelling companion
-            myChar1.addToEntourage(myNPC2);
+			// add NPC to employees
+			myChar1.hireNPC(myNPC2, 10000);
+			// set employee as travelling companion
+			myChar1.addToEntourage(myNPC2);
 
-            // Add fiefs to list of fiefs owned 
-            myChar1.addToOwnedFiefs(myFief1);
-            myChar1.addToOwnedFiefs(myFief3);
-            myChar1.addToOwnedFiefs(myFief4);
-            myChar1.addToOwnedFiefs(myFief6);
-            myChar2.addToOwnedFiefs(myFief2);
-            myChar2.addToOwnedFiefs(myFief5);
-            myChar2.addToOwnedFiefs(myFief7);
+			// Add fiefs to list of fiefs owned 
+			myChar1.addToOwnedFiefs(myFief1);
+			myChar1.addToOwnedFiefs(myFief3);
+			myChar1.addToOwnedFiefs(myFief4);
+			myChar1.addToOwnedFiefs(myFief6);
+			myChar2.addToOwnedFiefs(myFief2);
+			myChar2.addToOwnedFiefs(myFief5);
+			myChar2.addToOwnedFiefs(myFief7);
 
-            // add some characters to myFief1
-            myFief1.addCharacter(myChar1);
-            myFief1.addCharacter(myChar2);
-            myFief1.addCharacter(myNPC1);
-            myFief1.addCharacter(myNPC2);
+			// add some characters to myFief1
+			myFief1.addCharacter(myChar1);
+			myFief1.addCharacter(myChar2);
+			myFief1.addCharacter(myNPC1);
+			myFief1.addCharacter(myNPC2);
 
-            // bar a character from the myFief1 keep
-            // myFief1.barCharacter(myNPC2.charID);
+			// bar a character from the myFief1 keep
+			// myFief1.barCharacter(myNPC2.charID);
 
-            // set inital character to display
-            // this.charToView = myChar1;
+			// try retrieving fief from masterlist using fiefID
+			// Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
 
-            // set inital fief to display
-            this.fiefToView = myChar1.location;
-			*/
-
-            // try retrieving fief from masterlist using fiefID
-			//  Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
-			// Fief target = fiefMasterList.Find(x => x.fiefID == "ESX01");
-            // string fiefName = result.name;
-            // System.Windows.Forms.MessageBox.Show(fiefName);
-
-            // try shortest path
-            // string toDisplayNow = myHexMap.getShortestPathString(source, target);
-            // System.Windows.Forms.MessageBox.Show(toDisplayNow);
-			// myChar1.goTo = myHexMap.getShortestPath(myChar1.location, target);
-
-			// var cluster = RiakCluster.FromConfig("riakConfig");
-			// var client = cluster.CreateClient();
-
-			/*
-			// TEST RIAK SUFF
-
-			//test writing clock to Riak
-			var rClock = new RiakObject("clock", clock.clockID, clock);
-			var putClockResult = client.Put(rClock);
-
-			if (putClockResult.IsSuccess)
-			{
-				System.Windows.Forms.MessageBox.Show("Successfully saved " + rClock.Key + " to bucket " + rClock.Bucket);
-				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Are you *really* sure Riak is running?");
-				// Console.WriteLine("Are you *really* sure Riak is running?");
-				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
-			}
-				
-			// test reading clock from Riak
-			var clockResult = client.Get("clock", "clock001");
-			var newClock = new GameClock();
-
-			if (clockResult.IsSuccess)
-			{
-				newClock = clockResult.Value.GetObject<GameClock>();
-				string displayClock = "";
-				displayClock += "Successfully retrieved " + newClock.clockID + " from clock bucket \r\n";
-				displayClock += "Year: " + newClock.currentYear + ", Season: " + newClock.currentSeason;
-				System.Windows.Forms.MessageBox.Show(displayClock);
-				// Console.WriteLine("I found {0} in {1}", oj.EmailAddress, contributors);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Something went wrong!");
-				// Console.WriteLine("{0}: {1}", ojResult.ResultCode, ojResult.ErrorMessage);
-			}
-
-			// test writing skill to Riak
-			var o = new RiakObject("skills", command.skillID, command);
-			var putResult = client.Put(o);
-
-			if (putResult.IsSuccess)
-			{
-				System.Windows.Forms.MessageBox.Show("Successfully saved " + o.Key + " to bucket " + o.Bucket);
-				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Are you *really* sure Riak is running?");
-				// Console.WriteLine("Are you *really* sure Riak is running?");
-				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
-			}
-
-			// test creating new skill from Riak
-			var ojResult = client.Get("skills", "Command");
-			var oj = new Skill();
-
-			if (ojResult.IsSuccess)
-			{
-				oj = ojResult.Value.GetObject<Skill>();
-				string displaySkill = "";
-				displaySkill += "Successfully retrieved " + oj.name + " from skills bucket \r\n";
-				foreach (KeyValuePair<string, int> entry in oj.effects)
-				{
-					displaySkill += entry.Key + ": " + entry.Value + "\r\n";
-				}
-				System.Windows.Forms.MessageBox.Show(displaySkill);
-				// Console.WriteLine("I found {0} in {1}", oj.EmailAddress, contributors);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Something went wrong!");
-				// Console.WriteLine("{0}: {1}", ojResult.ResultCode, ojResult.ErrorMessage);
-			}
-
-			// test writing terrain to Riak
-			var oo = new RiakObject("terrains", Convert.ToString(mountains.terrainCode), mountains);
-			var ooPutResult = client.Put(oo);
-
-			if (ooPutResult.IsSuccess)
-			{
-				System.Windows.Forms.MessageBox.Show("Successfully saved " + oo.Key + " to bucket " + oo.Bucket);
-				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Are you *really* sure Riak is running?");
-				// Console.WriteLine("Are you *really* sure Riak is running?");
-				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
-			}
-
-			// test writing Fief to Riak
-			Fief_Riak riakFief = this.FieftoRiak (myFief1);
-			var riakObj = new RiakObject("fiefs", riakFief.fiefID, riakFief);
-			var riakObjPutResult = client.Put(riakObj);
-
-			if (riakObjPutResult.IsSuccess)
-			{
-				System.Windows.Forms.MessageBox.Show("Successfully saved " + riakObj.Key + " to bucket " + riakObj.Bucket);
-				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Error writing Fief to Riak");
-				// Console.WriteLine("Are you *really* sure Riak is running?");
-				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
-			}
-
-			// test getting fief from Riak
-			var frResult = client.Get("fiefs", "ESX02");
-			var fr = new Fief_Riak();
-			fr = frResult.Value.GetObject<Fief_Riak>();
-			Fief myFief8 = this.FiefFromRiakFief(fr);
-
-			if (frResult.IsSuccess) {
-				string toDisplay = "";
-				toDisplay += "New Fief " + myFief8.name + " extracted from Riak\r\n";
-				toDisplay += "Owner: " + myFief8.owner.name + "\r\n";
-				toDisplay += "Ancestral owner: " + myFief8.ancestralOwner.name + "\r\n";
-				if (myFief8.bailiff != null)
-				{
-					toDisplay += "Bailiff: " + myFief8.bailiff.name + "\r\n";
-				}
-				toDisplay += "Province: " + myFief8.province.name + "\r\n";
-				toDisplay += "Terrain: " + myFief8.terrain.description + "\r\n";
-				if (myFief8.characters.Count > 0)
-				{
-					toDisplay += "Characters present: ";
-					for (int i = 0; i < myFief8.characters.Count; i++)
-					{
-						toDisplay += myFief8.characters[i].charID + " ";
-					}
-				}
-				System.Windows.Forms.MessageBox.Show (toDisplay);
-			} else {
-				System.Windows.Forms.MessageBox.Show ("problem extracting Fief from Riak!");
-			}
-
-			// test writing province to Riak
-			Province_Riak riakProv = this.ProvinceToRiak (myProv2);
-			var p = new RiakObject("provinces", riakProv.provinceID, riakProv);
-			var pPutResult = client.Put(p);
-
-			if (pPutResult.IsSuccess)
-			{
-				System.Windows.Forms.MessageBox.Show("Successfully saved " + p.Key + " to bucket " + p.Bucket);
-				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Are you *really* sure Riak is running?");
-				// Console.WriteLine("Are you *really* sure Riak is running?");
-				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
-			}
-
-			// test getting province from Riak
-			var prResult = client.Get("provinces", "ESX00");
-			var pr = new Province_Riak();
-			pr = prResult.Value.GetObject<Province_Riak>();
-			Province myProv3 = this.ProvinceFromRiak (pr);
-
-			if (prResult.IsSuccess) {
-				string toDisplay = "";
-				toDisplay += "New Province " + myProv3.name + " extracted from Riak\r\n";
-				toDisplay += "Overlord: " + myProv3.overlord.name;
-				System.Windows.Forms.MessageBox.Show (toDisplay);
-			} else {
-				System.Windows.Forms.MessageBox.Show ("problem extracting Province from Riak!");
-			}
-
-			// test writing NonPlayerCharacter to Riak
-			NonPlayerCharacter_Riak riakNPC = this.NPCtoRiak (myNPC2);
-			var ppp = new RiakObject("characters", riakNPC.charID, riakNPC);
-			var pppPutResult = client.Put(ppp);
-
-			if (pppPutResult.IsSuccess)
-			{
-				System.Windows.Forms.MessageBox.Show("Successfully saved " + ppp.Key + " to bucket " + ppp.Bucket);
-				// Console.WriteLine("Successfully saved {1} to bucket {0}", o.Key, o.Bucket);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Are you *really* sure Riak is running?");
-				// Console.WriteLine("Are you *really* sure Riak is running?");
-				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
-			}
-
-			// test writing PlayerCharacter to Riak
-			PlayerCharacter_Riak riakPC = this.PCtoRiak (myChar1);
-			var rpcObj = new RiakObject("characters", riakPC.charID, riakPC);
-			var rpcObjPutResult = client.Put(rpcObj);
-
-			if (rpcObjPutResult.IsSuccess)
-			{
-				String toDisplay = "";
-				toDisplay += "Successfully saved " + rpcObj.Key + " to bucket " + rpcObj.Bucket;
-				if (riakPC.goTo.Count > 0)
-				{
-					toDisplay += "\r\n(" + riakPC.goTo.Count + " fiefs in goTo queue)";
-				}
-				System.Windows.Forms.MessageBox.Show(toDisplay);
-			}
-			else
-			{
-				System.Windows.Forms.MessageBox.Show("Are you *really* sure Riak is running?");
-				// Console.WriteLine("Are you *really* sure Riak is running?");
-				// Console.WriteLine("{0}: {1}", putResult.ResultCode, putResult.ErrorMessage);
-			}
-
-			// test getting PC from Riak
-			var pcResult = client.Get("characters", "101");
-			var pcRiak = new PlayerCharacter_Riak();
-			pcRiak = pcResult.Value.GetObject<PlayerCharacter_Riak>();
-			PlayerCharacter myChar3 = this.PCfromRiakPC (pcRiak);
-
-			if (pcResult.IsSuccess) {
-				string toDisplay = "";
-				toDisplay += "New PC " + myChar3.charID + " extracted from Riak\r\n";
-				toDisplay += "Name: " + myChar3.name + "\r\nSkills: ";
-				for (int i = 0; i < myChar3.skills.Length; i++)
-				{
-					toDisplay += myChar3.skills [i].name + " ";
-				}
-				toDisplay += "\r\nEmployees: ";
-				for (int i = 0; i < myChar3.employees.Count; i++)
-				{
-					toDisplay += myChar3.employees [i].name + " ";
-				}
-				System.Windows.Forms.MessageBox.Show (toDisplay);
-			} else {
-				System.Windows.Forms.MessageBox.Show ("Problem extracting PlayerCharacter from Riak!");
-			}
-
-			// test getting NPC from Riak
-			var npcResult = client.Get("characters", "402");
-			var npcRiak = new NonPlayerCharacter_Riak();
-			npcRiak = npcResult.Value.GetObject<NonPlayerCharacter_Riak>();
-			NonPlayerCharacter myNPC3 = this.NPCfromRiakNPC (npcRiak);
-
-			if (npcResult.IsSuccess) {
-				string toDisplay = "";
-				toDisplay += "New NPC " + myNPC3.charID + " extracted from Riak\r\n";
-				toDisplay += "Name: " + myNPC3.name + "\r\nSkills: ";
-				for (int i = 0; i < myNPC3.skills.Length; i++)
-				{
-					toDisplay += myNPC3.skills [i].name + " ";
-				}
-				if ((myNPC3.myBoss != null) && (myNPC3.myBoss.Length > 0))
-				{
-					toDisplay += "\r\nBoss: " + myNPC3.myBoss;
-				}
-				System.Windows.Forms.MessageBox.Show (toDisplay);
-			} else {
-				System.Windows.Forms.MessageBox.Show ("Problem extracting PlayerCharacter from Riak!");
-			}
-			*/
-
-			// this.writeToDB ("testGame");
-
-			this.initialDBload ("testGame");
-
-			// set inital fief to display
-			this.fiefToView = this.pcMasterList["101"].location;
-
-			// return PC;
-			return this.pcMasterList["101"];
-
-        }
+		}
 
 		/// <summary>
 		/// Writes all objects for a particular game to database
