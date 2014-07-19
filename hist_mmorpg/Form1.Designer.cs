@@ -39,6 +39,8 @@ namespace hist_mmorpg
             this.travelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.navigateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterContainer = new System.Windows.Forms.SplitContainer();
+            this.charMultiMoveTextBox = new System.Windows.Forms.TextBox();
+            this.charMultiMoveBtn = new System.Windows.Forms.Button();
             this.updateCharBtn = new System.Windows.Forms.Button();
             this.characterTextBox = new System.Windows.Forms.TextBox();
             this.fiefContainer = new System.Windows.Forms.SplitContainer();
@@ -77,8 +79,6 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListContainer = new System.Windows.Forms.SplitContainer();
             this.meetingPlaceTextBox = new System.Windows.Forms.TextBox();
             this.meetingPlaceCharsListView = new System.Windows.Forms.ListView();
-            this.charMultiMoveBtn = new System.Windows.Forms.Button();
-            this.charMultiMoveTextBox = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -149,14 +149,14 @@ namespace hist_mmorpg
             // fiefManagementToolStripMenuItem
             // 
             this.fiefManagementToolStripMenuItem.Name = "fiefManagementToolStripMenuItem";
-            this.fiefManagementToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.fiefManagementToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.fiefManagementToolStripMenuItem.Text = "Current fief";
             this.fiefManagementToolStripMenuItem.Click += new System.EventHandler(this.fiefManagementToolStripMenuItem_Click);
             // 
             // myFiefsToolStripMenuItem
             // 
             this.myFiefsToolStripMenuItem.Name = "myFiefsToolStripMenuItem";
-            this.myFiefsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.myFiefsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.myFiefsToolStripMenuItem.Text = "My fiefs";
             this.myFiefsToolStripMenuItem.Click += new System.EventHandler(this.myFiefsToolStripMenuItem_Click);
             // 
@@ -193,6 +193,23 @@ namespace hist_mmorpg
             this.characterContainer.Size = new System.Drawing.Size(801, 434);
             this.characterContainer.SplitterDistance = 264;
             this.characterContainer.TabIndex = 2;
+            // 
+            // charMultiMoveTextBox
+            // 
+            this.charMultiMoveTextBox.Location = new System.Drawing.Point(119, 33);
+            this.charMultiMoveTextBox.Name = "charMultiMoveTextBox";
+            this.charMultiMoveTextBox.Size = new System.Drawing.Size(93, 20);
+            this.charMultiMoveTextBox.TabIndex = 2;
+            // 
+            // charMultiMoveBtn
+            // 
+            this.charMultiMoveBtn.Location = new System.Drawing.Point(15, 33);
+            this.charMultiMoveBtn.Name = "charMultiMoveBtn";
+            this.charMultiMoveBtn.Size = new System.Drawing.Size(98, 23);
+            this.charMultiMoveBtn.TabIndex = 1;
+            this.charMultiMoveBtn.Text = "Move to ...";
+            this.charMultiMoveBtn.UseVisualStyleBackColor = true;
+            this.charMultiMoveBtn.Click += new System.EventHandler(this.charMultiMoveBtn_Click);
             // 
             // updateCharBtn
             // 
@@ -622,32 +639,15 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListView.View = System.Windows.Forms.View.Details;
             this.meetingPlaceCharsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.meetingPlaceCharsListView_ItemSelectionChanged);
             // 
-            // charMultiMoveBtn
-            // 
-            this.charMultiMoveBtn.Location = new System.Drawing.Point(15, 33);
-            this.charMultiMoveBtn.Name = "charMultiMoveBtn";
-            this.charMultiMoveBtn.Size = new System.Drawing.Size(98, 23);
-            this.charMultiMoveBtn.TabIndex = 1;
-            this.charMultiMoveBtn.Text = "Move to ...";
-            this.charMultiMoveBtn.UseVisualStyleBackColor = true;
-            this.charMultiMoveBtn.Click += new System.EventHandler(this.charMultiMoveBtn_Click);
-            // 
-            // charMultiMoveTextBox
-            // 
-            this.charMultiMoveTextBox.Location = new System.Drawing.Point(119, 33);
-            this.charMultiMoveTextBox.Name = "charMultiMoveTextBox";
-            this.charMultiMoveTextBox.Size = new System.Drawing.Size(93, 20);
-            this.charMultiMoveTextBox.TabIndex = 2;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(801, 458);
             this.Controls.Add(this.characterContainer);
+            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.meetingPlaceContainer);
-            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;

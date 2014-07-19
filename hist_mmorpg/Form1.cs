@@ -15,7 +15,7 @@ using CorrugatedIron.Models;
 
 namespace hist_mmorpg
 {
-    public partial class Form1 : Form, Mmorpg_View
+    public partial class Form1 : Form
     {
 
         /// <summary>
@@ -71,27 +71,23 @@ namespace hist_mmorpg
 		/// </summary>
 		List<Character_Riak> goToList = new List<Character_Riak> ();
         /// <summary>
-        /// Holds CharacterModel
+        /// Holds main PlayerCharacter
         /// </summary>
-        private CharacterModel charModel;
+        private PlayerCharacter myChar;
         /// <summary>
-        /// Holds FiefModel
-        /// </summary>
-        private FiefModel fModel;
-        /// <summary>
-        /// Holds Character to view
+        /// Holds Character to view in UI
         /// </summary>
         private Character charToView;
         /// <summary>
-        /// Holds Fief to view
+        /// Holds Fief to view in UI
         /// </summary>
         private Fief fiefToView;
         /// <summary>
-        /// Holds HexMapGraph
+        /// Holds HexMapGraph for this game
         /// </summary>
         private HexMapGraph gameMap;
         /// <summary>
-        /// Holds army's GameClock (season)
+        /// Holds GameClock for this game
         /// </summary>
         public GameClock clock { get; set; }
 		/// <summary>
@@ -99,39 +95,32 @@ namespace hist_mmorpg
 		/// </summary>
 		RiakCluster cluster;
 		/// <summary>
-		/// Holds client to communicate with Riak cluster
+        /// Holds RiakClient to communicate with RiakCluster
 		/// </summary>
 		RiakClient client;
 
         /// <summary>
         /// Constructor for Form1
         /// </summary>
-        /// <param name="cm">CharacterModel holding model</param>
-        /// <param name="nam">FiefModel holding model</param>
-        public Form1(CharacterModel cm, FiefModel fm)
+        public Form1()
         {
-            this.charModel = cm;
-            this.fModel = fm;
-            // registers as view of models
-            cm.registerObserver(this);
-            fm.registerObserver(this);
             // initialise display
             InitializeComponent();
+
 			// initialise Riak elements
 			cluster = (RiakCluster)RiakCluster.FromConfig("riakConfig");
 			client = (RiakClient)cluster.CreateClient();
+
             // create game objects
-			PlayerCharacter thisPC = this.initGameObjects("db");
+			this.myChar = this.initGameObjects("NOTdb");
 
-			this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
+			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
 
-            // inform models of initial game objects
-            cm.changeCurrent(thisPC);
-            fm.changeCurrent(thisPC.location);
+            this.fiefToView = this.myChar.location;
             this.setUpFiefsList();
             this.setUpCourtCharsList();
-            this.charToView = this.charModel.currentCharacter;
-            this.characterContainer.BringToFront();
+            this.charToView = this.myChar;
+            this.refreshCharacterContainer();
         }
 
 		public String[][] ArrayFromCSV (String csvFilename, bool writeToDB, String bucket = "", String key = "")
@@ -1507,14 +1496,14 @@ namespace hist_mmorpg
             // clear existing items in list
             this.fiefsListView.Items.Clear();
 
-            ListViewItem[] fiefsOwned = new ListViewItem[this.charModel.currentCharacter.ownedFiefs.Count];
+            ListViewItem[] fiefsOwned = new ListViewItem[this.myChar.ownedFiefs.Count];
             // iterates through fiefsOwned
-            for (int i = 0; i < this.charModel.currentCharacter.ownedFiefs.Count; i++)
+            for (int i = 0; i < this.myChar.ownedFiefs.Count; i++)
             {
                 // Create an item and subitem for each fief
-                fiefsOwned[i] = new ListViewItem(this.charModel.currentCharacter.ownedFiefs[i].name);
-                fiefsOwned[i].SubItems.Add(this.charModel.currentCharacter.ownedFiefs[i].fiefID);
-                if (this.charModel.currentCharacter.ownedFiefs[i] == this.charModel.currentCharacter.location)
+                fiefsOwned[i] = new ListViewItem(this.myChar.ownedFiefs[i].name);
+                fiefsOwned[i].SubItems.Add(this.myChar.ownedFiefs[i].fiefID);
+                if (this.myChar.ownedFiefs[i] == this.myChar.location)
                 {
                     fiefsOwned[i].SubItems.Add("You are here");
                 }
@@ -1534,10 +1523,10 @@ namespace hist_mmorpg
         public void meetingPlaceDisplayText(string place)
         {
             string textToDisplay = "";
-            textToDisplay += this.clock.seasons[this.clock.currentSeason] + ", " + this.clock.currentYear + ".  Your days left: " + this.charModel.currentCharacter.days + "\r\n\r\n";
-            textToDisplay += "Fief: " + this.fModel.currentFief.name + " (" + this.fModel.currentFief.fiefID + ")  in " + this.fModel.currentFief.province.name + "\r\n\r\n";
-            textToDisplay += "Owner: " + this.fModel.currentFief.owner.name + "\r\n";
-            textToDisplay += "Overlord: " + this.fModel.currentFief.province.overlord.name + "\r\n";
+            textToDisplay += this.clock.seasons[this.clock.currentSeason] + ", " + this.clock.currentYear + ".  Your days left: " + this.myChar.days + "\r\n\r\n";
+            textToDisplay += "Fief: " + this.myChar.location.name + " (" + this.myChar.location.fiefID + ")  in " + this.myChar.location.province.name + "\r\n\r\n";
+            textToDisplay += "Owner: " + this.myChar.location.owner.name + "\r\n";
+            textToDisplay += "Overlord: " + this.myChar.location.province.overlord.name + "\r\n";
 
             this.meetingPlaceTextBox.Text = textToDisplay;
         }
@@ -1555,20 +1544,20 @@ namespace hist_mmorpg
                 ifInKeep = true;
             }
 
-            ListViewItem[] charsInCourt = new ListViewItem[this.fModel.currentFief.characters.Count];
+            ListViewItem[] charsInCourt = new ListViewItem[this.myChar.location.characters.Count];
             // iterates through characters
-            for (int i = 0; i < this.fModel.currentFief.characters.Count; i++)
+            for (int i = 0; i < this.myChar.location.characters.Count; i++)
             {
-                if (this.fModel.currentFief.characters[i].inKeep == ifInKeep)
+                if (this.myChar.location.characters[i].inKeep == ifInKeep)
                 {
                     // don't show this PlayerCharacter
-                    if (this.fModel.currentFief.characters[i] != this.charModel.currentCharacter)
+                    if (this.myChar.location.characters[i] != this.myChar)
                     {
                         // Create an item and subitems for each character
-                        charsInCourt[i] = new ListViewItem(this.fModel.currentFief.characters[i].name);
-                        charsInCourt[i].SubItems.Add(this.fModel.currentFief.characters[i].charID);
+                        charsInCourt[i] = new ListViewItem(this.myChar.location.characters[i].name);
+                        charsInCourt[i].SubItems.Add(this.myChar.location.characters[i].charID);
                         charsInCourt[i].SubItems.Add("A household");
-                        if (this.fModel.currentFief.characters[i].isMale)
+                        if (this.myChar.location.characters[i].isMale)
                         {
                             charsInCourt[i].SubItems.Add("Male");
                         }
@@ -1579,11 +1568,11 @@ namespace hist_mmorpg
                         charsInCourt[i].SubItems.Add("A type");
 
                         bool isCompanion = false;
-                        for (int ii = 0; ii < this.charModel.currentCharacter.employees.Count; ii++)
+                        for (int ii = 0; ii < this.myChar.employees.Count; ii++)
                         {
-                            if (this.charModel.currentCharacter.employees[ii] == this.fModel.currentFief.characters[i])
+                            if (this.myChar.employees[ii] == this.myChar.location.characters[i])
                             {
-                                if (this.charModel.currentCharacter.employees[ii].inEntourage)
+                                if (this.myChar.employees[ii].inEntourage)
                                 {
                                     isCompanion = true;
                                 }
@@ -1774,9 +1763,9 @@ namespace hist_mmorpg
             }
             npcText += "Potential salary: " + ch.calcNPCwage() + "\r\n";
             npcText += "Last offer from this PC: ";
-            if (ch.lastOffer.ContainsKey(this.charModel.currentCharacter.charID))
+            if (ch.lastOffer.ContainsKey(this.myChar.charID))
             {
-                npcText += ch.lastOffer[this.charModel.currentCharacter.charID];
+                npcText += ch.lastOffer[this.myChar.charID];
             }
             else
             {
@@ -1919,30 +1908,22 @@ namespace hist_mmorpg
         /// <param name="info">String containing data about display element to update</param>
         public void nextTurn()
         {
-            this.fModel.updateFief();
-            this.charModel.updateCharacter();
-            this.clock.advanceSeason();
-        }
-
-        /// <summary>
-        /// Updates appropriate display elements when data received from model
-        /// </summary>
-        /// <param name="info">String containing data about display element to update</param>
-        public void update(String info)
-        {
-            switch (info)
+            foreach (KeyValuePair<string, Fief> entry in this.fiefMasterList)
             {
-                case "refreshChar":
-                    string textToDisplay = "";
-                    textToDisplay += this.displayCharacter(this.charModel.currentCharacter);
-                    this.characterTextBox.Text = textToDisplay;                    
-                    break;
-                case "refreshFief":
-                    this.displayFief(this.fModel.currentFief);
-                    break;
-                default:
-                    break;
+                entry.Value.updateFief();
             }
+            // this.fModel.updateFief();
+            foreach (KeyValuePair<string, PlayerCharacter> entry in this.pcMasterList)
+            {
+                entry.Value.updateCharacter();
+            }
+
+            foreach (KeyValuePair<string, NonPlayerCharacter> entry in this.npcMasterList)
+            {
+                entry.Value.updateCharacter();
+            }
+            // this.charModel.updateCharacter();
+            this.clock.advanceSeason();
         }
 
         public void refreshCharacterContainer()
@@ -1951,9 +1932,9 @@ namespace hist_mmorpg
             textToDisplay += this.displayCharacter(this.charToView);
             this.characterTextBox.Text = textToDisplay;
 
-			if (this.charModel.currentCharacter != this.charToView)
+            if (this.myChar != this.charToView)
 			{
-				if (! this.charModel.currentCharacter.employees.Contains(this.charToView))
+                if (!this.myChar.employees.Contains(this.charToView))
 				{
 					this.charMultiMoveBtn.Enabled = false;
 				}
@@ -1963,92 +1944,59 @@ namespace hist_mmorpg
         
         private void personalCharacteristicsAndAffairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.charToView = this.charModel.currentCharacter;
+            this.charToView = this.myChar;
             this.refreshCharacterContainer();
         }
 
         private void fiefManagementToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            /*
-            if (this.characterContainer.Visible)
-            {
-                this.characterContainer.Visible = false;
-            }
-
-            if (this.travelContainer.Visible)
-            {
-                this.travelContainer.Visible = false;
-            }
-
-            if (!this.fiefContainer.Visible)
-            {
-                this.fiefContainer.Visible = true;
-            } */
-
-            this.displayFief(this.charModel.currentCharacter.location);
+            this.displayFief(this.myChar.location);
             this.fiefContainer.BringToFront();
         }
 
         private void updateCharacter_Click(object sender, EventArgs e)
         {
-            this.charModel.updateCharacter();
-        }
-
-        private void calcPop_Click(object sender, EventArgs e)
-        {
-            this.fModel.calcNewPop();
+            // something
         }
 
         private void adjustTaxButton_Click(object sender, EventArgs e)
         {
-            this.fModel.adjustTx(Convert.ToDouble(this.adjustTaxTextBox.Text));
+            this.fiefToView.adjustTaxRate(Convert.ToDouble(this.adjustTaxTextBox.Text));
+            this.displayFief(this.fiefToView);
         }
 
         private void adjOffSpend_Click(object sender, EventArgs e)
         {
-            this.fModel.adjustOffSpend(Convert.ToUInt32(this.adjOffSpendTextBox.Text));
+            this.fiefToView.adjustOfficialsSpend(Convert.ToUInt32(this.adjOffSpendTextBox.Text));
+            this.displayFief(this.fiefToView);
         }
 
         private void adjGarrSpendBtn_Click(object sender, EventArgs e)
         {
-            this.fModel.adjustGarrSpend(Convert.ToUInt32(this.adjGarrSpendTextBox.Text));
+            this.fiefToView.adjustGarrisonSpend(Convert.ToUInt32(this.adjGarrSpendTextBox.Text));
+            this.displayFief(this.fiefToView);
         }
 
         private void adjInfrSpendBtn_Click(object sender, EventArgs e)
         {
-            this.fModel.adjustInfSpend(Convert.ToUInt32(this.adjInfrSpendTextBox.Text));
+            this.fiefToView.adjustInfraSpend(Convert.ToUInt32(this.adjInfrSpendTextBox.Text));
+            this.displayFief(this.fiefToView);
         }
 
         private void adjustKeepSpendBtn_Click(object sender, EventArgs e)
         {
-            this.fModel.adjustKpSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
+            this.fiefToView.adjustKeepSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
+            this.displayFief(this.fiefToView);
         }
 
         private void updateFiefBtn_Click(object sender, EventArgs e)
         {
-            this.fModel.updateFief();
+            // something
         }
 
         private void navigateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            /*
-            if (this.fiefContainer.Visible)
-            {
-                this.fiefContainer.Visible = false;
-            }
-
-            if (!this.characterContainer.Visible)
-            {
-                this.characterContainer.Visible = false;
-            }
-
-            if (!this.travelContainer.Visible)
-            {
-                this.refreshTravelContainer();
-                this.travelContainer.Visible = true;
-            } */
-
             this.refreshTravelContainer();
             this.travelContainer.BringToFront();
         }
@@ -2067,21 +2015,18 @@ namespace hist_mmorpg
 
         private void refreshTravelContainer()
         {
-            // setup array for direction tags
-            // string[] directions = new string[] {"NE", "E", "SE", "SW", "W", "NW"};
-
             // get text for home button
-            this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + this.charModel.currentCharacter.location.name + "\r\n(" + this.charModel.currentCharacter.location.province.name + ")";
+            this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + this.myChar.location.name + "\r\n(" + this.myChar.location.province.name + ")";
 
             // get text for directional buttons
             // NE
-            Fief targetNE = this.gameMap.getFief(this.charModel.currentCharacter.location, "NE");
+            Fief targetNE = this.gameMap.getFief(this.myChar.location, "NE");
             if (targetNE != null)
             {
                 this.travel_NE_btn.Text = "NE FIEF:\r\n\r\n";
                 this.travel_NE_btn.Text += targetNE.name + " (" + targetNE.fiefID + ")\r\n";
                 this.travel_NE_btn.Text += "(" + targetNE.province.name + ")\r\n\r\n";
-                this.travel_NE_btn.Text += "Cost: " + this.getTravelCost(this.charModel.currentCharacter.location, targetNE);
+                this.travel_NE_btn.Text += "Cost: " + this.getTravelCost(this.myChar.location, targetNE);
             }
             else
             {
@@ -2089,13 +2034,13 @@ namespace hist_mmorpg
             }
 
             // E
-            Fief targetE = this.gameMap.getFief(this.charModel.currentCharacter.location, "E");
+            Fief targetE = this.gameMap.getFief(this.myChar.location, "E");
             if (targetE != null)
             {
                 this.travel_E_btn.Text = "E FIEF:\r\n\r\n";
                 this.travel_E_btn.Text += targetE.name + " (" + targetE.fiefID + ")\r\n";
                 this.travel_E_btn.Text += "(" + targetE.province.name + ")\r\n\r\n";
-                this.travel_E_btn.Text += "Cost: " + this.getTravelCost(this.charModel.currentCharacter.location, targetE);
+                this.travel_E_btn.Text += "Cost: " + this.getTravelCost(this.myChar.location, targetE);
             }
             else
             {
@@ -2103,13 +2048,13 @@ namespace hist_mmorpg
             }
 
             // SE
-            Fief targetSE = this.gameMap.getFief(this.charModel.currentCharacter.location, "SE");
+            Fief targetSE = this.gameMap.getFief(this.myChar.location, "SE");
             if (targetSE != null)
             {
                 this.travel_SE_btn.Text = "SE FIEF:\r\n\r\n";
                 this.travel_SE_btn.Text += targetSE.name + " (" + targetSE.fiefID + ")\r\n";
                 this.travel_SE_btn.Text += "(" + targetSE.province.name + ")\r\n\r\n";
-                this.travel_SE_btn.Text += "Cost: " + this.getTravelCost(this.charModel.currentCharacter.location, targetSE);
+                this.travel_SE_btn.Text += "Cost: " + this.getTravelCost(this.myChar.location, targetSE);
             }
             else
             {
@@ -2117,13 +2062,13 @@ namespace hist_mmorpg
             }
 
             // SW
-            Fief targetSW = this.gameMap.getFief(this.charModel.currentCharacter.location, "SW");
+            Fief targetSW = this.gameMap.getFief(this.myChar.location, "SW");
             if (targetSW != null)
             {
                 this.travel_SW_btn.Text = "SW FIEF:\r\n\r\n";
                 this.travel_SW_btn.Text += targetSW.name + " (" + targetSW.fiefID + ")\r\n";
                 this.travel_SW_btn.Text += "(" + targetSW.province.name + ")\r\n\r\n";
-                this.travel_SW_btn.Text += "Cost: " + this.getTravelCost(this.charModel.currentCharacter.location, targetSW);
+                this.travel_SW_btn.Text += "Cost: " + this.getTravelCost(this.myChar.location, targetSW);
             }
             else
             {
@@ -2131,13 +2076,13 @@ namespace hist_mmorpg
             }
 
             // W
-            Fief targetW = this.gameMap.getFief(this.charModel.currentCharacter.location, "W");
+            Fief targetW = this.gameMap.getFief(this.myChar.location, "W");
             if (targetW != null)
             {
                 this.travel_W_btn.Text = "W FIEF:\r\n\r\n";
                 this.travel_W_btn.Text += targetW.name + " (" + targetW.fiefID + ")\r\n";
                 this.travel_W_btn.Text += "(" + targetW.province.name + ")\r\n\r\n";
-                this.travel_W_btn.Text += "Cost: " + this.getTravelCost(this.charModel.currentCharacter.location, targetW);
+                this.travel_W_btn.Text += "Cost: " + this.getTravelCost(this.myChar.location, targetW);
             }
             else
             {
@@ -2145,13 +2090,13 @@ namespace hist_mmorpg
             }
 
             // NW
-            Fief targetNW = this.gameMap.getFief(this.charModel.currentCharacter.location, "NW");
+            Fief targetNW = this.gameMap.getFief(this.myChar.location, "NW");
             if (targetNW != null)
             {
                 this.travel_NW_btn.Text = "NW FIEF:\r\n\r\n";
                 this.travel_NW_btn.Text += targetNW.name + " (" + targetNW.fiefID + ")\r\n";
                 this.travel_NW_btn.Text += "(" + targetNW.province.name + ")\r\n\r\n";
-                this.travel_NW_btn.Text += "Cost: " + this.getTravelCost(this.charModel.currentCharacter.location, targetNW);
+                this.travel_NW_btn.Text += "Cost: " + this.getTravelCost(this.myChar.location, targetNW);
             }
             else
             {
@@ -2159,7 +2104,7 @@ namespace hist_mmorpg
             }
 
             // set text for 'enter/exit keep' button
-            if (this.charModel.currentCharacter.inKeep)
+            if (this.myChar.inKeep)
             {
                 this.enterKeepBtn.Text = "Exit Keep";
             }
@@ -2174,15 +2119,14 @@ namespace hist_mmorpg
         {
             bool success = false;
             Button button = sender as Button;
-            Fief targetFief = this.gameMap.getFief(this.charModel.currentCharacter.location, button.Tag.ToString());
+            Fief targetFief = this.gameMap.getFief(this.myChar.location, button.Tag.ToString());
             if (targetFief != null)
             {
-                double travelCost = this.getTravelCost(this.charModel.currentCharacter.location, targetFief);
-                success = this.charModel.currentCharacter.moveCharacter(targetFief, travelCost);
+                double travelCost = this.getTravelCost(this.myChar.location, targetFief);
+                success = this.myChar.moveCharacter(targetFief, travelCost);
                 if (success)
                 {
-                    this.fModel.currentFief = targetFief;
-                    this.fiefToView = this.fModel.currentFief;
+                    this.fiefToView = targetFief;
                     this.refreshTravelContainer();
                 }
             }
@@ -2208,12 +2152,12 @@ namespace hist_mmorpg
                 }
             }
 
-            if (ch == this.charModel.currentCharacter)
+            if (ch == this.myChar)
             {
+                // if myChar has moved, refresh display
                 if (ch.goTo.Count < steps)
                 {
-                    this.fModel.currentFief = this.charModel.currentCharacter.location;
-                    this.fiefToView = this.fModel.currentFief;
+                    this.fiefToView = this.myChar.location;
                     this.refreshCharacterContainer();
                 }
             }
@@ -2230,10 +2174,10 @@ namespace hist_mmorpg
 
         private void viewBailiffBtn_Click(object sender, EventArgs e)
         {
-            if (this.fModel.currentFief.bailiff != null)
+            if (this.fiefToView.bailiff != null)
             {
                 string textToDisplay = "";
-                textToDisplay += this.displayCharacter(this.fModel.currentFief.bailiff);
+                textToDisplay += this.displayCharacter(this.fiefToView.bailiff);
                 this.characterTextBox.Text = textToDisplay;
                 this.characterContainer.BringToFront();
             }
@@ -2249,11 +2193,11 @@ namespace hist_mmorpg
         {
             Fief fiefToDisplay = null;
 
-            for (int i = 0; i < this.charModel.currentCharacter.ownedFiefs.Count; i++ )
+            for (int i = 0; i < this.myChar.ownedFiefs.Count; i++)
             {
-                if (this.charModel.currentCharacter.ownedFiefs[i].fiefID.Equals(this.fiefsListView.SelectedItems[0].SubItems[1].Text))
+                if (this.myChar.ownedFiefs[i].fiefID.Equals(this.fiefsListView.SelectedItems[0].SubItems[1].Text))
                 {
-                    fiefToDisplay = this.charModel.currentCharacter.ownedFiefs[i];
+                    fiefToDisplay = this.myChar.ownedFiefs[i];
                 }
 
             }
@@ -2268,15 +2212,15 @@ namespace hist_mmorpg
 
         private void enterKeepBtn_Click(object sender, EventArgs e)
         {
-            if (this.charModel.currentCharacter.inKeep)
+            if (this.myChar.inKeep)
             {
-                this.charModel.currentCharacter.exitKeep();
+                this.myChar.exitKeep();
                 this.enterKeepBtn.Text = "Enter Keep";
                 this.refreshTravelContainer();
             }
             else
             {
-                this.charModel.currentCharacter.enterKeep();
+                this.myChar.enterKeep();
                 this.enterKeepBtn.Text = "Exit Keep";
                 this.refreshTravelContainer();
             }
@@ -2284,9 +2228,9 @@ namespace hist_mmorpg
 
         private void visitCourtBtn1_Click(object sender, EventArgs e)
         {
-            if (! this.charModel.currentCharacter.inKeep)
+            if (!this.myChar.inKeep)
             {
-                this.charModel.currentCharacter.enterKeep();
+                this.myChar.enterKeep();
             }
 
             this.refreshMeetingPlaceDisplay("court");
@@ -2296,9 +2240,9 @@ namespace hist_mmorpg
 
         private void visitTavernBtn_Click_1(object sender, EventArgs e)
         {
-            if (this.charModel.currentCharacter.inKeep)
+            if (this.myChar.inKeep)
             {
-                this.charModel.currentCharacter.exitKeep();
+                this.myChar.exitKeep();
             }
             this.refreshMeetingPlaceDisplay("tavern");
             this.meetingPlaceCharDisplayTextBox.Text = "";
@@ -2318,7 +2262,7 @@ namespace hist_mmorpg
                         charToDisplay = this.fiefToView.characters[i];
 
                         // set text for hire/fire button
-                        if (this.charModel.currentCharacter.employees.Contains(this.fiefToView.characters[i]))
+                        if (this.myChar.employees.Contains(this.fiefToView.characters[i]))
                         {
                             this.hireNPC_Btn.Text = "Fire NPC";
                             this.hireNPC_TextBox.Visible = false;
@@ -2345,13 +2289,13 @@ namespace hist_mmorpg
 
         private void hireNPC_Btn_Click(object sender, EventArgs e)
         {
-            if (! this.charModel.currentCharacter.employees.Contains(charToView))
+            if (!this.myChar.employees.Contains(charToView))
             {
-                bool offerAccepted = this.charModel.currentCharacter.processEmployOffer((NonPlayerCharacter)charToView, Convert.ToUInt32(this.hireNPC_TextBox.Text));
+                bool offerAccepted = this.myChar.processEmployOffer((NonPlayerCharacter)charToView, Convert.ToUInt32(this.hireNPC_TextBox.Text));
             }
             else
             {
-                this.charModel.currentCharacter.fireNPC((NonPlayerCharacter)charToView);
+                this.myChar.fireNPC((NonPlayerCharacter)charToView);
             }
 
             string textToDisplay = "";
