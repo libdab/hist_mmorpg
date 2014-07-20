@@ -149,14 +149,14 @@ namespace hist_mmorpg
             // fiefManagementToolStripMenuItem
             // 
             this.fiefManagementToolStripMenuItem.Name = "fiefManagementToolStripMenuItem";
-            this.fiefManagementToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fiefManagementToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.fiefManagementToolStripMenuItem.Text = "Current fief";
             this.fiefManagementToolStripMenuItem.Click += new System.EventHandler(this.fiefManagementToolStripMenuItem_Click);
             // 
             // myFiefsToolStripMenuItem
             // 
             this.myFiefsToolStripMenuItem.Name = "myFiefsToolStripMenuItem";
-            this.myFiefsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.myFiefsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.myFiefsToolStripMenuItem.Text = "My fiefs";
             this.myFiefsToolStripMenuItem.Click += new System.EventHandler(this.myFiefsToolStripMenuItem_Click);
             // 
@@ -644,8 +644,8 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(801, 458);
-            this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.fiefContainer);
+            this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.fiefsOwnedContainer);

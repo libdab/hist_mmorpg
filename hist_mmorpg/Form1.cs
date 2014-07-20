@@ -23,7 +23,7 @@ namespace hist_mmorpg
         /// </summary>
         public Dictionary<string, NonPlayerCharacter> npcMasterList = new Dictionary<string, NonPlayerCharacter>();
 		/// <summary>
-		/// Holds keys for NonPlayerCharacter objects
+		/// Holds keys for NonPlayerCharacter objects (used when retrieving from database)
 		/// </summary>
 		List<String> npcKeys = new List<String> ();
         /// <summary>
@@ -31,7 +31,7 @@ namespace hist_mmorpg
         /// </summary>
         public Dictionary<string, PlayerCharacter> pcMasterList = new Dictionary<string, PlayerCharacter>();
 		/// <summary>
-		/// Holds keys for PlayerCharacter objects
+        /// Holds keys for PlayerCharacter objects (used when retrieving from database)
 		/// </summary>
 		List<String> pcKeys = new List<String> ();
         /// <summary>
@@ -39,7 +39,7 @@ namespace hist_mmorpg
         /// </summary>
         public Dictionary<string, Fief> fiefMasterList = new Dictionary<string, Fief>();
 		/// <summary>
-		/// Holds keys for Fief objects
+        /// Holds keys for Fief objects (used when retrieving from database)
 		/// </summary>
 		List<String> fiefKeys = new List<String> ();
 		/// <summary>
@@ -47,7 +47,7 @@ namespace hist_mmorpg
 		/// </summary>
 		public Dictionary<string, Province> provinceMasterList = new Dictionary<string, Province>();
 		/// <summary>
-		/// Holds keys for Province objects
+        /// Holds keys for Province objects (used when retrieving from database)
 		/// </summary>
 		List<String> provKeys = new List<String> ();
 		/// <summary>
@@ -55,7 +55,7 @@ namespace hist_mmorpg
 		/// </summary>
 		public Dictionary<string, Terrain> terrainMasterList = new Dictionary<string, Terrain>();
 		/// <summary>
-		/// Holds keys for Terrain objects
+        /// Holds keys for Terrain objects (used when retrieving from database)
 		/// </summary>
 		List<String> terrKeys = new List<String> ();
 		/// <summary>
@@ -63,11 +63,11 @@ namespace hist_mmorpg
 		/// </summary>
 		public Dictionary<string, Skill> skillMasterList = new Dictionary<string, Skill>();
 		/// <summary>
-		/// Holds keys for Skill objects
+        /// Holds keys for Skill objects (used when retrieving from database)
 		/// </summary>
 		List<String> skillKeys = new List<String> ();
 		/// <summary>
-		/// Holds Character_Riak objects with existing goTo queues (for initial load)
+		/// Holds Character_Riak objects with existing goTo queues (used during initial load)
 		/// </summary>
 		List<Character_Riak> goToList = new List<Character_Riak> ();
         /// <summary>
@@ -111,93 +111,19 @@ namespace hist_mmorpg
 			cluster = (RiakCluster)RiakCluster.FromConfig("riakConfig");
 			client = (RiakClient)cluster.CreateClient();
 
-            // create game objects
-			this.myChar = this.initGameObjects("NOTdb");
+            // initialise game objects
+			this.initGameObjects("NOTdb", "101");
 
 			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
 
-            this.fiefToView = this.myChar.location;
-            this.setUpFiefsList();
-            this.setUpCourtCharsList();
-            this.charToView = this.myChar;
-            this.refreshCharacterContainer();
         }
 
-		public String[][] ArrayFromCSV (String csvFilename, bool writeToDB, String bucket = "", String key = "")
-		{
-			var linesIn = new List<string[]>();
-
-			StreamReader sr = new StreamReader(csvFilename);
-
-			int Row = 0;
-			while (!sr.EndOfStream)
-			{
-				string[] line = sr.ReadLine().Split(',');
-				if (line.Length != 67)
-				{
-					System.Windows.Forms.MessageBox.Show("row " + Row + " = " + line.Length);
-				}
-				/* string toDisplay = "";
-				for (int i = 0; i < line.Length; i++)
-				{
-					toDisplay += line [i] + " ";
-				}
-				toDisplay += line.Length;
-				System.Windows.Forms.MessageBox.Show(toDisplay); */
-				linesIn.Add(line);
-				Row++;
-			}
-
-			var outArray = linesIn.ToArray();
-
-			if(writeToDB)
-			{
-				var arrayToDB = new RiakObject(bucket, key, outArray);
-				var putArrayResult = client.Put(arrayToDB);
-
-				if (! putArrayResult.IsSuccess)
-				{
-					System.Windows.Forms.MessageBox.Show("Write failed: " + arrayToDB.Key + " to bucket " + arrayToDB.Bucket);
-				}
-			}
-
-			/*
-			// test read from Riak
-			var fiefArrayResult = client.Get(bucket, key);
-
-			if (fiefArrayResult.IsSuccess)
-			{
-				string toDisplay = "";
-				var fiefArrayRiak = fiefArrayResult.Value.GetObject<string[,]>();
-				System.Windows.Forms.MessageBox.Show(fiefArrayRiak.GetLength(0) + " ; " + fiefArrayRiak.GetLength(1) + "   .");
-				for (int i = 0; i < fiefArrayRiak.GetLength(0); i++)
-				{
-					for (int ii = 0; ii < fiefArrayRiak.GetLength(1); ii++)
-					{
-						toDisplay += fiefArrayRiak [i,ii] + " ";
-					}
-					System.Windows.Forms.MessageBox.Show(toDisplay);
-					toDisplay = "";
-				}
-			}
-			else
-			{
-				// System.Windows.Forms.MessageBox.Show ("InitialDBload: Unable to retrieve PlayerCharacter " + pcID);
-			} */
-
-			return outArray;
-		}
-
-		public static bool IsOdd(int value)
-		{
-			return value % 2 != 0;
-		}
-
 		/// <summary>
-		/// Creates all game objects from code
+        /// Initialises all game objects
 		/// </summary>
-		/// <param name="source">Where to get object data</param>
-		public PlayerCharacter initGameObjects(String source)
+		/// <param name="source">Where to get object data (database or hard-coded)</param>
+        /// <param name="pc">ID of PlayerCharacter to set as myChar</param>
+        public void initGameObjects(String source, string pc)
         {
 
 			if (source == "db")
@@ -210,17 +136,25 @@ namespace hist_mmorpg
 				// create from code
 				this.initialLoad ();
 			}
-				
-			// set inital fief to display
-			this.fiefToView = this.pcMasterList["101"].location;
 
-			// return PC;
-			return this.pcMasterList["101"];
+            // set myChar
+            this.myChar = this.pcMasterList[pc];
+                
+            // set inital fief to display
+            this.fiefToView = this.myChar.location;
+
+            // initialise list elements in UI
+            this.setUpFiefsList();
+            this.setUpCourtCharsList();
+
+            // initialise character display in UI
+            this.charToView = this.myChar;
+            this.refreshCharacterContainer();
 
         }
 
 		/// <summary>
-		/// Creates all game objects from code
+		/// Creates some game objects from code (temporary)
 		/// </summary>
 		public void initialLoad()
 		{
@@ -230,12 +164,6 @@ namespace hist_mmorpg
 			this.clock = myGameClock;
 
 			// create skills
-			// Dictionary to hold collection of skills
-			// Dictionary<string, Skill> skillsCollection = new Dictionary<string, Skill>();
-
-			// List to holds skill keys (for random selection)
-			List<string> skillsKeys = new List<string>();
-
 			// Dictionary of skill effects
 			Dictionary<string, int> effectsCommand = new Dictionary<string, int>();
 			effectsCommand.Add("battle", 40);
@@ -304,23 +232,7 @@ namespace hist_mmorpg
 			// add each skillsCollection key to skillsKeys
 			foreach (KeyValuePair<string, Skill> entry in this.skillMasterList)
 			{
-				skillsKeys.Add(entry.Key);
-			}
-
-			// create new random for generating skills for Character
-			Random rndSkills = new Random();
-
-			// create array of skills between 2-3 in length
-			Skill[] skillsArray1 = new Skill[rndSkills.Next(2, 4)];
-
-			// populate array of skills with randomly chosen skills
-			// make temporary copy of skillsKeys
-			List<string> skillsKeysCopy = new List<string>(skillsKeys);
-			for (int i = 0; i < skillsArray1.Length; i++)
-			{
-				int randChoice = rndSkills.Next(0, skillsKeysCopy.Count - 1);
-				skillsArray1[i] = this.skillMasterList[skillsKeysCopy[randChoice]];
-				skillsKeysCopy.RemoveAt(randChoice);
+				this.skillKeys.Add(entry.Key);
 			}
 
 			// create terrain objects
@@ -429,16 +341,18 @@ namespace hist_mmorpg
 			List<Fief> myFiefsOwned1 = new List<Fief>();
 			List<Fief> myFiefsOwned2 = new List<Fief>();
 
-			// create some characters
-			PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, "E1", 90, 4.0, 7.2, 6.1, skillsArray1, false, true, false, "200", "403", "", false, 13000, myEmployees1, myFiefsOwned1, cl: this.clock, loc: myFief1);
+            // create Random for use with generating skill sets for Characters
+            Random myRand = new Random();
+            // create some characters
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, "E1", 90, 4.0, 7.2, 6.1, generateSkillSet(myRand), false, true, false, "200", "403", "", false, 13000, myEmployees1, myFiefsOwned1, cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar1.charID, myChar1);
-			PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, "E1", 90, 4.0, 5.0, 4.5, skillsArray1, true, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, "E1", 90, 4.0, 5.0, 4.5, generateSkillSet(myRand), true, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar2.charID, myChar2);
-			NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, "E1", 90, 4.0, 3.3, 6.7, skillsArray1, false, false, false, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, "E1", 90, 4.0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
 			npcMasterList.Add(myNPC1.charID, myNPC1);
-			NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, "E1", 90, 4.0, 7.1, 5.2, skillsArray1, false, false, false, "200", "", "", 10000, true, mb: myChar1.charID, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, "E1", 90, 4.0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, "200", "", "", 10000, true, mb: myChar1.charID, cl: this.clock, loc: myFief1);
 			npcMasterList.Add(myNPC2.charID, myNPC2);
-			NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myGoTo5, "E1", 90, 4.0, 4.0, 6.0, skillsArray1, false, true, true, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myGoTo5, "E1", 90, 4.0, 4.0, 6.0, generateSkillSet(myRand), false, true, true, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
 			npcMasterList.Add(myWife.charID, myWife);
 
 			// set fief owners
@@ -496,20 +410,50 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
+		/// Generates a random skill set for a Character
+		/// </summary>
+        /// <returns>Skill[] for use with a Character object</returns>
+        /// <param name="myRand">Random to use for integer generation</param>
+        public Skill[] generateSkillSet(Random myRand)
+        {
+            // create new random for generating skills for Character
+            Random rndSkills = myRand;
+
+            // create array of skills between 2-3 in length
+            Skill[] skillSet = new Skill[rndSkills.Next(2, 4)];
+
+            // populate array of skills with randomly chosen skills
+            // 1) make temporary copy of skillKeys
+            List<string> skillKeysCopy = new List<string>(this.skillKeys);
+            // 2) choose random skill, removing entry from keys list to ensure no duplication
+            for (int i = 0; i < skillSet.Length; i++)
+            {
+                int randChoice = rndSkills.Next(0, skillKeysCopy.Count - 1);
+                skillSet[i] = this.skillMasterList[skillKeysCopy[randChoice]];
+                skillKeysCopy.RemoveAt(randChoice);
+            }
+
+            return skillSet;
+
+        }
+
+        /// <summary>
 		/// Writes all objects for a particular game to database
 		/// </summary>
-		/// <param name="gameID">ID of game</param>
+		/// <param name="gameID">ID of game (used for Riak bucket)</param>
 		public void writeToDB(String gameID)
 		{
 			// write clock
 			this.writeClock (gameID, this.clock);
 
 			// write skills
+            // clear existing key list
 			if (this.skillKeys.Count > 0)
 			{
 				this.skillKeys.Clear ();
 			}
 
+            // write each objsct in skillMasterList, whilst also repopulating key list
 			foreach (KeyValuePair<String, Skill> pair in this.skillMasterList)
 			{
 				bool success = this.writeSkill (gameID, pair.Value);
@@ -519,15 +463,18 @@ namespace hist_mmorpg
 				}
 			}
 
+            // write key list to database
 			this.writeKeyList (gameID, "skillKeys", this.skillKeys);
 
 			// write NPCs
-			if (this.npcKeys.Count > 0)
+            // clear existing key list
+            if (this.npcKeys.Count > 0)
 			{
 				this.npcKeys.Clear ();
 			}
 
-			foreach (KeyValuePair<String, NonPlayerCharacter> pair in this.npcMasterList)
+            // write each objsct in npcMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<String, NonPlayerCharacter> pair in this.npcMasterList)
 			{
 				bool success = this.writeNPC (gameID, pair.Value);
 				if (success)
@@ -536,15 +483,18 @@ namespace hist_mmorpg
 				}
 			}
 
-			this.writeKeyList (gameID, "npcKeys", this.npcKeys);
+            // write key list to database
+            this.writeKeyList(gameID, "npcKeys", this.npcKeys);
 
 			// write PCs
-			if (this.pcKeys.Count > 0)
+            // clear existing key list
+            if (this.pcKeys.Count > 0)
 			{
 				this.pcKeys.Clear ();
 			}
 
-			foreach (KeyValuePair<String, PlayerCharacter> pair in this.pcMasterList)
+            // write each objsct in pcMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<String, PlayerCharacter> pair in this.pcMasterList)
 			{
 				bool success = this.writePC (gameID, pair.Value);
 				if (success)
@@ -553,15 +503,18 @@ namespace hist_mmorpg
 				}
 			}
 
-			this.writeKeyList (gameID, "pcKeys", this.pcKeys);
+            // write key list to database
+            this.writeKeyList(gameID, "pcKeys", this.pcKeys);
 
 			// write Provinces
-			if (this.provKeys.Count > 0)
+            // clear existing key list
+            if (this.provKeys.Count > 0)
 			{
 				this.provKeys.Clear ();
 			}
 
-			foreach (KeyValuePair<String, Province> pair in this.provinceMasterList)
+            // write each objsct in provinceMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<String, Province> pair in this.provinceMasterList)
 			{
 				bool success = this.writeProvince (gameID, pair.Value);
 				if (success)
@@ -570,15 +523,18 @@ namespace hist_mmorpg
 				}
 			}
 
-			this.writeKeyList (gameID, "provKeys", this.provKeys);
+            // write key list to database
+            this.writeKeyList(gameID, "provKeys", this.provKeys);
 
 			// write Terrains
-			if (this.terrKeys.Count > 0)
+            // clear existing key list
+            if (this.terrKeys.Count > 0)
 			{
 				this.terrKeys.Clear ();
 			}
 
-			foreach (KeyValuePair<String, Terrain> pair in this.terrainMasterList)
+            // write each objsct in terrainMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<String, Terrain> pair in this.terrainMasterList)
 			{
 				bool success = this.writeTerrain (gameID, pair.Value);
 				if (success)
@@ -587,15 +543,18 @@ namespace hist_mmorpg
 				}
 			}
 
-			this.writeKeyList (gameID, "terrKeys", this.terrKeys);
+            // write key list to database
+            this.writeKeyList(gameID, "terrKeys", this.terrKeys);
 
 			// write Fiefs
-			if (this.fiefKeys.Count > 0)
+            // clear existing key list
+            if (this.fiefKeys.Count > 0)
 			{
 				this.fiefKeys.Clear ();
 			}
 
-			foreach (KeyValuePair<String, Fief> pair in this.fiefMasterList)
+            // write each objsct in fiefMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<String, Fief> pair in this.fiefMasterList)
 			{
 				bool success = this.writeFief (gameID, pair.Value);
 				if (success)
@@ -604,9 +563,10 @@ namespace hist_mmorpg
 				}
 			}
 
-			this.writeKeyList (gameID, "fiefKeys", this.fiefKeys);
+            // write key list to database
+            this.writeKeyList(gameID, "fiefKeys", this.fiefKeys);
 
-			// write map (edges)
+			// write map (edges collection)
 			this.writeMapEdges (gameID, this.gameMap);
 
 		}
@@ -614,20 +574,21 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Loads all objects for a particular game from database
 		/// </summary>
-		/// <param name="gameID">ID of game</param>
+        /// <param name="gameID">ID of game (Riak bucket)</param>
 		public void initialDBload(String gameID)
 		{
 
-			// load key lists
+			// load key lists (to ensure efficient retrieval of specific game objects)
 			this.initialDBload_keyLists (gameID);
 
 			// load clock
-			this.clock = this.initialDBload_clock (gameID, "clock001");
+			this.clock = this.initialDBload_clock (gameID, "gameClock");
 
 			// load skills
 			foreach (String element in this.skillKeys)
 			{
 				Skill skill = this.initialDBload_skill (gameID, element);
+                // add Skill to skillMasterList
 				this.skillMasterList.Add(skill.skillID, skill);
 			}
 				
@@ -635,38 +596,43 @@ namespace hist_mmorpg
 			foreach (String element in this.npcKeys)
 			{
 				NonPlayerCharacter npc = this.initialDBload_NPC (gameID, element);
-				this.npcMasterList.Add(npc.charID, npc);
+                // add NPC to npcMasterList
+                this.npcMasterList.Add(npc.charID, npc);
 			}
 
 			// load PCs
 			foreach (String element in this.pcKeys)
 			{
 				PlayerCharacter pc = this.initialDBload_PC (gameID, element);
-				this.pcMasterList.Add(pc.charID, pc);
+                // add PC to pcMasterList
+                this.pcMasterList.Add(pc.charID, pc);
 			}
 
 			// load provinces
 			foreach (String element in this.provKeys)
 			{
 				Province prov = this.initialDBload_Province (gameID, element);
-				this.provinceMasterList.Add (prov.provinceID, prov);
+                // add Province to provinceMasterList
+                this.provinceMasterList.Add(prov.provinceID, prov);
 			}
 
 			// load terrains
 			foreach (String element in this.terrKeys)
 			{
 				Terrain terr = this.initialDBload_terrain (gameID, element);
-				this.terrainMasterList.Add (terr.terrainCode, terr);
+                // add Terrain to terrainMasterList
+                this.terrainMasterList.Add(terr.terrainCode, terr);
 			}
 
 			// load fiefs
 			foreach (String element in this.fiefKeys)
 			{
 				Fief f = this.initialDBload_Fief (gameID, element);
-				this.fiefMasterList.Add (f.fiefID, f);
+                // add Fief to fiefMasterList
+                this.fiefMasterList.Add(f.fiefID, f);
 			}
 
-			// process Character goTo queue
+			// process any Character goTo queues containing entries
 			if (this.goToList.Count > 0)
 			{
 				for (int i = 0; i < this.goToList.Count; i++)
@@ -677,7 +643,7 @@ namespace hist_mmorpg
 			}
 
 			// load map
-			this.gameMap = this.initialDBload_map (gameID, "map001E");
+			this.gameMap = this.initialDBload_map (gameID, "mapEdges");
 		}
 
 		/// <summary>
@@ -686,7 +652,7 @@ namespace hist_mmorpg
 		/// <param name="gameID">Game for which key lists to be retrieved</param>
 		public void initialDBload_keyLists(String gameID)
 		{
-			// get Skill Keys
+            // populate skillKeys
 			var skillKeyResult = client.Get(gameID, "skillKeys");
 			if (skillKeyResult.IsSuccess)
 			{
@@ -697,8 +663,8 @@ namespace hist_mmorpg
 				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve skillKeys from database.");
 			}
 
-			// get NPC Keys
-			var npcKeyResult = client.Get(gameID, "npcKeys");
+            // populate npcKeys
+            var npcKeyResult = client.Get(gameID, "npcKeys");
 			if (npcKeyResult.IsSuccess)
 			{
 				this.npcKeys = npcKeyResult.Value.GetObject<List<String>>();
@@ -707,9 +673,9 @@ namespace hist_mmorpg
 			{
 				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve npcKeys from database.");
 			}
-				
-			// get PC Keys
-			var pcKeyResult = client.Get(gameID, "pcKeys");
+
+            // populate pcKeys
+            var pcKeyResult = client.Get(gameID, "pcKeys");
 			if (pcKeyResult.IsSuccess)
 			{
 				this.pcKeys = pcKeyResult.Value.GetObject<List<String>>();
@@ -719,8 +685,8 @@ namespace hist_mmorpg
 				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve pcKeys from database.");
 			}
 
-			// get Province Keys
-			var provKeyResult = client.Get(gameID, "provKeys");
+            // populate provKeys
+            var provKeyResult = client.Get(gameID, "provKeys");
 			if (provKeyResult.IsSuccess)
 			{
 				this.provKeys = provKeyResult.Value.GetObject<List<String>>();
@@ -730,8 +696,8 @@ namespace hist_mmorpg
 				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve provKeys from database.");
 			}
 
-			// get Terrain Keys
-			var terrKeyResult = client.Get(gameID, "terrKeys");
+            // populate terrKeys
+            var terrKeyResult = client.Get(gameID, "terrKeys");
 			if (terrKeyResult.IsSuccess)
 			{
 				this.terrKeys = terrKeyResult.Value.GetObject<List<String>>();
@@ -741,8 +707,8 @@ namespace hist_mmorpg
 				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve terrKeys from database.");
 			}
 
-			// get Fief Keys
-			var fiefKeyResult = client.Get(gameID, "fiefKeys");
+            // populate fiefKeys
+            var fiefKeyResult = client.Get(gameID, "fiefKeys");
 			if (fiefKeyResult.IsSuccess)
 			{
 				this.fiefKeys = fiefKeyResult.Value.GetObject<List<String>>();
@@ -757,7 +723,8 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Loads GameClock for a particular game from database
 		/// </summary>
-		/// <param name="gameID">Game for which clock to be retrieved</param>
+        /// <returns>GameClock object</returns>
+        /// <param name="gameID">Game for which clock to be retrieved</param>
 		/// <param name="clockID">ID of clock to be retrieved</param>
 		public GameClock initialDBload_clock(String gameID, String clockID)
 		{
@@ -779,7 +746,8 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Loads a skill for a particular game from database
 		/// </summary>
-		/// <param name="gameID">Game for which skill to be retrieved</param>
+        /// <returns>Skill object</returns>
+        /// <param name="gameID">Game for which skill to be retrieved</param>
 		/// <param name="skillID">ID of skill to be retrieved</param>
 		public Skill initialDBload_skill(String gameID, String skillID)
 		{
@@ -801,7 +769,8 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Loads an NPC for a particular game from database
 		/// </summary>
-		/// <param name="gameID">Game for which skill to be retrieved</param>
+        /// <returns>NonPlayerCharacter object</returns>
+        /// <param name="gameID">Game for which NPC to be retrieved</param>
 		/// <param name="npcID">ID of NPC to be retrieved</param>
 		public NonPlayerCharacter initialDBload_NPC(String gameID, String npcID)
 		{
@@ -811,12 +780,15 @@ namespace hist_mmorpg
 
 			if (npcResult.IsSuccess)
 			{
+                // extract NonPlayerCharacter_Riak object
 				npcRiak = npcResult.Value.GetObject<NonPlayerCharacter_Riak>();
+                // if NonPlayerCharacter_Riak goTo queue contains entries, store for later processing
 				if (npcRiak.goTo.Count > 0)
 				{
 					goToList.Add (npcRiak);
 				}
-				myNPC = this.NPCfromRiakNPC (npcRiak);
+                // create NonPlayerCharacter from NonPlayerCharacter_Riak
+                myNPC = this.NPCfromRiakNPC(npcRiak);
 			}
 			else
 			{
@@ -829,7 +801,8 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Loads a PC for a particular game from database
 		/// </summary>
-		/// <param name="gameID">Game for which skill to be retrieved</param>
+        /// <returns>PlayerCharacter object</returns>
+        /// <param name="gameID">Game for which PC to be retrieved</param>
 		/// <param name="pcID">ID of PC to be retrieved</param>
 		public PlayerCharacter initialDBload_PC(String gameID, String pcID)
 		{
@@ -839,12 +812,15 @@ namespace hist_mmorpg
 
 			if (pcResult.IsSuccess)
 			{
-				pcRiak = pcResult.Value.GetObject<PlayerCharacter_Riak>();
-				if (pcRiak.goTo.Count > 0)
+                // extract PlayerCharacter_Riak object
+                pcRiak = pcResult.Value.GetObject<PlayerCharacter_Riak>();
+                // if PlayerCharacter_Riak goTo queue contains entries, store for later processing
+                if (pcRiak.goTo.Count > 0)
 				{
 					goToList.Add (pcRiak);
 				}
-				myPC = this.PCfromRiakPC (pcRiak);
+                // create PlayerCharacter from PlayerCharacter_Riak
+                myPC = this.PCfromRiakPC(pcRiak);
 			}
 			else
 			{
@@ -857,7 +833,8 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Loads a Province for a particular game from database
 		/// </summary>
-		/// <param name="gameID">Game for which skill to be retrieved</param>
+        /// <returns>Province object</returns>
+        /// <param name="gameID">Game for which Province to be retrieved</param>
 		/// <param name="provID">ID of Province to be retrieved</param>
 		public Province initialDBload_Province(String gameID, String provID)
 		{
@@ -867,8 +844,10 @@ namespace hist_mmorpg
 
 			if (provResult.IsSuccess)
 			{
-				provRiak = provResult.Value.GetObject<Province_Riak>();
-				myProv = this.ProvinceFromRiak (provRiak);
+                // extract Province_Riak object
+                provRiak = provResult.Value.GetObject<Province_Riak>();
+                // create Province from Province_Riak
+                myProv = this.ProvinceFromRiak(provRiak);
 			}
 			else
 			{
@@ -881,7 +860,8 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Loads a Terrain for a particular game from database
 		/// </summary>
-		/// <param name="gameID">Game for which Terrain to be retrieved</param>
+        /// <returns>Terrain object</returns>
+        /// <param name="gameID">Game for which Terrain to be retrieved</param>
 		/// <param name="terrID">ID of Terrain to be retrieved</param>
 		public Terrain initialDBload_terrain(String gameID, String terrID)
 		{
@@ -903,7 +883,8 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Loads a Fief for a particular game from database
 		/// </summary>
-		/// <param name="gameID">Game for which skill to be retrieved</param>
+        /// <returns>Fief object</returns>
+        /// <param name="gameID">Game for which Fief to be retrieved</param>
 		/// <param name="fiefID">ID of Fief to be retrieved</param>
 		public Fief initialDBload_Fief(String gameID, String fiefID)
 		{
@@ -913,8 +894,10 @@ namespace hist_mmorpg
 
 			if (fiefResult.IsSuccess)
 			{
-				fiefRiak = fiefResult.Value.GetObject<Fief_Riak>();
-				myFief = this.FiefFromRiakFief (fiefRiak);
+                // extract Fief_Riak object
+                fiefRiak = fiefResult.Value.GetObject<Fief_Riak>();
+                // create Fief from Fief_Riak
+                myFief = this.FiefFromRiakFief(fiefRiak);
 			}
 			else
 			{
@@ -928,7 +911,8 @@ namespace hist_mmorpg
 		/// Creates HexMapGraph for a particular game,
 		/// using map edges collection retrieved from database
 		/// </summary>
-		/// <param name="gameID">Game for which map to be created</param>
+        /// <returns>HexMapGraph object</returns>
+        /// <param name="gameID">Game for which map to be created</param>
 		/// <param name="mapEdgesID">ID of map edges collection to be retrieved</param>
 		public HexMapGraph initialDBload_map(String gameID, String mapEdgesID)
 		{
@@ -940,6 +924,7 @@ namespace hist_mmorpg
 			{
 				edgesList = mapResult.Value.GetObject<List<TaggedEdge<String, string>>>();
 				TaggedEdge<Fief, string>[] edgesArray = this.EdgeCollection_from_Riak (edgesList);
+                // create map from edges collection
 				newMap = new HexMapGraph ("map001", edgesArray);
 			}
 			else
@@ -953,7 +938,8 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Converts Fief object (containing nested objects) into suitable format for JSON serialisation
 		/// </summary>
-		/// <param name="f">Fief to be converted</param>
+        /// <returns>Fief_Riak object</returns>
+        /// <param name="f">Fief to be converted</param>
 		public Fief_Riak FieftoRiak(Fief f)
 		{
 			Fief_Riak fOut = null;
@@ -965,7 +951,8 @@ namespace hist_mmorpg
 		/// Converts Fief_Riak object into Fief object.
 		/// Also inserts Fief into appropriate PlayerCharacter and NonPlayerCharacter objects.
 		/// </summary>
-		/// <param name="fr">Fief_Riak object to be converted</param>
+        /// <returns>Fief object</returns>
+        /// <param name="fr">Fief_Riak object to be converted</param>
 		public Fief FiefFromRiakFief(Fief_Riak fr)
 		{
 			Fief fOut = null;
@@ -980,7 +967,6 @@ namespace hist_mmorpg
 
 			// insert owner
 			fOut.owner = this.pcMasterList[fr.owner];
-			// Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
 			// check if fief is in owner's list of fiefs owned
 			bool fiefInList = fOut.owner.ownedFiefs.Any(item => item.fiefID == fOut.fiefID);
 			// if not, add it
@@ -1001,7 +987,7 @@ namespace hist_mmorpg
 					fOut.bailiff = this.pcMasterList [fr.bailiff];
 				} else {
 					fOut.bailiff = null;
-					System.Windows.Forms.MessageBox.Show ("Unable to identify bailiff for Fief " + fOut.fiefID);
+					System.Windows.Forms.MessageBox.Show ("Unable to identify bailiff (" + fr.bailiff + ") for Fief " + fOut.fiefID);
 				}
 			}
 				
@@ -1018,11 +1004,15 @@ namespace hist_mmorpg
 						fOut.characters.Add(this.npcMasterList[fr.characters[i]]);
 						this.npcMasterList[fr.characters[i]].location = fOut;
 					}
-					else if (this.pcMasterList.ContainsKey (fr.characters[i]))
-					{
-						fOut.characters.Add(this.pcMasterList[fr.characters[i]]);
-						this.pcMasterList[fr.characters[i]].location = fOut;
-					}
+                    else if (this.pcMasterList.ContainsKey(fr.characters[i]))
+                    {
+                        fOut.characters.Add(this.pcMasterList[fr.characters[i]]);
+                        this.pcMasterList[fr.characters[i]].location = fOut;
+                    }
+                    else
+                    {
+                        System.Windows.Forms.MessageBox.Show("Unable to identify character (" + fr.characters[i] + ") for Fief " + fOut.fiefID);
+                    }
 
 				}
 			}
@@ -1033,7 +1023,8 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Converts PlayerCharacter object (containing nested objects) into suitable format for JSON serialisation
 		/// </summary>
-		/// <param name="pc">PlayerCharacter to be converted</param>
+        /// <returns>PlayerCharacter_Riak object</returns>
+        /// <param name="pc">PlayerCharacter to be converted</param>
 		public PlayerCharacter_Riak PCtoRiak(PlayerCharacter pc)
 		{
 			PlayerCharacter_Riak pcOut = null;
@@ -1044,7 +1035,8 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Converts NonPlayerCharacter object (containing nested objects) into suitable format for JSON serialisation
 		/// </summary>
-		/// <param name="npc">NonPlayerCharacter to be converted</param>
+        /// <returns>NonPlayerCharacter_Riak object</returns>
+        /// <param name="npc">NonPlayerCharacter to be converted</param>
 		public NonPlayerCharacter_Riak NPCtoRiak(NonPlayerCharacter npc)
 		{
 			NonPlayerCharacter_Riak npcOut = null;
@@ -1055,7 +1047,8 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Converts PlayerCharacter_Riak objects into PlayerCharacter game objects
 		/// </summary>
-		/// <param name="pcr">PlayerCharacter_Riak object to be converted</param>
+        /// <returns>PlayerCharacter object</returns>
+        /// <param name="pcr">PlayerCharacter_Riak object to be converted</param>
 		public PlayerCharacter PCfromRiakPC(PlayerCharacter_Riak pcr)
 		{
 			PlayerCharacter pcOut = null;
@@ -1070,8 +1063,7 @@ namespace hist_mmorpg
 			{
 				for (int i = 0; i < pcr.skills.Length; i++)
 				{
-					Skill skill = this.skillMasterList[pcr.skills[i]];
-					pcOut.skills[i] = skill;
+                    pcOut.skills[i] = this.skillMasterList[pcr.skills[i]];
 				}
 			}
 
@@ -1080,8 +1072,7 @@ namespace hist_mmorpg
 			{
 				for (int i = 0; i < pcr.employees.Count; i++)
 				{
-					NonPlayerCharacter employee = npcMasterList[pcr.employees[i]];
-					pcOut.employees.Add (employee);
+                    pcOut.employees.Add (npcMasterList[pcr.employees[i]]);
 				}
 			}
 
@@ -1091,11 +1082,12 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Converts NonPlayerCharacter_Riak objects into NonPlayerCharacter game objects
 		/// </summary>
-		/// <param name="npcr">NonPlayerCharacter_Riak object to be converted</param>
+        /// <returns>NonPlayerCharacter object</returns>
+        /// <param name="npcr">NonPlayerCharacter_Riak object to be converted</param>
 		public NonPlayerCharacter NPCfromRiakNPC(NonPlayerCharacter_Riak npcr)
 		{
 			NonPlayerCharacter npcOut = null;
-			// create PlayerCharacter from PlayerCharacter_Riak
+            // create NonPlayerCharacter from NonPlayerCharacter_Riak
 			npcOut = new NonPlayerCharacter (npcr);
 
 			// insert game clock
@@ -1106,8 +1098,7 @@ namespace hist_mmorpg
 			{
 				for (int i = 0; i < npcr.skills.Length; i++)
 				{
-					Skill skill = this.skillMasterList[npcr.skills[i]];
-					npcOut.skills[i] = skill;
+                    npcOut.skills[i] = this.skillMasterList[npcr.skills[i]];
 				}
 			}
 
@@ -1115,26 +1106,28 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
-		/// Converts HexMapGraph edge collection into suitable format for JSON serialisation
+		/// Converts HexMapGraph edges collection into suitable format for JSON serialisation
 		/// </summary>
-		/// <param name="edgesIn">List<TaggedEdge<Fief, string>> to be converted</param>
+        /// <returns>'String-ified' edges collection</returns>
+        /// <param name="edgesIn">Edges collection to be converted</param>
 		public List<TaggedEdge<String, string>> EdgeCollection_to_Riak(List<TaggedEdge<Fief, string>> edgesIn)
 		{
 			List<TaggedEdge<String, string>> edgesOut = new List<TaggedEdge<string, string>> ();
 
 			foreach (TaggedEdge<Fief, string> element in edgesIn)
 			{
-				TaggedEdge<String, string> newElement = this.EdgeFief_to_EdgeString (element);
-				edgesOut.Add (newElement);
+                // convert each Fief object to string ID
+				edgesOut.Add (this.EdgeFief_to_EdgeString (element));
 			}
 
 			return edgesOut;
 		}
 
 		/// <summary>
-		/// Converts List<TaggedEdge<String, string>> into TaggedEdge<Fief, string>[]
+        /// Converts 'String-ified' edges collection into HexMapGraph edges collection
 		/// </summary>
-		/// <param name="edgesIn">List<TaggedEdge<String, string>> to be converted</param>
+        /// <returns>HexMapGraph edges collection</returns>
+        /// <param name="edgesIn">'String-ified' edges collection to be converted</param>
 		public TaggedEdge<Fief, string>[] EdgeCollection_from_Riak(List<TaggedEdge<String, string>> edgesIn)
 		{
 			TaggedEdge<Fief, string>[] edgesOut = new TaggedEdge<Fief, string>[edgesIn.Count];
@@ -1142,8 +1135,8 @@ namespace hist_mmorpg
 			int i = 0;
 			foreach (TaggedEdge<String, string> element in edgesIn)
 			{
-				TaggedEdge<Fief, string> newElement = this.EdgeString_to_EdgeFief (element);
-				edgesOut [i] = newElement;
+                // convert to HexMapGraph edge
+                edgesOut[i] = this.EdgeString_to_EdgeFief(element);
 				i++;
 			}
 
@@ -1151,10 +1144,11 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
-		/// Converts TaggedEdge<Fief, string> object into suitable format for JSON serialisation
-		/// (i.e. TaggedEdge<String, string>)
+        /// Converts HexMapGraph edge object into one suitable format for JSON serialisation
+		/// (i.e. 'string-ifies' it)
 		/// </summary>
-		/// <param name="te">TaggedEdge<Fief, string> to be converted</param>
+        /// <returns>'String-ified' edge</returns>
+        /// <param name="te">HexMapGraph edge to be converted</param>
 		public TaggedEdge<String, string> EdgeFief_to_EdgeString(TaggedEdge<Fief, string> te)
 		{
 			TaggedEdge<String, string> edgeOut = new TaggedEdge<String, string>(te.Source.fiefID, te.Target.fiefID, te.Tag);
@@ -1162,9 +1156,10 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
-		/// Converts TaggedEdge<String, string> object into TaggedEdge<Fief, string>
+        /// Converts 'string-ified' edge into HexMapGraph edge
 		/// </summary>
-		/// <param name="te">TaggedEdge<String, string> to be converted</param>
+        /// <returns>HexMapGraph edge</returns>
+        /// <param name="te">'String-ified' edge to be converted</param>
 		public TaggedEdge<Fief, string> EdgeString_to_EdgeFief(TaggedEdge<String, string> te)
 		{
 			TaggedEdge<Fief, string> edgeOut = new TaggedEdge<Fief, string>(this.fiefMasterList[te.Source], this.fiefMasterList[te.Target], te.Tag);
@@ -1172,44 +1167,44 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
-		/// Inserts Fiefs from a Character_Riak's goTo Queue into a Character's goTo Queue
-		/// (used with load from database)
+        /// Inserts Fief objects into a Character's goTo Queue,
+        /// based on fiefIDs in a Character_Riak's goTo Queue (used with load from database)
 		/// </summary>
-		/// <param name="cr">Character_Riak containing goTo Queue</param>
+        /// <returns>bool indicating success</returns>
+        /// <param name="cr">Character_Riak containing goTo Queue</param>
 		public bool populate_goTo(Character_Riak cr)
 		{
 			bool success = false;
-			Character myChar = null;
+			Character myCh = null;
 
 			if (cr is PlayerCharacter_Riak)
 			{
 				if (this.pcMasterList.ContainsKey(cr.charID))
 				{
-					myChar = this.pcMasterList [cr.charID];
+					myCh = this.pcMasterList [cr.charID];
 					success = true;
-				}
-				else
-				{
-					System.Windows.Forms.MessageBox.Show ("PlayerCharacter not found: " + cr.charID);
 				}
 			}
 			else if (cr is NonPlayerCharacter_Riak)
 			{
 				if (this.npcMasterList.ContainsKey(cr.charID))
 				{
-					myChar = this.npcMasterList [cr.charID];
+					myCh = this.npcMasterList [cr.charID];
 					success = true;
 				}
-				else
-				{
-					System.Windows.Forms.MessageBox.Show ("NonPlayerCharacter not found: " + cr.charID);
-				}
 			}
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("goTo queue processing: Character not found (" + cr.charID + ")");
+            }
 
-			foreach (String value in cr.goTo)
-			{
-				myChar.goTo.Enqueue (this.fiefMasterList[value]);
-			}
+            if (success)
+            {
+                foreach (String value in cr.goTo)
+                {
+                    myCh.goTo.Enqueue(this.fiefMasterList[value]);
+                }
+            }
 
 			return success;
 		}
@@ -1217,7 +1212,8 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Converts Province object into suitable format for JSON serialisation
 		/// </summary>
-		/// <param name="p">Province to be converted</param>
+        /// <returns>Province_Riak object</returns>
+        /// <param name="p">Province to be converted</param>
 		public Province_Riak ProvinceToRiak(Province p)
 		{
 			Province_Riak oOut = null;
@@ -1228,24 +1224,33 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Converts Province_Riak objects into Province game objects
 		/// </summary>
-		/// <param name="pr">Province_Riak to be converted</param>
+        /// <returns>Province object</returns>
+        /// <param name="pr">Province_Riak to be converted</param>
 		public Province ProvinceFromRiak(Province_Riak pr)
 		{
 			Province oOut = null;
 			oOut = new Province (pr);
+
 			if (pr.overlordID != null)
 			{
-				Character oLord = pcMasterList[pr.overlordID];
-				oOut.overlord = oLord;
-			}
+                if (this.pcMasterList.ContainsKey(pr.overlordID))
+                {
+                    oOut.overlord = pcMasterList[pr.overlordID];
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("Province " + pr.provinceID + ": Overlord not found (" + pr.overlordID + ")");
+                }
+            }
 			return oOut;
 		}
 
 		/// <summary>
 		/// Writes key list (List object) to Riak
 		/// </summary>
-		/// <param name="gameID">Game (bucket) to write to</param>
-		/// <param name="key">key of key list</param>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
+		/// <param name="k">key of key list</param>
 		/// <param name="kl">key list to write</param>
 		public bool writeKeyList(String gameID, String k, List<String> kl)
 		{
@@ -1264,17 +1269,17 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Writes GameClock object to Riak
 		/// </summary>
-		/// <param name="gameID">Game (bucket) to write to</param>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="gc">GameClock to write</param>
 		public bool writeClock(String gameID, GameClock gc)
 		{
-
-			var rClock = new RiakObject(gameID, gc.clockID, gc);
+			var rClock = new RiakObject(gameID, "gameClock", gc);
 			var putClockResult = client.Put(rClock);
 
 			if (! putClockResult.IsSuccess)
 			{
-				System.Windows.Forms.MessageBox.Show("Write failed: GameClock " + rClock.Key + " to bucket " + rClock.Bucket);
+				System.Windows.Forms.MessageBox.Show("Write failed: GameClock to bucket " + rClock.Bucket);
 			}
 
 			return putClockResult.IsSuccess;
@@ -1283,11 +1288,11 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Writes Skill object to Riak
 		/// </summary>
-		/// <param name="gameID">Game (bucket) to write to</param>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="s">Skill to write</param>
 		public bool writeSkill(String gameID, Skill s)
 		{
-
 			var rSkill = new RiakObject(gameID, s.skillID, s);
 			var putSkillResult = client.Put(rSkill);
 
@@ -1302,12 +1307,14 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Writes NonPlayerCharacter object to Riak
 		/// </summary>
-		/// <param name="gameID">Game (bucket) to write to</param>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="npc">NonPlayerCharacter to write</param>
 		public bool writeNPC(String gameID, NonPlayerCharacter npc)
 		{
-
+            // convert NonPlayerCharacter into NonPlayerCharacter_Riak
 			NonPlayerCharacter_Riak riakNPC = this.NPCtoRiak (npc);
+
 			var rNPC = new RiakObject(gameID, riakNPC.charID, riakNPC);
 			var putNPCresult = client.Put(rNPC);
 
@@ -1322,12 +1329,14 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Writes PlayerCharacter object to Riak
 		/// </summary>
-		/// <param name="gameID">Game (bucket) to write to</param>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="pc">PlayerCharacter to write</param>
 		public bool writePC(String gameID, PlayerCharacter pc)
 		{
+            // convert PlayerCharacter into PlayerCharacter_Riak
+            PlayerCharacter_Riak riakPC = this.PCtoRiak(pc);
 
-			PlayerCharacter_Riak riakPC = this.PCtoRiak (pc);
 			var rPC = new RiakObject(gameID, riakPC.charID, riakPC);
 			var putPCresult = client.Put(rPC);
 
@@ -1342,12 +1351,14 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Writes Province object to Riak
 		/// </summary>
-		/// <param name="gameID">Game (bucket) to write to</param>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="p">Province to write</param>
 		public bool writeProvince(String gameID, Province p)
 		{
+            // convert Province into Province_Riak
+            Province_Riak riakProv = this.ProvinceToRiak(p);
 
-			Province_Riak riakProv = this.ProvinceToRiak (p);
 			var rProv = new RiakObject(gameID, riakProv.provinceID, riakProv);
 			var putProvResult = client.Put(rProv);
 
@@ -1362,7 +1373,8 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Writes Terrain object to Riak
 		/// </summary>
-		/// <param name="gameID">Game (bucket) to write to</param>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="t">Terrain to write</param>
 		public bool writeTerrain(String gameID, Terrain t)
 		{
@@ -1381,12 +1393,14 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Writes Fief object to Riak
 		/// </summary>
-		/// <param name="gameID">Game (bucket) to write to</param>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="f">Fief to write</param>
 		public bool writeFief(String gameID, Fief f)
 		{
+            // convert Fief into Fief_Riak
+            Fief_Riak riakFief = this.FieftoRiak(f);
 
-			Fief_Riak riakFief = this.FieftoRiak (f);
 			var rFief = new RiakObject(gameID, riakFief.fiefID, riakFief);
 			var putFiefResult = client.Put(rFief);
 
@@ -1401,14 +1415,15 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Writes HexMapGraph edges collection to Riak
 		/// </summary>
-		/// <param name="gameID">Game (bucket) to write to</param>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="map">HexMapGraph containing edges collection</param>
 		public bool writeMapEdges(String gameID, HexMapGraph map)
 		{
-
+            // extract edges collection from HexMapGraph
 			List<TaggedEdge<String, string>> riakMapEdges = this.EdgeCollection_to_Riak (map.myMap.Edges.ToList());
 
-			var rMapE = new RiakObject(gameID, map.mapID + "E", riakMapEdges);
+			var rMapE = new RiakObject(gameID, "mapEdges", riakMapEdges);
 			var putMapResultE = client.Put(rMapE);
 
 			if (! putMapResultE.IsSuccess)
@@ -1419,45 +1434,62 @@ namespace hist_mmorpg
 			return putMapResultE.IsSuccess;
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Updates game objects at end/start of season
 		/// </summary>
 		public void seasonUpdate()
 		{
 			// fiefs
-			foreach (KeyValuePair<string, Fief> fief in this.fiefMasterList)
+			foreach (KeyValuePair<string, Fief> fiefEntry in this.fiefMasterList)
 			{
-				fief.Value.updateFief();
+				fiefEntry.Value.updateFief();
 			}
 
-			// player characters
-			foreach (KeyValuePair<string, PlayerCharacter> pc in this.pcMasterList)
+            // PlayerCharacters
+			foreach (KeyValuePair<string, PlayerCharacter> pcEntry in this.pcMasterList)
 			{
-				if (pc.Value.health != 0)
+				if (pcEntry.Value.health != 0)
 				{
-					pc.Value.updateCharacter();
+					pcEntry.Value.updateCharacter();
 				}
 			}
 
-			// player characters
-			foreach (KeyValuePair<string, NonPlayerCharacter> npc in this.npcMasterList)
+            // NonPlayerCharacters
+			foreach (KeyValuePair<string, NonPlayerCharacter> npcEntry in this.npcMasterList)
 			{
-				if (npc.Value.health != 0)
+				if (npcEntry.Value.health != 0)
 				{
-					this.seasonUpdateNPC(npc.Value);
+                    npcEntry.Value.updateCharacter();
+                    // NPC-specific
+                    this.seasonUpdateNPC(npcEntry.Value);
 				}
 			}
 
-		}
+            // GameClock (advance season)
+            this.clock.advanceSeason();
+        }
 
         /// <summary>
         /// End/start of season updates specific to NPC objects
         /// </summary>
+        /// <param name="npc">NPC to update</param>
         public void seasonUpdateNPC(NonPlayerCharacter npc)
         {
+            // random move if has no boss
+            this.randomMoveNPC(npc);
+        }
+
+        /// <summary>
+        /// Moves an NPC without a boss one hex in a random direction
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="npc">NPC to move</param>
+        public bool randomMoveNPC(NonPlayerCharacter npc)
+        {
+            bool success = false;
+
             if (npc.myBoss == null)
             {
-                bool success = false;
                 Fief target = this.gameMap.chooseRandomHex(npc.location);
                 if (target != null)
                 {
@@ -1465,23 +1497,26 @@ namespace hist_mmorpg
                     success = npc.moveCharacter(target, travelCost);
                 }
             }
+            return success;
         }
 
-        // TODO
+        /// <summary>
+        /// Creates UI display for PlayerCharacter's list of owned Fiefs
+        /// </summary>
         public void setUpFiefsList()
         {
-            // set up fiefs list
+            // add necessary columns
             this.fiefsListView.Columns.Add("Fief Name", -2, HorizontalAlignment.Left);
             this.fiefsListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
             this.fiefsListView.Columns.Add("Where am I?", -2, HorizontalAlignment.Left);
-
-            this.refreshMyFiefs();
         }
-        
-        // TODO
+
+        /// <summary>
+        /// Creates UI display for list of characters present in Court/Tavern
+        /// </summary>
         public void setUpCourtCharsList()
         {
-            // set up court characters list
+            // add necessary columns
             this.meetingPlaceCharsListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
             this.meetingPlaceCharsListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
             this.meetingPlaceCharsListView.Columns.Add("Household", -2, HorizontalAlignment.Left);
@@ -1490,7 +1525,9 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
         }
 
-        // TODO
+        /// <summary>
+        /// Refreshes display of PlayerCharacter's list of owned Fiefs
+        /// </summary>
         public void refreshMyFiefs()
         {
             // clear existing items in list
@@ -1503,6 +1540,7 @@ namespace hist_mmorpg
                 // Create an item and subitem for each fief
                 fiefsOwned[i] = new ListViewItem(this.myChar.ownedFiefs[i].name);
                 fiefsOwned[i].SubItems.Add(this.myChar.ownedFiefs[i].fiefID);
+                // indicate if fief is current location
                 if (this.myChar.ownedFiefs[i] == this.myChar.location)
                 {
                     fiefsOwned[i].SubItems.Add("You are here");
@@ -1512,32 +1550,44 @@ namespace hist_mmorpg
             }
         }
 
-        // TODO
+        /// <summary>
+        /// Refreshes UI Court/Tavern display
+        /// </summary>
+        /// <param name="place">String specifying whether court or tavern</param>
         public void refreshMeetingPlaceDisplay(string place)
         {
-            this.meetingPlaceDisplayText(place);
+            this.meetingPlaceDisplayText();
             this.meetingPlaceDisplayList(place);
         }
 
-        // TODO
-        public void meetingPlaceDisplayText(string place)
+        /// <summary>
+        /// Refreshes general information displayed in Court/Tavern
+        /// </summary>
+        public void meetingPlaceDisplayText()
         {
             string textToDisplay = "";
+            // date/season and main character's days left
             textToDisplay += this.clock.seasons[this.clock.currentSeason] + ", " + this.clock.currentYear + ".  Your days left: " + this.myChar.days + "\r\n\r\n";
+            // Fief name/ID and province name
             textToDisplay += "Fief: " + this.myChar.location.name + " (" + this.myChar.location.fiefID + ")  in " + this.myChar.location.province.name + "\r\n\r\n";
+            // Fief owner
             textToDisplay += "Owner: " + this.myChar.location.owner.name + "\r\n";
+            // Fief overlord
             textToDisplay += "Overlord: " + this.myChar.location.province.overlord.name + "\r\n";
 
             this.meetingPlaceTextBox.Text = textToDisplay;
         }
 
-        // TODO
+        /// <summary>
+        /// Refreshes display of Character list in Court/Tavern
+        /// </summary>
+        /// <param name="place">String specifying whether court or tavern</param>
         public void meetingPlaceDisplayList(string place)
         {
             // clear existing items in list
             this.meetingPlaceCharsListView.Items.Clear();
 
-            // select which characters to display (court or tavern)
+            // select which characters to display - i.e. in the keep (court) or not (tavern)
             bool ifInKeep = false;
             if (place.Equals("court"))
             {
@@ -1548,15 +1598,24 @@ namespace hist_mmorpg
             // iterates through characters
             for (int i = 0; i < this.myChar.location.characters.Count; i++)
             {
+                // only display characters in relevant location (in keep, or not)
                 if (this.myChar.location.characters[i].inKeep == ifInKeep)
                 {
                     // don't show this PlayerCharacter
                     if (this.myChar.location.characters[i] != this.myChar)
                     {
                         // Create an item and subitems for each character
+
+                        // name
                         charsInCourt[i] = new ListViewItem(this.myChar.location.characters[i].name);
+
+                        // charID
                         charsInCourt[i].SubItems.Add(this.myChar.location.characters[i].charID);
+
+                        // TODO: household
                         charsInCourt[i].SubItems.Add("A household");
+
+                        // sex
                         if (this.myChar.location.characters[i].isMale)
                         {
                             charsInCourt[i].SubItems.Add("Male");
@@ -1565,8 +1624,11 @@ namespace hist_mmorpg
                         {
                             charsInCourt[i].SubItems.Add("Female");
                         }
+
+                        // TODO: Type (e.g. family or not)
                         charsInCourt[i].SubItems.Add("A type");
 
+                        // if is in player's entourage
                         bool isCompanion = false;
                         for (int ii = 0; ii < this.myChar.employees.Count; ii++)
                         {
@@ -1591,14 +1653,25 @@ namespace hist_mmorpg
             }
         }
 
-        // TODO
+        /// <summary>
+        /// Retrieves information for Character display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="ch">Character whose information is to be displayed</param>
         public string displayCharacter(Character ch)
         {
             string charText = "";
 
+            // ID
             charText += "ID: " + ch.charID + "\r\n";
+
+            // name
             charText += "Name: " + ch.name + "\r\n";
+
+            // age
             charText += "Age: " + ch.age + "\r\n";
+
+            // sex
             charText += "Sex: ";
             if (ch.isMale)
             {
@@ -1609,7 +1682,11 @@ namespace hist_mmorpg
                 charText += "Female";
             }
             charText += "\r\n";
+
+            // nationality
             charText += "Nationality: " + ch.nationality + "\r\n";
+
+            // health (& max. health)
             charText += "Health: ";
             if (ch.health == 0)
             {
@@ -1620,23 +1697,45 @@ namespace hist_mmorpg
                 charText += ch.health + " (max. health: " + ch.maxHealth + ")";
             }
             charText += "\r\n";
+
+            // any death modifiers (from skills)
             charText += "  (Death modifier from skills: " + ch.getDeathSkillsMod() + ")\r\n";
+
+            // virility
             charText += "Virility: " + ch.virility + "\r\n";
+
+            // location
             charText += "Current location: " + ch.location.name + " (" + ch.location.province.name + ")\r\n";
+            
+            // if in process of auto-moving, display next hex
             if (ch.goTo.Count != 0)
             {
                 charText += "Next Fief (if auto-moving): " + ch.goTo.Peek().fiefID + "\r\n";
             }
+
+            // language
             charText += "Language: " + ch.language + "\r\n";
+
+            // days left
             charText += "Days remaining: " + ch.days + "\r\n";
+
+            // stature
             charText += "Stature: " + ch.stature + "\r\n";
+
+            // management rating
             charText += "Management: " + ch.management + "\r\n";
+
+            // combat rating
             charText += "Combat: " + ch.combat + "\r\n";
+
+            // skills list
             charText += "Skills:\r\n";
             for (int i = 0; i < ch.skills.Length; i++)
             {
                 charText += "  - " + ch.skills[i].name + "\r\n";
             }
+
+            // whether inside/outside the keep
             charText += "You are ";
             if (ch.inKeep)
             {
@@ -1647,6 +1746,8 @@ namespace hist_mmorpg
                 charText += "outside";
             }
             charText += " the keep\r\n";
+
+            // marital status
             charText += "You are ";
             if (ch.married)
             {
@@ -1657,10 +1758,14 @@ namespace hist_mmorpg
                 charText += "single and lonely";
             }
             charText += "\r\n";
+
+            // spouse ID
             if (ch.married)
             {
                 charText += "Your spouse's ID is: " + ch.spouse + "\r\n";
             }
+
+            // if pregnant
             if (!ch.isMale)
             {
                 charText += "You are ";
@@ -1670,6 +1775,8 @@ namespace hist_mmorpg
                 }
                 charText += "pregnant\r\n";
             }
+
+            // if spouse pregnant
             else
             {
                 if (ch.married)
@@ -1685,6 +1792,8 @@ namespace hist_mmorpg
                     }
                 }
             }
+
+            // father
             charText += "Father's ID: ";
             if (ch.father != null)
             {
@@ -1695,6 +1804,8 @@ namespace hist_mmorpg
                 charText += "N/A";
             }
             charText += "\r\n";
+
+            // head of family
             charText += "Head of family's ID: ";
             if (ch.familyHead != null)
             {
@@ -1706,8 +1817,7 @@ namespace hist_mmorpg
             }
             charText += "\r\n";
 
-            this.characterTextBox.Text = charText;
-
+            // gather additional information for PC/NPC
             bool isPC = ch is PlayerCharacter;
             if (isPC)
             {
@@ -1721,72 +1831,109 @@ namespace hist_mmorpg
             return charText;
         }
 
-        // TODO
-        public string displayPlayerCharacter(PlayerCharacter ch)
+        /// <summary>
+        /// Retrieves PlayerCharacter-specific information for Character display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="pc">PlayerCharacter whose information is to be displayed</param>
+        public string displayPlayerCharacter(PlayerCharacter pc)
         {
             string pcText = "";
 
+            // whether outlawed
             pcText += "You are ";
-            if (!ch.outlawed)
+            if (!pc.outlawed)
             {
                 pcText += "not ";
             }
             pcText += "outlawed\r\n";
-            pcText += "Purse: " + ch.purse + "\r\n";
+
+            // purse
+            pcText += "Purse: " + pc.purse + "\r\n";
+
+            // employees
             pcText += "Employees:\r\n";
-            for (int i = 0; i < ch.employees.Count; i++)
+            for (int i = 0; i < pc.employees.Count; i++)
             {
-                pcText += "  - " + ch.employees[i].name;
-                if (ch.employees[i].inEntourage)
+                pcText += "  - " + pc.employees[i].name;
+                if (pc.employees[i].inEntourage)
                 {
                     pcText += " (travelling companion)";
                 }
                 pcText += "\r\n";
             }
+
+            // owned fiefs
             pcText += "Fiefs owned:\r\n";
-            for (int i = 0; i < ch.ownedFiefs.Count; i++)
+            for (int i = 0; i < pc.ownedFiefs.Count; i++)
             {
-                pcText += "  - " + ch.ownedFiefs[i].name + "\r\n";
+                pcText += "  - " + pc.ownedFiefs[i].name + "\r\n";
             }
 
             return pcText;
         }
 
-        // TODO
-        public string displayNonPlayerCharacter(NonPlayerCharacter ch)
+        /// <summary>
+        /// Retrieves NonPlayerCharacter-specific information for Character display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="npc">NonPlayerCharacter whose information is to be displayed</param>
+        public string displayNonPlayerCharacter(NonPlayerCharacter npc)
         {
             string npcText = "";
 
-            if (ch.myBoss != null)
+            // boss
+            if (npc.myBoss != null)
             {
-                npcText += "Hired by (ID): " + ch.myBoss + "\r\n";
+                npcText += "Hired by (ID): " + npc.myBoss + "\r\n";
             }
-            npcText += "Potential salary: " + ch.calcNPCwage() + "\r\n";
+
+            // estimated salary level
+            npcText += "Potential salary: " + npc.calcNPCwage() + "\r\n";
+
+            // most recent salary offer from player (if any)
             npcText += "Last offer from this PC: ";
-            if (ch.lastOffer.ContainsKey(this.myChar.charID))
+            if (npc.lastOffer.ContainsKey(this.myChar.charID))
             {
-                npcText += ch.lastOffer[this.myChar.charID];
+                npcText += npc.lastOffer[this.myChar.charID];
             }
             else
             {
                 npcText += "N/A";
             }
             npcText += "\r\n";
-            npcText += "Current salary: " + ch.wage + "\r\n";
+
+            // current salary
+            npcText += "Current salary: " + npc.wage + "\r\n";
 
             return npcText;
         }
 
-        // TODO
-        public void displayFief(Fief f)
+        /// <summary>
+        /// Retrieves information for Fief display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="f">Fief whose information is to be displayed</param>
+        public string displayFief(Fief f)
         {
             string fiefText = "";
 
+            // ID
             fiefText += "ID: " + f.fiefID + "\r\n";
+
+            // name (& province name)
             fiefText += "Name: " + f.name + " (Province: " + f.province.name + ")\r\n";
+
+            // population
             fiefText += "Population: " + f.population + "\r\n";
+
+            // owner's ID
             fiefText += "Owner (ID): " + f.owner.charID + "\r\n";
+
+            // ancestral owner's ID
             fiefText += "Ancestral owner (ID): " + f.ancestralOwner.charID + "\r\n";
+
+            // bailiff's ID
             fiefText += "Bailiff (ID): ";
             if (f.bailiff != null)
             {
@@ -1798,7 +1945,10 @@ namespace hist_mmorpg
             }
             fiefText += "\r\n";
 
+            // no. of troops
             fiefText += "Troops: " + f.troops + "\r\n";
+
+            // fief status
             fiefText += "Status: ";
             switch (f.status)
             {
@@ -1814,7 +1964,10 @@ namespace hist_mmorpg
             }
             fiefText += "\r\n";
 
+            // terrain type
             fiefText += "Terrain: " + f.terrain.description + "\r\n";
+
+            // characters present
             fiefText += "Characters present:";
             for (int i = 0; i < f.characters.Count; i++)
             {
@@ -1828,17 +1981,23 @@ namespace hist_mmorpg
                     fiefText += "\r\n";
                 }
             }
+
+            // characters barred
             fiefText += "Characters barred from keep (IDs):\r\n";
             for (int i = 0; i < f.barredCharacters.Count; i++)
             {
                 fiefText += " " + f.barredCharacters[i] + "\r\n";
             }
+
+            // if French barred
             fiefText += "The French are ";
             if (!f.frenchBarred)
             {
                 fiefText += "not";
             }
             fiefText += " barred from the keep\r\n";
+
+            // if English barred
             fiefText += "The English are ";
             if (!f.englishBarred)
             {
@@ -1846,32 +2005,71 @@ namespace hist_mmorpg
             }
             fiefText += " barred from the keep\r\n\r\n";
 
+            // fief management section
             fiefText += "========= Management ==========\r\n\r\n";
 
+            // loyalty
             fiefText += "Loyalty: " + (f.loyalty + (f.loyalty * f.calcBlfLoyAdjusted())) + "\r\n";
+            // loyalty modifier for officials spend
             fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod("this") + ")\r\n";
+            // loyalty modifier for garrison spend
             fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod("this") + ")\r\n";
+            // loyalty modifier for bailiff
             fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyAdjusted() + ")\r\n";
+            // loyalty modifier for bailiff skills
             fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod() + ")\r\n";
+            
+            // fields
             fiefText += "Fields level: " + f.fields + "\r\n";
+
+            // industry
             fiefText += "Industry level: " + f.industry + "\r\n";
+
+            // GDP
             fiefText += "GDP: " + f.calcGDP("this") + "\r\n";
+
+            // tax rate
             fiefText += "Tax rate: " + f.taxRate + "\r\n";
+
+            // officials spend
             fiefText += "Officials expenditure: " + f.officialsSpend + " (modifier: " + f.calcOffIncMod("this") + ")\r\n";
+
+            // garrison spend
             fiefText += "Garrison expenditure: " + f.garrisonSpend + "\r\n";
+
+            // infrastructure spend
             fiefText += "Infrastructure expenditure: " + f.infrastructureSpend + "\r\n";
+
+            // keep spend
             fiefText += "Keep expenditure: " + f.keepSpend + "\r\n";
+
+            // keep level
             fiefText += "Keep level: " + f.keepLevel + "\r\n";
+
+            // income
             fiefText += "Income: " + (f.calcIncome("this") * f.calcStatusIncmMod()) + "\r\n";
+            // income modifier for bailiff
             fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod() + ")\r\n";
+            // income modifier for officials spend
             fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod("this") + ")\r\n";
+            // income modifier for fief status
             fiefText += "  (including fief status income modifier: " + f.calcStatusIncmMod() + ")\r\n";
+
+            // family expenses
             fiefText += "Family expenses: 0 (not yet implemented)\r\n";
+
+            // total expenses
             fiefText += "Total expenses: " + f.calcExpenses("this") + "\r\n";
+            // expenses modifier for bailiff
             fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif() + ")\r\n";
+            
+            // overlord taxes
             fiefText += "Overlord taxes: " + f.calcOlordTaxes("this") + "\r\n";
+
+            // surplus
             fiefText += "Bottom line: " + f.calcBottomLine("this") + "\r\n\r\n";
 
+            // projected figures for next season (as above)
             fiefText += "========= Next season =========\r\n";
             fiefText += "(with current bailiff & oLord tax)\r\n";
             fiefText += " (NOT including effects of status)\r\n\r\n";
@@ -1899,60 +2097,88 @@ namespace hist_mmorpg
             fiefText += "Overlord taxes: " + f.calcOlordTaxes("next") + "\r\n";
             fiefText += "Bottom line: " + f.calcBottomLine("next") + "\r\n\r\n";
 
-            this.fiefTextBox.Text = fiefText;
+            return fiefText;
         }
 
         /// <summary>
-        /// Updates fief and character models and GameClock
+        /// Refreshes main Character display screen
         /// </summary>
-        /// <param name="info">String containing data about display element to update</param>
-        public void nextTurn()
+        /// <param name="ch">Character whose information is to be displayed</param>
+        public void refreshCharacterContainer(Character ch = null)
         {
-            foreach (KeyValuePair<string, Fief> entry in this.fiefMasterList)
+            // if character not specified, default to player
+            if (ch == null)
             {
-                entry.Value.updateFief();
-            }
-            // this.fModel.updateFief();
-            foreach (KeyValuePair<string, PlayerCharacter> entry in this.pcMasterList)
-            {
-                entry.Value.updateCharacter();
+                ch = this.myChar;
             }
 
-            foreach (KeyValuePair<string, NonPlayerCharacter> entry in this.npcMasterList)
-            {
-                entry.Value.updateCharacter();
-            }
-            // this.charModel.updateCharacter();
-            this.clock.advanceSeason();
-        }
-
-        public void refreshCharacterContainer()
-        {
             string textToDisplay = "";
-            textToDisplay += this.displayCharacter(this.charToView);
+
+            // get information to display
+            textToDisplay += this.displayCharacter(ch);
+
+            // refresh Character display TextBox
             this.characterTextBox.Text = textToDisplay;
 
-            if (this.myChar != this.charToView)
+            // multimove button only enabled if is player or an employee
+            if (ch != this.myChar)
 			{
-                if (!this.myChar.employees.Contains(this.charToView))
+                if (!this.myChar.employees.Contains(ch))
 				{
 					this.charMultiMoveBtn.Enabled = false;
 				}
 			}
+
             this.characterContainer.BringToFront();
         }
-        
+
+        /// <summary>
+        /// Displays main Character information screen
+        /// </summary>
         private void personalCharacteristicsAndAffairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.charToView = this.myChar;
             this.refreshCharacterContainer();
         }
 
+        /// <summary>
+        /// Refreshes main Fief display screen
+        /// </summary>
+        /// <param name="f">Fief whose information is to be displayed</param>
+        public void refreshFiefContainer(Fief f = null)
+        {
+            // if fief not specified, default to player's current location
+            if (f == null)
+            {
+                f = this.myChar.location;
+            }
+
+            string textToDisplay = "";
+
+            // get information to display
+            textToDisplay += this.displayFief(f);
+
+            // refresh Character display TextBox
+            this.fiefTextBox.Text = textToDisplay;
+
+            // fief management buttons only enabled if fief is owned by player
+            if (! myChar.ownedFiefs.Contains(f))
+            {
+                this.adjGarrSpendBtn.Enabled = false;
+                this.adjInfrSpendBtn.Enabled = false;
+                this.adjOffSpendBtn.Enabled = false;
+                this.adjustKeepSpendBtn.Enabled = false;
+                this.adjustTaxButton.Enabled = false;
+            }
+
+            this.fiefContainer.BringToFront();
+        }
+
+        /// <summary>
+        /// Displays main Fief information screen
+        /// </summary>
         private void fiefManagementToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-            this.displayFief(this.myChar.location);
-            this.fiefContainer.BringToFront();
+            this.refreshFiefContainer();
         }
 
         private void updateCharacter_Click(object sender, EventArgs e)
@@ -1963,31 +2189,31 @@ namespace hist_mmorpg
         private void adjustTaxButton_Click(object sender, EventArgs e)
         {
             this.fiefToView.adjustTaxRate(Convert.ToDouble(this.adjustTaxTextBox.Text));
-            this.displayFief(this.fiefToView);
+            this.fiefTextBox.Text = this.displayFief(this.fiefToView);
         }
 
         private void adjOffSpend_Click(object sender, EventArgs e)
         {
             this.fiefToView.adjustOfficialsSpend(Convert.ToUInt32(this.adjOffSpendTextBox.Text));
-            this.displayFief(this.fiefToView);
+            this.fiefTextBox.Text = this.displayFief(this.fiefToView);
         }
 
         private void adjGarrSpendBtn_Click(object sender, EventArgs e)
         {
             this.fiefToView.adjustGarrisonSpend(Convert.ToUInt32(this.adjGarrSpendTextBox.Text));
-            this.displayFief(this.fiefToView);
+            this.fiefTextBox.Text = this.displayFief(this.fiefToView);
         }
 
         private void adjInfrSpendBtn_Click(object sender, EventArgs e)
         {
             this.fiefToView.adjustInfraSpend(Convert.ToUInt32(this.adjInfrSpendTextBox.Text));
-            this.displayFief(this.fiefToView);
+            this.fiefTextBox.Text = this.displayFief(this.fiefToView);
         }
 
         private void adjustKeepSpendBtn_Click(object sender, EventArgs e)
         {
             this.fiefToView.adjustKeepSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
-            this.displayFief(this.fiefToView);
+            this.fiefTextBox.Text = this.displayFief(this.fiefToView);
         }
 
         private void updateFiefBtn_Click(object sender, EventArgs e)
@@ -2002,7 +2228,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Gtes travel cost (in days) to move to a fief
+        /// Gets travel cost (in days) to move to a fief
         /// </summary>
         /// <returns>double containing travel cost</returns>
         /// <param name="f">Target fief</param>
@@ -2176,10 +2402,7 @@ namespace hist_mmorpg
         {
             if (this.fiefToView.bailiff != null)
             {
-                string textToDisplay = "";
-                textToDisplay += this.displayCharacter(this.fiefToView.bailiff);
-                this.characterTextBox.Text = textToDisplay;
-                this.characterContainer.BringToFront();
+                this.refreshCharacterContainer(this.fiefToView.bailiff);
             }
         }
 
@@ -2205,7 +2428,7 @@ namespace hist_mmorpg
             if (fiefToDisplay != null)
             {
                 this.fiefToView = fiefToDisplay;
-                this.displayFief(fiefToView);
+                this.fiefTextBox.Text = this.displayFief(fiefToView);
                 this.fiefContainer.BringToFront();
             }
         }
@@ -2312,6 +2535,81 @@ namespace hist_mmorpg
             {
                 success = this.characterMultiMove(this.charToView);
             }
+        }
+
+        /// <summary>
+        /// Checks whether the supplied integer is odd or even
+        /// </summary>
+        /// <returns>Boolean indicating whether odd</returns>
+        /// <param name="value">Integer to be checked</param>
+        public static bool IsOdd(int value)
+        {
+            return value % 2 != 0;
+        }
+
+        public String[][] ArrayFromCSV(String csvFilename, bool writeToDB, String bucket = "", String key = "")
+        {
+            var linesIn = new List<string[]>();
+
+            StreamReader sr = new StreamReader(csvFilename);
+
+            int Row = 0;
+            while (!sr.EndOfStream)
+            {
+                string[] line = sr.ReadLine().Split(',');
+                if (line.Length != 67)
+                {
+                    System.Windows.Forms.MessageBox.Show("row " + Row + " = " + line.Length);
+                }
+                /* string toDisplay = "";
+                for (int i = 0; i < line.Length; i++)
+                {
+                    toDisplay += line [i] + " ";
+                }
+                toDisplay += line.Length;
+                System.Windows.Forms.MessageBox.Show(toDisplay); */
+                linesIn.Add(line);
+                Row++;
+            }
+
+            var outArray = linesIn.ToArray();
+
+            if (writeToDB)
+            {
+                var arrayToDB = new RiakObject(bucket, key, outArray);
+                var putArrayResult = client.Put(arrayToDB);
+
+                if (!putArrayResult.IsSuccess)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: " + arrayToDB.Key + " to bucket " + arrayToDB.Bucket);
+                }
+            }
+
+            /*
+            // test read from Riak
+            var fiefArrayResult = client.Get(bucket, key);
+
+            if (fiefArrayResult.IsSuccess)
+            {
+                string toDisplay = "";
+                var fiefArrayRiak = fiefArrayResult.Value.GetObject<string[,]>();
+                System.Windows.Forms.MessageBox.Show(fiefArrayRiak.GetLength(0) + " ; " + fiefArrayRiak.GetLength(1) + "   .");
+                for (int i = 0; i < fiefArrayRiak.GetLength(0); i++)
+                {
+                    for (int ii = 0; ii < fiefArrayRiak.GetLength(1); ii++)
+                    {
+                        toDisplay += fiefArrayRiak [i,ii] + " ";
+                    }
+                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                    toDisplay = "";
+                }
+            }
+            else
+            {
+                // System.Windows.Forms.MessageBox.Show ("InitialDBload: Unable to retrieve PlayerCharacter " + pcID);
+            } */
+
+            return outArray;
         }
 
     }
