@@ -758,16 +758,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates travel modifier for terrain
-        /// </summary>
-        /// <returns>double containing travel modifier</returns>
-        public double calcTerrainTravMod()
-        {
-            double travelModifier = this.terrain.travelCost - 1;
-            return travelModifier;
-        }
-
-        /// <summary>
         /// Updates fief data at the end/beginning of the season
         /// </summary>
         public void updateFief()

@@ -7,7 +7,7 @@ namespace hist_mmorpg
 {
 
     /// <summary>
-    /// Class storing data on character
+    /// Class storing data on character (PC and NPC)
     /// </summary>
     public abstract class Character
     {
@@ -101,7 +101,7 @@ namespace hist_mmorpg
         /// </summary>
         public Fief location { get; set; }
         /// <summary>
-        /// Holds army's GameClock (season)
+        /// Holds character's GameClock (season)
         /// </summary>
         public GameClock clock { get; set; }
 
@@ -239,7 +239,8 @@ namespace hist_mmorpg
         }
 
 		/// <summary>
-		/// Constructor for Character using PlayerCharacter_Riak or NonPlayerCharacter_Riak object
+		/// Constructor for Character using PlayerCharacter_Riak or NonPlayerCharacter_Riak object.
+        /// For use when de-serialising from Riak
 		/// </summary>
 		/// <param name="pcr">PlayerCharacter_Riak object to use as source</param>
 		/// <param name="npcr">NonPlayerCharacter_Riak object to use as source</param>
@@ -266,13 +267,15 @@ namespace hist_mmorpg
 				this.health = charToUse.health;
 				this.maxHealth = charToUse.maxHealth;
 				this.virility = charToUse.virility;
-				this.goTo = new Queue<Fief> ();
+                // create empty Queue, to be populated later
+                this.goTo = new Queue<Fief>();
 				this.language = charToUse.language;
 				this.days = charToUse.days;
 				this.stature = charToUse.stature;
 				this.management = charToUse.management;
 				this.combat = charToUse.combat;
-				this.skills = new Skill[charToUse.skills.Length];
+                // create empty array, to be populated later
+                this.skills = new Skill[charToUse.skills.Length];
 				this.inKeep = charToUse.inKeep;
 				this.married = charToUse.married;
 				this.pregnant = charToUse.pregnant;
@@ -304,6 +307,7 @@ namespace hist_mmorpg
             double deathSkillsModifier = this.getDeathSkillsMod();
 
             // calculate base chance of death
+            // chance = 2.8% per health level below 10
             Double deathChance = (10 - this.health) * 2.8;
 
             // apply skills modifier (if exists)
@@ -332,10 +336,13 @@ namespace hist_mmorpg
         {
             double deathModifier = 0;
 
+            // iterate through skills
             for (int i = 0; i < skills.Length; i++)
             {
+                // iterate through skill effects, looking for 'death' effect
                 foreach (KeyValuePair<string, int> entry in skills[i].effects)
                 {
+                    // if present, add to modifier
                     if (entry.Key.Equals("death"))
                     {
                         deathModifier += entry.Value;
@@ -351,34 +358,6 @@ namespace hist_mmorpg
             return deathModifier;
         }
 
-        /* 
-        /// <summary>
-        /// Calculates fief manager rating based on characteristics/skills
-        /// </summary>
-        /// <returns>double containing death modifier</returns>
-        public double getFiefMngRating()
-        {
-            double mngRating = 0;
-
-            for (int i = 0; i < skills.Length; i++)
-            {
-                foreach (KeyValuePair<string, int> entry in skills[i].effects)
-                {
-                    if (entry.Key.Equals("death"))
-                    {
-                        deathModifier += entry.Value;
-                    }
-                }
-            }
-
-            if (deathModifier != 0)
-            {
-                deathModifier = (deathModifier / 100);
-            }
-
-            return deathModifier;
-        } */
-
         /// <summary>
         /// Enables character to enter keep (if not barred)
         /// </summary>
@@ -387,7 +366,7 @@ namespace hist_mmorpg
         {
             bool success = true;
 
-                
+            // if character is English and English barred, don't allow entry
             if (location.englishBarred)                
             {                    
                 if (this.nationality.Equals("Eng"))                    
@@ -396,6 +375,7 @@ namespace hist_mmorpg
                 }               
             }
 
+            // if character is French and French barred, don't allow entry
             else if (location.frenchBarred)
             {
                 if (this.nationality.Equals("Fr"))
@@ -404,6 +384,7 @@ namespace hist_mmorpg
                 }
             }
 
+            // if character is specifically barred, don't allow entry
             else 
             {
                 if (location.barredCharacters.Contains(this.charID))
@@ -422,7 +403,7 @@ namespace hist_mmorpg
         /// </summary>
         public virtual void exitKeep()
         {
-
+            // exit keep
             this.inKeep = false;
         }
 
@@ -433,6 +414,7 @@ namespace hist_mmorpg
         public double calcFiefIncMod()
         {
             double incomeModif = 0;
+            // 2.5% increase in income per management level above 1
             incomeModif = (this.management - 1) * 2.5;
             incomeModif = incomeModif / 100;
             return incomeModif;
@@ -445,6 +427,7 @@ namespace hist_mmorpg
         public double calcFiefLoyMod()
         {
             double loyModif = 0;
+            // 1.25% increase in loyalty per stature/management average above 1
             loyModif = (((this.stature + this.management) / 2) - 1) * 1.25;
             loyModif = loyModif / 100;
             return loyModif;
@@ -458,10 +441,13 @@ namespace hist_mmorpg
         {
             double fiefExpModifier = 0;
 
+            // iterate through skills
             for (int i = 0; i < this.skills.Length; i++)
             {
+                // iterate through skill effects, looking for 'fiefExpense' effect
                 foreach (KeyValuePair<string, int> entry in this.skills[i].effects)
                 {
+                    // if present, add to modifier
                     if (entry.Key.Equals("fiefExpense"))
                     {
                         fiefExpModifier += entry.Value;
@@ -485,10 +471,13 @@ namespace hist_mmorpg
         {
             double loySkillsModifier = 0;
 
+            // iterate through skills
             for (int i = 0; i < this.skills.Length; i++)
             {
+                // iterate through skill effects, looking for 'fiefLoy' effect
                 foreach (KeyValuePair<string, int> entry in this.skills[i].effects)
                 {
+                    // if present, add to modifier
                     if (entry.Key.Equals("fiefLoy"))
                     {
                         loySkillsModifier += entry.Value;
@@ -512,10 +501,13 @@ namespace hist_mmorpg
         {
             double battleSkillsModifier = 0;
 
+            // iterate through skills
             for (int i = 0; i < this.skills.Length; i++)
             {
+                // iterate through skill effects, looking for 'battle' effect
                 foreach (KeyValuePair<string, int> entry in this.skills[i].effects)
                 {
+                    // if present, add to modifier
                     if (entry.Key.Equals("battle"))
                     {
                         battleSkillsModifier += entry.Value;
@@ -539,10 +531,13 @@ namespace hist_mmorpg
         {
             double siegeSkillsModifier = 0;
 
+            // iterate through skills
             for (int i = 0; i < this.skills.Length; i++)
             {
+                // iterate through skill effects, looking for 'siege' effect
                 foreach (KeyValuePair<string, int> entry in this.skills[i].effects)
                 {
+                    // if present, add to modifier
                     if (entry.Key.Equals("siege")) 
                     {
                         siegeSkillsModifier += entry.Value;
@@ -567,12 +562,18 @@ namespace hist_mmorpg
         {
             bool success = false;
 
+            // ensure have enough days left to allow for move
             if (this.days >= cost)
             {
+                // remove character from current fief's character list
                 this.location.removeCharacter(this);
+                // set location to target fief
                 this.location = target;
+                // add character to target fief's character list
                 this.location.addCharacter(this);
+                // arrives outside keep
                 this.inKeep = false;
+                // deduct move cost from days left
                 this.days = this.days - cost;
                 success = true;
             }
@@ -592,6 +593,7 @@ namespace hist_mmorpg
             }
             // advance character age
             // adjust stature (due to age)
+            // adjust health (due to age)
             // childbirth (and associated chance of death for mother/baby)
             // Movement of NPCs (maybe this goes in NPC class)
         }
@@ -600,7 +602,7 @@ namespace hist_mmorpg
     }
 
     /// <summary>
-    /// Class storing data on player character
+    /// Class storing data on PlayerCharacter
     /// </summary>
     public class PlayerCharacter : Character
     {
@@ -610,15 +612,15 @@ namespace hist_mmorpg
         /// </summary>
         public bool outlawed { get; set; }
         /// <summary>
-        /// Holds character's finances
+        /// Holds character's treasury
         /// </summary>
         public uint purse { get; set; }
         /// <summary>
-        /// Holds character's entourage
+        /// Holds character's entourage (NonPlayerCharacter objects)
         /// </summary>
         public List<NonPlayerCharacter> employees = new List<NonPlayerCharacter>();
         /// <summary>
-        /// Holds character's entourage
+        /// Holds character's owned fiefs
         /// </summary>
         public List<Fief> ownedFiefs = new List<Fief>();
 
@@ -641,13 +643,18 @@ namespace hist_mmorpg
             this.ownedFiefs = kps;
         }
 
-		public PlayerCharacter()
+        /// <summary>
+        /// Constructor for PlayerCharacter taking no parameters
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public PlayerCharacter()
 		{
 		}
 
 		/// <summary>
 		/// Constructor for PlayerCharacter using PlayerCharacter_Riak object
-		/// </summary>
+        /// For use when de-serialising from Riak
+        /// </summary>
 		/// <param name="pcr">PlayerCharacter_Riak object to use as source</param>
 		public PlayerCharacter(PlayerCharacter_Riak pcr)
 			: base(pcr: pcr)
@@ -655,14 +662,18 @@ namespace hist_mmorpg
 
 			this.outlawed = pcr.outlawed;
 			this.purse = pcr.purse;
+            // create empty List, to be populated later
 			this.employees = new List<NonPlayerCharacter> ();
-			this.ownedFiefs = new List<Fief> ();
+            // create empty List, to be populated later
+            this.ownedFiefs = new List<Fief>();
 		}
 
         /// <summary>
         /// Processes an offer for employment
         /// </summary>
         /// <returns>bool containing wage</returns>
+        /// <param name="npc">NPC receiving offer</param>
+        /// <param name="offer">Proposed wage</param>
         public bool processEmployOffer(NonPlayerCharacter npc, uint offer)
         {
             bool accepted = false;
@@ -677,8 +688,8 @@ namespace hist_mmorpg
             double minAcceptable = potentialSalary - (potentialSalary / 10);
             // maximum = 110% of potential salary
             double maxAcceptable = potentialSalary + (potentialSalary / 10);
-            // get increments
-            double increment = (maxAcceptable - minAcceptable) / 10;
+            // get range
+            double rangeAcceptable = (maxAcceptable - minAcceptable);
 
             // ensure this offer is more than the last from this PC
             bool offerLess = false;
@@ -688,24 +699,31 @@ namespace hist_mmorpg
                 {
                     offerLess = true;
                 }
+                // if new offer is greater, over-write previous offer
                 else
                 {
                     npc.lastOffer[this.charID] = offer;
                 }
             }
+            // if no previous offer, add new entry
             else
             {
                 npc.lastOffer.Add(this.charID, offer);
             }
 
+            // automatically reject if offer !> previous offer
             if (offerLess)
             {
                 accepted = false;
             }
+
+            // automatically accept if offer > 10% above potential salary
             else if (offer > maxAcceptable)
             {
                 accepted = true;
             }
+
+            // automatically reject if offer > 10% below potential salary
             else if (offer < minAcceptable)
             {
                 accepted = false;
@@ -713,53 +731,54 @@ namespace hist_mmorpg
 
             else
             {
-                for (int i = 0; i < 10; i++)
+                // see where offer lies (as %) within rangeAcceptable
+                double offerPercentage = ((offer - minAcceptable) / rangeAcceptable) * 100;
+                // compare randomly generated % with offerPercentage
+                if (chance <= offerPercentage)
                 {
-                    if ((offer >= minAcceptable + (increment * (i))) && (offer < minAcceptable + (increment * (i + 1))))
-                    {
-                        if (chance <= 10 * (i + 1))
-                        {
-                            accepted = true;
-                        }
-
-                        break;
-                    }
+                    accepted = true;
                 }
             }
 
             if (accepted)
             {
+                // hire this NPC
                 this.hireNPC(npc, offer);
-                /* npc.myBoss = this;
-                npc.wage = offer;
-                npc.lastOffer.Clear(); */
             }
 
             return accepted;
         }
 
         /// <summary>
-        /// Adds an NPC to PC's employees list
+        /// Hire an NPC
         /// </summary>
         /// <param name="npc">NPC to hire</param>
         /// <param name="wage">NPC's wage</param>
         public void hireNPC(NonPlayerCharacter npc, uint wage)
         {
+            // add to employee list
             this.employees.Add(npc);
+            // set NPC wage
             npc.wage = wage;
+            // set this PC as NPC's boss
             npc.myBoss = this.charID;
+            // remove any offers by this PC from NPCs lastOffer list
             npc.lastOffer.Clear();
         }
 
         /// <summary>
-        /// Removes an NPC from PC's employees list
+        /// Fire an NPC
         /// </summary>
         /// <param name="npc">NPC to fire</param>
         public void fireNPC(NonPlayerCharacter npc)
         {
+            // remove from employee list
             this.employees.Remove(npc);
+            // set NPC wage to 0
             npc.wage = 0;
+            // remove this PC as NPC's boss
             npc.myBoss = null;
+            // remove NPC from entourage
             npc.inEntourage = false;
         }
 
@@ -773,6 +792,7 @@ namespace hist_mmorpg
             double minDays = Math.Min(this.days, npc.days);
             this.days = minDays;
             npc.days = minDays;
+            // add to entourage
             npc.inEntourage = true;
         }
 
@@ -782,6 +802,7 @@ namespace hist_mmorpg
         /// <param name="npc">NPC to be removed</param>
         public void removeFromEntourage(NonPlayerCharacter npc)
         {
+            //remove from entourage
             npc.inEntourage = false;
         }
 

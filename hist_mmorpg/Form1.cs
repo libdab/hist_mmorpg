@@ -2133,8 +2133,11 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Displays main Character information screen
+        /// Responds to the click event of the personalCharacteristicsAndAffairsToolStripMenuItem
+        /// which displays main Character information screen
         /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void personalCharacteristicsAndAffairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.refreshCharacterContainer();
@@ -2174,56 +2177,119 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Displays main Fief information screen
+        /// Responds to the click event of the fiefManagementToolStripMenuItem
+        /// which displays main Fief information screen
         /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void fiefManagementToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.refreshFiefContainer();
         }
 
+        /// <summary>
+        /// Responds to the click event of the updateCharacter button
+        /// which performs end/start of seasonal updates for character on display (testing)
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void updateCharacter_Click(object sender, EventArgs e)
         {
             // something
         }
 
+        /// <summary>
+        /// Responds to the click event of the adjustTaxButton
+        /// which adjusts the fief tax rate for the coming year
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void adjustTaxButton_Click(object sender, EventArgs e)
         {
+            // adjust tax rate
             this.fiefToView.adjustTaxRate(Convert.ToDouble(this.adjustTaxTextBox.Text));
+            // refresh display
             this.fiefTextBox.Text = this.displayFief(this.fiefToView);
         }
 
+        /// <summary>
+        /// Responds to the click event of the adjOffSpend button
+        /// which adjusts the officials spend for the coming year
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void adjOffSpend_Click(object sender, EventArgs e)
         {
+            // adjust officials spend
             this.fiefToView.adjustOfficialsSpend(Convert.ToUInt32(this.adjOffSpendTextBox.Text));
+            // refresh display
             this.fiefTextBox.Text = this.displayFief(this.fiefToView);
         }
 
+        /// <summary>
+        /// Responds to the click event of the adjGarrSpendBtn button
+        /// which adjusts the garrison spend for the coming year
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void adjGarrSpendBtn_Click(object sender, EventArgs e)
         {
+            // adjust garrison spend
             this.fiefToView.adjustGarrisonSpend(Convert.ToUInt32(this.adjGarrSpendTextBox.Text));
+            // refresh display
             this.fiefTextBox.Text = this.displayFief(this.fiefToView);
         }
 
+        /// <summary>
+        /// Responds to the click event of the adjInfrSpendBtn button
+        /// which adjusts the infrastructure spend for the coming year
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void adjInfrSpendBtn_Click(object sender, EventArgs e)
         {
+            // adjust infrastructure spend
             this.fiefToView.adjustInfraSpend(Convert.ToUInt32(this.adjInfrSpendTextBox.Text));
+            // refresh display
             this.fiefTextBox.Text = this.displayFief(this.fiefToView);
         }
 
+        /// <summary>
+        /// Responds to the click event of the adjustKeepSpendBtn button
+        /// which adjusts the keep spend for the coming year
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void adjustKeepSpendBtn_Click(object sender, EventArgs e)
         {
+            // adjust keep spend
             this.fiefToView.adjustKeepSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
+            // refresh display
             this.fiefTextBox.Text = this.displayFief(this.fiefToView);
         }
 
+        /// <summary>
+        /// Responds to the click event of the updateFiefBtn button
+        /// which performs end/start of seasonal updates for Fief on display (testing)
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void updateFiefBtn_Click(object sender, EventArgs e)
         {
             // something
         }
 
+        /// <summary>
+        /// Responds to the click event of the navigateToolStripMenuItem
+        /// which refreshes and displays the navigation screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void navigateToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // refresh navigation data
             this.refreshTravelContainer();
+            // show navigation screen
             this.travelContainer.BringToFront();
         }
 
@@ -2235,101 +2301,43 @@ namespace hist_mmorpg
         private double getTravelCost(Fief source, Fief target)
         {
             double cost = 0;
-            cost = ((2 + source.calcTerrainTravMod() + target.calcTerrainTravMod()) / 2) * this.clock.calcSeasonTravMod();
+            // calculate travel cost based on terrain for both fiefs
+            cost = ((source.terrain.travelCost + target.terrain.travelCost) / 2) * this.clock.calcSeasonTravMod();
             return cost;
         }
 
+        /// <summary>
+        /// Refreshes travel display screen
+        /// </summary>
         private void refreshTravelContainer()
         {
+            // string[] to hold direction text
+            string[] directions = new string[] { "NE", "E", "SE", "SW", "W", "NW" };
+            // Button[] to hold corresponding travel buttons
+            Button[] travelBtns = new Button[] { travel_NE_btn, travel_E_btn, travel_SE_btn, travel_SW_btn, travel_W_btn, travel_NW_btn };
+
             // get text for home button
-            this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + this.myChar.location.name + "\r\n(" + this.myChar.location.province.name + ")";
+            this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + this.myChar.location.name + " (" + this.myChar.location.fiefID + ")" + "\r\n" + this.myChar.location.province.name;
 
-            // get text for directional buttons
-            // NE
-            Fief targetNE = this.gameMap.getFief(this.myChar.location, "NE");
-            if (targetNE != null)
+            for (int i = 0; i < directions.Length; i++ )
             {
-                this.travel_NE_btn.Text = "NE FIEF:\r\n\r\n";
-                this.travel_NE_btn.Text += targetNE.name + " (" + targetNE.fiefID + ")\r\n";
-                this.travel_NE_btn.Text += "(" + targetNE.province.name + ")\r\n\r\n";
-                this.travel_NE_btn.Text += "Cost: " + this.getTravelCost(this.myChar.location, targetNE);
-            }
-            else
-            {
-                this.travel_NE_btn.Text = "NE FIEF:\r\n\r\nNo fief present";
-            }
-
-            // E
-            Fief targetE = this.gameMap.getFief(this.myChar.location, "E");
-            if (targetE != null)
-            {
-                this.travel_E_btn.Text = "E FIEF:\r\n\r\n";
-                this.travel_E_btn.Text += targetE.name + " (" + targetE.fiefID + ")\r\n";
-                this.travel_E_btn.Text += "(" + targetE.province.name + ")\r\n\r\n";
-                this.travel_E_btn.Text += "Cost: " + this.getTravelCost(this.myChar.location, targetE);
-            }
-            else
-            {
-                this.travel_E_btn.Text = "E FIEF:\r\n\r\nNo fief present";
+                // retrieve target fief for that direction
+                Fief target = this.gameMap.getFief(this.myChar.location, directions[i]);
+                // display fief details and travel cost
+                if (target != null)
+                {
+                    travelBtns[i].Text = directions[i] + " FIEF:\r\n\r\n";
+                    travelBtns[i].Text += target.name + " (" + target.fiefID + ")\r\n";
+                    travelBtns[i].Text += target.province.name + "\r\n\r\n";
+                    travelBtns[i].Text += "Cost: " + this.getTravelCost(this.myChar.location, target);
+                }
+                else
+                {
+                    travelBtns[i].Text = directions[i] + " FIEF:\r\n\r\nNo fief present";
+                }
             }
 
-            // SE
-            Fief targetSE = this.gameMap.getFief(this.myChar.location, "SE");
-            if (targetSE != null)
-            {
-                this.travel_SE_btn.Text = "SE FIEF:\r\n\r\n";
-                this.travel_SE_btn.Text += targetSE.name + " (" + targetSE.fiefID + ")\r\n";
-                this.travel_SE_btn.Text += "(" + targetSE.province.name + ")\r\n\r\n";
-                this.travel_SE_btn.Text += "Cost: " + this.getTravelCost(this.myChar.location, targetSE);
-            }
-            else
-            {
-                this.travel_SE_btn.Text = "SE FIEF:\r\n\r\nNo fief present";
-            }
-
-            // SW
-            Fief targetSW = this.gameMap.getFief(this.myChar.location, "SW");
-            if (targetSW != null)
-            {
-                this.travel_SW_btn.Text = "SW FIEF:\r\n\r\n";
-                this.travel_SW_btn.Text += targetSW.name + " (" + targetSW.fiefID + ")\r\n";
-                this.travel_SW_btn.Text += "(" + targetSW.province.name + ")\r\n\r\n";
-                this.travel_SW_btn.Text += "Cost: " + this.getTravelCost(this.myChar.location, targetSW);
-            }
-            else
-            {
-                this.travel_SW_btn.Text = "SW FIEF:\r\n\r\nNo fief present";
-            }
-
-            // W
-            Fief targetW = this.gameMap.getFief(this.myChar.location, "W");
-            if (targetW != null)
-            {
-                this.travel_W_btn.Text = "W FIEF:\r\n\r\n";
-                this.travel_W_btn.Text += targetW.name + " (" + targetW.fiefID + ")\r\n";
-                this.travel_W_btn.Text += "(" + targetW.province.name + ")\r\n\r\n";
-                this.travel_W_btn.Text += "Cost: " + this.getTravelCost(this.myChar.location, targetW);
-            }
-            else
-            {
-                this.travel_W_btn.Text = "W FIEF:\r\n\r\nNo fief present";
-            }
-
-            // NW
-            Fief targetNW = this.gameMap.getFief(this.myChar.location, "NW");
-            if (targetNW != null)
-            {
-                this.travel_NW_btn.Text = "NW FIEF:\r\n\r\n";
-                this.travel_NW_btn.Text += targetNW.name + " (" + targetNW.fiefID + ")\r\n";
-                this.travel_NW_btn.Text += "(" + targetNW.province.name + ")\r\n\r\n";
-                this.travel_NW_btn.Text += "Cost: " + this.getTravelCost(this.myChar.location, targetNW);
-            }
-            else
-            {
-                this.travel_NW_btn.Text = "NW FIEF:\r\n\r\nNo fief present";
-            }
-
-            // set text for 'enter/exit keep' button
+            // set text for 'enter/exit keep' button, depending on whether player in/out of keep
             if (this.myChar.inKeep)
             {
                 this.enterKeepBtn.Text = "Exit Keep";
@@ -2341,15 +2349,27 @@ namespace hist_mmorpg
 
         }
 
+        /// <summary>
+        /// Responds to the click event of any of the travel buttons
+        /// which attempts to move the player to the target fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void travelBtnClick(object sender, EventArgs e)
         {
             bool success = false;
+            // necessary in order to be able to access button tag
             Button button = sender as Button;
+            // get target fief using travel button tag (contains direction string)
             Fief targetFief = this.gameMap.getFief(this.myChar.location, button.Tag.ToString());
+
             if (targetFief != null)
             {
+                // get travel cost
                 double travelCost = this.getTravelCost(this.myChar.location, targetFief);
+                // attempt to move player to target fief
                 success = this.myChar.moveCharacter(targetFief, travelCost);
+                // if move successfull, refresh travel display
                 if (success)
                 {
                     this.fiefToView = targetFief;
@@ -2358,46 +2378,25 @@ namespace hist_mmorpg
             }
         }
 
-        private bool characterMultiMove(Character ch)
-        {
-            bool success = false;
-            double travelCost = 0;
-            int steps = ch.goTo.Count;
-
-            for (int i = 0; i < steps; i++)
-            {
-                travelCost = this.getTravelCost(ch.location, ch.goTo.Peek());
-                success = ch.moveCharacter(ch.goTo.Peek(), travelCost);
-                if (success)
-                {
-                    ch.goTo.Dequeue();
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            if (ch == this.myChar)
-            {
-                // if myChar has moved, refresh display
-                if (ch.goTo.Count < steps)
-                {
-                    this.fiefToView = this.myChar.location;
-                    this.refreshCharacterContainer();
-                }
-            }
-
-            return success;
-
-        }
-
+        /// <summary>
+        /// Responds to the click event of myFiefsToolStripMenuItem
+        /// which refreshes and displays the owned fiefs screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void myFiefsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.refreshMyFiefs();
             this.fiefsOwnedContainer.BringToFront();
         }
 
+        /// <summary>
+        /// Responds to the click event of the viewBailiffBtn button
+        /// which refreshes and displays the character screen, showing details of the
+        /// bailiff for the selected fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void viewBailiffBtn_Click(object sender, EventArgs e)
         {
             if (this.fiefToView.bailiff != null)
@@ -2407,8 +2406,8 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the ItemSelectionChanged event of the fiefsListView ListView object,
-        /// invoking the displayFief method, passing a Fief to indicate the fief to display
+        /// Responds to the ItemSelectionChanged event of the fiefsListView object,
+        /// invoking the displayFief method, passing a Fief to display
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
@@ -2416,6 +2415,7 @@ namespace hist_mmorpg
         {
             Fief fiefToDisplay = null;
 
+            // loop through player's owned fiefs until correct fief is found
             for (int i = 0; i < this.myChar.ownedFiefs.Count; i++)
             {
                 if (this.myChar.ownedFiefs[i].fiefID.Equals(this.fiefsListView.SelectedItems[0].SubItems[1].Text))
@@ -2425,6 +2425,7 @@ namespace hist_mmorpg
 
             }
 
+            // display fief details
             if (fiefToDisplay != null)
             {
                 this.fiefToView = fiefToDisplay;
@@ -2433,61 +2434,117 @@ namespace hist_mmorpg
             }
         }
 
+        /// <summary>
+        /// Responds to the click event of the enterKeepBtn button
+        /// which causes the player (and entourage) to enter/exit the keep and
+        /// refreshes the travel screen, setting appropriate text for the enterKeepBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void enterKeepBtn_Click(object sender, EventArgs e)
         {
+            // if player in keep
             if (this.myChar.inKeep)
             {
+                // exit keep
                 this.myChar.exitKeep();
+                // change button text
                 this.enterKeepBtn.Text = "Enter Keep";
+                // refresh display
                 this.refreshTravelContainer();
             }
+            // if player not in keep
             else
             {
-                this.myChar.enterKeep();
-                this.enterKeepBtn.Text = "Exit Keep";
-                this.refreshTravelContainer();
+                // attempt to enter keep
+                bool entered = this.myChar.enterKeep();
+                // if successful
+                if (entered)
+                {
+                    // change button text
+                    this.enterKeepBtn.Text = "Exit Keep";
+                    // refresh display
+                    this.refreshTravelContainer();
+                }
             }
         }
 
+        /// <summary>
+        /// Responds to the click event of the visitCourtBtn1 button
+        /// which causes the player (and entourage) to enter the keep and
+        /// refreshes and displays the court screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void visitCourtBtn1_Click(object sender, EventArgs e)
         {
+            // if player not in keep
             if (!this.myChar.inKeep)
             {
-                this.myChar.enterKeep();
+                // attempt to enter keep
+                bool entered = this.myChar.enterKeep();
+                // if successful
+                if (entered)
+                {
+                    // refresh court screen 
+                    this.refreshMeetingPlaceDisplay("court");
+                    // remove any previously displayed characters
+                    this.meetingPlaceCharDisplayTextBox.Text = "";
+                    // display court screen
+                    this.meetingPlaceContainer.BringToFront();
+                }
             }
 
-            this.refreshMeetingPlaceDisplay("court");
-            this.meetingPlaceCharDisplayTextBox.Text = "";
-            this.meetingPlaceContainer.BringToFront();
         }
 
+        /// <summary>
+        /// Responds to the click event of the visitTavernBtn button
+        /// which causes the player (and entourage) to exit the keep (if necessary)
+        /// and refreshes and displays the tavern screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void visitTavernBtn_Click_1(object sender, EventArgs e)
         {
+            // exit keep if required
             if (this.myChar.inKeep)
             {
                 this.myChar.exitKeep();
             }
+            // refresh tavern screen 
             this.refreshMeetingPlaceDisplay("tavern");
+            // remove any previously displayed characters
             this.meetingPlaceCharDisplayTextBox.Text = "";
+            // display tavern screen
             this.meetingPlaceContainer.BringToFront();
         }
 
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of the meetingPlaceCharsListView object,
+        /// invoking the displayCharacter method, passing a Character to display
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void meetingPlaceCharsListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             Character charToDisplay = null;
 
+            // loop through the characters in the fief
             for (int i = 0; i < this.fiefToView.characters.Count; i++)
             {
                 if (meetingPlaceCharsListView.SelectedItems.Count > 0)
                 {
+                    // find matching character
                     if (this.fiefToView.characters[i].charID.Equals(this.meetingPlaceCharsListView.SelectedItems[0].SubItems[1].Text))
                     {
                         charToDisplay = this.fiefToView.characters[i];
 
-                        // set text for hire/fire button
+                        // set appropriate text for hire/fire button, 
+                        // depending on whether is existing employee
                         if (this.myChar.employees.Contains(this.fiefToView.characters[i]))
                         {
                             this.hireNPC_Btn.Text = "Fire NPC";
+                            // if already employee, disable 'salary offer' text box
                             this.hireNPC_TextBox.Visible = false;
                         }
                         else
@@ -2501,6 +2558,7 @@ namespace hist_mmorpg
 
             }
 
+            // retrieve and display character information
             if (charToDisplay != null)
             {
                 this.charToView = charToDisplay;
@@ -2510,27 +2568,93 @@ namespace hist_mmorpg
             }
         }
 
+        /// <summary>
+        /// Responds to the click event of the hireNPC_Btn button
+        /// which allows the player to either invoke processEmployOffer to attempt to hire an NPC
+        /// or invoke fireNPC to fire one
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void hireNPC_Btn_Click(object sender, EventArgs e)
         {
+            // if selected NPC is not a current employee
             if (!this.myChar.employees.Contains(charToView))
             {
-                bool offerAccepted = this.myChar.processEmployOffer((NonPlayerCharacter)charToView, Convert.ToUInt32(this.hireNPC_TextBox.Text));
+                // make an offer
+                this.myChar.processEmployOffer((NonPlayerCharacter)charToView, Convert.ToUInt32(this.hireNPC_TextBox.Text));
             }
+            // if selected NPC is already an employee
             else
             {
+                // fire NPC
                 this.myChar.fireNPC((NonPlayerCharacter)charToView);
             }
 
+            // refresh display
             string textToDisplay = "";
             textToDisplay += this.displayCharacter(charToView);
             this.meetingPlaceCharDisplayTextBox.Text = textToDisplay;
         }
 
+        /// <summary>
+        /// Moves character to the target fief, through intervening fiefs (stored in goTo queue)
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="ch">Character to be moved</param>
+        private bool characterMultiMove(Character ch)
+        {
+            bool success = false;
+            double travelCost = 0;
+            int steps = ch.goTo.Count;
+
+            for (int i = 0; i < steps; i++)
+            {
+                // get travel cost
+                travelCost = this.getTravelCost(ch.location, ch.goTo.Peek());
+                // attempt to move character
+                success = ch.moveCharacter(ch.goTo.Peek(), travelCost);
+                // if move successfull, remove fief from goTo queue
+                if (success)
+                {
+                    ch.goTo.Dequeue();
+                }
+                // if not successfull, exit loop
+                else
+                {
+                    break;
+                }
+            }
+
+            if (ch == this.myChar)
+            {
+                // if player has moved, refresh display
+                if (ch.goTo.Count < steps)
+                {
+                    this.fiefToView = this.myChar.location;
+                    this.refreshCharacterContainer();
+                }
+            }
+
+            return success;
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the charMultiMoveBtn button
+        /// which finds the shortest path to the target fief (specified in text box),
+        /// populates the character's goTo queue, and invokes characterMultiMove to
+        /// perform the move
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void charMultiMoveBtn_Click(object sender, EventArgs e)
         {
             bool success = false;
+            // retrieves target fief
             Fief target = fiefMasterList[this.charMultiMoveTextBox.Text];
+            // obtains goTo queue for shortest path to target
             this.charToView.goTo = this.gameMap.getShortestPath(this.charToView.location, target);
+            // if valid, perform move
             if (this.charToView.goTo.Count > 0)
             {
                 success = this.characterMultiMove(this.charToView);
@@ -2540,13 +2664,14 @@ namespace hist_mmorpg
         /// <summary>
         /// Checks whether the supplied integer is odd or even
         /// </summary>
-        /// <returns>Boolean indicating whether odd</returns>
+        /// <returns>bool indicating whether odd</returns>
         /// <param name="value">Integer to be checked</param>
         public static bool IsOdd(int value)
         {
             return value % 2 != 0;
         }
 
+        // temporary method to write object data to database
         public String[][] ArrayFromCSV(String csvFilename, bool writeToDB, String bucket = "", String key = "")
         {
             var linesIn = new List<string[]>();
