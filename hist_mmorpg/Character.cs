@@ -408,7 +408,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates effect of character's stats on fief income
+        /// Calculates effect of character's management rating on fief income
         /// </summary>
         /// <returns>double containing fief income modifier</returns>
         public double calcFiefIncMod()
@@ -556,6 +556,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Moves character to target fief
         /// </summary>
+        /// <returns>bool indicating success</returns>
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
         public virtual bool moveCharacter(Fief target, double cost)
@@ -671,7 +672,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Processes an offer for employment
         /// </summary>
-        /// <returns>bool containing wage</returns>
+        /// <returns>bool indicating acceptance of offer</returns>
         /// <param name="npc">NPC receiving offer</param>
         /// <param name="offer">Proposed wage</param>
         public bool processEmployOffer(NonPlayerCharacter npc, uint offer)
@@ -812,6 +813,7 @@ namespace hist_mmorpg
         /// <param name="f">Fief to be added</param>
         public void addToOwnedFiefs(Fief f)
         {
+            // add fief
             this.ownedFiefs.Add(f);
         }
 
@@ -821,23 +823,28 @@ namespace hist_mmorpg
         /// <param name="f">Fief to be removed</param>
         public void removeFromOwnedFiefs(Fief f)
         {
+            // remove fief
             this.ownedFiefs.Remove(f);
         }
 
         /// <summary>
-        /// Calls base method to enable boss character to enter keep (if not barred)
-        /// Also moves entourage (if not individually barred) - ignores nationality bar
-        /// if boss character allowed to enter
+        /// Extends base method allowing PlayerCharacter to enter keep (if not barred).
+        /// Then moves entourage (if not individually barred). Ignores nationality bar
+        /// for entourage if PlayerCharacter allowed to enter
         /// </summary>
         /// <returns>bool indicating success</returns>
         public override bool enterKeep()
         {
+            // invoke base method for PlayerCharacter
             bool success = base.enterKeep();
 
+            // if PlayerCharacter enters keep
             if (success)
             {
+                // iterate through employees
                 for (int i = 0; i < this.employees.Count; i++)
                 {
+                    // if employee in entourage, allow to enter keep unless individually barred
                     if (this.employees[i].inEntourage)
                     {
                         if (location.barredCharacters.Contains(this.employees[i].charID))
@@ -859,14 +866,17 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calls base method to enable character to exit keep, then moves entourage
+        /// Extends base method allowing PlayerCharacter to exit keep. Then exits entourage.
         /// </summary>
         public override void exitKeep()
         {
+            // invoke base method for PlayerCharacter
             base.exitKeep();
 
+            // iterate through employees
             for (int i = 0; i < this.employees.Count; i++)
             {
+                // if employee in entourage, exit keep
                 if (this.employees[i].inEntourage)
                 {
                     this.employees[i].inKeep = false;
@@ -875,20 +885,24 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Moves character's entourage to target fief
+        /// Extends base method allowing PlayerCharacter to target fief. Then moves entourage.
         /// </summary>
+        /// <returns>bool indicating success</returns>
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
         public override bool moveCharacter(Fief target, double cost)
         {
 
-            // use base method to move character
+            // use base method to move PlayerCharacter
             bool success = base.moveCharacter(target, cost);
 
+            // if PlayerCharacter move successfull
             if (success)
             {
+                // iterate through employees
                 for (int i = 0; i < this.employees.Count; i++)
                 {
+                    // if employee in entourage, move employee
                     if (this.employees[i].inEntourage)
                     {
                         this.employees[i].moveCharacter(target, cost);
@@ -903,35 +917,34 @@ namespace hist_mmorpg
     }
 
     /// <summary>
-    /// Class storing data on non player character
+    /// Class storing data on NonPlayerCharacter
     /// </summary>
     public class NonPlayerCharacter : Character
     {
 
         /// <summary>
-        /// Holds NPC's boss (charID)
+        /// Holds NPC's employer (charID)
         /// </summary>
         public String myBoss { get; set; }
         /// <summary>
-        /// Holds NPC's wages
+        /// Holds NPC's wage
         /// </summary>
         public uint wage { get; set; }
         /// <summary>
-        /// Holds last wage offer
+        /// Holds last wage offer from individual PCs
         /// </summary>
         public Dictionary<string, uint> lastOffer { get; set; }
         /// <summary>
-        /// Denotes if in/out of boss's entourage
+        /// Denotes if in employer's entourage
         /// </summary>
         public bool inEntourage { get; set; }
 
         /// <summary>
         /// Constructor for NonPlayerCharacter
         /// </summary>
-        /// <param name="mb">String holding NPC's boss (ID)</param>
-        /// <param name="go">String holding fief ID for destination (specified by NPC's boss)</param>
-        /// <param name="wa">string holding NPC's wages</param>
-        /// <param name="inEnt">bool denoting if in/out of boss's entourage</param>
+        /// <param name="mb">String holding NPC's employer (charID)</param>
+        /// <param name="wa">string holding NPC's wage</param>
+        /// <param name="inEnt">bool denoting if in employer's entourage</param>
         public NonPlayerCharacter(String id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg, String famHead,
             String sp, String fath, uint wa, bool inEnt, String mb = null, GameClock cl = null, Fief loc = null)
@@ -947,13 +960,18 @@ namespace hist_mmorpg
             this.lastOffer = new Dictionary<string, uint>();
         }
 
-		public NonPlayerCharacter()
+        /// <summary>
+        /// Constructor for NonPlayerCharacter taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public NonPlayerCharacter()
 		{
 		}
 
 		/// <summary>
 		/// Constructor for NonPlayerCharacter using NonPlayerCharacter_Riak object
-		/// </summary>
+        /// For use when de-serialising from Riak
+        /// </summary>
 		/// <param name="npcr">NonPlayerCharacter_Riak object to use as source</param>
 		public NonPlayerCharacter(NonPlayerCharacter_Riak npcr)
 			: base(npcr: npcr)
@@ -968,7 +986,8 @@ namespace hist_mmorpg
 		}
 
         /// <summary>
-        /// Calculates potential salary (per season) for NPC, taking into account hiring player's stature
+        /// Calculates the potential salary (per season) for the NonPlayerCharacter,
+        /// taking into account the stature of the hiring PlayerCharacter
         /// </summary>
         /// <returns>uint containing salary</returns>
         public uint calcNPCwage()
@@ -976,30 +995,42 @@ namespace hist_mmorpg
             double salary = 0;
             double basicSalary = 1500;
 
-            // calculate management rating
-            double fiefMgt = (this.management + this.stature) / 2;
-            double fiefLoySkills = this.calcFiefLoySkillMod();
+            // calculate fief management rating
+            // baseline rating
+            double fiefMgtRating = (this.management + this.stature) / 2;
+            // check for skills effecting fief loyalty
+            double fiefLoySkill = this.calcFiefLoySkillMod();
+            // check for skills effecting fief expenses
             double fiefExpSkill = this.calcFiefExpModif();
-            double mgtSkills = (fiefLoySkills + (-1 * fiefExpSkill));
-            fiefMgt = fiefMgt + (fiefMgt * mgtSkills);
+            // combine skills into single modifier. Note: fiefExpSkill is * by -1 because 
+            // a negative effect on expenses is good, so needs to be normalised
+            double mgtSkills = (fiefLoySkill + (-1 * fiefExpSkill));
+            // calculate final fief management rating
+            fiefMgtRating = fiefMgtRating + (fiefMgtRating * mgtSkills);
 
             // calculate combat rating
-            double combat = (this.management + this.stature + this.combat) / 3;
+            // baseline rating
+            double combatRating = (this.management + this.stature + this.combat) / 3;
+            // check for skills effecting battle
             double battleSkills = this.calcBattleSkillMod();
+            // check for skills effecting siege
             double siegeSkills = this.calcSiegeSkillMod();
+            // combine skills into single modifier 
             double combatSkills = battleSkills + siegeSkills;
-            combat = combat + (combat * combatSkills);
+            // calculate final combat rating
+            combatRating = combatRating + (combatRating * combatSkills);
 
-            if (fiefMgt > combat)
-            {
-                salary = (basicSalary * fiefMgt) + (basicSalary * (combat / 2));
-            }
-            else
-            {
-                salary = (basicSalary * combat) + (basicSalary * (fiefMgt / 2));
-            }
+            // determine lowest of 2 ratings
+            double minRating = Math.Min(combatRating, fiefMgtRating);
+            // determine highest of 2 ratings
+            double maxRating = Math.Max(combatRating, fiefMgtRating);
+
+            // calculate potential salary, mainly based on highest rating
+            // but also including 'flexibility bonus' for lowest rating
+            salary = (basicSalary * maxRating) + (basicSalary * (minRating / 2));
 
             // factor in hiring player's stature
+            // (4% reduction in NPC's salary for each stature rank above 4)
             if (this.stature > 4)
             {
                 double statMod = 1 - ((this.stature - 4) * 0.04);
@@ -1012,7 +1043,7 @@ namespace hist_mmorpg
     }
 
 	/// <summary>
-	/// Class used to convert Character to/from format suitable for Riak
+	/// Class used to convert Character to/from format suitable for Riak (JSON)
 	/// </summary>
 	public class Character_Riak
 	{
@@ -1050,7 +1081,7 @@ namespace hist_mmorpg
 		/// </summary>
 		public Double virility { get; set; }
 		/// <summary>
-		/// Queue of Fiefs to auto-travel to
+        /// Queue of Fiefs (fiefID) to auto-travel to
 		/// </summary>
 		public List<String> goTo { get; set; }
 		/// <summary>
@@ -1074,7 +1105,7 @@ namespace hist_mmorpg
 		/// </summary>
 		public Double combat { get; set; }
 		/// <summary>
-		/// Array holding character's skills
+		/// Array holding character's skills (skillID)
 		/// </summary>
 		public String[] skills { get; set; }
 		/// <summary>
@@ -1182,7 +1213,7 @@ namespace hist_mmorpg
 	}
 
 	/// <summary>
-	/// Class used to convert PlayerCharacter to/from format suitable for Riak
+	/// Class used to convert PlayerCharacter to/from format suitable for Riak (JSON)
 	/// </summary>
 	public class PlayerCharacter_Riak : Character_Riak
 	{
@@ -1196,18 +1227,18 @@ namespace hist_mmorpg
 		/// </summary>
 		public uint purse { get; set; }
 		/// <summary>
-		/// Holds character's entourage
+		/// Holds character's entourage (charID)
 		/// </summary>
 		public List<String> employees = new List<String>();
 		/// <summary>
-		/// Holds character's entourage
+		/// Holds character's owned fiefs (fiefID)
 		/// </summary>
 		public List<String> ownedFiefs = new List<String>();
 
 		/// <summary>
 		/// Constructor for PlayerCharacter_Riak
 		/// </summary>
-		/// <param name="pc">PlayerCharacter object</param>
+		/// <param name="pc">PlayerCharacter object to use as source</param>
 		public PlayerCharacter_Riak(PlayerCharacter pc)
 			: base(pc: pc)
 		{
@@ -1230,31 +1261,35 @@ namespace hist_mmorpg
 			}
 		}
 
-		public PlayerCharacter_Riak()
+        /// <summary>
+        /// Constructor for PlayerCharacter_Riak taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public PlayerCharacter_Riak()
 		{
 		}
 	}
 
 	/// <summary>
-	/// Class used to convert NonPlayerCharacter to/from format suitable for Riak
+	/// Class used to convert NonPlayerCharacter to/from format suitable for Riak (JSON)
 	/// </summary>
 	public class NonPlayerCharacter_Riak : Character_Riak
 	{
 
 		/// <summary>
-		/// Holds NPC's boss
+		/// Holds NPC's employer (charID)
 		/// </summary>
 		public String myBoss { get; set; }
 		/// <summary>
-		/// Holds NPC's wages
+		/// Holds NPC's wage
 		/// </summary>
 		public uint wage { get; set; }
 		/// <summary>
-		/// Holds last wage offer
+		/// Holds last wage offer from individual PCs
 		/// </summary>
 		public Dictionary<string, uint> lastOffer { get; set; }
 		/// <summary>
-		/// Denotes if in/out of boss's entourage
+        /// Denotes if in employer's entourage
 		/// </summary>
 		public bool inEntourage { get; set; }
 
@@ -1262,7 +1297,7 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Constructor for NonPlayerCharacter_Riak
 		/// </summary>
-		/// <param name="npc">NonPlayerCharacter object</param>
+		/// <param name="npc">NonPlayerCharacter object to use as source</param>
 		public NonPlayerCharacter_Riak(NonPlayerCharacter npc)
 			: base(npc: npc)
 		{
@@ -1276,7 +1311,11 @@ namespace hist_mmorpg
 			this.lastOffer = npc.lastOffer;
 		}
 
-		public NonPlayerCharacter_Riak()
+        /// <summary>
+        /// Constructor for NonPlayerCharacter_Riak taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public NonPlayerCharacter_Riak()
 		{
 		}
 	}

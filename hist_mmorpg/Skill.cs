@@ -5,13 +5,11 @@ using System.Text;
 
 namespace hist_mmorpg
 {
-
     /// <summary>
-    /// Class storing data on skill
+    /// Class storing data on a Skill
     /// </summary>
     public class Skill
     {
-
 		/// <summary>
 		/// Holds skill ID
 		/// </summary>
@@ -46,7 +44,11 @@ namespace hist_mmorpg
 
         }
 
-		public Skill()
+        /// <summary>
+        /// Constructor for Skill taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public Skill()
 		{
 		}
     }

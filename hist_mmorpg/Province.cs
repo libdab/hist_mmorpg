@@ -5,13 +5,11 @@ using System.Text;
 
 namespace hist_mmorpg
 {
-
     /// <summary>
     /// Class storing data on province
     /// </summary>
     public class Province
     {
-
         /// <summary>
         /// Holds province ID
         /// </summary>
@@ -21,9 +19,9 @@ namespace hist_mmorpg
         /// </summary>
         public String name { get; set; }
         /// <summary>
-		/// Holds province overlord (Character object)
+        /// Holds province overlord (PlayerCharacter object)
         /// </summary>
-        public Character overlord { get; set; }
+        public PlayerCharacter overlord { get; set; }
         /// <summary>
         /// Holds province overlord tax rate
         /// </summary>
@@ -38,10 +36,10 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="id">String holding province ID</param>
         /// <param name="nam">String holding province name</param>
-        /// <param name="olord">Character holding province overlord</param>
+        /// <param name="olord">Province overlord (PlayerCharacter)</param>
         /// <param name="otax">Double holding province overlord tax rate</param>
         /// <param name="lang">String holding province language code</param>
-        public Province(String id, String nam, Double otax, string lang, Character olord = null)
+        public Province(String id, String nam, Double otax, string lang, PlayerCharacter olord = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -54,9 +52,13 @@ namespace hist_mmorpg
             }
 
             // validate otax = 0-100.00
-            if ((otax < 0) || (otax > 100))
+            if (otax > 100)
             {
-                throw new InvalidDataException("Province overlord tax rate must be a double between 0 and 100");
+                otax = 100;
+            }
+            else if (otax < 0)
+            {
+                otax = 0;
             }
 
             // TODO: validate lang = string B,C,D,E,F,G,H,I,L/1-3
@@ -69,18 +71,24 @@ namespace hist_mmorpg
 
         }
 
-		public Province()
+        /// <summary>
+        /// Constructor for Province taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public Province()
 		{
 		}
 
 		/// <summary>
 		/// Constructor for Province using Province_Riak object
-		/// </summary>
-		/// <param name="pr">Province_Riak object</param>
+        /// For use when de-serialising from Riak
+        /// </summary>
+		/// <param name="pr">Province_Riak object to use as source</param>
 		public Province(Province_Riak pr)
 		{
 			this.provinceID = pr.provinceID;
 			this.name = pr.name;
+            // overlord to be inserted later
 			this.overlord = null;
 			this.overlordTaxRate = pr.overlordTaxRate;
 			this.language = pr.language;
@@ -92,7 +100,6 @@ namespace hist_mmorpg
 	/// </summary>
 	public class Province_Riak
 	{
-
 		/// <summary>
 		/// Holds province ID
 		/// </summary>
@@ -115,21 +122,24 @@ namespace hist_mmorpg
 		public string language { get; set; }
 
 		/// <summary>
-		/// Constructor for Province_Riak
-		/// </summary>
-		/// <param name="prov">Province object</param>
+		/// Constructor for Province_Riak.
+        /// For use when serialising to Riak
+        /// </summary>
+		/// <param name="prov">Province object to be used as source</param>
 		public Province_Riak(Province prov)
 		{
-
 			this.provinceID = prov.provinceID;
 			this.name = prov.name;
 			this.overlordID = prov.overlord.charID;
 			this.overlordTaxRate = prov.overlordTaxRate;
 			this.language = prov.language;
-
 		}
 
-		public Province_Riak()
+        /// <summary>
+        /// Constructor for Province_Riak taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public Province_Riak()
 		{
 		}
 	}

@@ -25,22 +25,35 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds current season
         /// </summary>
-        public uint currentSeason { get; set; }
+        public byte currentSeason { get; set; }
 
         /// <summary>
         /// Constructor for GameClock
         /// </summary>
 		/// <param name="id">String holding clock ID</param>
         /// <param name="yr">uint holding starting year</param>
-        /// <param name="s">int holding current season (default: 0)</param>
-		public GameClock(String id, uint yr, uint s = 0)
+        /// <param name="s">byte holding current season (default: 0)</param>
+		public GameClock(String id, uint yr, byte s = 0)
         {
 			this.clockID = id;
             this.currentYear = yr;
+            // ensure season within correct values
+            if (s > 3)
+            {
+                s = 3;
+            }
+            else if (s < 0)
+            {
+                s = 0;
+            }
             this.currentSeason = s;
         }
 
-		public GameClock()
+        /// <summary>
+        /// Constructor for GameClock taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public GameClock()
 		{
 		}
 
@@ -54,12 +67,15 @@ namespace hist_mmorpg
 
             switch (this.currentSeason)
             {
+                // spring
                 case 0:
                     travelModifier = 1.5;
                     break;
+                // winter
                 case 3:
                     travelModifier = 2;
                     break;
+                // summer & autumn
                 default:
                     travelModifier = 1;
                     break;
@@ -68,6 +84,10 @@ namespace hist_mmorpg
             return travelModifier;
         }
 
+        /// <summary>
+        /// Advances GameClock to next season
+        /// </summary>
+        /// <returns>double containing travel modifier</returns>
         public void advanceSeason()
         {
             if (this.currentSeason == 3)

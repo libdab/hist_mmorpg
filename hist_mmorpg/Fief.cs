@@ -5,13 +5,11 @@ using System.Text;
 
 namespace hist_mmorpg
 {
-
     /// <summary>
     /// Class storing data on fief
     /// </summary>
     public class Fief
     {
-
         /// <summary>
         /// Holds fief ID
         /// </summary>
@@ -23,7 +21,6 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds fief's Province object
         /// </summary>
-        // public String province { get; set; }
         public Province province { get; set; }
         /// <summary>
         /// Holds fief population
@@ -38,7 +35,7 @@ namespace hist_mmorpg
         /// </summary>
         public Double industry { get; set; }
         /// <summary>
-        /// Holds no. trrops in fief
+        /// Holds number of troops in fief
         /// </summary>
         public uint troops { get; set; }
         /// <summary>
@@ -98,11 +95,11 @@ namespace hist_mmorpg
         /// </summary>
         public Terrain terrain { get; set; }
         /// <summary>
-        /// Holds list of characters present in fief
+        /// Holds characters present in fief
         /// </summary>
         public List<Character> characters = new List<Character>();
         /// <summary>
-		/// Holds list of characters banned from keep (IDs)
+		/// Holds characters banned from keep (charIDs)
         /// </summary>
         public List<string> barredCharacters = new List<string>();
         /// <summary>
@@ -118,15 +115,15 @@ namespace hist_mmorpg
         /// </summary>
         public GameClock clock { get; set; }
         /// <summary>
-        /// Holds fief owner (Character)
+        /// Holds fief owner (PlayerCharacter object)
         /// </summary>
 		public PlayerCharacter owner { get; set; }
         /// <summary>
-        /// Holds fief ancestral owner (Character)
+        /// Holds fief ancestral owner (PlayerCharacter object)
         /// </summary>
 		public PlayerCharacter ancestralOwner { get; set; }
         /// <summary>
-        /// Holds fief bailiff (Character)
+        /// Holds fief bailiff (Character object)
         /// </summary>
         public Character bailiff { get; set; }
 
@@ -154,8 +151,8 @@ namespace hist_mmorpg
         /// <param name="loy">Double holding fief loyalty rating</param>
         /// <param name="stat">char holding fief status</param>
         /// <param name="terr">Terrain object for fief</param>
-        /// <param name="chars">List<Character> holding characters present in fief</param>
-        /// <param name="barChars">List<string> holding IDs of characters barred from keep</param>
+        /// <param name="chars">List holding characters present in fief</param>
+        /// <param name="barChars">List holding IDs of characters barred from keep</param>
         /// <param name="engBarr">bool indicating whether English nationality barred from keep</param>
         /// <param name="frBarr">bool indicating whether French nationality barred from keep</param>
         /// <param name="cl">GameClock holding season</param>
@@ -273,8 +270,9 @@ namespace hist_mmorpg
         }
 
 		/// <summary>
-		/// Constructor for Fief using Fief_Riak object
-		/// </summary>
+		/// Constructor for Fief using Fief_Riak object.
+        /// For use when de-serialising from Riak
+        /// </summary>
 		/// <param name="fr">Fief_Riak object to use as source</param>
 		public Fief(Fief_Riak fr)
 		{
@@ -303,6 +301,7 @@ namespace hist_mmorpg
 			this.loyalty = fr.loyalty;
 			this.status = fr.status;
 			this.terrain = null;
+            // create empty list to be populated later
 			this.characters = new List<Character>();
 			this.barredCharacters = fr.barredCharacters;
 			this.englishBarred = fr.englishBarred;
@@ -310,7 +309,11 @@ namespace hist_mmorpg
 			this.clock = null;
 		}
 
-		public Fief()
+        /// <summary>
+        /// Constructor for Fief taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public Fief()
 		{
 		}
 
@@ -318,7 +321,7 @@ namespace hist_mmorpg
         /// Calculates fief GDP
         /// </summary>
         /// <returns>uint containing fief GDP</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</param>
         public uint calcGDP(string season)
         {
             uint gdp = 0;
@@ -327,17 +330,17 @@ namespace hist_mmorpg
             switch (season)
             {
                 case "next":
-                    // calculate production from fields
+                    // calculate production from fields using next season's expenditure
                     fldProd = Convert.ToUInt32((this.calcNewFieldLevel() * 8997));
-                    // calculate production from industry
+                    // calculate production from industry using next season's expenditure
                     indProd = Convert.ToUInt32(this.calcNewIndustryLevel() * (290 * Math.Pow(1.2, ((this.calcNewPop() / 1000) - 1))));
                     // calculate final gdp
                     gdp = (fldProd + indProd) / (this.calcNewPop() / 1000);
                     break;
                 default:
-                    // calculate production from fields
+                    // calculate production from fields using current expenditure
                     fldProd = Convert.ToUInt32((this.fields * 8997));
-                    // calculate production from industry
+                    // calculate production from industry using current expenditure
                     indProd = Convert.ToUInt32(this.industry * (290 * Math.Pow(1.2, ((this.population / 1000) - 1))));
                     // calculate final gdp
                     gdp = (fldProd + indProd) / (this.population / 1000);
@@ -361,7 +364,7 @@ namespace hist_mmorpg
         /// Calculates fief income (NOT including income loss due to unrest/rebellion)
         /// </summary>
         /// <returns>uint containing fief income</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</param>
         public int calcIncome(string season)
         {
             int fiefBaseIncome = 0;
@@ -369,12 +372,15 @@ namespace hist_mmorpg
             switch (season)
             {
                 case "next":
+                    // using next season's expenditure and tax rate
                     fiefBaseIncome = Convert.ToInt32(this.calcGDP(season) * (this.taxRateNext / 100));
                     break;
                 default:
+                    // using current expenditure and tax rate
                     fiefBaseIncome = Convert.ToInt32(this.calcGDP(season) * (this.taxRate / 100));
                     break;
             }
+
             fiefIncome = fiefBaseIncome;
 
             // factor in bailiff modifier
@@ -397,7 +403,9 @@ namespace hist_mmorpg
             // check if auto-bailiff
             if (this.bailiff == null)
             {
-                incomeModif = ((3 - 1) * 2.5) / 100;
+                // modifer = 0.025 per management level above 1
+                // if auto-baliff set modifier at equivalent of management rating of 3
+                incomeModif = 0.05;
             }
             else
             {
@@ -411,7 +419,7 @@ namespace hist_mmorpg
         /// Calculates effect of officials spend on fief income
         /// </summary>
         /// <returns>double containing fief income modifier</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</param>
         public double calcOffIncMod(string season)
         {
             double incomeModif = 0;
@@ -419,9 +427,11 @@ namespace hist_mmorpg
             switch (season)
             {
                 case "next":
+                    // using next season's expenditure and population
                     incomeModif = ((this.officialsSpendNext - ((double)this.calcNewPop() * 2)) / (this.calcNewPop() * 2)) / 10;
                     break;
                 default:
+                    // using current expenditure and population
                     incomeModif = ((this.officialsSpend - ((double)this.population * 2)) / (this.population * 2)) / 10;
                     break;
             }
@@ -435,16 +445,21 @@ namespace hist_mmorpg
         /// <returns>double containing fief income modifier</returns>
         public double calcStatusIncmMod()
         {
-            double incomeModif = 1;
+            double incomeModif = 0;
+
             switch (this.status)
             {
+                // unrest = income reduced by 50%
                 case 'U':
                     incomeModif = 0.5;
                     break;
+                // unrest = income reduced by 100%
                 case 'R':
                     incomeModif = 0;
                     break;
+                // anything else = no reduction
                 default:
+                    incomeModif = 1;
                     break;
             }
 
@@ -455,9 +470,10 @@ namespace hist_mmorpg
         /// Calculates overlord taxes
         /// </summary>
         /// <returns>uint containing overlord taxes</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</param>
         public uint calcOlordTaxes(string season)
         {
+            // assumes overlord tax rate remains unchanged
             uint oTaxes = Convert.ToUInt32(this.calcIncome(season) * (this.province.overlordTaxRate / 100));
             return oTaxes;
         }
@@ -466,21 +482,24 @@ namespace hist_mmorpg
         /// Calculates fief expenses
         /// </summary>
         /// <returns>uint containing fief income</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</param>
         public int calcExpenses(string season)
         {
             int fiefExpenses = 0;
             switch (season)
             {
+                // using next season's expenditure
                 case "next":
                     fiefExpenses = (int)this.officialsSpendNext + (int)this.infrastructureSpendNext + (int)this.garrisonSpendNext + (int)this.keepSpendNext;
                     break;
+                // using current expenditure
                 default:
                     fiefExpenses = (int)this.officialsSpend + (int)this.infrastructureSpend + (int)this.garrisonSpend + (int)this.keepSpend;
                     break;
             }
 
             // factor in bailiff skills modifier for fief expenses
+            // assumes bailiff remains unchanged
             double bailiffModif = 0;
             bailiffModif = this.calcBailExpModif();
             if (bailiffModif != 0 )
@@ -511,17 +530,19 @@ namespace hist_mmorpg
         /// Calculates fief bottom line
         /// </summary>
         /// <returns>uint containing fief income</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</param>
         public int calcBottomLine(string season)
         {
             int fiefBottomLine = 0;
             switch (season)
             {
+                // using next season's income, expenses and overlord taxes
                 case "next":
                     fiefBottomLine = ((int)this.calcIncome("next") - (int)this.calcExpenses("next")) - (int)this.calcOlordTaxes("next");
                     break;
+                // using current income, expenses and overlord taxes
                 default:
-                    // factor in effect of fief status on income
+                    // factor in effect of current fief status
                     int fiefIncome = Convert.ToInt32(this.calcIncome("this") * this.calcStatusIncmMod());
                     fiefBottomLine = (fiefIncome - (int)this.calcExpenses("this")) - (int)this.calcOlordTaxes("this");
                     break;
@@ -532,45 +553,79 @@ namespace hist_mmorpg
         /// <summary>
         /// Adjusts fief tax rate
         /// </summary>
-        /// <param name="tx">double containing new tax rate</returns>
+        /// <param name="tx">double containing new tax rate</param>
         public void adjustTaxRate(double tx)
         {
+            // ensure max 100 and min 0
+            if (tx > 100)
+            {
+                tx = 100;
+            }
+            else if (tx < 0)
+            {
+                tx = 0;
+            }
+
             this.taxRateNext = tx;
         }
 
         /// <summary>
         /// Adjusts fief officials expenditure
         /// </summary>
-        /// <param name="os">uint containing new officials expenditure</returns>
+        /// <param name="os">uint containing new officials expenditure</param>
         public void adjustOfficialsSpend(uint os)
         {
+            // ensure min 0
+            if (os < 0)
+            {
+                os = 0;
+            }
+
             this.officialsSpendNext = os;
         }
 
         /// <summary>
         /// Adjusts fief infrastructure expenditure
         /// </summary>
-        /// <param name="infs">uint containing new infrastructure expenditure</returns>
+        /// <param name="infs">uint containing new infrastructure expenditure</param>
         public void adjustInfraSpend(uint infs)
         {
+            // ensure min 0
+            if (infs < 0)
+            {
+                infs = 0;
+            }
+
             this.infrastructureSpendNext = infs;
         }
 
         /// <summary>
         /// Adjusts fief garrison expenditure
         /// </summary>
-        /// <param name="gs">uint containing new garrison expenditure</returns>
+        /// <param name="gs">uint containing new garrison expenditure</param>
         public void adjustGarrisonSpend(uint gs)
         {
+            // ensure min 0
+            if (gs < 0)
+            {
+                gs = 0;
+            }
+
             this.garrisonSpendNext = gs;
         }
 
         /// <summary>
         /// Adjusts fief keep expenditure
         /// </summary>
-        /// <param name="ks">uint containing new keep expenditure</returns>
+        /// <param name="ks">uint containing new keep expenditure</param>
         public void adjustKeepSpend(uint ks)
         {
+            // ensure min 0
+            if (ks < 0)
+            {
+                ks = 0;
+            }
+
             this.keepSpendNext = ks;
         }
 
@@ -581,14 +636,18 @@ namespace hist_mmorpg
         public double calcNewFieldLevel()
         {
             double fldLvl = 0;
+
+            // if no expenditure, field level reduced by 1%
             if (this.infrastructureSpendNext == 0)
             {
                 fldLvl = this.fields - (this.fields / 100);
             }
+            // field level increases by 0.2 per 100k spent
             else
             {
                 fldLvl = this.fields + (this.infrastructureSpendNext / 500000.00);
             }
+
             return fldLvl;
         }
 
@@ -599,10 +658,13 @@ namespace hist_mmorpg
         public double calcNewIndustryLevel()
         {
             double indLvl = 0;
+
+            // if no expenditure, industry level reduced by 1%
             if (this.infrastructureSpendNext == 0)
             {
                 indLvl = this.industry - (this.industry / 100);
             }
+            // industry level increases by 0.1 per 100k spent
             else
             {
                 indLvl = this.industry + (this.infrastructureSpendNext / 1000000.00);
@@ -617,14 +679,18 @@ namespace hist_mmorpg
         public double calcNewKeepLevel()
         {
             double kpLvl = 0;
+
+            // if no expenditure, keep level reduced by 0.15
             if (this.keepSpendNext == 0)
             {
                 kpLvl = this.keepLevel - 0.15;
             }
+            // keep level increases by 0.25 per 100k spent
             else
             {
                 kpLvl = this.keepLevel + (this.keepSpendNext / 400000.00);
             }
+
             return kpLvl;
         }
 
@@ -637,12 +703,13 @@ namespace hist_mmorpg
             double newBaseLoy = 0;
             double newLoy = 0;
 
-            // calculate effect of tax rate change
+            // calculate effect of tax rate change = loyalty % change is direct inverse of tax % change
             newBaseLoy = this.loyalty + (this.loyalty * (((this.taxRateNext - this.taxRate) / 100) * -1));
             
-            // calculate effect of surplus
             if (this.calcBottomLine("next") > 0)
             {
+                // calculate effect of surplus 
+                // = loyalty reduced in proportion to surplus divided by income
                 newLoy = newBaseLoy - (this.calcBottomLine("next") / Convert.ToDouble(this.calcIncome("next")));
             }
 
@@ -687,7 +754,9 @@ namespace hist_mmorpg
 
             if (this.bailiff == null)
             {
-                loyModif = (((6 / 2) - 1) * 1.25) / 100;
+                // modifer = 0.0125 per stature/management average above 1
+                // if auto-baliff, set modifier at equivalent of stature/management average of 3
+                loyModif = 0.025;
             }
             else
             {
@@ -717,16 +786,18 @@ namespace hist_mmorpg
         /// Calculates effect of officials spend on fief loyalty
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</param>
         public double calcOffLoyMod(string season)
         {
             double loyaltyModif = 0;
 
             switch (season)
             {
+                // using next season's officials spend and population
                 case "next":
                     loyaltyModif = ((this.officialsSpendNext - ((double)this.calcNewPop() * 2)) / (this.calcNewPop() * 2)) / 10;
                     break;
+                // using current officials spend and population
                 default:
                     loyaltyModif = ((this.officialsSpend - ((double)this.population * 2)) / (this.population * 2)) / 10;
                     break;
@@ -739,16 +810,18 @@ namespace hist_mmorpg
         /// Calculates effect of garrison spend on fief loyalty
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</param>
         public double calcGarrLoyMod(string season)
         {
             double loyaltyModif = 0;
 
             switch (season)
             {
+                // using next season's garrison spend and population
                 case "next":
                     loyaltyModif = ((this.garrisonSpendNext - ((double)this.calcNewPop() * 7)) / (this.calcNewPop() * 7)) / 10;
                     break;
+                // using current garrison spend and population
                 default:
                     loyaltyModif = ((this.garrisonSpend - ((double)this.population * 7)) / (this.population * 7)) / 10;
                     break;
@@ -785,7 +858,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Checks for transition from calm to unrest/rebellion
+        /// Checks for transition from calm to unrest/rebellion;
         /// Or from unrest to calm
         /// </summary>
         /// <returns>char indicating fief status</returns>
@@ -811,6 +884,8 @@ namespace hist_mmorpg
                 if (!stat.Equals('R'))
                 {
                     double chance = (rand.NextDouble() * 100);
+                    
+                    // loyalty 3-4
                     if ((this.loyalty > 3) && (this.loyalty <= 4))
                     {
                         if (chance <= 2)
@@ -826,6 +901,8 @@ namespace hist_mmorpg
                             stat = 'C';
                         }
                     }
+
+                    // loyalty 2-3
                     else if ((this.loyalty > 2) && (this.loyalty <= 3))
                     {
                         if (chance <= 14)
@@ -841,6 +918,8 @@ namespace hist_mmorpg
                             stat = 'C';
                         }
                     }
+
+                    // loyalty 1-2
                     else if ((this.loyalty > 1) && (this.loyalty <= 2))
                     {
                         if (chance <= 26)
@@ -856,6 +935,8 @@ namespace hist_mmorpg
                             stat = 'C';
                         }
                     }
+
+                    // loyalty 0-1
                     else if ((this.loyalty > 0) && (this.loyalty <= 1))
                     {
                         if (chance <= 38)
@@ -871,6 +952,8 @@ namespace hist_mmorpg
                             stat = 'C';
                         }
                     }
+
+                    // loyalty 0
                     else if (this.loyalty == 0)
                     {
                         if (chance <= 50)
@@ -898,46 +981,42 @@ namespace hist_mmorpg
         /// <param name="ch">Character to be inserted into characters list</param>
         internal void addCharacter(Character ch)
         {
+            // add character
             this.characters.Add(ch);
         }
 
         /// <summary>
         /// removes character from characters list
         /// </summary>
-        /// <param name="ch">Character to be removed from characters list</param>
         /// <returns>bool indicating success/failure</returns>
+        /// <param name="ch">Character to be removed from characters list</param>
         internal bool removeCharacter(Character ch)
         {
-            bool success = false;
-            if (this.characters.Remove(ch))
-            {
-                success = true;
-            }
+            // remove character
+            bool success = this.characters.Remove(ch);
 
             return success;
         }
 
         /// <summary>
-        /// Adds character to barredCharacters list
+        /// Bar a specific character from the fief's keep
         /// </summary>
-        /// <param name="ch">Character to be inserted into barredCharacters list</param>
+        /// <param name="ch">Character to be barred</param>
         internal void barCharacter(string ch)
         {
+            // bar character
             this.barredCharacters.Add(ch);
         }
 
         /// <summary>
-        /// removes character from barredCharacters list
+        /// Removes a fief keep bar from a specific character
         /// </summary>
-        /// <param name="ch">Character to be removed from barredCharacters list</param>
         /// <returns>bool indicating success/failure</returns>
+        /// <param name="ch">Character for whom bar to be removed</param>
         internal bool removeBarCharacter(string ch)
         {
-            bool success = false;
-            if (this.barredCharacters.Remove(ch))
-            {
-                success = true;
-            }
+            // remove character bar
+            bool success = this.barredCharacters.Remove(ch);
 
             return success;
         }
@@ -945,11 +1024,10 @@ namespace hist_mmorpg
     }
 
 	/// <summary>
-	/// Class used to convert Fief to/from format suitable for Riak
+	/// Class used to convert Fief to/from format suitable for Riak (JSON)
 	/// </summary>
 	public class Fief_Riak
 	{
-
 		/// <summary>
 		/// Holds fief ID
 		/// </summary>
@@ -959,9 +1037,8 @@ namespace hist_mmorpg
 		/// </summary>
 		public String name { get; set; }
 		/// <summary>
-		/// Holds fief's Province object (ID)
+		/// Holds fief's Province object (provinceID)
 		/// </summary>
-		// public String province { get; set; }
 		public String province { get; set; }
 		/// <summary>
 		/// Holds fief population
@@ -1028,19 +1105,19 @@ namespace hist_mmorpg
 		/// </summary>
 		public Double loyalty { get; set; }
 		/// <summary>
-		/// Holds fief status (calm, unrest, rebellion)
+		/// Holds fief status (code)
 		/// </summary>
 		public char status { get; set; }
 		/// <summary>
-		/// Holds terrain object (ID)
+        /// Holds terrain object (terrainCode)
 		/// </summary>
 		public String terrain { get; set; }
 		/// <summary>
-		/// Holds list of characters present in fief (IDs)
+		/// Holds list of characters present in fief (charIDs)
 		/// </summary>
 		public List<String> characters = new List<String>();
 		/// <summary>
-		/// Holds list of characters banned from keep (IDs)
+		/// Holds list of characters banned from keep (charIDs)
 		/// </summary>
 		public List<string> barredCharacters = new List<string>();
 		/// <summary>
@@ -1052,19 +1129,19 @@ namespace hist_mmorpg
 		/// </summary>
 		public bool frenchBarred { get; set; }
 		/// <summary>
-		/// Holds fief's GameClock (ID)
+        /// Holds fief's GameClock (clockID)
 		/// </summary>
 		public String clock { get; set; }
 		/// <summary>
-		/// Holds fief owner (ID)
+		/// Holds fief owner (charID)
 		/// </summary>
 		public String owner { get; set; }
 		/// <summary>
-		/// Holds fief ancestral owner (ID)
+		/// Holds fief ancestral owner (charID)
 		/// </summary>
 		public String ancestralOwner { get; set; }
 		/// <summary>
-		/// Holds fief bailiff (ID)
+		/// Holds fief bailiff (charID)
 		/// </summary>
 		public String bailiff { get; set; }
 
@@ -1074,7 +1151,6 @@ namespace hist_mmorpg
 		/// <param name="f">Fief object to use as source</param>
 		public Fief_Riak(Fief f)
 		{
-
 			this.fiefID = f.fiefID;
 			this.name = f.name;
 			this.province = f.province.provinceID;
@@ -1116,7 +1192,11 @@ namespace hist_mmorpg
 			this.clock = f.clock.clockID;
 		}
 
-		public Fief_Riak()
+        /// <summary>
+        /// Constructor for Fief_Riak taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public Fief_Riak()
 		{
 		}
 	}

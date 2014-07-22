@@ -5,7 +5,6 @@ using System.Text;
 
 namespace hist_mmorpg
 {
-
     /// <summary>
     /// Class storing data on language
     /// </summary>

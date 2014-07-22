@@ -36,7 +36,11 @@ namespace hist_mmorpg
             this.travelCost = tc;
         }
 
-		public Terrain()
+        /// <summary>
+        /// Constructor for Terrain taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public Terrain()
 		{
 		}
     }
