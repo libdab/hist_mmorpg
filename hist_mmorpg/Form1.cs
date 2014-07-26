@@ -264,24 +264,24 @@ namespace hist_mmorpg
 			List<Character> fief7Chars = new List<Character>();
 
 			// create province for fiefs
-			Province myProv = new Province("ESX00", "Sussex, England", 6.2, "E1");
+			Province myProv = new Province("ESX00", "Sussex, England", 6.2);
 			this.provinceMasterList.Add (myProv.provinceID, myProv);
-			Province myProv2 = new Province("ESR00", "Surrey, England", 6.2, "E1");
+			Province myProv2 = new Province("ESR00", "Surrey, England", 6.2);
 			this.provinceMasterList.Add (myProv2.provinceID, myProv2);
 
-			Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief1Chars, keep1BarChars, false, false, this.clock);
+			Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", plains, fief1Chars, keep1BarChars, false, false, this.clock);
 			fiefMasterList.Add(myFief1.fiefID, myFief1);
-			Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', hills, fief2Chars, keep2BarChars, false, false, this.clock);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', "C2", hills, fief2Chars, keep2BarChars, false, false, this.clock);
 			fiefMasterList.Add(myFief2.fiefID, myFief2);
-			Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief3Chars, keep3BarChars, false, false, this.clock);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", plains, fief3Chars, keep3BarChars, false, false, this.clock);
 			fiefMasterList.Add(myFief3.fiefID, myFief3);
-			Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief4Chars, keep4BarChars, false, false, this.clock);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", plains, fief4Chars, keep4BarChars, false, false, this.clock);
 			fiefMasterList.Add(myFief4.fiefID, myFief4);
-			Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief5Chars, keep5BarChars, false, false, this.clock);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", plains, fief5Chars, keep5BarChars, false, false, this.clock);
 			fiefMasterList.Add(myFief5.fiefID, myFief5);
-			Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', plains, fief6Chars, keep6BarChars, false, false, this.clock);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", plains, fief6Chars, keep6BarChars, false, false, this.clock);
 			fiefMasterList.Add(myFief6.fiefID, myFief6);
-			Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', forrest, fief7Chars, keep7BarChars, false, false, this.clock);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", forrest, fief7Chars, keep7BarChars, false, false, this.clock);
 			fiefMasterList.Add(myFief7.fiefID, myFief7);
 			Army myArmy = new Army("army001", 0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
@@ -330,8 +330,8 @@ namespace hist_mmorpg
 			Queue<Fief> myGoTo5 = new Queue<Fief>();
 
 			// add some goTo entries for myChar1
-			myGoTo1.Enqueue (myFief2);
-			myGoTo1.Enqueue (myFief7);
+			//myGoTo1.Enqueue (myFief2);
+			//myGoTo1.Enqueue (myFief7);
 
 			// create entourages for PCs
 			List<NonPlayerCharacter> myEmployees1 = new List<NonPlayerCharacter>();
@@ -412,25 +412,30 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Generates a random skill set for a Character
 		/// </summary>
-        /// <returns>Skill[] for use with a Character object</returns>
+        /// <returns>Tuple<Skill, int>[] for use with a Character object</returns>
         /// <param name="myRand">Random to use for integer generation</param>
-        public Skill[] generateSkillSet(Random myRand)
+        public Tuple<Skill, int>[] generateSkillSet(Random myRand)
         {
             // create new random for generating skills for Character
             Random rndSkills = myRand;
 
             // create array of skills between 2-3 in length
-            Skill[] skillSet = new Skill[rndSkills.Next(2, 4)];
+            Tuple<Skill, int>[] skillSet = new Tuple<Skill, int>[rndSkills.Next(2, 4)];
 
             // populate array of skills with randomly chosen skills
             // 1) make temporary copy of skillKeys
             List<string> skillKeysCopy = new List<string>(this.skillKeys);
             // 2) choose random skill, removing entry from keys list to ensure no duplication
+            // Also assign random skill level
             for (int i = 0; i < skillSet.Length; i++)
             {
-                int randChoice = rndSkills.Next(0, skillKeysCopy.Count - 1);
-                skillSet[i] = this.skillMasterList[skillKeysCopy[randChoice]];
-                skillKeysCopy.RemoveAt(randChoice);
+                // choose random skill
+                int randSkill = rndSkills.Next(0, skillKeysCopy.Count - 1);
+                // assign random skill level
+                int randSkillLevel = rndSkills.Next(1, 10);
+                // create Skill tuple
+                skillSet[i] = new Tuple<Skill, int>(this.skillMasterList[skillKeysCopy[randSkill]], randSkillLevel);
+                skillKeysCopy.RemoveAt(randSkill);
             }
 
             return skillSet;
@@ -1063,7 +1068,7 @@ namespace hist_mmorpg
 			{
 				for (int i = 0; i < pcr.skills.Length; i++)
 				{
-                    pcOut.skills[i] = this.skillMasterList[pcr.skills[i]];
+                    pcOut.skills[i] = new Tuple<Skill, int>(this.skillMasterList[pcr.skills[i].Item1], pcr.skills[i].Item2);
 				}
 			}
 
@@ -1098,7 +1103,7 @@ namespace hist_mmorpg
 			{
 				for (int i = 0; i < npcr.skills.Length; i++)
 				{
-                    npcOut.skills[i] = this.skillMasterList[npcr.skills[i]];
+                    npcOut.skills[i] = new Tuple<Skill, int>(this.skillMasterList[npcr.skills[i].Item1], npcr.skills[i].Item2);
 				}
 			}
 
@@ -1699,7 +1704,7 @@ namespace hist_mmorpg
             charText += "\r\n";
 
             // any death modifiers (from skills)
-            charText += "  (Death modifier from skills: " + ch.getDeathSkillsMod() + ")\r\n";
+            charText += "  (Death modifier from skills: " + ch.calcSkillEffect("death") + ")\r\n";
 
             // virility
             charText += "Virility: " + ch.virility + "\r\n";
@@ -1732,7 +1737,7 @@ namespace hist_mmorpg
             charText += "Skills:\r\n";
             for (int i = 0; i < ch.skills.Length; i++)
             {
-                charText += "  - " + ch.skills[i].name + "\r\n";
+                charText += "  - " + ch.skills[i].Item1.name + " (level " + ch.skills[i].Item2 + ")\r\n";
             }
 
             // whether inside/outside the keep
@@ -1889,7 +1894,7 @@ namespace hist_mmorpg
             }
 
             // estimated salary level
-            npcText += "Potential salary: " + npc.calcNPCwage() + "\r\n";
+            npcText += "Potential salary: " + npc.calcWage(this.myChar) + "\r\n";
 
             // most recent salary offer from player (if any)
             npcText += "Last offer from this PC: ";
@@ -1963,6 +1968,9 @@ namespace hist_mmorpg
                      break;
             }
             fiefText += "\r\n";
+
+            // language
+            fiefText += "Language code: " + f.language + "\r\n";
 
             // terrain type
             fiefText += "Terrain: " + f.terrain.description + "\r\n";
@@ -2163,14 +2171,28 @@ namespace hist_mmorpg
             // refresh Character display TextBox
             this.fiefTextBox.Text = textToDisplay;
 
-            // fief management buttons only enabled if fief is owned by player
-            if (! myChar.ownedFiefs.Contains(f))
+            // fief management buttons and TextBoxes only enabled if fief is owned by player
+            if (!myChar.ownedFiefs.Contains(f))
             {
-                this.adjGarrSpendBtn.Enabled = false;
-                this.adjInfrSpendBtn.Enabled = false;
-                this.adjOffSpendBtn.Enabled = false;
-                this.adjustKeepSpendBtn.Enabled = false;
-                this.adjustTaxButton.Enabled = false;
+                this.adjGarrSpendBtn.Visible = false;
+                this.adjInfrSpendBtn.Visible = false;
+                this.adjOffSpendBtn.Visible = false;
+                this.adjustKeepSpendBtn.Visible = false;
+                this.adjustTaxButton.Visible = false;
+                this.adjGarrSpendTextBox.Visible = false;
+                this.adjInfrSpendTextBox.Visible = false;
+                this.adjOffSpendTextBox.Visible = false;
+                this.adjustKeepSpendTextBox.Visible = false;
+                this.adjustTaxTextBox.Visible = false;
+            }
+
+            else
+            {
+                this.adjGarrSpendTextBox.Text = Convert.ToString(f.garrisonSpendNext);
+                this.adjInfrSpendTextBox.Text = Convert.ToString(f.infrastructureSpendNext);
+                this.adjOffSpendTextBox.Text = Convert.ToString(f.officialsSpendNext);
+                this.adjustKeepSpendTextBox.Text = Convert.ToString(f.keepSpendNext);
+                this.adjustTaxTextBox.Text = Convert.ToString(f.taxRateNext);
             }
 
             this.fiefContainer.BringToFront();
@@ -2209,7 +2231,7 @@ namespace hist_mmorpg
             // adjust tax rate
             this.fiefToView.adjustTaxRate(Convert.ToDouble(this.adjustTaxTextBox.Text));
             // refresh display
-            this.fiefTextBox.Text = this.displayFief(this.fiefToView);
+            this.refreshFiefContainer();
         }
 
         /// <summary>
@@ -2223,7 +2245,7 @@ namespace hist_mmorpg
             // adjust officials spend
             this.fiefToView.adjustOfficialsSpend(Convert.ToUInt32(this.adjOffSpendTextBox.Text));
             // refresh display
-            this.fiefTextBox.Text = this.displayFief(this.fiefToView);
+            this.refreshFiefContainer();
         }
 
         /// <summary>
@@ -2237,7 +2259,7 @@ namespace hist_mmorpg
             // adjust garrison spend
             this.fiefToView.adjustGarrisonSpend(Convert.ToUInt32(this.adjGarrSpendTextBox.Text));
             // refresh display
-            this.fiefTextBox.Text = this.displayFief(this.fiefToView);
+            this.refreshFiefContainer();
         }
 
         /// <summary>
@@ -2251,7 +2273,7 @@ namespace hist_mmorpg
             // adjust infrastructure spend
             this.fiefToView.adjustInfraSpend(Convert.ToUInt32(this.adjInfrSpendTextBox.Text));
             // refresh display
-            this.fiefTextBox.Text = this.displayFief(this.fiefToView);
+            this.refreshFiefContainer();
         }
 
         /// <summary>
@@ -2265,7 +2287,7 @@ namespace hist_mmorpg
             // adjust keep spend
             this.fiefToView.adjustKeepSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
             // refresh display
-            this.fiefTextBox.Text = this.displayFief(this.fiefToView);
+            this.refreshFiefContainer();
         }
 
         /// <summary>

@@ -91,6 +91,10 @@ namespace hist_mmorpg
         /// </summary>
         public char status { get; set; }
         /// <summary>
+        /// Holds province language
+        /// </summary>
+        public string language { get; set; }
+        /// <summary>
         /// Holds terrain object
         /// </summary>
         public Terrain terrain { get; set; }
@@ -150,6 +154,7 @@ namespace hist_mmorpg
         /// <param name="kpLvl">Double holding fief keep level</param>
         /// <param name="loy">Double holding fief loyalty rating</param>
         /// <param name="stat">char holding fief status</param>
+        /// <param name="lang">String holding language code</param>
         /// <param name="terr">Terrain object for fief</param>
         /// <param name="chars">List holding characters present in fief</param>
         /// <param name="barChars">List holding IDs of characters barred from keep</param>
@@ -161,7 +166,7 @@ namespace hist_mmorpg
         /// <param name="bail">Character holding fief bailiff</param>
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp,
             Double tx, uint off, uint garr, uint infra, uint keep, Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, Double kpLvl,
-			Double loy, char stat, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr, GameClock cl, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null)
+			Double loy, char stat, String lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr, GameClock cl, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -261,6 +266,7 @@ namespace hist_mmorpg
             this.keepLevel = kpLvl;
             this.loyalty = loy;
             this.status = stat;
+            this.language = lang;
             this.terrain = terr;
             this.characters = chars;
             this.barredCharacters = barChars;
@@ -520,7 +526,7 @@ namespace hist_mmorpg
 
             if (this.bailiff != null)
             {
-                expSkillsModifier = this.bailiff.calcFiefExpModif();
+                expSkillsModifier = this.bailiff.calcSkillEffect("fiefExpense");
             }
 
             return expSkillsModifier;
@@ -560,10 +566,12 @@ namespace hist_mmorpg
             if (tx > 100)
             {
                 tx = 100;
+                System.Windows.Forms.MessageBox.Show("The maximum tax rate is 100%.  Rate adjusted.");
             }
             else if (tx < 0)
             {
                 tx = 0;
+                System.Windows.Forms.MessageBox.Show("The minimum tax rate is 0%.  Rate adjusted.");
             }
 
             this.taxRateNext = tx;
@@ -579,6 +587,15 @@ namespace hist_mmorpg
             if (os < 0)
             {
                 os = 0;
+                System.Windows.Forms.MessageBox.Show("The minimum officials expenditure is 0.  Amount adjusted.");
+            }
+
+            // ensure doesn't exceed max permitted (4 per head of population)
+            uint maxSpend = this.population * 4;
+            if (os > maxSpend)
+            {
+                os = maxSpend;
+                System.Windows.Forms.MessageBox.Show("The maximum officials expenditure for this fief is " + maxSpend + ".\r\nAmount adjusted.");
             }
 
             this.officialsSpendNext = os;
@@ -594,6 +611,15 @@ namespace hist_mmorpg
             if (infs < 0)
             {
                 infs = 0;
+                System.Windows.Forms.MessageBox.Show("The minimum infrastructure expenditure is 0.  Amount adjusted.");
+            }
+
+            // ensure doesn't exceed max permitted (6 per head of population)
+            uint maxSpend = this.population * 6;
+            if (infs > maxSpend)
+            {
+                infs = maxSpend;
+                System.Windows.Forms.MessageBox.Show("The maximum infrastructure expenditure for this fief is " + maxSpend + ".\r\nAmount adjusted.");
             }
 
             this.infrastructureSpendNext = infs;
@@ -609,6 +635,15 @@ namespace hist_mmorpg
             if (gs < 0)
             {
                 gs = 0;
+                System.Windows.Forms.MessageBox.Show("The minimum garrison expenditure is 0.  Amount adjusted.");
+            }
+
+            // ensure doesn't exceed max permitted (14 per head of population)
+            uint maxSpend = this.population * 14;
+            if (gs > maxSpend)
+            {
+                gs = maxSpend;
+                System.Windows.Forms.MessageBox.Show("The maximum garrison expenditure for this fief is " + maxSpend + ".\r\nAmount adjusted.");
             }
 
             this.garrisonSpendNext = gs;
@@ -624,6 +659,15 @@ namespace hist_mmorpg
             if (ks < 0)
             {
                 ks = 0;
+                System.Windows.Forms.MessageBox.Show("The minimum keep expenditure is 0.  Amount adjusted.");
+            }
+
+            // ensure doesn't exceed max permitted (13 per head of population)
+            uint maxSpend = this.population * 13;
+            if (ks > maxSpend)
+            {
+                ks = maxSpend;
+                System.Windows.Forms.MessageBox.Show("The maximum keep expenditure for this fief is " + maxSpend + ".\r\nAmount adjusted.");
             }
 
             this.keepSpendNext = ks;
@@ -776,7 +820,7 @@ namespace hist_mmorpg
 
             if (this.bailiff != null)
             {
-                loySkillsModifier = this.bailiff.calcFiefLoySkillMod();
+                loySkillsModifier = this.bailiff.calcSkillEffect("fiefLoy");
             }
 
             return loySkillsModifier;
@@ -1108,7 +1152,11 @@ namespace hist_mmorpg
 		/// Holds fief status (code)
 		/// </summary>
 		public char status { get; set; }
-		/// <summary>
+        /// <summary>
+        /// Holds province language
+        /// </summary>
+        public string language { get; set; }
+        /// <summary>
         /// Holds terrain object (terrainCode)
 		/// </summary>
 		public String terrain { get; set; }
@@ -1178,6 +1226,7 @@ namespace hist_mmorpg
 			this.keepLevel = f.keepLevel;
 			this.loyalty = f.loyalty;
 			this.status = f.status;
+            this.language = f.language;
 			this.terrain = f.terrain.terrainCode;
 			if (f.characters.Count > 0)
 			{

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
 
 namespace hist_mmorpg
 {
@@ -71,7 +72,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Array holding character's skills
         /// </summary>
-        public Skill[] skills { get; set; }
+        public Tuple<Skill, int>[] skills { get; set; }
         /// <summary>
         /// bool indicating if character is in the keep
         /// </summary>
@@ -122,6 +123,7 @@ namespace hist_mmorpg
         /// <param name="stat">Double holding character status rating</param>
         /// <param name="mngmnt">Double holding character management rating</param>
         /// <param name="cbt">Double holding character combat rating</param>
+        /// <param name="skl">Array containing character's skills</param>
         /// <param name="inK">bool indicating if character is in the keep</param>
         /// <param name="marr">char holding character marital status</param>
         /// <param name="preg">bool holding character pregnancy status</param>
@@ -131,7 +133,7 @@ namespace hist_mmorpg
         /// <param name="cl">GameClock holding season</param>
 		/// <param name="loc">Fief holding current location</param>
         public Character(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg,
+            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg,
             String famHead, String sp, String fath, GameClock cl = null, Fief loc = null)
         {
 
@@ -275,7 +277,7 @@ namespace hist_mmorpg
 				this.management = charToUse.management;
 				this.combat = charToUse.combat;
                 // create empty array, to be populated later
-                this.skills = new Skill[charToUse.skills.Length];
+                this.skills = new Tuple<Skill, int>[charToUse.skills.Length];
 				this.inKeep = charToUse.inKeep;
 				this.married = charToUse.married;
 				this.pregnant = charToUse.pregnant;
@@ -304,7 +306,7 @@ namespace hist_mmorpg
         {
 
             // Check if chance of death effected by character skills
-            double deathSkillsModifier = this.getDeathSkillsMod();
+            double deathSkillsModifier = this.calcSkillEffect("death");
 
             // calculate base chance of death
             // chance = 2.8% per health level below 10
@@ -329,36 +331,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Checks for skills death modifier
-        /// </summary>
-        /// <returns>double containing death modifier</returns>
-        public double getDeathSkillsMod()
-        {
-            double deathModifier = 0;
-
-            // iterate through skills
-            for (int i = 0; i < skills.Length; i++)
-            {
-                // iterate through skill effects, looking for 'death' effect
-                foreach (KeyValuePair<string, int> entry in skills[i].effects)
-                {
-                    // if present, add to modifier
-                    if (entry.Key.Equals("death"))
-                    {
-                        deathModifier += entry.Value;
-                    }
-                }
-            }
-
-            if (deathModifier != 0)
-            {
-                deathModifier = (deathModifier / 100);
-            }
-
-            return deathModifier;
-        }
-
-        /// <summary>
         /// Enables character to enter keep (if not barred)
         /// </summary>
         /// <returns>bool indicating success</returns>
@@ -371,7 +343,8 @@ namespace hist_mmorpg
             {                    
                 if (this.nationality.Equals("Eng"))                    
                 {                       
-                    success = false;                       
+                    success = false;
+                    System.Windows.Forms.MessageBox.Show("Bailiff: The duplicitous English are barred from entering this keep, Good Sir!");
                 }               
             }
 
@@ -381,6 +354,7 @@ namespace hist_mmorpg
                 if (this.nationality.Equals("Fr"))
                 {
                     success = false;
+                    System.Windows.Forms.MessageBox.Show("Bailiff: The perfidious French are barred from entering this keep, Mon Seigneur!");
                 }
             }
 
@@ -390,6 +364,7 @@ namespace hist_mmorpg
                 if (location.barredCharacters.Contains(this.charID))
                 {
                     success = false;
+                    System.Windows.Forms.MessageBox.Show("Bailiff: Your person is barred from entering this keep, Good Sir!");
                 }
 
             }
@@ -434,123 +409,34 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates effect of character skills on fief expenses
+        /// Calculates effect of a particular skill effect
         /// </summary>
-        /// <returns>double containing fief expenses modifier</returns>
-        public double calcFiefExpModif()
+        /// <returns>double containing skill effect modifier</returns>
+        /// <param name="effect">string specifying which skill effect to calculate</param>
+        public double calcSkillEffect(String effect)
         {
-            double fiefExpModifier = 0;
+            double skillEffectModifier = 0;
 
             // iterate through skills
             for (int i = 0; i < this.skills.Length; i++)
             {
-                // iterate through skill effects, looking for 'fiefExpense' effect
-                foreach (KeyValuePair<string, int> entry in this.skills[i].effects)
+                // iterate through skill effects, looking for effect
+                foreach (KeyValuePair<string, int> entry in this.skills[i].Item1.effects)
                 {
                     // if present, add to modifier
-                    if (entry.Key.Equals("fiefExpense"))
+                    if (entry.Key.Equals(effect))
                     {
-                        fiefExpModifier += entry.Value;
+                        skillEffectModifier += (entry.Value * (this.skills[i].Item2 * 0.111));
                     }
                 }
             }
 
-            if (fiefExpModifier != 0)
+            if (skillEffectModifier != 0)
             {
-                fiefExpModifier = fiefExpModifier / 100;
+                skillEffectModifier = (skillEffectModifier / 100);
             }
 
-            return fiefExpModifier;
-        }
-
-        /// <summary>
-        /// Calculates effect of character skills on fief loyalty
-        /// </summary>
-        /// <returns>double containing fief loyalty modifier</returns>
-        public double calcFiefLoySkillMod()
-        {
-            double loySkillsModifier = 0;
-
-            // iterate through skills
-            for (int i = 0; i < this.skills.Length; i++)
-            {
-                // iterate through skill effects, looking for 'fiefLoy' effect
-                foreach (KeyValuePair<string, int> entry in this.skills[i].effects)
-                {
-                    // if present, add to modifier
-                    if (entry.Key.Equals("fiefLoy"))
-                    {
-                        loySkillsModifier += entry.Value;
-                    }
-                }
-            }
-
-            if (loySkillsModifier != 0)
-            {
-                loySkillsModifier = (loySkillsModifier / 100);
-            }
-
-            return loySkillsModifier;
-        }
-
-        /// <summary>
-        /// Calculates effect of character skills on army leadership value in battle
-        /// </summary>
-        /// <returns>double containing battle modifier</returns>
-        public double calcBattleSkillMod()
-        {
-            double battleSkillsModifier = 0;
-
-            // iterate through skills
-            for (int i = 0; i < this.skills.Length; i++)
-            {
-                // iterate through skill effects, looking for 'battle' effect
-                foreach (KeyValuePair<string, int> entry in this.skills[i].effects)
-                {
-                    // if present, add to modifier
-                    if (entry.Key.Equals("battle"))
-                    {
-                        battleSkillsModifier += entry.Value;
-                    }
-                }
-            }
-
-            if (battleSkillsModifier != 0)
-            {
-                battleSkillsModifier = (battleSkillsModifier / 100);
-            }
-
-            return battleSkillsModifier;
-        }
-
-        /// <summary>
-        /// Calculates effect of character skills on army leadership value in siege
-        /// </summary>
-        /// <returns>double containing siege modifier</returns>
-        public double calcSiegeSkillMod()
-        {
-            double siegeSkillsModifier = 0;
-
-            // iterate through skills
-            for (int i = 0; i < this.skills.Length; i++)
-            {
-                // iterate through skill effects, looking for 'siege' effect
-                foreach (KeyValuePair<string, int> entry in this.skills[i].effects)
-                {
-                    // if present, add to modifier
-                    if (entry.Key.Equals("siege")) 
-                    {
-                        siegeSkillsModifier += entry.Value;
-                    }
-                }
-            }
-
-            if (siegeSkillsModifier != 0)
-            {
-                siegeSkillsModifier = (siegeSkillsModifier / 100);
-            }
-
-            return siegeSkillsModifier;
+            return skillEffectModifier;
         }
 
         /// <summary>
@@ -562,6 +448,30 @@ namespace hist_mmorpg
         public virtual bool moveCharacter(Fief target, double cost)
         {
             bool success = false;
+
+            // check to see if character has fiefs in their goTo queue
+            // (i.e. they have a pre-planned move)
+            if (this.goTo.Count > 0)
+            {
+                // check to see if this fief is the next planned destination
+                if (target != this.goTo.Peek())
+                {
+                    // if not the next planned destination, give choice to continue or cancel
+                    DialogResult dialogResult = MessageBox.Show("This move will clear your stored destination list.  Click 'OK' to proceed.", "Proceed with move?", MessageBoxButtons.OKCancel);
+                    
+                    // if choose to cancel, return
+                    if (dialogResult == DialogResult.Cancel)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Move cancelled.");
+                        return success;
+                    }
+                    // if choose to proceed, clear entries from goTo
+                    else
+                    {
+                        this.goTo.Clear();
+                    }
+                }
+            }
 
             // ensure have enough days left to allow for move
             if (this.days >= cost)
@@ -577,6 +487,17 @@ namespace hist_mmorpg
                 // deduct move cost from days left
                 this.days = this.days - cost;
                 success = true;
+            }
+
+            else
+            {
+                // if target fief not in character's goTo queue, add it
+                if (this.goTo.Count == 0)
+                {
+                    this.goTo.Enqueue(target);
+                }
+
+                System.Windows.Forms.MessageBox.Show("I'm afraid you've run out of days, Milord!\r\nYour journey will continue next season.");
             }
 
             return success;
@@ -633,7 +554,7 @@ namespace hist_mmorpg
         /// <param name="emp">List<NonPlayerCharacter> holding employees of character</param>
         /// <param name="kps">List<Fief> holding fiefs owned by character</param>
         public PlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg, String famHead,
+            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
             String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> emp, List<Fief> kps, GameClock cl = null, Fief loc = null)
             : base(id, nam, ag, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
         {
@@ -678,19 +599,38 @@ namespace hist_mmorpg
         public bool processEmployOffer(NonPlayerCharacter npc, uint offer)
         {
             bool accepted = false;
+
             // get NPC's potential salary
-            double potentialSalary = npc.calcNPCwage();
+            double potentialSalary = npc.calcWage(this);
+
             // generate random (0 - 100) to see if accepts offer
             Random rand = new Random();
             double chance = rand.NextDouble() * 100;
 
-            // get range of acceptable offers
-            // minimum = 90% of potential salary
+            // get 'npcHire' skill effect modifier (increase/decrease chance of offer being accepted)
+            double hireSkills = this.calcSkillEffect("npcHire");
+            // convert to % to allow easy modification of chance
+            hireSkills = (hireSkills * 100);
+            // apply to chance
+            chance = (chance + (hireSkills * -1));
+            // ensure chance is a valid %
+            if (chance < 0)
+            {
+                chance = 0;
+            }
+            else if (chance > 100)
+            {
+                chance = 100;
+            }
+
+
+            // get range of negotiable offers
+            // minimum = 90% of potential salary, below which all offers rejected
             double minAcceptable = potentialSalary - (potentialSalary / 10);
-            // maximum = 110% of potential salary
+            // maximum = 110% of potential salary, above which all offers accepted
             double maxAcceptable = potentialSalary + (potentialSalary / 10);
             // get range
-            double rangeAcceptable = (maxAcceptable - minAcceptable);
+            double rangeNegotiable = (maxAcceptable - minAcceptable);
 
             // ensure this offer is more than the last from this PC
             bool offerLess = false;
@@ -712,32 +652,36 @@ namespace hist_mmorpg
                 npc.lastOffer.Add(this.charID, offer);
             }
 
-            // automatically reject if offer !> previous offer
-            if (offerLess)
-            {
-                accepted = false;
-            }
-
             // automatically accept if offer > 10% above potential salary
-            else if (offer > maxAcceptable)
+            if (offer > maxAcceptable)
             {
                 accepted = true;
+                System.Windows.Forms.MessageBox.Show(npc.name + ": You've made me an offer I can't refuse, Milord!");
             }
 
-            // automatically reject if offer > 10% below potential salary
+            // automatically reject if offer < 10% below potential salary
             else if (offer < minAcceptable)
             {
                 accepted = false;
+                System.Windows.Forms.MessageBox.Show(npc.name + ": Don't insult me, Milord!");
+            }
+
+            // automatically reject if offer !> previous offer
+            else if (offerLess)
+            {
+                accepted = false;
+                System.Windows.Forms.MessageBox.Show("You must improve on your previous offer (£" + npc.lastOffer[this.charID] + ")");
             }
 
             else
             {
-                // see where offer lies (as %) within rangeAcceptable
-                double offerPercentage = ((offer - minAcceptable) / rangeAcceptable) * 100;
-                // compare randomly generated % with offerPercentage
+                // see where offer lies (as %) within rangeNegotiable
+                double offerPercentage = ((offer - minAcceptable) / rangeNegotiable) * 100;
+                // compare randomly generated % (chance) with offerPercentage
                 if (chance <= offerPercentage)
                 {
                     accepted = true;
+                    System.Windows.Forms.MessageBox.Show(npc.name + ": It's a deal, Good Sir!");
                 }
             }
 
@@ -745,6 +689,11 @@ namespace hist_mmorpg
             {
                 // hire this NPC
                 this.hireNPC(npc, offer);
+            }
+
+            else
+            {
+                System.Windows.Forms.MessageBox.Show(npc.name + ": You'll have to do better than that, Good Sir!");
             }
 
             return accepted;
@@ -781,6 +730,11 @@ namespace hist_mmorpg
             npc.myBoss = null;
             // remove NPC from entourage
             npc.inEntourage = false;
+            // if NPC has entries in goTo, clear
+            if (npc.goTo.Count > 0)
+            {
+                npc.goTo.Clear();
+            }
         }
 
         /// <summary>
@@ -789,10 +743,17 @@ namespace hist_mmorpg
         /// <param name="npc">NPC to be added</param>
         public void addToEntourage(NonPlayerCharacter npc)
         {
+            // if NPC has entries in goTo, clear
+            if (npc.goTo.Count > 0)
+            {
+                npc.goTo.Clear();
+            }
+
             // ensure days is set to lesser of PC/NPC days
             double minDays = Math.Min(this.days, npc.days);
             this.days = minDays;
             npc.days = minDays;
+
             // add to entourage
             npc.inEntourage = true;
         }
@@ -850,6 +811,10 @@ namespace hist_mmorpg
                         if (location.barredCharacters.Contains(this.employees[i].charID))
                         {
                             this.employees[i].inKeep = false;
+                            String toDisplay = "";
+                            toDisplay += "Bailiff: One or more of your entourage is barred from entering this keep!";
+                            toDisplay += "\r\nThey will rejoin you after your visit.";
+                            System.Windows.Forms.MessageBox.Show(toDisplay);
                         }
                         else
                         {
@@ -946,7 +911,7 @@ namespace hist_mmorpg
         /// <param name="wa">string holding NPC's wage</param>
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
         public NonPlayerCharacter(String id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Skill[] skl, bool inK, bool marr, bool preg, String famHead,
+            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
             String sp, String fath, uint wa, bool inEnt, String mb = null, GameClock cl = null, Fief loc = null)
             : base(id, nam, ag, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
         {
@@ -990,7 +955,7 @@ namespace hist_mmorpg
         /// taking into account the stature of the hiring PlayerCharacter
         /// </summary>
         /// <returns>uint containing salary</returns>
-        public uint calcNPCwage()
+        public uint calcWage(PlayerCharacter pc)
         {
             double salary = 0;
             double basicSalary = 1500;
@@ -999,9 +964,9 @@ namespace hist_mmorpg
             // baseline rating
             double fiefMgtRating = (this.management + this.stature) / 2;
             // check for skills effecting fief loyalty
-            double fiefLoySkill = this.calcFiefLoySkillMod();
+            double fiefLoySkill = this.calcSkillEffect("fiefLoy");
             // check for skills effecting fief expenses
-            double fiefExpSkill = this.calcFiefExpModif();
+            double fiefExpSkill = this.calcSkillEffect("fiefExpense");
             // combine skills into single modifier. Note: fiefExpSkill is * by -1 because 
             // a negative effect on expenses is good, so needs to be normalised
             double mgtSkills = (fiefLoySkill + (-1 * fiefExpSkill));
@@ -1012,9 +977,9 @@ namespace hist_mmorpg
             // baseline rating
             double combatRating = (this.management + this.stature + this.combat) / 3;
             // check for skills effecting battle
-            double battleSkills = this.calcBattleSkillMod();
+            double battleSkills = this.calcSkillEffect("battle");
             // check for skills effecting siege
-            double siegeSkills = this.calcSiegeSkillMod();
+            double siegeSkills = this.calcSkillEffect("siege");
             // combine skills into single modifier 
             double combatSkills = battleSkills + siegeSkills;
             // calculate final combat rating
@@ -1107,7 +1072,7 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Array holding character's skills (skillID)
 		/// </summary>
-		public String[] skills { get; set; }
+		public Tuple<String, int>[] skills { get; set; }
 		/// <summary>
 		/// bool indicating if character is in the keep
 		/// </summary>
@@ -1182,10 +1147,10 @@ namespace hist_mmorpg
 				this.stature = charToUse.stature;
 				this.management = charToUse.management;
 				this.combat = charToUse.combat;
-				this.skills = new String[charToUse.skills.Length];
+				this.skills = new Tuple<String, int>[charToUse.skills.Length];
 				for (int i = 0; i < charToUse.skills.Length; i++)
 				{
-					this.skills [i] = charToUse.skills [i].skillID;
+					this.skills [i] = new Tuple<string,int>(charToUse.skills [i].Item1.skillID, charToUse.skills [i].Item2);
 				}
 				this.inKeep = charToUse.inKeep;
 				this.married = charToUse.married;
