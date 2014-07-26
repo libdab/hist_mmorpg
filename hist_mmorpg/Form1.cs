@@ -2170,15 +2170,17 @@ namespace hist_mmorpg
 
             // refresh Character display TextBox
             this.fiefTextBox.Text = textToDisplay;
+            this.fiefTextBox.ReadOnly = true;
 
             // fief management buttons and TextBoxes only enabled if fief is owned by player
             if (!myChar.ownedFiefs.Contains(f))
             {
-                this.adjGarrSpendBtn.Visible = false;
-                this.adjInfrSpendBtn.Visible = false;
-                this.adjOffSpendBtn.Visible = false;
-                this.adjustKeepSpendBtn.Visible = false;
-                this.adjustTaxButton.Visible = false;
+                this.adjustSpendBtn.Visible = false;
+                this.taxRateLabel.Visible = false;
+                this.garrSpendLabel.Visible = false;
+                this.offSpendLabel.Visible = false;
+                this.infraSpendLabel.Visible = false;
+                this.keepSpendLabel.Visible = false;
                 this.adjGarrSpendTextBox.Visible = false;
                 this.adjInfrSpendTextBox.Visible = false;
                 this.adjOffSpendTextBox.Visible = false;
@@ -2221,73 +2223,69 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of the adjustTaxButton
-        /// which adjusts the fief tax rate for the coming year
+        /// Responds to the click event of the adjustSpendBtn button
+        /// which commits the expenditures and tax rate for the coming year
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
-        private void adjustTaxButton_Click(object sender, EventArgs e)
+        private void adjustSpendBtn_Click(object sender, EventArgs e)
         {
-            // adjust tax rate
-            this.fiefToView.adjustTaxRate(Convert.ToDouble(this.adjustTaxTextBox.Text));
-            // refresh display
-            this.refreshFiefContainer();
-        }
+            try
+            {
+                Double newTax = Convert.ToDouble(this.adjustTaxTextBox.Text);
+                // check if amount/rate changed
+                if (newTax != this.fiefToView.taxRateNext)
+                {
+                    // adjust tax rate
+                    this.fiefToView.adjustTaxRate(newTax);
+                }
 
-        /// <summary>
-        /// Responds to the click event of the adjOffSpend button
-        /// which adjusts the officials spend for the coming year
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void adjOffSpend_Click(object sender, EventArgs e)
-        {
-            // adjust officials spend
-            this.fiefToView.adjustOfficialsSpend(Convert.ToUInt32(this.adjOffSpendTextBox.Text));
-            // refresh display
-            this.refreshFiefContainer();
-        }
+                UInt32 newOff = Convert.ToUInt32(this.adjOffSpendTextBox.Text);
+                // check if amount/rate changed
+                if (newOff != this.fiefToView.officialsSpendNext)
+                {
+                    // adjust officials spend
+                    this.fiefToView.adjustOfficialsSpend(Convert.ToUInt32(this.adjOffSpendTextBox.Text));
+                }
 
-        /// <summary>
-        /// Responds to the click event of the adjGarrSpendBtn button
-        /// which adjusts the garrison spend for the coming year
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void adjGarrSpendBtn_Click(object sender, EventArgs e)
-        {
-            // adjust garrison spend
-            this.fiefToView.adjustGarrisonSpend(Convert.ToUInt32(this.adjGarrSpendTextBox.Text));
-            // refresh display
-            this.refreshFiefContainer();
-        }
+                UInt32 newGarr = Convert.ToUInt32(this.adjGarrSpendTextBox.Text);
+                // check if amount/rate changed
+                if (newGarr != this.fiefToView.garrisonSpendNext)
+                {
+                    // adjust garrison spend
+                    this.fiefToView.adjustGarrisonSpend(Convert.ToUInt32(this.adjGarrSpendTextBox.Text));
+                }
 
-        /// <summary>
-        /// Responds to the click event of the adjInfrSpendBtn button
-        /// which adjusts the infrastructure spend for the coming year
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void adjInfrSpendBtn_Click(object sender, EventArgs e)
-        {
-            // adjust infrastructure spend
-            this.fiefToView.adjustInfraSpend(Convert.ToUInt32(this.adjInfrSpendTextBox.Text));
-            // refresh display
-            this.refreshFiefContainer();
-        }
+                UInt32 newInfra = Convert.ToUInt32(this.adjInfrSpendTextBox.Text);
+                // check if amount/rate changed
+                if (newInfra != this.fiefToView.infrastructureSpendNext)
+                {
+                    // adjust infrastructure spend
+                    this.fiefToView.adjustInfraSpend(Convert.ToUInt32(this.adjInfrSpendTextBox.Text));
+                }
 
-        /// <summary>
-        /// Responds to the click event of the adjustKeepSpendBtn button
-        /// which adjusts the keep spend for the coming year
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void adjustKeepSpendBtn_Click(object sender, EventArgs e)
-        {
-            // adjust keep spend
-            this.fiefToView.adjustKeepSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
-            // refresh display
-            this.refreshFiefContainer();
+                UInt32 newKeep = Convert.ToUInt32(this.adjustKeepSpendTextBox.Text);
+                // check if amount/rate changed
+                if (newKeep != this.fiefToView.keepSpendNext)
+                {
+                    // adjust keep spend
+                    this.fiefToView.adjustKeepSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
+                }
+
+            }
+            catch (System.FormatException fe)
+            {
+                System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+            }
+            catch (System.OverflowException ofe)
+            {
+                System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+            }
+            finally
+            {
+                // refresh display
+                this.refreshFiefContainer();
+            }
         }
 
         /// <summary>
@@ -2310,6 +2308,7 @@ namespace hist_mmorpg
         private void navigateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // refresh navigation data
+            this.fiefToView = this.myChar.location;
             this.refreshTravelContainer();
             // show navigation screen
             this.travelContainer.BringToFront();
@@ -2451,7 +2450,8 @@ namespace hist_mmorpg
             if (fiefToDisplay != null)
             {
                 this.fiefToView = fiefToDisplay;
-                this.fiefTextBox.Text = this.displayFief(fiefToView);
+                this.refreshFiefContainer(this.fiefToView);
+                //this.fiefTextBox.Text = this.displayFief(fiefToView);
                 this.fiefContainer.BringToFront();
             }
         }
@@ -2500,21 +2500,28 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void visitCourtBtn1_Click(object sender, EventArgs e)
         {
+            bool enteredKeep = false;
+
             // if player not in keep
             if (!this.myChar.inKeep)
             {
                 // attempt to enter keep
-                bool entered = this.myChar.enterKeep();
-                // if successful
-                if (entered)
-                {
-                    // refresh court screen 
-                    this.refreshMeetingPlaceDisplay("court");
-                    // remove any previously displayed characters
-                    this.meetingPlaceCharDisplayTextBox.Text = "";
-                    // display court screen
-                    this.meetingPlaceContainer.BringToFront();
-                }
+                enteredKeep = this.myChar.enterKeep();
+            }
+            else
+            {
+                enteredKeep = true;
+            }
+
+            // if in keep
+            if (enteredKeep)
+            {
+                // refresh court screen 
+                this.refreshMeetingPlaceDisplay("court");
+                // remove any previously displayed characters
+                this.meetingPlaceCharDisplayTextBox.Text = "";
+                // display court screen
+                this.meetingPlaceContainer.BringToFront();
             }
 
         }
@@ -2602,9 +2609,25 @@ namespace hist_mmorpg
             // if selected NPC is not a current employee
             if (!this.myChar.employees.Contains(charToView))
             {
-                // make an offer
-                this.myChar.processEmployOffer((NonPlayerCharacter)charToView, Convert.ToUInt32(this.hireNPC_TextBox.Text));
+                try
+                {
+                    // get offer amount
+                    UInt32 newOffer = Convert.ToUInt32(this.hireNPC_TextBox.Text);
+                    // submit offer
+                    this.myChar.processEmployOffer((NonPlayerCharacter)charToView, newOffer);
+
+                }
+                catch (System.FormatException fe)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+                catch (System.OverflowException ofe)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+
             }
+
             // if selected NPC is already an employee
             else
             {
@@ -2616,6 +2639,7 @@ namespace hist_mmorpg
             string textToDisplay = "";
             textToDisplay += this.displayCharacter(charToView);
             this.meetingPlaceCharDisplayTextBox.Text = textToDisplay;
+
         }
 
         /// <summary>
@@ -2667,20 +2691,29 @@ namespace hist_mmorpg
         /// populates the character's goTo queue, and invokes characterMultiMove to
         /// perform the move
         /// </summary>
+        /// <returns>bool indicating whether odd</returns>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
         private void charMultiMoveBtn_Click(object sender, EventArgs e)
         {
-            bool success = false;
-            // retrieves target fief
-            Fief target = fiefMasterList[this.charMultiMoveTextBox.Text];
-            // obtains goTo queue for shortest path to target
-            this.charToView.goTo = this.gameMap.getShortestPath(this.charToView.location, target);
-            // if valid, perform move
-            if (this.charToView.goTo.Count > 0)
+            // check for existence of fief
+            if (this.fiefMasterList.ContainsKey(this.charMultiMoveTextBox.Text))
             {
-                success = this.characterMultiMove(this.charToView);
+                // retrieves target fief
+                Fief target = fiefMasterList[this.charMultiMoveTextBox.Text];
+                // obtains goTo queue for shortest path to target
+                this.charToView.goTo = this.gameMap.getShortestPath(this.charToView.location, target);
+                // if valid, perform move
+                if (this.charToView.goTo.Count > 0)
+                {
+                    this.characterMultiMove(this.charToView);
+                }
             }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("Target fief ID not found.  Please ensure fiefID is valid.");
+            }
+
         }
 
         /// <summary>

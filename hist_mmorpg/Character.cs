@@ -663,7 +663,7 @@ namespace hist_mmorpg
             else if (offer < minAcceptable)
             {
                 accepted = false;
-                System.Windows.Forms.MessageBox.Show(npc.name + ": Don't insult me, Milord!");
+                System.Windows.Forms.MessageBox.Show(npc.name + ": Don't insult me, Sirrah!");
             }
 
             // automatically reject if offer !> previous offer
@@ -681,7 +681,11 @@ namespace hist_mmorpg
                 if (chance <= offerPercentage)
                 {
                     accepted = true;
-                    System.Windows.Forms.MessageBox.Show(npc.name + ": It's a deal, Good Sir!");
+                    System.Windows.Forms.MessageBox.Show(npc.name + ": It's a deal, Milord!");
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show(npc.name + ": You'll have to do better than that, Good Sir!");
                 }
             }
 
@@ -689,11 +693,6 @@ namespace hist_mmorpg
             {
                 // hire this NPC
                 this.hireNPC(npc, offer);
-            }
-
-            else
-            {
-                System.Windows.Forms.MessageBox.Show(npc.name + ": You'll have to do better than that, Good Sir!");
             }
 
             return accepted;

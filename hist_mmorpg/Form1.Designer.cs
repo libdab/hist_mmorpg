@@ -44,18 +44,19 @@ namespace hist_mmorpg
             this.updateCharBtn = new System.Windows.Forms.Button();
             this.characterTextBox = new System.Windows.Forms.TextBox();
             this.fiefContainer = new System.Windows.Forms.SplitContainer();
+            this.keepSpendLabel = new System.Windows.Forms.Label();
+            this.infraSpendLabel = new System.Windows.Forms.Label();
+            this.garrSpendLabel = new System.Windows.Forms.Label();
+            this.offSpendLabel = new System.Windows.Forms.Label();
+            this.taxRateLabel = new System.Windows.Forms.Label();
             this.viewBailiffBtn = new System.Windows.Forms.Button();
             this.updateFiefBtn = new System.Windows.Forms.Button();
             this.adjustKeepSpendTextBox = new System.Windows.Forms.TextBox();
-            this.adjustKeepSpendBtn = new System.Windows.Forms.Button();
             this.adjInfrSpendTextBox = new System.Windows.Forms.TextBox();
-            this.adjInfrSpendBtn = new System.Windows.Forms.Button();
             this.adjGarrSpendTextBox = new System.Windows.Forms.TextBox();
-            this.adjGarrSpendBtn = new System.Windows.Forms.Button();
             this.adjOffSpendTextBox = new System.Windows.Forms.TextBox();
             this.adjustTaxTextBox = new System.Windows.Forms.TextBox();
-            this.adjustTaxButton = new System.Windows.Forms.Button();
-            this.adjOffSpendBtn = new System.Windows.Forms.Button();
+            this.adjustSpendBtn = new System.Windows.Forms.Button();
             this.fiefTextBox = new System.Windows.Forms.TextBox();
             this.travelContainer = new System.Windows.Forms.SplitContainer();
             this.visitTavernBtn = new System.Windows.Forms.Button();
@@ -239,18 +240,19 @@ namespace hist_mmorpg
             // 
             // fiefContainer.Panel1
             // 
+            this.fiefContainer.Panel1.Controls.Add(this.keepSpendLabel);
+            this.fiefContainer.Panel1.Controls.Add(this.infraSpendLabel);
+            this.fiefContainer.Panel1.Controls.Add(this.garrSpendLabel);
+            this.fiefContainer.Panel1.Controls.Add(this.offSpendLabel);
+            this.fiefContainer.Panel1.Controls.Add(this.taxRateLabel);
             this.fiefContainer.Panel1.Controls.Add(this.viewBailiffBtn);
             this.fiefContainer.Panel1.Controls.Add(this.updateFiefBtn);
             this.fiefContainer.Panel1.Controls.Add(this.adjustKeepSpendTextBox);
-            this.fiefContainer.Panel1.Controls.Add(this.adjustKeepSpendBtn);
             this.fiefContainer.Panel1.Controls.Add(this.adjInfrSpendTextBox);
-            this.fiefContainer.Panel1.Controls.Add(this.adjInfrSpendBtn);
             this.fiefContainer.Panel1.Controls.Add(this.adjGarrSpendTextBox);
-            this.fiefContainer.Panel1.Controls.Add(this.adjGarrSpendBtn);
             this.fiefContainer.Panel1.Controls.Add(this.adjOffSpendTextBox);
             this.fiefContainer.Panel1.Controls.Add(this.adjustTaxTextBox);
-            this.fiefContainer.Panel1.Controls.Add(this.adjustTaxButton);
-            this.fiefContainer.Panel1.Controls.Add(this.adjOffSpendBtn);
+            this.fiefContainer.Panel1.Controls.Add(this.adjustSpendBtn);
             // 
             // fiefContainer.Panel2
             // 
@@ -259,11 +261,56 @@ namespace hist_mmorpg
             this.fiefContainer.SplitterDistance = 317;
             this.fiefContainer.TabIndex = 3;
             // 
+            // keepSpendLabel
+            // 
+            this.keepSpendLabel.AutoSize = true;
+            this.keepSpendLabel.Location = new System.Drawing.Point(77, 139);
+            this.keepSpendLabel.Name = "keepSpendLabel";
+            this.keepSpendLabel.Size = new System.Drawing.Size(100, 13);
+            this.keepSpendLabel.TabIndex = 16;
+            this.keepSpendLabel.Text = "Keep Expenditure : ";
+            // 
+            // infraSpendLabel
+            // 
+            this.infraSpendLabel.AutoSize = true;
+            this.infraSpendLabel.Location = new System.Drawing.Point(40, 107);
+            this.infraSpendLabel.Name = "infraSpendLabel";
+            this.infraSpendLabel.Size = new System.Drawing.Size(137, 13);
+            this.infraSpendLabel.TabIndex = 15;
+            this.infraSpendLabel.Text = "Infrastructure Expenditure : ";
+            // 
+            // garrSpendLabel
+            // 
+            this.garrSpendLabel.AutoSize = true;
+            this.garrSpendLabel.Location = new System.Drawing.Point(63, 77);
+            this.garrSpendLabel.Name = "garrSpendLabel";
+            this.garrSpendLabel.Size = new System.Drawing.Size(114, 13);
+            this.garrSpendLabel.TabIndex = 14;
+            this.garrSpendLabel.Text = "Garrison Expenditure : ";
+            // 
+            // offSpendLabel
+            // 
+            this.offSpendLabel.AutoSize = true;
+            this.offSpendLabel.Location = new System.Drawing.Point(65, 48);
+            this.offSpendLabel.Name = "offSpendLabel";
+            this.offSpendLabel.Size = new System.Drawing.Size(112, 13);
+            this.offSpendLabel.TabIndex = 13;
+            this.offSpendLabel.Text = "Officials Expenditure : ";
+            // 
+            // taxRateLabel
+            // 
+            this.taxRateLabel.AutoSize = true;
+            this.taxRateLabel.Location = new System.Drawing.Point(117, 19);
+            this.taxRateLabel.Name = "taxRateLabel";
+            this.taxRateLabel.Size = new System.Drawing.Size(60, 13);
+            this.taxRateLabel.TabIndex = 12;
+            this.taxRateLabel.Text = "Tax Rate : ";
+            // 
             // viewBailiffBtn
             // 
-            this.viewBailiffBtn.Location = new System.Drawing.Point(13, 168);
+            this.viewBailiffBtn.Location = new System.Drawing.Point(70, 227);
             this.viewBailiffBtn.Name = "viewBailiffBtn";
-            this.viewBailiffBtn.Size = new System.Drawing.Size(124, 23);
+            this.viewBailiffBtn.Size = new System.Drawing.Size(122, 23);
             this.viewBailiffBtn.TabIndex = 11;
             this.viewBailiffBtn.Text = "View Bailiff";
             this.viewBailiffBtn.UseVisualStyleBackColor = true;
@@ -271,7 +318,7 @@ namespace hist_mmorpg
             // 
             // updateFiefBtn
             // 
-            this.updateFiefBtn.Location = new System.Drawing.Point(15, 197);
+            this.updateFiefBtn.Location = new System.Drawing.Point(70, 256);
             this.updateFiefBtn.Name = "updateFiefBtn";
             this.updateFiefBtn.Size = new System.Drawing.Size(122, 23);
             this.updateFiefBtn.TabIndex = 10;
@@ -281,88 +328,48 @@ namespace hist_mmorpg
             // 
             // adjustKeepSpendTextBox
             // 
-            this.adjustKeepSpendTextBox.Location = new System.Drawing.Point(144, 138);
+            this.adjustKeepSpendTextBox.Location = new System.Drawing.Point(187, 136);
             this.adjustKeepSpendTextBox.Name = "adjustKeepSpendTextBox";
-            this.adjustKeepSpendTextBox.Size = new System.Drawing.Size(55, 20);
+            this.adjustKeepSpendTextBox.Size = new System.Drawing.Size(56, 20);
             this.adjustKeepSpendTextBox.TabIndex = 9;
-            // 
-            // adjustKeepSpendBtn
-            // 
-            this.adjustKeepSpendBtn.Location = new System.Drawing.Point(14, 138);
-            this.adjustKeepSpendBtn.Name = "adjustKeepSpendBtn";
-            this.adjustKeepSpendBtn.Size = new System.Drawing.Size(123, 23);
-            this.adjustKeepSpendBtn.TabIndex = 8;
-            this.adjustKeepSpendBtn.Text = "Adjust Keep Spend";
-            this.adjustKeepSpendBtn.UseVisualStyleBackColor = true;
-            this.adjustKeepSpendBtn.Click += new System.EventHandler(this.adjustKeepSpendBtn_Click);
             // 
             // adjInfrSpendTextBox
             // 
-            this.adjInfrSpendTextBox.Location = new System.Drawing.Point(143, 93);
+            this.adjInfrSpendTextBox.Location = new System.Drawing.Point(186, 104);
             this.adjInfrSpendTextBox.Name = "adjInfrSpendTextBox";
             this.adjInfrSpendTextBox.Size = new System.Drawing.Size(57, 20);
             this.adjInfrSpendTextBox.TabIndex = 7;
             // 
-            // adjInfrSpendBtn
-            // 
-            this.adjInfrSpendBtn.Location = new System.Drawing.Point(13, 93);
-            this.adjInfrSpendBtn.Name = "adjInfrSpendBtn";
-            this.adjInfrSpendBtn.Size = new System.Drawing.Size(124, 39);
-            this.adjInfrSpendBtn.TabIndex = 6;
-            this.adjInfrSpendBtn.Text = "Adjust Infrastructure Spend";
-            this.adjInfrSpendBtn.UseVisualStyleBackColor = true;
-            this.adjInfrSpendBtn.Click += new System.EventHandler(this.adjInfrSpendBtn_Click);
-            // 
             // adjGarrSpendTextBox
             // 
-            this.adjGarrSpendTextBox.Location = new System.Drawing.Point(144, 63);
+            this.adjGarrSpendTextBox.Location = new System.Drawing.Point(187, 74);
             this.adjGarrSpendTextBox.Name = "adjGarrSpendTextBox";
             this.adjGarrSpendTextBox.Size = new System.Drawing.Size(56, 20);
             this.adjGarrSpendTextBox.TabIndex = 5;
             // 
-            // adjGarrSpendBtn
-            // 
-            this.adjGarrSpendBtn.Location = new System.Drawing.Point(13, 63);
-            this.adjGarrSpendBtn.Name = "adjGarrSpendBtn";
-            this.adjGarrSpendBtn.Size = new System.Drawing.Size(124, 23);
-            this.adjGarrSpendBtn.TabIndex = 4;
-            this.adjGarrSpendBtn.Text = "Adjust Garrison Spend";
-            this.adjGarrSpendBtn.UseVisualStyleBackColor = true;
-            this.adjGarrSpendBtn.Click += new System.EventHandler(this.adjGarrSpendBtn_Click);
-            // 
             // adjOffSpendTextBox
             // 
-            this.adjOffSpendTextBox.Location = new System.Drawing.Point(144, 33);
+            this.adjOffSpendTextBox.Location = new System.Drawing.Point(187, 44);
             this.adjOffSpendTextBox.Name = "adjOffSpendTextBox";
             this.adjOffSpendTextBox.Size = new System.Drawing.Size(56, 20);
             this.adjOffSpendTextBox.TabIndex = 3;
             // 
             // adjustTaxTextBox
             // 
-            this.adjustTaxTextBox.Location = new System.Drawing.Point(143, 6);
+            this.adjustTaxTextBox.Location = new System.Drawing.Point(187, 14);
             this.adjustTaxTextBox.Name = "adjustTaxTextBox";
             this.adjustTaxTextBox.Size = new System.Drawing.Size(57, 20);
             this.adjustTaxTextBox.TabIndex = 2;
             // 
-            // adjustTaxButton
+            // adjustSpendBtn
             // 
-            this.adjustTaxButton.Location = new System.Drawing.Point(12, 4);
-            this.adjustTaxButton.Name = "adjustTaxButton";
-            this.adjustTaxButton.Size = new System.Drawing.Size(125, 23);
-            this.adjustTaxButton.TabIndex = 1;
-            this.adjustTaxButton.Text = "Adjust Tax Rate";
-            this.adjustTaxButton.UseVisualStyleBackColor = true;
-            this.adjustTaxButton.Click += new System.EventHandler(this.adjustTaxButton_Click);
-            // 
-            // adjOffSpendBtn
-            // 
-            this.adjOffSpendBtn.Location = new System.Drawing.Point(13, 33);
-            this.adjOffSpendBtn.Name = "adjOffSpendBtn";
-            this.adjOffSpendBtn.Size = new System.Drawing.Size(124, 23);
-            this.adjOffSpendBtn.TabIndex = 0;
-            this.adjOffSpendBtn.Text = "Adjust Officials Spend";
-            this.adjOffSpendBtn.UseVisualStyleBackColor = true;
-            this.adjOffSpendBtn.Click += new System.EventHandler(this.adjOffSpend_Click);
+            this.adjustSpendBtn.Location = new System.Drawing.Point(70, 185);
+            this.adjustSpendBtn.Name = "adjustSpendBtn";
+            this.adjustSpendBtn.Size = new System.Drawing.Size(122, 36);
+            this.adjustSpendBtn.TabIndex = 0;
+            this.adjustSpendBtn.Text = "Commit amounts above";
+            this.adjustSpendBtn.UseVisualStyleBackColor = true;
+            this.adjustSpendBtn.Click += new System.EventHandler(this.adjustSpendBtn_Click);
             // 
             // fiefTextBox
             // 
@@ -644,11 +651,11 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(801, 458);
+            this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.travelContainer);
-            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.characterContainer);
-            this.Controls.Add(this.fiefsOwnedContainer);
+            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
@@ -707,16 +714,12 @@ namespace hist_mmorpg
         private System.Windows.Forms.SplitContainer fiefContainer;
         private System.Windows.Forms.ToolStripMenuItem fiefManagementToolStripMenuItem;
         private System.Windows.Forms.TextBox fiefTextBox;
-        private System.Windows.Forms.Button adjOffSpendBtn;
-        private System.Windows.Forms.Button adjustTaxButton;
+        private System.Windows.Forms.Button adjustSpendBtn;
         private System.Windows.Forms.TextBox adjustTaxTextBox;
         private System.Windows.Forms.TextBox adjOffSpendTextBox;
         private System.Windows.Forms.TextBox adjGarrSpendTextBox;
-        private System.Windows.Forms.Button adjGarrSpendBtn;
         private System.Windows.Forms.TextBox adjInfrSpendTextBox;
-        private System.Windows.Forms.Button adjInfrSpendBtn;
         private System.Windows.Forms.TextBox adjustKeepSpendTextBox;
-        private System.Windows.Forms.Button adjustKeepSpendBtn;
         private System.Windows.Forms.Button updateFiefBtn;
         private System.Windows.Forms.ToolStripMenuItem travelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem navigateToolStripMenuItem;
@@ -746,6 +749,11 @@ namespace hist_mmorpg
         private System.Windows.Forms.TextBox hireNPC_TextBox;
         private System.Windows.Forms.TextBox charMultiMoveTextBox;
         private System.Windows.Forms.Button charMultiMoveBtn;
+        private System.Windows.Forms.Label keepSpendLabel;
+        private System.Windows.Forms.Label infraSpendLabel;
+        private System.Windows.Forms.Label garrSpendLabel;
+        private System.Windows.Forms.Label offSpendLabel;
+        private System.Windows.Forms.Label taxRateLabel;
 
     }
 }
