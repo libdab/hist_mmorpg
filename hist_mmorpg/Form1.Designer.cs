@@ -44,6 +44,7 @@ namespace hist_mmorpg
             this.updateCharBtn = new System.Windows.Forms.Button();
             this.characterTextBox = new System.Windows.Forms.TextBox();
             this.fiefContainer = new System.Windows.Forms.SplitContainer();
+            this.setBailiffBtn = new System.Windows.Forms.Button();
             this.keepSpendLabel = new System.Windows.Forms.Label();
             this.infraSpendLabel = new System.Windows.Forms.Label();
             this.garrSpendLabel = new System.Windows.Forms.Label();
@@ -80,6 +81,8 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListContainer = new System.Windows.Forms.SplitContainer();
             this.meetingPlaceTextBox = new System.Windows.Forms.TextBox();
             this.meetingPlaceCharsListView = new System.Windows.Forms.ListView();
+            this.removeBaliffBtn = new System.Windows.Forms.Button();
+            this.selfBailiffBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -150,15 +153,15 @@ namespace hist_mmorpg
             // fiefManagementToolStripMenuItem
             // 
             this.fiefManagementToolStripMenuItem.Name = "fiefManagementToolStripMenuItem";
-            this.fiefManagementToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.fiefManagementToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.fiefManagementToolStripMenuItem.Text = "Current fief";
             this.fiefManagementToolStripMenuItem.Click += new System.EventHandler(this.fiefManagementToolStripMenuItem_Click);
             // 
             // myFiefsToolStripMenuItem
             // 
             this.myFiefsToolStripMenuItem.Name = "myFiefsToolStripMenuItem";
-            this.myFiefsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
-            this.myFiefsToolStripMenuItem.Text = "My fiefs";
+            this.myFiefsToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.myFiefsToolStripMenuItem.Text = "Manage my fiefs";
             this.myFiefsToolStripMenuItem.Click += new System.EventHandler(this.myFiefsToolStripMenuItem_Click);
             // 
             // travelToolStripMenuItem
@@ -191,7 +194,7 @@ namespace hist_mmorpg
             // characterContainer.Panel2
             // 
             this.characterContainer.Panel2.Controls.Add(this.characterTextBox);
-            this.characterContainer.Size = new System.Drawing.Size(801, 434);
+            this.characterContainer.Size = new System.Drawing.Size(801, 511);
             this.characterContainer.SplitterDistance = 264;
             this.characterContainer.TabIndex = 2;
             // 
@@ -229,7 +232,7 @@ namespace hist_mmorpg
             this.characterTextBox.Multiline = true;
             this.characterTextBox.Name = "characterTextBox";
             this.characterTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.characterTextBox.Size = new System.Drawing.Size(533, 434);
+            this.characterTextBox.Size = new System.Drawing.Size(533, 511);
             this.characterTextBox.TabIndex = 0;
             // 
             // fiefContainer
@@ -240,6 +243,9 @@ namespace hist_mmorpg
             // 
             // fiefContainer.Panel1
             // 
+            this.fiefContainer.Panel1.Controls.Add(this.selfBailiffBtn);
+            this.fiefContainer.Panel1.Controls.Add(this.removeBaliffBtn);
+            this.fiefContainer.Panel1.Controls.Add(this.setBailiffBtn);
             this.fiefContainer.Panel1.Controls.Add(this.keepSpendLabel);
             this.fiefContainer.Panel1.Controls.Add(this.infraSpendLabel);
             this.fiefContainer.Panel1.Controls.Add(this.garrSpendLabel);
@@ -257,9 +263,19 @@ namespace hist_mmorpg
             // fiefContainer.Panel2
             // 
             this.fiefContainer.Panel2.Controls.Add(this.fiefTextBox);
-            this.fiefContainer.Size = new System.Drawing.Size(801, 434);
+            this.fiefContainer.Size = new System.Drawing.Size(801, 511);
             this.fiefContainer.SplitterDistance = 317;
             this.fiefContainer.TabIndex = 3;
+            // 
+            // setBailiffBtn
+            // 
+            this.setBailiffBtn.Location = new System.Drawing.Point(70, 285);
+            this.setBailiffBtn.Name = "setBailiffBtn";
+            this.setBailiffBtn.Size = new System.Drawing.Size(122, 23);
+            this.setBailiffBtn.TabIndex = 17;
+            this.setBailiffBtn.Text = "Appoint a Bailiff";
+            this.setBailiffBtn.UseVisualStyleBackColor = true;
+            this.setBailiffBtn.Click += new System.EventHandler(this.setBailiffBtn_Click);
             // 
             // keepSpendLabel
             // 
@@ -378,7 +394,7 @@ namespace hist_mmorpg
             this.fiefTextBox.Multiline = true;
             this.fiefTextBox.Name = "fiefTextBox";
             this.fiefTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.fiefTextBox.Size = new System.Drawing.Size(480, 434);
+            this.fiefTextBox.Size = new System.Drawing.Size(480, 511);
             this.fiefTextBox.TabIndex = 0;
             // 
             // travelContainer
@@ -396,7 +412,7 @@ namespace hist_mmorpg
             // travelContainer.Panel2
             // 
             this.travelContainer.Panel2.Controls.Add(this.travelNavigationPanel);
-            this.travelContainer.Size = new System.Drawing.Size(801, 434);
+            this.travelContainer.Size = new System.Drawing.Size(801, 511);
             this.travelContainer.SplitterDistance = 266;
             this.travelContainer.TabIndex = 4;
             // 
@@ -528,7 +544,7 @@ namespace hist_mmorpg
             // fiefsOwnedContainer.Panel2
             // 
             this.fiefsOwnedContainer.Panel2.Controls.Add(this.fiefsListView);
-            this.fiefsOwnedContainer.Size = new System.Drawing.Size(801, 434);
+            this.fiefsOwnedContainer.Size = new System.Drawing.Size(801, 511);
             this.fiefsOwnedContainer.SplitterDistance = 266;
             this.fiefsOwnedContainer.TabIndex = 5;
             // 
@@ -539,7 +555,7 @@ namespace hist_mmorpg
             this.fiefsListView.GridLines = true;
             this.fiefsListView.Location = new System.Drawing.Point(0, 0);
             this.fiefsListView.Name = "fiefsListView";
-            this.fiefsListView.Size = new System.Drawing.Size(531, 434);
+            this.fiefsListView.Size = new System.Drawing.Size(531, 511);
             this.fiefsListView.TabIndex = 0;
             this.fiefsListView.UseCompatibleStateImageBehavior = false;
             this.fiefsListView.View = System.Windows.Forms.View.Details;
@@ -559,7 +575,7 @@ namespace hist_mmorpg
             // meetingPlaceContainer.Panel2
             // 
             this.meetingPlaceContainer.Panel2.Controls.Add(this.meetingPlaceCharsContainer);
-            this.meetingPlaceContainer.Size = new System.Drawing.Size(801, 434);
+            this.meetingPlaceContainer.Size = new System.Drawing.Size(801, 511);
             this.meetingPlaceContainer.SplitterDistance = 214;
             this.meetingPlaceContainer.TabIndex = 6;
             // 
@@ -593,7 +609,7 @@ namespace hist_mmorpg
             // meetingPlaceCharsContainer.Panel2
             // 
             this.meetingPlaceCharsContainer.Panel2.Controls.Add(this.meetingPlaceCharsListContainer);
-            this.meetingPlaceCharsContainer.Size = new System.Drawing.Size(583, 434);
+            this.meetingPlaceCharsContainer.Size = new System.Drawing.Size(583, 511);
             this.meetingPlaceCharsContainer.SplitterDistance = 234;
             this.meetingPlaceCharsContainer.TabIndex = 0;
             // 
@@ -603,7 +619,7 @@ namespace hist_mmorpg
             this.meetingPlaceCharDisplayTextBox.Location = new System.Drawing.Point(0, 0);
             this.meetingPlaceCharDisplayTextBox.Multiline = true;
             this.meetingPlaceCharDisplayTextBox.Name = "meetingPlaceCharDisplayTextBox";
-            this.meetingPlaceCharDisplayTextBox.Size = new System.Drawing.Size(234, 434);
+            this.meetingPlaceCharDisplayTextBox.Size = new System.Drawing.Size(234, 511);
             this.meetingPlaceCharDisplayTextBox.TabIndex = 0;
             // 
             // meetingPlaceCharsListContainer
@@ -620,8 +636,8 @@ namespace hist_mmorpg
             // meetingPlaceCharsListContainer.Panel2
             // 
             this.meetingPlaceCharsListContainer.Panel2.Controls.Add(this.meetingPlaceCharsListView);
-            this.meetingPlaceCharsListContainer.Size = new System.Drawing.Size(345, 434);
-            this.meetingPlaceCharsListContainer.SplitterDistance = 191;
+            this.meetingPlaceCharsListContainer.Size = new System.Drawing.Size(345, 511);
+            this.meetingPlaceCharsListContainer.SplitterDistance = 224;
             this.meetingPlaceCharsListContainer.TabIndex = 0;
             // 
             // meetingPlaceTextBox
@@ -630,7 +646,7 @@ namespace hist_mmorpg
             this.meetingPlaceTextBox.Location = new System.Drawing.Point(0, 0);
             this.meetingPlaceTextBox.Multiline = true;
             this.meetingPlaceTextBox.Name = "meetingPlaceTextBox";
-            this.meetingPlaceTextBox.Size = new System.Drawing.Size(345, 191);
+            this.meetingPlaceTextBox.Size = new System.Drawing.Size(345, 224);
             this.meetingPlaceTextBox.TabIndex = 0;
             // 
             // meetingPlaceCharsListView
@@ -640,22 +656,42 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListView.GridLines = true;
             this.meetingPlaceCharsListView.Location = new System.Drawing.Point(0, 0);
             this.meetingPlaceCharsListView.Name = "meetingPlaceCharsListView";
-            this.meetingPlaceCharsListView.Size = new System.Drawing.Size(345, 239);
+            this.meetingPlaceCharsListView.Size = new System.Drawing.Size(345, 283);
             this.meetingPlaceCharsListView.TabIndex = 0;
             this.meetingPlaceCharsListView.UseCompatibleStateImageBehavior = false;
             this.meetingPlaceCharsListView.View = System.Windows.Forms.View.Details;
             this.meetingPlaceCharsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.meetingPlaceCharsListView_ItemSelectionChanged);
             // 
+            // removeBaliffBtn
+            // 
+            this.removeBaliffBtn.Location = new System.Drawing.Point(70, 314);
+            this.removeBaliffBtn.Name = "removeBaliffBtn";
+            this.removeBaliffBtn.Size = new System.Drawing.Size(122, 23);
+            this.removeBaliffBtn.TabIndex = 18;
+            this.removeBaliffBtn.Text = "Remove the Bailiff";
+            this.removeBaliffBtn.UseVisualStyleBackColor = true;
+            this.removeBaliffBtn.Click += new System.EventHandler(this.removeBaliffBtn_Click);
+            // 
+            // selfBailiffBtn
+            // 
+            this.selfBailiffBtn.Location = new System.Drawing.Point(70, 343);
+            this.selfBailiffBtn.Name = "selfBailiffBtn";
+            this.selfBailiffBtn.Size = new System.Drawing.Size(122, 35);
+            this.selfBailiffBtn.TabIndex = 19;
+            this.selfBailiffBtn.Text = "Appoint Myself as Bailiff";
+            this.selfBailiffBtn.UseVisualStyleBackColor = true;
+            this.selfBailiffBtn.Click += new System.EventHandler(this.selfBailiffBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(801, 458);
-            this.Controls.Add(this.fiefsOwnedContainer);
+            this.ClientSize = new System.Drawing.Size(801, 535);
+            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.travelContainer);
+            this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.characterContainer);
-            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
@@ -754,6 +790,9 @@ namespace hist_mmorpg
         private System.Windows.Forms.Label garrSpendLabel;
         private System.Windows.Forms.Label offSpendLabel;
         private System.Windows.Forms.Label taxRateLabel;
+        private System.Windows.Forms.Button setBailiffBtn;
+        private System.Windows.Forms.Button removeBaliffBtn;
+        private System.Windows.Forms.Button selfBailiffBtn;
 
     }
 }

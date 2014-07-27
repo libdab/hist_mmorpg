@@ -15,9 +15,11 @@ using CorrugatedIron.Models;
 
 namespace hist_mmorpg
 {
+    /// <summary>
+    /// Main user interface component
+    /// </summary>
     public partial class Form1 : Form
     {
-
         /// <summary>
         /// Holds all NonPlayerCharacter objects
         /// </summary>
@@ -73,7 +75,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds main PlayerCharacter
         /// </summary>
-        private PlayerCharacter myChar;
+        public PlayerCharacter myChar;
         /// <summary>
         /// Holds Character to view in UI
         /// </summary>
@@ -81,7 +83,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds Fief to view in UI
         /// </summary>
-        private Fief fiefToView;
+        public Fief fiefToView;
         /// <summary>
         /// Holds HexMapGraph for this game
         /// </summary>
@@ -104,7 +106,7 @@ namespace hist_mmorpg
         /// </summary>
         public Form1()
         {
-            // initialise display
+            // initialise form elements
             InitializeComponent();
 
 			// initialise Riak elements
@@ -1580,6 +1582,7 @@ namespace hist_mmorpg
             // Fief overlord
             textToDisplay += "Overlord: " + this.myChar.location.province.overlord.name + "\r\n";
 
+            this.meetingPlaceTextBox.ReadOnly = true;
             this.meetingPlaceTextBox.Text = textToDisplay;
         }
 
@@ -2126,6 +2129,7 @@ namespace hist_mmorpg
             textToDisplay += this.displayCharacter(ch);
 
             // refresh Character display TextBox
+            this.characterTextBox.ReadOnly = true;
             this.characterTextBox.Text = textToDisplay;
 
             // multimove button only enabled if is player or an employee
@@ -2148,7 +2152,8 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void personalCharacteristicsAndAffairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.refreshCharacterContainer();
+            this.charToView = this.myChar;
+            this.refreshCharacterContainer(this.charToView);
         }
 
         /// <summary>
@@ -2172,7 +2177,7 @@ namespace hist_mmorpg
             this.fiefTextBox.Text = textToDisplay;
             this.fiefTextBox.ReadOnly = true;
 
-            // fief management buttons and TextBoxes only enabled if fief is owned by player
+            // if fief is NOT owned by player, disable fief management buttons and TextBoxes 
             if (!myChar.ownedFiefs.Contains(f))
             {
                 this.adjustSpendBtn.Visible = false;
@@ -2188,8 +2193,22 @@ namespace hist_mmorpg
                 this.adjustTaxTextBox.Visible = false;
             }
 
+            // if fief IS owned by player, enable fief management buttons and TextBoxes 
             else
             {
+                this.adjustSpendBtn.Visible = true;
+                this.taxRateLabel.Visible = true;
+                this.garrSpendLabel.Visible = true;
+                this.offSpendLabel.Visible = true;
+                this.infraSpendLabel.Visible = true;
+                this.keepSpendLabel.Visible = true;
+                this.adjGarrSpendTextBox.Visible = true;
+                this.adjInfrSpendTextBox.Visible = true;
+                this.adjOffSpendTextBox.Visible = true;
+                this.adjustKeepSpendTextBox.Visible = true;
+                this.adjustTaxTextBox.Visible = true;
+
+                // set TextBoxes to show next year's figures
                 this.adjGarrSpendTextBox.Text = Convert.ToString(f.garrisonSpendNext);
                 this.adjInfrSpendTextBox.Text = Convert.ToString(f.infrastructureSpendNext);
                 this.adjOffSpendTextBox.Text = Convert.ToString(f.officialsSpendNext);
@@ -2208,7 +2227,8 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void fiefManagementToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.refreshFiefContainer();
+            this.fiefToView = this.myChar.location;
+            this.refreshFiefContainer(this.fiefToView);
         }
 
         /// <summary>
@@ -2284,7 +2304,7 @@ namespace hist_mmorpg
             finally
             {
                 // refresh display
-                this.refreshFiefContainer();
+                this.refreshFiefContainer(this.fiefToView);
             }
         }
 
@@ -2519,6 +2539,7 @@ namespace hist_mmorpg
                 // refresh court screen 
                 this.refreshMeetingPlaceDisplay("court");
                 // remove any previously displayed characters
+                this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
                 this.meetingPlaceCharDisplayTextBox.Text = "";
                 // display court screen
                 this.meetingPlaceContainer.BringToFront();
@@ -2543,6 +2564,7 @@ namespace hist_mmorpg
             // refresh tavern screen 
             this.refreshMeetingPlaceDisplay("tavern");
             // remove any previously displayed characters
+            this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
             this.meetingPlaceCharDisplayTextBox.Text = "";
             // display tavern screen
             this.meetingPlaceContainer.BringToFront();
@@ -2593,6 +2615,7 @@ namespace hist_mmorpg
                 this.charToView = charToDisplay;
                 string textToDisplay = "";
                 textToDisplay += this.displayCharacter(charToDisplay);
+                this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
                 this.meetingPlaceCharDisplayTextBox.Text = textToDisplay;
             }
         }
@@ -2716,6 +2739,12 @@ namespace hist_mmorpg
 
         }
 
+        private void setBailiffBtn_Click(object sender, EventArgs e)
+        {
+            SelectionForm chooseBailiff = new SelectionForm(this);
+            chooseBailiff.Show();
+        }
+
         /// <summary>
         /// Checks whether the supplied integer is odd or even
         /// </summary>
@@ -2790,6 +2819,59 @@ namespace hist_mmorpg
             } */
 
             return outArray;
+        }
+
+        /// <summary>
+        /// Responds to the click event of the removeBaliffBtn button,
+        /// relieving the current bailiff of his duties
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void removeBaliffBtn_Click(object sender, EventArgs e)
+        {
+            // if the fief has an existing bailiff
+            if (this.fiefToView.bailiff != null)
+            {
+                // relieve him of his duties
+                this.fiefToView.bailiff = null;
+                // refresh fief display
+                this.refreshFiefContainer(fiefToView);
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the selfBailiffBtn button,
+        /// appointing the player as bailiff of the displayed fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void selfBailiffBtn_Click(object sender, EventArgs e)
+        {
+            // give player fair warning of bailiff commitments
+            DialogResult dialogResult = MessageBox.Show("Being a bailiff will restrict your movement.  Click 'OK' to proceed.", "Proceed with appointment?", MessageBoxButtons.OKCancel);
+
+            // if choose to cancel
+            if (dialogResult == DialogResult.Cancel)
+            {
+                System.Windows.Forms.MessageBox.Show("Appointment cancelled.");
+            }
+
+            // if choose to proceed
+            else
+            {
+                // if the fief has an existing bailiff
+                if (this.fiefToView.bailiff != null)
+                {
+                    // relieve him of his duties
+                    this.fiefToView.bailiff = null;
+                }
+
+                // set player as bailiff
+                this.fiefToView.bailiff = this.myChar;
+            }
+
+            // refresh fief display
+            this.refreshFiefContainer(fiefToView);
         }
 
     }
