@@ -44,6 +44,8 @@ namespace hist_mmorpg
             this.updateCharBtn = new System.Windows.Forms.Button();
             this.characterTextBox = new System.Windows.Forms.TextBox();
             this.fiefContainer = new System.Windows.Forms.SplitContainer();
+            this.selfBailiffBtn = new System.Windows.Forms.Button();
+            this.removeBaliffBtn = new System.Windows.Forms.Button();
             this.setBailiffBtn = new System.Windows.Forms.Button();
             this.keepSpendLabel = new System.Windows.Forms.Label();
             this.infraSpendLabel = new System.Windows.Forms.Label();
@@ -81,8 +83,7 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListContainer = new System.Windows.Forms.SplitContainer();
             this.meetingPlaceTextBox = new System.Windows.Forms.TextBox();
             this.meetingPlaceCharsListView = new System.Windows.Forms.ListView();
-            this.removeBaliffBtn = new System.Windows.Forms.Button();
-            this.selfBailiffBtn = new System.Windows.Forms.Button();
+            this.lockoutBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -243,6 +244,7 @@ namespace hist_mmorpg
             // 
             // fiefContainer.Panel1
             // 
+            this.fiefContainer.Panel1.Controls.Add(this.lockoutBtn);
             this.fiefContainer.Panel1.Controls.Add(this.selfBailiffBtn);
             this.fiefContainer.Panel1.Controls.Add(this.removeBaliffBtn);
             this.fiefContainer.Panel1.Controls.Add(this.setBailiffBtn);
@@ -266,6 +268,26 @@ namespace hist_mmorpg
             this.fiefContainer.Size = new System.Drawing.Size(801, 511);
             this.fiefContainer.SplitterDistance = 317;
             this.fiefContainer.TabIndex = 3;
+            // 
+            // selfBailiffBtn
+            // 
+            this.selfBailiffBtn.Location = new System.Drawing.Point(70, 343);
+            this.selfBailiffBtn.Name = "selfBailiffBtn";
+            this.selfBailiffBtn.Size = new System.Drawing.Size(122, 35);
+            this.selfBailiffBtn.TabIndex = 19;
+            this.selfBailiffBtn.Text = "Appoint Myself as Bailiff";
+            this.selfBailiffBtn.UseVisualStyleBackColor = true;
+            this.selfBailiffBtn.Click += new System.EventHandler(this.selfBailiffBtn_Click);
+            // 
+            // removeBaliffBtn
+            // 
+            this.removeBaliffBtn.Location = new System.Drawing.Point(70, 314);
+            this.removeBaliffBtn.Name = "removeBaliffBtn";
+            this.removeBaliffBtn.Size = new System.Drawing.Size(122, 23);
+            this.removeBaliffBtn.TabIndex = 18;
+            this.removeBaliffBtn.Text = "Remove the Bailiff";
+            this.removeBaliffBtn.UseVisualStyleBackColor = true;
+            this.removeBaliffBtn.Click += new System.EventHandler(this.removeBaliffBtn_Click);
             // 
             // setBailiffBtn
             // 
@@ -662,25 +684,15 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListView.View = System.Windows.Forms.View.Details;
             this.meetingPlaceCharsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.meetingPlaceCharsListView_ItemSelectionChanged);
             // 
-            // removeBaliffBtn
+            // lockoutBtn
             // 
-            this.removeBaliffBtn.Location = new System.Drawing.Point(70, 314);
-            this.removeBaliffBtn.Name = "removeBaliffBtn";
-            this.removeBaliffBtn.Size = new System.Drawing.Size(122, 23);
-            this.removeBaliffBtn.TabIndex = 18;
-            this.removeBaliffBtn.Text = "Remove the Bailiff";
-            this.removeBaliffBtn.UseVisualStyleBackColor = true;
-            this.removeBaliffBtn.Click += new System.EventHandler(this.removeBaliffBtn_Click);
-            // 
-            // selfBailiffBtn
-            // 
-            this.selfBailiffBtn.Location = new System.Drawing.Point(70, 343);
-            this.selfBailiffBtn.Name = "selfBailiffBtn";
-            this.selfBailiffBtn.Size = new System.Drawing.Size(122, 35);
-            this.selfBailiffBtn.TabIndex = 19;
-            this.selfBailiffBtn.Text = "Appoint Myself as Bailiff";
-            this.selfBailiffBtn.UseVisualStyleBackColor = true;
-            this.selfBailiffBtn.Click += new System.EventHandler(this.selfBailiffBtn_Click);
+            this.lockoutBtn.Location = new System.Drawing.Point(70, 384);
+            this.lockoutBtn.Name = "lockoutBtn";
+            this.lockoutBtn.Size = new System.Drawing.Size(122, 23);
+            this.lockoutBtn.TabIndex = 20;
+            this.lockoutBtn.Text = "Lock Out Options";
+            this.lockoutBtn.UseVisualStyleBackColor = true;
+            this.lockoutBtn.Click += new System.EventHandler(this.lockoutBtn_Click);
             // 
             // Form1
             // 
@@ -793,6 +805,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button setBailiffBtn;
         private System.Windows.Forms.Button removeBaliffBtn;
         private System.Windows.Forms.Button selfBailiffBtn;
+        private System.Windows.Forms.Button lockoutBtn;
 
     }
 }

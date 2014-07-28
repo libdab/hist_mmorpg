@@ -271,9 +271,9 @@ namespace hist_mmorpg
 			Province myProv2 = new Province("ESR00", "Surrey, England", 6.2);
 			this.provinceMasterList.Add (myProv2.provinceID, myProv2);
 
-			Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", plains, fief1Chars, keep1BarChars, false, false, this.clock);
+			Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", plains, fief1Chars, keep1BarChars, false, true, this.clock);
 			fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', "C2", hills, fief2Chars, keep2BarChars, false, false, this.clock);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', "C2", hills, fief2Chars, keep2BarChars, true, false, this.clock);
 			fiefMasterList.Add(myFief2.fiefID, myFief2);
             Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", plains, fief3Chars, keep3BarChars, false, false, this.clock);
 			fiefMasterList.Add(myFief3.fiefID, myFief3);
@@ -404,7 +404,9 @@ namespace hist_mmorpg
 			myFief1.addCharacter(myNPC2);
 
 			// bar a character from the myFief1 keep
-			// myFief1.barCharacter(myNPC2.charID);
+			myFief2.barCharacter(myNPC1.charID);
+            myFief2.barCharacter(myChar2.charID);
+            myFief2.barCharacter(myWife.charID);
 
 			// try retrieving fief from masterlist using fiefID
 			// Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
@@ -2741,8 +2743,14 @@ namespace hist_mmorpg
 
         private void setBailiffBtn_Click(object sender, EventArgs e)
         {
-            SelectionForm chooseBailiff = new SelectionForm(this);
+            SelectionForm chooseBailiff = new SelectionForm(this, "bailiff");
             chooseBailiff.Show();
+        }
+
+        private void lockoutBtn_Click(object sender, EventArgs e)
+        {
+            SelectionForm lockOutOptions = new SelectionForm(this, "lockout");
+            lockOutOptions.Show();
         }
 
         /// <summary>

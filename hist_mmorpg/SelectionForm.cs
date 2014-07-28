@@ -23,7 +23,8 @@ namespace hist_mmorpg
         /// Constructor for SelectionForm
         /// </summary>
         /// <param name="par">Parent Form1 object</param>
-        public SelectionForm(Form1 par)
+        /// <param name="myFunction">String indicating function to be performed</param>
+        public SelectionForm(Form1 par, String myFunction)
         {
             // initialise form elements
             InitializeComponent();
@@ -31,19 +32,38 @@ namespace hist_mmorpg
             this.parent = par;
 
             // initialise NPC display
-            this.initNPCdisplay();
+            this.initDisplay(myFunction);
         }
 
         /// <summary>
         /// Initialises NPC display screen
         /// </summary>
-        private void initNPCdisplay()
+        /// <param name="myFunction">String indicating function to be performed</param>
+        private void initDisplay(String myFunction)
         {
-            // format list display
-            this.setUpNpcList();
+            if (myFunction.Equals("bailiff"))
+            {
+                // format list display
+                this.setUpNpcList();
 
-            // refresh information 
-            this.refreshNPCdisplay();
+                // refresh information 
+                this.refreshNPCdisplay();
+
+                // show container
+                this.npcContainer.BringToFront();
+            }
+
+            if (myFunction.Equals("lockout"))
+            {
+                // format list display
+                this.setUpBarredList();
+
+                // refresh information 
+                this.refreshBarredDisplay();
+
+                // show container
+                this.lockOutContainer.BringToFront();
+            }
         }
 
         /// <summary>
@@ -241,6 +261,192 @@ namespace hist_mmorpg
             }
 
             // close this form
+            this.Close();
+        }
+
+        /// <summary>
+        /// Configures UI display for list of barred characters
+        /// </summary>
+        public void setUpBarredList()
+        {
+            // add necessary columns
+            this.barredListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.barredListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.barredListView.Columns.Add("Nationality", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Refreshes barred characters list
+        /// </summary>
+        public void refreshBarredDisplay()
+        {
+            // clear existing items in list
+            this.barredListView.Items.Clear();
+
+            ListViewItem[] barredChars = new ListViewItem[this.parent.fiefToView.barredCharacters.Count];
+
+            // iterates through employees
+            for (int i = 0; i < this.parent.fiefToView.barredCharacters.Count; i++)
+            {
+                // retrieve character
+                //PlayerCharacter myBarredpc = null;
+                //NonPlayerCharacter myBarrednpc = null;
+                Character myBarredChar = null;
+
+                if (this.parent.pcMasterList.ContainsKey(this.parent.fiefToView.barredCharacters[i]))
+                {
+                    myBarredChar = this.parent.pcMasterList[this.parent.fiefToView.barredCharacters[i]];
+                }
+                else if (this.parent.npcMasterList.ContainsKey(this.parent.fiefToView.barredCharacters[i]))
+                {
+                    myBarredChar = this.parent.npcMasterList[this.parent.fiefToView.barredCharacters[i]];
+                }
+
+                if (myBarredChar != null)
+                {
+                    // Create an item and subitems for each character
+
+                    // name
+                    barredChars[i] = new ListViewItem(myBarredChar.name);
+
+                    // charID
+                    barredChars[i].SubItems.Add(myBarredChar.charID);
+
+                    // if is in player's nationality
+                    barredChars[i].SubItems.Add(myBarredChar.nationality);
+
+                    // add item to fiefsListView
+                    this.barredListView.Items.Add(barredChars[i]);
+                }
+
+            }
+
+            // disable 'UnBar Character' button until a list item is selected
+            this.unbarCharBtn.Enabled = false;
+            // ensure the nationality bar CheckBoxes are displaying correctly
+            this.barEnglishCheckBox.Checked = this.parent.fiefToView.englishBarred;
+            this.barFrenchCheckBox.Checked = this.parent.fiefToView.frenchBarred;
+        }
+
+        /// <summary>
+        /// Responds to the click event of the barThisCharBtn button,
+        /// adding the charID in the barThisCharTextBox to the barred characters list
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void barThisCharBtn_Click(object sender, EventArgs e)
+        {
+            // if input ID is in pcMasterList
+            if (this.parent.pcMasterList.ContainsKey(this.barThisCharTextBox.Text))
+            {
+                // add ID to barred characters
+                this.parent.fiefToView.barredCharacters.Add(this.barThisCharTextBox.Text);
+                // refresh display
+                this.refreshBarredDisplay();
+            }
+            // if input ID is in npcMasterList
+            else if (this.parent.npcMasterList.ContainsKey(this.barThisCharTextBox.Text))
+            {
+                // add ID to barred characters
+                this.parent.fiefToView.barredCharacters.Add(this.barThisCharTextBox.Text);
+                // refresh display
+                this.refreshBarredDisplay();
+            }
+            // if input ID not found
+            else
+            {
+                // ask player to check entry
+                System.Windows.Forms.MessageBox.Show("Character could not be identified.  Please ensure charID is valid.");
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the unbarCharBtn button,
+        /// removing the selected character in the ListView from the barred characters list
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void unbarCharBtn_Click(object sender, EventArgs e)
+        {
+            if (barredListView.SelectedItems.Count > 0)
+            {
+                // if selected character is in pcMasterList
+                if (this.parent.pcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
+                {
+                    // remove ID from barred characters
+                    this.parent.fiefToView.barredCharacters.Remove(this.barredListView.SelectedItems[0].SubItems[1].Text);
+                    // refresh display
+                    this.refreshBarredDisplay();
+                }
+                // if selected character is in pcMasterList
+                else if (this.parent.npcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
+                {
+                    // remove ID from barred characters
+                    this.parent.fiefToView.barredCharacters.Remove(this.barredListView.SelectedItems[0].SubItems[1].Text);
+                    // refresh display
+                    this.refreshBarredDisplay();
+                }
+                // if selected character not found
+                else
+                {
+                    // display error message
+                    System.Windows.Forms.MessageBox.Show("Selected character could not be identified.");
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Responds to the SelectedIndexChanged event of the barredListView,
+        /// enabling the 'unBar Character' button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void barredListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (barredListView.SelectedItems.Count > 0)
+            {
+                // enable 'unBar Character' button
+                this.unbarCharBtn.Enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Responds to the CheckedChanged event of the barFrenchCheckBox,
+        /// either barring or unbarring all French characters
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void barFrenchCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            // bar/unbar French, depending on whether CheckBox is checked
+            this.parent.fiefToView.frenchBarred = this.barFrenchCheckBox.Checked;
+            // refresh the parent's fief container
+            this.parent.refreshFiefContainer();
+        }
+
+        /// <summary>
+        /// Responds to the CheckedChanged event of the barEnglishCheckBox,
+        /// either barring or unbarring all English characters
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void barEnglishCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            // bar/unbar English, depending on whether CheckBox is checked
+            this.parent.fiefToView.englishBarred = this.barEnglishCheckBox.Checked;
+            // refresh the parent's fief container
+            this.parent.refreshFiefContainer();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the closeBtn button,
+        /// closing the Lock Out Menu
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void closeBtn_Click(object sender, EventArgs e)
+        {
             this.Close();
         }
 
