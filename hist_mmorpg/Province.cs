@@ -26,6 +26,10 @@ namespace hist_mmorpg
         /// Holds province overlord tax rate
         /// </summary>
         public Double overlordTaxRate { get; set; }
+        /// <summary>
+        /// Holds province kingdom object
+        /// </summary>
+        public Kingdom kingdom { get; set; }
 
         /// <summary>
         /// Constructor for Province
@@ -34,7 +38,8 @@ namespace hist_mmorpg
         /// <param name="nam">String holding province name</param>
         /// <param name="olord">Province overlord (PlayerCharacter)</param>
         /// <param name="otax">Double holding province overlord tax rate</param>
-        public Province(String id, String nam, Double otax, PlayerCharacter olord = null)
+        /// <param name="king">Province's Kingdom object</param>
+        public Province(String id, String nam, Double otax, PlayerCharacter olord = null, Kingdom king = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -62,6 +67,7 @@ namespace hist_mmorpg
             this.name = nam;
             this.overlord = olord;
             this.overlordTaxRate = otax;
+            this.kingdom = king;
 
         }
 
@@ -85,6 +91,8 @@ namespace hist_mmorpg
             // overlord to be inserted later
 			this.overlord = null;
 			this.overlordTaxRate = pr.overlordTaxRate;
+            // kingdom to be inserted later
+            this.kingdom = null;
 		}
     }
 
@@ -109,6 +117,10 @@ namespace hist_mmorpg
 		/// Holds province overlord tax rate
 		/// </summary>
 		public Double overlordTaxRate { get; set; }
+        /// <summary>
+        /// Holds province kingdom (ID)
+        /// </summary>
+        public String kingdomID { get; set; }
 
 		/// <summary>
 		/// Constructor for Province_Riak.
@@ -121,6 +133,7 @@ namespace hist_mmorpg
 			this.name = prov.name;
 			this.overlordID = prov.overlord.charID;
 			this.overlordTaxRate = prov.overlordTaxRate;
+            this.kingdomID = prov.kingdom.kingdomID;
 		}
 
         /// <summary>

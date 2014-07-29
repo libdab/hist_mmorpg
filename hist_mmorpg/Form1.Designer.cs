@@ -44,6 +44,7 @@ namespace hist_mmorpg
             this.updateCharBtn = new System.Windows.Forms.Button();
             this.characterTextBox = new System.Windows.Forms.TextBox();
             this.fiefContainer = new System.Windows.Forms.SplitContainer();
+            this.lockoutBtn = new System.Windows.Forms.Button();
             this.selfBailiffBtn = new System.Windows.Forms.Button();
             this.removeBaliffBtn = new System.Windows.Forms.Button();
             this.setBailiffBtn = new System.Windows.Forms.Button();
@@ -83,7 +84,6 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListContainer = new System.Windows.Forms.SplitContainer();
             this.meetingPlaceTextBox = new System.Windows.Forms.TextBox();
             this.meetingPlaceCharsListView = new System.Windows.Forms.ListView();
-            this.lockoutBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -268,6 +268,16 @@ namespace hist_mmorpg
             this.fiefContainer.Size = new System.Drawing.Size(801, 511);
             this.fiefContainer.SplitterDistance = 317;
             this.fiefContainer.TabIndex = 3;
+            // 
+            // lockoutBtn
+            // 
+            this.lockoutBtn.Location = new System.Drawing.Point(70, 384);
+            this.lockoutBtn.Name = "lockoutBtn";
+            this.lockoutBtn.Size = new System.Drawing.Size(122, 23);
+            this.lockoutBtn.TabIndex = 20;
+            this.lockoutBtn.Text = "Lock Out Options";
+            this.lockoutBtn.UseVisualStyleBackColor = true;
+            this.lockoutBtn.Click += new System.EventHandler(this.lockoutBtn_Click);
             // 
             // selfBailiffBtn
             // 
@@ -684,24 +694,14 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListView.View = System.Windows.Forms.View.Details;
             this.meetingPlaceCharsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.meetingPlaceCharsListView_ItemSelectionChanged);
             // 
-            // lockoutBtn
-            // 
-            this.lockoutBtn.Location = new System.Drawing.Point(70, 384);
-            this.lockoutBtn.Name = "lockoutBtn";
-            this.lockoutBtn.Size = new System.Drawing.Size(122, 23);
-            this.lockoutBtn.TabIndex = 20;
-            this.lockoutBtn.Text = "Lock Out Options";
-            this.lockoutBtn.UseVisualStyleBackColor = true;
-            this.lockoutBtn.Click += new System.EventHandler(this.lockoutBtn_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(801, 535);
+            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.meetingPlaceContainer);
-            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);

@@ -45,14 +45,22 @@ namespace hist_mmorpg
 		/// </summary>
 		List<String> fiefKeys = new List<String> ();
 		/// <summary>
-		/// Holds all Province objects
+		/// Holds all Kingdom objects
 		/// </summary>
-		public Dictionary<string, Province> provinceMasterList = new Dictionary<string, Province>();
+        public Dictionary<string, Kingdom> kingdomMasterList = new Dictionary<string, Kingdom>();
 		/// <summary>
+        /// Holds keys for Kingdom objects (used when retrieving from database)
+		/// </summary>
+		List<String> kingKeys = new List<String> ();
+        /// <summary>
+        /// Holds all Province objects
+        /// </summary>
+        public Dictionary<string, Province> provinceMasterList = new Dictionary<string, Province>();
+        /// <summary>
         /// Holds keys for Province objects (used when retrieving from database)
-		/// </summary>
-		List<String> provKeys = new List<String> ();
-		/// <summary>
+        /// </summary>
+        List<String> provKeys = new List<String>();
+        /// <summary>
 		/// Holds all Language objects
 		/// </summary>
         public Dictionary<string, Language> languageMasterList = new Dictionary<string, Language>();
@@ -282,10 +290,16 @@ namespace hist_mmorpg
 			List<Character> fief6Chars = new List<Character>();
 			List<Character> fief7Chars = new List<Character>();
 
-			// create province for fiefs
-			Province myProv = new Province("ESX00", "Sussex, England", 6.2);
+            // create kingdoms for provinces
+            Kingdom myKing = new Kingdom("E0000", "England");
+            this.kingdomMasterList.Add(myKing.kingdomID, myKing);
+            Kingdom myKing2 = new Kingdom("B0000", "Boogiboogiland");
+            this.kingdomMasterList.Add(myKing2.kingdomID, myKing2);
+
+            // create provinces for fiefs
+            Province myProv = new Province("ESX00", "Sussex", 6.2, king: myKing);
 			this.provinceMasterList.Add (myProv.provinceID, myProv);
-			Province myProv2 = new Province("ESR00", "Surrey, England", 6.2);
+            Province myProv2 = new Province("ESR00", "Surrey", 6.2, king: myKing2);
 			this.provinceMasterList.Add (myProv2.provinceID, myProv2);
 
 			Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, true, this.clock);
@@ -396,7 +410,11 @@ namespace hist_mmorpg
 			myProv.overlord = myChar1;
 			myProv2.overlord = myChar2;
 
-			// set fief bailiffs
+            // set kings
+            myKing.king = myChar1;
+            myKing2.king = myChar2;
+
+            // set fief bailiffs
 			myFief1.bailiff = myNPC1;
 			myFief2.bailiff = myNPC2;
 
@@ -552,7 +570,27 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "pcKeys", this.pcKeys);
 
-			// write Provinces
+            // write Kingdoms
+            // clear existing key list
+            if (this.kingKeys.Count > 0)
+            {
+                this.kingKeys.Clear();
+            }
+
+            // write each object in kingdomMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<String, Kingdom> pair in this.kingdomMasterList)
+            {
+                bool success = this.writeKingdom(gameID, pair.Value);
+                if (success)
+                {
+                    this.kingKeys.Add(pair.Key);
+                }
+            }
+
+            // write key list to database
+            this.writeKeyList(gameID, "kingKeys", this.kingKeys);
+
+            // write Provinces
             // clear existing key list
             if (this.provKeys.Count > 0)
 			{
@@ -662,7 +700,15 @@ namespace hist_mmorpg
                 this.pcMasterList.Add(pc.charID, pc);
 			}
 
-			// load provinces
+            // load kingdoms
+            foreach (String element in this.kingKeys)
+            {
+                Kingdom king = this.initialDBload_Kingdom(gameID, element);
+                // add Kingdom to kingdomMasterList
+                this.kingdomMasterList.Add(king.kingdomID, king);
+            }
+
+            // load provinces
 			foreach (String element in this.provKeys)
 			{
 				Province prov = this.initialDBload_Province (gameID, element);
@@ -749,6 +795,17 @@ namespace hist_mmorpg
 			{
 				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve pcKeys from database.");
 			}
+
+            // populate kingKeys
+            var kingKeyResult = client.Get(gameID, "kingKeys");
+            if (kingKeyResult.IsSuccess)
+            {
+                this.kingKeys = kingKeyResult.Value.GetObject<List<String>>();
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve kingKeys from database.");
+            }
 
             // populate provKeys
             var provKeyResult = client.Get(gameID, "provKeys");
@@ -895,7 +952,34 @@ namespace hist_mmorpg
 			return myPC;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Loads a Kingdom for a particular game from database
+        /// </summary>
+        /// <returns>Kingdom object</returns>
+        /// <param name="gameID">Game for which Kingdom to be retrieved</param>
+        /// <param name="kingID">ID of Kingdom to be retrieved</param>
+        public Kingdom initialDBload_Kingdom(String gameID, String kingID)
+        {
+            var kingResult = client.Get(gameID, kingID);
+            var kingRiak = new Kingdom_Riak();
+            Kingdom myKing = new Kingdom();
+
+            if (kingResult.IsSuccess)
+            {
+                // extract Kingdom_Riak object
+                kingRiak = kingResult.Value.GetObject<Kingdom_Riak>();
+                // create Kingdom from Kingdom_Riak
+                myKing = this.KingdomFromRiak(kingRiak);
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Province " + kingID);
+            }
+
+            return myKing;
+        }
+
+        /// <summary>
 		/// Loads a Province for a particular game from database
 		/// </summary>
         /// <returns>Province object</returns>
@@ -1307,18 +1391,54 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
-		/// Converts Province object into suitable format for JSON serialisation
+		/// Converts Kingdom object into suitable format for JSON serialisation
 		/// </summary>
-        /// <returns>Province_Riak object</returns>
-        /// <param name="p">Province to be converted</param>
-		public Province_Riak ProvinceToRiak(Province p)
+        /// <returns>Kingdom_Riak object</returns>
+        /// <param name="k">Kingdom to be converted</param>
+        public Kingdom_Riak KingdomToRiak(Kingdom k)
 		{
-			Province_Riak oOut = null;
-			oOut = new Province_Riak (p);
+            Kingdom_Riak oOut = null;
+            oOut = new Kingdom_Riak(k);
 			return oOut;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Converts Province object into suitable format for JSON serialisation
+        /// </summary>
+        /// <returns>Province_Riak object</returns>
+        /// <param name="p">Province to be converted</param>
+        public Province_Riak ProvinceToRiak(Province p)
+        {
+            Province_Riak oOut = null;
+            oOut = new Province_Riak(p);
+            return oOut;
+        }
+
+        /// <summary>
+        /// Converts Kingdom_Riak objects into Kingdom game objects
+        /// </summary>
+        /// <returns>Kingdom object</returns>
+        /// <param name="kr">Kingdom_Riak to be converted</param>
+        public Kingdom KingdomFromRiak(Kingdom_Riak kr)
+        {
+            Kingdom oOut = null;
+            oOut = new Kingdom(kr);
+
+            if (kr.kingID != null)
+            {
+                if (this.pcMasterList.ContainsKey(kr.kingID))
+                {
+                    oOut.king = pcMasterList[kr.kingID];
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("Kingdom " + kr.kingdomID + ": King not found (" + kr.kingID + ")");
+                }
+            }
+            return oOut;
+        }
+
+        /// <summary>
 		/// Converts Province_Riak objects into Province game objects
 		/// </summary>
         /// <returns>Province object</returns>
@@ -1328,6 +1448,7 @@ namespace hist_mmorpg
 			Province oOut = null;
 			oOut = new Province (pr);
 
+            // insert overlord using overlordID
 			if (pr.overlordID != null)
 			{
                 if (this.pcMasterList.ContainsKey(pr.overlordID))
@@ -1339,7 +1460,21 @@ namespace hist_mmorpg
                     System.Windows.Forms.MessageBox.Show("Province " + pr.provinceID + ": Overlord not found (" + pr.overlordID + ")");
                 }
             }
-			return oOut;
+
+            // insert kingdom using kingdomID
+            if (pr.kingdomID != null)
+            {
+                if (this.kingdomMasterList.ContainsKey(pr.kingdomID))
+                {
+                    oOut.kingdom = kingdomMasterList[pr.kingdomID];
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("Province " + pr.provinceID + ": Kingdom not found (" + pr.kingdomID + ")");
+                }
+            }
+
+            return oOut;
 		}
 
 		/// <summary>
@@ -1446,28 +1581,50 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
-		/// Writes Province object to Riak
+		/// Writes Kingdom object to Riak
 		/// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
-		/// <param name="p">Province to write</param>
-		public bool writeProvince(String gameID, Province p)
+        /// <param name="k">Kingdom to write</param>
+        public bool writeKingdom(String gameID, Kingdom k)
 		{
+            // convert Kingdom into Kingdom_Riak
+            Kingdom_Riak riakKing = this.KingdomToRiak(k);
+
+			var rKing = new RiakObject(gameID, riakKing.kingdomID, riakKing);
+			var putKingResult = client.Put(rKing);
+
+			if (! putKingResult.IsSuccess)
+			{
+                System.Windows.Forms.MessageBox.Show("Write failed: Kingdom " + rKing.Key + " to bucket " + rKing.Bucket);
+			}
+
+			return putKingResult.IsSuccess;
+		}
+
+        /// <summary>
+        /// Writes Province object to Riak
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
+        /// <param name="p">Province to write</param>
+        public bool writeProvince(String gameID, Province p)
+        {
             // convert Province into Province_Riak
             Province_Riak riakProv = this.ProvinceToRiak(p);
 
-			var rProv = new RiakObject(gameID, riakProv.provinceID, riakProv);
-			var putProvResult = client.Put(rProv);
+            var rProv = new RiakObject(gameID, riakProv.provinceID, riakProv);
+            var putProvResult = client.Put(rProv);
 
-			if (! putProvResult.IsSuccess)
-			{
-				System.Windows.Forms.MessageBox.Show("Write failed: Province " + rProv.Key + " to bucket " + rProv.Bucket);
-			}
+            if (!putProvResult.IsSuccess)
+            {
+                System.Windows.Forms.MessageBox.Show("Write failed: Province " + rProv.Key + " to bucket " + rProv.Bucket);
+            }
 
-			return putProvResult.IsSuccess;
-		}
+            return putProvResult.IsSuccess;
+        }
 
-		/// <summary>
+        /// <summary>
 		/// Writes Language object to Riak
 		/// </summary>
         /// <returns>bool indicating success</returns>
@@ -1686,7 +1843,7 @@ namespace hist_mmorpg
             // date/season and main character's days left
             textToDisplay += this.clock.seasons[this.clock.currentSeason] + ", " + this.clock.currentYear + ".  Your days left: " + this.myChar.days + "\r\n\r\n";
             // Fief name/ID and province name
-            textToDisplay += "Fief: " + this.myChar.location.name + " (" + this.myChar.location.fiefID + ")  in " + this.myChar.location.province.name + "\r\n\r\n";
+            textToDisplay += "Fief: " + this.myChar.location.name + " (" + this.myChar.location.fiefID + ")  in " + this.myChar.location.province.name + ", " + this.myChar.location.province.kingdom.name + "\r\n\r\n";
             // Fief owner
             textToDisplay += "Owner: " + this.myChar.location.owner.name + "\r\n";
             // Fief overlord
@@ -2040,7 +2197,7 @@ namespace hist_mmorpg
             fiefText += "ID: " + f.fiefID + "\r\n";
 
             // name (& province name)
-            fiefText += "Name: " + f.name + " (Province: " + f.province.name + ")\r\n";
+            fiefText += "Name: " + f.name + " (Province: " + f.province.name + ".  Kingdom: " + f.province.kingdom.name + ")\r\n";
 
             // population
             fiefText += "Population: " + f.population + "\r\n";
@@ -2468,7 +2625,7 @@ namespace hist_mmorpg
             Button[] travelBtns = new Button[] { travel_NE_btn, travel_E_btn, travel_SE_btn, travel_SW_btn, travel_W_btn, travel_NW_btn };
 
             // get text for home button
-            this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + this.myChar.location.name + " (" + this.myChar.location.fiefID + ")" + "\r\n" + this.myChar.location.province.name;
+            this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + this.myChar.location.name + " (" + this.myChar.location.fiefID + ")" + "\r\n" + this.myChar.location.province.name + ", " + this.myChar.location.province.kingdom.name;
 
             for (int i = 0; i < directions.Length; i++ )
             {
@@ -2479,7 +2636,7 @@ namespace hist_mmorpg
                 {
                     travelBtns[i].Text = directions[i] + " FIEF:\r\n\r\n";
                     travelBtns[i].Text += target.name + " (" + target.fiefID + ")\r\n";
-                    travelBtns[i].Text += target.province.name + "\r\n\r\n";
+                    travelBtns[i].Text += target.province.name + ", " + target.province.kingdom.name + "\r\n\r\n";
                     travelBtns[i].Text += "Cost: " + this.getTravelCost(this.myChar.location, target);
                 }
                 else

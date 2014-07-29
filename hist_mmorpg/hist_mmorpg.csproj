@@ -81,6 +81,7 @@
     </Compile>
     <Compile Include="GameClock.cs" />
     <Compile Include="HexMapGraph.cs" />
+    <Compile Include="Kingdom.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
