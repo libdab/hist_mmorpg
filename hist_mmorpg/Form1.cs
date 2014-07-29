@@ -126,6 +126,8 @@ namespace hist_mmorpg
 
 			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
 
+			// write game objects to Riak
+			//this.writeToDB ("testGame");
         }
 
 		/// <summary>
@@ -247,6 +249,7 @@ namespace hist_mmorpg
 
             // create Language objects
             Language c = new Language("C", "Celtic");
+			this.languageMasterList.Add (c.languageID, c);
             // create languages for Fiefs
             Tuple<Language, int> myLang1 = new Tuple<Language, int>(c, 1);
             Tuple<Language, int> myLang2 = new Tuple<Language, int>(c, 2);
@@ -712,6 +715,17 @@ namespace hist_mmorpg
 			else
 			{
 				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve skillKeys from database.");
+			}
+
+			// populate langKeys
+			var langKeyResult = client.Get(gameID, "langKeys");
+			if (langKeyResult.IsSuccess)
+			{
+				this.langKeys = langKeyResult.Value.GetObject<List<String>>();
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve langKeys from database.");
 			}
 
             // populate npcKeys
