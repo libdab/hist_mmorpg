@@ -53,14 +53,22 @@ namespace hist_mmorpg
 		/// </summary>
 		List<String> provKeys = new List<String> ();
 		/// <summary>
-		/// Holds all Terrain objects
+		/// Holds all Language objects
 		/// </summary>
-		public Dictionary<string, Terrain> terrainMasterList = new Dictionary<string, Terrain>();
+        public Dictionary<string, Language> languageMasterList = new Dictionary<string, Language>();
 		/// <summary>
+        /// Holds keys for Language objects (used when retrieving from database)
+		/// </summary>
+		List<String> langKeys = new List<String> ();
+        /// <summary>
+        /// Holds all Terrain objects
+        /// </summary>
+        public Dictionary<string, Terrain> terrainMasterList = new Dictionary<string, Terrain>();
+        /// <summary>
         /// Holds keys for Terrain objects (used when retrieving from database)
-		/// </summary>
-		List<String> terrKeys = new List<String> ();
-		/// <summary>
+        /// </summary>
+        List<String> terrKeys = new List<String>();
+        /// <summary>
 		/// Holds all Skill objects
 		/// </summary>
 		public Dictionary<string, Skill> skillMasterList = new Dictionary<string, Skill>();
@@ -237,6 +245,12 @@ namespace hist_mmorpg
 				this.skillKeys.Add(entry.Key);
 			}
 
+            // create Language objects
+            Language c = new Language("C", "Celtic");
+            // create languages for Fiefs
+            Tuple<Language, int> myLang1 = new Tuple<Language, int>(c, 1);
+            Tuple<Language, int> myLang2 = new Tuple<Language, int>(c, 2);
+
 			// create terrain objects
 			Terrain plains = new Terrain("P", "Plains", 1);
 			this.terrainMasterList.Add (plains.terrainCode, plains);
@@ -271,19 +285,19 @@ namespace hist_mmorpg
 			Province myProv2 = new Province("ESR00", "Surrey, England", 6.2);
 			this.provinceMasterList.Add (myProv2.provinceID, myProv2);
 
-			Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", plains, fief1Chars, keep1BarChars, false, true, this.clock);
+			Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, true, this.clock);
 			fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', "C2", hills, fief2Chars, keep2BarChars, true, false, this.clock);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, true, false, this.clock);
 			fiefMasterList.Add(myFief2.fiefID, myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", plains, fief3Chars, keep3BarChars, false, false, this.clock);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock);
 			fiefMasterList.Add(myFief3.fiefID, myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", plains, fief4Chars, keep4BarChars, false, false, this.clock);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock);
 			fiefMasterList.Add(myFief4.fiefID, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", plains, fief5Chars, keep5BarChars, false, false, this.clock);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock);
 			fiefMasterList.Add(myFief5.fiefID, myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", plains, fief6Chars, keep6BarChars, false, false, this.clock);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang2, plains, fief6Chars, keep6BarChars, false, false, this.clock);
 			fiefMasterList.Add(myFief6.fiefID, myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', "C2", forrest, fief7Chars, keep7BarChars, false, false, this.clock);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang2, forrest, fief7Chars, keep7BarChars, false, false, this.clock);
 			fiefMasterList.Add(myFief7.fiefID, myFief7);
 			Army myArmy = new Army("army001", 0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
@@ -346,15 +360,15 @@ namespace hist_mmorpg
             // create Random for use with generating skill sets for Characters
             Random myRand = new Random();
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, "E1", 90, 4.0, 7.2, 6.1, generateSkillSet(myRand), false, true, false, "200", "403", "", false, 13000, myEmployees1, myFiefsOwned1, cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, myLang1, 90, 4.0, 7.2, 6.1, generateSkillSet(myRand), false, true, false, "200", "403", "", false, 13000, myEmployees1, myFiefsOwned1, cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, "E1", 90, 4.0, 5.0, 4.5, generateSkillSet(myRand), true, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, myLang1, 90, 4.0, 5.0, 4.5, generateSkillSet(myRand), true, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, "E1", 90, 4.0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, myLang1, 90, 4.0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
 			npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, "E1", 90, 4.0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, "200", "", "", 10000, true, mb: myChar1.charID, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, myLang1, 90, 4.0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, "200", "", "", 10000, true, mb: myChar1.charID, cl: this.clock, loc: myFief1);
 			npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myGoTo5, "E1", 90, 4.0, 4.0, 6.0, generateSkillSet(myRand), false, true, true, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myGoTo5, myLang2, 90, 4.0, 4.0, 6.0, generateSkillSet(myRand), false, true, true, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
 			npcMasterList.Add(myWife.charID, myWife);
 
 			// set fief owners
@@ -462,7 +476,7 @@ namespace hist_mmorpg
 				this.skillKeys.Clear ();
 			}
 
-            // write each objsct in skillMasterList, whilst also repopulating key list
+            // write each object in skillMasterList, whilst also repopulating key list
 			foreach (KeyValuePair<String, Skill> pair in this.skillMasterList)
 			{
 				bool success = this.writeSkill (gameID, pair.Value);
@@ -475,14 +489,34 @@ namespace hist_mmorpg
             // write key list to database
 			this.writeKeyList (gameID, "skillKeys", this.skillKeys);
 
-			// write NPCs
+            // write Languages
+            // clear existing key list
+            if (this.langKeys.Count > 0)
+            {
+                this.langKeys.Clear();
+            }
+
+            // write each object in languageMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<String, Language> pair in this.languageMasterList)
+            {
+                bool success = this.writeLanguage(gameID, pair.Value);
+                if (success)
+                {
+                    this.langKeys.Add(pair.Key);
+                }
+            }
+
+            // write key list to database
+            this.writeKeyList(gameID, "langKeys", this.langKeys);
+
+            // write NPCs
             // clear existing key list
             if (this.npcKeys.Count > 0)
 			{
 				this.npcKeys.Clear ();
 			}
 
-            // write each objsct in npcMasterList, whilst also repopulating key list
+            // write each object in npcMasterList, whilst also repopulating key list
             foreach (KeyValuePair<String, NonPlayerCharacter> pair in this.npcMasterList)
 			{
 				bool success = this.writeNPC (gameID, pair.Value);
@@ -502,7 +536,7 @@ namespace hist_mmorpg
 				this.pcKeys.Clear ();
 			}
 
-            // write each objsct in pcMasterList, whilst also repopulating key list
+            // write each object in pcMasterList, whilst also repopulating key list
             foreach (KeyValuePair<String, PlayerCharacter> pair in this.pcMasterList)
 			{
 				bool success = this.writePC (gameID, pair.Value);
@@ -522,7 +556,7 @@ namespace hist_mmorpg
 				this.provKeys.Clear ();
 			}
 
-            // write each objsct in provinceMasterList, whilst also repopulating key list
+            // write each object in provinceMasterList, whilst also repopulating key list
             foreach (KeyValuePair<String, Province> pair in this.provinceMasterList)
 			{
 				bool success = this.writeProvince (gameID, pair.Value);
@@ -542,7 +576,7 @@ namespace hist_mmorpg
 				this.terrKeys.Clear ();
 			}
 
-            // write each objsct in terrainMasterList, whilst also repopulating key list
+            // write each object in terrainMasterList, whilst also repopulating key list
             foreach (KeyValuePair<String, Terrain> pair in this.terrainMasterList)
 			{
 				bool success = this.writeTerrain (gameID, pair.Value);
@@ -562,7 +596,7 @@ namespace hist_mmorpg
 				this.fiefKeys.Clear ();
 			}
 
-            // write each objsct in fiefMasterList, whilst also repopulating key list
+            // write each object in fiefMasterList, whilst also repopulating key list
             foreach (KeyValuePair<String, Fief> pair in this.fiefMasterList)
 			{
 				bool success = this.writeFief (gameID, pair.Value);
@@ -601,7 +635,15 @@ namespace hist_mmorpg
 				this.skillMasterList.Add(skill.skillID, skill);
 			}
 				
-			// load NPCs
+            // load Languages
+            foreach (String element in this.langKeys)
+            {
+                Language lang = this.initialDBload_language(gameID, element);
+                // add Language to languageMasterList
+                this.languageMasterList.Add(lang.languageID, lang);
+            }
+
+            // load NPCs
 			foreach (String element in this.npcKeys)
 			{
 				NonPlayerCharacter npc = this.initialDBload_NPC (gameID, element);
@@ -889,7 +931,30 @@ namespace hist_mmorpg
 			return newTerrain;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Loads a Language for a particular game from database
+        /// </summary>
+        /// <returns>Language object</returns>
+        /// <param name="gameID">Game for which Language to be retrieved</param>
+        /// <param name="langID">ID of Language to be retrieved</param>
+        public Language initialDBload_language(String gameID, String langID)
+        {
+            var languageResult = client.Get(gameID, langID);
+            var newLanguage = new Language();
+
+            if (languageResult.IsSuccess)
+            {
+                newLanguage = languageResult.Value.GetObject<Language>();
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Language " + langID);
+            }
+
+            return newLanguage;
+        }
+
+        /// <summary>
 		/// Loads a Fief for a particular game from database
 		/// </summary>
         /// <returns>Fief object</returns>
@@ -974,7 +1039,10 @@ namespace hist_mmorpg
 			// insert province
 			fOut.province = this.provinceMasterList[fr.province];
 
-			// insert owner
+            // insert language
+            fOut.language = new Tuple<Language,int>(this.languageMasterList[fr.language.Item1], fr.language.Item2);
+
+            // insert owner
 			fOut.owner = this.pcMasterList[fr.owner];
 			// check if fief is in owner's list of fiefs owned
 			bool fiefInList = fOut.owner.ownedFiefs.Any(item => item.fiefID == fOut.fiefID);
@@ -1067,7 +1135,10 @@ namespace hist_mmorpg
 			// insert game clock
 			pcOut.clock = this.clock;
 
-			// insert skills
+            // insert language
+            pcOut.language = new Tuple<Language, int>(this.languageMasterList[pcr.language.Item1], pcr.language.Item2);
+
+            // insert skills
 			if (pcr.skills.Length > 0)
 			{
 				for (int i = 0; i < pcr.skills.Length; i++)
@@ -1102,7 +1173,10 @@ namespace hist_mmorpg
 			// insert game clock
 			npcOut.clock = this.clock;
 
-			// insert skills
+            // insert language
+            npcOut.language = new Tuple<Language, int>(this.languageMasterList[npcr.language.Item1], npcr.language.Item2);
+            
+            // insert skills
 			if (npcr.skills.Length > 0)
 			{
 				for (int i = 0; i < npcr.skills.Length; i++)
@@ -1380,26 +1454,46 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
-		/// Writes Terrain object to Riak
+		/// Writes Language object to Riak
 		/// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
-		/// <param name="t">Terrain to write</param>
-		public bool writeTerrain(String gameID, Terrain t)
+        /// <param name="l">Language to write</param>
+        public bool writeLanguage(String gameID, Language l)
 		{
 
-			var rTerrain = new RiakObject(gameID, t.terrainCode, t);
-			var putTerrainResult = client.Put(rTerrain);
+			var rLanguage = new RiakObject(gameID, l.languageID, l);
+			var putLanguageResult = client.Put(rLanguage);
 
-			if (! putTerrainResult.IsSuccess)
+			if (! putLanguageResult.IsSuccess)
 			{
-				System.Windows.Forms.MessageBox.Show("Write failed: Terrain " + rTerrain.Key + " to bucket " + rTerrain.Bucket);
+                System.Windows.Forms.MessageBox.Show("Write failed: Language " + rLanguage.Key + " to bucket " + rLanguage.Bucket);
 			}
 
-			return putTerrainResult.IsSuccess;
+			return putLanguageResult.IsSuccess;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Writes Terrain object to Riak
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
+        /// <param name="t">Terrain to write</param>
+        public bool writeTerrain(String gameID, Terrain t)
+        {
+
+            var rTerrain = new RiakObject(gameID, t.terrainCode, t);
+            var putTerrainResult = client.Put(rTerrain);
+
+            if (!putTerrainResult.IsSuccess)
+            {
+                System.Windows.Forms.MessageBox.Show("Write failed: Terrain " + rTerrain.Key + " to bucket " + rTerrain.Bucket);
+            }
+
+            return putTerrainResult.IsSuccess;
+        }
+
+        /// <summary>
 		/// Writes Fief object to Riak
 		/// </summary>
         /// <returns>bool indicating success</returns>
@@ -1724,7 +1818,7 @@ namespace hist_mmorpg
             }
 
             // language
-            charText += "Language: " + ch.language + "\r\n";
+            charText += "Language: " + ch.language.Item1.name + " (dialect " + ch.language.Item2 + ")\r\n";
 
             // days left
             charText += "Days remaining: " + ch.days + "\r\n";
@@ -1975,7 +2069,7 @@ namespace hist_mmorpg
             fiefText += "\r\n";
 
             // language
-            fiefText += "Language code: " + f.language + "\r\n";
+            fiefText += "Language: " + f.language.Item1.name + " (dialect " + f.language.Item2 + ")\r\n";
 
             // terrain type
             fiefText += "Terrain: " + f.terrain.description + "\r\n";

@@ -40,5 +40,13 @@ namespace hist_mmorpg
             this.name = nam;
 
         }
+
+        /// <summary>
+        /// Constructor for Language taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public Language()
+        {
+        }
     }
 }

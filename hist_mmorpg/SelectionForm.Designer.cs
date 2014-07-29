@@ -245,7 +245,7 @@
             this.closeBtn.Name = "closeBtn";
             this.closeBtn.Size = new System.Drawing.Size(108, 35);
             this.closeBtn.TabIndex = 6;
-            this.closeBtn.Text = "Close Lock Out Menu";
+            this.closeBtn.Text = "Close Lock Out Options";
             this.closeBtn.UseVisualStyleBackColor = true;
             this.closeBtn.Click += new System.EventHandler(this.closeBtn_Click);
             // 

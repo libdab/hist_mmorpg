@@ -50,9 +50,9 @@ namespace hist_mmorpg
         /// </summary>
 		public Queue<Fief> goTo = new Queue<Fief> ();
         /// <summary>
-        /// Holds character language
+        /// Holds character's language and dialect
         /// </summary>
-        public string language { get; set; }
+        public Tuple<Language, int> language { get; set; }
         /// <summary>
         /// Holds character's remaining days in season
         /// </summary>
@@ -118,7 +118,7 @@ namespace hist_mmorpg
         /// <param name="mxHea">Double holding character maximum health</param>
         /// <param name="vir">Double holding character virility rating</param>
         /// <param name="go">Queue<Fief> of Fiefs to auto-travel to</param>
-        /// <param name="lang">String holding character language code</param>
+        /// <param name="lang">Tuple<Language, int> holding character language and dialect</param>
         /// <param name="day">double holding character remaining days in season</param>
         /// <param name="stat">Double holding character status rating</param>
         /// <param name="mngmnt">Double holding character management rating</param>
@@ -133,7 +133,7 @@ namespace hist_mmorpg
         /// <param name="cl">GameClock holding season</param>
 		/// <param name="loc">Fief holding current location</param>
         public Character(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg,
+            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg,
             String famHead, String sp, String fath, GameClock cl = null, Fief loc = null)
         {
 
@@ -271,7 +271,7 @@ namespace hist_mmorpg
 				this.virility = charToUse.virility;
                 // create empty Queue, to be populated later
                 this.goTo = new Queue<Fief>();
-				this.language = charToUse.language;
+				this.language = null;
 				this.days = charToUse.days;
 				this.stature = charToUse.stature;
 				this.management = charToUse.management;
@@ -554,7 +554,7 @@ namespace hist_mmorpg
         /// <param name="emp">List<NonPlayerCharacter> holding employees of character</param>
         /// <param name="kps">List<Fief> holding fiefs owned by character</param>
         public PlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
+            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
             String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> emp, List<Fief> kps, GameClock cl = null, Fief loc = null)
             : base(id, nam, ag, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
         {
@@ -910,7 +910,7 @@ namespace hist_mmorpg
         /// <param name="wa">string holding NPC's wage</param>
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
         public NonPlayerCharacter(String id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
-            Queue<Fief> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
+            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
             String sp, String fath, uint wa, bool inEnt, String mb = null, GameClock cl = null, Fief loc = null)
             : base(id, nam, ag, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
         {
@@ -1049,9 +1049,9 @@ namespace hist_mmorpg
 		/// </summary>
 		public List<String> goTo { get; set; }
 		/// <summary>
-		/// Holds character language
+		/// Holds character language and dialect
 		/// </summary>
-		public string language { get; set; }
+        public Tuple<String, int> language { get; set; }
 		/// <summary>
 		/// Holds character's remaining days in season
 		/// </summary>
@@ -1141,7 +1141,7 @@ namespace hist_mmorpg
 						this.goTo.Add (value.fiefID);
 					}
 				}
-				this.language = charToUse.language;
+				this.language = new Tuple<string,int>(charToUse.language.Item1.languageID, charToUse.language.Item2);
 				this.days = charToUse.days;
 				this.stature = charToUse.stature;
 				this.management = charToUse.management;
