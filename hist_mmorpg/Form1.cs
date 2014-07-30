@@ -264,9 +264,9 @@ namespace hist_mmorpg
 			}
 
             // create Language objects
-            Language c = new Language("C", "Celtic");
+            Language c = new Language("langC", "Celtic");
 			this.languageMasterList.Add (c.languageID, c);
-            Language f = new Language("F", "French");
+            Language f = new Language("langF", "French");
             this.languageMasterList.Add(f.languageID, f);
             // create languages for Fiefs
             Tuple<Language, int> myLang1 = new Tuple<Language, int>(c, 1);
@@ -303,34 +303,39 @@ namespace hist_mmorpg
 
             // create ranks for kingdoms, provinces, fiefs
             Tuple<String, String>[] myTitle03 = new Tuple<string, string>[3];
-            myTitle03[0] = new Tuple<string, string>("C", "King");
+            myTitle03[0] = new Tuple<string, string>("langC", "King");
             myTitle03[1] = new Tuple<string, string>("E", "King");
-            myTitle03[2] = new Tuple<string, string>("F", "Roi");
+            myTitle03[2] = new Tuple<string, string>("langF", "Roi");
             Rank myRank03 = new Rank("03", myTitle03, 6);
+            this.rankMasterList.Add(myRank03.rankID, myRank03);
 
             Tuple<String, String>[] myTitle09 = new Tuple<string, string>[3];
-            myTitle09[0] = new Tuple<string, string>("C", "Prince");
+            myTitle09[0] = new Tuple<string, string>("langC", "Prince");
             myTitle09[1] = new Tuple<string, string>("E", "Prince");
-            myTitle09[2] = new Tuple<string, string>("F", "Prince");
+            myTitle09[2] = new Tuple<string, string>("langF", "Prince");
             Rank myRank09 = new Rank("09", myTitle09, 4);
+            this.rankMasterList.Add(myRank09.rankID, myRank09);
 
             Tuple<String, String>[] myTitle11 = new Tuple<string, string>[3];
-            myTitle11[0] = new Tuple<string, string>("C", "Earl");
+            myTitle11[0] = new Tuple<string, string>("langC", "Earl");
             myTitle11[1] = new Tuple<string, string>("E", "Earl");
-            myTitle11[2] = new Tuple<string, string>("F", "Comte");
+            myTitle11[2] = new Tuple<string, string>("langF", "Comte");
             Rank myRank11 = new Rank("11", myTitle11, 4);
+            this.rankMasterList.Add(myRank11.rankID, myRank11);
 
             Tuple<String, String>[] myTitle15 = new Tuple<string, string>[3];
-            myTitle15[0] = new Tuple<string, string>("C", "Baron");
+            myTitle15[0] = new Tuple<string, string>("langC", "Baron");
             myTitle15[1] = new Tuple<string, string>("E", "Baron");
-            myTitle15[2] = new Tuple<string, string>("F", "Baron");
+            myTitle15[2] = new Tuple<string, string>("langF", "Baron");
             Rank myRank15 = new Rank("15", myTitle15, 2);
+            this.rankMasterList.Add(myRank15.rankID, myRank15);
 
             Tuple<String, String>[] myTitle17 = new Tuple<string, string>[3];
-            myTitle17[0] = new Tuple<string, string>("C", "Lord");
+            myTitle17[0] = new Tuple<string, string>("langC", "Lord");
             myTitle17[1] = new Tuple<string, string>("E", "Lord");
-            myTitle17[2] = new Tuple<string, string>("F", "Sire");
+            myTitle17[2] = new Tuple<string, string>("langF", "Sire");
             Rank myRank17 = new Rank("17", myTitle17, 1);
+            this.rankMasterList.Add(myRank17.rankID, myRank17);
 
             // create kingdoms for provinces
             Kingdom myKingdom1 = new Kingdom("E0000", "England", r: myRank03);
@@ -2310,6 +2315,67 @@ namespace hist_mmorpg
                 pcText += "  - " + pc.ownedFiefs[i].name + "\r\n";
             }
 
+            // if titles are to be shown
+            if (this.characterTitlesCheckBox.Checked)
+            {
+                pcText += "\r\n\r\n------------------ TITLES ------------------\r\n\r\n";
+
+                // check kingdoms
+                foreach (KeyValuePair<string, Kingdom> entry in this.kingdomMasterList)
+                {
+                    // if PC is king
+                    if (entry.Value.king.charID.Equals(pc.charID))
+                    {
+                        // get correct title
+                        for (int i = 0; i < entry.Value.rank.title.Length; i++)
+                        {
+                            if (entry.Value.rank.title[i].Item1 == pc.language.Item1.languageID)
+                            {
+                                pcText += entry.Value.rank.title[i].Item2 + " (rank " + entry.Value.rank.rankID + ") of ";
+                                break;
+                            }
+                        }
+                        // get kingdom details
+                        pcText += entry.Value.name + " (" + entry.Value.kingdomID + ")\r\n";
+                    }
+                }
+
+                // check provinces
+                foreach (KeyValuePair<string, Province> entry in this.provinceMasterList)
+                {
+                    // if PC is overlord
+                    if (entry.Value.overlord.charID.Equals(pc.charID))
+                    {
+                        // get correct title
+                        for (int i = 0; i < entry.Value.rank.title.Length; i++)
+                        {
+                            if (entry.Value.rank.title[i].Item1 == pc.language.Item1.languageID)
+                            {
+                                pcText += entry.Value.rank.title[i].Item2 + " (rank " + entry.Value.rank.rankID + ") of ";
+                                break;
+                            }                        
+                        }
+                        // get province details
+                        pcText += entry.Value.name + " (" + entry.Value.provinceID + ")\r\n";
+                    }
+                }
+
+                // owned fiefs
+                for (int i = 0; i < pc.ownedFiefs.Count; i++ )
+                {
+                    for (int j = 0; j < pc.ownedFiefs[i].rank.title.Length; j++)
+                    {
+                        if (pc.ownedFiefs[i].rank.title[j].Item1 == pc.ownedFiefs[i].language.Item1.languageID)
+                        {
+                            pcText += pc.ownedFiefs[i].rank.title[j].Item2 + " (rank " + pc.ownedFiefs[i].rank.rankID + ") of ";
+                            break;
+                        }
+                    }
+                    // get fief details
+                    pcText += pc.ownedFiefs[i].name + " (" + pc.ownedFiefs[i].fiefID + ")\r\n";
+                }
+            }
+
             return pcText;
         }
 
@@ -3321,6 +3387,11 @@ namespace hist_mmorpg
 
             // refresh fief display
             this.refreshFiefContainer(fiefToView);
+        }
+
+        private void characterTitlesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            this.refreshCharacterContainer(this.charToView);
         }
 
     }

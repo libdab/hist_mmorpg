@@ -84,6 +84,7 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListContainer = new System.Windows.Forms.SplitContainer();
             this.meetingPlaceTextBox = new System.Windows.Forms.TextBox();
             this.meetingPlaceCharsListView = new System.Windows.Forms.ListView();
+            this.characterTitlesCheckBox = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -188,6 +189,7 @@ namespace hist_mmorpg
             // 
             // characterContainer.Panel1
             // 
+            this.characterContainer.Panel1.Controls.Add(this.characterTitlesCheckBox);
             this.characterContainer.Panel1.Controls.Add(this.charMultiMoveTextBox);
             this.characterContainer.Panel1.Controls.Add(this.charMultiMoveBtn);
             this.characterContainer.Panel1.Controls.Add(this.updateCharBtn);
@@ -694,16 +696,27 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListView.View = System.Windows.Forms.View.Details;
             this.meetingPlaceCharsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.meetingPlaceCharsListView_ItemSelectionChanged);
             // 
+            // characterTitlesCheckBox
+            // 
+            this.characterTitlesCheckBox.AutoSize = true;
+            this.characterTitlesCheckBox.Location = new System.Drawing.Point(18, 74);
+            this.characterTitlesCheckBox.Name = "characterTitlesCheckBox";
+            this.characterTitlesCheckBox.Size = new System.Drawing.Size(106, 17);
+            this.characterTitlesCheckBox.TabIndex = 3;
+            this.characterTitlesCheckBox.Text = "Show your titles?";
+            this.characterTitlesCheckBox.UseVisualStyleBackColor = true;
+            this.characterTitlesCheckBox.CheckedChanged += new System.EventHandler(this.characterTitlesCheckBox_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(801, 535);
-            this.Controls.Add(this.travelContainer);
+            this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.fiefContainer);
+            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
-            this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
@@ -806,6 +819,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button removeBaliffBtn;
         private System.Windows.Forms.Button selfBailiffBtn;
         private System.Windows.Forms.Button lockoutBtn;
+        private System.Windows.Forms.CheckBox characterTitlesCheckBox;
 
     }
 }
