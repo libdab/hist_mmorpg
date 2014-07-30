@@ -69,6 +69,14 @@ namespace hist_mmorpg
 		/// </summary>
 		List<String> langKeys = new List<String> ();
         /// <summary>
+        /// Holds all Rank objects
+        /// </summary>
+        public Dictionary<string, Rank> rankMasterList = new Dictionary<string, Rank>();
+        /// <summary>
+        /// Holds keys for Rank objects (used when retrieving from database)
+        /// </summary>
+        List<String> rankKeys = new List<String>();
+        /// <summary>
         /// Holds all Terrain objects
         /// </summary>
         public Dictionary<string, Terrain> terrainMasterList = new Dictionary<string, Terrain>();
@@ -258,9 +266,12 @@ namespace hist_mmorpg
             // create Language objects
             Language c = new Language("C", "Celtic");
 			this.languageMasterList.Add (c.languageID, c);
+            Language f = new Language("F", "French");
+            this.languageMasterList.Add(f.languageID, f);
             // create languages for Fiefs
             Tuple<Language, int> myLang1 = new Tuple<Language, int>(c, 1);
             Tuple<Language, int> myLang2 = new Tuple<Language, int>(c, 2);
+            Tuple<Language, int> myLang3 = new Tuple<Language, int>(f, 1);
 
 			// create terrain objects
 			Terrain plains = new Terrain("P", "Plains", 1);
@@ -290,31 +301,62 @@ namespace hist_mmorpg
 			List<Character> fief6Chars = new List<Character>();
 			List<Character> fief7Chars = new List<Character>();
 
+            // create ranks for kingdoms, provinces, fiefs
+            Tuple<String, String>[] myTitle03 = new Tuple<string, string>[3];
+            myTitle03[0] = new Tuple<string, string>("C", "King");
+            myTitle03[1] = new Tuple<string, string>("E", "King");
+            myTitle03[2] = new Tuple<string, string>("F", "Roi");
+            Rank myRank03 = new Rank("03", myTitle03, 6);
+
+            Tuple<String, String>[] myTitle09 = new Tuple<string, string>[3];
+            myTitle09[0] = new Tuple<string, string>("C", "Prince");
+            myTitle09[1] = new Tuple<string, string>("E", "Prince");
+            myTitle09[2] = new Tuple<string, string>("F", "Prince");
+            Rank myRank09 = new Rank("09", myTitle09, 4);
+
+            Tuple<String, String>[] myTitle11 = new Tuple<string, string>[3];
+            myTitle11[0] = new Tuple<string, string>("C", "Earl");
+            myTitle11[1] = new Tuple<string, string>("E", "Earl");
+            myTitle11[2] = new Tuple<string, string>("F", "Comte");
+            Rank myRank11 = new Rank("11", myTitle11, 4);
+
+            Tuple<String, String>[] myTitle15 = new Tuple<string, string>[3];
+            myTitle15[0] = new Tuple<string, string>("C", "Baron");
+            myTitle15[1] = new Tuple<string, string>("E", "Baron");
+            myTitle15[2] = new Tuple<string, string>("F", "Baron");
+            Rank myRank15 = new Rank("15", myTitle15, 2);
+
+            Tuple<String, String>[] myTitle17 = new Tuple<string, string>[3];
+            myTitle17[0] = new Tuple<string, string>("C", "Lord");
+            myTitle17[1] = new Tuple<string, string>("E", "Lord");
+            myTitle17[2] = new Tuple<string, string>("F", "Sire");
+            Rank myRank17 = new Rank("17", myTitle17, 1);
+
             // create kingdoms for provinces
-            Kingdom myKing = new Kingdom("E0000", "England");
-            this.kingdomMasterList.Add(myKing.kingdomID, myKing);
-            Kingdom myKing2 = new Kingdom("B0000", "Boogiboogiland");
-            this.kingdomMasterList.Add(myKing2.kingdomID, myKing2);
+            Kingdom myKingdom1 = new Kingdom("E0000", "England", r: myRank03);
+            this.kingdomMasterList.Add(myKingdom1.kingdomID, myKingdom1);
+            Kingdom myKingdom2 = new Kingdom("B0000", "Boogiboogiland", r: myRank03);
+            this.kingdomMasterList.Add(myKingdom2.kingdomID, myKingdom2);
 
             // create provinces for fiefs
-            Province myProv = new Province("ESX00", "Sussex", 6.2, king: myKing);
+            Province myProv = new Province("ESX00", "Sussex", 6.2, king: myKingdom1, ra: myRank11);
 			this.provinceMasterList.Add (myProv.provinceID, myProv);
-            Province myProv2 = new Province("ESR00", "Surrey", 6.2, king: myKing2);
+            Province myProv2 = new Province("ESR00", "Surrey", 6.2, king: myKingdom2, ra: myRank11);
 			this.provinceMasterList.Add (myProv2.provinceID, myProv2);
 
-			Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, true, this.clock);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, true, this.clock, ra: myRank17);
 			fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, true, false, this.clock);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, true, false, this.clock, ra: myRank15);
 			fiefMasterList.Add(myFief2.fiefID, myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, ra: myRank17);
 			fiefMasterList.Add(myFief3.fiefID, myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock, ra: myRank17);
 			fiefMasterList.Add(myFief4.fiefID, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock, ra: myRank15);
 			fiefMasterList.Add(myFief5.fiefID, myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang2, plains, fief6Chars, keep6BarChars, false, false, this.clock);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, this.clock, ra: myRank17);
 			fiefMasterList.Add(myFief6.fiefID, myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang2, forrest, fief7Chars, keep7BarChars, false, false, this.clock);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, this.clock, ra: myRank15);
 			fiefMasterList.Add(myFief7.fiefID, myFief7);
 			Army myArmy = new Army("army001", 0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
@@ -411,8 +453,8 @@ namespace hist_mmorpg
 			myProv2.overlord = myChar2;
 
             // set kings
-            myKing.king = myChar1;
-            myKing2.king = myChar2;
+            myKingdom1.king = myChar1;
+            myKingdom2.king = myChar2;
 
             // set fief bailiffs
 			myFief1.bailiff = myNPC1;
@@ -529,6 +571,26 @@ namespace hist_mmorpg
 
             // write key list to database
             this.writeKeyList(gameID, "langKeys", this.langKeys);
+
+            // write Ranks
+            // clear existing key list
+            if (this.rankKeys.Count > 0)
+            {
+                this.rankKeys.Clear();
+            }
+
+            // write each object in rankMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<String, Rank> pair in this.rankMasterList)
+            {
+                bool success = this.writeRank(gameID, pair.Value);
+                if (success)
+                {
+                    this.rankKeys.Add(pair.Key);
+                }
+            }
+
+            // write key list to database
+            this.writeKeyList(gameID, "rankKeys", this.rankKeys);
 
             // write NPCs
             // clear existing key list
@@ -684,6 +746,14 @@ namespace hist_mmorpg
                 this.languageMasterList.Add(lang.languageID, lang);
             }
 
+            // load Ranks
+            foreach (String element in this.rankKeys)
+            {
+                Rank rank = this.initialDBload_rank(gameID, element);
+                // add Rank to rankMasterList
+                this.rankMasterList.Add(rank.rankID, rank);
+            }
+
             // load NPCs
 			foreach (String element in this.npcKeys)
 			{
@@ -773,6 +843,17 @@ namespace hist_mmorpg
 			{
 				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve langKeys from database.");
 			}
+
+            // populate rankKeys
+            var rankKeyResult = client.Get(gameID, "rankKeys");
+            if (rankKeyResult.IsSuccess)
+            {
+                this.rankKeys = rankKeyResult.Value.GetObject<List<String>>();
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve rankKeys from database.");
+            }
 
             // populate npcKeys
             var npcKeyResult = client.Get(gameID, "npcKeys");
@@ -1034,7 +1115,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Language object</returns>
         /// <param name="gameID">Game for which Language to be retrieved</param>
-        /// <param name="langID">ID of Language to be retrieved</param>
+        /// <param name="rankID">ID of Language to be retrieved</param>
         public Language initialDBload_language(String gameID, String langID)
         {
             var languageResult = client.Get(gameID, langID);
@@ -1050,6 +1131,29 @@ namespace hist_mmorpg
             }
 
             return newLanguage;
+        }
+
+        /// <summary>
+        /// Loads a Rank for a particular game from database
+        /// </summary>
+        /// <returns>Rank object</returns>
+        /// <param name="gameID">Game for which Rank to be retrieved</param>
+        /// <param name="rankID">ID of Rank to be retrieved</param>
+        public Rank initialDBload_rank(String gameID, String rankID)
+        {
+            var rankResult = client.Get(gameID, rankID);
+            var newRank = new Rank();
+
+            if (rankResult.IsSuccess)
+            {
+                newRank = rankResult.Value.GetObject<Rank>();
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Rank " + rankID);
+            }
+
+            return newRank;
         }
 
         /// <summary>
@@ -1191,6 +1295,19 @@ namespace hist_mmorpg
 
 				}
 			}
+
+            // insert rank using rankID
+            if (fr.rankID != null)
+            {
+                if (this.rankMasterList.ContainsKey(fr.rankID))
+                {
+                    fOut.rank = rankMasterList[fr.rankID];
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("Fief " + fr.fiefID + ": Rank not found (" + fr.rankID + ")");
+                }
+            }
 
 			return fOut;
 		}
@@ -1424,6 +1541,7 @@ namespace hist_mmorpg
             Kingdom oOut = null;
             oOut = new Kingdom(kr);
 
+            // insert king
             if (kr.kingID != null)
             {
                 if (this.pcMasterList.ContainsKey(kr.kingID))
@@ -1435,6 +1553,20 @@ namespace hist_mmorpg
                     System.Windows.Forms.MessageBox.Show("Kingdom " + kr.kingdomID + ": King not found (" + kr.kingID + ")");
                 }
             }
+
+            // insert rank
+            if (kr.rankID != null)
+            {
+                if (this.rankMasterList.ContainsKey(kr.rankID))
+                {
+                    oOut.rank = rankMasterList[kr.rankID];
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("Kingdom " + kr.kingdomID + ": Rank not found (" + kr.rankID + ")");
+                }
+            }
+
             return oOut;
         }
 
@@ -1471,6 +1603,19 @@ namespace hist_mmorpg
                 else
                 {
                     System.Windows.Forms.MessageBox.Show("Province " + pr.provinceID + ": Kingdom not found (" + pr.kingdomID + ")");
+                }
+            }
+
+            // insert rank using rankID
+            if (pr.rankID != null)
+            {
+                if (this.rankMasterList.ContainsKey(pr.rankID))
+                {
+                    oOut.rank = rankMasterList[pr.rankID];
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("Province " + pr.provinceID + ": Rank not found (" + pr.rankID + ")");
                 }
             }
 
@@ -1643,6 +1788,26 @@ namespace hist_mmorpg
 
 			return putLanguageResult.IsSuccess;
 		}
+
+        /// <summary>
+        /// Writes Rank object to Riak
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
+        /// <param name="r">Rank to write</param>
+        public bool writeRank(String gameID, Rank r)
+        {
+
+            var rRank = new RiakObject(gameID, r.rankID, r);
+            var putRankResult = client.Put(rRank);
+
+            if (!putRankResult.IsSuccess)
+            {
+                System.Windows.Forms.MessageBox.Show("Write failed: Rank " + rRank.Key + " to bucket " + rRank.Bucket);
+            }
+
+            return putRankResult.IsSuccess;
+        }
 
         /// <summary>
         /// Writes Terrain object to Riak
@@ -2198,6 +2363,17 @@ namespace hist_mmorpg
 
             // name (& province name)
             fiefText += "Name: " + f.name + " (Province: " + f.province.name + ".  Kingdom: " + f.province.kingdom.name + ")\r\n";
+
+            // rank
+            fiefText += "Title (rank): ";
+            for (int i = 0; i < f.rank.title.Length; i++ )
+            {
+                if (f.rank.title[i].Item1 == f.language.Item1.languageID)
+                {
+                    fiefText += f.rank.title[i].Item2 + " (" + f.rank.rankID + ")\r\n";
+                    break;
+                }
+            }
 
             // population
             fiefText += "Population: " + f.population + "\r\n";

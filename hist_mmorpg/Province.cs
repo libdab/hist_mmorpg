@@ -30,6 +30,10 @@ namespace hist_mmorpg
         /// Holds province kingdom object
         /// </summary>
         public Kingdom kingdom { get; set; }
+        /// <summary>
+        /// Holds province Rank object
+        /// </summary>
+        public Rank rank { get; set; }
 
         /// <summary>
         /// Constructor for Province
@@ -39,7 +43,8 @@ namespace hist_mmorpg
         /// <param name="olord">Province overlord (PlayerCharacter)</param>
         /// <param name="otax">Double holding province overlord tax rate</param>
         /// <param name="king">Province's Kingdom object</param>
-        public Province(String id, String nam, Double otax, PlayerCharacter olord = null, Kingdom king = null)
+        /// <param name="ra">Province's Rank object</param>
+        public Province(String id, String nam, Double otax, PlayerCharacter olord = null, Kingdom king = null, Rank ra = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -68,6 +73,7 @@ namespace hist_mmorpg
             this.overlord = olord;
             this.overlordTaxRate = otax;
             this.kingdom = king;
+            this.rank = ra;
 
         }
 
@@ -93,7 +99,9 @@ namespace hist_mmorpg
 			this.overlordTaxRate = pr.overlordTaxRate;
             // kingdom to be inserted later
             this.kingdom = null;
-		}
+            // rank to be inserted later
+            this.rank = null;
+        }
     }
 
 	/// <summary>
@@ -121,6 +129,10 @@ namespace hist_mmorpg
         /// Holds province kingdom (ID)
         /// </summary>
         public String kingdomID { get; set; }
+        /// <summary>
+        /// Holds province Rank (ID)
+        /// </summary>
+        public String rankID { get; set; }
 
 		/// <summary>
 		/// Constructor for Province_Riak.
@@ -134,6 +146,7 @@ namespace hist_mmorpg
 			this.overlordID = prov.overlord.charID;
 			this.overlordTaxRate = prov.overlordTaxRate;
             this.kingdomID = prov.kingdom.kingdomID;
+            this.rankID = prov.rank.rankID;
 		}
 
         /// <summary>

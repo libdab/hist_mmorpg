@@ -22,6 +22,10 @@ namespace hist_mmorpg
         /// Holds kingdom king (PlayerCharacter object)
         /// </summary>
         public PlayerCharacter king { get; set; }
+        /// <summary>
+        /// Holds kingdom rank (Rank object)
+        /// </summary>
+        public Rank rank { get; set; }
 
         /// <summary>
         /// Constructor for Kingdom
@@ -29,7 +33,8 @@ namespace hist_mmorpg
         /// <param name="id">String holding kingdom ID</param>
         /// <param name="nam">String holding kingdom name</param>
         /// <param name="k">Kingdom king (PlayerCharacter)</param>
-        public Kingdom(String id, String nam, PlayerCharacter k = null)
+        /// <param name="r">Kingdom rank (Rank object)</param>
+        public Kingdom(String id, String nam, PlayerCharacter k = null, Rank r = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -45,6 +50,7 @@ namespace hist_mmorpg
             this.kingdomID = id;
             this.name = nam;
             this.king = k;
+            this.rank = r;
 
         }
 
@@ -67,7 +73,9 @@ namespace hist_mmorpg
 			this.name = kr.name;
             // overlord to be inserted later
 			this.king = null;
-		}
+            // rank to be inserted later
+            this.rank = null;
+        }
     }
 
     /// <summary>
@@ -87,6 +95,10 @@ namespace hist_mmorpg
         /// Holds kingdom overlord (ID)
 		/// </summary>
 		public String kingID { get; set; }
+        /// <summary>
+        /// Holds kingdom rank (ID)
+        /// </summary>
+        public String rankID { get; set; }
 
 		/// <summary>
         /// Constructor for Kingdom_Riak.
@@ -98,6 +110,7 @@ namespace hist_mmorpg
             this.kingdomID = k.kingdomID;
             this.name = k.name;
             this.kingID = k.king.charID;
+            this.rankID = k.rank.rankID;
 		}
 
         /// <summary>

@@ -130,6 +130,10 @@ namespace hist_mmorpg
         /// Holds fief bailiff (Character object)
         /// </summary>
         public Character bailiff { get; set; }
+        /// <summary>
+        /// Holds fief Rank object
+        /// </summary>
+        public Rank rank { get; set; }
 
         /// <summary>
         /// Constructor for Fief
@@ -164,9 +168,11 @@ namespace hist_mmorpg
 		/// <param name="own">PlayerCharacter holding fief owner</param>
 		/// <param name="ancOwn">PlayerCharacter holding fief ancestral owner</param>
         /// <param name="bail">Character holding fief bailiff</param>
+        /// <param name="ra">Fief's rank object</param>
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp,
             Double tx, uint off, uint garr, uint infra, uint keep, Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, Double kpLvl,
-            Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr, GameClock cl, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null)
+            Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
+            GameClock cl, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -273,6 +279,7 @@ namespace hist_mmorpg
             this.englishBarred = engBarr;
             this.frenchBarred = frBarr;
             this.clock = cl;
+            this.rank = ra;
         }
 
 		/// <summary>
@@ -285,11 +292,15 @@ namespace hist_mmorpg
 		
 			this.fiefID = fr.fiefID;
 			this.name = fr.name;
+            // province to be added later
 			this.province = null;
 			this.population = fr.population;
-			this.owner = null;
-			this.ancestralOwner = null;
-			this.bailiff = null;
+            // owner to be added later
+            this.owner = null;
+            // ancestral owner to be added later
+            this.ancestralOwner = null;
+            // bailiff to be added later
+            this.bailiff = null;
 			this.fields = fr.fields;
 			this.industry = fr.industry;
 			this.troops = fr.troops;
@@ -314,7 +325,9 @@ namespace hist_mmorpg
 			this.englishBarred = fr.englishBarred;
 			this.frenchBarred = fr.frenchBarred;
 			this.clock = null;
-		}
+            // rank to be added later
+            this.rank = null;
+        }
 
         /// <summary>
         /// Constructor for Fief taking no parameters.
@@ -1193,6 +1206,10 @@ namespace hist_mmorpg
 		/// Holds fief bailiff (charID)
 		/// </summary>
 		public String bailiff { get; set; }
+        /// <summary>
+        /// Holds fief Rank (ID)
+        /// </summary>
+        public String rankID { get; set; }
 
 		/// <summary>
 		/// Constructor for Fief_Riak
@@ -1240,6 +1257,7 @@ namespace hist_mmorpg
 			this.englishBarred = f.englishBarred;
 			this.frenchBarred = f.frenchBarred;
 			this.clock = f.clock.clockID;
+            this.rankID = f.rank.rankID;
 		}
 
         /// <summary>
