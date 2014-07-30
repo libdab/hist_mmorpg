@@ -349,9 +349,9 @@ namespace hist_mmorpg
             Province myProv2 = new Province("ESR00", "Surrey", 6.2, king: myKingdom2, ra: myRank11);
 			this.provinceMasterList.Add (myProv2.provinceID, myProv2);
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, true, this.clock, ra: myRank17);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, ra: myRank17);
 			fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, true, false, this.clock, ra: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, ra: myRank15);
 			fiefMasterList.Add(myFief2.fiefID, myFief2);
             Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, ra: myRank17);
 			fiefMasterList.Add(myFief3.fiefID, myFief3);
@@ -426,7 +426,7 @@ namespace hist_mmorpg
             // create some characters
             PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, myLang1, 90, 4.0, 7.2, 6.1, generateSkillSet(myRand), false, true, false, "200", "403", "", false, 13000, myEmployees1, myFiefsOwned1, cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, myLang1, 90, 4.0, 5.0, 4.5, generateSkillSet(myRand), true, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, myLang1, 90, 4.0, 5.0, 4.5, generateSkillSet(myRand), false, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar2.charID, myChar2);
             NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, myLang1, 90, 4.0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
 			npcMasterList.Add(myNPC1.charID, myNPC1);
@@ -1995,9 +1995,9 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Refreshes UI Court/Tavern display
+        /// Refreshes UI Court, Tavern, outside keep display
         /// </summary>
-        /// <param name="place">String specifying whether court or tavern</param>
+        /// <param name="place">String specifying whether court, tavern, outside keep</param>
         public void refreshMeetingPlaceDisplay(string place)
         {
             this.meetingPlaceDisplayText();
@@ -2005,7 +2005,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Refreshes general information displayed in Court/Tavern
+        /// Refreshes general information displayed in Court, Tavern, outside keep
         /// </summary>
         public void meetingPlaceDisplayText()
         {
@@ -2024,9 +2024,9 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Refreshes display of Character list in Court/Tavern
+        /// Refreshes display of Character list in Court, Tavern, outside keep
         /// </summary>
-        /// <param name="place">String specifying whether court or tavern</param>
+        /// <param name="place">String specifying whether court, tavern, outside keep</param>
         public void meetingPlaceDisplayList(string place)
         {
             // clear existing items in list
@@ -2039,63 +2039,103 @@ namespace hist_mmorpg
                 ifInKeep = true;
             }
 
-            ListViewItem[] charsInCourt = new ListViewItem[this.myChar.location.characters.Count];
+            //ListViewItem[] charsInCourt = new ListViewItem[this.myChar.location.characters.Count];
             // iterates through characters
             for (int i = 0; i < this.myChar.location.characters.Count; i++)
             {
+                ListViewItem charsInCourt = null;
+
                 // only display characters in relevant location (in keep, or not)
                 if (this.myChar.location.characters[i].inKeep == ifInKeep)
                 {
-                    // don't show this PlayerCharacter
+                    // don't show the player
                     if (this.myChar.location.characters[i] != this.myChar)
                     {
-                        // Create an item and subitems for each character
 
-                        // name
-                        charsInCourt[i] = new ListViewItem(this.myChar.location.characters[i].name);
-
-                        // charID
-                        charsInCourt[i].SubItems.Add(this.myChar.location.characters[i].charID);
-
-                        // TODO: household
-                        charsInCourt[i].SubItems.Add("A household");
-
-                        // sex
-                        if (this.myChar.location.characters[i].isMale)
+                        switch (place)
                         {
-                            charsInCourt[i].SubItems.Add("Male");
-                        }
-                        else
-                        {
-                            charsInCourt[i].SubItems.Add("Female");
-                        }
-
-                        // TODO: Type (e.g. family or not)
-                        charsInCourt[i].SubItems.Add("A type");
-
-                        // if is in player's entourage
-                        bool isCompanion = false;
-                        for (int ii = 0; ii < this.myChar.employees.Count; ii++)
-                        {
-                            if (this.myChar.employees[ii] == this.myChar.location.characters[i])
-                            {
-                                if (this.myChar.employees[ii].inEntourage)
+                            case "tavern":
+                                // only show NPCs
+                                if (this.myChar.location.characters[i] is NonPlayerCharacter)
                                 {
-                                    isCompanion = true;
+                                    // only show unemployed
+                                    if ((this.myChar.location.characters[i] as NonPlayerCharacter).wage == 0)
+                                    {
+                                        // Create an item and subitems for character
+                                        charsInCourt = this.createMeetingPlaceListItem(this.myChar.location.characters[i]);
+                                    }
                                 }
-                            }
+                                break;
+                            default:
+                                // Create an item and subitems for character
+                                charsInCourt = this.createMeetingPlaceListItem(this.myChar.location.characters[i]);
+                                break;
                         }
 
-                        if (isCompanion)
+                    }
+                }
+
+                // add item to fiefsListView
+                if (charsInCourt != null)
+                {
+                    this.meetingPlaceCharsListView.Items.Add(charsInCourt);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates item for Character list in Court, Tavern, outside keep
+        /// </summary>
+        /// <param name="ch">Character whose information is to be displayed</param>
+        /// <returns>ListViewItem containing character details</returns>
+        public ListViewItem createMeetingPlaceListItem(Character ch)
+        {
+            // name
+            ListViewItem myItem = new ListViewItem(ch.name);
+
+            // charID
+            myItem.SubItems.Add(ch.charID);
+
+            // TODO: household
+            myItem.SubItems.Add("A household");
+
+            // sex
+            if (ch.isMale)
+            {
+                myItem.SubItems.Add("Male");
+            }
+            else
+            {
+                myItem.SubItems.Add("Female");
+            }
+
+            // TODO: Type (e.g. family or not)
+            myItem.SubItems.Add("A type");
+
+            // show whether is in player's entourage
+            bool isCompanion = false;
+
+            if (ch is NonPlayerCharacter)
+            {
+                // iterate through employees checking for character
+                for (int i = 0; i < this.myChar.employees.Count; i++)
+                {
+                    if (this.myChar.employees[i] == ch)
+                    {
+                        if (this.myChar.employees[i].inEntourage)
                         {
-                            charsInCourt[i].SubItems.Add("Yes");
+                            isCompanion = true;
                         }
-
-                        // add item to fiefsListView
-                        this.meetingPlaceCharsListView.Items.Add(charsInCourt[i]);
                     }
                 }
             }
+
+            if (isCompanion)
+            {
+                myItem.SubItems.Add("Yes");
+            }
+
+            return myItem;
         }
 
         /// <summary>
@@ -3168,10 +3208,8 @@ namespace hist_mmorpg
             }
 
             // refresh display
-            string textToDisplay = "";
-            textToDisplay += this.displayCharacter(charToView);
-            this.meetingPlaceCharDisplayTextBox.Text = textToDisplay;
-
+            this.meetingPlaceCharDisplayTextBox.Text = "";
+            this.refreshMeetingPlaceDisplay("tavern");
         }
 
         /// <summary>
@@ -3392,6 +3430,29 @@ namespace hist_mmorpg
         private void characterTitlesCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             this.refreshCharacterContainer(this.charToView);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the listOutsideKeepBtn button
+        /// which causes the player (and entourage) to exit the keep (if necessary)
+        /// and refreshes and displays the 'outside keep' screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void listOutsideKeepBtn_Click(object sender, EventArgs e)
+        {
+            // exit keep if required
+            if (this.myChar.inKeep)
+            {
+                this.myChar.exitKeep();
+            }
+            // refresh outside keep screen 
+            this.refreshMeetingPlaceDisplay("outsideKeep");
+            // remove any previously displayed characters
+            this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
+            this.meetingPlaceCharDisplayTextBox.Text = "";
+            // display tavern screen
+            this.meetingPlaceContainer.BringToFront();
         }
 
     }
