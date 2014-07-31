@@ -173,7 +173,8 @@ namespace hist_mmorpg
 
             // initialise list elements in UI
             this.setUpFiefsList();
-            this.setUpCourtCharsList();
+            this.setUpMeetingPLaceCharsList();
+            this.setUpHouseholdCharsList();
 
             // initialise character display in UI
             this.charToView = this.myChar;
@@ -349,19 +350,19 @@ namespace hist_mmorpg
             Province myProv2 = new Province("ESR00", "Surrey", 6.2, king: myKingdom2, ra: myRank11);
 			this.provinceMasterList.Add (myProv2.provinceID, myProv2);
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, ra: myRank17);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, ra: myRank17);
 			fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, ra: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, ra: myRank15);
 			fiefMasterList.Add(myFief2.fiefID, myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, ra: myRank17);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, 0, ra: myRank17);
 			fiefMasterList.Add(myFief3.fiefID, myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock, ra: myRank17);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock, 0, ra: myRank17);
 			fiefMasterList.Add(myFief4.fiefID, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock, ra: myRank15);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock, 0, ra: myRank15);
 			fiefMasterList.Add(myFief5.fiefID, myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, this.clock, ra: myRank17);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, this.clock, 0, ra: myRank17);
 			fiefMasterList.Add(myFief6.fiefID, myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, this.clock, ra: myRank15);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, this.clock, 0, ra: myRank15);
 			fiefMasterList.Add(myFief7.fiefID, myFief7);
 			Army myArmy = new Army("army001", 0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
@@ -462,11 +463,11 @@ namespace hist_mmorpg
             myKingdom2.king = myChar2;
 
             // set fief bailiffs
-			myFief1.bailiff = myNPC1;
+            myFief1.bailiff = myChar1;
 			myFief2.bailiff = myNPC2;
 
 			// add NPC to employees
-			myChar1.hireNPC(myNPC2, 10000);
+            myChar1.hireNPC(myNPC2, 12000);
 			// set employee as travelling companion
 			myChar1.addToEntourage(myNPC2);
 
@@ -1956,9 +1957,9 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Creates UI display for list of characters present in Court/Tavern
+        /// Creates UI display for list of characters present in Court, Tavern, outside keep
         /// </summary>
-        public void setUpCourtCharsList()
+        public void setUpMeetingPLaceCharsList()
         {
             // add necessary columns
             this.meetingPlaceCharsListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
@@ -1967,6 +1968,19 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListView.Columns.Add("Sex", -2, HorizontalAlignment.Left);
             this.meetingPlaceCharsListView.Columns.Add("Type", -2, HorizontalAlignment.Left);
             this.meetingPlaceCharsListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for list of characters in the Household screen
+        /// </summary>
+        public void setUpHouseholdCharsList()
+        {
+            // add necessary columns
+            this.houseCharListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("Function", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -2000,7 +2014,12 @@ namespace hist_mmorpg
         /// <param name="place">String specifying whether court, tavern, outside keep</param>
         public void refreshMeetingPlaceDisplay(string place)
         {
+            // refresh general information
             this.meetingPlaceDisplayText();
+            // remove any previously displayed characters
+            this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
+            this.meetingPlaceCharDisplayTextBox.Text = "";
+            // refresh list of characters
             this.meetingPlaceDisplayList(place);
         }
 
@@ -2039,7 +2058,6 @@ namespace hist_mmorpg
                 ifInKeep = true;
             }
 
-            //ListViewItem[] charsInCourt = new ListViewItem[this.myChar.location.characters.Count];
             // iterates through characters
             for (int i = 0; i < this.myChar.location.characters.Count; i++)
             {
@@ -2136,6 +2154,60 @@ namespace hist_mmorpg
             }
 
             return myItem;
+        }
+
+        /// <summary>
+        /// Refreshes Household display
+        /// </summary>
+        /// <param name="place">String specifying whether court, tavern, outside keep</param>
+        public void refreshHouseholdDisplay(NonPlayerCharacter npc = null)
+        {
+            // remove any previously displayed characters
+            this.houseCharTextBox.ReadOnly = true;
+            this.houseCharTextBox.Text = "";
+
+            // clear existing items in characters list
+            this.houseCharListView.Items.Clear();
+
+            // iterates through characters
+            for (int i = 0; i < this.myChar.employees.Count; i++)
+            {
+                ListViewItem houseChar = null;
+
+                // name
+                houseChar = new ListViewItem(this.myChar.employees[i].name);
+
+                // charID
+                houseChar.SubItems.Add(this.myChar.employees[i].charID);
+
+                // TODO: Function (e.g. NPC, Son, etc.)
+                houseChar.SubItems.Add("A function");
+
+                // location
+                houseChar.SubItems.Add(this.myChar.employees[i].location.fiefID + " (" + this.myChar.employees[i].location.name + ")");
+
+                // show whether is in player's entourage
+                if (this.myChar.employees[i].inEntourage)
+                {
+                    houseChar.SubItems.Add("Yes");
+                }
+
+                if (houseChar != null)
+                {
+                    // if NPC passed in as parameter, show as selected
+                    if (this.myChar.employees[i] == npc)
+                    {
+                        houseChar.Selected = true;
+                    }
+
+                    // add item to fiefsListView
+                    this.houseCharListView.Items.Add(houseChar);
+                }
+
+            }
+
+            this.houseCharListView.HideSelection = false;
+            this.houseCharListView.Focus();
         }
 
         /// <summary>
@@ -2991,7 +3063,22 @@ namespace hist_mmorpg
         {
             if (this.fiefToView.bailiff != null)
             {
-                this.refreshCharacterContainer(this.fiefToView.bailiff);
+                // if player is bailiff, show in personal characteristics screen
+                if (this.fiefToView.bailiff == this.myChar)
+                {
+                    this.charToView = this.myChar;
+                    this.refreshCharacterContainer(this.charToView);
+                }
+
+                // if NPC is bailiff, show in household affairs screen
+                else if (this.fiefToView.bailiff is NonPlayerCharacter)
+                {
+                    this.charToView = this.fiefToView.bailiff;
+                    // refresh household affairs screen 
+                    this.refreshHouseholdDisplay(this.charToView as NonPlayerCharacter);
+                    // display household affairs screen
+                    this.houseContainer.BringToFront();
+                }
             }
         }
 
@@ -3087,9 +3174,6 @@ namespace hist_mmorpg
             {
                 // refresh court screen 
                 this.refreshMeetingPlaceDisplay("court");
-                // remove any previously displayed characters
-                this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
-                this.meetingPlaceCharDisplayTextBox.Text = "";
                 // display court screen
                 this.meetingPlaceContainer.BringToFront();
             }
@@ -3112,9 +3196,6 @@ namespace hist_mmorpg
             }
             // refresh tavern screen 
             this.refreshMeetingPlaceDisplay("tavern");
-            // remove any previously displayed characters
-            this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
-            this.meetingPlaceCharDisplayTextBox.Text = "";
             // display tavern screen
             this.meetingPlaceContainer.BringToFront();
         }
@@ -3448,11 +3529,60 @@ namespace hist_mmorpg
             }
             // refresh outside keep screen 
             this.refreshMeetingPlaceDisplay("outsideKeep");
-            // remove any previously displayed characters
-            this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
-            this.meetingPlaceCharDisplayTextBox.Text = "";
             // display tavern screen
             this.meetingPlaceContainer.BringToFront();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the dealWithHouseholdAffairsToolStripMenuItem
+        /// which causes the Household screen to display, listing the player's
+        /// family and employed NPCs
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void dealWithHouseholdAffairsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // refresh household affairs screen 
+            this.refreshHouseholdDisplay();
+            // display household affairs screen
+            this.houseContainer.BringToFront();
+        }
+
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of the houseCharListView object,
+        /// invoking the displayCharacter method, passing a Character to display
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void houseCharListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            Character charToDisplay = null;
+
+            // loop through the characters in employees
+            for (int i = 0; i < this.myChar.employees.Count; i++)
+            {
+                if (this.houseCharListView.SelectedItems.Count > 0)
+                {
+                    // find matching character
+                    if (this.myChar.employees[i].charID.Equals(this.houseCharListView.SelectedItems[0].SubItems[1].Text))
+                    {
+                        charToDisplay = this.myChar.employees[i];
+                        break;
+                    }
+
+                }
+
+            }
+
+            // retrieve and display character information
+            if (charToDisplay != null)
+            {
+                this.charToView = charToDisplay;
+                string textToDisplay = "";
+                textToDisplay += this.displayCharacter(charToDisplay);
+                this.houseCharTextBox.ReadOnly = true;
+                this.houseCharTextBox.Text = textToDisplay;
+            }
         }
 
     }

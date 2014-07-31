@@ -131,6 +131,10 @@ namespace hist_mmorpg
         /// </summary>
         public Character bailiff { get; set; }
         /// <summary>
+        /// Number of days the bailiff has been resident in the fief (this season)
+        /// </summary>
+        public byte bailiffDaysInFief { get; set; }
+        /// <summary>
         /// Holds fief Rank object
         /// </summary>
         public Rank rank { get; set; }
@@ -168,11 +172,12 @@ namespace hist_mmorpg
 		/// <param name="own">PlayerCharacter holding fief owner</param>
 		/// <param name="ancOwn">PlayerCharacter holding fief ancestral owner</param>
         /// <param name="bail">Character holding fief bailiff</param>
+        /// <param name="bailInF">byte holding days bailiff in fief</param>
         /// <param name="ra">Fief's rank object</param>
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp,
             Double tx, uint off, uint garr, uint infra, uint keep, Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, Double kpLvl,
             Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
-            GameClock cl, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
+            GameClock cl, byte bailInF, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -280,6 +285,7 @@ namespace hist_mmorpg
             this.frenchBarred = frBarr;
             this.clock = cl;
             this.rank = ra;
+            this.bailiffDaysInFief = bailInF;
         }
 
 		/// <summary>
@@ -327,6 +333,7 @@ namespace hist_mmorpg
 			this.clock = null;
             // rank to be added later
             this.rank = null;
+            this.bailiffDaysInFief = fr.bailiffDaysInFief;
         }
 
         /// <summary>
@@ -1207,6 +1214,10 @@ namespace hist_mmorpg
 		/// </summary>
 		public String bailiff { get; set; }
         /// <summary>
+        /// Number of days the bailiff has been resident in the fief (this season)
+        /// </summary>
+        public byte bailiffDaysInFief { get; set; }
+        /// <summary>
         /// Holds fief Rank (ID)
         /// </summary>
         public String rankID { get; set; }
@@ -1258,6 +1269,7 @@ namespace hist_mmorpg
 			this.frenchBarred = f.frenchBarred;
 			this.clock = f.clock.clockID;
             this.rankID = f.rank.rankID;
+            this.bailiffDaysInFief = f.bailiffDaysInFief;
 		}
 
         /// <summary>

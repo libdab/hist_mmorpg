@@ -64,6 +64,7 @@ namespace hist_mmorpg
             this.adjustSpendBtn = new System.Windows.Forms.Button();
             this.fiefTextBox = new System.Windows.Forms.TextBox();
             this.travelContainer = new System.Windows.Forms.SplitContainer();
+            this.listOutsideKeepBtn = new System.Windows.Forms.Button();
             this.visitTavernBtn = new System.Windows.Forms.Button();
             this.visitCourtBtn1 = new System.Windows.Forms.Button();
             this.enterKeepBtn = new System.Windows.Forms.Button();
@@ -85,7 +86,14 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListContainer = new System.Windows.Forms.SplitContainer();
             this.meetingPlaceTextBox = new System.Windows.Forms.TextBox();
             this.meetingPlaceCharsListView = new System.Windows.Forms.ListView();
-            this.listOutsideKeepBtn = new System.Windows.Forms.Button();
+            this.houseContainer = new System.Windows.Forms.SplitContainer();
+            this.houseCharContainer = new System.Windows.Forms.SplitContainer();
+            this.houseCharListContainer = new System.Windows.Forms.SplitContainer();
+            this.houseCharListLabel = new System.Windows.Forms.Label();
+            this.houseCharListView = new System.Windows.Forms.ListView();
+            this.householdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dealWithHouseholdAffairsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.houseCharTextBox = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -115,6 +123,17 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListContainer.Panel1.SuspendLayout();
             this.meetingPlaceCharsListContainer.Panel2.SuspendLayout();
             this.meetingPlaceCharsListContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.houseContainer)).BeginInit();
+            this.houseContainer.Panel2.SuspendLayout();
+            this.houseContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.houseCharContainer)).BeginInit();
+            this.houseCharContainer.Panel1.SuspendLayout();
+            this.houseCharContainer.Panel2.SuspendLayout();
+            this.houseCharContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.houseCharListContainer)).BeginInit();
+            this.houseCharListContainer.Panel1.SuspendLayout();
+            this.houseCharListContainer.Panel2.SuspendLayout();
+            this.houseCharListContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -122,7 +141,8 @@ namespace hist_mmorpg
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.characterToolStripMenuItem,
             this.fiefToolStripMenuItem,
-            this.travelToolStripMenuItem});
+            this.travelToolStripMenuItem,
+            this.householdToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(801, 24);
@@ -185,7 +205,7 @@ namespace hist_mmorpg
             // characterContainer
             // 
             this.characterContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.characterContainer.Location = new System.Drawing.Point(0, 24);
+            this.characterContainer.Location = new System.Drawing.Point(0, 0);
             this.characterContainer.Name = "characterContainer";
             // 
             // characterContainer.Panel1
@@ -198,7 +218,7 @@ namespace hist_mmorpg
             // characterContainer.Panel2
             // 
             this.characterContainer.Panel2.Controls.Add(this.characterTextBox);
-            this.characterContainer.Size = new System.Drawing.Size(801, 511);
+            this.characterContainer.Size = new System.Drawing.Size(801, 535);
             this.characterContainer.SplitterDistance = 264;
             this.characterContainer.TabIndex = 2;
             // 
@@ -247,7 +267,7 @@ namespace hist_mmorpg
             this.characterTextBox.Multiline = true;
             this.characterTextBox.Name = "characterTextBox";
             this.characterTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.characterTextBox.Size = new System.Drawing.Size(533, 511);
+            this.characterTextBox.Size = new System.Drawing.Size(533, 535);
             this.characterTextBox.TabIndex = 0;
             // 
             // fiefContainer
@@ -446,7 +466,7 @@ namespace hist_mmorpg
             // travelContainer
             // 
             this.travelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.travelContainer.Location = new System.Drawing.Point(0, 24);
+            this.travelContainer.Location = new System.Drawing.Point(0, 0);
             this.travelContainer.Name = "travelContainer";
             // 
             // travelContainer.Panel1
@@ -459,9 +479,19 @@ namespace hist_mmorpg
             // travelContainer.Panel2
             // 
             this.travelContainer.Panel2.Controls.Add(this.travelNavigationPanel);
-            this.travelContainer.Size = new System.Drawing.Size(801, 511);
+            this.travelContainer.Size = new System.Drawing.Size(801, 535);
             this.travelContainer.SplitterDistance = 266;
             this.travelContainer.TabIndex = 4;
+            // 
+            // listOutsideKeepBtn
+            // 
+            this.listOutsideKeepBtn.Location = new System.Drawing.Point(15, 101);
+            this.listOutsideKeepBtn.Name = "listOutsideKeepBtn";
+            this.listOutsideKeepBtn.Size = new System.Drawing.Size(122, 35);
+            this.listOutsideKeepBtn.TabIndex = 3;
+            this.listOutsideKeepBtn.Text = "List Those Outside The Keep";
+            this.listOutsideKeepBtn.UseVisualStyleBackColor = true;
+            this.listOutsideKeepBtn.Click += new System.EventHandler(this.listOutsideKeepBtn_Click);
             // 
             // visitTavernBtn
             // 
@@ -585,13 +615,13 @@ namespace hist_mmorpg
             // fiefsOwnedContainer
             // 
             this.fiefsOwnedContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fiefsOwnedContainer.Location = new System.Drawing.Point(0, 24);
+            this.fiefsOwnedContainer.Location = new System.Drawing.Point(0, 0);
             this.fiefsOwnedContainer.Name = "fiefsOwnedContainer";
             // 
             // fiefsOwnedContainer.Panel2
             // 
             this.fiefsOwnedContainer.Panel2.Controls.Add(this.fiefsListView);
-            this.fiefsOwnedContainer.Size = new System.Drawing.Size(801, 511);
+            this.fiefsOwnedContainer.Size = new System.Drawing.Size(801, 535);
             this.fiefsOwnedContainer.SplitterDistance = 266;
             this.fiefsOwnedContainer.TabIndex = 5;
             // 
@@ -602,7 +632,7 @@ namespace hist_mmorpg
             this.fiefsListView.GridLines = true;
             this.fiefsListView.Location = new System.Drawing.Point(0, 0);
             this.fiefsListView.Name = "fiefsListView";
-            this.fiefsListView.Size = new System.Drawing.Size(531, 511);
+            this.fiefsListView.Size = new System.Drawing.Size(531, 535);
             this.fiefsListView.TabIndex = 0;
             this.fiefsListView.UseCompatibleStateImageBehavior = false;
             this.fiefsListView.View = System.Windows.Forms.View.Details;
@@ -709,15 +739,99 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListView.View = System.Windows.Forms.View.Details;
             this.meetingPlaceCharsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.meetingPlaceCharsListView_ItemSelectionChanged);
             // 
-            // listOutsideKeepBtn
+            // houseContainer
             // 
-            this.listOutsideKeepBtn.Location = new System.Drawing.Point(15, 101);
-            this.listOutsideKeepBtn.Name = "listOutsideKeepBtn";
-            this.listOutsideKeepBtn.Size = new System.Drawing.Size(122, 35);
-            this.listOutsideKeepBtn.TabIndex = 3;
-            this.listOutsideKeepBtn.Text = "List Those Outside The Keep";
-            this.listOutsideKeepBtn.UseVisualStyleBackColor = true;
-            this.listOutsideKeepBtn.Click += new System.EventHandler(this.listOutsideKeepBtn_Click);
+            this.houseContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.houseContainer.Location = new System.Drawing.Point(0, 0);
+            this.houseContainer.Name = "houseContainer";
+            // 
+            // houseContainer.Panel2
+            // 
+            this.houseContainer.Panel2.Controls.Add(this.houseCharContainer);
+            this.houseContainer.Size = new System.Drawing.Size(801, 535);
+            this.houseContainer.SplitterDistance = 163;
+            this.houseContainer.TabIndex = 7;
+            // 
+            // houseCharContainer
+            // 
+            this.houseCharContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.houseCharContainer.Location = new System.Drawing.Point(0, 0);
+            this.houseCharContainer.Name = "houseCharContainer";
+            // 
+            // houseCharContainer.Panel1
+            // 
+            this.houseCharContainer.Panel1.Controls.Add(this.houseCharTextBox);
+            // 
+            // houseCharContainer.Panel2
+            // 
+            this.houseCharContainer.Panel2.Controls.Add(this.houseCharListContainer);
+            this.houseCharContainer.Size = new System.Drawing.Size(634, 535);
+            this.houseCharContainer.SplitterDistance = 231;
+            this.houseCharContainer.TabIndex = 0;
+            // 
+            // houseCharListContainer
+            // 
+            this.houseCharListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.houseCharListContainer.Location = new System.Drawing.Point(0, 0);
+            this.houseCharListContainer.Name = "houseCharListContainer";
+            this.houseCharListContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // houseCharListContainer.Panel1
+            // 
+            this.houseCharListContainer.Panel1.Controls.Add(this.houseCharListLabel);
+            // 
+            // houseCharListContainer.Panel2
+            // 
+            this.houseCharListContainer.Panel2.Controls.Add(this.houseCharListView);
+            this.houseCharListContainer.Size = new System.Drawing.Size(399, 535);
+            this.houseCharListContainer.SplitterDistance = 46;
+            this.houseCharListContainer.TabIndex = 0;
+            // 
+            // houseCharListLabel
+            // 
+            this.houseCharListLabel.AutoSize = true;
+            this.houseCharListLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.houseCharListLabel.Location = new System.Drawing.Point(50, 11);
+            this.houseCharListLabel.Name = "houseCharListLabel";
+            this.houseCharListLabel.Size = new System.Drawing.Size(313, 24);
+            this.houseCharListLabel.TabIndex = 0;
+            this.houseCharListLabel.Text = "Family And NPCs In Thy Service";
+            // 
+            // houseCharListView
+            // 
+            this.houseCharListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.houseCharListView.FullRowSelect = true;
+            this.houseCharListView.Location = new System.Drawing.Point(0, 0);
+            this.houseCharListView.Name = "houseCharListView";
+            this.houseCharListView.Size = new System.Drawing.Size(399, 485);
+            this.houseCharListView.TabIndex = 0;
+            this.houseCharListView.UseCompatibleStateImageBehavior = false;
+            this.houseCharListView.View = System.Windows.Forms.View.Details;
+            this.houseCharListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.houseCharListView_ItemSelectionChanged);
+            // 
+            // householdToolStripMenuItem
+            // 
+            this.householdToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dealWithHouseholdAffairsToolStripMenuItem});
+            this.householdToolStripMenuItem.Name = "householdToolStripMenuItem";
+            this.householdToolStripMenuItem.Size = new System.Drawing.Size(77, 20);
+            this.householdToolStripMenuItem.Text = "Household";
+            // 
+            // dealWithHouseholdAffairsToolStripMenuItem
+            // 
+            this.dealWithHouseholdAffairsToolStripMenuItem.Name = "dealWithHouseholdAffairsToolStripMenuItem";
+            this.dealWithHouseholdAffairsToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.dealWithHouseholdAffairsToolStripMenuItem.Text = "Deal with household affairs";
+            this.dealWithHouseholdAffairsToolStripMenuItem.Click += new System.EventHandler(this.dealWithHouseholdAffairsToolStripMenuItem_Click);
+            // 
+            // houseCharTextBox
+            // 
+            this.houseCharTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.houseCharTextBox.Location = new System.Drawing.Point(0, 0);
+            this.houseCharTextBox.Multiline = true;
+            this.houseCharTextBox.Name = "houseCharTextBox";
+            this.houseCharTextBox.Size = new System.Drawing.Size(231, 535);
+            this.houseCharTextBox.TabIndex = 0;
             // 
             // Form1
             // 
@@ -725,11 +839,12 @@ namespace hist_mmorpg
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(801, 535);
             this.Controls.Add(this.meetingPlaceContainer);
+            this.Controls.Add(this.fiefContainer);
+            this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.characterContainer);
-            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
-            this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
@@ -770,6 +885,19 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.meetingPlaceCharsListContainer)).EndInit();
             this.meetingPlaceCharsListContainer.ResumeLayout(false);
+            this.houseContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.houseContainer)).EndInit();
+            this.houseContainer.ResumeLayout(false);
+            this.houseCharContainer.Panel1.ResumeLayout(false);
+            this.houseCharContainer.Panel1.PerformLayout();
+            this.houseCharContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.houseCharContainer)).EndInit();
+            this.houseCharContainer.ResumeLayout(false);
+            this.houseCharListContainer.Panel1.ResumeLayout(false);
+            this.houseCharListContainer.Panel1.PerformLayout();
+            this.houseCharListContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.houseCharListContainer)).EndInit();
+            this.houseCharListContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -833,6 +961,14 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button lockoutBtn;
         private System.Windows.Forms.CheckBox characterTitlesCheckBox;
         private System.Windows.Forms.Button listOutsideKeepBtn;
+        private System.Windows.Forms.SplitContainer houseContainer;
+        private System.Windows.Forms.SplitContainer houseCharContainer;
+        private System.Windows.Forms.SplitContainer houseCharListContainer;
+        private System.Windows.Forms.Label houseCharListLabel;
+        private System.Windows.Forms.ListView houseCharListView;
+        private System.Windows.Forms.ToolStripMenuItem householdToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dealWithHouseholdAffairsToolStripMenuItem;
+        private System.Windows.Forms.TextBox houseCharTextBox;
 
     }
 }
