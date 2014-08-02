@@ -504,20 +504,45 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Uses up the character's remaining days, which will be added to bailiffDaysInFief if appropriate
+        /// </summary>
+        public void useUpDays()
+        {
+            byte bailiffDays = Convert.ToByte(Math.Truncate(this.days));
+
+            // adjust character's days for next season
+            this.days = 90;
+
+            // if character is bailiff of this fief, increment bailiffDaysInFief
+            if (this.location.bailiff == this)
+            {
+                this.location.bailiffDaysInFief += bailiffDays;
+            }
+        }
+        
+        /// <summary>
         /// Updates character data at the end/beginning of the season
         /// </summary>
         public void updateCharacter()
         {
+            // use any remaining days to go towards bailiffDaysInFief, if appropriate
+            this.useUpDays();
+
             // check for character death
             if (this.checkDeath())
             {
                 this.health = 0;
             }
-            // advance character age
-            // adjust stature (due to age)
-            // adjust health (due to age)
-            // childbirth (and associated chance of death for mother/baby)
-            // Movement of NPCs (maybe this goes in NPC class)
+
+            // TODO: advance character age
+
+            // TODO: adjust stature (due to age)
+
+            // TODO: adjust health (due to age)
+
+            // TODO: childbirth (and associated chance of death for mother/baby)
+
+            // TODO: Movement of NPCs (maybe this goes in NPC class)
         }
 
 
@@ -538,7 +563,7 @@ namespace hist_mmorpg
         /// </summary>
         public uint purse { get; set; }
         /// <summary>
-        /// Holds character's entourage (NonPlayerCharacter objects)
+        /// Holds character's employees (NonPlayerCharacter objects)
         /// </summary>
         public List<NonPlayerCharacter> employees = new List<NonPlayerCharacter>();
         /// <summary>
@@ -748,6 +773,9 @@ namespace hist_mmorpg
                 npc.goTo.Clear();
             }
 
+            // keep track of original days value for PC
+            double myDays = this.days;
+
             // ensure days is set to lesser of PC/NPC days
             double minDays = Math.Min(this.days, npc.days);
             this.days = minDays;
@@ -755,6 +783,18 @@ namespace hist_mmorpg
 
             // add to entourage
             npc.inEntourage = true;
+
+            // ensure days of entourage are synched with PC
+            if (this.days != myDays)
+            {
+                for (int i = 0; i < this.employees.Count; i++)
+                {
+                    if (this.employees[i].inEntourage)
+                    {
+                        this.employees[i].days = this.days;
+                    }
+                }
+            }
         }
 
         /// <summary>

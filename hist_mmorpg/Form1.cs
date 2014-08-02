@@ -2019,6 +2019,26 @@ namespace hist_mmorpg
             // remove any previously displayed characters
             this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
             this.meetingPlaceCharDisplayTextBox.Text = "";
+            // disable controls until character selected in list
+            this.hireNPC_Btn.Enabled = false;
+            this.hireNPC_TextBox.Text = "";
+            this.hireNPC_TextBox.Enabled = false;
+            // set label
+            switch (place)
+            {
+                case "tavern":
+                    this.meetingPlaceLabel.Text = "Ye Olde Tavern";
+                    break;
+                case "court":
+                    this.meetingPlaceLabel.Text = "The Esteemed Court Of " + this.fiefToView.name;
+                    break;
+                case "outsideKeep":
+                    this.meetingPlaceLabel.Text = "Hangin' Outside The Keep";
+                    break;
+                default:
+                    this.meetingPlaceLabel.Text = "A Generic Meeting Place";
+                    break;
+            }
             // refresh list of characters
             this.meetingPlaceDisplayList(place);
         }
@@ -2165,6 +2185,11 @@ namespace hist_mmorpg
             // remove any previously displayed characters
             this.houseCharTextBox.ReadOnly = true;
             this.houseCharTextBox.Text = "";
+
+            // ensure unable to use controls whilst no NPC selected in ListView
+            this.houseCampBtn.Enabled = false;
+            this.houseCampDaysTextBox.Text = "";
+            this.houseCampDaysTextBox.Enabled = false;
 
             // clear existing items in characters list
             this.houseCharListView.Items.Clear();
@@ -2641,15 +2666,15 @@ namespace hist_mmorpg
             fiefText += "========= Management ==========\r\n\r\n";
 
             // loyalty
-            fiefText += "Loyalty: " + (f.loyalty + (f.loyalty * f.calcBlfLoyAdjusted())) + "\r\n";
+            fiefText += "Loyalty: " + (f.loyalty + (f.loyalty * f.calcBlfLoyAdjusted(f.bailiffDaysInFief >= 30))) + "\r\n";
             // loyalty modifier for officials spend
             fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod("this") + ")\r\n";
             // loyalty modifier for garrison spend
             fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod("this") + ")\r\n";
             // loyalty modifier for bailiff
-            fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyAdjusted() + ")\r\n";
+            fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyAdjusted(f.bailiffDaysInFief >= 30) + ")\r\n";
             // loyalty modifier for bailiff skills
-            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod() + ")\r\n";
+            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod(f.bailiffDaysInFief >= 30) + ")\r\n";
             
             // fields
             fiefText += "Fields level: " + f.fields + "\r\n";
@@ -2681,7 +2706,7 @@ namespace hist_mmorpg
             // income
             fiefText += "Income: " + (f.calcIncome("this") * f.calcStatusIncmMod()) + "\r\n";
             // income modifier for bailiff
-            fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod() + ")\r\n";
+            fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod(f.bailiffDaysInFief >= 30) + ")\r\n";
             // income modifier for officials spend
             fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod("this") + ")\r\n";
             // income modifier for fief status
@@ -2693,7 +2718,7 @@ namespace hist_mmorpg
             // total expenses
             fiefText += "Total expenses: " + f.calcExpenses("this") + "\r\n";
             // expenses modifier for bailiff
-            fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif() + ")\r\n";
+            fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif(f.bailiffDaysInFief >= 30) + ")\r\n";
             
             // overlord taxes
             fiefText += "Overlord taxes: " + f.calcOlordTaxes("this") + "\r\n";
@@ -2706,11 +2731,11 @@ namespace hist_mmorpg
             fiefText += "(with current bailiff & oLord tax)\r\n";
             fiefText += " (NOT including effects of status)\r\n\r\n";
 
-            fiefText += "Loyalty: " + (f.calcNewLoyalty() + (f.calcNewLoyalty() * f.calcBlfLoyAdjusted())) + "\r\n";
+            fiefText += "Loyalty: " + f.calcNewLoyalty() + "\r\n";
             fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod("next") + ")\r\n";
             fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod("next") + ")\r\n";
-            fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyAdjusted() + ")\r\n";
-            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod() + ")\r\n";
+            fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyAdjusted(f.bailiffDaysInFief >= 30) + ")\r\n";
+            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod(f.bailiffDaysInFief >= 30) + ")\r\n";
             fiefText += "Fields level: " + f.calcNewFieldLevel() + "\r\n";
             fiefText += "Industry level: " + f.calcNewIndustryLevel() + "\r\n";
             fiefText += "GDP: " + f.calcGDP("next") + "\r\n";
@@ -2721,11 +2746,11 @@ namespace hist_mmorpg
             fiefText += "Keep expenditure: " + f.keepSpendNext + "\r\n";
             fiefText += "Keep level: " + f.calcNewKeepLevel() + "\r\n";
             fiefText += "Income: " + f.calcIncome("next") + "\r\n";
-            fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod() + ")\r\n";
+            fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod(f.bailiffDaysInFief >= 30) + ")\r\n";
             fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod("next") + ")\r\n";
             fiefText += "Family expenses: 0 (not yet implemented)\r\n";
             fiefText += "Total expenses: " + f.calcExpenses("next") + "\r\n";
-            fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif() + ")\r\n";
+            fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif(f.bailiffDaysInFief >= 30) + ")\r\n";
             fiefText += "Overlord taxes: " + f.calcOlordTaxes("next") + "\r\n";
             fiefText += "Bottom line: " + f.calcBottomLine("next") + "\r\n\r\n";
 
@@ -2753,12 +2778,15 @@ namespace hist_mmorpg
             this.characterTextBox.ReadOnly = true;
             this.characterTextBox.Text = textToDisplay;
 
+            // clear previous entries in Camp TextBox
+            this.travelCampDaysTextBox.Text = "";
+
             // multimove button only enabled if is player or an employee
             if (ch != this.myChar)
 			{
                 if (!this.myChar.employees.Contains(ch))
 				{
-					this.charMultiMoveBtn.Enabled = false;
+					this.travelMultiMoveBtn.Enabled = false;
 				}
 			}
 
@@ -2789,52 +2817,76 @@ namespace hist_mmorpg
                 f = this.myChar.location;
             }
 
+            this.fiefToView = f;
+
             string textToDisplay = "";
 
+            // set label text
+            this.fiefLabel.Text = this.fiefToView.name + " (" + this.fiefToView.fiefID + ")";
+
             // get information to display
-            textToDisplay += this.displayFief(f);
+            textToDisplay += this.displayFief(this.fiefToView);
 
             // refresh Character display TextBox
             this.fiefTextBox.Text = textToDisplay;
             this.fiefTextBox.ReadOnly = true;
 
             // if fief is NOT owned by player, disable fief management buttons and TextBoxes 
-            if (!myChar.ownedFiefs.Contains(f))
+            if (!myChar.ownedFiefs.Contains(this.fiefToView))
             {
-                this.adjustSpendBtn.Visible = false;
-                this.taxRateLabel.Visible = false;
-                this.garrSpendLabel.Visible = false;
-                this.offSpendLabel.Visible = false;
-                this.infraSpendLabel.Visible = false;
-                this.keepSpendLabel.Visible = false;
-                this.adjGarrSpendTextBox.Visible = false;
-                this.adjInfrSpendTextBox.Visible = false;
-                this.adjOffSpendTextBox.Visible = false;
-                this.adjustKeepSpendTextBox.Visible = false;
-                this.adjustTaxTextBox.Visible = false;
+                this.adjustSpendBtn.Enabled = false;
+                this.taxRateLabel.Enabled = false;
+                this.garrSpendLabel.Enabled = false;
+                this.offSpendLabel.Enabled = false;
+                this.infraSpendLabel.Enabled = false;
+                this.keepSpendLabel.Enabled = false;
+                this.adjGarrSpendTextBox.Enabled = false;
+                this.adjInfrSpendTextBox.Enabled = false;
+                this.adjOffSpendTextBox.Enabled = false;
+                this.adjustKeepSpendTextBox.Enabled = false;
+                this.adjustTaxTextBox.Enabled = false;
+                this.viewBailiffBtn.Enabled = false;
+                this.updateFiefBtn.Enabled = false;
+                this.lockoutBtn.Enabled = false;
+                this.selfBailiffBtn.Enabled = false;
+                this.setBailiffBtn.Enabled = false;
+                this.removeBaliffBtn.Enabled = false;
+
+                // set TextBoxes to nowt
+                this.adjGarrSpendTextBox.Text = "";
+                this.adjInfrSpendTextBox.Text = "";
+                this.adjOffSpendTextBox.Text = "";
+                this.adjustKeepSpendTextBox.Text = "";
+                this.adjustTaxTextBox.Text = "";
             }
 
             // if fief IS owned by player, enable fief management buttons and TextBoxes 
             else
             {
-                this.adjustSpendBtn.Visible = true;
-                this.taxRateLabel.Visible = true;
-                this.garrSpendLabel.Visible = true;
-                this.offSpendLabel.Visible = true;
-                this.infraSpendLabel.Visible = true;
-                this.keepSpendLabel.Visible = true;
-                this.adjGarrSpendTextBox.Visible = true;
-                this.adjInfrSpendTextBox.Visible = true;
-                this.adjOffSpendTextBox.Visible = true;
-                this.adjustKeepSpendTextBox.Visible = true;
-                this.adjustTaxTextBox.Visible = true;
+                this.adjustSpendBtn.Enabled = true;
+                this.taxRateLabel.Enabled = true;
+                this.garrSpendLabel.Enabled = true;
+                this.offSpendLabel.Enabled = true;
+                this.infraSpendLabel.Enabled = true;
+                this.keepSpendLabel.Enabled = true;
+                this.adjGarrSpendTextBox.Enabled = true;
+                this.adjInfrSpendTextBox.Enabled = true;
+                this.adjOffSpendTextBox.Enabled = true;
+                this.adjustKeepSpendTextBox.Enabled = true;
+                this.adjustTaxTextBox.Enabled = true;
+                this.viewBailiffBtn.Enabled = true;
+                this.updateFiefBtn.Enabled = true;
+                this.lockoutBtn.Enabled = true;
+                this.selfBailiffBtn.Enabled = true;
+                this.setBailiffBtn.Enabled = true;
+                this.removeBaliffBtn.Enabled = true;
 
                 // set TextBoxes to show next year's figures
-                this.adjGarrSpendTextBox.Text = Convert.ToString(f.garrisonSpendNext);
-                this.adjInfrSpendTextBox.Text = Convert.ToString(f.infrastructureSpendNext);
-                this.adjOffSpendTextBox.Text = Convert.ToString(f.officialsSpendNext);
-                this.adjustKeepSpendTextBox.Text = Convert.ToString(f.keepSpendNext);
-                this.adjustTaxTextBox.Text = Convert.ToString(f.taxRateNext);
+                this.adjGarrSpendTextBox.Text = Convert.ToString(this.fiefToView.garrisonSpendNext);
+                this.adjInfrSpendTextBox.Text = Convert.ToString(this.fiefToView.infrastructureSpendNext);
+                this.adjOffSpendTextBox.Text = Convert.ToString(this.fiefToView.officialsSpendNext);
+                this.adjustKeepSpendTextBox.Text = Convert.ToString(this.fiefToView.keepSpendNext);
+                this.adjustTaxTextBox.Text = Convert.ToString(this.fiefToView.taxRateNext);
             }
 
             this.fiefContainer.BringToFront();
@@ -2848,8 +2900,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void fiefManagementToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.fiefToView = this.myChar.location;
-            this.refreshFiefContainer(this.fiefToView);
+            this.refreshFiefContainer(this.myChar.location);
         }
 
         /// <summary>
@@ -2973,6 +3024,10 @@ namespace hist_mmorpg
         /// </summary>
         private void refreshTravelContainer()
         {
+            // clear existing data in TextBoxex
+            this.travelMultiMoveTextBox.Text = "";
+            this.travelCampDaysTextBox.Text = "";
+
             // string[] to hold direction text
             string[] directions = new string[] { "NE", "E", "SE", "SW", "W", "NW" };
             // Button[] to hold corresponding travel buttons
@@ -3105,8 +3160,7 @@ namespace hist_mmorpg
             // display fief details
             if (fiefToDisplay != null)
             {
-                this.fiefToView = fiefToDisplay;
-                this.refreshFiefContainer(this.fiefToView);
+                this.refreshFiefContainer(fiefToDisplay);
                 //this.fiefTextBox.Text = this.displayFief(fiefToView);
                 this.fiefContainer.BringToFront();
             }
@@ -3156,6 +3210,8 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void visitCourtBtn1_Click(object sender, EventArgs e)
         {
+            String place = "court";
+
             bool enteredKeep = false;
 
             // if player not in keep
@@ -3172,8 +3228,10 @@ namespace hist_mmorpg
             // if in keep
             if (enteredKeep)
             {
+                // set hireNPC_Btn tag to reflect which meeting place
+                this.hireNPC_Btn.Tag = place;
                 // refresh court screen 
-                this.refreshMeetingPlaceDisplay("court");
+                this.refreshMeetingPlaceDisplay(place);
                 // display court screen
                 this.meetingPlaceContainer.BringToFront();
             }
@@ -3189,13 +3247,17 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void visitTavernBtn_Click_1(object sender, EventArgs e)
         {
+            String place = "tavern";
+
             // exit keep if required
             if (this.myChar.inKeep)
             {
                 this.myChar.exitKeep();
             }
+            // set hireNPC_Btn tag to reflect which meeting place
+            this.hireNPC_Btn.Tag = place;
             // refresh tavern screen 
-            this.refreshMeetingPlaceDisplay("tavern");
+            this.refreshMeetingPlaceDisplay(place);
             // display tavern screen
             this.meetingPlaceContainer.BringToFront();
         }
@@ -3232,7 +3294,9 @@ namespace hist_mmorpg
                         {
                             this.hireNPC_Btn.Text = "Hire NPC";
                             this.hireNPC_TextBox.Visible = true;
+                            this.hireNPC_TextBox.Enabled = true;
                         }
+                        this.hireNPC_Btn.Enabled = true;
                     }
 
                 }
@@ -3259,6 +3323,11 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void hireNPC_Btn_Click(object sender, EventArgs e)
         {
+            bool isHired = false;
+
+            // get hireNPC_Btn tag (shows which meeting place are in)
+            String place = Convert.ToString(((Button)sender).Tag);
+
             // if selected NPC is not a current employee
             if (!this.myChar.employees.Contains(charToView))
             {
@@ -3267,7 +3336,7 @@ namespace hist_mmorpg
                     // get offer amount
                     UInt32 newOffer = Convert.ToUInt32(this.hireNPC_TextBox.Text);
                     // submit offer
-                    this.myChar.processEmployOffer((NonPlayerCharacter)charToView, newOffer);
+                    isHired = this.myChar.processEmployOffer((NonPlayerCharacter)charToView, newOffer);
 
                 }
                 catch (System.FormatException fe)
@@ -3288,9 +3357,25 @@ namespace hist_mmorpg
                 this.myChar.fireNPC((NonPlayerCharacter)charToView);
             }
 
-            // refresh display
-            this.meetingPlaceCharDisplayTextBox.Text = "";
-            this.refreshMeetingPlaceDisplay("tavern");
+            // if in the tavern
+            if (place.Equals("tavern"))
+            {
+                // if NPC is hired, refresh whole screen (NPC removed from list)
+                if (isHired)
+                {
+                    this.refreshMeetingPlaceDisplay(place);
+                }
+                // if NPC not hired, just refresh the character display
+                else
+                {
+                    this.meetingPlaceCharDisplayTextBox.Text = this.displayCharacter(charToView);
+                }
+            }
+            // if not in tavern, just refresh the character display
+            else
+            {
+                this.meetingPlaceCharDisplayTextBox.Text = this.displayCharacter(charToView);
+            }
         }
 
         /// <summary>
@@ -3328,7 +3413,7 @@ namespace hist_mmorpg
                 if (ch.goTo.Count < steps)
                 {
                     this.fiefToView = this.myChar.location;
-                    this.refreshCharacterContainer();
+                    this.refreshTravelContainer();
                 }
             }
 
@@ -3337,7 +3422,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of the charMultiMoveBtn button
+        /// Responds to the click event of the travelMultiMoveBtn button
         /// which finds the shortest path to the target fief (specified in text box),
         /// populates the character's goTo queue, and invokes characterMultiMove to
         /// perform the move
@@ -3345,13 +3430,13 @@ namespace hist_mmorpg
         /// <returns>bool indicating whether odd</returns>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
-        private void charMultiMoveBtn_Click(object sender, EventArgs e)
+        private void travelMultiMoveBtn_Click(object sender, EventArgs e)
         {
             // check for existence of fief
-            if (this.fiefMasterList.ContainsKey(this.charMultiMoveTextBox.Text))
+            if (this.fiefMasterList.ContainsKey(this.travelMultiMoveTextBox.Text))
             {
                 // retrieves target fief
-                Fief target = fiefMasterList[this.charMultiMoveTextBox.Text];
+                Fief target = fiefMasterList[this.travelMultiMoveTextBox.Text];
                 // obtains goTo queue for shortest path to target
                 this.charToView.goTo = this.gameMap.getShortestPath(this.charToView.location, target);
                 // if valid, perform move
@@ -3469,7 +3554,7 @@ namespace hist_mmorpg
                 // relieve him of his duties
                 this.fiefToView.bailiff = null;
                 // refresh fief display
-                this.refreshFiefContainer(fiefToView);
+                this.refreshFiefContainer(this.fiefToView);
             }
         }
 
@@ -3505,7 +3590,7 @@ namespace hist_mmorpg
             }
 
             // refresh fief display
-            this.refreshFiefContainer(fiefToView);
+            this.refreshFiefContainer(this.fiefToView);
         }
 
         private void characterTitlesCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -3522,13 +3607,17 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void listOutsideKeepBtn_Click(object sender, EventArgs e)
         {
+            String place = "outsideKeep";
+
             // exit keep if required
             if (this.myChar.inKeep)
             {
                 this.myChar.exitKeep();
             }
+            // set hireNPC_Btn tag to reflect which meeting place
+            this.hireNPC_Btn.Tag = place;
             // refresh outside keep screen 
-            this.refreshMeetingPlaceDisplay("outsideKeep");
+            this.refreshMeetingPlaceDisplay(place);
             // display tavern screen
             this.meetingPlaceContainer.BringToFront();
         }
@@ -3582,7 +3671,209 @@ namespace hist_mmorpg
                 textToDisplay += this.displayCharacter(charToDisplay);
                 this.houseCharTextBox.ReadOnly = true;
                 this.houseCharTextBox.Text = textToDisplay;
+                // re-enable controls
+                this.houseCampBtn.Enabled = true;
+                this.houseCampDaysTextBox.Enabled = true;
             }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the houseCampBtn button
+        /// invoking the campWaitHere method
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void houseCampBtn_Click(object sender, EventArgs e)
+        {
+            this.campWaitHere(this.charToView);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the travelCampBtn button
+        /// invoking the campWaitHere method
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void travelCampBtn_Click(object sender, EventArgs e)
+        {
+            this.campWaitHere(this.charToView);
+        }
+
+        /// <summary>
+        /// Allows the character to remain in their current location for the specified
+        /// number of days, incrementing bailiffDaysInFief if appropriate
+        /// </summary>
+        /// <param name="ch">The Character who wishes to camp (wait here)</param>
+        public void campWaitHere(Character ch)
+        {
+            bool proceed = true;
+            byte campDays = 0;
+
+            try
+            {
+                // get number of days to camp
+                // if player, get from travel screen
+                if (ch == this.myChar)
+                {
+                    campDays = Convert.ToByte(this.travelCampDaysTextBox.Text);
+                }
+                // if not player, get from household screen
+                else
+                {
+                    campDays = Convert.ToByte(this.houseCampDaysTextBox.Text);
+                }
+
+                // check has enough days available
+                if (ch.days < (Double)campDays)
+                {
+                    campDays = Convert.ToByte(Math.Truncate(ch.days));
+                    DialogResult dialogResult = MessageBox.Show("You only have " + campDays + " available.  Click 'OK' to proceed.", "Proceed with camp?", MessageBoxButtons.OKCancel);
+
+                    // if choose to cancel
+                    if (dialogResult == DialogResult.Cancel)
+                    {
+                        proceed = false;
+                        System.Windows.Forms.MessageBox.Show("You decide not to camp after all.");
+                    }
+                }
+
+                if (proceed)
+                {
+                    // check if player's entourage needs to camp
+                    bool entourageCamp = false;
+
+                    // if character is player, camp entourage
+                    if (ch == this.myChar)
+                    {
+                        entourageCamp = true;
+                    }
+
+                    // if character NOT player
+                    else
+                    {
+                        // if is in entourage, give player chance to remove prior to camping
+                        if ((ch as NonPlayerCharacter).inEntourage)
+                        {
+                            DialogResult dialogResult = MessageBox.Show("Do you wish to remove this character from  your entourage before he camps?", "Remove character from entourage?", MessageBoxButtons.YesNo);
+                            if (dialogResult == DialogResult.No)
+                            {
+                                entourageCamp = true;
+                            }
+                            else
+                            {
+                                (ch as NonPlayerCharacter).inEntourage = false;
+                            }
+                        }
+                    }
+
+                    // adjust character's days
+                    ch.days = ch.days - campDays;
+                    System.Windows.Forms.MessageBox.Show("You remain in " + ch.location.name + " for " + campDays + " days.");
+
+                    // camp entourage (and player) if necessary
+                    if (entourageCamp)
+                    {
+                        // iterate through employees to locate entourage
+                        for (int i = 0; i < this.myChar.employees.Count; i++ )
+                        {
+                            if (this.myChar.employees[i].inEntourage)
+                            {
+                                if (this.myChar.employees[i] != ch)
+                                {
+                                    this.myChar.employees[i].days = this.myChar.employees[i].days - campDays;
+                                }
+                            }
+                        }
+
+                        // camp player, if necessary
+                        if (ch != this.myChar)
+                        {
+                            this.myChar.days = this.myChar.days - campDays;
+                        }
+                    }
+
+                    // keep track of bailiffDaysInFief before any possible increment
+                    byte bailiffDaysBefore = ch.location.bailiffDaysInFief;
+
+                    // keep track of identity of bailiff
+                    Character myBailiff = null;
+
+                    // check if character is bailiff of this fief
+                    if (ch.location.bailiff == ch)
+                    {
+                        myBailiff = ch;
+                    }
+
+                    // if character not bailiff, if appropriate, check to see if anyone in entourage is
+                    else if (entourageCamp)
+                    {
+                        // if player is bailiff
+                        if (this.myChar == ch.location.bailiff)
+                        {
+                            myBailiff = this.myChar;
+                        }
+                        // if not, check for bailiff in entourage
+                        else
+                        {
+                            for (int i = 0; i < this.myChar.employees.Count; i++)
+                            {
+                                if (this.myChar.employees[i].inEntourage)
+                                {
+                                    if (this.myChar.employees[i] != ch)
+                                    {
+                                        if (this.myChar.employees[i] == ch.location.bailiff)
+                                        {
+                                            myBailiff = this.myChar.employees[i];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
+                    // if bailiff identified as someone who camped
+                    if (myBailiff != null)
+                    {
+                        // incremenet bailiffDaysInFief
+                        ch.location.bailiffDaysInFief += campDays;
+                        // if necessary, display message to player
+                        if (ch.location.bailiffDaysInFief >= 30)
+                        {
+                            // don't display this message if min bailiffDaysInFief was already achieved
+                            if (!(bailiffDaysBefore >= 30))
+                            {
+                                System.Windows.Forms.MessageBox.Show(myBailiff.name + " has fulfilled his bailiff duties in " + ch.location.name + ".");
+                            }
+                        }
+                    }
+                }
+
+            }
+            catch (System.FormatException fe)
+            {
+                System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+            }
+            catch (System.OverflowException ofe)
+            {
+                System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+            }
+            finally
+            {
+                // refresh display
+                if (proceed)
+                {
+                    if (ch == this.myChar)
+                    {
+                        this.refreshTravelContainer();
+                    }
+                    else
+                    {
+                        this.refreshHouseholdDisplay((this.charToView as NonPlayerCharacter));
+                    }
+                }
+            }
+
         }
 
     }

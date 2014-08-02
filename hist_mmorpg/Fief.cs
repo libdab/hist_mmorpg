@@ -410,8 +410,8 @@ namespace hist_mmorpg
 
             fiefIncome = fiefBaseIncome;
 
-            // factor in bailiff modifier
-            fiefIncome = fiefIncome + Convert.ToInt32(fiefBaseIncome * this.calcBlfIncMod());
+            // factor in bailiff modifier (also passing whether bailiffDaysInFief is sufficient)
+            fiefIncome = fiefIncome + Convert.ToInt32(fiefBaseIncome * this.calcBlfIncMod(this.bailiffDaysInFief >= 30));
 
             // factor in officials spend modifier
             fiefIncome = fiefIncome + Convert.ToInt32(fiefBaseIncome * this.calcOffIncMod(season));
@@ -423,12 +423,13 @@ namespace hist_mmorpg
         /// Calculates effect of bailiff on fief income
         /// </summary>
         /// <returns>double containing fief income modifier</returns>
-        public double calcBlfIncMod()
+        /// <param name="daysInFiefOK">bool specifying whether bailiff has sufficient days in fief</param>
+        public double calcBlfIncMod(bool daysInFiefOK)
         {
             double incomeModif = 0;
 
             // check if auto-bailiff
-            if (this.bailiff == null)
+            if ((this.bailiff == null) || (! daysInFiefOK))
             {
                 // modifer = 0.025 per management level above 1
                 // if auto-baliff set modifier at equivalent of management rating of 3
@@ -528,7 +529,10 @@ namespace hist_mmorpg
             // factor in bailiff skills modifier for fief expenses
             // assumes bailiff remains unchanged
             double bailiffModif = 0;
-            bailiffModif = this.calcBailExpModif();
+
+            // get bailiff modifier (passing in whether bailiffDaysInFief is sufficient)
+            bailiffModif = this.calcBailExpModif(this.bailiffDaysInFief >= 30);
+
             if (bailiffModif != 0 )
             {
                 fiefExpenses = fiefExpenses + Convert.ToInt32(fiefExpenses * bailiffModif);
@@ -541,11 +545,12 @@ namespace hist_mmorpg
         /// Calculates effect of bailiff skills on fief expenses
         /// </summary>
         /// <returns>double containing fief expenses modifier</returns>
-        public double calcBailExpModif()
+        /// <param name="daysInFiefOK">bool specifying whether bailiff has sufficient days in fief</param>
+        public double calcBailExpModif(bool daysInFiefOK)
         {
             double expSkillsModifier = 0;
 
-            if (this.bailiff != null)
+            if ((this.bailiff != null) && (daysInFiefOK))
             {
                 expSkillsModifier = this.bailiff.calcSkillEffect("fiefExpense");
             }
@@ -784,6 +789,9 @@ namespace hist_mmorpg
             // calculate effect of garrison spend
             newLoy = newLoy + (newBaseLoy * this.calcGarrLoyMod("next"));
 
+            // factor in bailiff modifier (also passing whether bailiffDaysInFief is sufficient)
+            newLoy = newLoy + (newBaseLoy * this.calcBlfLoyAdjusted(this.bailiffDaysInFief >= 30));
+
             return newLoy;
         }
 
@@ -792,19 +800,19 @@ namespace hist_mmorpg
         /// Also includes effect of skills
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
-        public double calcBlfLoyAdjusted()
+        /// <param name="daysInFiefOK">bool specifying whether bailiff has sufficient days in fief</param>
+        public double calcBlfLoyAdjusted(bool daysInFiefOK)
         {
             double loyModif = 0;
             double loySkillModif = 0;
 
-            loyModif = this.calcBlfLoyMod();
-            loySkillModif = this.calcBailLoySkillMod();
+            // get base bailiff loyalty modifier
+            loyModif = this.calcBlfLoyMod(daysInFiefOK);
 
-            // Check if loyalty effected by character skills
-            if (loySkillModif != 0)
-            {
-                loyModif = loyModif + (loyModif * loySkillModif);
-            }
+            // check for skill modifier, passing in daysInFiefOK
+            loySkillModif = this.calcBailLoySkillMod(daysInFiefOK);
+
+            loyModif = loyModif + (loyModif * loySkillModif);
 
             return loyModif;
         }
@@ -813,11 +821,12 @@ namespace hist_mmorpg
         /// Calculates effect of bailiff on fief loyalty level
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
-        public double calcBlfLoyMod()
+        /// <param name="daysInFiefOK">bool specifying whether bailiff has sufficient days in fief</param>
+        public double calcBlfLoyMod(bool daysInFiefOK)
         {
             double loyModif = 0;
 
-            if (this.bailiff == null)
+            if ((this.bailiff == null) || (! daysInFiefOK))
             {
                 // modifer = 0.0125 per stature/management average above 1
                 // if auto-baliff, set modifier at equivalent of stature/management average of 3
@@ -835,11 +844,12 @@ namespace hist_mmorpg
         /// Calculates bailiff's skill modifier for fief loyalty
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
-        public double calcBailLoySkillMod()
+        /// <param name="daysInFiefOK">bool specifying whether bailiff has sufficient days in fief</param>
+        public double calcBailLoySkillMod(bool daysInFiefOK)
         {
             double loySkillsModifier = 0;
 
-            if (this.bailiff != null)
+            if ((this.bailiff != null) && (daysInFiefOK))
             {
                 loySkillsModifier = this.bailiff.calcSkillEffect("fiefLoy");
             }

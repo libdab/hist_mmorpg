@@ -422,7 +422,7 @@ namespace hist_mmorpg
             // bar/unbar French, depending on whether CheckBox is checked
             this.parent.fiefToView.frenchBarred = this.barFrenchCheckBox.Checked;
             // refresh the parent's fief container
-            this.parent.refreshFiefContainer();
+            this.parent.refreshFiefContainer(this.parent.fiefToView);
         }
 
         /// <summary>
@@ -436,7 +436,7 @@ namespace hist_mmorpg
             // bar/unbar English, depending on whether CheckBox is checked
             this.parent.fiefToView.englishBarred = this.barEnglishCheckBox.Checked;
             // refresh the parent's fief container
-            this.parent.refreshFiefContainer();
+            this.parent.refreshFiefContainer(this.parent.fiefToView);
         }
 
         /// <summary>
