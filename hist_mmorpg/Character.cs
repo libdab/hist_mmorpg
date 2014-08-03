@@ -542,7 +542,7 @@ namespace hist_mmorpg
 
             // TODO: childbirth (and associated chance of death for mother/baby)
 
-            // TODO: Movement of NPCs (maybe this goes in NPC class)
+            // TODO: Resume movement based on goTo queue
         }
 
 
@@ -570,6 +570,14 @@ namespace hist_mmorpg
         /// Holds character's owned fiefs
         /// </summary>
         public List<Fief> ownedFiefs = new List<Fief>();
+        /// <summary>
+        /// Holds character's home fief (fiefID)
+        /// </summary>
+        public String homeFief { get; set; }
+        /// <summary>
+        /// Holds character's ancestral home fief (fiefID)
+        /// </summary>
+        public String ancestralHomeFief { get; set; }
 
         /// <summary>
         /// Constructor for PlayerCharacter
@@ -578,9 +586,11 @@ namespace hist_mmorpg
         /// <param name="pur">uint holding character purse</param>
         /// <param name="emp">List<NonPlayerCharacter> holding employees of character</param>
         /// <param name="kps">List<Fief> holding fiefs owned by character</param>
+        /// <param name="home">String holding character's home fief (fiefID)</param>
+        /// <param name="anchome">String holding character's ancestral home fief (fiefID)</param>
         public PlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
-            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> emp, List<Fief> kps, GameClock cl = null, Fief loc = null)
+            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> emp, List<Fief> kps, String home, String ancHome,GameClock cl = null, Fief loc = null)
             : base(id, nam, ag, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
         {
 
@@ -588,6 +598,8 @@ namespace hist_mmorpg
             this.purse = pur;
             this.employees = emp;
             this.ownedFiefs = kps;
+            this.homeFief = home;
+            this.ancestralHomeFief = ancHome;
         }
 
         /// <summary>
@@ -613,6 +625,8 @@ namespace hist_mmorpg
 			this.employees = new List<NonPlayerCharacter> ();
             // create empty List, to be populated later
             this.ownedFiefs = new List<Fief>();
+            this.homeFief = pcr.homeFief;
+            this.ancestralHomeFief = pcr.ancestralHomeFief;
 		}
 
         /// <summary>
@@ -1238,6 +1252,14 @@ namespace hist_mmorpg
 		/// Holds character's owned fiefs (fiefID)
 		/// </summary>
 		public List<String> ownedFiefs = new List<String>();
+        /// <summary>
+        /// Holds character's home fief (fiefID)
+        /// </summary>
+        public String homeFief { get; set; }
+        /// <summary>
+        /// Holds character's ancestral home fief (fiefID)
+        /// </summary>
+        public String ancestralHomeFief { get; set; }
 
 		/// <summary>
 		/// Constructor for PlayerCharacter_Riak
@@ -1263,6 +1285,8 @@ namespace hist_mmorpg
 					this.ownedFiefs.Add (pc.ownedFiefs[i].fiefID);
 				}
 			}
+            this.homeFief = pc.homeFief;
+            this.ancestralHomeFief = pc.ancestralHomeFief;
 		}
 
         /// <summary>

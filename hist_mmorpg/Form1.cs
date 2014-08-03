@@ -350,19 +350,19 @@ namespace hist_mmorpg
             Province myProv2 = new Province("ESR00", "Surrey", 6.2, king: myKingdom2, ra: myRank11);
 			this.provinceMasterList.Add (myProv2.provinceID, myProv2);
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, ra: myRank17);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 200000, ra: myRank17);
 			fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, ra: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 100000, ra: myRank15);
 			fiefMasterList.Add(myFief2.fiefID, myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, 0, ra: myRank17);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
 			fiefMasterList.Add(myFief3.fiefID, myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock, 0, ra: myRank17);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
 			fiefMasterList.Add(myFief4.fiefID, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock, 0, ra: myRank15);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock, 0, 100000, ra: myRank15);
 			fiefMasterList.Add(myFief5.fiefID, myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, this.clock, 0, ra: myRank17);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
 			fiefMasterList.Add(myFief6.fiefID, myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, this.clock, 0, ra: myRank15);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, this.clock, 0, 100000, ra: myRank15);
 			fiefMasterList.Add(myFief7.fiefID, myFief7);
 			Army myArmy = new Army("army001", 0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
@@ -425,9 +425,9 @@ namespace hist_mmorpg
             // create Random for use with generating skill sets for Characters
             Random myRand = new Random();
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, myLang1, 90, 4.0, 7.2, 6.1, generateSkillSet(myRand), false, true, false, "200", "403", "", false, 13000, myEmployees1, myFiefsOwned1, cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, myLang1, 90, 4.0, 7.2, 6.1, generateSkillSet(myRand), false, true, false, "200", "403", "", false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, myLang1, 90, 4.0, 5.0, 4.5, generateSkillSet(myRand), false, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, myLang1, 90, 4.0, 5.0, 4.5, generateSkillSet(myRand), false, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar2.charID, myChar2);
             NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, myLang1, 90, 4.0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
 			npcMasterList.Add(myNPC1.charID, myNPC1);
@@ -438,20 +438,20 @@ namespace hist_mmorpg
 
 			// set fief owners
 			myFief1.owner = myChar1;
-			myFief2.owner = myChar2;
+			myFief2.owner = myChar1;
 			myFief3.owner = myChar1;
 			myFief4.owner = myChar1;
 			myFief5.owner = myChar2;
-			myFief6.owner = myChar1;
+			myFief6.owner = myChar2;
 			myFief7.owner = myChar2;
 
 			// set fief ancestral owners
-			myFief1.ancestralOwner = myChar2;
+			myFief1.ancestralOwner = myChar1;
 			myFief2.ancestralOwner = myChar1;
 			myFief3.ancestralOwner = myChar1;
 			myFief4.ancestralOwner = myChar1;
 			myFief5.ancestralOwner = myChar2;
-			myFief6.ancestralOwner = myChar1;
+			myFief6.ancestralOwner = myChar2;
 			myFief7.ancestralOwner = myChar2;
 
 			// set province overlords
@@ -2268,6 +2268,17 @@ namespace hist_mmorpg
             // nationality
             charText += "Nationality: " + ch.nationality + "\r\n";
 
+            if (ch is PlayerCharacter)
+            {
+                // home fief
+                Fief homeFief = this.fiefMasterList[(ch as PlayerCharacter).homeFief];
+                charText += "Home fief: " + homeFief.name + " (" + homeFief.fiefID + ")\r\n";
+
+                // ancestral home fief
+                Fief ancHomeFief = this.fiefMasterList[(ch as PlayerCharacter).ancestralHomeFief];
+                charText += "Ancestral Home fief: " + ancHomeFief.name + " (" + ancHomeFief.fiefID + ")\r\n";
+            }
+
             // health (& max. health)
             charText += "Health: ";
             if (ch.health == 0)
@@ -2827,9 +2838,10 @@ namespace hist_mmorpg
             // get information to display
             textToDisplay += this.displayFief(this.fiefToView);
 
-            // refresh Character display TextBox
+            // refresh fief display TextBoxes
             this.fiefTextBox.Text = textToDisplay;
             this.fiefTextBox.ReadOnly = true;
+            this.fiefTransferAmountTextBox.Text = "";
 
             // if fief is NOT owned by player, disable fief management buttons and TextBoxes 
             if (!myChar.ownedFiefs.Contains(this.fiefToView))
@@ -2851,6 +2863,11 @@ namespace hist_mmorpg
                 this.selfBailiffBtn.Enabled = false;
                 this.setBailiffBtn.Enabled = false;
                 this.removeBaliffBtn.Enabled = false;
+                this.fiefTransferToFiefBtn.Enabled = false;
+                this.fiefTransferToHomeBtn.Enabled = false;
+                this.fiefHomeTreasTextBox.Enabled = false;
+                this.fiefTransferAmountTextBox.Enabled = false;
+                this.FiefTreasTextBox.Enabled = false;
 
                 // set TextBoxes to nowt
                 this.adjGarrSpendTextBox.Text = "";
@@ -2858,6 +2875,8 @@ namespace hist_mmorpg
                 this.adjOffSpendTextBox.Text = "";
                 this.adjustKeepSpendTextBox.Text = "";
                 this.adjustTaxTextBox.Text = "";
+                this.fiefHomeTreasTextBox.Text = "";
+                this.FiefTreasTextBox.Text = "";
             }
 
             // if fief IS owned by player, enable fief management buttons and TextBoxes 
@@ -2880,13 +2899,43 @@ namespace hist_mmorpg
                 this.selfBailiffBtn.Enabled = true;
                 this.setBailiffBtn.Enabled = true;
                 this.removeBaliffBtn.Enabled = true;
+                this.fiefHomeTreasTextBox.ReadOnly = true;
+                this.FiefTreasTextBox.ReadOnly = true;
+                // don't enable treasury transfer controls if in Home Fief (can't transfer to self)
+                if (f == this.fiefMasterList[this.myChar.homeFief])
+                {
+                    this.fiefTransferToFiefBtn.Enabled = false;
+                    this.fiefTransferToHomeBtn.Enabled = false;
+                    this.fiefTransferAmountTextBox.Enabled = false;
+                    this.fiefHomeTreasTextBox.Enabled = false;
+                    this.FiefTreasTextBox.Enabled = false;
+                }
+                else
+                {
+                    this.fiefTransferToFiefBtn.Enabled = true;
+                    this.fiefTransferToHomeBtn.Enabled = true;
+                    this.fiefTransferAmountTextBox.Enabled = true;
+                    this.fiefHomeTreasTextBox.Enabled = true;
+                    this.FiefTreasTextBox.Enabled = true;
+                }
 
-                // set TextBoxes to show next year's figures
+                // set TextBoxes to show appropriate figures
                 this.adjGarrSpendTextBox.Text = Convert.ToString(this.fiefToView.garrisonSpendNext);
                 this.adjInfrSpendTextBox.Text = Convert.ToString(this.fiefToView.infrastructureSpendNext);
                 this.adjOffSpendTextBox.Text = Convert.ToString(this.fiefToView.officialsSpendNext);
                 this.adjustKeepSpendTextBox.Text = Convert.ToString(this.fiefToView.keepSpendNext);
                 this.adjustTaxTextBox.Text = Convert.ToString(this.fiefToView.taxRateNext);
+                // don't show treasury amounts if in Home Fief (can't transfer to self)
+                if (f == this.fiefMasterList[this.myChar.homeFief])
+                {
+                    this.fiefHomeTreasTextBox.Text = "";
+                    this.FiefTreasTextBox.Text = "";
+                }
+                else
+                {
+                    this.fiefHomeTreasTextBox.Text = Convert.ToString(this.fiefMasterList[this.myChar.homeFief].treasury);
+                    this.FiefTreasTextBox.Text = Convert.ToString(this.fiefToView.treasury);
+                }
             }
 
             this.fiefContainer.BringToFront();
@@ -2924,46 +2973,68 @@ namespace hist_mmorpg
         {
             try
             {
+                // get new amounts
                 Double newTax = Convert.ToDouble(this.adjustTaxTextBox.Text);
-                // check if amount/rate changed
-                if (newTax != this.fiefToView.taxRateNext)
-                {
-                    // adjust tax rate
-                    this.fiefToView.adjustTaxRate(newTax);
-                }
-
                 UInt32 newOff = Convert.ToUInt32(this.adjOffSpendTextBox.Text);
-                // check if amount/rate changed
-                if (newOff != this.fiefToView.officialsSpendNext)
-                {
-                    // adjust officials spend
-                    this.fiefToView.adjustOfficialsSpend(Convert.ToUInt32(this.adjOffSpendTextBox.Text));
-                }
-
                 UInt32 newGarr = Convert.ToUInt32(this.adjGarrSpendTextBox.Text);
-                // check if amount/rate changed
-                if (newGarr != this.fiefToView.garrisonSpendNext)
-                {
-                    // adjust garrison spend
-                    this.fiefToView.adjustGarrisonSpend(Convert.ToUInt32(this.adjGarrSpendTextBox.Text));
-                }
-
                 UInt32 newInfra = Convert.ToUInt32(this.adjInfrSpendTextBox.Text);
-                // check if amount/rate changed
-                if (newInfra != this.fiefToView.infrastructureSpendNext)
-                {
-                    // adjust infrastructure spend
-                    this.fiefToView.adjustInfraSpend(Convert.ToUInt32(this.adjInfrSpendTextBox.Text));
-                }
-
                 UInt32 newKeep = Convert.ToUInt32(this.adjustKeepSpendTextBox.Text);
-                // check if amount/rate changed
-                if (newKeep != this.fiefToView.keepSpendNext)
-                {
-                    // adjust keep spend
-                    this.fiefToView.adjustKeepSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
-                }
 
+                // get total spend
+                uint totalSpend = newOff + newGarr + newInfra + newKeep;
+
+                // make sure expenditure doesn't exceed amount in treasury
+                // if it does, display a message and cancel the commit
+                if (totalSpend > this.fiefToView.treasury)
+                {
+                    int difference = Convert.ToInt32(totalSpend - this.fiefToView.treasury);
+                    String toDisplay = "Your spending exceeds the " + this.fiefToView.name + " treasury by " + difference;
+                    toDisplay += "\r\nYou may be able to transfer funds from your Home Treasury.  Transaction cancelled.";
+                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                }
+                // if treasury funds are sufficient to cover expenditure, do the commit
+                else
+                {
+                    // tax rate
+                    // check if amount/rate changed
+                    if (newTax != this.fiefToView.taxRateNext)
+                    {
+                        // adjust tax rate
+                        this.fiefToView.adjustTaxRate(newTax);
+                    }
+
+                    // officials spend
+                    // check if amount/rate changed
+                    if (newOff != this.fiefToView.officialsSpendNext)
+                    {
+                        // adjust officials spend
+                        this.fiefToView.adjustOfficialsSpend(Convert.ToUInt32(this.adjOffSpendTextBox.Text));
+                    }
+
+                    // garrison spend
+                    // check if amount/rate changed
+                    if (newGarr != this.fiefToView.garrisonSpendNext)
+                    {
+                        // adjust garrison spend
+                        this.fiefToView.adjustGarrisonSpend(Convert.ToUInt32(this.adjGarrSpendTextBox.Text));
+                    }
+
+                    // infrastructure spend
+                    // check if amount/rate changed
+                    if (newInfra != this.fiefToView.infrastructureSpendNext)
+                    {
+                        // adjust infrastructure spend
+                        this.fiefToView.adjustInfraSpend(Convert.ToUInt32(this.adjInfrSpendTextBox.Text));
+                    }
+
+                    // adjust keep spend
+                    // check if amount/rate changed
+                    if (newKeep != this.fiefToView.keepSpendNext)
+                    {
+                        // adjust keep spend
+                        this.fiefToView.adjustKeepSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
+                    }
+                }
             }
             catch (System.FormatException fe)
             {
@@ -2999,6 +3070,8 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void navigateToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // ensure reflects player's location
+            this.charToView = this.myChar;
             // refresh navigation data
             this.fiefToView = this.myChar.location;
             this.refreshTravelContainer();
@@ -3027,6 +3100,7 @@ namespace hist_mmorpg
             // clear existing data in TextBoxex
             this.travelMultiMoveTextBox.Text = "";
             this.travelCampDaysTextBox.Text = "";
+            this.travelRouteTextBox.Text = "";
 
             // string[] to hold direction text
             string[] directions = new string[] { "NE", "E", "SE", "SW", "W", "NW" };
@@ -3874,6 +3948,147 @@ namespace hist_mmorpg
                 }
             }
 
+        }
+
+        /// <summary>
+        /// Responds to the click event of the travelRouteBtn button
+        /// allowing players to enter a specific route by using direction codes (NE, E, SE, SW, W, NW)
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void travelRouteBtn_Click(object sender, EventArgs e)
+        {
+            Fief source = null;
+            Fief target = null;
+            Queue<Fief> route = new Queue<Fief>();
+
+            // get list of directions
+            String[] directions = this.travelRouteTextBox.Text.Split(',').ToArray<String>();
+
+            // convert to Queue of fiefs
+            for (int i = 0; i < directions.Length; i++)
+            {
+                // source for first move is character's current location
+                if (i == 0)
+                {
+                    source = this.charToView.location;
+                }
+                    // source for all other moves is the previous target fief
+                else
+                {
+                    source = target;
+                }
+
+                // get the target fief
+                target = this.gameMap.getFief(source, directions[i].ToUpper());
+
+                // if target successfully acquired, add to queue
+                if (target != null)
+                {
+                    route.Enqueue(target);
+                }
+                // if no target acquired, display message and break
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("Invalid direction code encountered.  Route halted at " + source.name + " (" + source.fiefID + ")");
+                    break;
+                }
+
+                // if there are any fiefs in the queue, overwrite the character's goTo queue
+                // then process by calling characterMultiMove
+                if (route.Count > 0)
+                {
+                    this.charToView.goTo = route;
+                    this.characterMultiMove(this.charToView);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the fiefTransferToFiefBtn button
+        /// allowing players to transfer funds from the fief treasury to the home treasury
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefTransferToFiefBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Fief fiefFrom = this.fiefMasterList[this.myChar.homeFief];
+                Fief fiefTo = this.fiefToView;
+                int amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
+
+                // make sure are enough funds to cover transfer
+                if (amount > fiefFrom.treasury)
+                {
+                    // if not, inform player and adjust amount downwards
+                    System.Windows.Forms.MessageBox.Show("Too few funds available in Home Treasury; amount adjusted.");
+                    amount = fiefFrom.treasury;
+                }
+
+                // make the transfer
+                this.treasuryTransfer(fiefFrom, fiefTo, amount);
+            }
+            catch (System.FormatException fe)
+            {
+                System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+            }
+            catch (System.OverflowException ofe)
+            {
+                System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the fiefTransferToHomeBtn button
+        /// allowing players to transfer funds from the home treasury to the fief treasury
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefTransferToHomeBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Fief fiefFrom = this.fiefToView;
+                Fief fiefTo = this.fiefMasterList[this.myChar.homeFief];
+                int amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
+
+                // make sure are enough funds to cover transfer
+                if (amount > fiefFrom.treasury)
+                {
+                    // if not, inform player and adjust amount downwards
+                    System.Windows.Forms.MessageBox.Show("Too few funds available in " + fiefFrom.name + " Treasury; amount adjusted.");
+                    amount = fiefFrom.treasury;
+                }
+
+                // make the transfer
+                this.treasuryTransfer(fiefFrom, fiefTo, amount);
+            }
+            catch (System.FormatException fe)
+            {
+                System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+            }
+            catch (System.OverflowException ofe)
+            {
+                System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+            }
+        }
+
+        /// <summary>
+        /// Transfers funds between the home treasury and the fief treasury
+        /// </summary>
+        /// <param name="from">The Fief from which funds are to be transferred</param>
+        /// <param name="to">The Fief to which funds are to be transferred</param>
+        /// <param name="amount">How much to be transferred</param>
+        private void treasuryTransfer(Fief from, Fief to, int amount)
+        {
+            // subtract from source treasury
+            from.treasury = from.treasury - amount;
+            // add to target treasury
+            to.treasury = to.treasury + amount;
+            // refresh fief display
+            this.refreshFiefContainer(this.fiefToView);
         }
 
     }

@@ -138,6 +138,10 @@ namespace hist_mmorpg
         /// Holds fief Rank object
         /// </summary>
         public Rank rank { get; set; }
+        /// <summary>
+        /// Holds fief treasury
+        /// </summary>
+        public int treasury { get; set; }
 
         /// <summary>
         /// Constructor for Fief
@@ -174,10 +178,11 @@ namespace hist_mmorpg
         /// <param name="bail">Character holding fief bailiff</param>
         /// <param name="bailInF">byte holding days bailiff in fief</param>
         /// <param name="ra">Fief's rank object</param>
+        /// <param name="treas">int containing fief treasury</param>
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp,
             Double tx, uint off, uint garr, uint infra, uint keep, Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, Double kpLvl,
             Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
-            GameClock cl, byte bailInF, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
+            GameClock cl, byte bailInF, int treas, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -286,6 +291,7 @@ namespace hist_mmorpg
             this.clock = cl;
             this.rank = ra;
             this.bailiffDaysInFief = bailInF;
+            this.treasury = treas;
         }
 
 		/// <summary>
@@ -334,6 +340,7 @@ namespace hist_mmorpg
             // rank to be added later
             this.rank = null;
             this.bailiffDaysInFief = fr.bailiffDaysInFief;
+            this.treasury = fr.treasury;
         }
 
         /// <summary>
@@ -385,6 +392,17 @@ namespace hist_mmorpg
         {
             uint newPop = Convert.ToUInt32(this.population + (this.population * 0.035));
             return newPop;
+        }
+
+        /// <summary>
+        /// Updates fief treasury at end of season
+        /// </summary>
+        /// <returns>uint containing updated fief treasury</returns>
+        public int calcNewTreasury()
+        {
+            // add surplus (positive or negative) to treasury
+            int newTreasury = this.treasury + this.calcBottomLine("this");
+            return newTreasury;
         }
 
         /// <summary>
@@ -930,6 +948,8 @@ namespace hist_mmorpg
             this.keepSpend = this.keepSpendNext;
             // check for unrest/rebellion
             this.status = this.checkFiefStatus();
+            // update fief treasury (based on new season figures)
+            this.industry = this.calcNewTreasury();
         }
 
         /// <summary>
@@ -1231,6 +1251,10 @@ namespace hist_mmorpg
         /// Holds fief Rank (ID)
         /// </summary>
         public String rankID { get; set; }
+        /// <summary>
+        /// Holds fief treasury
+        /// </summary>
+        public int treasury { get; set; }
 
 		/// <summary>
 		/// Constructor for Fief_Riak
@@ -1280,6 +1304,7 @@ namespace hist_mmorpg
 			this.clock = f.clock.clockID;
             this.rankID = f.rank.rankID;
             this.bailiffDaysInFief = f.bailiffDaysInFief;
+            this.treasury = f.treasury;
 		}
 
         /// <summary>
