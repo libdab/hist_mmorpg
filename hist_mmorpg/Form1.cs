@@ -352,7 +352,7 @@ namespace hist_mmorpg
 
             Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 200000, ra: myRank17);
 			fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 1000, 1000, 2000, 2000, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 100000, ra: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 100, 1000, 2000, 2900, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 4000, ra: myRank15);
 			fiefMasterList.Add(myFief2.fiefID, myFief2);
             Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
 			fiefMasterList.Add(myFief3.fiefID, myFief3);
@@ -475,8 +475,8 @@ namespace hist_mmorpg
 			myChar1.addToOwnedFiefs(myFief1);
 			myChar1.addToOwnedFiefs(myFief3);
 			myChar1.addToOwnedFiefs(myFief4);
-			myChar1.addToOwnedFiefs(myFief6);
-			myChar2.addToOwnedFiefs(myFief2);
+			myChar2.addToOwnedFiefs(myFief6);
+			myChar1.addToOwnedFiefs(myFief2);
 			myChar2.addToOwnedFiefs(myFief5);
 			myChar2.addToOwnedFiefs(myFief7);
 
@@ -2828,6 +2828,9 @@ namespace hist_mmorpg
                 f = this.myChar.location;
             }
 
+            bool displayWarning = false;
+            String toDisplay = "";
+
             this.fiefToView = f;
 
             string textToDisplay = "";
@@ -2933,12 +2936,47 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    this.fiefHomeTreasTextBox.Text = Convert.ToString(this.fiefMasterList[this.myChar.homeFief].treasury);
+                    // calculate home treasury
+                    Fief home = this.fiefMasterList[this.myChar.homeFief];
+                    int homeTreasury = home.treasury;
+                    homeTreasury -= Convert.ToInt32(home.officialsSpendNext);
+                    homeTreasury -= Convert.ToInt32(home.garrisonSpendNext);
+                    homeTreasury -= Convert.ToInt32(home.infrastructureSpendNext);
+                    homeTreasury -= Convert.ToInt32(home.keepSpendNext);
+
+                    // display treasuries
+                    this.fiefHomeTreasTextBox.Text = Convert.ToString(homeTreasury);
                     this.FiefTreasTextBox.Text = Convert.ToString(this.fiefToView.treasury);
+                }
+
+                // check to see if proposed expenditure level doesn't exceed fief treasury
+                // get individual spends
+                uint newOff = this.fiefToView.officialsSpendNext;
+                uint newGarr = this.fiefToView.garrisonSpendNext;
+                uint newInfra = this.fiefToView.infrastructureSpendNext;
+                uint newKeep = this.fiefToView.keepSpendNext;
+
+                // get total spend
+                uint totalSpend = newOff + newGarr + newInfra + newKeep;
+
+                // make sure expenditure can be supported by the treasury
+                // if it can't, display a message and cancel the commit
+                if (!this.fiefToView.checkExpenditureOK(totalSpend))
+                {
+                    int difference = Convert.ToInt32(totalSpend - this.fiefToView.treasury);
+                    toDisplay = "Your proposed expenditure exceeds the " + this.fiefToView.name + " treasury by " + difference;
+                    toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
+                    toDisplay += "\r\n\r\nAny unsupportable expenditure levels will be automatically adjusted during the seasonal update.";
+                    displayWarning = true;
                 }
             }
 
             this.fiefContainer.BringToFront();
+
+            if (displayWarning)
+            {
+                System.Windows.Forms.MessageBox.Show(toDisplay, "WARNING: EXPENDITURE TOO HIGH");
+            }
         }
 
         /// <summary>
@@ -2971,6 +3009,9 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void adjustSpendBtn_Click(object sender, EventArgs e)
         {
+            // keep track of whether any spends ahve changed
+            bool spendChanged = false;
+
             try
             {
                 // get new amounts
@@ -2983,24 +3024,25 @@ namespace hist_mmorpg
                 // get total spend
                 uint totalSpend = newOff + newGarr + newInfra + newKeep;
 
-                // make sure expenditure doesn't exceed amount in treasury
-                // if it does, display a message and cancel the commit
-                if (totalSpend > this.fiefToView.treasury)
+                // make sure expenditure can be supported by the treasury
+                // if it can't, display a message and cancel the commit
+                if (! this.fiefToView.checkExpenditureOK(totalSpend))
                 {
                     int difference = Convert.ToInt32(totalSpend - this.fiefToView.treasury);
                     String toDisplay = "Your spending exceeds the " + this.fiefToView.name + " treasury by " + difference;
-                    toDisplay += "\r\nYou may be able to transfer funds from your Home Treasury.  Transaction cancelled.";
-                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                    toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
+                    System.Windows.Forms.MessageBox.Show(toDisplay, "TRANSACTION CANCELLED");
                 }
                 // if treasury funds are sufficient to cover expenditure, do the commit
                 else
-                {
+                {                    
                     // tax rate
                     // check if amount/rate changed
                     if (newTax != this.fiefToView.taxRateNext)
                     {
                         // adjust tax rate
                         this.fiefToView.adjustTaxRate(newTax);
+                        spendChanged = true;
                     }
 
                     // officials spend
@@ -3009,6 +3051,7 @@ namespace hist_mmorpg
                     {
                         // adjust officials spend
                         this.fiefToView.adjustOfficialsSpend(Convert.ToUInt32(this.adjOffSpendTextBox.Text));
+                        spendChanged = true;
                     }
 
                     // garrison spend
@@ -3017,6 +3060,7 @@ namespace hist_mmorpg
                     {
                         // adjust garrison spend
                         this.fiefToView.adjustGarrisonSpend(Convert.ToUInt32(this.adjGarrSpendTextBox.Text));
+                        spendChanged = true;
                     }
 
                     // infrastructure spend
@@ -3025,6 +3069,7 @@ namespace hist_mmorpg
                     {
                         // adjust infrastructure spend
                         this.fiefToView.adjustInfraSpend(Convert.ToUInt32(this.adjInfrSpendTextBox.Text));
+                        spendChanged = true;
                     }
 
                     // adjust keep spend
@@ -3033,7 +3078,21 @@ namespace hist_mmorpg
                     {
                         // adjust keep spend
                         this.fiefToView.adjustKeepSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
+                        spendChanged = true;
                     }
+
+                    // display appropriate message
+                    String toDisplay = "";
+                    if (spendChanged)
+                    {
+                        toDisplay += "Expenditure adjusted";
+                    }
+                    else
+                    {
+                        toDisplay += "Expenditure unchanged";
+                    }
+
+                    System.Windows.Forms.MessageBox.Show(toDisplay);
                 }
             }
             catch (System.FormatException fe)
@@ -3046,8 +3105,12 @@ namespace hist_mmorpg
             }
             finally
             {
-                // refresh display
-                this.refreshFiefContainer(this.fiefToView);
+                // refresh screen if expenditure changed
+                if (spendChanged)
+                {
+                    // refresh display
+                    this.refreshFiefContainer(this.fiefToView);
+                }
             }
         }
 
@@ -3059,7 +3122,8 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void updateFiefBtn_Click(object sender, EventArgs e)
         {
-            // something
+            this.fiefToView.validateFiefExpenditure();
+            this.refreshFiefContainer();
         }
 
         /// <summary>

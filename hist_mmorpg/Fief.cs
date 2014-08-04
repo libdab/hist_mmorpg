@@ -516,10 +516,9 @@ namespace hist_mmorpg
         /// Calculates overlord taxes
         /// </summary>
         /// <returns>uint containing overlord taxes</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</param>
         public uint calcOlordTaxes(string season)
         {
-            // assumes overlord tax rate remains unchanged
+            // calculate tax, based on income of specified season
             uint oTaxes = Convert.ToUInt32(this.calcIncome(season) * (this.province.overlordTaxRate / 100));
             return oTaxes;
         }
@@ -584,19 +583,13 @@ namespace hist_mmorpg
         public int calcBottomLine(string season)
         {
             int fiefBottomLine = 0;
-            switch (season)
-            {
-                // using next season's income, expenses and overlord taxes
-                case "next":
-                    fiefBottomLine = ((int)this.calcIncome("next") - (int)this.calcExpenses("next")) - (int)this.calcOlordTaxes("next");
-                    break;
-                // using current income, expenses and overlord taxes
-                default:
-                    // factor in effect of current fief status
-                    int fiefIncome = Convert.ToInt32(this.calcIncome("this") * this.calcStatusIncmMod());
-                    fiefBottomLine = (fiefIncome - (int)this.calcExpenses("this")) - (int)this.calcOlordTaxes("this");
-                    break;
-            }
+
+            // factor in effect of fief status on specified season's income
+            int fiefIncome = Convert.ToInt32(this.calcIncome(season) * this.calcStatusIncmMod());
+
+            // calculate bottom line using specified season's income, expenses and overlord taxes
+            fiefBottomLine = (fiefIncome - (int)this.calcExpenses(season)) - (int)this.calcOlordTaxes(season);
+
             return fiefBottomLine;
         }
 
@@ -793,11 +786,11 @@ namespace hist_mmorpg
 
             // calculate effect of tax rate change = loyalty % change is direct inverse of tax % change
             newBaseLoy = this.loyalty + (this.loyalty * (((this.taxRateNext - this.taxRate) / 100) * -1));
-            
+
+            // calculate effect of surplus 
             if (this.calcBottomLine("next") > 0)
             {
-                // calculate effect of surplus 
-                // = loyalty reduced in proportion to surplus divided by income
+                // loyalty reduced in proportion to surplus divided by income
                 newLoy = newBaseLoy - (this.calcBottomLine("next") / Convert.ToDouble(this.calcIncome("next")));
             }
 
@@ -924,10 +917,227 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Validates proposed expenditure levels, auto-adjusting where necessary
+        /// </summary>
+        public void validateFiefExpenditure()
+        {
+            // get individual spends
+            uint newOff = this.officialsSpendNext;
+            uint newGarr = this.garrisonSpendNext;
+            uint newInfra = this.infrastructureSpendNext;
+            uint newKeep = this.keepSpendNext;
+
+            // get total spend
+            uint totalSpend = newOff + newGarr + newInfra + newKeep;
+
+            // check to see if proposed expenditure level doesn't exceed fief treasury
+            bool isOK = this.checkExpenditureOK(totalSpend);
+
+            // if expenditure does exceed fief treasury
+            if (!isOK)
+            {
+                // calculate amount by which treasury exceeded
+                uint difference = Convert.ToUInt32(totalSpend - this.treasury);
+                // auto-adjust expenditure
+                this.autoAdjustExpenditure(difference);
+            }
+        }
+
+        /// <summary>
+        /// Automatically adjusts expenditure at end of season, if exceeds treasury
+        /// </summary>
+        /// <param name="difference">The amount by which expenditure exceeds treasury</param>
+        public void autoAdjustExpenditure(uint difference)
+        {
+            // if treasury empty or in deficit, reduce all expenditure to 0
+            if (this.treasury <= 0)
+            {
+                this.officialsSpendNext = 0;
+                this.garrisonSpendNext = 0;
+                this.infrastructureSpendNext = 0;
+                this.keepSpendNext = 0;
+            }
+
+            else
+            {
+                // bool to control do while loop
+                bool finished = false;
+                // amount to deduct from each spend
+                uint takeOff = 0;
+                // list to hold individual spends
+                List<string> spends = new List<string>();
+
+                do
+                {
+                    // populate spends list with appropriate codes
+                    // but only spends > 0
+                    if (this.officialsSpendNext > 0)
+                    {
+                        spends.Add("off");
+                    }
+                    if (this.garrisonSpendNext > 0)
+                    {
+                        spends.Add("garr");
+                    }
+                    if (this.infrastructureSpendNext > 0)
+                    {
+                        spends.Add("inf");
+                    }
+                    if (this.keepSpendNext > 0)
+                    {
+                        spends.Add("keep");
+                    }
+
+                    // calculate amount by which each spend needs to be reduced
+                    double reduceEachBy = (double)difference / spends.Count;
+                    // round up if < 1
+                    if ((reduceEachBy < 1) || (reduceEachBy == 1))
+                    {
+                        takeOff = 1;
+                    }
+                    // round down if > 1
+                    else if (reduceEachBy > 1)
+                    {
+                        takeOff = Convert.ToUInt32(Math.Truncate(reduceEachBy));
+                    }
+
+                    // iterate through each entry in spends list
+                    // (remember: only spends > 0)
+                    for (int i = 0; i < spends.Count; i++)
+                    {
+                        switch (spends[i])
+                        {
+                            // officials
+                            case "off":
+                                if (!(difference < takeOff))
+                                {
+                                    // if is enough in spend to subtract takeOff amount
+                                    if (this.officialsSpendNext >= takeOff)
+                                    {
+                                        // subtract takeOff from spend
+                                        this.officialsSpendNext -= takeOff;
+                                        // subtract takeOff from remaining difference
+                                        difference -= takeOff;
+                                    }
+                                    // if is less in spend than takeOff amount
+                                    else
+                                    {
+                                        // subtract spend from remaining difference
+                                        difference -= this.officialsSpendNext;
+                                        // reduce spend to 0
+                                        this.officialsSpendNext = 0;
+                                    }
+                                    // check to see if is any difference remaining 
+                                    if (difference == 0)
+                                    {
+                                        // if no remaining difference, signal exit from do while loop
+                                        finished = true;
+                                    }
+                                }
+                                break;
+                            case "garr":
+                                if (!(difference < takeOff))
+                                {
+                                    if (this.garrisonSpendNext >= takeOff)
+                                    {
+                                        this.garrisonSpendNext -= takeOff;
+                                        difference -= takeOff;
+                                    }
+                                    else
+                                    {
+                                        difference -= this.garrisonSpendNext;
+                                        this.garrisonSpendNext = 0;
+                                    }
+                                    if (difference == 0)
+                                    {
+                                        finished = true;
+                                    }
+                                }
+                                break;
+                            case "inf":
+                                if (!(difference < takeOff))
+                                {
+                                    if (this.infrastructureSpendNext >= takeOff)
+                                    {
+                                        this.infrastructureSpendNext -= takeOff;
+                                        difference -= takeOff;
+                                    }
+                                    else
+                                    {
+                                        difference -= this.infrastructureSpendNext;
+                                        this.infrastructureSpendNext = 0;
+                                    }
+                                    if (difference == 0)
+                                    {
+                                        finished = true;
+                                    }
+                                }
+                                break;
+                            case "keep":
+                                if (!(difference < takeOff))
+                                {
+                                    if (this.keepSpendNext >= takeOff)
+                                    {
+                                        this.keepSpendNext -= takeOff;
+                                        difference -= takeOff;
+                                    }
+                                    else
+                                    {
+                                        difference -= this.keepSpendNext;
+                                        this.keepSpendNext = 0;
+                                    }
+                                    if (difference == 0)
+                                    {
+                                        finished = true;
+                                    }
+                                }
+                               break;
+                            default:
+                                break;
+                        }
+                    }
+                } while (!finished);
+            }
+        }
+
+        /// <summary>
+        /// Compares expenditure level with fief treasury
+        /// </summary>
+        /// <returns>bool indicating whether expenditure acceptable</returns>
+        /// <param name="totalSpend">proposed total expenditure for next season</param>
+        public bool checkExpenditureOK(uint totalSpend)
+        {
+            bool spendLevelOK = true;
+
+            // if there are funds in the treasury
+            if (this.treasury > 0)
+            {
+                // expenditure should not exceed treasury
+                if (totalSpend > this.treasury)
+                {
+                    spendLevelOK = false;
+                }
+            }
+            // if treasury is empty or in deficit
+            else
+            {
+                // expenditure should be 0
+                if (totalSpend > 0)
+                {
+                    spendLevelOK = false;
+                }
+            }
+
+            return spendLevelOK;
+        }
+        
+        /// <summary>
         /// Updates fief data at the end/beginning of the season
         /// </summary>
         public void updateFief()
         {
+            // validate fief expenditure against treasury
+            this.validateFiefExpenditure();
             // update loyalty level
             this.loyalty = this.calcNewLoyalty();
             // update fields level (based on next season infrastructure spend)
@@ -946,10 +1156,12 @@ namespace hist_mmorpg
             this.infrastructureSpend = this.infrastructureSpendNext;
             // update keep spend
             this.keepSpend = this.keepSpendNext;
+            // deduct expenses from fief treasury
+            this.treasury = this.treasury - this.calcExpenses("this");
             // check for unrest/rebellion
             this.status = this.checkFiefStatus();
-            // update fief treasury (based on new season figures)
-            this.industry = this.calcNewTreasury();
+            // update fief treasury with new surplus
+            this.treasury = calcNewTreasury();
         }
 
         /// <summary>
