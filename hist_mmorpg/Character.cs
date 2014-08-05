@@ -22,9 +22,9 @@ namespace hist_mmorpg
         /// </summary>
         public String name { get; set; }
         /// <summary>
-        /// Holds character age
+        /// Tuple holding character's year and season of birth
         /// </summary>
-        public uint age { get; set; }
+        public Tuple<uint, byte> birthDate { get; set; }
         /// <summary>
         /// Holds if character male
         /// </summary>
@@ -111,7 +111,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="id">string holding character ID</param>
         /// <param name="nam">String holding character name</param>
-        /// <param name="ag">uint holding character age</param>
+        /// <param name="dob">Tuple<uint, byte> holding character's year and season of birth</param>
         /// <param name="isM">bool holding if character male</param>
         /// <param name="nat">String holding character nationality</param>
         /// <param name="hea">Double holding character current health</param>
@@ -132,7 +132,7 @@ namespace hist_mmorpg
         /// <param name="fath">String holding father</param>
         /// <param name="cl">GameClock holding season</param>
 		/// <param name="loc">Fief holding current location</param>
-        public Character(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
+        public Character(string id, String nam, Tuple<uint, byte> dob, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg,
             String famHead, String sp, String fath, GameClock cl = null, Fief loc = null)
         {
@@ -146,13 +146,9 @@ namespace hist_mmorpg
                 throw new InvalidDataException("Character name must be between 1 and 40 characters in length");
             }
 
-            // validate ag < 100
-            if (ag > 99)
-            {
-                throw new InvalidDataException("Character age must be an integer between 0 and 100");
-            }
+            // TODO: validate dob
 
-			// validate preg = not if male
+            // validate preg = not if male
             if (isM)
             {
 				this.pregnant = false;
@@ -217,7 +213,7 @@ namespace hist_mmorpg
 
             this.charID = id;
             this.name = nam;
-            this.age = ag;
+            this.birthDate = dob;
             this.isMale = isM;
             this.nationality = nat;
             this.health = hea;
@@ -263,7 +259,7 @@ namespace hist_mmorpg
 			{
 				this.charID = charToUse.charID;
 				this.name = charToUse.name;
-				this.age = charToUse.age;
+				this.birthDate = charToUse.birthDate;
 				this.isMale = charToUse.isMale;
 				this.nationality = charToUse.nationality;
 				this.health = charToUse.health;
@@ -298,6 +294,25 @@ namespace hist_mmorpg
 			}
 		}
 
+        /// <summary>
+        /// Calculates character's age
+        /// </summary>
+        /// <returns>byte containing character's age</returns>
+        public byte calcCharAge()
+        {
+            byte myAge = 0;
+
+            // subtract year of birth from current year
+            myAge = Convert.ToByte(clock.currentYear - this.birthDate.Item1);
+            // if current season < season of birth, subtract 1 from age (not reached birthday yet)
+            if (clock.currentSeason < this.birthDate.Item2)
+            {
+                myAge--;
+            }
+
+            return myAge;
+        }
+        
         /// <summary>
         /// Checks for character death
         /// </summary>
@@ -588,10 +603,10 @@ namespace hist_mmorpg
         /// <param name="kps">List<Fief> holding fiefs owned by character</param>
         /// <param name="home">String holding character's home fief (fiefID)</param>
         /// <param name="anchome">String holding character's ancestral home fief (fiefID)</param>
-        public PlayerCharacter(string id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
+        public PlayerCharacter(string id, String nam, Tuple<uint, byte> dob, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
             String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> emp, List<Fief> kps, String home, String ancHome,GameClock cl = null, Fief loc = null)
-            : base(id, nam, ag, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
+            : base(id, nam, dob, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
         {
 
             this.outlawed = outl;
@@ -963,10 +978,10 @@ namespace hist_mmorpg
         /// <param name="mb">String holding NPC's employer (charID)</param>
         /// <param name="wa">string holding NPC's wage</param>
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
-        public NonPlayerCharacter(String id, String nam, uint ag, bool isM, String nat, Double hea, Double mxHea, Double vir,
+        public NonPlayerCharacter(String id, String nam, Tuple<uint, byte> dob, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
             String sp, String fath, uint wa, bool inEnt, String mb = null, GameClock cl = null, Fief loc = null)
-            : base(id, nam, ag, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
+            : base(id, nam, dob, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -1074,11 +1089,11 @@ namespace hist_mmorpg
 		/// Holds character name
 		/// </summary>
 		public String name { get; set; }
-		/// <summary>
-		/// Holds character age
-		/// </summary>
-		public uint age { get; set; }
-		/// <summary>
+        /// <summary>
+        /// Tuple holding character's year and season of birth
+        /// </summary>
+        public Tuple<uint, byte> birthDate { get; set; }
+        /// <summary>
 		/// Holds if character male
 		/// </summary>
 		public bool isMale { get; set; }
@@ -1181,7 +1196,7 @@ namespace hist_mmorpg
 			{
 				this.charID = charToUse.charID;
 				this.name = charToUse.name;
-				this.age = charToUse.age;
+				this.birthDate = charToUse.birthDate;
 				this.isMale = charToUse.isMale;
 				this.nationality = charToUse.nationality;
 				this.health = charToUse.health;

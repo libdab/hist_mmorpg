@@ -422,18 +422,25 @@ namespace hist_mmorpg
 			List<Fief> myFiefsOwned1 = new List<Fief>();
 			List<Fief> myFiefsOwned2 = new List<Fief>();
 
+            // create DOBs for characters
+            Tuple<uint, byte> myDob001 = new Tuple<uint, byte>(1290, 1);
+            Tuple<uint, byte> myDob002 = new Tuple<uint, byte>(1260, 0);
+            Tuple<uint, byte> myDob003 = new Tuple<uint, byte>(1278, 2);
+            Tuple<uint, byte> myDob004 = new Tuple<uint, byte>(1295, 3);
+            Tuple<uint, byte> myDob005 = new Tuple<uint, byte>(1288, 2);
+
             // create Random for use with generating skill sets for Characters
             Random myRand = new Random();
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", 50, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, myLang1, 90, 4.0, 7.2, 6.1, generateSkillSet(myRand), false, true, false, "200", "403", "", false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", myDob001, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, myLang1, 90, 4.0, 7.2, 6.1, generateSkillSet(myRand), false, true, false, "200", "403", "", false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, myLang1, 90, 4.0, 5.0, 4.5, generateSkillSet(myRand), false, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", myDob002, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, myLang1, 90, 4.0, 5.0, 4.5, generateSkillSet(myRand), false, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, myLang1, 90, 4.0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", myDob003, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, myLang1, 90, 4.0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
 			npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", 50, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, myLang1, 90, 4.0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, "200", "", "", 10000, true, mb: myChar1.charID, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", myDob004, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, myLang1, 90, 4.0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, "200", "", "", 10000, true, mb: myChar1.charID, cl: this.clock, loc: myFief1);
 			npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", 50, false, "Eng", 1.0, 8.50, 6.0, myGoTo5, myLang2, 90, 4.0, 4.0, 6.0, generateSkillSet(myRand), false, true, true, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", myDob005, false, "Eng", 1.0, 8.50, 6.0, myGoTo5, myLang2, 90, 4.0, 4.0, 6.0, generateSkillSet(myRand), false, true, true, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
 			npcMasterList.Add(myWife.charID, myWife);
 
 			// set fief owners
@@ -464,7 +471,7 @@ namespace hist_mmorpg
 
             // set fief bailiffs
             myFief1.bailiff = myChar1;
-			myFief2.bailiff = myNPC2;
+            myFief2.bailiff = myChar1;
 
 			// add NPC to employees
             myChar1.hireNPC(myNPC2, 12000);
@@ -2251,7 +2258,7 @@ namespace hist_mmorpg
             charText += "Name: " + ch.name + "\r\n";
 
             // age
-            charText += "Age: " + ch.age + "\r\n";
+            charText += "Age: " + ch.calcCharAge() + "\r\n";
 
             // sex
             charText += "Sex: ";
@@ -2885,6 +2892,9 @@ namespace hist_mmorpg
             // if fief IS owned by player, enable fief management buttons and TextBoxes 
             else
             {
+                int homeTreasury = 0;
+                int fiefTreasury = 0;
+
                 this.adjustSpendBtn.Enabled = true;
                 this.taxRateLabel.Enabled = true;
                 this.garrSpendLabel.Enabled = true;
@@ -2936,34 +2946,33 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    // calculate home treasury
+                    // calculate available home treasury
                     Fief home = this.fiefMasterList[this.myChar.homeFief];
-                    int homeTreasury = home.treasury;
-                    homeTreasury -= Convert.ToInt32(home.officialsSpendNext);
-                    homeTreasury -= Convert.ToInt32(home.garrisonSpendNext);
-                    homeTreasury -= Convert.ToInt32(home.infrastructureSpendNext);
-                    homeTreasury -= Convert.ToInt32(home.keepSpendNext);
+                    homeTreasury = home.treasury;
+                    // deduct home fief expenditure
+                    homeTreasury -= home.calcExpenses("next");
+                    // deduct home fief overlord taxes
+                    homeTreasury -= Convert.ToInt32(home.calcOlordTaxes("next"));
+
+                    // calculate available fief treasury
+                    fiefTreasury = this.fiefToView.treasury;
+                    // deduct fief overlord taxes
+                    fiefTreasury -= Convert.ToInt32(this.fiefToView.calcOlordTaxes("next"));
 
                     // display treasuries
                     this.fiefHomeTreasTextBox.Text = Convert.ToString(homeTreasury);
-                    this.FiefTreasTextBox.Text = Convert.ToString(this.fiefToView.treasury);
+                    this.FiefTreasTextBox.Text = Convert.ToString(fiefTreasury);
                 }
 
                 // check to see if proposed expenditure level doesn't exceed fief treasury
-                // get individual spends
-                uint newOff = this.fiefToView.officialsSpendNext;
-                uint newGarr = this.fiefToView.garrisonSpendNext;
-                uint newInfra = this.fiefToView.infrastructureSpendNext;
-                uint newKeep = this.fiefToView.keepSpendNext;
-
-                // get total spend
-                uint totalSpend = newOff + newGarr + newInfra + newKeep;
+                // get fief expenses (includes bailiff modifiers)
+                uint totalSpend = Convert.ToUInt32(this.fiefToView.calcExpenses("next")); ;
 
                 // make sure expenditure can be supported by the treasury
                 // if it can't, display a message and cancel the commit
                 if (!this.fiefToView.checkExpenditureOK(totalSpend))
                 {
-                    int difference = Convert.ToInt32(totalSpend - this.fiefToView.treasury);
+                    int difference = Convert.ToInt32(totalSpend - fiefTreasury);
                     toDisplay = "Your proposed expenditure exceeds the " + this.fiefToView.name + " treasury by " + difference;
                     toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
                     toDisplay += "\r\n\r\nAny unsupportable expenditure levels will be automatically adjusted during the seasonal update.";
@@ -3024,7 +3033,18 @@ namespace hist_mmorpg
                 // get total spend
                 uint totalSpend = newOff + newGarr + newInfra + newKeep;
 
-                // make sure expenditure can be supported by the treasury
+                // factor in bailiff skills modifier for fief expenses
+                double bailiffModif = 0;
+
+                // get bailiff modifier (passing in whether bailiffDaysInFief is sufficient)
+                bailiffModif = this.fiefToView.calcBailExpModif(this.fiefToView.bailiffDaysInFief >= 30);
+
+                if (bailiffModif != 0)
+                {
+                    totalSpend = totalSpend + Convert.ToUInt32(totalSpend * bailiffModif);
+                }
+
+                // check that expenditure can be supported by the treasury
                 // if it can't, display a message and cancel the commit
                 if (! this.fiefToView.checkExpenditureOK(totalSpend))
                 {

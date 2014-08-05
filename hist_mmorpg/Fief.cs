@@ -544,7 +544,6 @@ namespace hist_mmorpg
             }
 
             // factor in bailiff skills modifier for fief expenses
-            // assumes bailiff remains unchanged
             double bailiffModif = 0;
 
             // get bailiff modifier (passing in whether bailiffDaysInFief is sufficient)
@@ -1108,6 +1107,7 @@ namespace hist_mmorpg
         public bool checkExpenditureOK(uint totalSpend)
         {
             bool spendLevelOK = true;
+            int availTreasury = this.treasury - Convert.ToInt32(this.calcOlordTaxes("next"));
 
             // if there are funds in the treasury
             if (this.treasury > 0)
@@ -1158,6 +1158,8 @@ namespace hist_mmorpg
             this.keepSpend = this.keepSpendNext;
             // deduct expenses from fief treasury
             this.treasury = this.treasury - this.calcExpenses("this");
+            // deduct overlord tax from fief treasury
+            this.treasury = this.treasury - Convert.ToInt32(this.calcOlordTaxes("this"));
             // check for unrest/rebellion
             this.status = this.checkFiefStatus();
             // update fief treasury with new surplus

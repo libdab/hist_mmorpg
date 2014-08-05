@@ -166,7 +166,7 @@ namespace hist_mmorpg
             charText += "Name: " + npc.name + "\r\n";
 
             // age
-            charText += "Age: " + npc.age + "\r\n";
+            charText += "Age: " + npc.calcCharAge() + "\r\n";
 
             // nationality
             charText += "Nationality: " + npc.nationality + "\r\n";
