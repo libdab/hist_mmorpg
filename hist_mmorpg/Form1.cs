@@ -352,7 +352,7 @@ namespace hist_mmorpg
 
             Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 200000, ra: myRank17);
 			fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 100, 1000, 2000, 2900, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 4000, ra: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 0, 0, 2000, 4000, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 4000, ra: myRank15);
 			fiefMasterList.Add(myFief2.fiefID, myFief2);
             Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
 			fiefMasterList.Add(myFief3.fiefID, myFief3);
@@ -2914,6 +2914,7 @@ namespace hist_mmorpg
                 this.removeBaliffBtn.Enabled = true;
                 this.fiefHomeTreasTextBox.ReadOnly = true;
                 this.FiefTreasTextBox.ReadOnly = true;
+
                 // don't enable treasury transfer controls if in Home Fief (can't transfer to self)
                 if (f == this.fiefMasterList[this.myChar.homeFief])
                 {
@@ -2938,6 +2939,7 @@ namespace hist_mmorpg
                 this.adjOffSpendTextBox.Text = Convert.ToString(this.fiefToView.officialsSpendNext);
                 this.adjustKeepSpendTextBox.Text = Convert.ToString(this.fiefToView.keepSpendNext);
                 this.adjustTaxTextBox.Text = Convert.ToString(this.fiefToView.taxRateNext);
+
                 // don't show treasury amounts if in Home Fief (can't transfer to self)
                 if (f == this.fiefMasterList[this.myChar.homeFief])
                 {
@@ -2966,7 +2968,7 @@ namespace hist_mmorpg
 
                 // check to see if proposed expenditure level doesn't exceed fief treasury
                 // get fief expenses (includes bailiff modifiers)
-                uint totalSpend = Convert.ToUInt32(this.fiefToView.calcExpenses("next")); ;
+                uint totalSpend = Convert.ToUInt32(this.fiefToView.calcExpenses("next"));
 
                 // make sure expenditure can be supported by the treasury
                 // if it can't, display a message and cancel the commit

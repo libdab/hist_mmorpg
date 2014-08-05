@@ -920,14 +920,8 @@ namespace hist_mmorpg
         /// </summary>
         public void validateFiefExpenditure()
         {
-            // get individual spends
-            uint newOff = this.officialsSpendNext;
-            uint newGarr = this.garrisonSpendNext;
-            uint newInfra = this.infrastructureSpendNext;
-            uint newKeep = this.keepSpendNext;
-
             // get total spend
-            uint totalSpend = newOff + newGarr + newInfra + newKeep;
+            uint totalSpend = Convert.ToUInt32(this.calcExpenses("next")); ;
 
             // check to see if proposed expenditure level doesn't exceed fief treasury
             bool isOK = this.checkExpenditureOK(totalSpend);
@@ -935,8 +929,10 @@ namespace hist_mmorpg
             // if expenditure does exceed fief treasury
             if (!isOK)
             {
+                // get available treasury
+                int availTreasury = this.treasury - Convert.ToInt32(this.calcOlordTaxes("next"));
                 // calculate amount by which treasury exceeded
-                uint difference = Convert.ToUInt32(totalSpend - this.treasury);
+                uint difference = Convert.ToUInt32(totalSpend - availTreasury);
                 // auto-adjust expenditure
                 this.autoAdjustExpenditure(difference);
             }
@@ -948,8 +944,11 @@ namespace hist_mmorpg
         /// <param name="difference">The amount by which expenditure exceeds treasury</param>
         public void autoAdjustExpenditure(uint difference)
         {
+            // get available treasury
+            int availTreasury = this.treasury - Convert.ToInt32(this.calcOlordTaxes("next"));
+
             // if treasury empty or in deficit, reduce all expenditure to 0
-            if (this.treasury <= 0)
+            if (availTreasury <= 0)
             {
                 this.officialsSpendNext = 0;
                 this.garrisonSpendNext = 0;
@@ -961,13 +960,26 @@ namespace hist_mmorpg
             {
                 // bool to control do while loop
                 bool finished = false;
-                // amount to deduct from each spend
+                // keep track of new difference
+                uint differenceNew = difference;
+                // get total expenditure
+                uint totalSpend = this.officialsSpendNext + this.garrisonSpendNext + this.infrastructureSpendNext + this.keepSpendNext;
+                // proportion to take off each spend
+                double reduceByModifierOff = (double)this.officialsSpendNext / totalSpend;
+                double reduceByModifierGarr = (double)this.garrisonSpendNext / totalSpend;
+                double reduceByModifierInf = (double)this.infrastructureSpendNext / totalSpend;
+                double reduceByModifierKeep = (double)this.keepSpendNext / totalSpend;
+                // double to reduce spend by
+                double reduceBy = 0;
+                // uint to deduct from each spend
                 uint takeOff = 0;
                 // list to hold individual spends
                 List<string> spends = new List<string>();
 
                 do
                 {
+                    // update difference
+                    difference = differenceNew;
                     // populate spends list with appropriate codes
                     // but only spends > 0
                     if (this.officialsSpendNext > 0)
@@ -987,19 +999,6 @@ namespace hist_mmorpg
                         spends.Add("keep");
                     }
 
-                    // calculate amount by which each spend needs to be reduced
-                    double reduceEachBy = (double)difference / spends.Count;
-                    // round up if < 1
-                    if ((reduceEachBy < 1) || (reduceEachBy == 1))
-                    {
-                        takeOff = 1;
-                    }
-                    // round down if > 1
-                    else if (reduceEachBy > 1)
-                    {
-                        takeOff = Convert.ToUInt32(Math.Truncate(reduceEachBy));
-                    }
-
                     // iterate through each entry in spends list
                     // (remember: only spends > 0)
                     for (int i = 0; i < spends.Count; i++)
@@ -1008,86 +1007,154 @@ namespace hist_mmorpg
                         {
                             // officials
                             case "off":
-                                if (!(difference < takeOff))
+                                if (!finished)
                                 {
-                                    // if is enough in spend to subtract takeOff amount
-                                    if (this.officialsSpendNext >= takeOff)
+                                    // calculate amount by which spend needs to be reduced
+                                    reduceBy = (double)difference * reduceByModifierOff;
+                                    // round up if < 1
+                                    if ((reduceBy < 1) || (reduceBy == 1))
                                     {
-                                        // subtract takeOff from spend
-                                        this.officialsSpendNext -= takeOff;
-                                        // subtract takeOff from remaining difference
-                                        difference -= takeOff;
+                                        takeOff = 1;
                                     }
-                                    // if is less in spend than takeOff amount
-                                    else
+                                    // round down if > 1
+                                    else if (reduceBy > 1)
                                     {
-                                        // subtract spend from remaining difference
-                                        difference -= this.officialsSpendNext;
-                                        // reduce spend to 0
-                                        this.officialsSpendNext = 0;
+                                        takeOff = Convert.ToUInt32(Math.Truncate(reduceBy));
                                     }
-                                    // check to see if is any difference remaining 
-                                    if (difference == 0)
+                                    System.Windows.Forms.MessageBox.Show("difference: " + difference + "\r\noffSpend: " + this.officialsSpendNext + "\r\ntotSpend: " + totalSpend + "\r\nreduceByModifierOff: " + reduceByModifierOff + "\r\nreduceBy: " + reduceBy + "\r\ntakeOff: " + takeOff);
+
+                                    if (!(differenceNew < takeOff))
                                     {
-                                        // if no remaining difference, signal exit from do while loop
-                                        finished = true;
+                                        // if is enough in spend to subtract takeOff amount
+                                        if (this.officialsSpendNext >= takeOff)
+                                        {
+                                            // subtract takeOff from spend
+                                            this.officialsSpendNext -= takeOff;
+                                            // subtract takeOff from remaining difference
+                                            differenceNew -= takeOff;
+                                        }
+                                        // if is less in spend than takeOff amount
+                                        else
+                                        {
+                                            // subtract spend from remaining difference
+                                            differenceNew -= this.officialsSpendNext;
+                                            // reduce spend to 0
+                                            this.officialsSpendNext = 0;
+                                        }
+                                        // check to see if is any difference remaining 
+                                        if (differenceNew == 0)
+                                        {
+                                            // if no remaining difference, signal exit from do while loop
+                                            finished = true;
+                                        }
                                     }
                                 }
                                 break;
                             case "garr":
-                                if (!(difference < takeOff))
+                                if (!finished)
                                 {
-                                    if (this.garrisonSpendNext >= takeOff)
+                                    // calculate amount by which spend needs to be reduced
+                                    reduceBy = (double)difference * reduceByModifierGarr;
+                                    // round up if < 1
+                                    if ((reduceBy < 1) || (reduceBy == 1))
                                     {
-                                        this.garrisonSpendNext -= takeOff;
-                                        difference -= takeOff;
+                                        takeOff = 1;
                                     }
-                                    else
+                                    // round down if > 1
+                                    else if (reduceBy > 1)
                                     {
-                                        difference -= this.garrisonSpendNext;
-                                        this.garrisonSpendNext = 0;
+                                        takeOff = Convert.ToUInt32(Math.Truncate(reduceBy));
                                     }
-                                    if (difference == 0)
+                                    System.Windows.Forms.MessageBox.Show("difference: " + difference + "\r\ngarrSpend: " + this.garrisonSpendNext + "\r\ntotSpend: " + totalSpend + "\r\nreduceByModifierGarr: " + reduceByModifierGarr + "\r\nreduceBy: " + reduceBy + "\r\ntakeOff: " + takeOff);
+
+                                    if (!(differenceNew < takeOff))
                                     {
-                                        finished = true;
+                                        if (this.garrisonSpendNext >= takeOff)
+                                        {
+                                            this.garrisonSpendNext -= takeOff;
+                                            differenceNew -= takeOff;
+                                        }
+                                        else
+                                        {
+                                            differenceNew -= this.garrisonSpendNext;
+                                            this.garrisonSpendNext = 0;
+                                        }
+                                        if (differenceNew == 0)
+                                        {
+                                            finished = true;
+                                        }
                                     }
                                 }
                                 break;
                             case "inf":
-                                if (!(difference < takeOff))
+                                if (!finished)
                                 {
-                                    if (this.infrastructureSpendNext >= takeOff)
+                                    // calculate amount by which spend needs to be reduced
+                                    reduceBy = (double)difference * reduceByModifierInf;
+                                    // round up if < 1
+                                    if ((reduceBy < 1) || (reduceBy == 1))
                                     {
-                                        this.infrastructureSpendNext -= takeOff;
-                                        difference -= takeOff;
+                                        takeOff = 1;
                                     }
-                                    else
+                                    // round down if > 1
+                                    else if (reduceBy > 1)
                                     {
-                                        difference -= this.infrastructureSpendNext;
-                                        this.infrastructureSpendNext = 0;
+                                        takeOff = Convert.ToUInt32(Math.Truncate(reduceBy));
                                     }
-                                    if (difference == 0)
+                                    System.Windows.Forms.MessageBox.Show("difference: " + difference + "\r\ninfSpend: " + this.infrastructureSpendNext + "\r\ntotSpend: " + totalSpend + "\r\nreduceByModifierInf: " + reduceByModifierInf + "\r\nreduceBy: " + reduceBy + "\r\ntakeOff: " + takeOff);
+
+                                    if (!(differenceNew < takeOff))
                                     {
-                                        finished = true;
+                                        if (this.infrastructureSpendNext >= takeOff)
+                                        {
+                                            this.infrastructureSpendNext -= takeOff;
+                                            differenceNew -= takeOff;
+                                        }
+                                        else
+                                        {
+                                            differenceNew -= this.infrastructureSpendNext;
+                                            this.infrastructureSpendNext = 0;
+                                        }
+                                        if (differenceNew == 0)
+                                        {
+                                            finished = true;
+                                        }
                                     }
                                 }
                                 break;
                             case "keep":
-                                if (!(difference < takeOff))
+                                if (!finished)
                                 {
-                                    if (this.keepSpendNext >= takeOff)
+                                    // calculate amount by which spend needs to be reduced
+                                    reduceBy = (double)difference * reduceByModifierKeep;
+                                    // round up if < 1
+                                    if ((reduceBy < 1) || (reduceBy == 1))
                                     {
-                                        this.keepSpendNext -= takeOff;
-                                        difference -= takeOff;
+                                        takeOff = 1;
                                     }
-                                    else
+                                    // round down if > 1
+                                    else if (reduceBy > 1)
                                     {
-                                        difference -= this.keepSpendNext;
-                                        this.keepSpendNext = 0;
+                                        takeOff = Convert.ToUInt32(Math.Truncate(reduceBy));
                                     }
-                                    if (difference == 0)
+                                    System.Windows.Forms.MessageBox.Show("difference: " + difference + "\r\nkeepSpend: " + this.keepSpendNext + "\r\ntotSpend: " + totalSpend + "\r\nreduceByModifierKeep: " + reduceByModifierKeep + "\r\nreduceBy: " + reduceBy + "\r\ntakeOff: " + takeOff);
+
+                                    if (!(differenceNew < takeOff))
                                     {
-                                        finished = true;
+                                        if (this.keepSpendNext >= takeOff)
+                                        {
+                                            this.keepSpendNext -= takeOff;
+                                            differenceNew -= takeOff;
+                                        }
+                                        else
+                                        {
+                                            differenceNew -= this.keepSpendNext;
+                                            this.keepSpendNext = 0;
+                                        }
+                                        if (differenceNew == 0)
+                                        {
+                                            finished = true;
+                                        }
                                     }
                                 }
                                break;
@@ -1110,10 +1177,10 @@ namespace hist_mmorpg
             int availTreasury = this.treasury - Convert.ToInt32(this.calcOlordTaxes("next"));
 
             // if there are funds in the treasury
-            if (this.treasury > 0)
+            if (availTreasury > 0)
             {
                 // expenditure should not exceed treasury
-                if (totalSpend > this.treasury)
+                if (totalSpend > availTreasury)
                 {
                     spendLevelOK = false;
                 }
