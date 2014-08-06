@@ -187,9 +187,12 @@ namespace hist_mmorpg
 		/// </summary>
 		public void initialLoad()
 		{
+            // create Journals for GameClock
+            Journal myScheduledJournal = new Journal();
+            Journal myPastJournal = new Journal();
 
-            // creat GameClock
-			GameClock myGameClock = new GameClock("clock001", 1320);
+            // create GameClock
+            GameClock myGameClock = new GameClock("clock001", 1320, myScheduledJournal, myPastJournal);
 			this.clock = myGameClock;
 
 			// create skills
@@ -432,15 +435,15 @@ namespace hist_mmorpg
             // create Random for use with generating skill sets for Characters
             Random myRand = new Random();
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", myDob001, true, "Fr", 1.0, 8.50, 6.0, myGoTo1, myLang1, 90, 4.0, 7.2, 6.1, generateSkillSet(myRand), false, true, false, "200", "403", "", false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", myDob001, true, "Fr", 1.0, 8.50, 9.0, myGoTo1, myLang1, 90, 4.0, 7.2, 6.1, generateSkillSet(myRand), false, true, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", myDob002, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, myLang1, 90, 4.0, 5.0, 4.5, generateSkillSet(myRand), false, false, false, "200", "", "", false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", myDob002, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, myLang1, 90, 4.0, 5.0, 4.5, generateSkillSet(myRand), false, false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", myDob003, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, myLang1, 90, 4.0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", myDob003, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, myLang1, 90, 4.0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, null, null, null, 0, false, cl: this.clock, loc: myFief1);
 			npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", myDob004, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, myLang1, 90, 4.0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, "200", "", "", 10000, true, mb: myChar1.charID, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", myDob004, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, myLang1, 90, 4.0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, null, null, null, 10000, true, mb: myChar1.charID, cl: this.clock, loc: myFief1, funct: "Unspecified");
 			npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", myDob005, false, "Eng", 1.0, 8.50, 6.0, myGoTo5, myLang2, 90, 4.0, 4.0, 6.0, generateSkillSet(myRand), false, true, true, "200", "", "", 0, false, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", myDob005, false, "Eng", 1.0, 8.50, 9.0, myGoTo5, myLang2, 90, 4.0, 4.0, 6.0, generateSkillSet(myRand), false, true, false, "101", "101", null, 0, false, cl: this.clock, loc: myFief1, funct: "Wife");
 			npcMasterList.Add(myWife.charID, myWife);
 
 			// set fief owners
@@ -477,6 +480,8 @@ namespace hist_mmorpg
             myChar1.hireNPC(myNPC2, 12000);
 			// set employee as travelling companion
 			myChar1.addToEntourage(myNPC2);
+            // add wife to myNPCs
+            myChar1.myNPCs.Add(myWife);
 
 			// Add fiefs to list of fiefs owned 
 			myChar1.addToOwnedFiefs(myFief1);
@@ -1376,11 +1381,11 @@ namespace hist_mmorpg
 			}
 
 			// insert employees
-			if (pcr.employees.Count > 0)
+			if (pcr.myNPCs.Count > 0)
 			{
-				for (int i = 0; i < pcr.employees.Count; i++)
+				for (int i = 0; i < pcr.myNPCs.Count; i++)
 				{
-                    pcOut.employees.Add (npcMasterList[pcr.employees[i]]);
+                    pcOut.myNPCs.Add (npcMasterList[pcr.myNPCs[i]]);
 				}
 			}
 
@@ -2163,11 +2168,11 @@ namespace hist_mmorpg
             if (ch is NonPlayerCharacter)
             {
                 // iterate through employees checking for character
-                for (int i = 0; i < this.myChar.employees.Count; i++)
+                for (int i = 0; i < this.myChar.myNPCs.Count; i++)
                 {
-                    if (this.myChar.employees[i] == ch)
+                    if (this.myChar.myNPCs[i] == ch)
                     {
-                        if (this.myChar.employees[i].inEntourage)
+                        if (this.myChar.myNPCs[i].inEntourage)
                         {
                             isCompanion = true;
                         }
@@ -2201,25 +2206,25 @@ namespace hist_mmorpg
             // clear existing items in characters list
             this.houseCharListView.Items.Clear();
 
-            // iterates through characters
-            for (int i = 0; i < this.myChar.employees.Count; i++)
+            // iterates through household characters
+            for (int i = 0; i < this.myChar.myNPCs.Count; i++)
             {
                 ListViewItem houseChar = null;
 
                 // name
-                houseChar = new ListViewItem(this.myChar.employees[i].name);
+                houseChar = new ListViewItem(this.myChar.myNPCs[i].name);
 
                 // charID
-                houseChar.SubItems.Add(this.myChar.employees[i].charID);
+                houseChar.SubItems.Add(this.myChar.myNPCs[i].charID);
 
-                // TODO: Function (e.g. NPC, Son, etc.)
-                houseChar.SubItems.Add("A function");
+                // Function (i.e. employee's job, family member's role)
+                houseChar.SubItems.Add(this.myChar.myNPCs[i].function);
 
                 // location
-                houseChar.SubItems.Add(this.myChar.employees[i].location.fiefID + " (" + this.myChar.employees[i].location.name + ")");
+                houseChar.SubItems.Add(this.myChar.myNPCs[i].location.fiefID + " (" + this.myChar.myNPCs[i].location.name + ")");
 
                 // show whether is in player's entourage
-                if (this.myChar.employees[i].inEntourage)
+                if (this.myChar.myNPCs[i].inEntourage)
                 {
                     houseChar.SubItems.Add("Yes");
                 }
@@ -2227,7 +2232,7 @@ namespace hist_mmorpg
                 if (houseChar != null)
                 {
                     // if NPC passed in as parameter, show as selected
-                    if (this.myChar.employees[i] == npc)
+                    if (this.myChar.myNPCs[i] == npc)
                     {
                         houseChar.Selected = true;
                     }
@@ -2407,9 +2412,9 @@ namespace hist_mmorpg
 
             // head of family
             charText += "Head of family's ID: ";
-            if (ch.familyHead != null)
+            if (ch.familyID != null)
             {
-                charText += ch.familyHead;
+                charText += ch.familyID;
             }
             else
             {
@@ -2453,10 +2458,10 @@ namespace hist_mmorpg
 
             // employees
             pcText += "Employees:\r\n";
-            for (int i = 0; i < pc.employees.Count; i++)
+            for (int i = 0; i < pc.myNPCs.Count; i++)
             {
-                pcText += "  - " + pc.employees[i].name;
-                if (pc.employees[i].inEntourage)
+                pcText += "  - " + pc.myNPCs[i].name;
+                if (pc.myNPCs[i].inEntourage)
                 {
                     pcText += " (travelling companion)";
                 }
@@ -2566,6 +2571,18 @@ namespace hist_mmorpg
 
             // current salary
             npcText += "Current salary: " + npc.wage + "\r\n";
+
+            // function
+            if (npc.function != null)
+            {
+                npcText += "Function: " + npc.function;
+            }
+            else
+            {
+                npcText += "Function: N/A";
+            }
+            npcText += "\r\n";
+
 
             return npcText;
         }
@@ -2802,7 +2819,7 @@ namespace hist_mmorpg
             // multimove button only enabled if is player or an employee
             if (ch != this.myChar)
 			{
-                if (!this.myChar.employees.Contains(ch))
+                if (!this.myChar.myNPCs.Contains(ch))
 				{
 					this.travelMultiMoveBtn.Enabled = false;
 				}
@@ -3444,7 +3461,7 @@ namespace hist_mmorpg
 
                         // set appropriate text for hire/fire button, 
                         // depending on whether is existing employee
-                        if (this.myChar.employees.Contains(this.fiefToView.characters[i]))
+                        if (this.myChar.myNPCs.Contains(this.fiefToView.characters[i]))
                         {
                             this.hireNPC_Btn.Text = "Fire NPC";
                             // if already employee, disable 'salary offer' text box
@@ -3489,7 +3506,7 @@ namespace hist_mmorpg
             String place = Convert.ToString(((Button)sender).Tag);
 
             // if selected NPC is not a current employee
-            if (!this.myChar.employees.Contains(charToView))
+            if (!this.myChar.myNPCs.Contains(charToView))
             {
                 try
                 {
@@ -3808,14 +3825,14 @@ namespace hist_mmorpg
             Character charToDisplay = null;
 
             // loop through the characters in employees
-            for (int i = 0; i < this.myChar.employees.Count; i++)
+            for (int i = 0; i < this.myChar.myNPCs.Count; i++)
             {
                 if (this.houseCharListView.SelectedItems.Count > 0)
                 {
                     // find matching character
-                    if (this.myChar.employees[i].charID.Equals(this.houseCharListView.SelectedItems[0].SubItems[1].Text))
+                    if (this.myChar.myNPCs[i].charID.Equals(this.houseCharListView.SelectedItems[0].SubItems[1].Text))
                     {
-                        charToDisplay = this.myChar.employees[i];
+                        charToDisplay = this.myChar.myNPCs[i];
                         break;
                     }
 
@@ -3934,13 +3951,13 @@ namespace hist_mmorpg
                     if (entourageCamp)
                     {
                         // iterate through employees to locate entourage
-                        for (int i = 0; i < this.myChar.employees.Count; i++ )
+                        for (int i = 0; i < this.myChar.myNPCs.Count; i++ )
                         {
-                            if (this.myChar.employees[i].inEntourage)
+                            if (this.myChar.myNPCs[i].inEntourage)
                             {
-                                if (this.myChar.employees[i] != ch)
+                                if (this.myChar.myNPCs[i] != ch)
                                 {
-                                    this.myChar.employees[i].days = this.myChar.employees[i].days - campDays;
+                                    this.myChar.myNPCs[i].days = this.myChar.myNPCs[i].days - campDays;
                                 }
                             }
                         }
@@ -3975,15 +3992,15 @@ namespace hist_mmorpg
                         // if not, check for bailiff in entourage
                         else
                         {
-                            for (int i = 0; i < this.myChar.employees.Count; i++)
+                            for (int i = 0; i < this.myChar.myNPCs.Count; i++)
                             {
-                                if (this.myChar.employees[i].inEntourage)
+                                if (this.myChar.myNPCs[i].inEntourage)
                                 {
-                                    if (this.myChar.employees[i] != ch)
+                                    if (this.myChar.myNPCs[i] != ch)
                                     {
-                                        if (this.myChar.employees[i] == ch.location.bailiff)
+                                        if (this.myChar.myNPCs[i] == ch.location.bailiff)
                                         {
-                                            myBailiff = this.myChar.employees[i];
+                                            myBailiff = this.myChar.myNPCs[i];
                                         }
                                     }
                                 }
@@ -4175,6 +4192,32 @@ namespace hist_mmorpg
             to.treasury = to.treasury + amount;
             // refresh fief display
             this.refreshFiefContainer(this.fiefToView);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the familyGetSpousePregBt button
+        /// calling the Character.getSpousePregnant method,
+        /// allowing players to attempt to get their spouse pregnant
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void familyGetSpousePregBtn_Click(object sender, EventArgs e)
+        {
+            // get spouse
+            NonPlayerCharacter mySpouse = this.npcMasterList[this.myChar.spouse];
+            // attempt pregnancy
+            bool pregnant = this.myChar.getSpousePregnant(mySpouse);
+
+            // test event scheduled in clock
+            List<JournalEvent> myEvents = new List<JournalEvent>();
+            myEvents = this.clock.scheduledEvents.getEventsOnDate();
+            if (myEvents.Count > 0)
+            {
+                foreach (JournalEvent jEvent in myEvents)
+                {
+                    System.Windows.Forms.MessageBox.Show("Year: " + jEvent.year + " | Season: " + jEvent.season + " | Who: " + jEvent.personae + " | What: " + jEvent.type);
+                }
+            }
         }
 
     }

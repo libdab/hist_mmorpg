@@ -117,6 +117,8 @@ namespace hist_mmorpg
             this.houseCharListContainer = new System.Windows.Forms.SplitContainer();
             this.houseCharListLabel = new System.Windows.Forms.Label();
             this.houseCharListView = new System.Windows.Forms.ListView();
+            this.label3 = new System.Windows.Forms.Label();
+            this.familyGetSpousePregBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -173,7 +175,7 @@ namespace hist_mmorpg
             this.householdToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(801, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(935, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -235,14 +237,14 @@ namespace hist_mmorpg
             this.householdToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.dealWithHouseholdAffairsToolStripMenuItem});
             this.householdToolStripMenuItem.Name = "householdToolStripMenuItem";
-            this.householdToolStripMenuItem.Size = new System.Drawing.Size(77, 20);
-            this.householdToolStripMenuItem.Text = "Household";
+            this.householdToolStripMenuItem.Size = new System.Drawing.Size(138, 20);
+            this.householdToolStripMenuItem.Text = "Family and Household";
             // 
             // dealWithHouseholdAffairsToolStripMenuItem
             // 
             this.dealWithHouseholdAffairsToolStripMenuItem.Name = "dealWithHouseholdAffairsToolStripMenuItem";
-            this.dealWithHouseholdAffairsToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.dealWithHouseholdAffairsToolStripMenuItem.Text = "Deal with household affairs";
+            this.dealWithHouseholdAffairsToolStripMenuItem.Size = new System.Drawing.Size(319, 22);
+            this.dealWithHouseholdAffairsToolStripMenuItem.Text = "Deal with family matters and household affairs";
             this.dealWithHouseholdAffairsToolStripMenuItem.Click += new System.EventHandler(this.dealWithHouseholdAffairsToolStripMenuItem_Click);
             // 
             // characterContainer
@@ -259,8 +261,8 @@ namespace hist_mmorpg
             // characterContainer.Panel2
             // 
             this.characterContainer.Panel2.Controls.Add(this.characterTextBox);
-            this.characterContainer.Size = new System.Drawing.Size(801, 637);
-            this.characterContainer.SplitterDistance = 264;
+            this.characterContainer.Size = new System.Drawing.Size(935, 637);
+            this.characterContainer.SplitterDistance = 308;
             this.characterContainer.TabIndex = 2;
             // 
             // characterTitlesCheckBox
@@ -291,7 +293,7 @@ namespace hist_mmorpg
             this.characterTextBox.Multiline = true;
             this.characterTextBox.Name = "characterTextBox";
             this.characterTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.characterTextBox.Size = new System.Drawing.Size(533, 637);
+            this.characterTextBox.Size = new System.Drawing.Size(623, 637);
             this.characterTextBox.TabIndex = 0;
             // 
             // fiefContainer
@@ -334,8 +336,8 @@ namespace hist_mmorpg
             // fiefContainer.Panel2
             // 
             this.fiefContainer.Panel2.Controls.Add(this.fiefTextBox);
-            this.fiefContainer.Size = new System.Drawing.Size(801, 637);
-            this.fiefContainer.SplitterDistance = 317;
+            this.fiefContainer.Size = new System.Drawing.Size(935, 637);
+            this.fiefContainer.SplitterDistance = 370;
             this.fiefContainer.TabIndex = 3;
             // 
             // label2
@@ -593,7 +595,7 @@ namespace hist_mmorpg
             this.fiefTextBox.Multiline = true;
             this.fiefTextBox.Name = "fiefTextBox";
             this.fiefTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.fiefTextBox.Size = new System.Drawing.Size(480, 637);
+            this.fiefTextBox.Size = new System.Drawing.Size(561, 637);
             this.fiefTextBox.TabIndex = 0;
             // 
             // travelContainer
@@ -620,8 +622,8 @@ namespace hist_mmorpg
             // travelContainer.Panel2
             // 
             this.travelContainer.Panel2.Controls.Add(this.travelNavigationPanel);
-            this.travelContainer.Size = new System.Drawing.Size(801, 637);
-            this.travelContainer.SplitterDistance = 266;
+            this.travelContainer.Size = new System.Drawing.Size(935, 637);
+            this.travelContainer.SplitterDistance = 310;
             this.travelContainer.TabIndex = 4;
             // 
             // travelRouteTextBox
@@ -832,8 +834,8 @@ namespace hist_mmorpg
             // fiefsOwnedContainer.Panel2
             // 
             this.fiefsOwnedContainer.Panel2.Controls.Add(this.fiefsListView);
-            this.fiefsOwnedContainer.Size = new System.Drawing.Size(801, 661);
-            this.fiefsOwnedContainer.SplitterDistance = 266;
+            this.fiefsOwnedContainer.Size = new System.Drawing.Size(935, 661);
+            this.fiefsOwnedContainer.SplitterDistance = 310;
             this.fiefsOwnedContainer.TabIndex = 5;
             // 
             // fiefsListView
@@ -843,7 +845,7 @@ namespace hist_mmorpg
             this.fiefsListView.GridLines = true;
             this.fiefsListView.Location = new System.Drawing.Point(0, 0);
             this.fiefsListView.Name = "fiefsListView";
-            this.fiefsListView.Size = new System.Drawing.Size(531, 661);
+            this.fiefsListView.Size = new System.Drawing.Size(621, 661);
             this.fiefsListView.TabIndex = 0;
             this.fiefsListView.UseCompatibleStateImageBehavior = false;
             this.fiefsListView.View = System.Windows.Forms.View.Details;
@@ -863,8 +865,8 @@ namespace hist_mmorpg
             // meetingPlaceContainer.Panel2
             // 
             this.meetingPlaceContainer.Panel2.Controls.Add(this.meetingPlaceCharsContainer);
-            this.meetingPlaceContainer.Size = new System.Drawing.Size(801, 637);
-            this.meetingPlaceContainer.SplitterDistance = 214;
+            this.meetingPlaceContainer.Size = new System.Drawing.Size(935, 637);
+            this.meetingPlaceContainer.SplitterDistance = 249;
             this.meetingPlaceContainer.TabIndex = 6;
             // 
             // hireNPC_TextBox
@@ -897,8 +899,8 @@ namespace hist_mmorpg
             // meetingPlaceCharsContainer.Panel2
             // 
             this.meetingPlaceCharsContainer.Panel2.Controls.Add(this.meetingPlaceCharsListContainer);
-            this.meetingPlaceCharsContainer.Size = new System.Drawing.Size(583, 637);
-            this.meetingPlaceCharsContainer.SplitterDistance = 234;
+            this.meetingPlaceCharsContainer.Size = new System.Drawing.Size(682, 637);
+            this.meetingPlaceCharsContainer.SplitterDistance = 273;
             this.meetingPlaceCharsContainer.TabIndex = 0;
             // 
             // meetingPlaceCharDisplayTextBox
@@ -907,7 +909,7 @@ namespace hist_mmorpg
             this.meetingPlaceCharDisplayTextBox.Location = new System.Drawing.Point(0, 0);
             this.meetingPlaceCharDisplayTextBox.Multiline = true;
             this.meetingPlaceCharDisplayTextBox.Name = "meetingPlaceCharDisplayTextBox";
-            this.meetingPlaceCharDisplayTextBox.Size = new System.Drawing.Size(234, 637);
+            this.meetingPlaceCharDisplayTextBox.Size = new System.Drawing.Size(273, 637);
             this.meetingPlaceCharDisplayTextBox.TabIndex = 0;
             // 
             // meetingPlaceCharsListContainer
@@ -924,7 +926,7 @@ namespace hist_mmorpg
             // meetingPlaceCharsListContainer.Panel2
             // 
             this.meetingPlaceCharsListContainer.Panel2.Controls.Add(this.meetingPlaceCharsListView);
-            this.meetingPlaceCharsListContainer.Size = new System.Drawing.Size(345, 637);
+            this.meetingPlaceCharsListContainer.Size = new System.Drawing.Size(405, 637);
             this.meetingPlaceCharsListContainer.SplitterDistance = 200;
             this.meetingPlaceCharsListContainer.TabIndex = 0;
             // 
@@ -942,7 +944,7 @@ namespace hist_mmorpg
             // meetingPlaceTextBoxContainer.Panel2
             // 
             this.meetingPlaceTextBoxContainer.Panel2.Controls.Add(this.meetingPlaceTextBox);
-            this.meetingPlaceTextBoxContainer.Size = new System.Drawing.Size(345, 200);
+            this.meetingPlaceTextBoxContainer.Size = new System.Drawing.Size(405, 200);
             this.meetingPlaceTextBoxContainer.SplitterDistance = 100;
             this.meetingPlaceTextBoxContainer.TabIndex = 1;
             // 
@@ -962,7 +964,7 @@ namespace hist_mmorpg
             this.meetingPlaceTextBox.Location = new System.Drawing.Point(0, 0);
             this.meetingPlaceTextBox.Multiline = true;
             this.meetingPlaceTextBox.Name = "meetingPlaceTextBox";
-            this.meetingPlaceTextBox.Size = new System.Drawing.Size(345, 96);
+            this.meetingPlaceTextBox.Size = new System.Drawing.Size(405, 96);
             this.meetingPlaceTextBox.TabIndex = 0;
             // 
             // meetingPlaceCharsListView
@@ -972,7 +974,7 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListView.GridLines = true;
             this.meetingPlaceCharsListView.Location = new System.Drawing.Point(0, 0);
             this.meetingPlaceCharsListView.Name = "meetingPlaceCharsListView";
-            this.meetingPlaceCharsListView.Size = new System.Drawing.Size(345, 433);
+            this.meetingPlaceCharsListView.Size = new System.Drawing.Size(405, 433);
             this.meetingPlaceCharsListView.TabIndex = 0;
             this.meetingPlaceCharsListView.UseCompatibleStateImageBehavior = false;
             this.meetingPlaceCharsListView.View = System.Windows.Forms.View.Details;
@@ -986,6 +988,8 @@ namespace hist_mmorpg
             // 
             // houseContainer.Panel1
             // 
+            this.houseContainer.Panel1.Controls.Add(this.familyGetSpousePregBtn);
+            this.houseContainer.Panel1.Controls.Add(this.label3);
             this.houseContainer.Panel1.Controls.Add(this.houseCampDaysLabel);
             this.houseContainer.Panel1.Controls.Add(this.houseCampDaysTextBox);
             this.houseContainer.Panel1.Controls.Add(this.houseCampForLabel);
@@ -994,8 +998,8 @@ namespace hist_mmorpg
             // houseContainer.Panel2
             // 
             this.houseContainer.Panel2.Controls.Add(this.houseCharContainer);
-            this.houseContainer.Size = new System.Drawing.Size(801, 637);
-            this.houseContainer.SplitterDistance = 222;
+            this.houseContainer.Size = new System.Drawing.Size(935, 637);
+            this.houseContainer.SplitterDistance = 259;
             this.houseContainer.TabIndex = 7;
             // 
             // houseCampDaysLabel
@@ -1047,8 +1051,8 @@ namespace hist_mmorpg
             // houseCharContainer.Panel2
             // 
             this.houseCharContainer.Panel2.Controls.Add(this.houseCharListContainer);
-            this.houseCharContainer.Size = new System.Drawing.Size(575, 637);
-            this.houseCharContainer.SplitterDistance = 282;
+            this.houseCharContainer.Size = new System.Drawing.Size(672, 637);
+            this.houseCharContainer.SplitterDistance = 329;
             this.houseCharContainer.TabIndex = 0;
             // 
             // houseCharTextBox
@@ -1057,7 +1061,7 @@ namespace hist_mmorpg
             this.houseCharTextBox.Location = new System.Drawing.Point(0, 0);
             this.houseCharTextBox.Multiline = true;
             this.houseCharTextBox.Name = "houseCharTextBox";
-            this.houseCharTextBox.Size = new System.Drawing.Size(282, 637);
+            this.houseCharTextBox.Size = new System.Drawing.Size(329, 637);
             this.houseCharTextBox.TabIndex = 0;
             // 
             // houseCharListContainer
@@ -1074,7 +1078,7 @@ namespace hist_mmorpg
             // houseCharListContainer.Panel2
             // 
             this.houseCharListContainer.Panel2.Controls.Add(this.houseCharListView);
-            this.houseCharListContainer.Size = new System.Drawing.Size(289, 637);
+            this.houseCharListContainer.Size = new System.Drawing.Size(339, 637);
             this.houseCharListContainer.SplitterDistance = 53;
             this.houseCharListContainer.TabIndex = 0;
             // 
@@ -1094,22 +1098,42 @@ namespace hist_mmorpg
             this.houseCharListView.FullRowSelect = true;
             this.houseCharListView.Location = new System.Drawing.Point(0, 0);
             this.houseCharListView.Name = "houseCharListView";
-            this.houseCharListView.Size = new System.Drawing.Size(289, 580);
+            this.houseCharListView.Size = new System.Drawing.Size(339, 580);
             this.houseCharListView.TabIndex = 0;
             this.houseCharListView.UseCompatibleStateImageBehavior = false;
             this.houseCharListView.View = System.Windows.Forms.View.Details;
             this.houseCharListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.houseCharListView_ItemSelectionChanged);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(39, 389);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(184, 13);
+            this.label3.TabIndex = 32;
+            this.label3.Text = "----------- Family Matters -----------";
+            // 
+            // familyGetSpousePregBtn
+            // 
+            this.familyGetSpousePregBtn.Location = new System.Drawing.Point(58, 417);
+            this.familyGetSpousePregBtn.Name = "familyGetSpousePregBtn";
+            this.familyGetSpousePregBtn.Size = new System.Drawing.Size(139, 22);
+            this.familyGetSpousePregBtn.TabIndex = 33;
+            this.familyGetSpousePregBtn.Text = "Get Your Wife With Child";
+            this.familyGetSpousePregBtn.UseVisualStyleBackColor = true;
+            this.familyGetSpousePregBtn.Click += new System.EventHandler(this.familyGetSpousePregBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(801, 661);
+            this.ClientSize = new System.Drawing.Size(935, 661);
+            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.meetingPlaceContainer);
-            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.MainMenuStrip = this.menuStrip1;
@@ -1267,6 +1291,8 @@ namespace hist_mmorpg
         private System.Windows.Forms.Label fiefHomeTreasLabel;
         private System.Windows.Forms.Label fiefTreasLabel;
         private System.Windows.Forms.Label fiefTreasTransferLabel;
+        private System.Windows.Forms.Button familyGetSpousePregBtn;
+        private System.Windows.Forms.Label label3;
 
     }
 }

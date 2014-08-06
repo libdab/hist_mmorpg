@@ -86,9 +86,9 @@ namespace hist_mmorpg
         /// </summary>
         public bool pregnant { get; set; }
         /// <summary>
-        /// Holds head of family (charID)
+        /// Holds charID of head of family with which character associated
         /// </summary>
-        public String familyHead { get; set; }
+        public String familyID { get; set; }
         /// <summary>
         /// Holds spouse (charID)
         /// </summary>
@@ -127,14 +127,14 @@ namespace hist_mmorpg
         /// <param name="inK">bool indicating if character is in the keep</param>
         /// <param name="marr">char holding character marital status</param>
         /// <param name="preg">bool holding character pregnancy status</param>
-        /// <param name="famHead">String holding head of family (ID)</param>
+        /// <param name="famID">String holding charID of head of family with which character associated</param>
         /// <param name="sp">String holding spouse (ID)</param>
         /// <param name="fath">String holding father</param>
         /// <param name="cl">GameClock holding season</param>
 		/// <param name="loc">Fief holding current location</param>
         public Character(string id, String nam, Tuple<uint, byte> dob, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg,
-            String famHead, String sp, String fath, GameClock cl = null, Fief loc = null)
+            String famID, String sp, String fath, GameClock cl = null, Fief loc = null)
         {
 
             // validation
@@ -233,7 +233,7 @@ namespace hist_mmorpg
 			this.location = loc;
             this.spouse = sp;
             this.father = fath;
-            this.familyHead = famHead;
+            this.familyID = famID;
         }
 
 		/// <summary>
@@ -285,9 +285,9 @@ namespace hist_mmorpg
 				{
 					this.father = charToUse.father;
 				}
-				if ((charToUse.familyHead != null) && (charToUse.familyHead.Length > 0))
+				if ((charToUse.familyID != null) && (charToUse.familyID.Length > 0))
 				{
-					this.familyHead = charToUse.familyHead;
+					this.familyID = charToUse.familyID;
 				}
 				this.clock = null;
 				this.location = null;
@@ -534,7 +534,151 @@ namespace hist_mmorpg
                 this.location.bailiffDaysInFief += bailiffDays;
             }
         }
-        
+
+        /// <summary>
+        /// Calculates whether character manages to get spouse pregnant
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="mySpouse">Character's spouse</param>
+        public bool getSpousePregnant(NonPlayerCharacter mySpouse)
+        {
+            bool success = false;
+
+            // make sure not already pregnant
+            if (mySpouse.pregnant)
+            {
+                System.Windows.Forms.MessageBox.Show(mySpouse.name + " is already pregnant, milord.  Don't be so impatient!", "PREGNANCY ATTEMPT CANCELLED");
+            }
+            else
+            {
+                // ensure player and spouse have at least 1 day remaining
+                double minDays = Math.Min(this.days, mySpouse.days);
+
+                if (minDays < 1)
+                {
+                    System.Windows.Forms.MessageBox.Show("Sorry, you don't have enough time left for this in the current season.", "PREGNANCY ATTEMPT CANCELLED");
+                }
+                else
+                {
+                    // ensure days are synchronised
+                    this.days = minDays;
+                    mySpouse.days = minDays;
+
+                    // generate random (0 - 100) to see if pregnancy successful
+                    Random rand = new Random();
+                    double randPercentage = rand.NextDouble() * 100;
+
+                    // holds chance of pregnancy based on age and virility
+                    int chanceOfPregnancy = 0;
+
+                    // holds pregnancy modifier based on virility
+                    double pregModifier = 0;
+
+                    // spouse's age
+                    byte spouseAge = mySpouse.calcCharAge();
+
+                    // calculate base chance of pregnancy, based on age of spouse
+                    if ((!(spouseAge < 14)) && (!(spouseAge > 55)))
+                    {
+                        if (spouseAge < 18)
+                        {
+                            chanceOfPregnancy = 8;
+                        }
+                        else if (spouseAge < 25)
+                        {
+                            chanceOfPregnancy = 10;
+                        }
+                        else if (spouseAge < 30)
+                        {
+                            chanceOfPregnancy = 8;
+                        }
+                        else if (spouseAge < 35)
+                        {
+                            chanceOfPregnancy = 6;
+                        }
+                        else if (spouseAge < 40)
+                        {
+                            chanceOfPregnancy = 5;
+                        }
+                        else if (spouseAge < 45)
+                        {
+                            chanceOfPregnancy = 4;
+                        }
+                        else if (spouseAge < 50)
+                        {
+                            chanceOfPregnancy = 2;
+                        }
+                        else if (spouseAge < 55)
+                        {
+                            chanceOfPregnancy = 1;
+                        }
+                    }
+
+                    // factor in effect of parent's virility
+                    // but only if within child-bearing age bracket (14 - 55)
+                    if ((!(spouseAge < 14)) && (!(spouseAge > 55)))
+                    {
+                        // modifier will be in range 0.4 - -0.4 depending on parent's virility
+                        // 1. get average parent virility
+                        pregModifier = (this.virility + mySpouse.virility) / 2;
+                        // 2. subtract 5 and divide by 10 to give final modifier
+                        pregModifier = (pregModifier - 5) / 10;
+
+                        // apply modifier to chanceOfPregnancy
+                        chanceOfPregnancy = chanceOfPregnancy + Convert.ToInt32(chanceOfPregnancy * pregModifier);
+                        if (chanceOfPregnancy < 0)
+                        {
+                            chanceOfPregnancy = 0;
+                        }
+                    }
+
+                    // compare chanceOfPregnancy with randPercentage to see if pregnancy successful
+                    if (chanceOfPregnancy > 0)
+                    {
+                        // if attempt successful
+                        if (randPercentage <= chanceOfPregnancy)
+                        {
+                            // set spouse as pregnant
+                            mySpouse.pregnant = true;
+
+                            // schedule birth in clock sheduledEvents
+                            uint birthYear = this.clock.currentYear;
+                            byte birthSeason = this.clock.currentSeason;
+                            if (this.clock.currentSeason == 0)
+                            {
+                                birthSeason = (byte)(birthSeason + 3);
+                            }
+                            else
+                            {
+                                birthSeason = (byte)(birthSeason - 1);
+                                birthYear = birthYear + 1;
+                            }
+                            JournalEvent birth = new JournalEvent(birthYear, birthSeason, mySpouse.charID, "birth");
+                            this.clock.scheduledEvents.events.Add(birth);
+
+                             // display message of celebration
+                            System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + mySpouse.name + " is pregnant!", "PREGNANCY SUCCESSFUL");
+                            success = true;
+                        }
+                        // if attempt not successful
+                        else
+                        {
+                            // display encouraging message
+                            System.Windows.Forms.MessageBox.Show("I'm afraid " + mySpouse.name + " is not pregnant.  Better luck next time, milord!", "PREGNANCY UNSUCCESSFUL");
+                        }
+                    }
+                    // if pregnancy impossible
+                    else
+                    {
+                        // give the player the bad news
+                        System.Windows.Forms.MessageBox.Show("Ahem ...\r\n\r\nUnfortunately, the fief physician advises that " + mySpouse.name + " will never get pregnant with her current partner", "PREGNANCY UNSUCCESSFUL");
+                    }
+                }
+            }
+
+            return success;
+        }
+
         /// <summary>
         /// Updates character data at the end/beginning of the season
         /// </summary>
@@ -578,9 +722,9 @@ namespace hist_mmorpg
         /// </summary>
         public uint purse { get; set; }
         /// <summary>
-        /// Holds character's employees (NonPlayerCharacter objects)
+        /// Holds character's employees and family (NonPlayerCharacter objects)
         /// </summary>
-        public List<NonPlayerCharacter> employees = new List<NonPlayerCharacter>();
+        public List<NonPlayerCharacter> myNPCs = new List<NonPlayerCharacter>();
         /// <summary>
         /// Holds character's owned fiefs
         /// </summary>
@@ -599,19 +743,19 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="outl">bool holding character outlawed status</param>
         /// <param name="pur">uint holding character purse</param>
-        /// <param name="emp">List<NonPlayerCharacter> holding employees of character</param>
+        /// <param name="npcs">List<NonPlayerCharacter> holding employees and family of character</param>
         /// <param name="kps">List<Fief> holding fiefs owned by character</param>
         /// <param name="home">String holding character's home fief (fiefID)</param>
         /// <param name="anchome">String holding character's ancestral home fief (fiefID)</param>
         public PlayerCharacter(string id, String nam, Tuple<uint, byte> dob, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
-            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> emp, List<Fief> kps, String home, String ancHome,GameClock cl = null, Fief loc = null)
+            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> kps, String home, String ancHome,GameClock cl = null, Fief loc = null)
             : base(id, nam, dob, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
         {
 
             this.outlawed = outl;
             this.purse = pur;
-            this.employees = emp;
+            this.myNPCs = npcs;
             this.ownedFiefs = kps;
             this.homeFief = home;
             this.ancestralHomeFief = ancHome;
@@ -637,7 +781,7 @@ namespace hist_mmorpg
 			this.outlawed = pcr.outlawed;
 			this.purse = pcr.purse;
             // create empty List, to be populated later
-			this.employees = new List<NonPlayerCharacter> ();
+			this.myNPCs = new List<NonPlayerCharacter> ();
             // create empty List, to be populated later
             this.ownedFiefs = new List<Fief>();
             this.homeFief = pcr.homeFief;
@@ -760,11 +904,13 @@ namespace hist_mmorpg
         public void hireNPC(NonPlayerCharacter npc, uint wage)
         {
             // add to employee list
-            this.employees.Add(npc);
+            this.myNPCs.Add(npc);
             // set NPC wage
             npc.wage = wage;
             // set this PC as NPC's boss
             npc.myBoss = this.charID;
+            // set employee's initial function
+            npc.function = "Unspecified";
             // remove any offers by this PC from NPCs lastOffer list
             npc.lastOffer.Clear();
         }
@@ -776,13 +922,15 @@ namespace hist_mmorpg
         public void fireNPC(NonPlayerCharacter npc)
         {
             // remove from employee list
-            this.employees.Remove(npc);
+            this.myNPCs.Remove(npc);
             // set NPC wage to 0
             npc.wage = 0;
             // remove this PC as NPC's boss
             npc.myBoss = null;
             // remove NPC from entourage
             npc.inEntourage = false;
+            // remove function
+            npc.function = null;
             // if NPC has entries in goTo, clear
             if (npc.goTo.Count > 0)
             {
@@ -805,7 +953,7 @@ namespace hist_mmorpg
             // keep track of original days value for PC
             double myDays = this.days;
 
-            // ensure days is set to lesser of PC/NPC days
+            // ensure days are synchronised
             double minDays = Math.Min(this.days, npc.days);
             this.days = minDays;
             npc.days = minDays;
@@ -816,11 +964,11 @@ namespace hist_mmorpg
             // ensure days of entourage are synched with PC
             if (this.days != myDays)
             {
-                for (int i = 0; i < this.employees.Count; i++)
+                for (int i = 0; i < this.myNPCs.Count; i++)
                 {
-                    if (this.employees[i].inEntourage)
+                    if (this.myNPCs[i].inEntourage)
                     {
-                        this.employees[i].days = this.days;
+                        this.myNPCs[i].days = this.days;
                     }
                 }
             }
@@ -871,14 +1019,14 @@ namespace hist_mmorpg
             if (success)
             {
                 // iterate through employees
-                for (int i = 0; i < this.employees.Count; i++)
+                for (int i = 0; i < this.myNPCs.Count; i++)
                 {
                     // if employee in entourage, allow to enter keep unless individually barred
-                    if (this.employees[i].inEntourage)
+                    if (this.myNPCs[i].inEntourage)
                     {
-                        if (location.barredCharacters.Contains(this.employees[i].charID))
+                        if (location.barredCharacters.Contains(this.myNPCs[i].charID))
                         {
-                            this.employees[i].inKeep = false;
+                            this.myNPCs[i].inKeep = false;
                             String toDisplay = "";
                             toDisplay += "Bailiff: One or more of your entourage is barred from entering this keep!";
                             toDisplay += "\r\nThey will rejoin you after your visit.";
@@ -886,7 +1034,7 @@ namespace hist_mmorpg
                         }
                         else
                         {
-                            this.employees[i].inKeep = true;
+                            this.myNPCs[i].inKeep = true;
                         }
                     }
 
@@ -907,12 +1055,12 @@ namespace hist_mmorpg
             base.exitKeep();
 
             // iterate through employees
-            for (int i = 0; i < this.employees.Count; i++)
+            for (int i = 0; i < this.myNPCs.Count; i++)
             {
                 // if employee in entourage, exit keep
-                if (this.employees[i].inEntourage)
+                if (this.myNPCs[i].inEntourage)
                 {
-                    this.employees[i].inKeep = false;
+                    this.myNPCs[i].inKeep = false;
                 }
             }
         }
@@ -933,12 +1081,12 @@ namespace hist_mmorpg
             if (success)
             {
                 // iterate through employees
-                for (int i = 0; i < this.employees.Count; i++)
+                for (int i = 0; i < this.myNPCs.Count; i++)
                 {
                     // if employee in entourage, move employee
-                    if (this.employees[i].inEntourage)
+                    if (this.myNPCs[i].inEntourage)
                     {
-                        this.employees[i].moveCharacter(target, cost);
+                        this.myNPCs[i].moveCharacter(target, cost);
                     }
                 }
             }
@@ -971,6 +1119,10 @@ namespace hist_mmorpg
         /// Denotes if in employer's entourage
         /// </summary>
         public bool inEntourage { get; set; }
+        /// <summary>
+        /// Holds NPC's family or employee function
+        /// </summary>
+        public String function { get; set; }
 
         /// <summary>
         /// Constructor for NonPlayerCharacter
@@ -978,9 +1130,10 @@ namespace hist_mmorpg
         /// <param name="mb">String holding NPC's employer (charID)</param>
         /// <param name="wa">string holding NPC's wage</param>
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
+        /// <param name="funct">string holding NPC's family or employee function</param>
         public NonPlayerCharacter(String id, String nam, Tuple<uint, byte> dob, bool isM, String nat, Double hea, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
-            String sp, String fath, uint wa, bool inEnt, String mb = null, GameClock cl = null, Fief loc = null)
+            String sp, String fath, uint wa, bool inEnt, String mb = null, GameClock cl = null, Fief loc = null, String funct = null)
             : base(id, nam, dob, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
         {
             // TODO: validate hb = 1-10000
@@ -991,6 +1144,7 @@ namespace hist_mmorpg
             this.wage = wa;
             this.inEntourage = inEnt;
             this.lastOffer = new Dictionary<string, uint>();
+            this.function = funct;
         }
 
         /// <summary>
@@ -1016,6 +1170,7 @@ namespace hist_mmorpg
 			this.wage = npcr.wage;
 			this.inEntourage = npcr.inEntourage;
 			this.lastOffer = npcr.lastOffer;
+            this.function = npcr.function;
 		}
 
         /// <summary>
@@ -1170,9 +1325,9 @@ namespace hist_mmorpg
 		/// </summary>
 		public String father { get; set; }
 		/// <summary>
-		/// Holds head of family (Character ID)
+        /// Holds charID of head of family with which character associated
 		/// </summary>
-		public String familyHead { get; set; }
+		public String familyID { get; set; }
 
 		/// <summary>
 		/// Constructor for Character_Riak
@@ -1235,10 +1390,10 @@ namespace hist_mmorpg
 				} else {
 					this.father = null;
 				}
-				if (charToUse.familyHead != null) {
-					this.familyHead = charToUse.familyHead;
+				if (charToUse.familyID != null) {
+					this.familyID = charToUse.familyID;
 				} else {
-					this.familyHead = null;
+					this.familyID = null;
 				}
 			}
 		}
@@ -1260,9 +1415,9 @@ namespace hist_mmorpg
 		/// </summary>
 		public uint purse { get; set; }
 		/// <summary>
-		/// Holds character's entourage (charID)
+		/// Holds character's employees and family (charID)
 		/// </summary>
-		public List<String> employees = new List<String>();
+		public List<String> myNPCs = new List<String>();
 		/// <summary>
 		/// Holds character's owned fiefs (fiefID)
 		/// </summary>
@@ -1286,11 +1441,11 @@ namespace hist_mmorpg
 
 			this.outlawed = pc.outlawed;
 			this.purse = pc.purse;
-			if (pc.employees.Count > 0)
+			if (pc.myNPCs.Count > 0)
 			{
-				for (int i = 0; i < pc.employees.Count; i++)
+				for (int i = 0; i < pc.myNPCs.Count; i++)
 				{
-					this.employees.Add (pc.employees[i].charID);
+					this.myNPCs.Add (pc.myNPCs[i].charID);
 				}
 			}
 			if (pc.ownedFiefs.Count > 0)
@@ -1335,6 +1490,10 @@ namespace hist_mmorpg
         /// Denotes if in employer's entourage
 		/// </summary>
 		public bool inEntourage { get; set; }
+        /// <summary>
+        /// Holds NPC's family or employee function
+        /// </summary>
+        public String function { get; set; }
 
 
 		/// <summary>
@@ -1352,6 +1511,7 @@ namespace hist_mmorpg
 			this.wage = npc.wage;
 			this.inEntourage = npc.inEntourage;
 			this.lastOffer = npc.lastOffer;
+            this.function = npc.function;
 		}
 
         /// <summary>
