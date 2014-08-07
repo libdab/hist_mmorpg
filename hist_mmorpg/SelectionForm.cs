@@ -97,7 +97,7 @@ namespace hist_mmorpg
                 // Create an item and subitems for each character
 
                 // name
-                myNPCs[i] = new ListViewItem(this.parent.myChar.myNPCs[i].name);
+                myNPCs[i] = new ListViewItem(this.parent.myChar.myNPCs[i].firstName + " " + this.parent.myChar.myNPCs[i].familyName);
 
                 // charID
                 myNPCs[i].SubItems.Add(this.parent.myChar.myNPCs[i].charID);
@@ -163,7 +163,7 @@ namespace hist_mmorpg
             charText += "ID: " + npc.charID + "\r\n";
 
             // name
-            charText += "Name: " + npc.name + "\r\n";
+            charText += "Name: " + npc.firstName + " " + npc.familyName + "\r\n";
 
             // age
             charText += "Age: " + npc.calcCharAge() + "\r\n";
@@ -173,13 +173,13 @@ namespace hist_mmorpg
 
             // health (& max. health)
             charText += "Health: ";
-            if (npc.health == 0)
+            if (!npc.isAlive)
             {
                 charText += "Blimey, you're Dead!";
             }
             else
             {
-                charText += npc.health + " (max. health: " + npc.maxHealth + ")";
+                charText += npc.calculateHealth() + " (max. health: " + npc.maxHealth + ")";
             }
             charText += "\r\n";
 
@@ -319,7 +319,7 @@ namespace hist_mmorpg
                     // Create an item and subitems for each character
 
                     // name
-                    barredChars[i] = new ListViewItem(myBarredChar.name);
+                    barredChars[i] = new ListViewItem(myBarredChar.firstName + " " + myBarredChar.familyName);
 
                     // charID
                     barredChars[i].SubItems.Add(myBarredChar.charID);

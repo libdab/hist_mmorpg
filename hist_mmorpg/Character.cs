@@ -18,9 +18,13 @@ namespace hist_mmorpg
         /// </summary>
         public string charID { get; set; }
         /// <summary>
-        /// Holds character name
+        /// Holds character's first name
         /// </summary>
-        public String name { get; set; }
+        public String firstName { get; set; }
+        /// <summary>
+        /// Holds character's family name
+        /// </summary>
+        public String familyName { get; set; }
         /// <summary>
         /// Tuple holding character's year and season of birth
         /// </summary>
@@ -34,9 +38,9 @@ namespace hist_mmorpg
         /// </summary>
         public String nationality { get; set; }
         /// <summary>
-        /// Holds character current health
+        /// bool indicating whether character is alive
         /// </summary>
-        public Double health { get; set; }
+        public bool isAlive { get; set; }
         /// <summary>
         /// Holds character maximum health
         /// </summary>
@@ -80,11 +84,11 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds character marital status
         /// </summary>
-        public bool married { get; set; }
+        public bool isMarried { get; set; }
         /// <summary>
         /// Holds character pregnancy status
         /// </summary>
-        public bool pregnant { get; set; }
+        public bool isPregnant { get; set; }
         /// <summary>
         /// Holds charID of head of family with which character associated
         /// </summary>
@@ -110,17 +114,18 @@ namespace hist_mmorpg
         /// Constructor for Character
         /// </summary>
         /// <param name="id">string holding character ID</param>
-        /// <param name="nam">String holding character name</param>
+        /// <param name="firstNam">String holding character's first name</param>
+        /// <param name="famNam">String holding character's family name</param>
         /// <param name="dob">Tuple<uint, byte> holding character's year and season of birth</param>
         /// <param name="isM">bool holding if character male</param>
         /// <param name="nat">String holding character nationality</param>
-        /// <param name="hea">Double holding character current health</param>
+        /// <param name="alive">bool indicating whether character is alive</param>
         /// <param name="mxHea">Double holding character maximum health</param>
         /// <param name="vir">Double holding character virility rating</param>
         /// <param name="go">Queue<Fief> of Fiefs to auto-travel to</param>
         /// <param name="lang">Tuple<Language, int> holding character language and dialect</param>
         /// <param name="day">double holding character remaining days in season</param>
-        /// <param name="stat">Double holding character status rating</param>
+        /// <param name="stat">Double holding character stature rating</param>
         /// <param name="mngmnt">Double holding character management rating</param>
         /// <param name="cbt">Double holding character combat rating</param>
         /// <param name="skl">Array containing character's skills</param>
@@ -132,7 +137,7 @@ namespace hist_mmorpg
         /// <param name="fath">String holding father</param>
         /// <param name="cl">GameClock holding season</param>
 		/// <param name="loc">Fief holding current location</param>
-        public Character(string id, String nam, Tuple<uint, byte> dob, bool isM, String nat, Double hea, Double mxHea, Double vir,
+        public Character(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg,
             String famID, String sp, String fath, GameClock cl = null, Fief loc = null)
         {
@@ -140,10 +145,16 @@ namespace hist_mmorpg
             // validation
             // TODO validate id = 1-10000?
 
-            // validate nam length = 1-40
-            if ((nam.Length < 1) || (nam.Length > 40))
+            // validate firstNam length = 2-40
+            if ((firstNam.Length < 2) || (firstNam.Length > 40))
             {
-                throw new InvalidDataException("Character name must be between 1 and 40 characters in length");
+                throw new InvalidDataException("Character first name must be between 2 and 40 characters in length");
+            }
+
+            // validate famNam length = 2-40
+            if ((famNam.Length < 2) || (famNam.Length > 40))
+            {
+                throw new InvalidDataException("Character family name must be between 2 and 40 characters in length");
             }
 
             // TODO: validate dob
@@ -151,19 +162,13 @@ namespace hist_mmorpg
             // validate preg = not if male
             if (isM)
             {
-				this.pregnant = false;
+				this.isPregnant = false;
             }
 
             // validate nat = Eng/Fr
             if ((!nat.Equals("Eng")) && (!nat.Equals("Fr")))
             {
                 throw new InvalidDataException("Character nationality must be either 'Eng' or 'Fr'");
-            }
-
-            // validate hea = 1-9.00
-            if ((hea < 1) || (hea > 9))
-            {
-                throw new InvalidDataException("Character health must be a double between 1 and 9");
             }
 
             // validate maxHea = 1-9.00
@@ -212,11 +217,12 @@ namespace hist_mmorpg
             // TODO: validate famHead ID = 1-10000?
 
             this.charID = id;
-            this.name = nam;
+            this.firstName = firstNam;
+            this.familyName = famNam;
             this.birthDate = dob;
             this.isMale = isM;
             this.nationality = nat;
-            this.health = hea;
+            this.isAlive = alive;
             this.maxHealth = mxHea;
             this.virility = vir;
             this.goTo = go;
@@ -227,8 +233,8 @@ namespace hist_mmorpg
             this.combat = cbt;
             this.skills = skl;
             this.inKeep = inK;
-            this.married = marr;
-            this.pregnant = preg;
+            this.isMarried = marr;
+            this.isPregnant = preg;
             this.clock = cl;
 			this.location = loc;
             this.spouse = sp;
@@ -258,11 +264,12 @@ namespace hist_mmorpg
 			if (charToUse != null)
 			{
 				this.charID = charToUse.charID;
-				this.name = charToUse.name;
-				this.birthDate = charToUse.birthDate;
+				this.firstName = charToUse.firstName;
+                this.familyName = charToUse.familyName;
+                this.birthDate = charToUse.birthDate;
 				this.isMale = charToUse.isMale;
 				this.nationality = charToUse.nationality;
-				this.health = charToUse.health;
+                this.isAlive = charToUse.isAlive;
 				this.maxHealth = charToUse.maxHealth;
 				this.virility = charToUse.virility;
                 // create empty Queue, to be populated later
@@ -275,8 +282,8 @@ namespace hist_mmorpg
                 // create empty array, to be populated later
                 this.skills = new Tuple<Skill, int>[charToUse.skills.Length];
 				this.inKeep = charToUse.inKeep;
-				this.married = charToUse.married;
-				this.pregnant = charToUse.pregnant;
+				this.isMarried = charToUse.married;
+				this.isPregnant = charToUse.pregnant;
 				if ((charToUse.spouse != null) && (charToUse.spouse.Length > 0))
 				{
 					this.spouse = charToUse.spouse;
@@ -312,7 +319,73 @@ namespace hist_mmorpg
 
             return myAge;
         }
-        
+
+        /// <summary>
+        /// Calculates character's base health
+        /// </summary>
+        /// <returns>Double containing character's base health</returns>
+        public double calculateHealth()
+        {
+
+            double charHealth = 0;
+            double ageModifier = 0;
+
+            // calculate health age modifier, based on age
+            if (this.calcCharAge() < 1)
+            {
+                ageModifier = 0.25;
+            }
+            else if (this.calcCharAge() < 5)
+            {
+                ageModifier = 0.5;
+            }
+            else if (this.calcCharAge() < 10)
+            {
+                ageModifier = 0.8;
+            }
+            else if (this.calcCharAge() < 20)
+            {
+                ageModifier = 0.9;
+            }
+            else if (this.calcCharAge() < 35)
+            {
+                ageModifier = 1;
+            }
+            else if (this.calcCharAge() < 40)
+            {
+                ageModifier = 0.95;
+            }
+            else if (this.calcCharAge() < 45)
+            {
+                ageModifier = 0.9;
+            }
+            else if (this.calcCharAge() < 50)
+            {
+                ageModifier = 0.85;
+            }
+            else if (this.calcCharAge() < 55)
+            {
+                ageModifier = 0.75;
+            }
+            else if (this.calcCharAge() < 60)
+            {
+                ageModifier = 0.65;
+            }
+            else if (this.calcCharAge() < 70)
+            {
+                ageModifier = 0.55;
+            }
+            else
+            {
+                ageModifier = 0.35;
+            }
+
+            // calculate health based on maxHealth and health age modifier
+            charHealth = (this.maxHealth * ageModifier);
+
+            return charHealth;
+        }
+
         /// <summary>
         /// Checks for character death
         /// </summary>
@@ -325,7 +398,7 @@ namespace hist_mmorpg
 
             // calculate base chance of death
             // chance = 2.8% per health level below 10
-            Double deathChance = (10 - this.health) * 2.8;
+            Double deathChance = (10 - this.calculateHealth()) * 2.8;
 
             // apply skills modifier (if exists)
             if (deathSkillsModifier != 0)
@@ -545,9 +618,9 @@ namespace hist_mmorpg
             bool success = false;
 
             // make sure not already pregnant
-            if (mySpouse.pregnant)
+            if (mySpouse.isPregnant)
             {
-                System.Windows.Forms.MessageBox.Show(mySpouse.name + " is already pregnant, milord.  Don't be so impatient!", "PREGNANCY ATTEMPT CANCELLED");
+                System.Windows.Forms.MessageBox.Show(mySpouse.firstName + " " + mySpouse.familyName + " is already pregnant, milord.  Don't be so impatient!", "PREGNANCY ATTEMPT CANCELLED");
             }
             else
             {
@@ -639,7 +712,7 @@ namespace hist_mmorpg
                         if (randPercentage <= chanceOfPregnancy)
                         {
                             // set spouse as pregnant
-                            mySpouse.pregnant = true;
+                            mySpouse.isPregnant = true;
 
                             // schedule birth in clock sheduledEvents
                             uint birthYear = this.clock.currentYear;
@@ -657,21 +730,26 @@ namespace hist_mmorpg
                             this.clock.scheduledEvents.events.Add(birth);
 
                              // display message of celebration
-                            System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + mySpouse.name + " is pregnant!", "PREGNANCY SUCCESSFUL");
+                            System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + mySpouse.firstName + " " + mySpouse.familyName + " is pregnant!", "PREGNANCY SUCCESSFUL");
                             success = true;
                         }
                         // if attempt not successful
                         else
                         {
                             // display encouraging message
-                            System.Windows.Forms.MessageBox.Show("I'm afraid " + mySpouse.name + " is not pregnant.  Better luck next time, milord!", "PREGNANCY UNSUCCESSFUL");
+                            System.Windows.Forms.MessageBox.Show("I'm afraid " + mySpouse.firstName + " " + mySpouse.familyName + " is not pregnant.  Better luck next time, milord!", "PREGNANCY UNSUCCESSFUL");
                         }
+
+                        // succeed or fail, deduct a day
+                        this.days--;
+                        mySpouse.days--;
+
                     }
                     // if pregnancy impossible
                     else
                     {
                         // give the player the bad news
-                        System.Windows.Forms.MessageBox.Show("Ahem ...\r\n\r\nUnfortunately, the fief physician advises that " + mySpouse.name + " will never get pregnant with her current partner", "PREGNANCY UNSUCCESSFUL");
+                        System.Windows.Forms.MessageBox.Show("Ahem ...\r\n\r\nUnfortunately, the fief physician advises that " + mySpouse.firstName + " " + mySpouse.familyName + " will never get pregnant with her current partner", "PREGNANCY UNSUCCESSFUL");
                     }
                 }
             }
@@ -690,7 +768,7 @@ namespace hist_mmorpg
             // check for character death
             if (this.checkDeath())
             {
-                this.health = 0;
+                this.isAlive = false;
             }
 
             // TODO: advance character age
@@ -747,10 +825,10 @@ namespace hist_mmorpg
         /// <param name="kps">List<Fief> holding fiefs owned by character</param>
         /// <param name="home">String holding character's home fief (fiefID)</param>
         /// <param name="anchome">String holding character's ancestral home fief (fiefID)</param>
-        public PlayerCharacter(string id, String nam, Tuple<uint, byte> dob, bool isM, String nat, Double hea, Double mxHea, Double vir,
+        public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
             String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> kps, String home, String ancHome,GameClock cl = null, Fief loc = null)
-            : base(id, nam, dob, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
         {
 
             this.outlawed = outl;
@@ -854,14 +932,14 @@ namespace hist_mmorpg
             if (offer > maxAcceptable)
             {
                 accepted = true;
-                System.Windows.Forms.MessageBox.Show(npc.name + ": You've made me an offer I can't refuse, Milord!");
+                System.Windows.Forms.MessageBox.Show(npc.firstName + " " + npc.familyName + ": You've made me an offer I can't refuse, Milord!");
             }
 
             // automatically reject if offer < 10% below potential salary
             else if (offer < minAcceptable)
             {
                 accepted = false;
-                System.Windows.Forms.MessageBox.Show(npc.name + ": Don't insult me, Sirrah!");
+                System.Windows.Forms.MessageBox.Show(npc.firstName + " " + npc.familyName + ": Don't insult me, Sirrah!");
             }
 
             // automatically reject if offer !> previous offer
@@ -879,11 +957,11 @@ namespace hist_mmorpg
                 if (chance <= offerPercentage)
                 {
                     accepted = true;
-                    System.Windows.Forms.MessageBox.Show(npc.name + ": It's a deal, Milord!");
+                    System.Windows.Forms.MessageBox.Show(npc.firstName + " " + npc.familyName + ": It's a deal, Milord!");
                 }
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show(npc.name + ": You'll have to do better than that, Good Sir!");
+                    System.Windows.Forms.MessageBox.Show(npc.firstName + " " + npc.familyName + ": You'll have to do better than that, Good Sir!");
                 }
             }
 
@@ -1131,10 +1209,10 @@ namespace hist_mmorpg
         /// <param name="wa">string holding NPC's wage</param>
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
         /// <param name="funct">string holding NPC's family or employee function</param>
-        public NonPlayerCharacter(String id, String nam, Tuple<uint, byte> dob, bool isM, String nat, Double hea, Double mxHea, Double vir,
+        public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
             String sp, String fath, uint wa, bool inEnt, String mb = null, GameClock cl = null, Fief loc = null, String funct = null)
-            : base(id, nam, dob, isM, nat, hea, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -1240,10 +1318,14 @@ namespace hist_mmorpg
 		/// Holds character ID
 		/// </summary>
 		public string charID { get; set; }
-		/// <summary>
-		/// Holds character name
-		/// </summary>
-		public String name { get; set; }
+        /// <summary>
+        /// Holds character's first name
+        /// </summary>
+        public String firstName { get; set; }
+        /// <summary>
+        /// Holds character's family name
+        /// </summary>
+        public String familyName { get; set; }
         /// <summary>
         /// Tuple holding character's year and season of birth
         /// </summary>
@@ -1256,11 +1338,11 @@ namespace hist_mmorpg
 		/// Holds character nationality
 		/// </summary>
 		public String nationality { get; set; }
-		/// <summary>
-		/// Holds character current health
-		/// </summary>
-		public Double health { get; set; }
-		/// <summary>
+        /// <summary>
+        /// bool indicating whether character is alive
+        /// </summary>
+        public bool isAlive { get; set; }
+        /// <summary>
 		/// Holds character maximum health
 		/// </summary>
 		public Double maxHealth { get; set; }
@@ -1350,11 +1432,12 @@ namespace hist_mmorpg
 			if (charToUse != null)
 			{
 				this.charID = charToUse.charID;
-				this.name = charToUse.name;
+				this.familyName = charToUse.familyName;
+                this.firstName = charToUse.firstName;
 				this.birthDate = charToUse.birthDate;
 				this.isMale = charToUse.isMale;
 				this.nationality = charToUse.nationality;
-				this.health = charToUse.health;
+                this.isAlive = charToUse.isAlive;
 				this.maxHealth = charToUse.maxHealth;
 				this.virility = charToUse.virility;
 				this.goTo = new List<string> ();
@@ -1376,8 +1459,8 @@ namespace hist_mmorpg
 					this.skills [i] = new Tuple<string,int>(charToUse.skills [i].Item1.skillID, charToUse.skills [i].Item2);
 				}
 				this.inKeep = charToUse.inKeep;
-				this.married = charToUse.married;
-				this.pregnant = charToUse.pregnant;
+				this.married = charToUse.isMarried;
+				this.pregnant = charToUse.isPregnant;
 				this.clock = null;
 				this.location = charToUse.location.fiefID;
 				if (charToUse.spouse != null) {

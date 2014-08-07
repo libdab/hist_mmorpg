@@ -435,15 +435,15 @@ namespace hist_mmorpg
             // create Random for use with generating skill sets for Characters
             Random myRand = new Random();
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave Bond", myDob001, true, "Fr", 1.0, 8.50, 9.0, myGoTo1, myLang1, 90, 4.0, 7.2, 6.1, generateSkillSet(myRand), false, true, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "Fr", true, 8.50, 9.0, myGoTo1, myLang1, 90, 4.0, 7.2, 6.1, generateSkillSet(myRand), false, true, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave Dond", myDob002, true, "Eng", 1.0, 8.50, 6.0, myGoTo2, myLang1, 90, 4.0, 5.0, 4.5, generateSkillSet(myRand), false, false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "Eng", true, 8.50, 6.0, myGoTo2, myLang1, 90, 4.0, 5.0, 4.5, generateSkillSet(myRand), false, false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", cl: this.clock, loc: myFief1);
 			pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy Servant", myDob003, true, "Eng", 1.0, 8.50, 6.0, myGoTo3, myLang1, 90, 4.0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, null, null, null, 0, false, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "Eng", true, 8.50, 6.0, myGoTo3, myLang1, 90, 4.0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, null, null, null, 0, false, cl: this.clock, loc: myFief1);
 			npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny Servant", myDob004, true, "Eng", 1.0, 8.50, 6.0, myGoTo4, myLang1, 90, 4.0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, null, null, null, 10000, true, mb: myChar1.charID, cl: this.clock, loc: myFief1, funct: "Unspecified");
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "Eng", true, 8.50, 6.0, myGoTo4, myLang1, 90, 4.0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, null, null, null, 10000, true, mb: myChar1.charID, cl: this.clock, loc: myFief1, funct: "Unspecified");
 			npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly Maguire", myDob005, false, "Eng", 1.0, 8.50, 9.0, myGoTo5, myLang2, 90, 4.0, 4.0, 6.0, generateSkillSet(myRand), false, true, false, "101", "101", null, 0, false, cl: this.clock, loc: myFief1, funct: "Wife");
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly", "Maguire", myDob005, false, "Eng", true, 8.50, 9.0, myGoTo5, myLang2, 90, 4.0, 4.0, 6.0, generateSkillSet(myRand), false, true, false, "101", "101", null, 0, false, cl: this.clock, loc: myFief1, funct: "Wife");
 			npcMasterList.Add(myWife.charID, myWife);
 
 			// set fief owners
@@ -1905,7 +1905,7 @@ namespace hist_mmorpg
             // PlayerCharacters
 			foreach (KeyValuePair<string, PlayerCharacter> pcEntry in this.pcMasterList)
 			{
-				if (pcEntry.Value.health != 0)
+				if (pcEntry.Value.isAlive)
 				{
 					pcEntry.Value.updateCharacter();
 				}
@@ -1914,7 +1914,7 @@ namespace hist_mmorpg
             // NonPlayerCharacters
 			foreach (KeyValuePair<string, NonPlayerCharacter> npcEntry in this.npcMasterList)
 			{
-				if (npcEntry.Value.health != 0)
+				if (npcEntry.Value.isAlive)
 				{
                     npcEntry.Value.updateCharacter();
                     // NPC-specific
@@ -2066,9 +2066,9 @@ namespace hist_mmorpg
             // Fief name/ID and province name
             textToDisplay += "Fief: " + this.myChar.location.name + " (" + this.myChar.location.fiefID + ")  in " + this.myChar.location.province.name + ", " + this.myChar.location.province.kingdom.name + "\r\n\r\n";
             // Fief owner
-            textToDisplay += "Owner: " + this.myChar.location.owner.name + "\r\n";
+            textToDisplay += "Owner: " + this.myChar.location.owner.firstName + " " + this.myChar.location.owner.familyName + "\r\n";
             // Fief overlord
-            textToDisplay += "Overlord: " + this.myChar.location.province.overlord.name + "\r\n";
+            textToDisplay += "Overlord: " + this.myChar.location.province.overlord.firstName + " " + this.myChar.location.province.overlord.familyName + "\r\n";
 
             this.meetingPlaceTextBox.ReadOnly = true;
             this.meetingPlaceTextBox.Text = textToDisplay;
@@ -2141,7 +2141,7 @@ namespace hist_mmorpg
         public ListViewItem createMeetingPlaceListItem(Character ch)
         {
             // name
-            ListViewItem myItem = new ListViewItem(ch.name);
+            ListViewItem myItem = new ListViewItem(ch.firstName + " " + ch.familyName);
 
             // charID
             myItem.SubItems.Add(ch.charID);
@@ -2212,7 +2212,7 @@ namespace hist_mmorpg
                 ListViewItem houseChar = null;
 
                 // name
-                houseChar = new ListViewItem(this.myChar.myNPCs[i].name);
+                houseChar = new ListViewItem(this.myChar.myNPCs[i].firstName + " " + this.myChar.myNPCs[i].familyName);
 
                 // charID
                 houseChar.SubItems.Add(this.myChar.myNPCs[i].charID);
@@ -2260,7 +2260,7 @@ namespace hist_mmorpg
             charText += "ID: " + ch.charID + "\r\n";
 
             // name
-            charText += "Name: " + ch.name + "\r\n";
+            charText += "Name: " + ch.firstName + " " + ch.familyName + "\r\n";
 
             // age
             charText += "Age: " + ch.calcCharAge() + "\r\n";
@@ -2293,13 +2293,13 @@ namespace hist_mmorpg
 
             // health (& max. health)
             charText += "Health: ";
-            if (ch.health == 0)
+            if (!ch.isAlive)
             {
                 charText += "You're Dead!";
             }
             else
             {
-                charText += ch.health + " (max. health: " + ch.maxHealth + ")";
+                charText += ch.calculateHealth() + " (max. health: " + ch.maxHealth + ")";
             }
             charText += "\r\n";
 
@@ -2354,7 +2354,7 @@ namespace hist_mmorpg
 
             // marital status
             charText += "You are ";
-            if (ch.married)
+            if (ch.isMarried)
             {
                 charText += "happily married";
             }
@@ -2365,7 +2365,7 @@ namespace hist_mmorpg
             charText += "\r\n";
 
             // spouse ID
-            if (ch.married)
+            if (ch.isMarried)
             {
                 charText += "Your spouse's ID is: " + ch.spouse + "\r\n";
             }
@@ -2374,7 +2374,7 @@ namespace hist_mmorpg
             if (!ch.isMale)
             {
                 charText += "You are ";
-                if (!ch.pregnant)
+                if (!ch.isPregnant)
                 {
                     charText += "not ";
                 }
@@ -2384,10 +2384,10 @@ namespace hist_mmorpg
             // if spouse pregnant
             else
             {
-                if (ch.married)
+                if (ch.isMarried)
                 {
                     NonPlayerCharacter thisSpouse = npcMasterList[ch.spouse];
-                    if (thisSpouse.pregnant)
+                    if (thisSpouse.isPregnant)
                     {
                         charText += "Your spouse is pregnant (congratulations!)\r\n";
                     }
@@ -2460,7 +2460,7 @@ namespace hist_mmorpg
             pcText += "Employees:\r\n";
             for (int i = 0; i < pc.myNPCs.Count; i++)
             {
-                pcText += "  - " + pc.myNPCs[i].name;
+                pcText += "  - " + pc.myNPCs[i].firstName + " " + pc.myNPCs[i].familyName;
                 if (pc.myNPCs[i].inEntourage)
                 {
                     pcText += " (travelling companion)";
@@ -2663,7 +2663,7 @@ namespace hist_mmorpg
             fiefText += "Characters present:";
             for (int i = 0; i < f.characters.Count; i++)
             {
-                fiefText += " " + f.characters[i].name;
+                fiefText += " " + f.characters[i].firstName + " " + f.characters[i].familyName;
                 if (i < (f.characters.Count - 1))
                 {
                     fiefText += ",";
@@ -4020,7 +4020,7 @@ namespace hist_mmorpg
                             // don't display this message if min bailiffDaysInFief was already achieved
                             if (!(bailiffDaysBefore >= 30))
                             {
-                                System.Windows.Forms.MessageBox.Show(myBailiff.name + " has fulfilled his bailiff duties in " + ch.location.name + ".");
+                                System.Windows.Forms.MessageBox.Show(myBailiff.firstName + " " + myBailiff.familyName + " has fulfilled his bailiff duties in " + ch.location.name + ".");
                             }
                         }
                     }
@@ -4218,6 +4218,330 @@ namespace hist_mmorpg
                     System.Windows.Forms.MessageBox.Show("Year: " + jEvent.year + " | Season: " + jEvent.season + " | Who: " + jEvent.personae + " | What: " + jEvent.type);
                 }
             }
+        }
+
+        /// <summary>
+        /// Generates a new NPC based on parents' statistics
+        /// </summary>
+        /// <returns>NonPlayerCharacter or null</returns>
+        /// <param name="mummy">The new NPC's mother</param>
+        /// <param name="daddy">The new NPC's father</param>
+        public NonPlayerCharacter generateNewNPC(NonPlayerCharacter mummy, Character daddy)
+        {
+            NonPlayerCharacter newNPC = null;
+
+            /// <param name="id">string holding character ID</param>
+            /// <param name="stat">Double holding character stature rating</param>
+            /// <param name="skl">Array containing character's skills</param>
+
+            // first name
+            newNPC.firstName = "Baby";
+            // family name
+            newNPC.familyName = daddy.familyName;
+            // date of birth
+            newNPC.birthDate = new Tuple<uint, byte>(this.clock.currentYear, this.clock.currentSeason);
+            // nationality
+            newNPC.nationality = daddy.nationality;
+            // whether is alive
+            newNPC.isAlive = true;
+            // goTo queue
+            newNPC.goTo = new Queue<Fief>();
+            // language
+            newNPC.language = daddy.language;
+            // days left
+            newNPC.days = 90;
+            // if in keep
+            newNPC.inKeep = mummy.inKeep;
+            // if married
+            newNPC.isMarried = false;
+            // if pregnant
+            newNPC.isPregnant = false;
+            // familyID
+            newNPC.familyID = daddy.familyID;
+            // spouse
+            newNPC.spouse = null;
+            // father
+            newNPC.father = daddy.charID;
+            // gameclock
+            newNPC.clock = this.clock;
+            // location
+            newNPC.location = mummy.location;
+
+            // sex
+            newNPC.isMale = this.generateSex();
+            // maxHealth
+            newNPC.maxHealth = this.generateKeyCharacteristics(mummy.maxHealth, daddy.maxHealth);
+            // virility
+            newNPC.virility = this.generateKeyCharacteristics(mummy.virility, daddy.virility);
+            // management
+            newNPC.management = this.generateKeyCharacteristics(mummy.management, daddy.management);
+            // combat
+            newNPC.combat = this.generateKeyCharacteristics(mummy.combat, daddy.combat);
+            // skills
+            newNPC.skills = this.generateSkillSet(mummy.skills, daddy.skills, newNPC.isMale);
+
+            return newNPC;
+        }
+
+        /// <summary>
+        /// Generates a random sex for a Character
+        /// </summary>
+        /// <returns>bool indicating whether is male</returns>
+        public bool generateSex()
+        {
+            bool isMale = false;
+
+            // generate random (0 - 1) to see if male or female
+            Random rand = new Random();
+
+            if (rand.Next(0, 2) == 0)
+            {
+                isMale = true;
+            }
+
+            return isMale;
+        }
+
+        /// <summary>
+        /// Generates a characteristic stat for a Character, based on parent stats
+        /// </summary>
+        /// <returns>Double containing characteristic stat</returns>
+        /// <param name="mummyStat">The mother's characteristic stat</param>
+        /// <param name="daddyStat">The father's characteristic stat</param>
+        public Double generateKeyCharacteristics(Double mummyStat, Double daddyStat)
+        {
+            Double newStat = 0;
+
+            // get average of parents' stats
+            Double parentalAverage = (mummyStat + daddyStat) / 2;
+
+            // generate random (0 - 100) to determine relationship of new stat to parentalAverage
+            Random rand = new Random();
+            double randPercentage = rand.NextDouble() * 100;
+
+            // calculate new stat
+            if (randPercentage <= 35)
+            {
+                newStat = parentalAverage;
+            }
+            else if (randPercentage <= 52.5)
+            {
+                newStat = parentalAverage - 1;
+            }
+            else if (randPercentage <= 70)
+            {
+                newStat = parentalAverage + 1;
+            }
+            else if (randPercentage <= 80)
+            {
+                newStat = parentalAverage - 2;
+            }
+            else if (randPercentage <= 90)
+            {
+                newStat = parentalAverage + 2;
+            }
+            else if (randPercentage <= 95)
+            {
+                newStat = parentalAverage - 3;
+            }
+            else
+            {
+                newStat = parentalAverage + 3;
+            }
+
+            // make sure new stat falls within acceptable range
+            if (newStat < 1)
+            {
+                newStat = 1;
+            }
+            else if (newStat > 9)
+            {
+                newStat = 9;
+            }
+
+            return newStat;
+        }
+
+        /// <summary>
+        /// Generates a skill set for a Character, based on parent skills
+        /// </summary>
+        /// <returns>Array containing skill set</returns>
+        /// <param name="mummySkills">The mother's skills</param>
+        /// <param name="daddySkills">The father's skills</param>
+        /// <param name="isMale">Whether character is a male</param>
+        public Tuple<Skill, int>[] generateSkillSet(Tuple<Skill, int>[] mummySkills, Tuple<Skill, int>[] daddySkills, bool isMale)
+        {
+            // create a List to temporarily hold skills
+            // will convert to array at end of method
+            List<Tuple<Skill, int>> newSkillsList = new List<Tuple<Skill, int>>();
+
+            // generate new random for choosing skills, etc.
+            Random rand = new Random();
+
+            // number of skills to return
+            int numSkills = 0;
+
+            // need to compare parent's skills to see how many match (could effect no. of child skills)
+            int matchingSkills = 0;
+            int totalSkillsAvail = 0;
+
+            // iterate through parents' skills identifying matches
+            for (int i = 0; i < mummySkills.Length; i++ )
+            {
+                for (int ii = 0; ii < daddySkills.Length; ii++ )
+                {
+                    if (mummySkills[i].Item1.skillID.Equals(daddySkills[ii].Item1.skillID))
+                    {
+                        matchingSkills++;
+                    }
+                }
+            }
+
+            // get total skill pool available from both parents
+            totalSkillsAvail = (mummySkills.Length + daddySkills.Length) - matchingSkills;
+
+            // if are only 2 skills in total, can only be 2 child skills
+            if (totalSkillsAvail == 2)
+            {
+                numSkills = 2;
+            }
+            else
+            {
+                // generate random (2-3) to see how many skills child will have
+                numSkills = rand.Next(2, 4);
+            }
+
+            // if are only 2 skills in parents' skill pool (i.e. both parents have same skills)
+            // then use mother's skills (enhanced)
+            if (totalSkillsAvail == 2)
+            {
+                for (int i = 0; i < mummySkills.Length; i++)
+                {
+                    // calculate new skill level
+                    int newSkillLevel = 0;
+                    if (mummySkills[i].Item2 > 6)
+                    {
+                        newSkillLevel = 9;
+                    }
+                    else
+                    {
+                        newSkillLevel = mummySkills[i].Item2 + 2;
+                    }
+
+                    // creat new skill item
+                    Tuple<Skill, int> mySkill = new Tuple<Skill, int>(mummySkills[i].Item1, newSkillLevel);
+                    // add to temporary list
+                    newSkillsList.Add(mySkill);
+                }
+            }
+
+            // if are more than 2 skills in parents' skill pool
+            else
+            {
+                Tuple<Skill, int> mySkill;
+
+                // decide which parent to use first (in case have to choose 2 skills from one parent)
+                Tuple<Skill, int>[] firstSkillSet = null;
+                Tuple<Skill, int>[] lastSkillSet = null;
+
+                // use same sex parent first
+                if (isMale)
+                {
+                    firstSkillSet = daddySkills;
+                    lastSkillSet = mummySkills;
+                }
+                else
+                {
+                    firstSkillSet = mummySkills;
+                    lastSkillSet = daddySkills;
+                }
+
+                // to hold chosen skill
+                int chosenSkill = 0;
+                // to hold previous chosen skill, to allow comparison
+                int PrevChosenSkill = 0;
+
+                // get a skill from the first parent
+                chosenSkill = rand.Next(0, firstSkillSet.Length + 1);
+
+                // creat new skill item
+                mySkill = new Tuple<Skill, int>(firstSkillSet[chosenSkill].Item1, firstSkillSet[chosenSkill].Item2);
+                // add to temporary list
+                newSkillsList.Add(mySkill);
+                // record which skill was chosen in case comparison needed
+                PrevChosenSkill = chosenSkill;
+
+                // if child is to have 3 skills
+                if (numSkills == 3)
+                {
+                    do {
+                        // get another skill from the first parent
+                        chosenSkill = rand.Next(0, firstSkillSet.Length + 1);
+
+                        // creat new skill item
+                        mySkill = new Tuple<Skill, int>(firstSkillSet[chosenSkill].Item1, firstSkillSet[chosenSkill].Item2);
+                        // add to temporary list
+                        newSkillsList.Add(mySkill);
+
+                    // do chosen skill doesn't match the first
+                    } while (chosenSkill == PrevChosenSkill);
+
+                }
+
+                // get a skill from the other parent
+                chosenSkill = rand.Next(0, lastSkillSet.Length + 1);
+
+                // check to see if already have skill in newSkillsList
+                bool duplicate = false;
+                // to hold any duplicate skill items
+                Tuple<Skill, int> duplicateItem = null;
+
+                // iterate through existing skills list checking for duplicates
+                foreach (Tuple<Skill, int> element in newSkillsList)
+                {
+                    if (lastSkillSet[chosenSkill].Item1.skillID.Equals(element.Item1.skillID))
+                    {
+                        duplicate = true;
+                        // record duplicate skill item
+                        duplicateItem = element;
+                    }
+                }
+
+                // if the last chosen skill was a duplicate
+                if (duplicate)
+                {
+                    // adjust the sill level upwards
+                    int newSkillLevel = 0;
+                    if (duplicateItem.Item2 > 6)
+                    {
+                        newSkillLevel = 9;
+                    }
+                    else
+                    {
+                        newSkillLevel = duplicateItem.Item2 + 2;
+                    }
+
+                    // remove the duplicate item from the list
+                    newSkillsList.Remove(duplicateItem);
+                    // create a new skill item with enhanced skill level
+                    mySkill = new Tuple<Skill, int>(duplicateItem.Item1, newSkillLevel);
+                }
+
+                // if the last chosen skill was not a duplicate
+                else
+                {
+                    // copy chosen skill into new skill item
+                    mySkill = new Tuple<Skill, int>(lastSkillSet[chosenSkill].Item1, lastSkillSet[chosenSkill].Item2);
+                }
+
+                // add to temporary list
+                newSkillsList.Add(mySkill);
+            }
+
+            // create new skills array from temporary list
+            Tuple<Skill, int>[] newSkills = newSkillsList.ToArray();
+
+            return newSkills;
         }
 
     }
