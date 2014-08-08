@@ -202,7 +202,8 @@ namespace hist_mmorpg
             charText += "Days remaining: " + npc.days + "\r\n";
 
             // stature
-            charText += "Stature: " + npc.stature + "\r\n";
+            charText += "Stature: " + npc.calculateStature(true) + "\r\n";
+            charText += "  (base stature: " + npc.calculateStature(false) + " | modifier: " + npc.statureModifier + ")\r\n";
 
             // management rating
             charText += "Management: " + npc.management + "\r\n";
@@ -262,7 +263,7 @@ namespace hist_mmorpg
                 }
 
                 // set the selected NPC as bailiff
-                this.parent.fiefToView.bailiff = this.parent.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+                this.parent.fiefToView.bailiff = Globals.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
                 
                 // set new bailiff's function
                 funct = "Bailiff of " + this.parent.fiefToView.name + " (" + this.parent.fiefToView.fiefID + ")";
@@ -305,13 +306,13 @@ namespace hist_mmorpg
                 //NonPlayerCharacter myBarrednpc = null;
                 Character myBarredChar = null;
 
-                if (this.parent.pcMasterList.ContainsKey(this.parent.fiefToView.barredCharacters[i]))
+                if (Globals.pcMasterList.ContainsKey(this.parent.fiefToView.barredCharacters[i]))
                 {
-                    myBarredChar = this.parent.pcMasterList[this.parent.fiefToView.barredCharacters[i]];
+                    myBarredChar = Globals.pcMasterList[this.parent.fiefToView.barredCharacters[i]];
                 }
-                else if (this.parent.npcMasterList.ContainsKey(this.parent.fiefToView.barredCharacters[i]))
+                else if (Globals.npcMasterList.ContainsKey(this.parent.fiefToView.barredCharacters[i]))
                 {
-                    myBarredChar = this.parent.npcMasterList[this.parent.fiefToView.barredCharacters[i]];
+                    myBarredChar = Globals.npcMasterList[this.parent.fiefToView.barredCharacters[i]];
                 }
 
                 if (myBarredChar != null)
@@ -349,7 +350,7 @@ namespace hist_mmorpg
         private void barThisCharBtn_Click(object sender, EventArgs e)
         {
             // if input ID is in pcMasterList
-            if (this.parent.pcMasterList.ContainsKey(this.barThisCharTextBox.Text))
+            if (Globals.pcMasterList.ContainsKey(this.barThisCharTextBox.Text))
             {
                 // add ID to barred characters
                 this.parent.fiefToView.barredCharacters.Add(this.barThisCharTextBox.Text);
@@ -357,7 +358,7 @@ namespace hist_mmorpg
                 this.refreshBarredDisplay();
             }
             // if input ID is in npcMasterList
-            else if (this.parent.npcMasterList.ContainsKey(this.barThisCharTextBox.Text))
+            else if (Globals.npcMasterList.ContainsKey(this.barThisCharTextBox.Text))
             {
                 // add ID to barred characters
                 this.parent.fiefToView.barredCharacters.Add(this.barThisCharTextBox.Text);
@@ -383,7 +384,7 @@ namespace hist_mmorpg
             if (barredListView.SelectedItems.Count > 0)
             {
                 // if selected character is in pcMasterList
-                if (this.parent.pcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
+                if (Globals.pcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
                 {
                     // remove ID from barred characters
                     this.parent.fiefToView.barredCharacters.Remove(this.barredListView.SelectedItems[0].SubItems[1].Text);
@@ -391,7 +392,7 @@ namespace hist_mmorpg
                     this.refreshBarredDisplay();
                 }
                 // if selected character is in pcMasterList
-                else if (this.parent.npcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
+                else if (Globals.npcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
                 {
                     // remove ID from barred characters
                     this.parent.fiefToView.barredCharacters.Remove(this.barredListView.SelectedItems[0].SubItems[1].Text);

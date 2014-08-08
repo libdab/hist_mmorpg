@@ -80,6 +80,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GameClock.cs" />
+    <Compile Include="Globals.cs" />
     <Compile Include="HexMapGraph.cs" />
     <Compile Include="Journal.cs" />
     <Compile Include="Kingdom.cs" />

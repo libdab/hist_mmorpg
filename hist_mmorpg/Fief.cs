@@ -142,6 +142,10 @@ namespace hist_mmorpg
         /// Holds fief treasury
         /// </summary>
         public int treasury { get; set; }
+        /// <summary>
+        /// Fief title holder (charID)
+        /// </summary>
+        public String titleHolder { get; set; }
 
         /// <summary>
         /// Constructor for Fief
@@ -179,10 +183,11 @@ namespace hist_mmorpg
         /// <param name="bailInF">byte holding days bailiff in fief</param>
         /// <param name="ra">Fief's rank object</param>
         /// <param name="treas">int containing fief treasury</param>
+        /// <param name="tiHo">Fief title holder (charID)</param>
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp,
             Double tx, uint off, uint garr, uint infra, uint keep, Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, Double kpLvl,
             Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
-            GameClock cl, byte bailInF, int treas, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
+            GameClock cl, byte bailInF, int treas, String tiHo = null, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -292,6 +297,7 @@ namespace hist_mmorpg
             this.rank = ra;
             this.bailiffDaysInFief = bailInF;
             this.treasury = treas;
+            this.titleHolder = tiHo;
         }
 
 		/// <summary>
@@ -341,6 +347,7 @@ namespace hist_mmorpg
             this.rank = null;
             this.bailiffDaysInFief = fr.bailiffDaysInFief;
             this.treasury = fr.treasury;
+            this.titleHolder = fr.titleHolder;
         }
 
         /// <summary>
@@ -1536,6 +1543,10 @@ namespace hist_mmorpg
         /// Holds fief treasury
         /// </summary>
         public int treasury { get; set; }
+        /// <summary>
+        /// Fief title holder (charID)
+        /// </summary>
+        public String titleHolder { get; set; }
 
 		/// <summary>
 		/// Constructor for Fief_Riak
@@ -1586,6 +1597,7 @@ namespace hist_mmorpg
             this.rankID = f.rank.rankID;
             this.bailiffDaysInFief = f.bailiffDaysInFief;
             this.treasury = f.treasury;
+            this.titleHolder = f.titleHolder;
 		}
 
         /// <summary>

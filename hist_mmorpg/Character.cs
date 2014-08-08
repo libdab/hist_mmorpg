@@ -6,7 +6,6 @@ using System.Windows.Forms;
 
 namespace hist_mmorpg
 {
-
     /// <summary>
     /// Class storing data on character (PC and NPC)
     /// </summary>
@@ -64,7 +63,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds character's stature
         /// </summary>
-        public Double stature { get; set; }
+        public Double statureModifier { get; set; }
         /// <summary>
         /// Holds character's management rating
         /// </summary>
@@ -109,6 +108,10 @@ namespace hist_mmorpg
         /// Holds character's GameClock (season)
         /// </summary>
         public GameClock clock { get; set; }
+        /// <summary>
+        /// Holds character's titles (fiefIDs)
+        /// </summary>
+        public List<String> myTitles { get; set; }
 
         /// <summary>
         /// Constructor for Character
@@ -137,9 +140,10 @@ namespace hist_mmorpg
         /// <param name="fath">String holding father</param>
         /// <param name="cl">GameClock holding season</param>
 		/// <param name="loc">Fief holding current location</param>
+        /// <param name="myTi">List holding character's titles (fiefIDs)</param>
         public Character(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg,
-            String famID, String sp, String fath, GameClock cl = null, Fief loc = null)
+            String famID, String sp, String fath, List<String> myTi, GameClock cl = null, Fief loc = null)
         {
 
             // validation
@@ -228,7 +232,7 @@ namespace hist_mmorpg
             this.goTo = go;
             this.language = lang;
             this.days = day;
-            this.stature = stat;
+            this.statureModifier = stat;
             this.management = mngmnt;
             this.combat = cbt;
             this.skills = skl;
@@ -240,6 +244,7 @@ namespace hist_mmorpg
             this.spouse = sp;
             this.father = fath;
             this.familyID = famID;
+            this.myTitles = myTi;
         }
 
 		/// <summary>
@@ -276,7 +281,7 @@ namespace hist_mmorpg
                 this.goTo = new Queue<Fief>();
 				this.language = null;
 				this.days = charToUse.days;
-				this.stature = charToUse.stature;
+				this.statureModifier = charToUse.statureModifier;
 				this.management = charToUse.management;
 				this.combat = charToUse.combat;
                 // create empty array, to be populated later
@@ -298,6 +303,7 @@ namespace hist_mmorpg
 				}
 				this.clock = null;
 				this.location = null;
+                this.myTitles = charToUse.myTitles;
 			}
 		}
 
@@ -318,6 +324,88 @@ namespace hist_mmorpg
             }
 
             return myAge;
+        }
+
+        /// <summary>
+        /// Retrieves stature associated with character's highest rank
+        /// </summary>
+        /// <returns>byte containing stature associated with character's highest rank</returns>
+        public byte getHighRankStature()
+        {
+            byte highRankStature = 0;
+
+            foreach (String fiefID in this.myTitles)
+            {
+                if (Globals.fiefMasterList[fiefID].rank.stature > highRankStature)
+                {
+                    highRankStature = Globals.fiefMasterList[fiefID].rank.stature;
+                }
+            }
+
+            return highRankStature;
+        }
+       
+        /// <summary>
+        /// Calculates character's base stature
+        /// </summary>
+        /// <returns>Double containing character's base stature</returns>
+        /// <param name="type">bool indicating whether to return current stature (or just base)</param>
+        public Double calculateStature(bool currentStature)
+        {
+            Double stature = 0;
+
+            // get stature for character's highest rank
+            stature = this.getHighRankStature();
+
+            // factor in age
+            if ((this.calcCharAge() > 10) && (this.calcCharAge() < 21))
+            {
+                stature += 0.5;
+            }
+            else if (this.calcCharAge() < 31)
+            {
+                stature += 1;
+            }
+            else if (this.calcCharAge() < 41)
+            {
+                stature += 2;
+            }
+            else if (this.calcCharAge() < 51)
+            {
+                stature += 3;
+            }
+            else if (this.calcCharAge() < 61)
+            {
+                stature += 4;
+            }
+            else
+            {
+                stature += 5;
+            }
+
+            // factor in sex (it's a man's world)
+            if (!this.isMale)
+            {
+                stature -= 6;
+            }
+
+            // ensure doesn't exceed boundaries
+            if (stature < 0)
+            {
+                stature = 0;
+            }
+            else if (stature > 9)
+            {
+                stature = 9;
+            }
+
+            // factor in character's current statureModifier if required
+            if (currentStature)
+            {
+                stature += this.statureModifier;
+            }
+
+            return stature;
         }
 
         /// <summary>
@@ -390,20 +478,48 @@ namespace hist_mmorpg
         /// Checks for character death
         /// </summary>
         /// <returns>Boolean indicating character death occurrence</returns>
-        public Boolean checkDeath()
+        /// <param name="isBirth">bool indicating whether check is due to birth</param>
+        /// <param name="isMother">bool indicating whether (if check is due to birth) character is mother</param>
+        /// <param name="isStillborn">bool indicating whether (if check is due to birth) baby was stillborn</param>
+        public Boolean checkDeath(bool isBirth = false, bool isMother = false, bool isStillborn = false)
         {
-
             // Check if chance of death effected by character skills
             double deathSkillsModifier = this.calcSkillEffect("death");
 
             // calculate base chance of death
-            // chance = 2.8% per health level below 10
-            Double deathChance = (10 - this.calculateHealth()) * 2.8;
+            // chance = 2.8% (2.5% for women) per health level below 10
+            Double deathChanceIncrement = 0;
+            if (this.isMale)
+            {
+                deathChanceIncrement = 2.8;
+            }
+            else
+            {
+                deathChanceIncrement = 2.5;
+            }
+
+            Double deathChance = (10 - this.calculateHealth()) * deathChanceIncrement;
 
             // apply skills modifier (if exists)
             if (deathSkillsModifier != 0)
             {
                 deathChance = deathChance + (deathChance * deathSkillsModifier);
+            }
+
+            // factor in birth event if appropriate
+            if (isBirth)
+            {
+                // if check is on mother and baby was stillborn
+                // (indicates unspecified complications with pregnancy)
+                if ((isMother) && (isStillborn))
+                {
+                    deathChance = deathChance * 2;
+                }
+                // if is baby, or mother of healthy baby
+                else
+                {
+                    deathChance = deathChance * 1.5;
+                }
             }
 
             // generate a rndom double between 0-100 and compare to deathChance
@@ -491,7 +607,7 @@ namespace hist_mmorpg
         {
             double loyModif = 0;
             // 1.25% increase in loyalty per stature/management average above 1
-            loyModif = (((this.stature + this.management) / 2) - 1) * 1.25;
+            loyModif = (((this.calculateStature(true) + this.management) / 2) - 1) * 1.25;
             loyModif = loyModif / 100;
             return loyModif;
         }
@@ -822,19 +938,19 @@ namespace hist_mmorpg
         /// <param name="outl">bool holding character outlawed status</param>
         /// <param name="pur">uint holding character purse</param>
         /// <param name="npcs">List<NonPlayerCharacter> holding employees and family of character</param>
-        /// <param name="kps">List<Fief> holding fiefs owned by character</param>
+        /// <param name="owned">List<Fief> holding fiefs owned by character</param>
         /// <param name="home">String holding character's home fief (fiefID)</param>
         /// <param name="anchome">String holding character's ancestral home fief (fiefID)</param>
         public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
-            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> kps, String home, String ancHome,GameClock cl = null, Fief loc = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
+            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, GameClock cl = null, Fief loc = null)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, myTi, cl, loc)
         {
 
             this.outlawed = outl;
             this.purse = pur;
             this.myNPCs = npcs;
-            this.ownedFiefs = kps;
+            this.ownedFiefs = owned;
             this.homeFief = home;
             this.ancestralHomeFief = ancHome;
         }
@@ -1211,8 +1327,8 @@ namespace hist_mmorpg
         /// <param name="funct">string holding NPC's family or employee function</param>
         public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
-            String sp, String fath, uint wa, bool inEnt, String mb = null, GameClock cl = null, Fief loc = null, String funct = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, cl, loc)
+            String sp, String fath, uint wa, bool inEnt, List<String> myTi, String mb = null, GameClock cl = null, Fief loc = null, String funct = null)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, myTi, cl, loc)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -1263,7 +1379,7 @@ namespace hist_mmorpg
 
             // calculate fief management rating
             // baseline rating
-            double fiefMgtRating = (this.management + this.stature) / 2;
+            double fiefMgtRating = (this.management + this.calculateStature(true)) / 2;
             // check for skills effecting fief loyalty
             double fiefLoySkill = this.calcSkillEffect("fiefLoy");
             // check for skills effecting fief expenses
@@ -1276,7 +1392,7 @@ namespace hist_mmorpg
 
             // calculate combat rating
             // baseline rating
-            double combatRating = (this.management + this.stature + this.combat) / 3;
+            double combatRating = (this.management + this.calculateStature(true) + this.combat) / 3;
             // check for skills effecting battle
             double battleSkills = this.calcSkillEffect("battle");
             // check for skills effecting siege
@@ -1297,9 +1413,9 @@ namespace hist_mmorpg
 
             // factor in hiring player's stature
             // (4% reduction in NPC's salary for each stature rank above 4)
-            if (this.stature > 4)
+            if (this.calculateStature(true) > 4)
             {
-                double statMod = 1 - ((this.stature - 4) * 0.04);
+                double statMod = 1 - ((this.calculateStature(true) - 4) * 0.04);
                 salary = salary * statMod;
             }
 
@@ -1365,7 +1481,7 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Holds character's stature
 		/// </summary>
-		public Double stature { get; set; }
+		public Double statureModifier { get; set; }
 		/// <summary>
 		/// Holds character's management rating
 		/// </summary>
@@ -1410,6 +1526,10 @@ namespace hist_mmorpg
         /// Holds charID of head of family with which character associated
 		/// </summary>
 		public String familyID { get; set; }
+        /// <summary>
+        /// Holds character's titles (fiefIDs)
+        /// </summary>
+        public List<String> myTitles { get; set; }
 
 		/// <summary>
 		/// Constructor for Character_Riak
@@ -1450,7 +1570,7 @@ namespace hist_mmorpg
 				}
 				this.language = new Tuple<string,int>(charToUse.language.Item1.languageID, charToUse.language.Item2);
 				this.days = charToUse.days;
-				this.stature = charToUse.stature;
+				this.statureModifier = charToUse.statureModifier;
 				this.management = charToUse.management;
 				this.combat = charToUse.combat;
 				this.skills = new Tuple<String, int>[charToUse.skills.Length];
@@ -1478,6 +1598,7 @@ namespace hist_mmorpg
 				} else {
 					this.familyID = null;
 				}
+                this.myTitles = charToUse.myTitles;
 			}
 		}
 
