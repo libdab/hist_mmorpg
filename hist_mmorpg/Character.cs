@@ -478,10 +478,11 @@ namespace hist_mmorpg
         /// Checks for character death
         /// </summary>
         /// <returns>Boolean indicating character death occurrence</returns>
+        /// <param name="rand">Random used to calculate death chance</param>
         /// <param name="isBirth">bool indicating whether check is due to birth</param>
         /// <param name="isMother">bool indicating whether (if check is due to birth) character is mother</param>
         /// <param name="isStillborn">bool indicating whether (if check is due to birth) baby was stillborn</param>
-        public Boolean checkDeath(bool isBirth = false, bool isMother = false, bool isStillborn = false)
+        public Boolean checkDeath(Random rand, bool isBirth = false, bool isMother = false, bool isStillborn = false)
         {
             // Check if chance of death effected by character skills
             double deathSkillsModifier = this.calcSkillEffect("death");
@@ -523,7 +524,6 @@ namespace hist_mmorpg
             }
 
             // generate a rndom double between 0-100 and compare to deathChance
-            Random rand = new Random();
             if ((rand.NextDouble() * 100) <= deathChance)
             {
                 return true;
@@ -878,16 +878,21 @@ namespace hist_mmorpg
         /// </summary>
         public void updateCharacter()
         {
+            // create Random to use with various chance calculations
+            Random myRand = new Random();
+
             // use any remaining days to go towards bailiffDaysInFief, if appropriate
             this.useUpDays();
 
             // check for character death
-            if (this.checkDeath())
+            if (this.checkDeath(myRand))
             {
                 this.isAlive = false;
             }
 
             // TODO: advance character age
+
+            // TODO: if (age >= 1) && (firstName.Equals("Baby")), character firstname = king's?
 
             // TODO: adjust stature (due to age)
 

@@ -108,6 +108,8 @@ namespace hist_mmorpg
             this.meetingPlaceTextBox = new System.Windows.Forms.TextBox();
             this.meetingPlaceCharsListView = new System.Windows.Forms.ListView();
             this.houseContainer = new System.Windows.Forms.SplitContainer();
+            this.familyGetSpousePregBtn = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
             this.houseCampDaysLabel = new System.Windows.Forms.Label();
             this.houseCampDaysTextBox = new System.Windows.Forms.TextBox();
             this.houseCampForLabel = new System.Windows.Forms.Label();
@@ -117,8 +119,9 @@ namespace hist_mmorpg
             this.houseCharListContainer = new System.Windows.Forms.SplitContainer();
             this.houseCharListLabel = new System.Windows.Forms.Label();
             this.houseCharListView = new System.Windows.Forms.ListView();
-            this.label3 = new System.Windows.Forms.Label();
-            this.familyGetSpousePregBtn = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.familyNameChildButton = new System.Windows.Forms.Button();
+            this.familyNameChildTextBox = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -988,6 +991,9 @@ namespace hist_mmorpg
             // 
             // houseContainer.Panel1
             // 
+            this.houseContainer.Panel1.Controls.Add(this.familyNameChildTextBox);
+            this.houseContainer.Panel1.Controls.Add(this.familyNameChildButton);
+            this.houseContainer.Panel1.Controls.Add(this.button1);
             this.houseContainer.Panel1.Controls.Add(this.familyGetSpousePregBtn);
             this.houseContainer.Panel1.Controls.Add(this.label3);
             this.houseContainer.Panel1.Controls.Add(this.houseCampDaysLabel);
@@ -1001,6 +1007,26 @@ namespace hist_mmorpg
             this.houseContainer.Size = new System.Drawing.Size(935, 637);
             this.houseContainer.SplitterDistance = 259;
             this.houseContainer.TabIndex = 7;
+            // 
+            // familyGetSpousePregBtn
+            // 
+            this.familyGetSpousePregBtn.Location = new System.Drawing.Point(58, 417);
+            this.familyGetSpousePregBtn.Name = "familyGetSpousePregBtn";
+            this.familyGetSpousePregBtn.Size = new System.Drawing.Size(139, 22);
+            this.familyGetSpousePregBtn.TabIndex = 33;
+            this.familyGetSpousePregBtn.Text = "Get Your Wife With Child";
+            this.familyGetSpousePregBtn.UseVisualStyleBackColor = true;
+            this.familyGetSpousePregBtn.Click += new System.EventHandler(this.familyGetSpousePregBtn_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(39, 389);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(184, 13);
+            this.label3.TabIndex = 32;
+            this.label3.Text = "----------- Family Matters -----------";
             // 
             // houseCampDaysLabel
             // 
@@ -1104,25 +1130,32 @@ namespace hist_mmorpg
             this.houseCharListView.View = System.Windows.Forms.View.Details;
             this.houseCharListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.houseCharListView_ItemSelectionChanged);
             // 
-            // label3
+            // button1
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(39, 389);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(184, 13);
-            this.label3.TabIndex = 32;
-            this.label3.Text = "----------- Family Matters -----------";
+            this.button1.Location = new System.Drawing.Point(58, 473);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(139, 22);
+            this.button1.TabIndex = 34;
+            this.button1.Text = "My Test Button";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // familyGetSpousePregBtn
+            // familyNameChildButton
             // 
-            this.familyGetSpousePregBtn.Location = new System.Drawing.Point(58, 417);
-            this.familyGetSpousePregBtn.Name = "familyGetSpousePregBtn";
-            this.familyGetSpousePregBtn.Size = new System.Drawing.Size(139, 22);
-            this.familyGetSpousePregBtn.TabIndex = 33;
-            this.familyGetSpousePregBtn.Text = "Get Your Wife With Child";
-            this.familyGetSpousePregBtn.UseVisualStyleBackColor = true;
-            this.familyGetSpousePregBtn.Click += new System.EventHandler(this.familyGetSpousePregBtn_Click);
+            this.familyNameChildButton.Location = new System.Drawing.Point(19, 445);
+            this.familyNameChildButton.Name = "familyNameChildButton";
+            this.familyNameChildButton.Size = new System.Drawing.Size(76, 22);
+            this.familyNameChildButton.TabIndex = 35;
+            this.familyNameChildButton.Text = "Name Child";
+            this.familyNameChildButton.UseVisualStyleBackColor = true;
+            this.familyNameChildButton.Click += new System.EventHandler(this.familyNameChildButton_Click);
+            // 
+            // familyNameChildTextBox
+            // 
+            this.familyNameChildTextBox.Location = new System.Drawing.Point(115, 447);
+            this.familyNameChildTextBox.Name = "familyNameChildTextBox";
+            this.familyNameChildTextBox.Size = new System.Drawing.Size(103, 20);
+            this.familyNameChildTextBox.TabIndex = 36;
             // 
             // Form1
             // 
@@ -1293,6 +1326,9 @@ namespace hist_mmorpg
         private System.Windows.Forms.Label fiefTreasTransferLabel;
         private System.Windows.Forms.Button familyGetSpousePregBtn;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox familyNameChildTextBox;
+        private System.Windows.Forms.Button familyNameChildButton;
 
     }
 }
