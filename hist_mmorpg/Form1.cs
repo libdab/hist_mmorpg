@@ -446,6 +446,7 @@ namespace hist_mmorpg
 			myFief1.addCharacter(myChar2);
 			myFief1.addCharacter(myNPC1);
 			myFief1.addCharacter(myNPC2);
+            myFief1.addCharacter(myWife);
 
 			// bar a character from the myFief1 keep
 			myFief2.barCharacter(myNPC1.charID);
@@ -4634,6 +4635,8 @@ namespace hist_mmorpg
 
             if (!isStillborn)
             {
+                Globals.npcMasterList.Add(weeBairn.charID, weeBairn);
+                this.clock.pastEvents.events.Add(new JournalEvent(this.clock.currentYear, this.clock.currentSeason, this.myChar.charID, "Birth", descr: this.myChar.firstName + " " + this.myChar.familyName + " welcomes a new " + weeBairn.function + " into his family"));
                 this.myChar.myNPCs.Add(weeBairn);
             }
 
