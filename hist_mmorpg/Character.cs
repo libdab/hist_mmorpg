@@ -892,6 +892,13 @@ namespace hist_mmorpg
 
             // TODO: advance character age
 
+            // TODO: check if family allowance has increased due to age
+            // Wife: 30,000
+            // Eldest son: 20,000 (age 0-14), 30,000 (15-20), 40,000 (21 >)
+            // Other son: 15,000, 20,000, 30,000
+            // Daughter: 10,000, 15,000, 20,000
+            // Grandchild: as above
+
             // TODO: if (age >= 1) && (firstName.Equals("Baby")), character firstname = king's?
 
             // TODO: adjust stature (due to age)

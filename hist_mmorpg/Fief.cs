@@ -533,7 +533,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Calculates fief expenses
         /// </summary>
-        /// <returns>uint containing fief income</returns>
+        /// <returns>int containing family expenses</returns>
         /// <param name="season">string specifying whether to calculate for this or next season</param>
         public int calcExpenses(string season)
         {
@@ -597,6 +597,59 @@ namespace hist_mmorpg
             fiefBottomLine = (fiefIncome - (int)this.calcExpenses(season)) - (int)this.calcOlordTaxes(season);
 
             return fiefBottomLine;
+        }
+
+        /// <summary>
+        /// Calculates family expenses
+        /// </summary>
+        /// <returns>int containing family expenses</returns>
+        /// <param name="season">string specifying whether to calculate for this or next season</param>
+        public int calcFamilyExpenses()
+        {
+            int famExpenses = 0;
+
+            // for all fiefs, get bailiff wages
+            if (this.bailiff != null)
+            {
+                if (this.bailiff != this.owner)
+                {
+                    famExpenses += Convert.ToInt32((this.bailiff as NonPlayerCharacter).wage);
+                }
+            }
+
+            // if home fief, also get all non-bailiff expenses
+            // (i.e. family allowances, other employees' wages)
+            if (this.fiefID.Equals(this.owner.homeFief))
+            {
+                foreach (NonPlayerCharacter element in this.owner.myNPCs)
+                {
+                    if (!(element.function.Contains("Bailiff")))
+                    {
+                        famExpenses += Convert.ToInt32(element.wage);
+                    }
+                }
+
+                // factor in skills of player or spouse (highest management rating)
+                double famSkillsModifier = 0;
+
+                // get famExpense rating of whoever has highest management rating
+                if (this.owner.management > Globals.npcMasterList[this.owner.spouse].management)
+                {
+                    famSkillsModifier = this.owner.calcSkillEffect("famExpense");
+                }
+                else
+                {
+                    famSkillsModifier = Globals.npcMasterList[this.owner.spouse].calcSkillEffect("famExpense");
+                }
+
+                // apply to family expenses
+                if (famSkillsModifier != 0)
+                {
+                    famExpenses = famExpenses + Convert.ToInt32(famExpenses * famSkillsModifier);
+                }
+            }
+
+            return famExpenses;
         }
 
         /// <summary>

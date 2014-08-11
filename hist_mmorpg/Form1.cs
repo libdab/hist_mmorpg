@@ -374,7 +374,7 @@ namespace hist_mmorpg
             Globals.npcMasterList.Add(myNPC1.charID, myNPC1);
             NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "Eng", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, null, null, null, 10000, true, myTitles004, mb: myChar1.charID, cl: this.clock, loc: myFief1, funct: "Unspecified");
             Globals.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly", "Maguire", myDob005, false, "Eng", true, 2.50, 9.0, myGoTo5, myLang2, 90, 0, 4.0, 6.0, generateSkillSet(myRand), false, true, false, "101", "101", null, 10000, false, myTitles005, cl: this.clock, loc: myFief1, funct: "Wife");
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly", "Maguire", myDob005, false, "Eng", true, 2.50, 9.0, myGoTo5, myLang2, 90, 0, 4.0, 6.0, generateSkillSet(myRand), false, true, false, "101", "101", null, 30000, false, myTitles005, cl: this.clock, loc: myFief1, funct: "Wife");
             Globals.npcMasterList.Add(myWife.charID, myWife);
 
 			// set fief owners
@@ -2706,7 +2706,17 @@ namespace hist_mmorpg
             fiefText += "  (including fief status income modifier: " + f.calcStatusIncmMod() + ")\r\n";
 
             // family expenses
-            fiefText += "Family expenses: 0 (not yet implemented)\r\n";
+            fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
+            // famExpenses modifier for player/spouse
+            if (f.owner.management > Globals.npcMasterList[f.owner.spouse].management)
+            {
+                fiefText += "  (which may include a famExpense skills modifier: " + f.owner.calcSkillEffect("famExpense") + ")\r\n";
+            }
+            else
+            {
+                fiefText += "  (which may include a famExpense skills modifier: " + Globals.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")\r\n";
+            }
+
 
             // total expenses
             fiefText += "Total expenses: " + f.calcExpenses("this") + "\r\n";
@@ -2928,11 +2938,15 @@ namespace hist_mmorpg
                     homeTreasury = home.treasury;
                     // deduct home fief expenditure
                     homeTreasury -= home.calcExpenses("next");
+                    // deduct home family expenses
+                    homeTreasury -= home.calcFamilyExpenses();
                     // deduct home fief overlord taxes
                     homeTreasury -= Convert.ToInt32(home.calcOlordTaxes("next"));
 
                     // calculate available fief treasury
                     fiefTreasury = this.fiefToView.treasury;
+                    // deduct fief family expenses
+                    fiefTreasury -= this.fiefToView.calcFamilyExpenses();
                     // deduct fief overlord taxes
                     fiefTreasury -= Convert.ToInt32(this.fiefToView.calcOlordTaxes("next"));
 

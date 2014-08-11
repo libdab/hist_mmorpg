@@ -256,10 +256,11 @@ namespace hist_mmorpg
                 // if the fief has an existing bailiff, relieve him of his duties
                 if (this.parent.fiefToView.bailiff != null)
                 {
-                    // set ex-bailiff's function
-                    (this.parent.fiefToView.bailiff as NonPlayerCharacter).function = "Unspecified";
-                    // remove from bailiff position
-                    this.parent.fiefToView.bailiff = null;
+                    if (this.parent.fiefToView.bailiff is NonPlayerCharacter)
+                    {
+                        // set ex-bailiff's function
+                        (this.parent.fiefToView.bailiff as NonPlayerCharacter).function = "Unspecified";
+                    }
                 }
 
                 // set the selected NPC as bailiff
