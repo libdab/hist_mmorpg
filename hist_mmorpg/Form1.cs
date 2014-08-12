@@ -2164,7 +2164,12 @@ namespace hist_mmorpg
             // clear existing items in characters list
             this.houseCharListView.Items.Clear();
 
-            // iterates through household characters
+            // variables needed for name check (to see if NPC needs naming)
+            String nameWarning = "The following offspring need to be named:\r\n\r\n";
+            bool showNameWarning = false;
+
+            // iterates through household characters adding information to ListView
+            // and checking if naming is required
             for (int i = 0; i < this.myChar.myNPCs.Count; i++)
             {
                 ListViewItem houseChar = null;
@@ -2187,6 +2192,18 @@ namespace hist_mmorpg
                     houseChar.SubItems.Add("Yes");
                 }
 
+                // check if needs to be named
+                if (this.myChar.myNPCs[i].familyID != null)
+                {
+                    bool nameRequired = this.myChar.myNPCs[i].checkForName(0);
+
+                    if (nameRequired)
+                    {
+                        showNameWarning = true;
+                        nameWarning += " - " + this.myChar.myNPCs[i].charID + " (" + this.myChar.myNPCs[i].firstName + " " + this.myChar.myNPCs[i].familyName + ")\r\n";
+                    }
+                }
+
                 if (houseChar != null)
                 {
                     // if NPC passed in as parameter, show as selected
@@ -2203,6 +2220,12 @@ namespace hist_mmorpg
 
             this.houseCharListView.HideSelection = false;
             this.houseCharListView.Focus();
+
+            if (showNameWarning)
+            {
+                nameWarning += "\r\nAny children who are not named by the age of one will be named after his highness the king.";
+                System.Windows.Forms.MessageBox.Show(nameWarning);
+            }
         }
 
         /// <summary>
@@ -3828,7 +3851,7 @@ namespace hist_mmorpg
                 this.houseCampDaysTextBox.Enabled = true;
 
                 // if character aged 0 and firstname = "Baby", enable 'name child' controls
-                if ((charToDisplay.calcCharAge() == 0) && (charToDisplay.firstName.Equals("Baby")))
+                if ((charToDisplay as NonPlayerCharacter).checkForName(0))
                 {
                     this.familyNameChildButton.Enabled = true;
                     this.familyNameChildTextBox.Enabled = true;

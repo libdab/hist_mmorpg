@@ -890,18 +890,17 @@ namespace hist_mmorpg
                 this.isAlive = false;
             }
 
-            // TODO: check if family allowance has increased due to age
-            // Wife: 30,000
-            // Eldest son: 20,000 (age 0-14), 30,000 (15-20), 40,000 (21 >)
-            // Other son: 15,000, 20,000, 30,000
-            // Daughter: 10,000, 15,000, 20,000
-            // Grandchild: as above
-
-            // TODO: if (age >= 1) && (firstName.Equals("Baby")), character firstname = king's?
-
-            // TODO: adjust stature (due to age)
-
-            // TODO: adjust health (due to age)
+            // if (age >= 1) && (firstName.Equals("Baby")), character firstname = king's
+            if (this.familyID != null)
+            {
+                if ((this as NonPlayerCharacter).checkForName(1))
+                {
+                    // get king's firstName
+                    String newFirstName = "";
+                    newFirstName = Globals.fiefMasterList[Globals.pcMasterList[this.familyID].homeFief].province.kingdom.king.firstName;
+                    this.firstName = newFirstName;
+                }
+            }
 
             // TODO: childbirth (and associated chance of death for mother/baby)
 
@@ -1421,6 +1420,24 @@ namespace hist_mmorpg
             }
 
             return famAllowance;
+        }
+
+        /// <summary>
+        /// Checks if recently born NPC still needs to be named
+        /// </summary>
+        /// <returns>bool indicating whether NPC needs naming</returns>
+        /// <param name="age">NPC age to check for</param>
+        public bool checkForName(byte age)
+        {
+            bool needsName = false;
+
+            // look for NPC with age < 1 who has firstname of 'baby'
+            if ((this.calcCharAge() == age) && ((this.firstName).ToLower().Equals("baby")))
+            {
+                needsName = true;
+            }
+
+            return needsName;
         }
 
         /// <summary>
