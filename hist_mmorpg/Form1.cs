@@ -1849,6 +1849,9 @@ namespace hist_mmorpg
 		/// </summary>
 		public void seasonUpdate()
 		{
+            // create Random to pass into any methods requiring random number
+            Random myRand = new Random();
+
             // season and year
             this.clock.advanceSeason();
 
@@ -1864,6 +1867,12 @@ namespace hist_mmorpg
 				if (pcEntry.Value.isAlive)
 				{
 					pcEntry.Value.updateCharacter();
+
+                    // finish previously started multi-hex move if necessary
+                    if (pcEntry.Value.goTo.Count > 0)
+                    {
+                        this.characterMultiMove(pcEntry.Value, true);
+                    }
 				}
 			}
 
@@ -1874,21 +1883,38 @@ namespace hist_mmorpg
 				{
                     npcEntry.Value.updateCharacter();
 
-                    // NPC-specific
-                    this.seasonUpdateNPC(npcEntry.Value);
-				}
-			}
+                    // random move if has no boss and is not family member
+                    if ((npcEntry.Value.myBoss == null) && (npcEntry.Value.familyID == null))
+                    {
+                        this.randomMoveNPC(npcEntry.Value, true);
+                    }
 
-        }
+                    // finish previously started multi-hex move if necessary
+                    if (npcEntry.Value.goTo.Count > 0)
+                    {
+                        this.characterMultiMove(npcEntry.Value, true);
+                    }
+                }
 
-        /// <summary>
-        /// End/start of season updates specific to NPC objects
-        /// </summary>
-        /// <param name="npc">NPC to update</param>
-        public void seasonUpdateNPC(NonPlayerCharacter npc)
-        {
-            // random move if has no boss
-            this.randomMoveNPC(npc);
+            }
+
+            // iterate through clock's scheduled events
+            // check for births
+            foreach (JournalEvent jEvent in this.clock.scheduledEvents.events)
+            {
+                if ((jEvent.year == this.clock.currentYear) && (jEvent.season == this.clock.currentSeason))
+                {
+                    if ((jEvent.type).ToLower().Equals("birth"))
+                    {
+                        // get parents
+                        NonPlayerCharacter mummy = Globals.npcMasterList[jEvent.personae];
+                        Character daddy = Globals.pcMasterList[mummy.spouse];
+
+                        // run childbirth procedure
+                        this.giveBirth(myRand, mummy, daddy);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -1896,19 +1922,23 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="npc">NPC to move</param>
-        public bool randomMoveNPC(NonPlayerCharacter npc)
+        /// <param name="isUpdate">Indicates if is update mode</param>
+        public bool randomMoveNPC(NonPlayerCharacter npc, bool isUpdate)
         {
             bool success = false;
 
-            if (npc.myBoss == null)
+            // get a destination
+            Fief target = this.gameMap.chooseRandomHex(npc.location);
+
+            if (target != null)
             {
-                Fief target = this.gameMap.chooseRandomHex(npc.location);
-                if (target != null)
-                {
-                    double travelCost = this.getTravelCost(npc.location, target);
-                    success = npc.moveCharacter(target, travelCost);
-                }
+                // get travel cost
+                double travelCost = this.getTravelCost(npc.location, target);
+
+                // perform move
+                success = npc.moveCharacter(target, travelCost, isUpdate);
             }
+
             return success;
         }
 
@@ -3259,7 +3289,7 @@ namespace hist_mmorpg
                 // get travel cost
                 double travelCost = this.getTravelCost(this.myChar.location, targetFief);
                 // attempt to move player to target fief
-                success = this.myChar.moveCharacter(targetFief, travelCost);
+                success = this.myChar.moveCharacter(targetFief, travelCost, false);
                 // if move successfull, refresh travel display
                 if (success)
                 {
@@ -3557,7 +3587,8 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="ch">Character to be moved</param>
-        private bool characterMultiMove(Character ch)
+        /// <param name="isUpdate">Indicates if is update mode</param>
+        private bool characterMultiMove(Character ch, bool isUpdate)
         {
             bool success = false;
             double travelCost = 0;
@@ -3568,7 +3599,7 @@ namespace hist_mmorpg
                 // get travel cost
                 travelCost = this.getTravelCost(ch.location, ch.goTo.Peek());
                 // attempt to move character
-                success = ch.moveCharacter(ch.goTo.Peek(), travelCost);
+                success = ch.moveCharacter(ch.goTo.Peek(), travelCost, isUpdate);
                 // if move successfull, remove fief from goTo queue
                 if (success)
                 {
@@ -3616,7 +3647,7 @@ namespace hist_mmorpg
                 // if valid, perform move
                 if (this.charToView.goTo.Count > 0)
                 {
-                    this.characterMultiMove(this.charToView);
+                    this.characterMultiMove(this.charToView, false);
                 }
             }
             else
@@ -4113,7 +4144,7 @@ namespace hist_mmorpg
                 if (route.Count > 0)
                 {
                     this.charToView.goTo = route;
-                    this.characterMultiMove(this.charToView);
+                    this.characterMultiMove(this.charToView, false);
                 }
             }
 

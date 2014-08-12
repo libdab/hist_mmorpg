@@ -649,30 +649,34 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
-        public virtual bool moveCharacter(Fief target, double cost)
+        /// <param name="isUpdate">Indicates if is update mode</param>
+        public virtual bool moveCharacter(Fief target, double cost, bool isUpdate)
         {
             bool success = false;
 
-            // check to see if character has fiefs in their goTo queue
-            // (i.e. they have a pre-planned move)
-            if (this.goTo.Count > 0)
+            if (!isUpdate)
             {
-                // check to see if this fief is the next planned destination
-                if (target != this.goTo.Peek())
+                // check to see if character has fiefs in their goTo queue
+                // (i.e. they have a pre-planned move)
+                if (this.goTo.Count > 0)
                 {
-                    // if not the next planned destination, give choice to continue or cancel
-                    DialogResult dialogResult = MessageBox.Show("This move will clear your stored destination list.  Click 'OK' to proceed.", "Proceed with move?", MessageBoxButtons.OKCancel);
-                    
-                    // if choose to cancel, return
-                    if (dialogResult == DialogResult.Cancel)
+                    // check to see if this fief is the next planned destination
+                    if (target != this.goTo.Peek())
                     {
-                        System.Windows.Forms.MessageBox.Show("Move cancelled.");
-                        return success;
-                    }
-                    // if choose to proceed, clear entries from goTo
-                    else
-                    {
-                        this.goTo.Clear();
+                        // if not the next planned destination, give choice to continue or cancel
+                        DialogResult dialogResult = MessageBox.Show("This move will clear your stored destination list.  Click 'OK' to proceed.", "Proceed with move?", MessageBoxButtons.OKCancel);
+
+                        // if choose to cancel, return
+                        if (dialogResult == DialogResult.Cancel)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Move cancelled.");
+                            return success;
+                        }
+                        // if choose to proceed, clear entries from goTo
+                        else
+                        {
+                            this.goTo.Clear();
+                        }
                     }
                 }
             }
@@ -701,7 +705,10 @@ namespace hist_mmorpg
                     this.goTo.Enqueue(target);
                 }
 
-                System.Windows.Forms.MessageBox.Show("I'm afraid you've run out of days, Milord!\r\nYour journey will continue next season.");
+                if (!isUpdate)
+                {
+                    System.Windows.Forms.MessageBox.Show("I'm afraid you've run out of days, Milord!\r\nYour journey will continue next season.");
+                }
             }
 
             return success;
@@ -902,9 +909,6 @@ namespace hist_mmorpg
                 }
             }
 
-            // TODO: childbirth (and associated chance of death for mother/baby)
-
-            // TODO: Resume movement based on goTo queue
         }
 
 
@@ -1274,11 +1278,12 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
-        public override bool moveCharacter(Fief target, double cost)
+        /// <param name="isUpdate">Indicates if is update mode</param>
+        public override bool moveCharacter(Fief target, double cost, bool isUpdate)
         {
 
             // use base method to move PlayerCharacter
-            bool success = base.moveCharacter(target, cost);
+            bool success = base.moveCharacter(target, cost, isUpdate);
 
             // if PlayerCharacter move successfull
             if (success)
@@ -1289,7 +1294,7 @@ namespace hist_mmorpg
                     // if employee in entourage, move employee
                     if (this.myNPCs[i].inEntourage)
                     {
-                        this.myNPCs[i].moveCharacter(target, cost);
+                        this.myNPCs[i].moveCharacter(target, cost, isUpdate);
                     }
                 }
             }
