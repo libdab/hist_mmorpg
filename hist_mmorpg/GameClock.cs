@@ -104,6 +104,7 @@ namespace hist_mmorpg
         {
             if (this.currentSeason == 3)
             {
+                this.currentYear++;
                 this.currentSeason = 0;
             }
             else

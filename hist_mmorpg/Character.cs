@@ -890,8 +890,6 @@ namespace hist_mmorpg
                 this.isAlive = false;
             }
 
-            // TODO: advance character age
-
             // TODO: check if family allowance has increased due to age
             // Wife: 30,000
             // Eldest son: 20,000 (age 0-14), 30,000 (15-20), 40,000 (21 >)
@@ -1378,6 +1376,52 @@ namespace hist_mmorpg
 			this.lastOffer = npcr.lastOffer;
             this.function = npcr.function;
 		}
+
+        /// <summary>
+        /// Calculates the family allowance of a family NPC, based on age and function
+        /// </summary>
+        /// <returns>uint containing family allowance</returns>
+        public uint calcFamilyAllowance()
+        {
+            uint famAllowance = 0;
+
+            // factor in family function
+            if (this.function.Equals("Wife"))
+            {
+                famAllowance = 30000;
+            }
+            else
+            {
+                if ((this.function.ToLower()).Equals("heir"))
+                {
+                    famAllowance = 20000;
+                }
+                else if (((this.function.ToLower()).Equals("son")) || ((this.function.ToLower()).Equals("son-in-law")))
+                {
+                    famAllowance = 15000;
+                }
+                else if (((this.function.ToLower()).Equals("daughter")) || ((this.function.ToLower()).Equals("daughter-in-law")))
+                {
+                    famAllowance = 10000;
+                }
+                else if ((this.function.ToLower()).Contains("grand"))
+                {
+                    famAllowance = 10000;
+                }
+
+                // factor in age
+                if ((this.calcCharAge() > 14) && (this.calcCharAge() < 21))
+                {
+                    famAllowance = Convert.ToUInt32(famAllowance * 1.5);
+                }
+                else if (this.calcCharAge() > 20)
+                {
+                    famAllowance = famAllowance * 2;
+                }
+            }
+
+            return famAllowance;
+        }
 
         /// <summary>
         /// Calculates the potential salary (per season) for the NonPlayerCharacter,

@@ -1849,6 +1849,9 @@ namespace hist_mmorpg
 		/// </summary>
 		public void seasonUpdate()
 		{
+            // season and year
+            this.clock.advanceSeason();
+
 			// fiefs
             foreach (KeyValuePair<string, Fief> fiefEntry in Globals.fiefMasterList)
 			{
@@ -1870,13 +1873,12 @@ namespace hist_mmorpg
 				if (npcEntry.Value.isAlive)
 				{
                     npcEntry.Value.updateCharacter();
+
                     // NPC-specific
                     this.seasonUpdateNPC(npcEntry.Value);
 				}
 			}
 
-            // GameClock (advance season)
-            this.clock.advanceSeason();
         }
 
         /// <summary>
