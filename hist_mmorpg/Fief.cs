@@ -1272,6 +1272,15 @@ namespace hist_mmorpg
         /// </summary>
         public void updateFief()
         {
+            // update bailiffDaysInFief if appropriate
+            if (this.characters.Contains(this.bailiff))
+            {
+                if (this.bailiff.days > 0)
+                {
+                    this.bailiffDaysInFief += Convert.ToByte(this.bailiff.days);
+                    this.bailiff.days = 0;
+                }
+            }
             // validate fief expenditure against treasury
             this.validateFiefExpenditure();
             // update loyalty level
@@ -1300,6 +1309,8 @@ namespace hist_mmorpg
             this.status = this.checkFiefStatus();
             // update fief treasury with new surplus
             this.treasury = calcNewTreasury();
+            // reset bailiffDaysInFief
+            this.bailiffDaysInFief = 0;
         }
 
         /// <summary>

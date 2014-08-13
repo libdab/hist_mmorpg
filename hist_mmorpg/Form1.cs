@@ -1847,74 +1847,115 @@ namespace hist_mmorpg
         /// <summary>
 		/// Updates game objects at end/start of season
 		/// </summary>
-		public void seasonUpdate()
+        /// <param name="type">Specifies type of update to perform (mainly used for testing)</param>
+        public void seasonUpdate(String type = "full")
 		{
+            // used to check if character update is necessary
+            bool performCharacterUpdate = true;
+
             // create Random to pass into any methods requiring random number
             Random myRand = new Random();
 
             // season and year
             this.clock.advanceSeason();
 
-			// fiefs
-            foreach (KeyValuePair<string, Fief> fiefEntry in Globals.fiefMasterList)
-			{
-				fiefEntry.Value.updateFief();
-			}
-
-            // PlayerCharacters
-            foreach (KeyValuePair<string, PlayerCharacter> pcEntry in Globals.pcMasterList)
-			{
-				if (pcEntry.Value.isAlive)
-				{
-					pcEntry.Value.updateCharacter();
-
-                    // finish previously started multi-hex move if necessary
-                    if (pcEntry.Value.goTo.Count > 0)
-                    {
-                        this.characterMultiMove(pcEntry.Value, true);
-                    }
-				}
-			}
-
-            // NonPlayerCharacters
-            foreach (KeyValuePair<string, NonPlayerCharacter> npcEntry in Globals.npcMasterList)
-			{
-				if (npcEntry.Value.isAlive)
-				{
-                    npcEntry.Value.updateCharacter();
-
-                    // random move if has no boss and is not family member
-                    if ((npcEntry.Value.myBoss == null) && (npcEntry.Value.familyID == null))
-                    {
-                        this.randomMoveNPC(npcEntry.Value, true);
-                    }
-
-                    // finish previously started multi-hex move if necessary
-                    if (npcEntry.Value.goTo.Count > 0)
-                    {
-                        this.characterMultiMove(npcEntry.Value, true);
-                    }
-                }
-
-            }
-
-            // iterate through clock's scheduled events
-            // check for births
-            foreach (JournalEvent jEvent in this.clock.scheduledEvents.events)
+            if (!type.Equals("character"))
             {
-                if ((jEvent.year == this.clock.currentYear) && (jEvent.season == this.clock.currentSeason))
+                // fiefs
+                foreach (KeyValuePair<string, Fief> fiefEntry in Globals.fiefMasterList)
                 {
-                    if ((jEvent.type).ToLower().Equals("birth"))
-                    {
-                        // get parents
-                        NonPlayerCharacter mummy = Globals.npcMasterList[jEvent.personae];
-                        Character daddy = Globals.pcMasterList[mummy.spouse];
+                    fiefEntry.Value.updateFief();
+                }
+            }
 
-                        // run childbirth procedure
-                        this.giveBirth(myRand, mummy, daddy);
+            if (!type.Equals("fief"))
+            {
+                // PlayerCharacters
+                foreach (KeyValuePair<string, PlayerCharacter> pcEntry in Globals.pcMasterList)
+                {
+                    // check if PlayerCharacter is alive
+                    performCharacterUpdate = pcEntry.Value.isAlive;
+
+                    if (performCharacterUpdate)
+                    {
+                        // updateCharacter includes checkDeath
+                        pcEntry.Value.updateCharacter(myRand);
+
+                        // check again if PlayerCharacter is alive (after checkDeath)
+                        if (pcEntry.Value.isAlive)
+                        {
+                            // finish previously started multi-hex move if necessary
+                            if (pcEntry.Value.goTo.Count > 0)
+                            {
+                                this.characterMultiMove(pcEntry.Value, true);
+                            }
+                        }
+                    }
+                }
+
+                // NonPlayerCharacters
+                foreach (KeyValuePair<string, NonPlayerCharacter> npcEntry in Globals.npcMasterList)
+                {
+                    // check if NonPlayerCharacter is alive
+                    performCharacterUpdate = npcEntry.Value.isAlive;
+
+                    if (performCharacterUpdate)
+                    {
+                        // updateCharacter includes checkDeath
+                        npcEntry.Value.updateCharacter(myRand);
+
+                        // check again if NonPlayerCharacter is alive (after checkDeath)
+                        if (npcEntry.Value.isAlive)
+                        {
+                            // random move if has no boss and is not family member
+                            if ((npcEntry.Value.myBoss == null) && (npcEntry.Value.familyID == null))
+                            {
+                                this.randomMoveNPC(npcEntry.Value, true);
+                            }
+
+                            // finish previously started multi-hex move if necessary
+                            if (npcEntry.Value.goTo.Count > 0)
+                            {
+                                this.characterMultiMove(npcEntry.Value, true);
+                            }
+                        }
+                    }
+
+                }
+
+                // iterate through clock's scheduled events
+                // check for births
+                foreach (JournalEvent jEvent in this.clock.scheduledEvents.events)
+                {
+                    if ((jEvent.year == this.clock.currentYear) && (jEvent.season == this.clock.currentSeason))
+                    {
+                        if ((jEvent.type).ToLower().Equals("birth"))
+                        {
+                            // get parents
+                            NonPlayerCharacter mummy = Globals.npcMasterList[jEvent.personae];
+                            Character daddy = Globals.pcMasterList[mummy.spouse];
+
+                            // run childbirth procedure
+                            this.giveBirth(myRand, mummy, daddy);
+                        }
                     }
                 }
             }
+
+            /*
+            this.fiefContainer.Focus();
+            if (this.fiefContainer.ContainsFocus)
+            {
+                System.Windows.Forms.MessageBox.Show("Fief");
+            }
+            else if (this.characterContainer.ContainsFocus)
+            {
+				System.Windows.Forms.MessageBox.Show("Character");
+            }
+            else if (this.travelContainer.ContainsFocus)
+            {
+				System.Windows.Forms.MessageBox.Show("Travel");
+            } */
         }
 
         /// <summary>
@@ -2908,7 +2949,6 @@ namespace hist_mmorpg
                 this.adjustKeepSpendTextBox.Enabled = false;
                 this.adjustTaxTextBox.Enabled = false;
                 this.viewBailiffBtn.Enabled = false;
-                this.updateFiefBtn.Enabled = false;
                 this.lockoutBtn.Enabled = false;
                 this.selfBailiffBtn.Enabled = false;
                 this.setBailiffBtn.Enabled = false;
@@ -2947,7 +2987,6 @@ namespace hist_mmorpg
                 this.adjustKeepSpendTextBox.Enabled = true;
                 this.adjustTaxTextBox.Enabled = true;
                 this.viewBailiffBtn.Enabled = true;
-                this.updateFiefBtn.Enabled = true;
                 this.lockoutBtn.Enabled = true;
                 this.selfBailiffBtn.Enabled = true;
                 this.setBailiffBtn.Enabled = true;
@@ -4824,6 +4863,63 @@ namespace hist_mmorpg
                 System.Windows.Forms.MessageBox.Show("Please select a character from the list.");
             }
 
+        }
+
+        /// <summary>
+        /// Responds to the click event of the exitToolStripMenuItem
+        /// closing the application
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // closes application
+            Application.Exit();
+        }
+
+        /// <summary>
+        /// Overrides System.Windows.Forms.OnFormClosing to allow for more controlled
+        /// closing sequence whether exiting via File menu or X button.  Allows closing
+        /// to proceed unhindered if Windows shutting down
+        /// </summary>
+        /// <param name="e">The event args</param>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            // allows immediate closing if Windows shutting down
+            if (e.CloseReason == CloseReason.WindowsShutDown) return;
+
+            // Confirm user wants to close
+            switch (MessageBox.Show("Really Quit?", "Exit", MessageBoxButtons.OKCancel))
+            {
+                case DialogResult.OK:
+                    // TODO: do whatever necessary to ensure safe closedown
+                    break;
+                // if cancel pressed, do nothing (don't close)
+                case DialogResult.Cancel:
+                    e.Cancel = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the fullToolStripMenuItem
+        /// performing a full seasonal update
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void testUpdateMenuItem_Click(object sender, EventArgs e)
+        {
+            // necessary in order to be able to access button tag
+            ToolStripItem menuItem = sender as ToolStripItem;
+
+            // get type of update from button tag
+            String updateType = menuItem.Tag.ToString();
+
+            this.seasonUpdate(updateType);
         }
 
     }

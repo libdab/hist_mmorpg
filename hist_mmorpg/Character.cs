@@ -535,6 +535,36 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Performs necessary actions upon the death of a character
+        /// </summary>
+        public void processDeath()
+        {
+            // TODO: check if involved with any scheduled events and remove
+
+            // TODO: set isAlive = false
+
+            // TODO: remove from fief
+
+            // TODO: remove from fief barred lists
+
+            // TODO: remove from spouse
+
+            // TODO: check and remove from bailiff positions
+
+            // TODO: check and remove from army leadership
+
+            // TODO: clear titles and assign to heir (for PC) or owner (for NPC)
+
+            // TODO: (Player) transfer dead player PC to chosen heir = create new PC from NPC
+            // transfer fiefs, titles, ancestral ownership, change family functions
+
+            // TODO: (NPC) check and remove from PC myNPCs list
+
+            // TODO: (NPC) remove myBoss?  Maybe not required.
+
+        }
+        
+        /// <summary>
         /// Enables character to enter keep (if not barred)
         /// </summary>
         /// <returns>bool indicating success</returns>
@@ -883,30 +913,34 @@ namespace hist_mmorpg
         /// <summary>
         /// Updates character data at the end/beginning of the season
         /// </summary>
-        public void updateCharacter()
+        /// <param name="myRand">Random to use for any processes requiring a random number</param>
+        public void updateCharacter(Random myRand)
         {
-            // create Random to use with various chance calculations
-            Random myRand = new Random();
-
-            // use any remaining days to go towards bailiffDaysInFief, if appropriate
-            this.useUpDays();
-
             // check for character death
             if (this.checkDeath(myRand))
             {
                 this.isAlive = false;
             }
 
-            // if (age >= 1) && (firstName.Equals("Baby")), character firstname = king's
-            if (this.familyID != null)
+            if (this.isAlive)
             {
-                if ((this as NonPlayerCharacter).checkForName(1))
+                if (this is NonPlayerCharacter)
                 {
-                    // get king's firstName
-                    String newFirstName = "";
-                    newFirstName = Globals.fiefMasterList[Globals.pcMasterList[this.familyID].homeFief].province.kingdom.king.firstName;
-                    this.firstName = newFirstName;
+                    // if (age >= 1) && (firstName.Equals("Baby")), character firstname = king's
+                    if (this.familyID != null)
+                    {
+                        if ((this as NonPlayerCharacter).checkForName(1))
+                        {
+                            // get king's firstName
+                            String newFirstName = "";
+                            newFirstName = Globals.fiefMasterList[Globals.pcMasterList[this.familyID].homeFief].province.kingdom.king.firstName;
+                            this.firstName = newFirstName;
+                        }
+                    }
                 }
+
+                // reset days
+                this.days = 90;
             }
 
         }
