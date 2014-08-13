@@ -1942,20 +1942,47 @@ namespace hist_mmorpg
                 }
             }
 
-            /*
-            this.fiefContainer.Focus();
+            // refresh current screen
+            // fief
             if (this.fiefContainer.ContainsFocus)
             {
-                System.Windows.Forms.MessageBox.Show("Fief");
+                this.refreshFiefContainer(this.fiefToView);
             }
+                // character
             else if (this.characterContainer.ContainsFocus)
             {
-				System.Windows.Forms.MessageBox.Show("Character");
+                this.refreshCharacterContainer(this.charToView);
             }
-            else if (this.travelContainer.ContainsFocus)
+                // household affairs
+            else if (this.houseContainer.ContainsFocus)
             {
-				System.Windows.Forms.MessageBox.Show("Travel");
-            } */
+                NonPlayerCharacter npcToDisplay = null;
+
+                // check if NPC being displayed (to refresh NPC display)
+                if (this.houseCharListView.SelectedItems.Count > 0)
+                {
+                    npcToDisplay = Globals.npcMasterList[this.houseCharListView.SelectedItems[0].SubItems[1].Text];
+                }
+
+                this.refreshHouseholdDisplay(npcToDisplay);
+            }
+                // meeting place
+            else if (this.meetingPlaceContainer.ContainsFocus)
+            {
+                if ((this.meetingPlaceLabel.Text).ToLower().Contains("tavern"))
+                {
+                    this.refreshMeetingPlaceDisplay("tavern");
+                }
+                else if ((this.meetingPlaceLabel.Text).ToLower().Contains("outside"))
+                {
+                    this.refreshMeetingPlaceDisplay("outsidekeep");
+                }
+                else if ((this.meetingPlaceLabel.Text).ToLower().Contains("court"))
+                {
+                    this.refreshMeetingPlaceDisplay("court");
+                }
+
+            }
         }
 
         /// <summary>
@@ -2217,7 +2244,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes Household display
         /// </summary>
-        /// <param name="place">String specifying whether court, tavern, outside keep</param>
+        /// <param name="npc">NonPlayerCharacter to display</param>
         public void refreshHouseholdDisplay(NonPlayerCharacter npc = null)
         {
             // remove any previously displayed characters
@@ -2890,6 +2917,7 @@ namespace hist_mmorpg
 			}
 
             this.characterContainer.BringToFront();
+            this.characterContainer.Focus();
         }
 
         /// <summary>
@@ -3066,6 +3094,7 @@ namespace hist_mmorpg
             }
 
             this.fiefContainer.BringToFront();
+            this.fiefContainer.Focus();
 
             if (displayWarning)
             {
@@ -3246,6 +3275,7 @@ namespace hist_mmorpg
             this.refreshTravelContainer();
             // show navigation screen
             this.travelContainer.BringToFront();
+            this.travelContainer.Focus();
         }
 
         /// <summary>
@@ -3477,6 +3507,7 @@ namespace hist_mmorpg
                 this.refreshMeetingPlaceDisplay(place);
                 // display court screen
                 this.meetingPlaceContainer.BringToFront();
+                this.meetingPlaceContainer.Focus();
             }
 
         }
@@ -3503,6 +3534,7 @@ namespace hist_mmorpg
             this.refreshMeetingPlaceDisplay(place);
             // display tavern screen
             this.meetingPlaceContainer.BringToFront();
+            this.meetingPlaceContainer.Focus();
         }
 
         /// <summary>
@@ -3864,6 +3896,7 @@ namespace hist_mmorpg
             this.refreshMeetingPlaceDisplay(place);
             // display tavern screen
             this.meetingPlaceContainer.BringToFront();
+            this.meetingPlaceContainer.Focus();
         }
 
         /// <summary>
@@ -3879,6 +3912,7 @@ namespace hist_mmorpg
             this.refreshHouseholdDisplay();
             // display household affairs screen
             this.houseContainer.BringToFront();
+            this.houseContainer.Focus();
         }
 
         /// <summary>

@@ -209,7 +209,7 @@ namespace hist_mmorpg
             // fullToolStripMenuItem
             // 
             this.fullToolStripMenuItem.Name = "fullToolStripMenuItem";
-            this.fullToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fullToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.fullToolStripMenuItem.Tag = "full";
             this.fullToolStripMenuItem.Text = "Full";
             this.fullToolStripMenuItem.Click += new System.EventHandler(this.testUpdateMenuItem_Click);
@@ -217,7 +217,7 @@ namespace hist_mmorpg
             // characterToolStripMenuItem1
             // 
             this.characterToolStripMenuItem1.Name = "characterToolStripMenuItem1";
-            this.characterToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.characterToolStripMenuItem1.Size = new System.Drawing.Size(125, 22);
             this.characterToolStripMenuItem1.Tag = "character";
             this.characterToolStripMenuItem1.Text = "Character";
             this.characterToolStripMenuItem1.Click += new System.EventHandler(this.testUpdateMenuItem_Click);
@@ -225,7 +225,7 @@ namespace hist_mmorpg
             // fiefToolStripMenuItem1
             // 
             this.fiefToolStripMenuItem1.Name = "fiefToolStripMenuItem1";
-            this.fiefToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.fiefToolStripMenuItem1.Size = new System.Drawing.Size(125, 22);
             this.fiefToolStripMenuItem1.Tag = "fief";
             this.fiefToolStripMenuItem1.Text = "Fief";
             this.fiefToolStripMenuItem1.Click += new System.EventHandler(this.testUpdateMenuItem_Click);
@@ -1195,11 +1195,11 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
-            this.Controls.Add(this.fiefContainer);
-            this.Controls.Add(this.characterContainer);
-            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.meetingPlaceContainer);
+            this.Controls.Add(this.houseContainer);
+            this.Controls.Add(this.fiefContainer);
+            this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.MainMenuStrip = this.menuStrip1;
