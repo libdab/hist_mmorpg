@@ -594,7 +594,7 @@ namespace hist_mmorpg
             int fiefIncome = Convert.ToInt32(this.calcIncome(season) * this.calcStatusIncmMod());
 
             // calculate bottom line using specified season's income, expenses and overlord taxes
-            fiefBottomLine = (fiefIncome - (int)this.calcExpenses(season)) - (int)this.calcOlordTaxes(season);
+            fiefBottomLine = ((fiefIncome - (int)this.calcExpenses(season)) - (int)this.calcOlordTaxes(season)) - this.calcFamilyExpenses();
 
             return fiefBottomLine;
         }
@@ -642,13 +642,20 @@ namespace hist_mmorpg
                 double famSkillsModifier = 0;
 
                 // get famExpense rating of whoever has highest management rating
-                if (this.owner.management > Globals.npcMasterList[this.owner.spouse].management)
+                if (this.owner.isMarried)
                 {
-                    famSkillsModifier = this.owner.calcSkillEffect("famExpense");
+                    if (this.owner.management > Globals.npcMasterList[this.owner.spouse].management)
+                    {
+                        famSkillsModifier = this.owner.calcSkillEffect("famExpense");
+                    }
+                    else
+                    {
+                        famSkillsModifier = Globals.npcMasterList[this.owner.spouse].calcSkillEffect("famExpense");
+                    }
                 }
                 else
                 {
-                    famSkillsModifier = Globals.npcMasterList[this.owner.spouse].calcSkillEffect("famExpense");
+                    famSkillsModifier = this.owner.calcSkillEffect("famExpense");
                 }
 
                 // apply to family expenses

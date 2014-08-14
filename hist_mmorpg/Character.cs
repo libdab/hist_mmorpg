@@ -539,28 +539,115 @@ namespace hist_mmorpg
         /// </summary>
         public void processDeath()
         {
-            // TODO: check if involved with any scheduled events and remove
+            // 1. set isAlive = false
+            this.isAlive = false;
 
-            // TODO: set isAlive = false
+            // 2. remove from fief
+            this.location.characters.Remove(this);
 
-            // TODO: remove from fief
+            // 3. check if involved with any scheduled events and remove
+            // to store events to remove
+            List<JournalEvent> eventsToRemove = new List<JournalEvent>();
+            // iterate through clock's scheduled events
+            foreach (JournalEvent jEvent in this.clock.scheduledEvents.events)
+            {
+                // if event concerned with this character
+                if (jEvent.personae.Equals(this.charID))
+                {
+                    // store event
+                    eventsToRemove.Add(jEvent);
+                }
+            }
 
-            // TODO: remove from fief barred lists
+            // if events found, remove them
+            if (eventsToRemove.Count > 0)
+            {
+                foreach (JournalEvent thisEvent in eventsToRemove)
+                {
+                    this.clock.scheduledEvents.events.Remove(thisEvent);
+                }
 
-            // TODO: remove from spouse
+            }
+            // tidy up
+            eventsToRemove.Clear();
 
-            // TODO: check and remove from bailiff positions
+            // 4. remove from fief barred lists
+            if (this.location.barredCharacters.Contains(this.charID))
+            {
+                this.location.barredCharacters.Remove(this.charID);
+            }
+
+            // 5. if married, remove from spouse
+            if (this.isMarried)
+            {
+                if (Globals.npcMasterList.ContainsKey(this.spouse))
+                {
+                    Globals.npcMasterList[this.spouse].spouse = null;
+                    Globals.npcMasterList[this.spouse].isMarried = false;
+                }
+                else if (Globals.pcMasterList.ContainsKey(this.spouse))
+                {
+                    Globals.pcMasterList[this.spouse].spouse = null;
+                    Globals.pcMasterList[this.spouse].isMarried = false;
+                }
+                
+            }
+
+            // 6. (NPC) check and remove from PC myNPCs list
+            // 7. (NPC) check and remove from bailiff positions
+            if (this is NonPlayerCharacter)
+            {
+                // if is an employee
+                if ((this as NonPlayerCharacter).myBoss != null)
+                {
+                    // get boss
+                    PlayerCharacter boss = Globals.pcMasterList[(this as NonPlayerCharacter).myBoss];
+
+                    // check to see if is a bailiff.  If so, remove
+                    foreach (Fief thisFief in boss.ownedFiefs)
+                    {
+                        if (thisFief.bailiff == this)
+                        {
+                            thisFief.bailiff = null;
+                        }
+                    }
+
+                    // remove from boss's myNPCs
+                    boss.myNPCs.Remove((this as NonPlayerCharacter));
+                }
+
+                // if is a family member
+                if ((this as NonPlayerCharacter).familyID != null)
+                {
+                    // get boss
+                    PlayerCharacter familyHead = Globals.pcMasterList[(this as NonPlayerCharacter).familyID];
+
+                    // check to see if is a bailiff.  If so, remove
+                    foreach (Fief thisFief in familyHead.ownedFiefs)
+                    {
+                        if (thisFief.bailiff == this)
+                        {
+                            thisFief.bailiff = null;
+                        }
+                    }
+
+                    // remove from head of family's myNPCs
+                    familyHead.myNPCs.Remove((this as NonPlayerCharacter));
+                }
+
+                // TODO: inform PC
+            }
+
+            // TODO: (PC) check and remove from bailiff positions
 
             // TODO: check and remove from army leadership
 
             // TODO: clear titles and assign to heir (for PC) or owner (for NPC)
 
             // TODO: (Player) transfer dead player PC to chosen heir = create new PC from NPC
-            // transfer fiefs, titles, ancestral ownership, change family functions
-
-            // TODO: (NPC) check and remove from PC myNPCs list
-
-            // TODO: (NPC) remove myBoss?  Maybe not required.
+            // transfer fiefs, titles, ancestral ownership, employees, change family functions
+            // change familyID of all family members
+            // IF NO HEIR?
 
         }
         
@@ -765,20 +852,20 @@ namespace hist_mmorpg
         /// Calculates whether character manages to get spouse pregnant
         /// </summary>
         /// <returns>bool indicating success</returns>
-        /// <param name="mySpouse">Character's spouse</param>
-        public bool getSpousePregnant(NonPlayerCharacter mySpouse)
+        /// <param name="wife">Character's spouse</param>
+        public bool getSpousePregnant(NonPlayerCharacter wife)
         {
             bool success = false;
 
             // make sure not already pregnant
-            if (mySpouse.isPregnant)
+            if (wife.isPregnant)
             {
-                System.Windows.Forms.MessageBox.Show(mySpouse.firstName + " " + mySpouse.familyName + " is already pregnant, milord.  Don't be so impatient!", "PREGNANCY ATTEMPT CANCELLED");
+                System.Windows.Forms.MessageBox.Show(wife.firstName + " " + wife.familyName + " is already pregnant, milord.  Don't be so impatient!", "PREGNANCY ATTEMPT CANCELLED");
             }
             else
             {
                 // ensure player and spouse have at least 1 day remaining
-                double minDays = Math.Min(this.days, mySpouse.days);
+                double minDays = Math.Min(this.days, wife.days);
 
                 if (minDays < 1)
                 {
@@ -788,7 +875,7 @@ namespace hist_mmorpg
                 {
                     // ensure days are synchronised
                     this.days = minDays;
-                    mySpouse.days = minDays;
+                    wife.days = minDays;
 
                     // generate random (0 - 100) to see if pregnancy successful
                     Random rand = new Random();
@@ -801,7 +888,7 @@ namespace hist_mmorpg
                     double pregModifier = 0;
 
                     // spouse's age
-                    byte spouseAge = mySpouse.calcCharAge();
+                    byte spouseAge = wife.calcCharAge();
 
                     // calculate base chance of pregnancy, based on age of spouse
                     if ((!(spouseAge < 14)) && (!(spouseAge > 55)))
@@ -846,7 +933,7 @@ namespace hist_mmorpg
                     {
                         // modifier will be in range 0.4 - -0.4 depending on parent's virility
                         // 1. get average parent virility
-                        pregModifier = (this.virility + mySpouse.virility) / 2;
+                        pregModifier = (this.virility + wife.virility) / 2;
                         // 2. subtract 5 and divide by 10 to give final modifier
                         pregModifier = (pregModifier - 5) / 10;
 
@@ -865,7 +952,7 @@ namespace hist_mmorpg
                         if (randPercentage <= chanceOfPregnancy)
                         {
                             // set spouse as pregnant
-                            mySpouse.isPregnant = true;
+                            wife.isPregnant = true;
 
                             // schedule birth in clock sheduledEvents
                             uint birthYear = this.clock.currentYear;
@@ -879,30 +966,30 @@ namespace hist_mmorpg
                                 birthSeason = (byte)(birthSeason - 1);
                                 birthYear = birthYear + 1;
                             }
-                            JournalEvent birth = new JournalEvent(birthYear, birthSeason, mySpouse.charID, "birth");
+                            JournalEvent birth = new JournalEvent(birthYear, birthSeason, wife.charID, "birth");
                             this.clock.scheduledEvents.events.Add(birth);
 
                              // display message of celebration
-                            System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + mySpouse.firstName + " " + mySpouse.familyName + " is pregnant!", "PREGNANCY SUCCESSFUL");
+                            System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + wife.firstName + " " + wife.familyName + " is pregnant!", "PREGNANCY SUCCESSFUL");
                             success = true;
                         }
                         // if attempt not successful
                         else
                         {
                             // display encouraging message
-                            System.Windows.Forms.MessageBox.Show("I'm afraid " + mySpouse.firstName + " " + mySpouse.familyName + " is not pregnant.  Better luck next time, milord!", "PREGNANCY UNSUCCESSFUL");
+                            System.Windows.Forms.MessageBox.Show("I'm afraid " + wife.firstName + " " + wife.familyName + " is not pregnant.  Better luck next time, milord!", "PREGNANCY UNSUCCESSFUL");
                         }
 
                         // succeed or fail, deduct a day
                         this.days--;
-                        mySpouse.days--;
+                        wife.days--;
 
                     }
                     // if pregnancy impossible
                     else
                     {
                         // give the player the bad news
-                        System.Windows.Forms.MessageBox.Show("Ahem ...\r\n\r\nUnfortunately, the fief physician advises that " + mySpouse.firstName + " " + mySpouse.familyName + " will never get pregnant with her current partner", "PREGNANCY UNSUCCESSFUL");
+                        System.Windows.Forms.MessageBox.Show("Ahem ...\r\n\r\nUnfortunately, the fief physician advises that " + wife.firstName + " " + wife.familyName + " will never get pregnant with her current partner", "PREGNANCY UNSUCCESSFUL");
                     }
                 }
             }

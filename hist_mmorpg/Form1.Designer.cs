@@ -126,6 +126,8 @@ namespace hist_mmorpg
             this.houseCharListContainer = new System.Windows.Forms.SplitContainer();
             this.houseCharListLabel = new System.Windows.Forms.Label();
             this.houseCharListView = new System.Windows.Forms.ListView();
+            this.travelLocationLabel = new System.Windows.Forms.Label();
+            this.travelDaysLabel = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -286,7 +288,7 @@ namespace hist_mmorpg
             // navigateToolStripMenuItem
             // 
             this.navigateToolStripMenuItem.Name = "navigateToolStripMenuItem";
-            this.navigateToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.navigateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.navigateToolStripMenuItem.Text = "Navigate";
             this.navigateToolStripMenuItem.Click += new System.EventHandler(this.navigateToolStripMenuItem_Click);
             // 
@@ -774,6 +776,8 @@ namespace hist_mmorpg
             // 
             // travelNavigationPanel
             // 
+            this.travelNavigationPanel.Controls.Add(this.travelDaysLabel);
+            this.travelNavigationPanel.Controls.Add(this.travelLocationLabel);
             this.travelNavigationPanel.Controls.Add(this.travel_SE_btn);
             this.travelNavigationPanel.Controls.Add(this.travel_SW_btn);
             this.travelNavigationPanel.Controls.Add(this.travel_E_btn);
@@ -783,12 +787,12 @@ namespace hist_mmorpg
             this.travelNavigationPanel.Controls.Add(this.travel_NW_btn);
             this.travelNavigationPanel.Location = new System.Drawing.Point(3, 6);
             this.travelNavigationPanel.Name = "travelNavigationPanel";
-            this.travelNavigationPanel.Size = new System.Drawing.Size(475, 416);
+            this.travelNavigationPanel.Size = new System.Drawing.Size(475, 489);
             this.travelNavigationPanel.TabIndex = 0;
             // 
             // travel_SE_btn
             // 
-            this.travel_SE_btn.Location = new System.Drawing.Point(231, 265);
+            this.travel_SE_btn.Location = new System.Drawing.Point(241, 338);
             this.travel_SE_btn.Name = "travel_SE_btn";
             this.travel_SE_btn.Size = new System.Drawing.Size(137, 123);
             this.travel_SE_btn.TabIndex = 6;
@@ -799,7 +803,7 @@ namespace hist_mmorpg
             // 
             // travel_SW_btn
             // 
-            this.travel_SW_btn.Location = new System.Drawing.Point(88, 265);
+            this.travel_SW_btn.Location = new System.Drawing.Point(98, 338);
             this.travel_SW_btn.Name = "travel_SW_btn";
             this.travel_SW_btn.Size = new System.Drawing.Size(137, 123);
             this.travel_SW_btn.TabIndex = 5;
@@ -810,7 +814,7 @@ namespace hist_mmorpg
             // 
             // travel_E_btn
             // 
-            this.travel_E_btn.Location = new System.Drawing.Point(299, 136);
+            this.travel_E_btn.Location = new System.Drawing.Point(309, 209);
             this.travel_E_btn.Name = "travel_E_btn";
             this.travel_E_btn.Size = new System.Drawing.Size(137, 123);
             this.travel_E_btn.TabIndex = 4;
@@ -821,7 +825,7 @@ namespace hist_mmorpg
             // 
             // travel_Home_btn
             // 
-            this.travel_Home_btn.Location = new System.Drawing.Point(156, 136);
+            this.travel_Home_btn.Location = new System.Drawing.Point(166, 209);
             this.travel_Home_btn.Name = "travel_Home_btn";
             this.travel_Home_btn.Size = new System.Drawing.Size(137, 123);
             this.travel_Home_btn.TabIndex = 3;
@@ -830,7 +834,7 @@ namespace hist_mmorpg
             // 
             // travel_W_btn
             // 
-            this.travel_W_btn.Location = new System.Drawing.Point(13, 136);
+            this.travel_W_btn.Location = new System.Drawing.Point(23, 209);
             this.travel_W_btn.Name = "travel_W_btn";
             this.travel_W_btn.Size = new System.Drawing.Size(137, 123);
             this.travel_W_btn.TabIndex = 2;
@@ -841,7 +845,7 @@ namespace hist_mmorpg
             // 
             // travel_NE_btn
             // 
-            this.travel_NE_btn.Location = new System.Drawing.Point(231, 7);
+            this.travel_NE_btn.Location = new System.Drawing.Point(241, 80);
             this.travel_NE_btn.Name = "travel_NE_btn";
             this.travel_NE_btn.Size = new System.Drawing.Size(137, 123);
             this.travel_NE_btn.TabIndex = 1;
@@ -852,7 +856,7 @@ namespace hist_mmorpg
             // 
             // travel_NW_btn
             // 
-            this.travel_NW_btn.Location = new System.Drawing.Point(88, 7);
+            this.travel_NW_btn.Location = new System.Drawing.Point(98, 80);
             this.travel_NW_btn.Name = "travel_NW_btn";
             this.travel_NW_btn.Size = new System.Drawing.Size(137, 123);
             this.travel_NW_btn.TabIndex = 0;
@@ -1190,6 +1194,26 @@ namespace hist_mmorpg
             this.houseCharListView.View = System.Windows.Forms.View.Details;
             this.houseCharListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.houseCharListView_ItemSelectionChanged);
             // 
+            // travelLocationLabel
+            // 
+            this.travelLocationLabel.AutoSize = true;
+            this.travelLocationLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.travelLocationLabel.Location = new System.Drawing.Point(103, 7);
+            this.travelLocationLabel.Name = "travelLocationLabel";
+            this.travelLocationLabel.Size = new System.Drawing.Size(123, 20);
+            this.travelLocationLabel.TabIndex = 7;
+            this.travelLocationLabel.Text = "You are here: ";
+            // 
+            // travelDaysLabel
+            // 
+            this.travelDaysLabel.AutoSize = true;
+            this.travelDaysLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.travelDaysLabel.Location = new System.Drawing.Point(103, 37);
+            this.travelDaysLabel.Name = "travelDaysLabel";
+            this.travelDaysLabel.Size = new System.Drawing.Size(182, 20);
+            this.travelDaysLabel.TabIndex = 8;
+            this.travelDaysLabel.Text = "Your remaining days: ";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1225,6 +1249,7 @@ namespace hist_mmorpg
             ((System.ComponentModel.ISupportInitialize)(this.travelContainer)).EndInit();
             this.travelContainer.ResumeLayout(false);
             this.travelNavigationPanel.ResumeLayout(false);
+            this.travelNavigationPanel.PerformLayout();
             this.fiefsOwnedContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.fiefsOwnedContainer)).EndInit();
             this.fiefsOwnedContainer.ResumeLayout(false);
@@ -1366,6 +1391,8 @@ namespace hist_mmorpg
         private System.Windows.Forms.ToolStripMenuItem fullToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem characterToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem fiefToolStripMenuItem1;
+        private System.Windows.Forms.Label travelDaysLabel;
+        private System.Windows.Forms.Label travelLocationLabel;
 
     }
 }

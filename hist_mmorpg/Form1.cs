@@ -114,6 +114,9 @@ namespace hist_mmorpg
             // create Journals for GameClock
             Journal myScheduledJournal = new Journal();
             Journal myPastJournal = new Journal();
+            // add a scheduled birth
+            JournalEvent myEvent = new JournalEvent(1320, 1, "403", "birth");
+            myScheduledJournal.events.Add(myEvent);
 
             // create GameClock
             GameClock myGameClock = new GameClock("clock001", 1320, myScheduledJournal, myPastJournal);
@@ -429,6 +432,8 @@ namespace hist_mmorpg
             myChar1.hireNPC(myNPC2, 12000);
 			// set employee as travelling companion
 			myChar1.addToEntourage(myNPC2);
+            // give player a wife
+            myChar1.spouse = myWife.charID;
             // add wife to myNPCs
             myChar1.myNPCs.Add(myWife);
 
@@ -2840,9 +2845,8 @@ namespace hist_mmorpg
                 fiefText += "  (which may include a famExpense skills modifier: " + Globals.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")\r\n";
             }
 
-
             // total expenses
-            fiefText += "Total expenses: " + f.calcExpenses("this") + "\r\n";
+            fiefText += "Total fief expenses: " + f.calcExpenses("this") + "\r\n";
             // expenses modifier for bailiff
             fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif(f.bailiffDaysInFief >= 30) + ")\r\n";
             
@@ -2874,8 +2878,19 @@ namespace hist_mmorpg
             fiefText += "Income: " + f.calcIncome("next") + "\r\n";
             fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod(f.bailiffDaysInFief >= 30) + ")\r\n";
             fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod("next") + ")\r\n";
-            fiefText += "Family expenses: 0 (not yet implemented)\r\n";
-            fiefText += "Total expenses: " + f.calcExpenses("next") + "\r\n";
+            // family expenses
+            fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
+            // famExpenses modifier for player/spouse
+            if (f.owner.management > Globals.npcMasterList[f.owner.spouse].management)
+            {
+                fiefText += "  (which may include a famExpense skills modifier: " + f.owner.calcSkillEffect("famExpense") + ")\r\n";
+            }
+            else
+            {
+                fiefText += "  (which may include a famExpense skills modifier: " + Globals.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")\r\n";
+            }
+
+            fiefText += "Total fief expenses: " + f.calcExpenses("next") + "\r\n";
             fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif(f.bailiffDaysInFief >= 30) + ")\r\n";
             fiefText += "Overlord taxes: " + f.calcOlordTaxes("next") + "\r\n";
             fiefText += "Bottom line: " + f.calcBottomLine("next") + "\r\n\r\n";
@@ -3019,6 +3034,7 @@ namespace hist_mmorpg
                 this.selfBailiffBtn.Enabled = true;
                 this.setBailiffBtn.Enabled = true;
                 this.removeBaliffBtn.Enabled = true;
+                this.fiefHomeTreasTextBox.Enabled = true;
                 this.fiefHomeTreasTextBox.ReadOnly = true;
                 this.FiefTreasTextBox.ReadOnly = true;
 
@@ -3028,7 +3044,6 @@ namespace hist_mmorpg
                     this.fiefTransferToFiefBtn.Enabled = false;
                     this.fiefTransferToHomeBtn.Enabled = false;
                     this.fiefTransferAmountTextBox.Enabled = false;
-                    this.fiefHomeTreasTextBox.Enabled = false;
                     this.FiefTreasTextBox.Enabled = false;
                 }
                 else
@@ -3047,24 +3062,26 @@ namespace hist_mmorpg
                 this.adjustKeepSpendTextBox.Text = Convert.ToString(this.fiefToView.keepSpendNext);
                 this.adjustTaxTextBox.Text = Convert.ToString(this.fiefToView.taxRateNext);
 
-                // don't show treasury amounts if in Home Fief (can't transfer to self)
+                // calculate and display home treasury
+                Fief home = Globals.fiefMasterList[this.myChar.homeFief];
+                homeTreasury = home.treasury;
+                // deduct home fief expenditure
+                homeTreasury -= home.calcExpenses("next");
+                // deduct home family expenses
+                homeTreasury -= home.calcFamilyExpenses();
+                // deduct home fief overlord taxes
+                homeTreasury -= Convert.ToInt32(home.calcOlordTaxes("next"));
+                // display home treasury
+                this.fiefHomeTreasTextBox.Text = Convert.ToString(homeTreasury);
+
+
+                // if in Home Fief only show home treasury amount (can't transfer to self)
                 if (f == Globals.fiefMasterList[this.myChar.homeFief])
                 {
-                    this.fiefHomeTreasTextBox.Text = "";
                     this.FiefTreasTextBox.Text = "";
                 }
                 else
                 {
-                    // calculate available home treasury
-                    Fief home = Globals.fiefMasterList[this.myChar.homeFief];
-                    homeTreasury = home.treasury;
-                    // deduct home fief expenditure
-                    homeTreasury -= home.calcExpenses("next");
-                    // deduct home family expenses
-                    homeTreasury -= home.calcFamilyExpenses();
-                    // deduct home fief overlord taxes
-                    homeTreasury -= Convert.ToInt32(home.calcOlordTaxes("next"));
-
                     // calculate available fief treasury
                     fiefTreasury = this.fiefToView.treasury;
                     // deduct fief family expenses
@@ -3072,8 +3089,7 @@ namespace hist_mmorpg
                     // deduct fief overlord taxes
                     fiefTreasury -= Convert.ToInt32(this.fiefToView.calcOlordTaxes("next"));
 
-                    // display treasuries
-                    this.fiefHomeTreasTextBox.Text = Convert.ToString(homeTreasury);
+                    // display fief treasury
                     this.FiefTreasTextBox.Text = Convert.ToString(fiefTreasury);
                 }
 
@@ -3296,7 +3312,7 @@ namespace hist_mmorpg
         /// </summary>
         private void refreshTravelContainer()
         {
-            // clear existing data in TextBoxex
+            // clear existing data in TextBoxes
             this.travelMultiMoveTextBox.Text = "";
             this.travelCampDaysTextBox.Text = "";
             this.travelRouteTextBox.Text = "";
@@ -3327,6 +3343,10 @@ namespace hist_mmorpg
                 }
             }
 
+            // set text for informational labels
+            this.travelLocationLabel.Text = "You are here: " + this.myChar.location.name + " (" + this.myChar.location.fiefID + ")";
+            this.travelDaysLabel.Text = "Your remaining days: " + this.myChar.days;
+            
             // set text for 'enter/exit keep' button, depending on whether player in/out of keep
             if (this.myChar.inKeep)
             {
