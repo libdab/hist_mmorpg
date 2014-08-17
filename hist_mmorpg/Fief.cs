@@ -43,22 +43,6 @@ namespace hist_mmorpg
         /// </summary>
         public Double taxRate { get; set; }
         /// <summary>
-        /// Holds expenditure on officials
-        /// </summary>
-        public uint officialsSpend { get; set; }
-        /// <summary>
-        /// Holds expenditure on garrison
-        /// </summary>
-        public uint garrisonSpend { get; set; }
-        /// <summary>
-        /// Holds expenditure on infrastructure
-        /// </summary>
-        public uint infrastructureSpend { get; set; }
-        /// <summary>
-        /// Holds expenditure on keep
-        /// </summary>
-        public uint keepSpend { get; set; }
-        /// <summary>
         /// Holds fief tax rate (next season)
         /// </summary>
         public Double taxRateNext { get; set; }
@@ -78,6 +62,28 @@ namespace hist_mmorpg
         /// Holds expenditure on keep (next season)
         /// </summary>
         public uint keepSpendNext { get; set; }
+        /// <summary>
+        /// Holds key data for current season
+        /// 0 = loyalty
+        /// 1 = GDP
+        /// 2 = tax rate
+        /// 3 = official expenditure
+        /// 4 = garrison expenditure
+        /// 5 = infrastructure expenditure
+        /// 6 = keep expenditure
+        /// 7 = keep level
+        /// 8 = income
+        /// 9 = family expenses
+        /// 10 = total expenses
+        /// 11 = overlord taxes
+        /// 12 = overlord tax rate
+        /// 13 = bottom line
+        /// </summary>
+        public double[] keyStatsCurrent = new double[14];
+        /// <summary>
+        /// Holds key data for previous season
+        /// </summary>
+        public double[] keyStatsPrevious = new double[14];
         /// <summary>
         /// Holds fief keep level
         /// </summary>
@@ -158,15 +164,13 @@ namespace hist_mmorpg
         /// <param name="fld">Double holding fief industry level</param>
         /// <param name="trp">uint holding no. of troops in fief</param>
         /// <param name="tx">Double holding fief tax rate</param>
-        /// <param name="off">uint holding officials expenditure</param>
-        /// <param name="garr">uint holding garrison expenditure</param>
-        /// <param name="infra">uint holding infrastructure expenditure</param>
-        /// <param name="keep">uint holding keep expenditure</param>
         /// <param name="txNxt">Double holding fief tax rate (next season)</param>
         /// <param name="offNxt">uint holding officials expenditure (next season)</param>
         /// <param name="garrNxt">uint holding garrison expenditure (next season)</param>
         /// <param name="infraNxt">uint holding infrastructure expenditure (next season)</param>
         /// <param name="keepNxt">uint holding keep expenditure (next season)</param>
+        /// <param name="finCurr">String [] holding financial data for current season</param>
+        /// <param name="finPrev">String [] holding financial data for previous season</param>
         /// <param name="kpLvl">Double holding fief keep level</param>
         /// <param name="loy">Double holding fief loyalty rating</param>
         /// <param name="stat">char holding fief status</param>
@@ -184,9 +188,9 @@ namespace hist_mmorpg
         /// <param name="ra">Fief's rank object</param>
         /// <param name="treas">int containing fief treasury</param>
         /// <param name="tiHo">Fief title holder (charID)</param>
-        public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp,
-            Double tx, uint off, uint garr, uint infra, uint keep, Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, Double kpLvl,
-            Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
+        public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp, Double tx,
+            Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
+            Double kpLvl, Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
             GameClock cl, byte bailInF, int treas, String tiHo = null, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
         {
 
@@ -275,15 +279,13 @@ namespace hist_mmorpg
             this.industry = ind;
             this.troops = trp;
             this.taxRate = tx;
-            this.officialsSpend = off;
-            this.garrisonSpend = garr;
-            this.infrastructureSpend = infra;
-            this.keepSpend = keep;
             this.taxRateNext = txNxt;
             this.officialsSpendNext = offNxt;
             this.garrisonSpendNext = garrNxt;
             this.infrastructureSpendNext = infraNxt;
             this.keepSpendNext = keepNxt;
+            this.keyStatsCurrent = finCurr;
+            this.keyStatsPrevious = finPrev;
             this.keepLevel = kpLvl;
             this.loyalty = loy;
             this.status = stat;
@@ -323,15 +325,13 @@ namespace hist_mmorpg
 			this.industry = fr.industry;
 			this.troops = fr.troops;
 			this.taxRate = fr.taxRate;
-			this.officialsSpend = fr.officialsSpend;
-			this.garrisonSpend = fr.garrisonSpend;
-			this.infrastructureSpend = fr.infrastructureSpend;
-			this.keepSpend = fr.keepSpend;
 			this.taxRateNext = fr.taxRateNext;
 			this.officialsSpendNext = fr.officialsSpendNext;
 			this.garrisonSpendNext = fr.garrisonSpendNext;
 			this.infrastructureSpendNext = fr.infrastructureSpendNext;
 			this.keepSpendNext = fr.keepSpendNext;
+            this.keyStatsCurrent = fr.keyStatsCurrent;
+            this.keyStatsPrevious = fr.keyStatsPrevious;
 			this.keepLevel = fr.keepLevel;
 			this.loyalty = fr.loyalty;
 			this.status = fr.status;
@@ -362,32 +362,23 @@ namespace hist_mmorpg
         /// Calculates fief GDP
         /// </summary>
         /// <returns>uint containing fief GDP</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</param>
-        public uint calcGDP(string season)
+        public uint calcNewGDP()
         {
             uint gdp = 0;
             uint fldProd = 0;
             uint indProd = 0;
-            switch (season)
-            {
-                case "next":
-                    // calculate production from fields using next season's expenditure
-                    fldProd = Convert.ToUInt32((this.calcNewFieldLevel() * 8997));
-                    // calculate production from industry using next season's expenditure
-                    indProd = Convert.ToUInt32(this.calcNewIndustryLevel() * (290 * Math.Pow(1.2, ((this.calcNewPop() / 1000) - 1))));
-                    // calculate final gdp
-                    gdp = (fldProd + indProd) / (this.calcNewPop() / 1000);
-                    break;
-                default:
-                    // calculate production from fields using current expenditure
-                    fldProd = Convert.ToUInt32((this.fields * 8997));
-                    // calculate production from industry using current expenditure
-                    indProd = Convert.ToUInt32(this.industry * (290 * Math.Pow(1.2, ((this.population / 1000) - 1))));
-                    // calculate final gdp
-                    gdp = (fldProd + indProd) / (this.population / 1000);
-                    break;
-            }
+
+            // calculate production from fields using next season's expenditure
+            fldProd = Convert.ToUInt32((this.calcNewFieldLevel() * 8997));
+
+            // calculate production from industry using next season's expenditure
+            indProd = Convert.ToUInt32(this.calcNewIndustryLevel() * (290 * Math.Pow(1.2, ((this.calcNewPop() / 1000) - 1))));
+            
+            // calculate final gdp
+            gdp = (fldProd + indProd) / (this.calcNewPop() / 1000);
+
             gdp = (gdp * 1000);
+
             return gdp;
         }
 
@@ -402,36 +393,16 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Updates fief treasury at end of season
-        /// </summary>
-        /// <returns>uint containing updated fief treasury</returns>
-        public int calcNewTreasury()
-        {
-            // add surplus (positive or negative) to treasury
-            int newTreasury = this.treasury + this.calcBottomLine("this");
-            return newTreasury;
-        }
-
-        /// <summary>
         /// Calculates fief income (NOT including income loss due to unrest/rebellion)
         /// </summary>
         /// <returns>uint containing fief income</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</param>
-        public int calcIncome(string season)
+        public int calcNewIncome()
         {
             int fiefBaseIncome = 0;
             int fiefIncome = 0;
-            switch (season)
-            {
-                case "next":
-                    // using next season's expenditure and tax rate
-                    fiefBaseIncome = Convert.ToInt32(this.calcGDP(season) * (this.taxRateNext / 100));
-                    break;
-                default:
-                    // using current expenditure and tax rate
-                    fiefBaseIncome = Convert.ToInt32(this.calcGDP(season) * (this.taxRate / 100));
-                    break;
-            }
+
+            // using next season's expenditure and tax rate
+            fiefBaseIncome = Convert.ToInt32(this.calcNewGDP() * (this.taxRateNext / 100));
 
             fiefIncome = fiefBaseIncome;
 
@@ -439,7 +410,7 @@ namespace hist_mmorpg
             fiefIncome = fiefIncome + Convert.ToInt32(fiefBaseIncome * this.calcBlfIncMod(this.bailiffDaysInFief >= 30));
 
             // factor in officials spend modifier
-            fiefIncome = fiefIncome + Convert.ToInt32(fiefBaseIncome * this.calcOffIncMod(season));
+            fiefIncome = fiefIncome + Convert.ToInt32(fiefBaseIncome * this.calcOffIncMod());
 
             return fiefIncome;
         }
@@ -472,22 +443,12 @@ namespace hist_mmorpg
         /// Calculates effect of officials spend on fief income
         /// </summary>
         /// <returns>double containing fief income modifier</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</param>
-        public double calcOffIncMod(string season)
+        public double calcOffIncMod()
         {
             double incomeModif = 0;
 
-            switch (season)
-            {
-                case "next":
-                    // using next season's expenditure and population
-                    incomeModif = ((this.officialsSpendNext - ((double)this.calcNewPop() * 2)) / (this.calcNewPop() * 2)) / 10;
-                    break;
-                default:
-                    // using current expenditure and population
-                    incomeModif = ((this.officialsSpend - ((double)this.population * 2)) / (this.population * 2)) / 10;
-                    break;
-            }
+            // using next season's expenditure and population
+            incomeModif = ((this.officialsSpendNext - ((double)this.calcNewPop() * 2)) / (this.calcNewPop() * 2)) / 10;
 
             return incomeModif;
         }
@@ -523,10 +484,10 @@ namespace hist_mmorpg
         /// Calculates overlord taxes
         /// </summary>
         /// <returns>uint containing overlord taxes</returns>
-        public uint calcOlordTaxes(string season)
+        public uint calcNewOlordTaxes()
         {
             // calculate tax, based on income of specified season
-            uint oTaxes = Convert.ToUInt32(this.calcIncome(season) * (this.province.overlordTaxRate / 100));
+            uint oTaxes = Convert.ToUInt32(this.calcNewIncome() * (this.province.overlordTaxRate / 100));
             return oTaxes;
         }
 
@@ -534,21 +495,12 @@ namespace hist_mmorpg
         /// Calculates fief expenses
         /// </summary>
         /// <returns>int containing family expenses</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</param>
-        public int calcExpenses(string season)
+        public int calcNewExpenses()
         {
             int fiefExpenses = 0;
-            switch (season)
-            {
-                // using next season's expenditure
-                case "next":
-                    fiefExpenses = (int)this.officialsSpendNext + (int)this.infrastructureSpendNext + (int)this.garrisonSpendNext + (int)this.keepSpendNext;
-                    break;
-                // using current expenditure
-                default:
-                    fiefExpenses = (int)this.officialsSpend + (int)this.infrastructureSpend + (int)this.garrisonSpend + (int)this.keepSpend;
-                    break;
-            }
+
+            // using next season's expenditure
+            fiefExpenses = (int)this.officialsSpendNext + (int)this.infrastructureSpendNext + (int)this.garrisonSpendNext + (int)this.keepSpendNext;
 
             // factor in bailiff skills modifier for fief expenses
             double bailiffModif = 0;
@@ -585,16 +537,15 @@ namespace hist_mmorpg
         /// Calculates fief bottom line
         /// </summary>
         /// <returns>uint containing fief income</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</param>
-        public int calcBottomLine(string season)
+        public int calcNewBottomLine()
         {
             int fiefBottomLine = 0;
 
             // factor in effect of fief status on specified season's income
-            int fiefIncome = Convert.ToInt32(this.calcIncome(season) * this.calcStatusIncmMod());
+            int fiefIncome = Convert.ToInt32(this.calcNewIncome() * this.calcStatusIncmMod());
 
             // calculate bottom line using specified season's income, expenses and overlord taxes
-            fiefBottomLine = ((fiefIncome - (int)this.calcExpenses(season)) - (int)this.calcOlordTaxes(season)) - this.calcFamilyExpenses();
+            fiefBottomLine = ((fiefIncome - (int)this.calcNewExpenses()) - (int)this.calcNewOlordTaxes()) - this.calcFamilyExpenses();
 
             return fiefBottomLine;
         }
@@ -863,17 +814,17 @@ namespace hist_mmorpg
             newBaseLoy = this.loyalty + (this.loyalty * (((this.taxRateNext - this.taxRate) / 100) * -1));
 
             // calculate effect of surplus 
-            if (this.calcBottomLine("next") > 0)
+            if (this.calcNewBottomLine() > 0)
             {
                 // loyalty reduced in proportion to surplus divided by income
-                newLoy = newBaseLoy - (this.calcBottomLine("next") / Convert.ToDouble(this.calcIncome("next")));
+                newLoy = newBaseLoy - (this.calcNewBottomLine() / Convert.ToDouble(this.calcNewIncome()));
             }
 
             // calculate effect of officials spend
-            newLoy = newLoy + (newBaseLoy * this.calcOffLoyMod("next"));
+            newLoy = newLoy + (newBaseLoy * this.calcOffLoyMod());
 
             // calculate effect of garrison spend
-            newLoy = newLoy + (newBaseLoy * this.calcGarrLoyMod("next"));
+            newLoy = newLoy + (newBaseLoy * this.calcGarrLoyMod());
 
             // factor in bailiff modifier (also passing whether bailiffDaysInFief is sufficient)
             newLoy = newLoy + (newBaseLoy * this.calcBlfLoyAdjusted(this.bailiffDaysInFief >= 30));
@@ -947,22 +898,12 @@ namespace hist_mmorpg
         /// Calculates effect of officials spend on fief loyalty
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</param>
-        public double calcOffLoyMod(string season)
+        public double calcOffLoyMod()
         {
             double loyaltyModif = 0;
 
-            switch (season)
-            {
-                // using next season's officials spend and population
-                case "next":
-                    loyaltyModif = ((this.officialsSpendNext - ((double)this.calcNewPop() * 2)) / (this.calcNewPop() * 2)) / 10;
-                    break;
-                // using current officials spend and population
-                default:
-                    loyaltyModif = ((this.officialsSpend - ((double)this.population * 2)) / (this.population * 2)) / 10;
-                    break;
-            }
+            // using next season's officials spend and population
+            loyaltyModif = ((this.officialsSpendNext - ((double)this.calcNewPop() * 2)) / (this.calcNewPop() * 2)) / 10;
 
             return loyaltyModif;
         }
@@ -971,22 +912,12 @@ namespace hist_mmorpg
         /// Calculates effect of garrison spend on fief loyalty
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
-        /// <param name="season">string specifying whether to calculate for this or next season</param>
-        public double calcGarrLoyMod(string season)
+        public double calcGarrLoyMod()
         {
             double loyaltyModif = 0;
 
-            switch (season)
-            {
-                // using next season's garrison spend and population
-                case "next":
-                    loyaltyModif = ((this.garrisonSpendNext - ((double)this.calcNewPop() * 7)) / (this.calcNewPop() * 7)) / 10;
-                    break;
-                // using current garrison spend and population
-                default:
-                    loyaltyModif = ((this.garrisonSpend - ((double)this.population * 7)) / (this.population * 7)) / 10;
-                    break;
-            }
+            // using next season's garrison spend and population
+            loyaltyModif = ((this.garrisonSpendNext - ((double)this.calcNewPop() * 7)) / (this.calcNewPop() * 7)) / 10;
 
             return loyaltyModif;
         }
@@ -997,7 +928,7 @@ namespace hist_mmorpg
         public void validateFiefExpenditure()
         {
             // get total spend
-            uint totalSpend = Convert.ToUInt32(this.calcExpenses("next")); ;
+            uint totalSpend = Convert.ToUInt32(this.calcNewExpenses()); ;
 
             // check to see if proposed expenditure level doesn't exceed fief treasury
             bool isOK = this.checkExpenditureOK(totalSpend);
@@ -1006,7 +937,7 @@ namespace hist_mmorpg
             if (!isOK)
             {
                 // get available treasury
-                int availTreasury = this.treasury - Convert.ToInt32(this.calcOlordTaxes("next"));
+                int availTreasury = this.treasury - Convert.ToInt32(this.calcNewOlordTaxes());
                 // calculate amount by which treasury exceeded
                 uint difference = Convert.ToUInt32(totalSpend - availTreasury);
                 // auto-adjust expenditure
@@ -1021,7 +952,7 @@ namespace hist_mmorpg
         public void autoAdjustExpenditure(uint difference)
         {
             // get available treasury
-            int availTreasury = this.treasury - Convert.ToInt32(this.calcOlordTaxes("next"));
+            int availTreasury = this.treasury - Convert.ToInt32(this.calcNewOlordTaxes());
 
             // if treasury empty or in deficit, reduce all expenditure to 0
             if (availTreasury <= 0)
@@ -1250,7 +1181,7 @@ namespace hist_mmorpg
         public bool checkExpenditureOK(uint totalSpend)
         {
             bool spendLevelOK = true;
-            int availTreasury = this.treasury - Convert.ToInt32(this.calcOlordTaxes("next"));
+            int availTreasury = this.treasury - Convert.ToInt32(this.calcNewOlordTaxes());
 
             // if there are funds in the treasury
             if (availTreasury > 0)
@@ -1288,34 +1219,69 @@ namespace hist_mmorpg
                     this.bailiff.days = 0;
                 }
             }
+
+            // update previous season's financial data
+            this.keyStatsCurrent.CopyTo(this.keyStatsPrevious, 0);
+
             // validate fief expenditure against treasury
             this.validateFiefExpenditure();
+
             // update loyalty level
-            this.loyalty = this.calcNewLoyalty();
+            this.keyStatsCurrent[0] = this.calcNewLoyalty();
+
+            // update GDP
+            this.keyStatsCurrent[1] = this.calcNewGDP();
+
+            // update tax rate
+            this.keyStatsCurrent[2] = this.taxRateNext;
+
+            // update officials spend (updating total expenses)
+            this.keyStatsCurrent[3] = this.officialsSpendNext;
+            this.keyStatsCurrent[10] += this.keyStatsCurrent[3];
+
+            // update garrison spend (updating total expenses)
+            this.keyStatsCurrent[4] = this.garrisonSpendNext;
+            this.keyStatsCurrent[10] += this.keyStatsCurrent[4];
+
+            // update infrastructure spend (updating total expenses)
+            this.keyStatsCurrent[5] = this.infrastructureSpendNext;
+            this.keyStatsCurrent[10] += this.keyStatsCurrent[5];
+
+            // update keep spend (updating total expenses)
+            this.keyStatsCurrent[6] = this.keepSpendNext;
+            this.keyStatsCurrent[10] += this.keyStatsCurrent[6];
+
+            // update keep level (based on next season keep spend)
+            this.keyStatsCurrent[7] = this.calcNewKeepLevel();
+
+            // update income
+            this.keyStatsCurrent[8] = this.calcNewIncome();
+
+            // update family expenses (updating total expenses)
+            this.keyStatsCurrent[9] = this.calcFamilyExpenses();
+            this.keyStatsCurrent[10] += this.keyStatsCurrent[9];
+
+            // update overord taxes
+            this.keyStatsCurrent[11] = this.calcNewOlordTaxes();
+
+            // update overord tax rate
+            this.keyStatsCurrent[12] = this.province.overlordTaxRate;
+
+            // update bottom line
+            this.keyStatsCurrent[13] = this.calcNewBottomLine();
+
             // update fields level (based on next season infrastructure spend)
             this.fields = this.calcNewFieldLevel();
+
             // update industry level (based on next season infrastructure spend)
             this.industry = this.calcNewIndustryLevel();
-            // update keep level (based on next season keep spend)
-            this.keepLevel = this.calcNewKeepLevel();
-            // update tax rate
-            this.taxRate = this.taxRateNext;
-            // update officials spend
-            this.officialsSpend = this.officialsSpendNext;
-            // update garrison spend
-            this.garrisonSpend = this.garrisonSpendNext;
-            // update infrastructure spend
-            this.infrastructureSpend = this.infrastructureSpendNext;
-            // update keep spend
-            this.keepSpend = this.keepSpendNext;
-            // deduct expenses from fief treasury
-            this.treasury = this.treasury - this.calcExpenses("this");
-            // deduct overlord tax from fief treasury
-            this.treasury = this.treasury - Convert.ToInt32(this.calcOlordTaxes("this"));
+
+            // update fief treasury with new bottom line
+            this.treasury += Convert.ToInt32(this.keyStatsCurrent[13]);
+
             // check for unrest/rebellion
             this.status = this.checkFiefStatus();
-            // update fief treasury with new surplus
-            this.treasury = calcNewTreasury();
+
             // reset bailiffDaysInFief
             this.bailiffDaysInFief = 0;
         }
@@ -1335,7 +1301,7 @@ namespace hist_mmorpg
             if (! stat.Equals('R'))
             {
                 // method 1 (depends on tax rate and surplus)
-                if ((this.taxRate > 20) && (this.calcBottomLine("this") > (this.calcIncome("this") * 0.1)))
+                if ((this.taxRate > 20) && (this.keyStatsCurrent[13] > (this.keyStatsCurrent[8] * 0.1)))
                 {
                     if ((rand.NextDouble() * 100) <= (this.taxRate - 20))
                     {
@@ -1524,22 +1490,6 @@ namespace hist_mmorpg
 		/// </summary>
 		public Double taxRate { get; set; }
 		/// <summary>
-		/// Holds expenditure on officials
-		/// </summary>
-		public uint officialsSpend { get; set; }
-		/// <summary>
-		/// Holds expenditure on garrison
-		/// </summary>
-		public uint garrisonSpend { get; set; }
-		/// <summary>
-		/// Holds expenditure on infrastructure
-		/// </summary>
-		public uint infrastructureSpend { get; set; }
-		/// <summary>
-		/// Holds expenditure on keep
-		/// </summary>
-		public uint keepSpend { get; set; }
-		/// <summary>
 		/// Holds fief tax rate (next season)
 		/// </summary>
 		public Double taxRateNext { get; set; }
@@ -1559,7 +1509,29 @@ namespace hist_mmorpg
 		/// Holds expenditure on keep (next season)
 		/// </summary>
 		public uint keepSpendNext { get; set; }
-		/// <summary>
+        /// <summary>
+        /// Holds key data for current season
+        /// 0 = loyalty
+        /// 1 = GDP
+        /// 2 = tax rate
+        /// 3 = official expenditure
+        /// 4 = garrison expenditure
+        /// 5 = infrastructure expenditure
+        /// 6 = keep expenditure
+        /// 7 = keep level
+        /// 8 = income
+        /// 9 = family expenses
+        /// 10 = total expenses
+        /// 11 = overlord taxes
+        /// 12 = overlord tax rate
+        /// 13 = bottom line
+        /// </summary>
+        public double[] keyStatsCurrent = new double[14];
+        /// <summary>
+        /// Holds key data for previous season
+        /// </summary>
+        public double[] keyStatsPrevious = new double[14];
+        /// <summary>
 		/// Holds fief keep level
 		/// </summary>
 		public Double keepLevel { get; set; }
@@ -1649,15 +1621,13 @@ namespace hist_mmorpg
 			this.industry = f.industry;
 			this.troops = f.troops;
 			this.taxRate = f.taxRate;
-			this.officialsSpend = f.officialsSpend;
-			this.garrisonSpend = f.garrisonSpend;
-			this.infrastructureSpend = f.infrastructureSpend;
-			this.keepSpend = f.keepSpend;
 			this.taxRateNext = f.taxRateNext;
 			this.officialsSpendNext = f.officialsSpendNext;
 			this.garrisonSpendNext = f.garrisonSpendNext;
 			this.infrastructureSpendNext = f.infrastructureSpendNext;
 			this.keepSpendNext = f.keepSpendNext;
+            this.keyStatsCurrent = f.keyStatsCurrent;
+            this.keyStatsPrevious = f.keyStatsPrevious;
 			this.keepLevel = f.keepLevel;
 			this.loyalty = f.loyalty;
 			this.status = f.status;

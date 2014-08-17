@@ -280,19 +280,35 @@ namespace hist_mmorpg
             Province myProv2 = new Province("ESR00", "Surrey", 6.2, king: myKingdom2, ra: myRank11);
             Globals.provinceMasterList.Add(myProv2.provinceID, myProv2);
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 200000, ra: myRank17);
+            // create financial arrays for fiefs
+            double[] prevFin001 = new double[] { 6.6, 4760000, 10, 12000, 42000, 2000, 2000, 5.3, 476000, 47594, 105594, 29512, 6.2, 340894 };
+            double[] currFin001 = new double[] { 5.6, 4860000, 10, 12000, 42000, 2000, 2000, 5.5, 486000, 47594, 105594, 30132, 6.2, 350274 };
+            double[] prevFin002 = new double[14];
+            double[] currFin002 = new double[14];
+            double[] prevFin003 = new double[14];
+            double[] currFin003 = new double[14];
+            double[] prevFin004 = new double[14];
+            double[] currFin004 = new double[14];
+            double[] prevFin005 = new double[14];
+            double[] currFin005 = new double[14];
+            double[] prevFin006 = new double[14];
+            double[] currFin006 = new double[14];
+            double[] prevFin007 = new double[14];
+            double[] currFin007 = new double[14];
+
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 200000, ra: myRank17);
             Globals.fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 1000, 1000, 2000, 2000, 10, 0, 0, 2000, 4000, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 4000, ra: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 4000, ra: myRank15);
             Globals.fiefMasterList.Add(myFief2.fiefID, myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
             Globals.fiefMasterList.Add(myFief3.fiefID, myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
             Globals.fiefMasterList.Add(myFief4.fiefID, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock, 0, 100000, ra: myRank15);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock, 0, 100000, ra: myRank15);
             Globals.fiefMasterList.Add(myFief5.fiefID, myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
             Globals.fiefMasterList.Add(myFief6.fiefID, myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 12000, 42000, 2000, 2000, 10, 12000, 42000, 2000, 2000, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, this.clock, 0, 100000, ra: myRank15);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, this.clock, 0, 100000, ra: myRank15);
             Globals.fiefMasterList.Add(myFief7.fiefID, myFief7);
 			Army myArmy = new Army("army001", 0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
@@ -2674,11 +2690,11 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Retrieves information for Fief display screen
+        /// Retrieves general information for Fief display screen
         /// </summary>
         /// <returns>String containing information to display</returns>
-        /// <param name="f">Fief whose information is to be displayed</param>
-        public string displayFief(Fief f)
+        /// <param name="f">Fief for which information is to be displayed</param>
+        public string displayGeneralFiefData(Fief f)
         {
             string fiefText = "";
 
@@ -2701,6 +2717,12 @@ namespace hist_mmorpg
 
             // population
             fiefText += "Population: " + f.population + "\r\n";
+
+            // fields
+            fiefText += "Fields level: " + f.fields + "\r\n";
+
+            // industry
+            fiefText += "Industry level: " + f.industry + "\r\n";
 
             // owner's ID
             fiefText += "Owner (ID): " + f.owner.charID + "\r\n";
@@ -2783,56 +2805,156 @@ namespace hist_mmorpg
             }
             fiefText += " barred from the keep\r\n\r\n";
 
-            // fief management section
-            fiefText += "========= Management ==========\r\n\r\n";
+            return fiefText;
+        }
+
+        /// <summary>
+        /// Retrieves previous season's key information for Fief display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="f">Fief for which information is to be displayed</param>
+        public string displayFiefKeyStatsPrev(Fief f)
+        {
+            string fiefText = "PREVIOUS SEASON\r\n=================\r\n\r\n";
 
             // loyalty
-            fiefText += "Loyalty: " + (f.loyalty + (f.loyalty * f.calcBlfLoyAdjusted(f.bailiffDaysInFief >= 30))) + "\r\n";
-            // loyalty modifier for officials spend
-            fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod("this") + ")\r\n";
-            // loyalty modifier for garrison spend
-            fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod("this") + ")\r\n";
-            // loyalty modifier for bailiff
-            fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyAdjusted(f.bailiffDaysInFief >= 30) + ")\r\n";
-            // loyalty modifier for bailiff skills
-            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod(f.bailiffDaysInFief >= 30) + ")\r\n";
-            
-            // fields
-            fiefText += "Fields level: " + f.fields + "\r\n";
-
-            // industry
-            fiefText += "Industry level: " + f.industry + "\r\n";
+            fiefText += "Loyalty: " + f.keyStatsPrevious[0] + "\r\n";
 
             // GDP
-            fiefText += "GDP: " + f.calcGDP("this") + "\r\n";
+            fiefText += "GDP: " + f.keyStatsPrevious[1] + "\r\n";
 
             // tax rate
-            fiefText += "Tax rate: " + f.taxRate + "\r\n";
+            fiefText += "Tax rate: " + f.keyStatsPrevious[2] + "%\r\n";
 
             // officials spend
-            fiefText += "Officials expenditure: " + f.officialsSpend + " (modifier: " + f.calcOffIncMod("this") + ")\r\n";
+            fiefText += "Officials expenditure: " + f.keyStatsPrevious[3] + ")\r\n";
 
             // garrison spend
-            fiefText += "Garrison expenditure: " + f.garrisonSpend + "\r\n";
+            fiefText += "Garrison expenditure: " + f.keyStatsPrevious[4] + "\r\n";
 
             // infrastructure spend
-            fiefText += "Infrastructure expenditure: " + f.infrastructureSpend + "\r\n";
+            fiefText += "Infrastructure expenditure: " + f.keyStatsPrevious[5] + "\r\n";
 
             // keep spend
-            fiefText += "Keep expenditure: " + f.keepSpend + "\r\n";
-
+            fiefText += "Keep expenditure: " + f.keyStatsPrevious[6] + "\r\n";
             // keep level
-            fiefText += "Keep level: " + f.keepLevel + "\r\n";
+            fiefText += "   (Keep level: " + f.keyStatsPrevious[7] + ")\r\n";
 
             // income
-            fiefText += "Income: " + (f.calcIncome("this") * f.calcStatusIncmMod()) + "\r\n";
-            // income modifier for bailiff
-            fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod(f.bailiffDaysInFief >= 30) + ")\r\n";
-            // income modifier for officials spend
-            fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod("this") + ")\r\n";
-            // income modifier for fief status
-            fiefText += "  (including fief status income modifier: " + f.calcStatusIncmMod() + ")\r\n";
+            fiefText += "Income: " + f.keyStatsPrevious[8] + "\r\n";
 
+            // family expenses
+            fiefText += "Family expenses: " + f.keyStatsPrevious[9] + "\r\n";
+
+            // total expenses
+            fiefText += "Total fief expenses: " + f.keyStatsPrevious[10] + "\r\n";
+
+            // overlord taxes
+            fiefText += "Overlord taxes: " + f.keyStatsPrevious[11] + "\r\n";
+            // overlord tax rate
+            fiefText += "   (tax rate: " + f.keyStatsPrevious[12] + "%)\r\n";
+
+            // surplus
+            fiefText += "Bottom line: " + f.keyStatsPrevious[13] + "\r\n\r\n";
+
+            return fiefText;
+        }
+
+        /// <summary>
+        /// Retrieves current season's key information for Fief display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="f">Fief for which information is to be displayed</param>
+        public string displayFiefKeyStatsCurr(Fief f)
+        {
+            string fiefText = "CURRENT SEASON\r\n=================\r\n\r\n";
+
+            // loyalty
+            fiefText += "Loyalty: " + f.keyStatsCurrent[0] + "\r\n";
+
+            // GDP
+            fiefText += "GDP: " + f.keyStatsCurrent[1] + "\r\n";
+
+            // tax rate
+            fiefText += "Tax rate: " + f.keyStatsCurrent[2] + "%\r\n";
+
+            // officials spend
+            fiefText += "Officials expenditure: " + f.keyStatsCurrent[3] + ")\r\n";
+
+            // garrison spend
+            fiefText += "Garrison expenditure: " + f.keyStatsCurrent[4] + "\r\n";
+
+            // infrastructure spend
+            fiefText += "Infrastructure expenditure: " + f.keyStatsCurrent[5] + "\r\n";
+
+            // keep spend
+            fiefText += "Keep expenditure: " + f.keyStatsCurrent[6] + "\r\n";
+            // keep level
+            fiefText += "   (Keep level: " + f.keyStatsCurrent[7] + ")\r\n";
+
+            // income
+            fiefText += "Income: " + f.keyStatsCurrent[8] + "\r\n";
+
+            // family expenses
+            fiefText += "Family expenses: " + f.keyStatsCurrent[9] + "\r\n";
+
+            // total expenses
+            fiefText += "Total fief expenses: " + f.keyStatsCurrent[10] + "\r\n";
+
+            // overlord taxes
+            fiefText += "Overlord taxes: " + f.keyStatsCurrent[11] + "\r\n";
+            // overlord tax rate
+            fiefText += "   (tax rate: " + f.keyStatsCurrent[12] + "%)\r\n";
+
+            // surplus
+            fiefText += "Bottom line: " + f.keyStatsCurrent[13] + "\r\n\r\n";
+
+            return fiefText;
+        }
+
+        /// <summary>
+        /// Retrieves next season's key information for Fief display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="f">Fief for which information is to be displayed</param>
+        public string displayFiefKeyStatsNext(Fief f)
+        {
+            string fiefText = "NEXT SEASON (ESTIMATE)\r\n========================\r\n\r\n";
+
+            // loyalty
+            fiefText += "Loyalty: " + f.calcNewLoyalty() + "\r\n";
+            // various loyalty modifiers
+            fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod() + ")\r\n";
+            fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod() + ")\r\n";
+            fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyAdjusted(f.bailiffDaysInFief >= 30) + ")\r\n";
+            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod(f.bailiffDaysInFief >= 30) + ")\r\n";
+            
+            // GDP
+            fiefText += "GDP: " + f.calcNewGDP() + "\r\n";
+
+            // tax rate
+            fiefText += "Tax rate: " + f.taxRateNext + "%\r\n";
+
+            // officials expenditure
+            fiefText += "Officials expenditure: " + f.officialsSpendNext + "\r\n";
+
+            // Garrison expenditure
+            fiefText += "Garrison expenditure: " + f.garrisonSpendNext + "\r\n";
+
+            // Infrastructure expenditure
+            fiefText += "Infrastructure expenditure: " + f.infrastructureSpendNext + "\r\n";
+
+            // keep expenditure
+            fiefText += "Keep expenditure: " + f.keepSpendNext + "\r\n";
+            // keep level
+            fiefText += "   (keep level: " + f.calcNewKeepLevel() + ")\r\n";
+
+            // income
+            fiefText += "Income: " + f.calcNewIncome() + "\r\n";
+            // various income modifiers
+            fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod(f.bailiffDaysInFief >= 30) + ")\r\n";
+            fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod() + ")\r\n";
+            
             // family expenses
             fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
             // famExpenses modifier for player/spouse
@@ -2845,55 +2967,18 @@ namespace hist_mmorpg
                 fiefText += "  (which may include a famExpense skills modifier: " + Globals.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")\r\n";
             }
 
-            // total expenses
-            fiefText += "Total fief expenses: " + f.calcExpenses("this") + "\r\n";
-            // expenses modifier for bailiff
+            // total expenses (fief and family)
+            fiefText += "Total fief expenses: " + (f.calcNewExpenses() + f.calcFamilyExpenses()) + "\r\n";
+            // bailiff fief expenses modifier
             fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif(f.bailiffDaysInFief >= 30) + ")\r\n";
             
             // overlord taxes
-            fiefText += "Overlord taxes: " + f.calcOlordTaxes("this") + "\r\n";
+            fiefText += "Overlord taxes: " + f.calcNewOlordTaxes() + "\r\n";
+            // overlord tax rate
+            fiefText += "   (tax rate: " + f.province.overlordTaxRate + "%)\r\n";
 
-            // surplus
-            fiefText += "Bottom line: " + f.calcBottomLine("this") + "\r\n\r\n";
-
-            // projected figures for next season (as above)
-            fiefText += "========= Next season =========\r\n";
-            fiefText += "(with current bailiff & oLord tax)\r\n";
-            fiefText += " (NOT including effects of status)\r\n\r\n";
-
-            fiefText += "Loyalty: " + f.calcNewLoyalty() + "\r\n";
-            fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod("next") + ")\r\n";
-            fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod("next") + ")\r\n";
-            fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyAdjusted(f.bailiffDaysInFief >= 30) + ")\r\n";
-            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod(f.bailiffDaysInFief >= 30) + ")\r\n";
-            fiefText += "Fields level: " + f.calcNewFieldLevel() + "\r\n";
-            fiefText += "Industry level: " + f.calcNewIndustryLevel() + "\r\n";
-            fiefText += "GDP: " + f.calcGDP("next") + "\r\n";
-            fiefText += "Tax rate: " + f.taxRateNext + "\r\n";
-            fiefText += "Officials expenditure: " + f.officialsSpendNext + "\r\n";
-            fiefText += "Garrison expenditure: " + f.garrisonSpendNext + "\r\n";
-            fiefText += "Infrastructure expenditure: " + f.infrastructureSpendNext + "\r\n";
-            fiefText += "Keep expenditure: " + f.keepSpendNext + "\r\n";
-            fiefText += "Keep level: " + f.calcNewKeepLevel() + "\r\n";
-            fiefText += "Income: " + f.calcIncome("next") + "\r\n";
-            fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod(f.bailiffDaysInFief >= 30) + ")\r\n";
-            fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod("next") + ")\r\n";
-            // family expenses
-            fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
-            // famExpenses modifier for player/spouse
-            if (f.owner.management > Globals.npcMasterList[f.owner.spouse].management)
-            {
-                fiefText += "  (which may include a famExpense skills modifier: " + f.owner.calcSkillEffect("famExpense") + ")\r\n";
-            }
-            else
-            {
-                fiefText += "  (which may include a famExpense skills modifier: " + Globals.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")\r\n";
-            }
-
-            fiefText += "Total fief expenses: " + f.calcExpenses("next") + "\r\n";
-            fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif(f.bailiffDaysInFief >= 30) + ")\r\n";
-            fiefText += "Overlord taxes: " + f.calcOlordTaxes("next") + "\r\n";
-            fiefText += "Bottom line: " + f.calcBottomLine("next") + "\r\n\r\n";
+            // bottom line
+            fiefText += "Bottom line: " + f.calcNewBottomLine() + "\r\n\r\n";
 
             return fiefText;
         }
@@ -2964,17 +3049,18 @@ namespace hist_mmorpg
 
             this.fiefToView = f;
 
-            string textToDisplay = "";
-
             // set label text
             this.fiefLabel.Text = this.fiefToView.name + " (" + this.fiefToView.fiefID + ")";
 
-            // get information to display
-            textToDisplay += this.displayFief(this.fiefToView);
-
-            // refresh fief display TextBoxes
-            this.fiefTextBox.Text = textToDisplay;
+            // refresh fief display TextBoxes with updated info
+            this.fiefTextBox.Text = this.displayGeneralFiefData(this.fiefToView);
+            this.fiefPrevKeyStatsTextBox.Text = this.displayFiefKeyStatsPrev(this.fiefToView);
+            this.fiefCurrKeyStatsTextBox.Text = this.displayFiefKeyStatsCurr(this.fiefToView);
+            this.fiefNextKeyStatsTextBox.Text = this.displayFiefKeyStatsNext(this.fiefToView);
             this.fiefTextBox.ReadOnly = true;
+            this.fiefPrevKeyStatsTextBox.ReadOnly = true;
+            this.fiefCurrKeyStatsTextBox.ReadOnly = true;
+            this.fiefNextKeyStatsTextBox.ReadOnly = true;
             this.fiefTransferAmountTextBox.Text = "";
 
             // if fief is NOT owned by player, disable fief management buttons and TextBoxes 
@@ -3066,11 +3152,11 @@ namespace hist_mmorpg
                 Fief home = Globals.fiefMasterList[this.myChar.homeFief];
                 homeTreasury = home.treasury;
                 // deduct home fief expenditure
-                homeTreasury -= home.calcExpenses("next");
+                homeTreasury -= home.calcNewExpenses();
                 // deduct home family expenses
                 homeTreasury -= home.calcFamilyExpenses();
                 // deduct home fief overlord taxes
-                homeTreasury -= Convert.ToInt32(home.calcOlordTaxes("next"));
+                homeTreasury -= Convert.ToInt32(home.calcNewOlordTaxes());
                 // display home treasury
                 this.fiefHomeTreasTextBox.Text = Convert.ToString(homeTreasury);
 
@@ -3087,7 +3173,7 @@ namespace hist_mmorpg
                     // deduct fief family expenses
                     fiefTreasury -= this.fiefToView.calcFamilyExpenses();
                     // deduct fief overlord taxes
-                    fiefTreasury -= Convert.ToInt32(this.fiefToView.calcOlordTaxes("next"));
+                    fiefTreasury -= Convert.ToInt32(this.fiefToView.calcNewOlordTaxes());
 
                     // display fief treasury
                     this.FiefTreasTextBox.Text = Convert.ToString(fiefTreasury);
@@ -3095,7 +3181,7 @@ namespace hist_mmorpg
 
                 // check to see if proposed expenditure level doesn't exceed fief treasury
                 // get fief expenses (includes bailiff modifiers)
-                uint totalSpend = Convert.ToUInt32(this.fiefToView.calcExpenses("next"));
+                uint totalSpend = Convert.ToUInt32(this.fiefToView.calcNewExpenses());
 
                 // make sure expenditure can be supported by the treasury
                 // if it can't, display a message and cancel the commit
@@ -4397,7 +4483,7 @@ namespace hist_mmorpg
             // gameclock
             newNPC.clock = this.clock;
             // location
-            newNPC.location = mummy.location;
+            newNPC.location = null;
             // titles
             newNPC.myTitles = new List<string>();
             // sex
@@ -4419,9 +4505,9 @@ namespace hist_mmorpg
             // employer (myBoss)
             newNPC.myBoss = null;
             // salary/allowance
-            newNPC.wage = 5000;
+            newNPC.wage = 0;
             // inEntourage
-            newNPC.inEntourage = mummy.inEntourage;
+            newNPC.inEntourage = false;
             // lastOffer (will remain empty for family members)
             newNPC.lastOffer = new Dictionary<string, uint>();
             // function
@@ -4800,7 +4886,12 @@ namespace hist_mmorpg
             {
                 Globals.npcMasterList.Add(weeBairn.charID, weeBairn);
                 this.clock.pastEvents.events.Add(new JournalEvent(this.clock.currentYear, this.clock.currentSeason, this.myChar.charID, "Birth", descr: this.myChar.firstName + " " + this.myChar.familyName + " welcomes a new " + weeBairn.function + " into his family"));
+                weeBairn.location = mummy.location;
                 this.myChar.myNPCs.Add(weeBairn);
+            }
+            else
+            {
+                weeBairn.isAlive = false;
             }
 
             // check for mother dying during childbirth
