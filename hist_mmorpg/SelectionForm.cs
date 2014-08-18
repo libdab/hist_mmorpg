@@ -248,28 +248,11 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void chooseNpcBtn_Click(object sender, EventArgs e)
         {
-            // string to hold function
-            String funct = "";
-
             if (npcListView.SelectedItems.Count > 0)
             {
-                // if the fief has an existing bailiff, relieve him of his duties
-                if (this.parent.fiefToView.bailiff != null)
-                {
-                    if (this.parent.fiefToView.bailiff is NonPlayerCharacter)
-                    {
-                        // set ex-bailiff's function
-                        (this.parent.fiefToView.bailiff as NonPlayerCharacter).function = "Unspecified";
-                    }
-                }
-
                 // set the selected NPC as bailiff
                 this.parent.fiefToView.bailiff = Globals.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
                 
-                // set new bailiff's function
-                funct = "Bailiff of " + this.parent.fiefToView.name + " (" + this.parent.fiefToView.fiefID + ")";
-                (this.parent.fiefToView.bailiff as NonPlayerCharacter).function = funct;
-
                 // refresh the fief information (in the main form)
                 this.parent.refreshFiefContainer(this.parent.fiefToView);
             }

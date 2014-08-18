@@ -1237,8 +1237,6 @@ namespace hist_mmorpg
             npc.wage = wage;
             // set this PC as NPC's boss
             npc.myBoss = this.charID;
-            // set employee's initial function
-            npc.function = "Unspecified";
             // remove any offers by this PC from NPCs lastOffer list
             npc.lastOffer.Clear();
         }
@@ -1257,8 +1255,6 @@ namespace hist_mmorpg
             npc.myBoss = null;
             // remove NPC from entourage
             npc.inEntourage = false;
-            // remove function
-            npc.function = null;
             // if NPC has entries in goTo, clear
             if (npc.goTo.Count > 0)
             {
@@ -1448,10 +1444,6 @@ namespace hist_mmorpg
         /// Denotes if in employer's entourage
         /// </summary>
         public bool inEntourage { get; set; }
-        /// <summary>
-        /// Holds NPC's family or employee function
-        /// </summary>
-        public String function { get; set; }
 
         /// <summary>
         /// Constructor for NonPlayerCharacter
@@ -1459,10 +1451,9 @@ namespace hist_mmorpg
         /// <param name="mb">String holding NPC's employer (charID)</param>
         /// <param name="wa">string holding NPC's wage</param>
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
-        /// <param name="funct">string holding NPC's family or employee function</param>
         public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
-            String sp, String fath, uint wa, bool inEnt, List<String> myTi, String mb = null, GameClock cl = null, Fief loc = null, String funct = null)
+            String sp, String fath, uint wa, bool inEnt, List<String> myTi, String mb = null, GameClock cl = null, Fief loc = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, myTi, cl, loc)
         {
             // TODO: validate hb = 1-10000
@@ -1473,7 +1464,6 @@ namespace hist_mmorpg
             this.wage = wa;
             this.inEntourage = inEnt;
             this.lastOffer = new Dictionary<string, uint>();
-            this.function = funct;
         }
 
         /// <summary>
@@ -1499,37 +1489,37 @@ namespace hist_mmorpg
 			this.wage = npcr.wage;
 			this.inEntourage = npcr.inEntourage;
 			this.lastOffer = npcr.lastOffer;
-            this.function = npcr.function;
 		}
 
         /// <summary>
         /// Calculates the family allowance of a family NPC, based on age and function
         /// </summary>
         /// <returns>uint containing family allowance</returns>
-        public uint calcFamilyAllowance()
+        /// <param name="func">NPC's function</param>
+        public uint calcFamilyAllowance(String func)
         {
             uint famAllowance = 0;
 
             // factor in family function
-            if (this.function.Equals("Wife"))
+            if (func.ToLower().Equals("wife"))
             {
                 famAllowance = 30000;
             }
             else
             {
-                if ((this.function.ToLower()).Equals("heir"))
+                if (func.ToLower().Equals("heir"))
                 {
                     famAllowance = 20000;
                 }
-                else if (((this.function.ToLower()).Equals("son")) || ((this.function.ToLower()).Equals("son-in-law")))
+                else if ((func.ToLower().Equals("son")) || (func.ToLower().Equals("son-in-law")))
                 {
                     famAllowance = 15000;
                 }
-                else if (((this.function.ToLower()).Equals("daughter")) || ((this.function.ToLower()).Equals("daughter-in-law")))
+                else if ((func.ToLower().Equals("daughter")) || (func.ToLower().Equals("daughter-in-law")))
                 {
                     famAllowance = 10000;
                 }
-                else if ((this.function.ToLower()).Contains("grand"))
+                else if (func.ToLower().Contains("grand"))
                 {
                     famAllowance = 10000;
                 }
@@ -1546,6 +1536,118 @@ namespace hist_mmorpg
             }
 
             return famAllowance;
+        }
+
+        /// <summary>
+        /// Derives NPC function
+        /// </summary>
+        /// <returns>String containing NPC function</returns>
+        /// <param name="bigCheese">PlayerCharacter with whom NPC has relationship</param>
+        public String getFunction(PlayerCharacter bigCheese)
+        {
+            String myFunction = "";
+            bool isFirstEntry = true;
+
+            // check for family function
+            if (this.familyID != null)
+            {
+                if (this.familyID.Equals(bigCheese.charID))
+                {
+                    if (!isFirstEntry)
+                    {
+                        myFunction += "\r\n";
+                    }
+                    else
+                    {
+                        isFirstEntry = false;
+                    }
+
+                    // check for wife
+                    if (this.spouse != null)
+                    {
+                        if (this.spouse.Equals(bigCheese.charID))
+                        {
+                            myFunction += "Wife";
+                        }
+                    }
+
+                    else if (this.father != null)
+                    {
+                        // check for son/daughter
+                        if (this.father.Equals(bigCheese.charID))
+                        {
+                            if (this.isMale)
+                            {
+                                myFunction += "Son";
+                            }
+                            else
+                            {
+                                myFunction += "Daughter";
+                            }
+                        }
+                        else
+                        {
+                            // check for grandkids
+                            if (Globals.npcMasterList[this.father].father != null)
+                            {
+                                if (Globals.npcMasterList[this.father].father.Equals(bigCheese.charID))
+                                {
+                                    if (this.isMale)
+                                    {
+                                        myFunction += "Grandson";
+                                    }
+                                    else
+                                    {
+                                        myFunction += "Granddaughter";
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // if none of above, must be daughter-in-law
+                    else
+                    {
+                        if (!this.isMale)
+                        {
+                            myFunction += "Daughter-in-Law";
+                        }
+                    }
+
+                }
+            }
+
+            // check for employment function
+            if (this.myBoss != null)
+            {
+                if (this.myBoss.Equals(bigCheese.charID))
+                {
+                    // check if is bailiff of any fiefs
+                    for (int i = 0; i < bigCheese.ownedFiefs.Count; i++ )
+                    {
+                        if (bigCheese.ownedFiefs[i].bailiff == this)
+                        {
+                            if (! isFirstEntry)
+                            {
+                                myFunction += "\r\n";
+                            }
+                            else
+                            {
+                                isFirstEntry = false;
+                            }
+
+                            myFunction += "Bailiff of " + bigCheese.ownedFiefs[i].name + " (" + bigCheese.ownedFiefs[i].fiefID + ")";
+                        }
+                    }
+
+                    if (myFunction.Equals(""))
+                    {
+                        myFunction += "Unspecified";
+                    }
+                }
+            }
+
+            return myFunction;
         }
 
         /// <summary>
@@ -1893,10 +1995,6 @@ namespace hist_mmorpg
         /// Denotes if in employer's entourage
 		/// </summary>
 		public bool inEntourage { get; set; }
-        /// <summary>
-        /// Holds NPC's family or employee function
-        /// </summary>
-        public String function { get; set; }
 
 
 		/// <summary>
@@ -1914,7 +2012,6 @@ namespace hist_mmorpg
 			this.wage = npc.wage;
 			this.inEntourage = npc.inEntourage;
 			this.lastOffer = npc.lastOffer;
-            this.function = npc.function;
 		}
 
         /// <summary>

@@ -391,9 +391,9 @@ namespace hist_mmorpg
             Globals.pcMasterList.Add(myChar2.charID, myChar2);
             NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "Eng", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, null, null, null, 0, false, myTitles003, cl: this.clock, loc: myFief1);
             Globals.npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "Eng", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, null, null, null, 10000, true, myTitles004, mb: myChar1.charID, cl: this.clock, loc: myFief1, funct: "Unspecified");
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "Eng", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, null, null, null, 10000, true, myTitles004, mb: myChar1.charID, cl: this.clock, loc: myFief1);
             Globals.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly", "Maguire", myDob005, false, "Eng", true, 2.50, 9.0, myGoTo5, myLang2, 90, 0, 4.0, 6.0, generateSkillSet(myRand), false, true, false, "101", "101", null, 30000, false, myTitles005, cl: this.clock, loc: myFief1, funct: "Wife");
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly", "Maguire", myDob005, false, "Eng", true, 2.50, 9.0, myGoTo5, myLang2, 90, 0, 4.0, 6.0, generateSkillSet(myRand), false, true, false, "101", "101", null, 30000, false, myTitles005, cl: this.clock, loc: myFief1);
             Globals.npcMasterList.Add(myWife.charID, myWife);
 
 			// set fief owners
@@ -2300,7 +2300,7 @@ namespace hist_mmorpg
                 houseChar.SubItems.Add(this.myChar.myNPCs[i].charID);
 
                 // Function (i.e. employee's job, family member's role)
-                houseChar.SubItems.Add(this.myChar.myNPCs[i].function);
+                houseChar.SubItems.Add(this.myChar.myNPCs[i].getFunction(this.myChar));
 
                 // location
                 houseChar.SubItems.Add(this.myChar.myNPCs[i].location.fiefID + " (" + this.myChar.myNPCs[i].location.name + ")");
@@ -2674,6 +2674,7 @@ namespace hist_mmorpg
             // current salary
             npcText += "Current salary: " + npc.wage + "\r\n";
 
+            /*
             // function
             if (npc.function != null)
             {
@@ -2684,7 +2685,7 @@ namespace hist_mmorpg
                 npcText += "Function: N/A";
             }
             npcText += "\r\n";
-
+            */
 
             return npcText;
         }
@@ -2818,44 +2819,44 @@ namespace hist_mmorpg
             string fiefText = "PREVIOUS SEASON\r\n=================\r\n\r\n";
 
             // loyalty
-            fiefText += "Loyalty: " + f.keyStatsPrevious[0] + "\r\n";
+            fiefText += "Loyalty: " + f.keyStatsPrevious[0] + "\r\n\r\n";
 
             // GDP
-            fiefText += "GDP: " + f.keyStatsPrevious[1] + "\r\n";
+            fiefText += "GDP: " + f.keyStatsPrevious[1] + "\r\n\r\n";
 
             // tax rate
-            fiefText += "Tax rate: " + f.keyStatsPrevious[2] + "%\r\n";
+            fiefText += "Tax rate: " + f.keyStatsPrevious[2] + "%\r\n\r\n";
 
             // officials spend
-            fiefText += "Officials expenditure: " + f.keyStatsPrevious[3] + ")\r\n";
+            fiefText += "Officials expenditure: " + f.keyStatsPrevious[3] + "\r\n\r\n";
 
             // garrison spend
-            fiefText += "Garrison expenditure: " + f.keyStatsPrevious[4] + "\r\n";
+            fiefText += "Garrison expenditure: " + f.keyStatsPrevious[4] + "\r\n\r\n";
 
             // infrastructure spend
-            fiefText += "Infrastructure expenditure: " + f.keyStatsPrevious[5] + "\r\n";
+            fiefText += "Infrastructure expenditure: " + f.keyStatsPrevious[5] + "\r\n\r\n";
 
             // keep spend
             fiefText += "Keep expenditure: " + f.keyStatsPrevious[6] + "\r\n";
             // keep level
-            fiefText += "   (Keep level: " + f.keyStatsPrevious[7] + ")\r\n";
+            fiefText += "   (Keep level: " + f.keyStatsPrevious[7] + ")\r\n\r\n";
 
             // income
-            fiefText += "Income: " + f.keyStatsPrevious[8] + "\r\n";
+            fiefText += "Income: " + f.keyStatsPrevious[8] + "\r\n\r\n";
 
             // family expenses
-            fiefText += "Family expenses: " + f.keyStatsPrevious[9] + "\r\n";
+            fiefText += "Family expenses: " + f.keyStatsPrevious[9] + "\r\n\r\n";
 
             // total expenses
-            fiefText += "Total fief expenses: " + f.keyStatsPrevious[10] + "\r\n";
+            fiefText += "Total fief expenses: " + f.keyStatsPrevious[10] + "\r\n\r\n";
 
             // overlord taxes
             fiefText += "Overlord taxes: " + f.keyStatsPrevious[11] + "\r\n";
             // overlord tax rate
-            fiefText += "   (tax rate: " + f.keyStatsPrevious[12] + "%)\r\n";
+            fiefText += "   (tax rate: " + f.keyStatsPrevious[12] + "%)\r\n\r\n";
 
             // surplus
-            fiefText += "Bottom line: " + f.keyStatsPrevious[13] + "\r\n\r\n";
+            fiefText += "Bottom line: " + f.keyStatsPrevious[13];
 
             return fiefText;
         }
@@ -2870,44 +2871,44 @@ namespace hist_mmorpg
             string fiefText = "CURRENT SEASON\r\n=================\r\n\r\n";
 
             // loyalty
-            fiefText += "Loyalty: " + f.keyStatsCurrent[0] + "\r\n";
+            fiefText += "Loyalty: " + f.keyStatsCurrent[0] + "\r\n\r\n";
 
             // GDP
-            fiefText += "GDP: " + f.keyStatsCurrent[1] + "\r\n";
+            fiefText += "GDP: " + f.keyStatsCurrent[1] + "\r\n\r\n";
 
             // tax rate
-            fiefText += "Tax rate: " + f.keyStatsCurrent[2] + "%\r\n";
+            fiefText += "Tax rate: " + f.keyStatsCurrent[2] + "%\r\n\r\n";
 
             // officials spend
-            fiefText += "Officials expenditure: " + f.keyStatsCurrent[3] + ")\r\n";
+            fiefText += "Officials expenditure: " + f.keyStatsCurrent[3] + "\r\n\r\n";
 
             // garrison spend
-            fiefText += "Garrison expenditure: " + f.keyStatsCurrent[4] + "\r\n";
+            fiefText += "Garrison expenditure: " + f.keyStatsCurrent[4] + "\r\n\r\n";
 
             // infrastructure spend
-            fiefText += "Infrastructure expenditure: " + f.keyStatsCurrent[5] + "\r\n";
+            fiefText += "Infrastructure expenditure: " + f.keyStatsCurrent[5] + "\r\n\r\n";
 
             // keep spend
             fiefText += "Keep expenditure: " + f.keyStatsCurrent[6] + "\r\n";
             // keep level
-            fiefText += "   (Keep level: " + f.keyStatsCurrent[7] + ")\r\n";
+            fiefText += "   (Keep level: " + f.keyStatsCurrent[7] + ")\r\n\r\n";
 
             // income
-            fiefText += "Income: " + f.keyStatsCurrent[8] + "\r\n";
+            fiefText += "Income: " + f.keyStatsCurrent[8] + "\r\n\r\n";
 
             // family expenses
-            fiefText += "Family expenses: " + f.keyStatsCurrent[9] + "\r\n";
+            fiefText += "Family expenses: " + f.keyStatsCurrent[9] + "\r\n\r\n";
 
             // total expenses
-            fiefText += "Total fief expenses: " + f.keyStatsCurrent[10] + "\r\n";
+            fiefText += "Total fief expenses: " + f.keyStatsCurrent[10] + "\r\n\r\n";
 
             // overlord taxes
             fiefText += "Overlord taxes: " + f.keyStatsCurrent[11] + "\r\n";
             // overlord tax rate
-            fiefText += "   (tax rate: " + f.keyStatsCurrent[12] + "%)\r\n";
+            fiefText += "   (tax rate: " + f.keyStatsCurrent[12] + "%)\r\n\r\n";
 
             // surplus
-            fiefText += "Bottom line: " + f.keyStatsCurrent[13] + "\r\n\r\n";
+            fiefText += "Bottom line: " + f.keyStatsCurrent[13];
 
             return fiefText;
         }
@@ -2927,58 +2928,59 @@ namespace hist_mmorpg
             fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod() + ")\r\n";
             fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod() + ")\r\n";
             fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyAdjusted(f.bailiffDaysInFief >= 30) + ")\r\n";
-            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod(f.bailiffDaysInFief >= 30) + ")\r\n";
+            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod(f.bailiffDaysInFief >= 30) + ")\r\n\r\n";
             
             // GDP
-            fiefText += "GDP: " + f.calcNewGDP() + "\r\n";
+            fiefText += "GDP: " + f.calcNewGDP() + "\r\n\r\n";
 
             // tax rate
-            fiefText += "Tax rate: " + f.taxRateNext + "%\r\n";
+            fiefText += "Tax rate: " + f.taxRateNext + "%\r\n\r\n";
 
             // officials expenditure
-            fiefText += "Officials expenditure: " + f.officialsSpendNext + "\r\n";
+            fiefText += "Officials expenditure: " + f.officialsSpendNext + "\r\n\r\n";
 
             // Garrison expenditure
-            fiefText += "Garrison expenditure: " + f.garrisonSpendNext + "\r\n";
+            fiefText += "Garrison expenditure: " + f.garrisonSpendNext + "\r\n\r\n";
 
             // Infrastructure expenditure
-            fiefText += "Infrastructure expenditure: " + f.infrastructureSpendNext + "\r\n";
+            fiefText += "Infrastructure expenditure: " + f.infrastructureSpendNext + "\r\n\r\n";
 
             // keep expenditure
             fiefText += "Keep expenditure: " + f.keepSpendNext + "\r\n";
             // keep level
-            fiefText += "   (keep level: " + f.calcNewKeepLevel() + ")\r\n";
+            fiefText += "   (keep level: " + f.calcNewKeepLevel() + ")\r\n\r\n";
 
             // income
             fiefText += "Income: " + f.calcNewIncome() + "\r\n";
             // various income modifiers
             fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod(f.bailiffDaysInFief >= 30) + ")\r\n";
-            fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod() + ")\r\n";
+            fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod() + ")\r\n\r\n";
             
             // family expenses
             fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
             // famExpenses modifier for player/spouse
             if (f.owner.management > Globals.npcMasterList[f.owner.spouse].management)
             {
-                fiefText += "  (which may include a famExpense skills modifier: " + f.owner.calcSkillEffect("famExpense") + ")\r\n";
+                fiefText += "  (which may include a famExpense skills modifier: " + f.owner.calcSkillEffect("famExpense") + ")";
             }
             else
             {
-                fiefText += "  (which may include a famExpense skills modifier: " + Globals.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")\r\n";
+                fiefText += "  (which may include a famExpense skills modifier: " + Globals.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")";
             }
+            fiefText += "\r\n\r\n";
 
             // total expenses (fief and family)
             fiefText += "Total fief expenses: " + (f.calcNewExpenses() + f.calcFamilyExpenses()) + "\r\n";
             // bailiff fief expenses modifier
-            fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif(f.bailiffDaysInFief >= 30) + ")\r\n";
+            fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif(f.bailiffDaysInFief >= 30) + ")\r\n\r\n";
             
             // overlord taxes
             fiefText += "Overlord taxes: " + f.calcNewOlordTaxes() + "\r\n";
             // overlord tax rate
-            fiefText += "   (tax rate: " + f.province.overlordTaxRate + "%)\r\n";
+            fiefText += "   (tax rate: " + f.province.overlordTaxRate + "%)\r\n\r\n";
 
             // bottom line
-            fiefText += "Bottom line: " + f.calcNewBottomLine() + "\r\n\r\n";
+            fiefText += "Bottom line: " + f.calcNewBottomLine();
 
             return fiefText;
         }
@@ -4510,87 +4512,8 @@ namespace hist_mmorpg
             newNPC.inEntourage = false;
             // lastOffer (will remain empty for family members)
             newNPC.lastOffer = new Dictionary<string, uint>();
-            // function
-            newNPC.function = this.defineFunction(mummy, newNPC.isMale);
 
             return newNPC;
-        }
-
-        /// <summary>
-        /// Defines the function for a new (i.e. newborn) NonPlayerCharacter
-        /// </summary>
-        /// <returns>String containing function</returns>
-        /// <param name="mummy">The new NPC's mother</param>
-        /// <param name="isMale">bool indicating whether child is male</param>
-        public String defineFunction(NonPlayerCharacter mummy, bool isMale)
-        {
-            // set default function
-            String function = "Family member";
-
-            // iterate through myNPCs to get function of mother
-            foreach (NonPlayerCharacter npc in this.myChar.myNPCs)
-            {
-                if (npc == mummy)
-                {
-                    // set function of child dpending on function of mother and sex of child
-                    switch (mummy.function)
-                    {
-                        case "Wife":
-                            if (isMale)
-                            {
-                                function = "Son";
-                            }
-                            else
-                            {
-                                function = "Daughter";
-                            }
-                            break;
-                        case "Daughter":
-                            if (isMale)
-                            {
-                                function = "Grandson";
-                            }
-                            else
-                            {
-                                function = "Granddaughter";
-                            }
-                            break;
-                        case "Daughter-in-law":
-                            if (isMale)
-                            {
-                                function = "Grandson";
-                            }
-                            else
-                            {
-                                function = "Granddaughter";
-                            }
-                            break;
-                        case "Granddaughter":
-                            if (isMale)
-                            {
-                                function = "Great-grandson";
-                            }
-                            else
-                            {
-                                function = "Great-granddaughter";
-                            }
-                            break;
-                        case "Granddaughter-in-law":
-                            if (isMale)
-                            {
-                                function = "Great-grandson";
-                            }
-                            else
-                            {
-                                function = "Great-granddaughter";
-                            }
-                            break;
-                    }
-                    break;
-                }
-            }
-
-            return function;
         }
 
         /// <summary>
@@ -4885,8 +4808,9 @@ namespace hist_mmorpg
             if (!isStillborn)
             {
                 Globals.npcMasterList.Add(weeBairn.charID, weeBairn);
-                this.clock.pastEvents.events.Add(new JournalEvent(this.clock.currentYear, this.clock.currentSeason, this.myChar.charID, "Birth", descr: this.myChar.firstName + " " + this.myChar.familyName + " welcomes a new " + weeBairn.function + " into his family"));
+                this.clock.pastEvents.events.Add(new JournalEvent(this.clock.currentYear, this.clock.currentSeason, this.myChar.charID, "Birth", descr: this.myChar.firstName + " " + this.myChar.familyName + " welcomes a new " + weeBairn.getFunction(this.myChar) + " into his family"));
                 weeBairn.location = mummy.location;
+                weeBairn.location.characters.Add(weeBairn);
                 this.myChar.myNPCs.Add(weeBairn);
             }
             else

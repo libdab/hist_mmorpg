@@ -574,7 +574,7 @@ namespace hist_mmorpg
             {
                 foreach (NonPlayerCharacter element in this.owner.myNPCs)
                 {
-                    if (!((element.function.ToLower()).Contains("bailiff")))
+                    if (!((element.getFunction(this.owner).ToLower()).Contains("bailiff")))
                     {
                         // add wage of non-bailiff employees
                         if (element.familyID == null)
@@ -584,7 +584,7 @@ namespace hist_mmorpg
                         // add family allowance of family NPCs
                         else
                         {
-                            famExpenses += Convert.ToInt32(element.calcFamilyAllowance());
+                            famExpenses += Convert.ToInt32(element.calcFamilyAllowance(element.getFunction(this.owner)));
                         }
                     }
                 }
