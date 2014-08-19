@@ -120,6 +120,7 @@ namespace hist_mmorpg
             this.meetingPlaceTextBox = new System.Windows.Forms.TextBox();
             this.meetingPlaceCharsListView = new System.Windows.Forms.ListView();
             this.houseContainer = new System.Windows.Forms.SplitContainer();
+            this.houseHeirBtn = new System.Windows.Forms.Button();
             this.familyNameChildTextBox = new System.Windows.Forms.TextBox();
             this.familyNameChildButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -134,7 +135,6 @@ namespace hist_mmorpg
             this.houseCharListContainer = new System.Windows.Forms.SplitContainer();
             this.houseCharListLabel = new System.Windows.Forms.Label();
             this.houseCharListView = new System.Windows.Forms.ListView();
-            this.houseHeirBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -1167,6 +1167,17 @@ namespace hist_mmorpg
             this.houseContainer.SplitterDistance = 259;
             this.houseContainer.TabIndex = 7;
             // 
+            // houseHeirBtn
+            // 
+            this.houseHeirBtn.Location = new System.Drawing.Point(70, 473);
+            this.houseHeirBtn.Name = "houseHeirBtn";
+            this.houseHeirBtn.Size = new System.Drawing.Size(106, 23);
+            this.houseHeirBtn.TabIndex = 37;
+            this.houseHeirBtn.Tag = "";
+            this.houseHeirBtn.Text = "Appoint As My Heir";
+            this.houseHeirBtn.UseVisualStyleBackColor = true;
+            this.houseHeirBtn.Click += new System.EventHandler(this.houseHeirBtn_Click);
+            // 
             // familyNameChildTextBox
             // 
             this.familyNameChildTextBox.Location = new System.Drawing.Point(115, 447);
@@ -1316,26 +1327,15 @@ namespace hist_mmorpg
             this.houseCharListView.View = System.Windows.Forms.View.Details;
             this.houseCharListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.houseCharListView_ItemSelectionChanged);
             // 
-            // houseHeirBtn
-            // 
-            this.houseHeirBtn.Location = new System.Drawing.Point(70, 473);
-            this.houseHeirBtn.Name = "houseHeirBtn";
-            this.houseHeirBtn.Size = new System.Drawing.Size(106, 23);
-            this.houseHeirBtn.TabIndex = 37;
-            this.houseHeirBtn.Tag = "";
-            this.houseHeirBtn.Text = "Appoint As My Heir";
-            this.houseHeirBtn.UseVisualStyleBackColor = true;
-            this.houseHeirBtn.Click += new System.EventHandler(this.houseHeirBtn_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
-            this.Controls.Add(this.fiefContainer);
-            this.Controls.Add(this.houseContainer);
-            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.travelContainer);
+            this.Controls.Add(this.houseContainer);
+            this.Controls.Add(this.fiefContainer);
+            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.fiefsOwnedContainer);

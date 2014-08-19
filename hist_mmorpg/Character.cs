@@ -1578,12 +1578,6 @@ namespace hist_mmorpg
                         }
                     }
 
-                    // check for heir
-                    else if (this.isHeir)
-                    {
-                        myFunction += "Heir";
-                    }
-
                     else if (this.father != null)
                     {
                         // check for son/daughter
@@ -1626,6 +1620,12 @@ namespace hist_mmorpg
                         {
                             myFunction += "Daughter-in-Law";
                         }
+                    }
+
+                    // check for heir
+                    if (this.isHeir)
+                    {
+                        myFunction += " & Heir";
                     }
 
                 }

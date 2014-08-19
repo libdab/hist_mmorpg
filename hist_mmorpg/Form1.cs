@@ -2050,8 +2050,8 @@ namespace hist_mmorpg
             // add necessary columns
             this.meetingPlaceCharsListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
             this.meetingPlaceCharsListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.meetingPlaceCharsListView.Columns.Add("Household", -2, HorizontalAlignment.Left);
             this.meetingPlaceCharsListView.Columns.Add("Sex", -2, HorizontalAlignment.Left);
+            this.meetingPlaceCharsListView.Columns.Add("Household", -2, HorizontalAlignment.Left);
             this.meetingPlaceCharsListView.Columns.Add("Type", -2, HorizontalAlignment.Left);
             this.meetingPlaceCharsListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
         }
@@ -2220,9 +2220,6 @@ namespace hist_mmorpg
             // charID
             myItem.SubItems.Add(ch.charID);
 
-            // TODO: household
-            myItem.SubItems.Add("A household");
-
             // sex
             if (ch.isMale)
             {
@@ -2233,7 +2230,25 @@ namespace hist_mmorpg
                 myItem.SubItems.Add("Female");
             }
 
-            // TODO: Type (e.g. family or not)
+            // to store household and type data
+            string myHousehold = "";
+            bool isEmployee = false;
+            bool isFamily = false;
+
+            // household
+            if (ch.familyID != null)
+            {
+                myHousehold = Globals.pcMasterList[ch.familyID].familyName + " (ID: " + ch.familyID + ")";
+
+                if (ch.familyID.Equals(this.myChar.charID))
+                {
+                    isFamily = true;
+                }
+            }
+
+            myItem.SubItems.Add(myHousehold);
+
+            // TODO: type (e.g. family, NPC, player)
             myItem.SubItems.Add("A type");
 
             // show whether is in player's entourage
@@ -2696,7 +2711,8 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>String containing information to display</returns>
         /// <param name="f">Fief for which information is to be displayed</param>
-        public string displayGeneralFiefData(Fief f)
+        /// <param name="isOwner">bool indicating if fief owned by player</param>
+        public string displayGeneralFiefData(Fief f, bool isOwner)
         {
             string fiefText = "";
 
@@ -2744,8 +2760,11 @@ namespace hist_mmorpg
             }
             fiefText += "\r\n";
 
-            // no. of troops
-            fiefText += "Troops: " + f.troops + "\r\n";
+            // no. of troops (only if owned)
+            if (isOwner)
+            {
+                fiefText += "Troops: " + f.troops + "\r\n";
+            }
 
             // fief status
             fiefText += "Status: ";
@@ -2769,6 +2788,7 @@ namespace hist_mmorpg
             // terrain type
             fiefText += "Terrain: " + f.terrain.description + "\r\n";
 
+            /*
             // characters present
             fiefText += "Characters present:";
             for (int i = 0; i < f.characters.Count; i++)
@@ -2806,6 +2826,7 @@ namespace hist_mmorpg
                 fiefText += "not";
             }
             fiefText += " barred from the keep\r\n\r\n";
+             * */
 
             return fiefText;
         }
@@ -2960,13 +2981,13 @@ namespace hist_mmorpg
             // family expenses
             fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
             // famExpenses modifier for player/spouse
-            if (f.owner.management > Globals.npcMasterList[f.owner.spouse].management)
+            if ((f.owner.isMarried) && (Globals.npcMasterList[f.owner.spouse].management > f.owner.management))
             {
-                fiefText += "  (which may include a famExpense skills modifier: " + f.owner.calcSkillEffect("famExpense") + ")";
+                fiefText += "  (which may include a famExpense skills modifier: " + Globals.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")";
             }
             else
             {
-                fiefText += "  (which may include a famExpense skills modifier: " + Globals.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")";
+                fiefText += "  (which may include a famExpense skills modifier: " + f.owner.calcSkillEffect("famExpense") + ")";
             }
             fiefText += "\r\n\r\n";
 
@@ -3047,6 +3068,7 @@ namespace hist_mmorpg
                 f = this.myChar.location;
             }
 
+            bool isOwner = myChar.ownedFiefs.Contains(this.fiefToView);
             bool displayWarning = false;
             String toDisplay = "";
 
@@ -3055,11 +3077,10 @@ namespace hist_mmorpg
             // set label text
             this.fiefLabel.Text = this.fiefToView.name + " (" + this.fiefToView.fiefID + ")";
 
-            // refresh fief display TextBoxes with updated info
-            this.fiefTextBox.Text = this.displayGeneralFiefData(this.fiefToView);
-            this.fiefPrevKeyStatsTextBox.Text = this.displayFiefKeyStatsPrev(this.fiefToView);
-            this.fiefCurrKeyStatsTextBox.Text = this.displayFiefKeyStatsCurr(this.fiefToView);
-            this.fiefNextKeyStatsTextBox.Text = this.displayFiefKeyStatsNext(this.fiefToView);
+            // refresh main fief TextBox with updated info
+            this.fiefTextBox.Text = this.displayGeneralFiefData(this.fiefToView, isOwner);
+
+            // ensure textboxes aren't interactive
             this.fiefTextBox.ReadOnly = true;
             this.fiefPrevKeyStatsTextBox.ReadOnly = true;
             this.fiefCurrKeyStatsTextBox.ReadOnly = true;
@@ -3067,7 +3088,7 @@ namespace hist_mmorpg
             this.fiefTransferAmountTextBox.Text = "";
 
             // if fief is NOT owned by player, disable fief management buttons and TextBoxes 
-            if (!myChar.ownedFiefs.Contains(this.fiefToView))
+            if (! isOwner)
             {
                 this.adjustSpendBtn.Enabled = false;
                 this.taxRateLabel.Enabled = false;
@@ -3099,6 +3120,9 @@ namespace hist_mmorpg
                 this.adjustTaxTextBox.Text = "";
                 this.fiefHomeTreasTextBox.Text = "";
                 this.FiefTreasTextBox.Text = "";
+                this.fiefPrevKeyStatsTextBox.Text = "";
+                this.fiefCurrKeyStatsTextBox.Text = "";
+                this.fiefNextKeyStatsTextBox.Text = "";
             }
 
             // if fief IS owned by player, enable fief management buttons and TextBoxes 
@@ -3144,12 +3168,15 @@ namespace hist_mmorpg
                     this.FiefTreasTextBox.Enabled = true;
                 }
 
-                // set TextBoxes to show appropriate figures
+                // set TextBoxes to show appropriate data
                 this.adjGarrSpendTextBox.Text = Convert.ToString(this.fiefToView.garrisonSpendNext);
                 this.adjInfrSpendTextBox.Text = Convert.ToString(this.fiefToView.infrastructureSpendNext);
                 this.adjOffSpendTextBox.Text = Convert.ToString(this.fiefToView.officialsSpendNext);
                 this.adjustKeepSpendTextBox.Text = Convert.ToString(this.fiefToView.keepSpendNext);
                 this.adjustTaxTextBox.Text = Convert.ToString(this.fiefToView.taxRateNext);
+                this.fiefPrevKeyStatsTextBox.Text = this.displayFiefKeyStatsPrev(this.fiefToView);
+                this.fiefCurrKeyStatsTextBox.Text = this.displayFiefKeyStatsCurr(this.fiefToView);
+                this.fiefNextKeyStatsTextBox.Text = this.displayFiefKeyStatsNext(this.fiefToView);
 
                 // calculate and display home treasury
                 Fief home = Globals.fiefMasterList[this.myChar.homeFief];
@@ -4074,7 +4101,16 @@ namespace hist_mmorpg
                 // re-enable controls
                 this.houseCampBtn.Enabled = true;
                 this.houseCampDaysTextBox.Enabled = true;
-                this.houseHeirBtn.Enabled = true;
+
+                // if family selected, enable 'choose heir' button
+                if ((this.charToView.familyID != null) && (this.charToView.familyID.Equals(this.myChar.charID)))
+                {
+                    this.houseHeirBtn.Enabled = true;
+                }
+                else
+                {
+                    this.houseHeirBtn.Enabled = false;
+                }
 
                 // if character aged 0 and firstname = "Baby", enable 'name child' controls
                 if ((charToDisplay as NonPlayerCharacter).checkForName(0))
