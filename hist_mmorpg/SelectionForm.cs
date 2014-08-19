@@ -41,10 +41,10 @@ namespace hist_mmorpg
         /// <param name="myFunction">String indicating function to be performed</param>
         private void initDisplay(String myFunction)
         {
-            if (myFunction.Equals("bailiff"))
+            if ((myFunction.Equals("bailiff")) || (myFunction.Equals("heir")))
             {
                 // format list display
-                this.setUpNpcList();
+                this.setUpNpcList(myFunction);
 
                 // refresh information 
                 this.refreshNPCdisplay();
@@ -69,12 +69,29 @@ namespace hist_mmorpg
         /// <summary>
         /// Configures UI display for list of household NPCs
         /// </summary>
-        public void setUpNpcList()
+        /// <param name="myFunction">String indicating function to be performed</param>
+        public void setUpNpcList(String myFunction)
         {
             // add necessary columns
             this.npcListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
             this.npcListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
             this.npcListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
+
+            // set appropriate button tag
+            this.chooseNpcBtn.Tag = myFunction;
+
+            // set appropriate button text
+            if (myFunction.Equals("bailiff"))
+            {
+                this.chooseNpcBtn.Text = "Appoint this person as bailiff";
+            }
+            else if (myFunction.Equals("heir"))
+            {
+                this.chooseNpcBtn.Text = "Appoint this person as my heir";
+            }
+
+            // disable button (until NPC selected)
+            this.chooseNpcBtn.Enabled = false;
         }
 
         /// <summary>
@@ -128,6 +145,9 @@ namespace hist_mmorpg
             {
                 if (npcListView.SelectedItems.Count > 0)
                 {
+                    // enable 'appoint this NPC' button
+                    this.chooseNpcBtn.Enabled = true;
+
                     // find matching character
                     if (this.parent.myChar.myNPCs[i].charID.Equals(this.npcListView.SelectedItems[0].SubItems[1].Text))
                     {
@@ -240,9 +260,9 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of the chooseNpcBtn button
-        /// which appoints the selected NPC as the bailiff of the fief displayed in the main UI
-        /// and closes the child (this) form
+        /// Responds to the click event of the chooseNpcBtn button which appoints the selected NPC
+        /// as either 1) the bailiff of the fief displayed in the main UI
+        /// or 2) the player's heir.  Then closes the child (this) form.
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
@@ -250,11 +270,40 @@ namespace hist_mmorpg
         {
             if (npcListView.SelectedItems.Count > 0)
             {
-                // set the selected NPC as bailiff
-                this.parent.fiefToView.bailiff = Globals.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
-                
-                // refresh the fief information (in the main form)
-                this.parent.refreshFiefContainer(this.parent.fiefToView);
+                // get selected NPC
+                NonPlayerCharacter selectedNPC = Globals.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+
+                // get chooseNpcBtn tag (determines function)
+                String myFunction = Convert.ToString(((Button)sender).Tag);
+
+                // if appointing a bailiff
+                if (myFunction.Equals("bailiff"))
+                {
+                    // set the selected NPC as bailiff
+                    this.parent.fiefToView.bailiff = selectedNPC;
+
+                    // refresh the fief information (in the main form)
+                    this.parent.refreshFiefContainer(this.parent.fiefToView);
+                }
+
+                // if appointing an heir
+                else if (myFunction.Equals("heir"))
+                {
+                    // check for an existing heir and remove
+                    foreach (NonPlayerCharacter npc in this.parent.myChar.myNPCs)
+                    {
+                        if (npc.isHeir)
+                        {
+                            npc.isHeir = false;
+                        }
+                    }
+
+                    // appoint NPC as heir
+                    selectedNPC.isHeir = true;
+
+                    // refresh the household screen (in the main form)
+                    this.parent.refreshHouseholdDisplay(selectedNPC);
+                }
             }
 
             // close this form

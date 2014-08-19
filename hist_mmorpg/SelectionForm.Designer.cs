@@ -34,15 +34,15 @@
             this.chooseNpcBtn = new System.Windows.Forms.Button();
             this.npcListView = new System.Windows.Forms.ListView();
             this.lockOutContainer = new System.Windows.Forms.SplitContainer();
-            this.barredListContainer = new System.Windows.Forms.SplitContainer();
-            this.barredListView = new System.Windows.Forms.ListView();
-            this.barredListLabel = new System.Windows.Forms.Label();
-            this.barThisCharBtn = new System.Windows.Forms.Button();
-            this.barThisCharTextBox = new System.Windows.Forms.TextBox();
-            this.unbarCharBtn = new System.Windows.Forms.Button();
-            this.barFrenchCheckBox = new System.Windows.Forms.CheckBox();
-            this.barEnglishCheckBox = new System.Windows.Forms.CheckBox();
             this.closeBtn = new System.Windows.Forms.Button();
+            this.barEnglishCheckBox = new System.Windows.Forms.CheckBox();
+            this.barFrenchCheckBox = new System.Windows.Forms.CheckBox();
+            this.unbarCharBtn = new System.Windows.Forms.Button();
+            this.barThisCharTextBox = new System.Windows.Forms.TextBox();
+            this.barThisCharBtn = new System.Windows.Forms.Button();
+            this.barredListContainer = new System.Windows.Forms.SplitContainer();
+            this.barredListLabel = new System.Windows.Forms.Label();
+            this.barredListView = new System.Windows.Forms.ListView();
             ((System.ComponentModel.ISupportInitialize)(this.npcContainer)).BeginInit();
             this.npcContainer.Panel1.SuspendLayout();
             this.npcContainer.Panel2.SuspendLayout();
@@ -150,6 +150,65 @@
             this.lockOutContainer.SplitterDistance = 257;
             this.lockOutContainer.TabIndex = 1;
             // 
+            // closeBtn
+            // 
+            this.closeBtn.Location = new System.Drawing.Point(16, 224);
+            this.closeBtn.Name = "closeBtn";
+            this.closeBtn.Size = new System.Drawing.Size(108, 35);
+            this.closeBtn.TabIndex = 6;
+            this.closeBtn.Text = "Close Lock Out Options";
+            this.closeBtn.UseVisualStyleBackColor = true;
+            this.closeBtn.Click += new System.EventHandler(this.closeBtn_Click);
+            // 
+            // barEnglishCheckBox
+            // 
+            this.barEnglishCheckBox.AutoSize = true;
+            this.barEnglishCheckBox.Location = new System.Drawing.Point(151, 170);
+            this.barEnglishCheckBox.Name = "barEnglishCheckBox";
+            this.barEnglishCheckBox.Size = new System.Drawing.Size(101, 17);
+            this.barEnglishCheckBox.TabIndex = 5;
+            this.barEnglishCheckBox.Text = "Bar The English";
+            this.barEnglishCheckBox.UseVisualStyleBackColor = true;
+            this.barEnglishCheckBox.CheckedChanged += new System.EventHandler(this.barEnglishCheckBox_CheckedChanged);
+            // 
+            // barFrenchCheckBox
+            // 
+            this.barFrenchCheckBox.AutoSize = true;
+            this.barFrenchCheckBox.Location = new System.Drawing.Point(151, 143);
+            this.barFrenchCheckBox.Name = "barFrenchCheckBox";
+            this.barFrenchCheckBox.Size = new System.Drawing.Size(100, 17);
+            this.barFrenchCheckBox.TabIndex = 3;
+            this.barFrenchCheckBox.Text = "Bar The French";
+            this.barFrenchCheckBox.UseVisualStyleBackColor = true;
+            this.barFrenchCheckBox.CheckedChanged += new System.EventHandler(this.barFrenchCheckBox_CheckedChanged);
+            // 
+            // unbarCharBtn
+            // 
+            this.unbarCharBtn.Location = new System.Drawing.Point(16, 88);
+            this.unbarCharBtn.Name = "unbarCharBtn";
+            this.unbarCharBtn.Size = new System.Drawing.Size(108, 35);
+            this.unbarCharBtn.TabIndex = 2;
+            this.unbarCharBtn.Text = "UnBar Selected Character";
+            this.unbarCharBtn.UseVisualStyleBackColor = true;
+            this.unbarCharBtn.Click += new System.EventHandler(this.unbarCharBtn_Click);
+            // 
+            // barThisCharTextBox
+            // 
+            this.barThisCharTextBox.Location = new System.Drawing.Point(151, 61);
+            this.barThisCharTextBox.Name = "barThisCharTextBox";
+            this.barThisCharTextBox.Size = new System.Drawing.Size(59, 20);
+            this.barThisCharTextBox.TabIndex = 1;
+            // 
+            // barThisCharBtn
+            // 
+            this.barThisCharBtn.Location = new System.Drawing.Point(16, 61);
+            this.barThisCharBtn.Name = "barThisCharBtn";
+            this.barThisCharBtn.Size = new System.Drawing.Size(108, 21);
+            this.barThisCharBtn.TabIndex = 0;
+            this.barThisCharBtn.Text = "Bar This Character";
+            this.barThisCharBtn.UseVisualStyleBackColor = true;
+            this.barThisCharBtn.Click += new System.EventHandler(this.barThisCharBtn_Click);
+            // 
             // barredListContainer
             // 
             this.barredListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -168,6 +227,16 @@
             this.barredListContainer.SplitterDistance = 45;
             this.barredListContainer.TabIndex = 0;
             // 
+            // barredListLabel
+            // 
+            this.barredListLabel.AutoSize = true;
+            this.barredListLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.barredListLabel.Location = new System.Drawing.Point(18, 9);
+            this.barredListLabel.Name = "barredListLabel";
+            this.barredListLabel.Size = new System.Drawing.Size(320, 24);
+            this.barredListLabel.TabIndex = 0;
+            this.barredListLabel.Text = "Characters Barred From This Fief";
+            // 
             // barredListView
             // 
             this.barredListView.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -180,82 +249,13 @@
             this.barredListView.View = System.Windows.Forms.View.Details;
             this.barredListView.SelectedIndexChanged += new System.EventHandler(this.barredListView_SelectedIndexChanged);
             // 
-            // barredListLabel
-            // 
-            this.barredListLabel.AutoSize = true;
-            this.barredListLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.barredListLabel.Location = new System.Drawing.Point(18, 9);
-            this.barredListLabel.Name = "barredListLabel";
-            this.barredListLabel.Size = new System.Drawing.Size(320, 24);
-            this.barredListLabel.TabIndex = 0;
-            this.barredListLabel.Text = "Characters Barred From This Fief";
-            // 
-            // barThisCharBtn
-            // 
-            this.barThisCharBtn.Location = new System.Drawing.Point(16, 61);
-            this.barThisCharBtn.Name = "barThisCharBtn";
-            this.barThisCharBtn.Size = new System.Drawing.Size(108, 21);
-            this.barThisCharBtn.TabIndex = 0;
-            this.barThisCharBtn.Text = "Bar This Character";
-            this.barThisCharBtn.UseVisualStyleBackColor = true;
-            this.barThisCharBtn.Click += new System.EventHandler(this.barThisCharBtn_Click);
-            // 
-            // barThisCharTextBox
-            // 
-            this.barThisCharTextBox.Location = new System.Drawing.Point(151, 61);
-            this.barThisCharTextBox.Name = "barThisCharTextBox";
-            this.barThisCharTextBox.Size = new System.Drawing.Size(59, 20);
-            this.barThisCharTextBox.TabIndex = 1;
-            // 
-            // unbarCharBtn
-            // 
-            this.unbarCharBtn.Location = new System.Drawing.Point(16, 88);
-            this.unbarCharBtn.Name = "unbarCharBtn";
-            this.unbarCharBtn.Size = new System.Drawing.Size(108, 35);
-            this.unbarCharBtn.TabIndex = 2;
-            this.unbarCharBtn.Text = "UnBar Selected Character";
-            this.unbarCharBtn.UseVisualStyleBackColor = true;
-            this.unbarCharBtn.Click += new System.EventHandler(this.unbarCharBtn_Click);
-            // 
-            // barFrenchCheckBox
-            // 
-            this.barFrenchCheckBox.AutoSize = true;
-            this.barFrenchCheckBox.Location = new System.Drawing.Point(151, 143);
-            this.barFrenchCheckBox.Name = "barFrenchCheckBox";
-            this.barFrenchCheckBox.Size = new System.Drawing.Size(100, 17);
-            this.barFrenchCheckBox.TabIndex = 3;
-            this.barFrenchCheckBox.Text = "Bar The French";
-            this.barFrenchCheckBox.UseVisualStyleBackColor = true;
-            this.barFrenchCheckBox.CheckedChanged += new System.EventHandler(this.barFrenchCheckBox_CheckedChanged);
-            // 
-            // barEnglishCheckBox
-            // 
-            this.barEnglishCheckBox.AutoSize = true;
-            this.barEnglishCheckBox.Location = new System.Drawing.Point(151, 170);
-            this.barEnglishCheckBox.Name = "barEnglishCheckBox";
-            this.barEnglishCheckBox.Size = new System.Drawing.Size(101, 17);
-            this.barEnglishCheckBox.TabIndex = 5;
-            this.barEnglishCheckBox.Text = "Bar The English";
-            this.barEnglishCheckBox.UseVisualStyleBackColor = true;
-            this.barEnglishCheckBox.CheckedChanged += new System.EventHandler(this.barEnglishCheckBox_CheckedChanged);
-            // 
-            // closeBtn
-            // 
-            this.closeBtn.Location = new System.Drawing.Point(16, 224);
-            this.closeBtn.Name = "closeBtn";
-            this.closeBtn.Size = new System.Drawing.Size(108, 35);
-            this.closeBtn.TabIndex = 6;
-            this.closeBtn.Text = "Close Lock Out Options";
-            this.closeBtn.UseVisualStyleBackColor = true;
-            this.closeBtn.Click += new System.EventHandler(this.closeBtn_Click);
-            // 
             // SelectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(620, 547);
-            this.Controls.Add(this.lockOutContainer);
             this.Controls.Add(this.npcContainer);
+            this.Controls.Add(this.lockOutContainer);
             this.Name = "SelectionForm";
             this.Text = "SelectionForm";
             this.npcContainer.Panel1.ResumeLayout(false);

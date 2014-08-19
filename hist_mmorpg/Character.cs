@@ -1444,6 +1444,10 @@ namespace hist_mmorpg
         /// Denotes if in employer's entourage
         /// </summary>
         public bool inEntourage { get; set; }
+        /// <summary>
+        /// Denotes if is player's heir
+        /// </summary>
+        public bool isHeir { get; set; }
 
         /// <summary>
         /// Constructor for NonPlayerCharacter
@@ -1451,9 +1455,10 @@ namespace hist_mmorpg
         /// <param name="mb">String holding NPC's employer (charID)</param>
         /// <param name="wa">string holding NPC's wage</param>
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
+        /// <param name="isH">bool denoting if is player's heir</param>
         public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
-            String sp, String fath, uint wa, bool inEnt, List<String> myTi, String mb = null, GameClock cl = null, Fief loc = null)
+            String sp, String fath, uint wa, bool inEnt, bool isH, List<String> myTi, String mb = null, GameClock cl = null, Fief loc = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, myTi, cl, loc)
         {
             // TODO: validate hb = 1-10000
@@ -1464,6 +1469,7 @@ namespace hist_mmorpg
             this.wage = wa;
             this.inEntourage = inEnt;
             this.lastOffer = new Dictionary<string, uint>();
+            this.isHeir = isH;
         }
 
         /// <summary>
@@ -1489,6 +1495,7 @@ namespace hist_mmorpg
 			this.wage = npcr.wage;
 			this.inEntourage = npcr.inEntourage;
 			this.lastOffer = npcr.lastOffer;
+            this.isHeir = npcr.isHeir;
 		}
 
         /// <summary>
@@ -1571,6 +1578,12 @@ namespace hist_mmorpg
                         }
                     }
 
+                    // check for heir
+                    else if (this.isHeir)
+                    {
+                        myFunction += "Heir";
+                    }
+
                     else if (this.father != null)
                     {
                         // check for son/daughter
@@ -1585,6 +1598,7 @@ namespace hist_mmorpg
                                 myFunction += "Daughter";
                             }
                         }
+
                         else
                         {
                             // check for grandkids
@@ -1995,6 +2009,10 @@ namespace hist_mmorpg
         /// Denotes if in employer's entourage
 		/// </summary>
 		public bool inEntourage { get; set; }
+        /// <summary>
+        /// Denotes if is player's heir
+        /// </summary>
+        public bool isHeir { get; set; }
 
 
 		/// <summary>
@@ -2012,6 +2030,7 @@ namespace hist_mmorpg
 			this.wage = npc.wage;
 			this.inEntourage = npc.inEntourage;
 			this.lastOffer = npc.lastOffer;
+            this.isHeir = npc.isHeir;
 		}
 
         /// <summary>

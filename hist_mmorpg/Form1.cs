@@ -389,11 +389,11 @@ namespace hist_mmorpg
             Globals.pcMasterList.Add(myChar1.charID, myChar1);
             PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "Eng", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(myRand), false, false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, cl: this.clock, loc: myFief1);
             Globals.pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "Eng", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, null, null, null, 0, false, myTitles003, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "Eng", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, null, null, null, 0, false, false, myTitles003, cl: this.clock, loc: myFief1);
             Globals.npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "Eng", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, null, null, null, 10000, true, myTitles004, mb: myChar1.charID, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "Eng", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, null, null, null, 10000, true, false, myTitles004, mb: myChar1.charID, cl: this.clock, loc: myFief1);
             Globals.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly", "Maguire", myDob005, false, "Eng", true, 2.50, 9.0, myGoTo5, myLang2, 90, 0, 4.0, 6.0, generateSkillSet(myRand), false, true, false, "101", "101", null, 30000, false, myTitles005, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly", "Maguire", myDob005, false, "Eng", true, 2.50, 9.0, myGoTo5, myLang2, 90, 0, 4.0, 6.0, generateSkillSet(myRand), false, true, false, "101", "101", null, 30000, false, false, myTitles005, cl: this.clock, loc: myFief1);
             Globals.npcMasterList.Add(myWife.charID, myWife);
 
 			// set fief owners
@@ -2279,6 +2279,7 @@ namespace hist_mmorpg
             this.familyNameChildButton.Enabled = false;
             this.familyNameChildTextBox.Text = "";
             this.familyNameChildTextBox.Enabled = false;
+            this.houseHeirBtn.Enabled = false;
 
             // clear existing items in characters list
             this.houseCharListView.Items.Clear();
@@ -3838,12 +3839,24 @@ namespace hist_mmorpg
 
         private void setBailiffBtn_Click(object sender, EventArgs e)
         {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
             SelectionForm chooseBailiff = new SelectionForm(this, "bailiff");
             chooseBailiff.Show();
         }
 
         private void lockoutBtn_Click(object sender, EventArgs e)
         {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
             SelectionForm lockOutOptions = new SelectionForm(this, "lockout");
             lockOutOptions.Show();
         }
@@ -4061,6 +4074,7 @@ namespace hist_mmorpg
                 // re-enable controls
                 this.houseCampBtn.Enabled = true;
                 this.houseCampDaysTextBox.Enabled = true;
+                this.houseHeirBtn.Enabled = true;
 
                 // if character aged 0 and firstname = "Baby", enable 'name child' controls
                 if ((charToDisplay as NonPlayerCharacter).checkForName(0))
@@ -4989,6 +5003,31 @@ namespace hist_mmorpg
             String updateType = menuItem.Tag.ToString();
 
             this.seasonUpdate(updateType);
+        }
+
+        private void houseHeirBtn_Click(object sender, EventArgs e)
+        {
+            if (this.houseCharListView.SelectedItems.Count > 0)
+            {
+                // get selected NPC
+                NonPlayerCharacter selectedNPC = Globals.npcMasterList[this.houseCharListView.SelectedItems[0].SubItems[1].Text];
+
+                // check for an existing heir and remove
+                foreach (NonPlayerCharacter npc in this.myChar.myNPCs)
+                {
+                    if (npc.isHeir)
+                    {
+                        npc.isHeir = false;
+                    }
+                }
+
+                // appoint NPC as heir
+                selectedNPC.isHeir = true;
+
+                // refresh the household screen (in the main form)
+                this.refreshHouseholdDisplay(selectedNPC);
+            }
+
         }
 
     }
