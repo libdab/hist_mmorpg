@@ -1065,6 +1065,10 @@ namespace hist_mmorpg
         /// Holds character's ancestral home fief (fiefID)
         /// </summary>
         public String ancestralHomeFief { get; set; }
+        /// <summary>
+        /// Holds ID of player who is currently playing this PlayerCharacter
+        /// </summary>
+        public String playerID { get; set; }
 
         /// <summary>
         /// Constructor for PlayerCharacter
@@ -1075,9 +1079,10 @@ namespace hist_mmorpg
         /// <param name="owned">List<Fief> holding fiefs owned by character</param>
         /// <param name="home">String holding character's home fief (fiefID)</param>
         /// <param name="anchome">String holding character's ancestral home fief (fiefID)</param>
+        /// <param name="pID">String holding ID of player who is currently playing this PlayerCharacter</param>
         public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
-            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, GameClock cl = null, Fief loc = null)
+            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, GameClock cl = null, Fief loc = null, String pID = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, myTi, cl, loc)
         {
 
@@ -1087,6 +1092,7 @@ namespace hist_mmorpg
             this.ownedFiefs = owned;
             this.homeFief = home;
             this.ancestralHomeFief = ancHome;
+            this.playerID = pID;
         }
 
         /// <summary>
@@ -1114,6 +1120,7 @@ namespace hist_mmorpg
             this.ownedFiefs = new List<Fief>();
             this.homeFief = pcr.homeFief;
             this.ancestralHomeFief = pcr.ancestralHomeFief;
+            this.playerID = pcr.playerID;
 		}
 
         /// <summary>
@@ -1562,7 +1569,7 @@ namespace hist_mmorpg
                 {
                     if (!isFirstEntry)
                     {
-                        myFunction += "\r\n";
+                        myFunction += " & ";
                     }
                     else
                     {
@@ -1643,7 +1650,7 @@ namespace hist_mmorpg
                         {
                             if (! isFirstEntry)
                             {
-                                myFunction += "\r\n";
+                                myFunction += " & ";
                             }
                             else
                             {
@@ -1949,6 +1956,10 @@ namespace hist_mmorpg
         /// Holds character's ancestral home fief (fiefID)
         /// </summary>
         public String ancestralHomeFief { get; set; }
+        /// <summary>
+        /// Holds ID of player who is currently playing this PlayerCharacter
+        /// </summary>
+        public String playerID { get; set; }
 
 		/// <summary>
 		/// Constructor for PlayerCharacter_Riak
@@ -1976,6 +1987,7 @@ namespace hist_mmorpg
 			}
             this.homeFief = pc.homeFief;
             this.ancestralHomeFief = pc.ancestralHomeFief;
+            this.playerID = pc.playerID;
 		}
 
         /// <summary>

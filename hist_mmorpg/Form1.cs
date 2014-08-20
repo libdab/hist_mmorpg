@@ -2113,13 +2113,13 @@ namespace hist_mmorpg
             switch (place)
             {
                 case "tavern":
-                    this.meetingPlaceLabel.Text = "Ye Olde Tavern";
+                    this.meetingPlaceLabel.Text = "Ye Olde Tavern Of " + this.fiefToView.name;
                     break;
                 case "court":
                     this.meetingPlaceLabel.Text = "The Esteemed Court Of " + this.fiefToView.name;
                     break;
                 case "outsideKeep":
-                    this.meetingPlaceLabel.Text = "Hangin' Outside The Keep";
+                    this.meetingPlaceLabel.Text = "Persons Present Outwith\r\nThe Keep Of " + this.fiefToView.name;
                     break;
                 default:
                     this.meetingPlaceLabel.Text = "A Generic Meeting Place";
@@ -2232,6 +2232,7 @@ namespace hist_mmorpg
 
             // to store household and type data
             string myHousehold = "";
+            string myType = "";
             bool isEmployee = false;
             bool isFamily = false;
 
@@ -2248,8 +2249,48 @@ namespace hist_mmorpg
 
             myItem.SubItems.Add(myHousehold);
 
-            // TODO: type (e.g. family, NPC, player)
-            myItem.SubItems.Add("A type");
+            // type (e.g. family, NPC, player)
+
+            // check for players and PCs
+            if (ch is PlayerCharacter)
+            {
+                if ((ch as PlayerCharacter).playerID != null)
+                {
+                    myType = "PC (player)";
+                }
+                else
+                {
+                    myType = "PC (inactive)";
+                }
+            }
+            else
+            {
+                // check for employees
+                if (((ch as NonPlayerCharacter).myBoss != null) && (ch as NonPlayerCharacter).myBoss.Equals(this.myChar.charID))
+                {
+                    isEmployee = true;
+                }
+
+                // allocate NPC type
+                if ((isFamily) && (isEmployee))
+                {
+                    myType = "Family & Employee";
+                }
+                else if (isFamily)
+                {
+                    myType = "Family";
+                }
+                else if (isEmployee)
+                {
+                    myType = "Employee";
+                }
+                else
+                {
+                    myType = "NPC";
+                }
+            }
+
+            myItem.SubItems.Add(myType);
 
             // show whether is in player's entourage
             bool isCompanion = false;
@@ -2371,6 +2412,13 @@ namespace hist_mmorpg
         public string displayCharacter(Character ch)
         {
             string charText = "";
+            bool isMyNPC = false;
+
+            // check if is in player's myNPCs
+            if (this.myChar.myNPCs.Contains((ch as NonPlayerCharacter)))
+            {
+                isMyNPC = true;
+            }
 
             // ID
             charText += "ID: " + ch.charID + "\r\n";
@@ -2407,38 +2455,38 @@ namespace hist_mmorpg
                 charText += "Ancestral Home fief: " + ancHomeFief.name + " (" + ancHomeFief.fiefID + ")\r\n";
             }
 
-            // health (& max. health)
-            charText += "Health: ";
-            if (!ch.isAlive)
+            if (isMyNPC)
             {
-                charText += "You're Dead!";
-            }
-            else
-            {
-                charText += ch.calculateHealth() + " (max. health: " + ch.maxHealth + ")";
-            }
-            charText += "\r\n";
+                // health (& max. health)
+                charText += "Health: ";
+                if (!ch.isAlive)
+                {
+                    charText += "You're Dead!";
+                }
+                else
+                {
+                    charText += ch.calculateHealth() + " (max. health: " + ch.maxHealth + ")";
+                }
+                charText += "\r\n";
 
-            // any death modifiers (from skills)
-            charText += "  (Death modifier from skills: " + ch.calcSkillEffect("death") + ")\r\n";
+                // any death modifiers (from skills)
+                charText += "  (Death modifier from skills: " + ch.calcSkillEffect("death") + ")\r\n";
 
-            // virility
-            charText += "Virility: " + ch.virility + "\r\n";
+                // virility
+                charText += "Virility: " + ch.virility + "\r\n";
+            }
 
             // location
             charText += "Current location: " + ch.location.name + " (" + ch.location.province.name + ")\r\n";
             
-            // if in process of auto-moving, display next hex
-            if (ch.goTo.Count != 0)
-            {
-                charText += "Next Fief (if auto-moving): " + ch.goTo.Peek().fiefID + "\r\n";
-            }
-
             // language
             charText += "Language: " + ch.language.Item1.name + " (dialect " + ch.language.Item2 + ")\r\n";
 
-            // days left
-            charText += "Days remaining: " + ch.days + "\r\n";
+            if (isMyNPC)
+            {
+                // days left
+                charText += "Days remaining: " + ch.days + "\r\n";
+            }
 
             // stature
             charText += "Stature: " + ch.calculateStature(true) + "\r\n";
@@ -2543,7 +2591,10 @@ namespace hist_mmorpg
             bool isPC = ch is PlayerCharacter;
             if (isPC)
             {
-                charText += this.displayPlayerCharacter((PlayerCharacter)ch);
+                if (isMyNPC)
+                {
+                    charText += this.displayPlayerCharacter((PlayerCharacter)ch);
+                }
             }
             else
             {

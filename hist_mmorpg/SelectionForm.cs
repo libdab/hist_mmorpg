@@ -281,6 +281,7 @@ namespace hist_mmorpg
                 {
                     // set the selected NPC as bailiff
                     this.parent.fiefToView.bailiff = selectedNPC;
+                    selectedNPC.myBoss = this.parent.myChar.charID;
 
                     // refresh the fief information (in the main form)
                     this.parent.refreshFiefContainer(this.parent.fiefToView);
