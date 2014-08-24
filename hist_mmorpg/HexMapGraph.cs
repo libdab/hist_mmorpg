@@ -229,8 +229,7 @@ namespace hist_mmorpg
             }
 
             // generate random int between 0 and no. of targets
-            Random rnd = new Random();
-            int selection = rnd.Next(0, (choices.Count + 1));
+            int selection = Globals.myRand.Next(0, (choices.Count + 1));
 
             // if random number = highest possible number, null is returned (i.e. don't move)
             // if not, appropriate Fief returned

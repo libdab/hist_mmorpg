@@ -56,6 +56,10 @@ namespace hist_mmorpg
         /// Holds army's GameClock (season)
         /// </summary>
         public GameClock clock { get; set; }
+        /// <summary>
+        /// Holds army location (fiefID)
+        /// </summary>
+        public string location { get; set; }
 
         /// <summary>
         /// Constructor for Army
@@ -71,7 +75,8 @@ namespace hist_mmorpg
         /// <param name="own">string holding ID of army owner</param>
         /// <param name="day">double holding remaining days in season for army</param>
         /// <param name="cl">GameClock holding season</param>
-		public Army(String id, uint kni, uint maa, uint ltCav, uint yeo, uint ft, uint rbl, string ldr, string own, double day, GameClock cl)
+        /// <param name="loc">string holding army location (fiefID)</param>
+        public Army(String id, string ldr, string own, double day, GameClock cl, string loc, uint kni = 0, uint maa = 0, uint ltCav = 0, uint yeo = 0, uint ft = 0, uint rbl = 0)
         {
 
             // TODO: validate kni = (upper limit?)
@@ -99,14 +104,22 @@ namespace hist_mmorpg
             this.owner = own;
             this.days = day;
             this.clock = cl;
-
+            this.location = loc;
         }
 
+        /// <summary>
+        /// Constructor for Army taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public Army()
+		{
+		}
+		
         /// <summary>
         /// Calculates travel modifier for army size
         /// </summary>
         /// <returns>double containing travel modifier</returns>
-        public double calcTerrainTravMod()
+        public double calcArmyTravMod()
         {
             double travelModifier = 0;
 

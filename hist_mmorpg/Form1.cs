@@ -296,21 +296,29 @@ namespace hist_mmorpg
             double[] prevFin007 = new double[14];
             double[] currFin007 = new double[14];
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 200000, ra: myRank17);
+            // create armies list for fiefs
+            List<String> armies001 = new List<string>();
+            List<String> armies002 = new List<string>();
+            List<String> armies003 = new List<string>();
+            List<String> armies004 = new List<string>();
+            List<String> armies005 = new List<string>();
+            List<String> armies006 = new List<string>();
+            List<String> armies007 = new List<string>();
+
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 200000, armies001, ra: myRank17);
             Globals.fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 4000, ra: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 4000, armies002, ra: myRank15);
             Globals.fiefMasterList.Add(myFief2.fiefID, myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, 0, 100000, armies003, ra: myRank17);
             Globals.fiefMasterList.Add(myFief3.fiefID, myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock, 0, 100000, armies004, ra: myRank17);
             Globals.fiefMasterList.Add(myFief4.fiefID, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock, 0, 100000, ra: myRank15);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock, 0, 100000, armies005, ra: myRank15);
             Globals.fiefMasterList.Add(myFief5.fiefID, myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, this.clock, 0, 100000, ra: myRank17);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, this.clock, 0, 100000, armies006, ra: myRank17);
             Globals.fiefMasterList.Add(myFief6.fiefID, myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, this.clock, 0, 100000, ra: myRank15);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, this.clock, 0, 100000, armies007, ra: myRank15);
             Globals.fiefMasterList.Add(myFief7.fiefID, myFief7);
-			Army myArmy = new Army("army001", 0, 0, 0, 0, 100, 0, "101", "401", 90, this.clock);
 
 			// create QuickGraph undirected graph
 			// 1. create graph
@@ -359,7 +367,7 @@ namespace hist_mmorpg
 			// add some goTo entries for myChar1
 			//myGoTo1.Enqueue (myFief2);
 			//myGoTo1.Enqueue (myFief7);
-
+            
 			// create entourages for PCs
 			List<NonPlayerCharacter> myEmployees1 = new List<NonPlayerCharacter>();
 			List<NonPlayerCharacter> myEmployees2 = new List<NonPlayerCharacter>();
@@ -375,25 +383,27 @@ namespace hist_mmorpg
             Tuple<uint, byte> myDob004 = new Tuple<uint, byte>(1295, 3);
             Tuple<uint, byte> myDob005 = new Tuple<uint, byte>(1288, 2);
 
-            // creat titles list for characters
+            // create titles list for characters
             List<String> myTitles001 = new List<string>();
             List<String> myTitles002 = new List<string>();
             List<String> myTitles003 = new List<string>();
             List<String> myTitles004 = new List<string>();
             List<String> myTitles005 = new List<string>();
 
-            // create Random for use with generating skill sets for Characters
-            Random myRand = new Random();
+            // create armies list for PCs
+            List<Army> myArmies001 = new List<Army>();
+            List<Army> myArmies002 = new List<Army>();
+
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "Fr", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(myRand), false, true, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "Fr", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, true, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, cl: this.clock, loc: myFief1);
             Globals.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "Eng", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(myRand), false, false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "Eng", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, cl: this.clock, loc: myFief1);
             Globals.pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "Eng", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(myRand), false, false, false, null, null, null, 0, false, false, myTitles003, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "Eng", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, false, null, null, null, 0, false, false, myTitles003, cl: this.clock, loc: myFief1);
             Globals.npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "Eng", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(myRand), false, false, false, null, null, null, 10000, true, false, myTitles004, mb: myChar1.charID, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "Eng", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, false, null, null, null, 10000, true, false, myTitles004, mb: myChar1.charID, cl: this.clock, loc: myFief1);
             Globals.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly", "Maguire", myDob005, false, "Eng", true, 2.50, 9.0, myGoTo5, myLang2, 90, 0, 4.0, 6.0, generateSkillSet(myRand), false, true, false, "101", "101", null, 30000, false, false, myTitles005, cl: this.clock, loc: myFief1);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly", "Maguire", myDob005, false, "Eng", true, 2.50, 9.0, myGoTo5, myLang2, 90, 0, 4.0, 6.0, generateSkillSet(), false, true, false, "101", "101", null, 30000, false, false, myTitles005, cl: this.clock, loc: myFief1);
             Globals.npcMasterList.Add(myWife.charID, myWife);
 
 			// set fief owners
@@ -469,7 +479,18 @@ namespace hist_mmorpg
 			myFief1.addCharacter(myNPC2);
             myFief1.addCharacter(myWife);
 
-			// bar a character from the myFief1 keep
+
+            // create an army and add in appropriate places
+            Army myArmy = new Army("army001", null, null, 90, this.clock, null, ft: 100);
+            myArmy.owner = myChar1.charID;
+            myArmy.leader = myChar1.charID;
+            myArmy.days = Globals.pcMasterList[myArmy.leader].days;
+            myChar1.myArmies.Add(myArmy);
+            myChar1.armyID = myArmy.armyID;
+            myArmy.location = Globals.pcMasterList[myArmy.leader].location.fiefID;
+            myChar1.location.armies.Add(myArmy.armyID);
+            
+            // bar a character from the myFief1 keep
 			myFief2.barCharacter(myNPC1.charID);
             myFief2.barCharacter(myChar2.charID);
             myFief2.barCharacter(myWife.charID);
@@ -483,14 +504,11 @@ namespace hist_mmorpg
 		/// Generates a random skill set for a Character
 		/// </summary>
         /// <returns>Tuple<Skill, int>[] for use with a Character object</returns>
-        /// <param name="myRand">Random to use for integer generation</param>
-        public Tuple<Skill, int>[] generateSkillSet(Random myRand)
+        public Tuple<Skill, int>[] generateSkillSet()
         {
-            // create new random for generating skills for Character
-            Random rndSkills = myRand;
 
             // create array of skills between 2-3 in length
-            Tuple<Skill, int>[] skillSet = new Tuple<Skill, int>[rndSkills.Next(2, 4)];
+            Tuple<Skill, int>[] skillSet = new Tuple<Skill, int>[Globals.myRand.Next(2, 4)];
 
             // populate array of skills with randomly chosen skills
             // 1) make temporary copy of skillKeys
@@ -500,9 +518,9 @@ namespace hist_mmorpg
             for (int i = 0; i < skillSet.Length; i++)
             {
                 // choose random skill
-                int randSkill = rndSkills.Next(0, skillKeysCopy.Count - 1);
+                int randSkill = Globals.myRand.Next(0, skillKeysCopy.Count - 1);
                 // assign random skill level
-                int randSkillLevel = rndSkills.Next(1, 10);
+                int randSkillLevel = Globals.myRand.Next(1, 10);
                 // create Skill tuple
                 skillSet[i] = new Tuple<Skill, int>(Globals.skillMasterList[skillKeysCopy[randSkill]], randSkillLevel);
                 skillKeysCopy.RemoveAt(randSkill);
@@ -701,7 +719,27 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "fiefKeys", Globals.fiefKeys);
 
-			// write map (edges collection)
+            // write Armies
+            // clear existing key list
+            if (Globals.armyKeys.Count > 0)
+            {
+                Globals.armyKeys.Clear();
+            }
+
+            // write each object in armyMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<String, Army> pair in Globals.armyMasterList)
+            {
+                bool success = this.writeArmy(gameID, pair.Value);
+                if (success)
+                {
+                    Globals.armyKeys.Add(pair.Key);
+                }
+            }
+
+            // write key list to database
+            this.writeKeyList(gameID, "armyKeys", Globals.armyKeys);
+
+            // write map (edges collection)
 			this.writeMapEdges (gameID, this.gameMap);
 
 		}
@@ -741,6 +779,14 @@ namespace hist_mmorpg
                 Rank rank = this.initialDBload_rank(gameID, element);
                 // add Rank to rankMasterList
                 Globals.rankMasterList.Add(rank.rankID, rank);
+            }
+
+            // load armies
+            foreach (String element in Globals.armyKeys)
+            {
+                Army a = this.initialDBload_Army(gameID, element);
+                // add Army to armyMasterList
+                Globals.armyMasterList.Add(a.armyID, a);
             }
 
             // load NPCs
@@ -791,7 +837,7 @@ namespace hist_mmorpg
                 Globals.fiefMasterList.Add(f.fiefID, f);
 			}
 
-			// process any Character goTo queues containing entries
+            // process any Character goTo queues containing entries
             if (Globals.goToList.Count > 0)
 			{
                 for (int i = 0; i < Globals.goToList.Count; i++)
@@ -910,7 +956,18 @@ namespace hist_mmorpg
 				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve fiefKeys from database.");
 			}
 
-		}
+            // populate armyKeys
+            var armyKeyResult = client.Get(gameID, "armyKeys");
+            if (armyKeyResult.IsSuccess)
+            {
+                Globals.armyKeys = armyKeyResult.Value.GetObject<List<String>>();
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve armyKeys from database.");
+            }
+
+        }
 
 		/// <summary>
 		/// Loads GameClock for a particular game from database
@@ -1172,7 +1229,31 @@ namespace hist_mmorpg
 			return myFief;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Loads an Army for a particular game from database
+        /// </summary>
+        /// <returns>Army object</returns>
+        /// <param name="gameID">Game for which Army to be retrieved</param>
+        /// <param name="ArmyID">ID of Army to be retrieved</param>
+        public Army initialDBload_Army(String gameID, String ArmyID)
+        {
+            var armyResult = client.Get(gameID, ArmyID);
+            Army myArmy = new Army();
+
+            if (armyResult.IsSuccess)
+            {
+                // extract Army object
+                myArmy = armyResult.Value.GetObject<Army>();
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Army " + ArmyID);
+            }
+
+            return myArmy;
+        }
+
+        /// <summary>
 		/// Creates HexMapGraph for a particular game,
 		/// using map edges collection retrieved from database
 		/// </summary>
@@ -1363,7 +1444,16 @@ namespace hist_mmorpg
 				}
 			}
 
-			return pcOut;
+            // insert armies
+            if (pcr.myArmies.Count > 0)
+            {
+                for (int i = 0; i < pcr.myArmies.Count; i++)
+                {
+                    pcOut.myArmies.Add(Globals.armyMasterList[pcr.myArmies[i]]);
+                }
+            }
+
+            return pcOut;
 		}
 
 		/// <summary>
@@ -1843,7 +1933,26 @@ namespace hist_mmorpg
 			return putFiefResult.IsSuccess;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Writes Army object to Riak
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
+        /// <param name="a">Army to write</param>
+        public bool writeArmy(String gameID, Army a)
+        {
+            var rArmy = new RiakObject(gameID, a.armyID, a);
+            var putArmyResult = client.Put(rArmy);
+
+            if (!putArmyResult.IsSuccess)
+            {
+                System.Windows.Forms.MessageBox.Show("Write failed: Army " + rArmy.Key + " to bucket " + rArmy.Bucket);
+            }
+
+            return putArmyResult.IsSuccess;
+        }
+
+        /// <summary>
 		/// Writes HexMapGraph edges collection to Riak
 		/// </summary>
         /// <returns>bool indicating success</returns>
@@ -1874,9 +1983,6 @@ namespace hist_mmorpg
             // used to check if character update is necessary
             bool performCharacterUpdate = true;
 
-            // create Random to pass into any methods requiring random number
-            Random myRand = new Random();
-
             // season and year
             this.clock.advanceSeason();
 
@@ -1900,7 +2006,7 @@ namespace hist_mmorpg
                     if (performCharacterUpdate)
                     {
                         // updateCharacter includes checkDeath
-                        pcEntry.Value.updateCharacter(myRand);
+                        pcEntry.Value.updateCharacter();
 
                         // check again if PlayerCharacter is alive (after checkDeath)
                         if (pcEntry.Value.isAlive)
@@ -1923,7 +2029,7 @@ namespace hist_mmorpg
                     if (performCharacterUpdate)
                     {
                         // updateCharacter includes checkDeath
-                        npcEntry.Value.updateCharacter(myRand);
+                        npcEntry.Value.updateCharacter();
 
                         // check again if NonPlayerCharacter is alive (after checkDeath)
                         if (npcEntry.Value.isAlive)
@@ -1957,7 +2063,7 @@ namespace hist_mmorpg
                             Character daddy = Globals.pcMasterList[mummy.spouse];
 
                             // run childbirth procedure
-                            this.giveBirth(myRand, mummy, daddy);
+                            this.giveBirth(mummy, daddy);
                         }
                     }
                 }
@@ -4548,10 +4654,9 @@ namespace hist_mmorpg
         /// Generates a new NPC based on parents' statistics
         /// </summary>
         /// <returns>NonPlayerCharacter or null</returns>
-        /// <param name="rand">Random used for various chance calculations</param>
         /// <param name="mummy">The new NPC's mother</param>
         /// <param name="daddy">The new NPC's father</param>
-        public NonPlayerCharacter generateNewNPC(Random rand, NonPlayerCharacter mummy, Character daddy)
+        public NonPlayerCharacter generateNewNPC(NonPlayerCharacter mummy, Character daddy)
         {
             NonPlayerCharacter newNPC = new NonPlayerCharacter();
 
@@ -4590,19 +4695,19 @@ namespace hist_mmorpg
             // titles
             newNPC.myTitles = new List<string>();
             // sex
-            newNPC.isMale = this.generateSex(rand);
+            newNPC.isMale = this.generateSex();
             // maxHealth
-            newNPC.maxHealth = this.generateKeyCharacteristics(rand, mummy.maxHealth, daddy.maxHealth);
+            newNPC.maxHealth = this.generateKeyCharacteristics(mummy.maxHealth, daddy.maxHealth);
             // virility
-            newNPC.virility = this.generateKeyCharacteristics(rand, mummy.virility, daddy.virility);
+            newNPC.virility = this.generateKeyCharacteristics(mummy.virility, daddy.virility);
             // management
-            newNPC.management = this.generateKeyCharacteristics(rand, mummy.management, daddy.management);
+            newNPC.management = this.generateKeyCharacteristics(mummy.management, daddy.management);
             // combat
-            newNPC.combat = this.generateKeyCharacteristics(rand, mummy.combat, daddy.combat);
+            newNPC.combat = this.generateKeyCharacteristics(mummy.combat, daddy.combat);
             // skills
-            newNPC.skills = this.generateSkillSet(rand, mummy.skills, daddy.skills, newNPC.isMale);
+            newNPC.skills = this.generateSkillSetFromParents(mummy.skills, daddy.skills, newNPC.isMale);
             // charID
-            newNPC.charID = Convert.ToString(Globals.getNextID());
+            newNPC.charID = Convert.ToString(Globals.getNextCharID());
             // stature modifier
             newNPC.statureModifier = 0;
             // employer (myBoss)
@@ -4620,14 +4725,13 @@ namespace hist_mmorpg
         /// <summary>
         /// Generates a random sex for a Character
         /// </summary>
-        /// <param name="rand">Random used for various chance calculations</param>
         /// <returns>bool indicating whether is male</returns>
-        public bool generateSex(Random rand)
+        public bool generateSex()
         {
             bool isMale = false;
 
-            // generate random (0 - 1) to see if male or female
-            if (rand.Next(0, 2) == 0)
+            // generate random (0-1) to see if male or female
+            if (Globals.myRand.Next(0, 2) == 0)
             {
                 isMale = true;
             }
@@ -4639,10 +4743,9 @@ namespace hist_mmorpg
         /// Generates a characteristic stat for a Character, based on parent stats
         /// </summary>
         /// <returns>Double containing characteristic stat</returns>
-        /// <param name="rand">Random used for various chance calculations</param>
         /// <param name="mummyStat">The mother's characteristic stat</param>
         /// <param name="daddyStat">The father's characteristic stat</param>
-        public Double generateKeyCharacteristics(Random rand, Double mummyStat, Double daddyStat)
+        public Double generateKeyCharacteristics(Double mummyStat, Double daddyStat)
         {
             Double newStat = 0;
 
@@ -4650,7 +4753,7 @@ namespace hist_mmorpg
             Double parentalAverage = (mummyStat + daddyStat) / 2;
 
             // generate random (0 - 100) to determine relationship of new stat to parentalAverage
-            double randPercentage = rand.NextDouble() * 100;
+            double randPercentage = Globals.GetRandomDouble(100);
 
             // calculate new stat
             if (randPercentage <= 35)
@@ -4699,11 +4802,10 @@ namespace hist_mmorpg
         /// Generates a skill set for a Character, based on parent skills
         /// </summary>
         /// <returns>Array containing skill set</returns>
-        /// <param name="rand">Random used for various chance calculations</param>
         /// <param name="mummySkills">The mother's skills</param>
         /// <param name="daddySkills">The father's skills</param>
         /// <param name="isMale">Whether character is a male</param>
-        public Tuple<Skill, int>[] generateSkillSet(Random rand, Tuple<Skill, int>[] mummySkills, Tuple<Skill, int>[] daddySkills, bool isMale)
+        public Tuple<Skill, int>[] generateSkillSetFromParents(Tuple<Skill, int>[] mummySkills, Tuple<Skill, int>[] daddySkills, bool isMale)
         {
             // create a List to temporarily hold skills
             // will convert to array at end of method
@@ -4739,7 +4841,7 @@ namespace hist_mmorpg
             else
             {
                 // generate random (2-3) to see how many skills child will have
-                numSkills = rand.Next(2, 4);
+                numSkills = Globals.myRand.Next(2, 4);
             }
 
             // if are only 2 skills in parents' skill pool (i.e. both parents have same skills)
@@ -4805,7 +4907,7 @@ namespace hist_mmorpg
                 int PrevChosenSkill = 0;
 
                 // get a skill from the first parent
-                chosenSkill = rand.Next(0, firstSkillSet.Length);
+                chosenSkill = Globals.myRand.Next(0, firstSkillSet.Length);
 
                 // creat new skill item
                 mySkill = new Tuple<Skill, int>(firstSkillSet[chosenSkill].Item1, firstSkillSet[chosenSkill].Item2);
@@ -4819,7 +4921,7 @@ namespace hist_mmorpg
                 {
                     do {
                         // get another skill from the first parent
-                        chosenSkill = rand.Next(0, firstSkillSet.Length);
+                        chosenSkill = Globals.myRand.Next(0, firstSkillSet.Length);
 
                         // creat new skill item
                         mySkill = new Tuple<Skill, int>(firstSkillSet[chosenSkill].Item1, firstSkillSet[chosenSkill].Item2);
@@ -4832,7 +4934,7 @@ namespace hist_mmorpg
                 }
 
                 // get a skill from the other parent
-                chosenSkill = rand.Next(0, lastSkillSet.Length);
+                chosenSkill = Globals.myRand.Next(0, lastSkillSet.Length);
 
                 // check to see if already have skill in newSkillsList
                 bool duplicate = false;
@@ -4895,16 +4997,15 @@ namespace hist_mmorpg
         /// Performs childbirth procedure
         /// </summary>
         /// <returns>Boolean indicating character death occurrence</returns>
-        /// <param name="rand">Random used for various chance calculations</param>
         /// <param name="mummy">The new NPC's mother</param>
         /// <param name="daddy">The new NPC's father</param>
-        public void giveBirth(Random rand, NonPlayerCharacter mummy, Character daddy)
+        public void giveBirth(NonPlayerCharacter mummy, Character daddy)
         {
             // generate new NPC (baby)
-            NonPlayerCharacter weeBairn = this.generateNewNPC(rand, mummy, daddy);
+            NonPlayerCharacter weeBairn = this.generateNewNPC(mummy, daddy);
 
             // check for baby being stillborn
-            bool isStillborn = weeBairn.checkDeath(rand, true, false, false);
+            bool isStillborn = weeBairn.checkDeath(true, false, false);
 
             if (!isStillborn)
             {
@@ -4920,7 +5021,7 @@ namespace hist_mmorpg
             }
 
             // check for mother dying during childbirth
-            bool mummyDied = mummy.checkDeath(rand, true, true, isStillborn);
+            bool mummyDied = mummy.checkDeath(true, true, isStillborn);
 
             // inform father of outcome
             String toDisplay = "";
@@ -4983,10 +5084,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void button1_Click(object sender, EventArgs e)
         {
-            // create Random to pass in
-            Random myRand = new Random();
-
-            this.giveBirth(myRand, Globals.npcMasterList[this.myChar.spouse], this.myChar);
+            this.giveBirth(Globals.npcMasterList[this.myChar.spouse], this.myChar);
         }
 
         /// <summary>

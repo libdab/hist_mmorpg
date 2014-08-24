@@ -83,23 +83,61 @@ namespace hist_mmorpg
         /// </summary>
         public static List<String> skillKeys = new List<String>();
         /// <summary>
+        /// Holds all army objects
+        /// </summary>
+        public static Dictionary<string, Army> armyMasterList = new Dictionary<string, Army>();
+        /// <summary>
+        /// Holds keys for army objects (used when retrieving from database)
+        /// </summary>
+        public static List<String> armyKeys = new List<String>();
+        /// <summary>
         /// Holds Character_Riak objects with existing goTo queues (used during initial load)
         /// </summary>
         public static List<Character_Riak> goToList = new List<Character_Riak>();
         /// <summary>
+        /// Holds random for use with various methods
+        /// </summary>
+        public static Random myRand = new Random();
+        /// <summary>
         /// Holds next value for character ID
         /// </summary>
         public static uint newCharID = 6300;
+        /// <summary>
+        /// Holds next value for army ID
+        /// </summary>
+        public static uint newArmyID = 1;
 
         /// <summary>
         /// Gets the next available newCharID, then increments it
         /// </summary>
         /// <returns>uint containing newCharID</returns>
-        public static uint getNextID()
+        public static uint getNextCharID()
         {
-            uint newID = Globals.newCharID;
+            uint charID = Globals.newCharID;
             Globals.newCharID++;
-            return newID;
+            return charID;
+        }
+
+        /// <summary>
+        /// Gets the next available newArmyID, then increments it
+        /// </summary>
+        /// <returns>uint containing newArmyID</returns>
+        public static uint getNextArmyrID()
+        {
+            uint armyID = Globals.newArmyID;
+            Globals.newArmyID++;
+            return armyID;
+        }
+
+        /// <summary>
+        /// Generates a random double, specifying maximum and (optional) minimum values
+        /// </summary>
+        /// <returns>random double</returns>
+        /// <param name="max">maximum value</param>
+        /// <param name="min">minimum value</param>
+        public static double GetRandomDouble(double max, double min = 0)
+        {
+            return myRand.NextDouble() * (max - min) + min;
         }
     }
 }

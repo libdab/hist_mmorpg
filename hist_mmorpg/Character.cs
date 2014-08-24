@@ -112,6 +112,10 @@ namespace hist_mmorpg
         /// Holds character's titles (fiefIDs)
         /// </summary>
         public List<String> myTitles { get; set; }
+        /// <summary>
+        /// Holds armyID of army character is leading
+        /// </summary>
+        public String armyID { get; set; }
 
         /// <summary>
         /// Constructor for Character
@@ -141,9 +145,10 @@ namespace hist_mmorpg
         /// <param name="cl">GameClock holding season</param>
 		/// <param name="loc">Fief holding current location</param>
         /// <param name="myTi">List holding character's titles (fiefIDs)</param>
+        /// <param name="aID">String holding armyID of army character is leading</param>
         public Character(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg,
-            String famID, String sp, String fath, List<String> myTi, GameClock cl = null, Fief loc = null)
+            String famID, String sp, String fath, List<String> myTi, GameClock cl = null, Fief loc = null, String aID = null)
         {
 
             // validation
@@ -245,6 +250,7 @@ namespace hist_mmorpg
             this.father = fath;
             this.familyID = famID;
             this.myTitles = myTi;
+            this.armyID = aID;
         }
 
 		/// <summary>
@@ -304,6 +310,7 @@ namespace hist_mmorpg
 				this.clock = null;
 				this.location = null;
                 this.myTitles = charToUse.myTitles;
+                this.armyID = charToUse.armyID;
 			}
 		}
 
@@ -478,11 +485,10 @@ namespace hist_mmorpg
         /// Checks for character death
         /// </summary>
         /// <returns>Boolean indicating character death occurrence</returns>
-        /// <param name="rand">Random used to calculate death chance</param>
         /// <param name="isBirth">bool indicating whether check is due to birth</param>
         /// <param name="isMother">bool indicating whether (if check is due to birth) character is mother</param>
         /// <param name="isStillborn">bool indicating whether (if check is due to birth) baby was stillborn</param>
-        public Boolean checkDeath(Random rand, bool isBirth = false, bool isMother = false, bool isStillborn = false)
+        public Boolean checkDeath(bool isBirth = false, bool isMother = false, bool isStillborn = false)
         {
             // Check if chance of death effected by character skills
             double deathSkillsModifier = this.calcSkillEffect("death");
@@ -524,7 +530,7 @@ namespace hist_mmorpg
             }
 
             // generate a rndom double between 0-100 and compare to deathChance
-            if ((rand.NextDouble() * 100) <= deathChance)
+            if ((Globals.GetRandomDouble(100)) <= deathChance)
             {
                 return true;
             }
@@ -878,8 +884,7 @@ namespace hist_mmorpg
                     wife.days = minDays;
 
                     // generate random (0 - 100) to see if pregnancy successful
-                    Random rand = new Random();
-                    double randPercentage = rand.NextDouble() * 100;
+                    double randPercentage = Globals.GetRandomDouble(100);
 
                     // holds chance of pregnancy based on age and virility
                     int chanceOfPregnancy = 0;
@@ -1000,11 +1005,10 @@ namespace hist_mmorpg
         /// <summary>
         /// Updates character data at the end/beginning of the season
         /// </summary>
-        /// <param name="myRand">Random to use for any processes requiring a random number</param>
-        public void updateCharacter(Random myRand)
+        public void updateCharacter()
         {
             // check for character death
-            if (this.checkDeath(myRand))
+            if (this.checkDeath())
             {
                 this.isAlive = false;
             }
@@ -1069,6 +1073,10 @@ namespace hist_mmorpg
         /// Holds ID of player who is currently playing this PlayerCharacter
         /// </summary>
         public String playerID { get; set; }
+        /// <summary>
+        /// Holds character's armies (Army objects)
+        /// </summary>
+        public List<Army> myArmies = new List<Army>();
 
         /// <summary>
         /// Constructor for PlayerCharacter
@@ -1080,12 +1088,12 @@ namespace hist_mmorpg
         /// <param name="home">String holding character's home fief (fiefID)</param>
         /// <param name="anchome">String holding character's ancestral home fief (fiefID)</param>
         /// <param name="pID">String holding ID of player who is currently playing this PlayerCharacter</param>
+        /// <param name="myA">List<Army> holding character's armies</param>
         public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
-            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, GameClock cl = null, Fief loc = null, String pID = null)
+            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, List<Army> myA, GameClock cl = null, Fief loc = null, String pID = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, myTi, cl, loc)
         {
-
             this.outlawed = outl;
             this.purse = pur;
             this.myNPCs = npcs;
@@ -1093,6 +1101,7 @@ namespace hist_mmorpg
             this.homeFief = home;
             this.ancestralHomeFief = ancHome;
             this.playerID = pID;
+            this.myArmies = myA;
         }
 
         /// <summary>
@@ -1114,13 +1123,15 @@ namespace hist_mmorpg
 
 			this.outlawed = pcr.outlawed;
 			this.purse = pcr.purse;
-            // create empty List, to be populated later
+            // create empty NPC List, to be populated later
 			this.myNPCs = new List<NonPlayerCharacter> ();
-            // create empty List, to be populated later
+            // create empty Fief List, to be populated later
             this.ownedFiefs = new List<Fief>();
             this.homeFief = pcr.homeFief;
             this.ancestralHomeFief = pcr.ancestralHomeFief;
             this.playerID = pcr.playerID;
+            // create empty Army List, to be populated later
+            this.myArmies = new List<Army>();
 		}
 
         /// <summary>
@@ -1137,8 +1148,7 @@ namespace hist_mmorpg
             double potentialSalary = npc.calcWage(this);
 
             // generate random (0 - 100) to see if accepts offer
-            Random rand = new Random();
-            double chance = rand.NextDouble() * 100;
+            double chance = Globals.GetRandomDouble(100);
 
             // get 'npcHire' skill effect modifier (increase/decrease chance of offer being accepted)
             double hireSkills = this.calcSkillEffect("npcHire");
@@ -1425,6 +1435,46 @@ namespace hist_mmorpg
 
             return success;
 
+        }
+
+        /// <summary>
+        /// Recruits troops from the current fief
+        /// </summary>
+        /// <returns>uint containing number of troops recruited</returns>
+        public uint recuitTroops()
+        {
+            uint troopsRecruited = 0;
+
+            // string to hold any messages
+            string toDisplay = "";
+
+            // see how long recuitment attempt will take: generate random int (1-5)
+            int daysUsed = Globals.myRand.Next(6);
+
+            // check if have enough days to recruit
+            if (this.days < daysUsed)
+            {
+                toDisplay = "I'm afraid you have run out of days, my lord.";
+                System.Windows.Forms.MessageBox.Show(toDisplay);
+            }
+
+            else
+            {
+                // generate random double (2-5) to see the number of troops raised
+                double popPercent = (Globals.GetRandomDouble(5, min: 2) / 100);
+
+                // calculate number of troops raised
+                troopsRecruited = Convert.ToUInt32(this.location.population * popPercent);
+            }
+
+            // update days
+            this.days = this.days - daysUsed;
+            if (this.days < 0)
+            {
+                this.days = 0;
+            }
+
+            return troopsRecruited;
         }
 
     }
@@ -1852,6 +1902,10 @@ namespace hist_mmorpg
         /// Holds character's titles (fiefIDs)
         /// </summary>
         public List<String> myTitles { get; set; }
+        /// <summary>
+        /// Holds armyID of army character is leading
+        /// </summary>
+        public String armyID { get; set; }
 
 		/// <summary>
 		/// Constructor for Character_Riak
@@ -1921,6 +1975,7 @@ namespace hist_mmorpg
 					this.familyID = null;
 				}
                 this.myTitles = charToUse.myTitles;
+                this.armyID = charToUse.armyID;
 			}
 		}
 
@@ -1960,6 +2015,10 @@ namespace hist_mmorpg
         /// Holds ID of player who is currently playing this PlayerCharacter
         /// </summary>
         public String playerID { get; set; }
+        /// <summary>
+        /// Holds character's armies (Army objects)
+        /// </summary>
+        public List<String> myArmies = new List<String>();
 
 		/// <summary>
 		/// Constructor for PlayerCharacter_Riak
@@ -1988,6 +2047,13 @@ namespace hist_mmorpg
             this.homeFief = pc.homeFief;
             this.ancestralHomeFief = pc.ancestralHomeFief;
             this.playerID = pc.playerID;
+            if (pc.myArmies.Count > 0)
+            {
+                for (int i = 0; i < pc.myArmies.Count; i++ )
+                {
+                    this.myArmies.Add(pc.myArmies[i].armyID);
+                }
+            }
 		}
 
         /// <summary>

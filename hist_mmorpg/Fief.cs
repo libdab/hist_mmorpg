@@ -152,6 +152,10 @@ namespace hist_mmorpg
         /// Fief title holder (charID)
         /// </summary>
         public String titleHolder { get; set; }
+        /// <summary>
+        /// Holds armies present in the fief (armyIDs)
+        /// </summary>
+        public List<string> armies = new List<string>();
 
         /// <summary>
         /// Constructor for Fief
@@ -188,10 +192,11 @@ namespace hist_mmorpg
         /// <param name="ra">Fief's rank object</param>
         /// <param name="treas">int containing fief treasury</param>
         /// <param name="tiHo">Fief title holder (charID)</param>
+        /// <param name="arms">List holding IDs of armies present in fief</param>
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
             Double kpLvl, Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
-            GameClock cl, byte bailInF, int treas, String tiHo = null, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
+            GameClock cl, byte bailInF, int treas, List<string> arms, String tiHo = null, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -300,6 +305,7 @@ namespace hist_mmorpg
             this.bailiffDaysInFief = bailInF;
             this.treasury = treas;
             this.titleHolder = tiHo;
+            this.armies = arms;
         }
 
 		/// <summary>
@@ -348,6 +354,7 @@ namespace hist_mmorpg
             this.bailiffDaysInFief = fr.bailiffDaysInFief;
             this.treasury = fr.treasury;
             this.titleHolder = fr.titleHolder;
+            this.armies = fr.armies;
         }
 
         /// <summary>
@@ -1294,7 +1301,6 @@ namespace hist_mmorpg
         public char checkFiefStatus()
         {
             char stat = this.status;
-            Random rand = new Random();
 
             // if fief in rebellion it can only be recovered by combat or bribe,
             // so don't run check
@@ -1303,7 +1309,7 @@ namespace hist_mmorpg
                 // method 1 (depends on tax rate and surplus)
                 if ((this.taxRate > 20) && (this.keyStatsCurrent[13] > (this.keyStatsCurrent[8] * 0.1)))
                 {
-                    if ((rand.NextDouble() * 100) <= (this.taxRate - 20))
+                    if (Globals.GetRandomDouble(100) <= (this.taxRate - 20))
                     {
                         stat = 'R';
                     }
@@ -1312,7 +1318,7 @@ namespace hist_mmorpg
                 // method 2 (depends on fief loyalty level)
                 if (!stat.Equals('R'))
                 {
-                    double chance = (rand.NextDouble() * 100);
+                    double chance = Globals.GetRandomDouble(100);
                     
                     // loyalty 3-4
                     if ((this.loyalty > 3) && (this.loyalty <= 4))
@@ -1599,6 +1605,10 @@ namespace hist_mmorpg
         /// Fief title holder (charID)
         /// </summary>
         public String titleHolder { get; set; }
+        /// <summary>
+        /// Holds armies present in the fief (armyIDs)
+        /// </summary>
+        public List<string> armies = new List<string>();
 
 		/// <summary>
 		/// Constructor for Fief_Riak
@@ -1648,6 +1658,7 @@ namespace hist_mmorpg
             this.bailiffDaysInFief = f.bailiffDaysInFief;
             this.treasury = f.treasury;
             this.titleHolder = f.titleHolder;
+            this.armies = f.armies;
 		}
 
         /// <summary>
