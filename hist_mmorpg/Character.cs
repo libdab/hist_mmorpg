@@ -1441,30 +1441,139 @@ namespace hist_mmorpg
         /// Recruits troops from the current fief
         /// </summary>
         /// <returns>uint containing number of troops recruited</returns>
-        public uint recuitTroops()
+        public int recuitTroops()
         {
-            uint troopsRecruited = 0;
+            // used to record outcome of various checks
+            bool proceed = true;
+
+            int troopsRecruited = 0;
+            int revisedRecruited = 0;
+            int indivTroopCost = 0;
+            int troopCost = 0;
+            int daysUsed = 0;
+
+            // get home fief
+            Fief homeFief = Globals.fiefMasterList[this.homeFief];
+
+            // calculate cost of individual soldier
+            if (this.location.ancestralOwner == this)
+            {
+                indivTroopCost = 500;
+            }
+            else
+            {
+                indivTroopCost = 2000;
+            }
 
             // string to hold any messages
             string toDisplay = "";
 
-            // see how long recuitment attempt will take: generate random int (1-5)
-            int daysUsed = Globals.myRand.Next(6);
-
-            // check if have enough days to recruit
-            if (this.days < daysUsed)
+            // various checks to see whether to proceed
+            // 1. see if recruitment already occurred for this season
+            if (this.location.hasRecruited)
             {
-                toDisplay = "I'm afraid you have run out of days, my lord.";
+                proceed = false;
+                toDisplay = "I'm afraid you have already recruited in this fief, my lord.";
                 System.Windows.Forms.MessageBox.Show(toDisplay);
             }
-
             else
+            {
+                // 2. Check language and loyalty permit recruitment
+                if ((!this.language.Item1.languageID.Equals(this.location.language.Item1.languageID))
+                    && (this.location.loyalty < 7))
+                {
+                    proceed = false;
+                    toDisplay = "I'm sorry, my lord, you do not speak the same language as the people in this fief,\r\n";
+                    toDisplay += "and thier loyalty is not sufficiently high to allow recruitment.";
+                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                }
+                else
+                {
+                    // 3. check sufficient funds for at least 1 troop
+                    if (!(homeFief.treasury > indivTroopCost))
+                    {
+                        proceed = false;
+                        toDisplay = "I'm sorry, my Lord; you have insufficient funds for recruitment.";
+                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                    }
+                    else
+                    {
+                        // 4. check sufficient days remaining
+                        // see how long recuitment attempt will take: generate random int (1-5)
+                        daysUsed = Globals.myRand.Next(6);
+
+                        if (this.days < daysUsed)
+                        {
+                            proceed = false;
+                            toDisplay = "I'm afraid you have run out of days, my lord.";
+                            System.Windows.Forms.MessageBox.Show(toDisplay);
+                        }
+                    }
+                }
+            }
+
+            // check if have enough days to recruit
+            if (proceed)
             {
                 // generate random double (2-5) to see the number of troops raised
                 double popPercent = (Globals.GetRandomDouble(5, min: 2) / 100);
 
                 // calculate number of troops raised
-                troopsRecruited = Convert.ToUInt32(this.location.population * popPercent);
+                troopsRecruited = Convert.ToInt32(this.location.population * popPercent);
+
+                // calculate total cost
+                troopCost = troopsRecruited * indivTroopCost;
+
+                // check is sufficient funds for recruitment
+
+                // check treasury
+                // if is enough funds
+                if (homeFief.treasury >= troopCost)
+                {
+                    // confirm recruitment
+                    toDisplay = "You have recruited " + troopsRecruited + " troops at a cost of " + troopCost + ".\r\n";
+                    toDisplay += "There is " + homeFief.treasury + "in the home tresury.  Do you wish to proceed with recruitment?";
+                    DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with recruitment?", MessageBoxButtons.OKCancel);
+
+                    // if choose to cancel
+                    if (dialogResult == DialogResult.Cancel)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
+                    }
+                    // chooses to proceed
+                    else
+                    {
+                        // deduct cost of troops from treasury
+                        homeFief.treasury = homeFief.treasury - troopCost;
+                    }
+                }
+
+                // if not enough funds for all of the troops
+                else
+                {
+                    // work out how many troops can afford
+                    double roughNumber = homeFief.treasury / indivTroopCost;
+                    revisedRecruited = Convert.ToInt32(Math.Floor(roughNumber));
+
+                    // confirm recruitment
+                    toDisplay = troopsRecruited + " have come forward.  However, you only have enough funds in the treasury to recruit " + revisedRecruited + ".\r\n";
+                    toDisplay += "Do you wish to proceed with the recruitment of the revised number?";
+                    DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with revised recruitment?", MessageBoxButtons.OKCancel);
+
+                    // if choose to cancel
+                    if (dialogResult == DialogResult.Cancel)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
+                    }
+                    // chooses to proceed
+                    else
+                    {
+                        // revise troopCost
+                        troopCost = revisedRecruited * indivTroopCost;
+                        // deduct cost of troops from treasury
+                        homeFief.treasury = homeFief.treasury - troopCost;
+                    }
+                }
             }
 
             // update days

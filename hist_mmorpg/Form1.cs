@@ -305,19 +305,19 @@ namespace hist_mmorpg
             List<String> armies006 = new List<string>();
             List<String> armies007 = new List<string>();
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 200000, armies001, ra: myRank17);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 200000, armies001, false, ra: myRank17);
             Globals.fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 4000, armies002, ra: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 4000, armies002, false, ra: myRank15);
             Globals.fiefMasterList.Add(myFief2.fiefID, myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, 0, 100000, armies003, ra: myRank17);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, 0, 100000, armies003, false, ra: myRank17);
             Globals.fiefMasterList.Add(myFief3.fiefID, myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock, 0, 100000, armies004, ra: myRank17);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock, 0, 100000, armies004, false, ra: myRank17);
             Globals.fiefMasterList.Add(myFief4.fiefID, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock, 0, 100000, armies005, ra: myRank15);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock, 0, 100000, armies005, false, ra: myRank15);
             Globals.fiefMasterList.Add(myFief5.fiefID, myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, this.clock, 0, 100000, armies006, ra: myRank17);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, this.clock, 0, 100000, armies006, false, ra: myRank17);
             Globals.fiefMasterList.Add(myFief6.fiefID, myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, this.clock, 0, 100000, armies007, ra: myRank15);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, this.clock, 0, 100000, armies007, false, ra: myRank15);
             Globals.fiefMasterList.Add(myFief7.fiefID, myFief7);
 
 			// create QuickGraph undirected graph
@@ -2521,7 +2521,7 @@ namespace hist_mmorpg
             bool isMyNPC = false;
 
             // check if is in player's myNPCs
-            if (this.myChar.myNPCs.Contains((ch as NonPlayerCharacter)))
+            if (this.myChar.myNPCs.Contains((ch as NonPlayerCharacter)) || (ch == this.myChar))
             {
                 isMyNPC = true;
             }

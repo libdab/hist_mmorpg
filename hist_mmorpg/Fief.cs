@@ -156,6 +156,10 @@ namespace hist_mmorpg
         /// Holds armies present in the fief (armyIDs)
         /// </summary>
         public List<string> armies = new List<string>();
+        /// <summary>
+        /// Identifies if recruitment has occurred in the fief
+        /// </summary>
+        public bool hasRecruited { get; set; }
 
         /// <summary>
         /// Constructor for Fief
@@ -193,10 +197,11 @@ namespace hist_mmorpg
         /// <param name="treas">int containing fief treasury</param>
         /// <param name="tiHo">Fief title holder (charID)</param>
         /// <param name="arms">List holding IDs of armies present in fief</param>
+        /// <param name="rec">bool indicating whether recruitment has occurred in the fief</param>
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
             Double kpLvl, Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
-            GameClock cl, byte bailInF, int treas, List<string> arms, String tiHo = null, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
+            GameClock cl, byte bailInF, int treas, List<string> arms, bool rec, String tiHo = null, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -306,6 +311,7 @@ namespace hist_mmorpg
             this.treasury = treas;
             this.titleHolder = tiHo;
             this.armies = arms;
+            this.hasRecruited = rec;
         }
 
 		/// <summary>
@@ -355,6 +361,7 @@ namespace hist_mmorpg
             this.treasury = fr.treasury;
             this.titleHolder = fr.titleHolder;
             this.armies = fr.armies;
+            this.hasRecruited = fr.hasRecruited;
         }
 
         /// <summary>
@@ -1609,6 +1616,10 @@ namespace hist_mmorpg
         /// Holds armies present in the fief (armyIDs)
         /// </summary>
         public List<string> armies = new List<string>();
+        /// <summary>
+        /// Identifies if recruitment has occurred in the fief
+        /// </summary>
+        public bool hasRecruited { get; set; }
 
 		/// <summary>
 		/// Constructor for Fief_Riak
@@ -1659,6 +1670,7 @@ namespace hist_mmorpg
             this.treasury = f.treasury;
             this.titleHolder = f.titleHolder;
             this.armies = f.armies;
+            this.hasRecruited = f.hasRecruited;
 		}
 
         /// <summary>
