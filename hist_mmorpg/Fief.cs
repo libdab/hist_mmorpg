@@ -951,7 +951,7 @@ namespace hist_mmorpg
             if (!isOK)
             {
                 // get available treasury
-                int availTreasury = this.treasury - Convert.ToInt32(this.calcNewOlordTaxes());
+                int availTreasury = this.getAvailableTreasury();
                 // calculate amount by which treasury exceeded
                 uint difference = Convert.ToUInt32(totalSpend - availTreasury);
                 // auto-adjust expenditure
@@ -966,7 +966,7 @@ namespace hist_mmorpg
         public void autoAdjustExpenditure(uint difference)
         {
             // get available treasury
-            int availTreasury = this.treasury - Convert.ToInt32(this.calcNewOlordTaxes());
+            int availTreasury = this.getAvailableTreasury();
 
             // if treasury empty or in deficit, reduce all expenditure to 0
             if (availTreasury <= 0)
@@ -1188,6 +1188,31 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Calculates amount available in treasury for financial transactions
+        /// </summary>
+        /// <returns>int containing amount available</returns>
+        /// <param name="deductFiefExpense">bool indicating whether to account for fief expenses in the calculation</param>
+        public int getAvailableTreasury(bool deductFiefExpense = false)
+        {
+            int amountAvail = 0;
+
+            // get treasury
+            amountAvail = this.treasury;
+            // deduct family expenses
+            amountAvail -= this.calcFamilyExpenses();
+            // deduct overlord taxes
+            amountAvail -= Convert.ToInt32(this.calcNewOlordTaxes());
+
+            if (deductFiefExpense)
+            {
+                // deduct fief expenditure
+                amountAvail -= this.calcNewExpenses();
+            }
+
+            return amountAvail;
+        }
+        
+        /// <summary>
         /// Compares expenditure level with fief treasury
         /// </summary>
         /// <returns>bool indicating whether expenditure acceptable</returns>
@@ -1195,7 +1220,9 @@ namespace hist_mmorpg
         public bool checkExpenditureOK(uint totalSpend)
         {
             bool spendLevelOK = true;
-            int availTreasury = this.treasury - Convert.ToInt32(this.calcNewOlordTaxes());
+
+            // get available treasury
+            int availTreasury = this.getAvailableTreasury();
 
             // if there are funds in the treasury
             if (availTreasury > 0)

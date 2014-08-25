@@ -1441,10 +1441,14 @@ namespace hist_mmorpg
         /// Recruits troops from the current fief
         /// </summary>
         /// <returns>uint containing number of troops recruited</returns>
-        public int recuitTroops()
+        /// <param name="number">How many troops to recruit</param>
+        public int recuitTroops(uint number)
         {
             // used to record outcome of various checks
             bool proceed = true;
+
+            // used to confirm final purchase of troops
+            bool confirmPurchase = false;
 
             int troopsRecruited = 0;
             int revisedRecruited = 0;
@@ -1502,7 +1506,7 @@ namespace hist_mmorpg
                     else
                     {
                         // 4. check sufficient funds for at least 1 troop
-                        if (!(homeFief.treasury > indivTroopCost))
+                        if (!(homeFief.getAvailableTreasury() > indivTroopCost))
                         {
                             proceed = false;
                             toDisplay = "I'm sorry, my Lord; you have insufficient funds for recruitment.";
@@ -1525,83 +1529,114 @@ namespace hist_mmorpg
                 }
             }
 
-            // if have passed all checks above, proceed with recruitment
+            // if have not passed any of checks above, return
+            if (!proceed)
+            {
+                return troopsRecruited;
+            }
+
+            // calculate potential cost
+            troopCost = Convert.ToInt32(number) * indivTroopCost;
+
+            // check to see if can afford the specified number of troops
+            // if can't afford specified number
+            if (!(homeFief.getAvailableTreasury() >= troopCost))
+            {
+                // work out how many troops can afford
+                double roughNumber = homeFief.getAvailableTreasury() / indivTroopCost;
+                revisedRecruited = Convert.ToInt32(Math.Floor(roughNumber));
+
+                // present alternative number and ask for confirmation
+                toDisplay = "Sorry, milord, you do not have the funds to recruit " + number + " troops.";
+                toDisplay += "  However, you can afford to recruit " + revisedRecruited + ".\r\n";
+                toDisplay += "Do you wish to proceed with the recruitment of the revised number?";
+                DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with revised recruitment?", MessageBoxButtons.OKCancel);
+
+                // if choose to cancel
+                if (dialogResult == DialogResult.Cancel)
+                {
+                    proceed = false;
+                    System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
+                }
+                // chooses to proceed
+                else
+                {
+                    // revise number to recruit
+                    number = Convert.ToUInt32(revisedRecruited);
+                }
+            }
+
             if (proceed)
             {
-                // generate random double (2-5) to see the number of troops raised
+                // generate random double (2-5) to see the % of population responding to call
                 double popPercent = (Globals.GetRandomDouble(5, min: 2) / 100);
 
-                // calculate number of troops raised
+                // calculate number of troops responding to call and adjust if necessary
                 troopsRecruited = Convert.ToInt32(this.location.population * popPercent);
-
-                // calculate total cost
-                troopCost = troopsRecruited * indivTroopCost;
-
-                // check is sufficient funds for recruitment
-
-                // check treasury
-                // if is enough funds
-                if (homeFief.treasury >= troopCost)
+                if (troopsRecruited >= number)
                 {
+                    troopsRecruited = Convert.ToInt32(number);
+
+                    // calculate total cost
+                    troopCost = troopsRecruited * indivTroopCost;
+
                     // confirm recruitment
-                    toDisplay = "You have recruited " + troopsRecruited + " troops at a cost of " + troopCost + ".\r\n";
-                    toDisplay += "There is " + homeFief.treasury + "in the home tresury.  Do you wish to proceed with recruitment?";
+                    toDisplay = troopsRecruited + " men have responded to your call, milord, and they would cost " + troopCost + " to recruit.\r\n";
+                    toDisplay += "There is " + homeFief.getAvailableTreasury() + "in the home treasury.  Do you wish to proceed with recruitment?";
                     DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with recruitment?", MessageBoxButtons.OKCancel);
 
                     // if choose to cancel
                     if (dialogResult == DialogResult.Cancel)
                     {
+                        confirmPurchase = false;
                         System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
                     }
                     // chooses to proceed
                     else
                     {
-                        // deduct cost of troops from treasury
-                        homeFief.treasury = homeFief.treasury - troopCost;
-                        // add new troops to army
-                        thisArmy.foot += Convert.ToUInt32(troopsRecruited);
-                        // indicate recruitment has occurred in this fief
-                        this.location.hasRecruited = true;
+                        confirmPurchase = true;
                     }
                 }
-
-                // if not enough funds for all of the troops
+                // if less than specified number respond to call
                 else
                 {
-                    // work out how many troops can afford
-                    double roughNumber = homeFief.treasury / indivTroopCost;
-                    revisedRecruited = Convert.ToInt32(Math.Floor(roughNumber));
+                    // calculate total cost
+                    troopCost = troopsRecruited * indivTroopCost;
 
                     // confirm recruitment
-                    toDisplay = troopsRecruited + " have come forward.  However, you only have enough funds in the treasury to recruit " + revisedRecruited + ".\r\n";
-                    toDisplay += "Do you wish to proceed with the recruitment of the revised number?";
-                    DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with revised recruitment?", MessageBoxButtons.OKCancel);
+                    toDisplay = "Only " + troopsRecruited + " men have responded to your call, milord, and they would cost " + troopCost + " to recruit.\r\n";
+                    toDisplay += "There is " + homeFief.getAvailableTreasury() + "in the home treasury.  Do you wish to proceed with recruitment?";
+                    DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with recruitment?", MessageBoxButtons.OKCancel);
 
                     // if choose to cancel
                     if (dialogResult == DialogResult.Cancel)
                     {
+                        confirmPurchase = false;
                         System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
                     }
                     // chooses to proceed
                     else
                     {
-                        // revise troopCost
-                        troopCost = revisedRecruited * indivTroopCost;
-                        // deduct cost of troops from treasury
-                        homeFief.treasury = homeFief.treasury - troopCost;
-                        // add new troops to army
-                        thisArmy.foot += Convert.ToUInt32(revisedRecruited);
-                        // indicate recruitment has occurred in this fief
-                        this.location.hasRecruited = true;
+                        confirmPurchase = true;
                     }
                 }
-            }
 
-            // update days
-            this.days = this.days - daysUsed;
-            if (this.days < 0)
-            {
-                this.days = 0;
+                if (confirmPurchase)
+                {
+                    // deduct cost of troops from treasury
+                    homeFief.treasury = homeFief.treasury - troopCost;
+                    // add new troops to army
+                    thisArmy.foot += Convert.ToUInt32(troopsRecruited);
+                    // indicate recruitment has occurred in this fief
+                    this.location.hasRecruited = true;
+                }
+
+                // update days
+                this.days = this.days - daysUsed;
+                if (this.days < 0)
+                {
+                    this.days = 0;
+                }
             }
 
             return troopsRecruited;

@@ -33,6 +33,10 @@ namespace hist_mmorpg
         /// </summary>
         public Fief fiefToView;
         /// <summary>
+        /// Holds Army to view in UI
+        /// </summary>
+        public Army armyToView;
+        /// <summary>
         /// Holds HexMapGraph for this game
         /// </summary>
         private HexMapGraph gameMap;
@@ -2902,12 +2906,13 @@ namespace hist_mmorpg
             armyText += " - Light Cavalry: " + a.lightCavalry + "\r\n";
             armyText += " - Yeomen: " + a.yeomen + "\r\n";
             armyText += " - Foot: " + a.foot + "\r\n";
-            armyText += " - Rabble: " + a.rabble + "\r\n\r\n";
+            armyText += " - Rabble: " + a.rabble + "\r\n";
+            armyText += " - TOTAL: " + a.calcArmySize() + "\r\n\r\n";
 
             // whether is maintained (and at what cost)
             if (a.isMaintained)
             {
-                uint armyCost = (a.knights + a.menAtArms + a.lightCavalry + a.yeomen + a.foot + a.rabble) * 500;
+                uint armyCost = a.calcArmySize() * 500;
 
                 armyText += "This army is currently being maintained (at a cost of £" + armyCost + ")\r\n";
             }
@@ -3292,21 +3297,30 @@ namespace hist_mmorpg
 
             if (a == null)
             {
+                // disable various controls
+                this.armyMaintainBtn.Enabled = false;
+
                 // set correct text and tag for 'recuit' button
                 this.armyRecruitBtn.Text = "Recruit a New Army";
                 this.armyRecruitBtn.Tag = "new";
+
                 // set text to display in main text area
                 this.ArmyTextBox.Text = "You are not currently leader of an army.";
             }
             else
             {
+                // enable various controls
+                this.armyMaintainBtn.Enabled = true;
+
                 // set correct text and tag for 'recuit' button
                 this.armyRecruitBtn.Text = "Recruit Additional Troops";
                 this.armyRecruitBtn.Tag = "add";
+
                 // get army data to display
                 this.ArmyTextBox.Text = this.displayArmyData(a);
             }
 
+            this.armyToView = a;
             this.armyContainer.BringToFront();
             this.armyContainer.Focus();
         }
@@ -3433,39 +3447,26 @@ namespace hist_mmorpg
                 this.fiefCurrKeyStatsTextBox.Text = this.displayFiefKeyStatsCurr(this.fiefToView);
                 this.fiefNextKeyStatsTextBox.Text = this.displayFiefKeyStatsNext(this.fiefToView);
 
-                // calculate and display home treasury
+                // get home fief
                 Fief home = Globals.fiefMasterList[this.myChar.homeFief];
-                homeTreasury = home.treasury;
-                // deduct home family expenses
-                homeTreasury -= home.calcFamilyExpenses();
-                // deduct home fief overlord taxes
-                homeTreasury -= Convert.ToInt32(home.calcNewOlordTaxes());
-
 
                 // check if in home fief
-                if (f == Globals.fiefMasterList[this.myChar.homeFief])
+                if (f == home)
                 {
                     // don't show fief treasury
                     this.FiefTreasTextBox.Text = "";
+
+                    // display home treasury
+                    this.fiefHomeTreasTextBox.Text = home.getAvailableTreasury().ToString();
                 }
                 else
                 {
-                    // only deduct fief expenditure from home treasury if not in home fief
-                    homeTreasury -= home.calcNewExpenses();
-
-                    // calculate available fief treasury
-                    fiefTreasury = this.fiefToView.treasury;
-                    // deduct fief family expenses
-                    fiefTreasury -= this.fiefToView.calcFamilyExpenses();
-                    // deduct fief overlord taxes
-                    fiefTreasury -= Convert.ToInt32(this.fiefToView.calcNewOlordTaxes());
-
                     // display fief treasury
-                    this.FiefTreasTextBox.Text = Convert.ToString(fiefTreasury);
-                }
+                    this.FiefTreasTextBox.Text = f.getAvailableTreasury().ToString();
 
-                // display home treasury
-                this.fiefHomeTreasTextBox.Text = Convert.ToString(homeTreasury);
+                    // display home treasury
+                    this.fiefHomeTreasTextBox.Text = home.getAvailableTreasury(true).ToString();
+                }
 
                 // check to see if proposed expenditure level doesn't exceed fief treasury
                 // get fief expenses (includes bailiff modifiers)
@@ -3552,7 +3553,7 @@ namespace hist_mmorpg
                 // if it can't, display a message and cancel the commit
                 if (! this.fiefToView.checkExpenditureOK(totalSpend))
                 {
-                    int difference = Convert.ToInt32(totalSpend - this.fiefToView.treasury);
+                    int difference = Convert.ToInt32(totalSpend - this.fiefToView.getAvailableTreasury());
                     String toDisplay = "Your spending exceeds the " + this.fiefToView.name + " treasury by " + difference;
                     toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
                     System.Windows.Forms.MessageBox.Show(toDisplay, "TRANSACTION CANCELLED");
@@ -4654,11 +4655,11 @@ namespace hist_mmorpg
                 int amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
 
                 // make sure are enough funds to cover transfer
-                if (amount > fiefFrom.treasury)
+                if (amount > fiefFrom.getAvailableTreasury(true))
                 {
                     // if not, inform player and adjust amount downwards
                     System.Windows.Forms.MessageBox.Show("Too few funds available in Home Treasury; amount adjusted.");
-                    amount = fiefFrom.treasury;
+                    amount = fiefFrom.getAvailableTreasury(true);
                 }
 
                 // make the transfer
@@ -4689,11 +4690,11 @@ namespace hist_mmorpg
                 int amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
 
                 // make sure are enough funds to cover transfer
-                if (amount > fiefFrom.treasury)
+                if (amount > fiefFrom.getAvailableTreasury())
                 {
                     // if not, inform player and adjust amount downwards
                     System.Windows.Forms.MessageBox.Show("Too few funds available in " + fiefFrom.name + " Treasury; amount adjusted.");
-                    amount = fiefFrom.treasury;
+                    amount = fiefFrom.getAvailableTreasury();
                 }
 
                 // make the transfer
@@ -5349,11 +5350,82 @@ namespace hist_mmorpg
                 this.myChar.location.armies.Add(newArmy.armyID);
             }
 
-            // recruit troops
-            this.myChar.recuitTroops();
+            try
+            {
+                // get number of troops specified
+                UInt32 numberWanted = Convert.ToUInt32(this.armyRecruitTextBox.Text);
 
-            // refresh display
-            this.refreshArmyContainer();
+                // recruit troops
+                this.myChar.recuitTroops(numberWanted);
+
+                // refresh display
+                this.refreshArmyContainer();
+            }
+            catch (System.FormatException fe)
+            {
+                System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+            }
+            catch (System.OverflowException ofe)
+            {
+                System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyMaintainBtn button
+        /// allowing the player to maintain the army in the field
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyMaintainBtn_Click(object sender, EventArgs e)
+        {
+            if (this.armyToView != null)
+            {
+                // maintain army
+                this.mantainArmy(armyToView);
+
+                // refresh display
+                this.refreshArmyContainer();
+            }
+        }
+
+        public void mantainArmy(Army a)
+        {
+            String toDisplay = "";
+
+            // get cost
+            uint maintCost = a.calcArmySize() * 500;
+
+            // get available treasury
+            Fief homeFief = Globals.fiefMasterList[this.myChar.homeFief];
+            int availTreas = homeFief.getAvailableTreasury();
+
+            // check if army is already maintained
+            if (!a.isMaintained)
+            {
+                // check if can afford maintenance
+                if (maintCost > availTreas)
+                {
+                    // display 'no' message
+                    toDisplay += "Sorry, milord, to maintain this army would cost £" + maintCost + "\r\n";
+                    toDisplay += "and you only have £" + availTreas + " available in the home treasury.";
+                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                }
+                else
+                {
+                    // set isMaintained
+                    a.isMaintained = true;
+
+                    // deduct funds from treasury
+                    homeFief.treasury -= Convert.ToInt32(maintCost);
+
+                    // display confirmation message
+                    toDisplay += "Army maintained at a cost of £" + maintCost + ".";
+                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                }
+            }
+
+
         }
 
     }
