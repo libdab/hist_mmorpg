@@ -1455,6 +1455,9 @@ namespace hist_mmorpg
             // get home fief
             Fief homeFief = Globals.fiefMasterList[this.homeFief];
 
+            // get army
+            Army thisArmy = Globals.armyMasterList[this.armyID];
+
             // calculate cost of individual soldier
             if (this.location.ancestralOwner == this)
             {
@@ -1469,50 +1472,60 @@ namespace hist_mmorpg
             string toDisplay = "";
 
             // various checks to see whether to proceed
-            // 1. see if recruitment already occurred for this season
-            if (this.location.hasRecruited)
+            // 1. see if fief owned by player
+            if (!this.ownedFiefs.Contains(this.location))
             {
                 proceed = false;
-                toDisplay = "I'm afraid you have already recruited in this fief, my lord.";
+                toDisplay = "You cannot recruit in this fief, my lord, as you don't actually own it.";
                 System.Windows.Forms.MessageBox.Show(toDisplay);
             }
             else
             {
-                // 2. Check language and loyalty permit recruitment
-                if ((!this.language.Item1.languageID.Equals(this.location.language.Item1.languageID))
-                    && (this.location.loyalty < 7))
+                // 2. see if recruitment already occurred for this season
+                if (this.location.hasRecruited)
                 {
                     proceed = false;
-                    toDisplay = "I'm sorry, my lord, you do not speak the same language as the people in this fief,\r\n";
-                    toDisplay += "and thier loyalty is not sufficiently high to allow recruitment.";
+                    toDisplay = "I'm afraid you have already recruited here in this season, my lord.";
                     System.Windows.Forms.MessageBox.Show(toDisplay);
                 }
                 else
                 {
-                    // 3. check sufficient funds for at least 1 troop
-                    if (!(homeFief.treasury > indivTroopCost))
+                    // 3. Check language and loyalty permit recruitment
+                    if ((!this.language.Item1.languageID.Equals(this.location.language.Item1.languageID))
+                        && (this.location.loyalty < 7))
                     {
                         proceed = false;
-                        toDisplay = "I'm sorry, my Lord; you have insufficient funds for recruitment.";
+                        toDisplay = "I'm sorry, my lord, you do not speak the same language as the people in this fief,\r\n";
+                        toDisplay += "and thier loyalty is not sufficiently high to allow recruitment.";
                         System.Windows.Forms.MessageBox.Show(toDisplay);
                     }
                     else
                     {
-                        // 4. check sufficient days remaining
-                        // see how long recuitment attempt will take: generate random int (1-5)
-                        daysUsed = Globals.myRand.Next(6);
-
-                        if (this.days < daysUsed)
+                        // 4. check sufficient funds for at least 1 troop
+                        if (!(homeFief.treasury > indivTroopCost))
                         {
                             proceed = false;
-                            toDisplay = "I'm afraid you have run out of days, my lord.";
+                            toDisplay = "I'm sorry, my Lord; you have insufficient funds for recruitment.";
                             System.Windows.Forms.MessageBox.Show(toDisplay);
+                        }
+                        else
+                        {
+                            // 5. check sufficient days remaining
+                            // see how long recuitment attempt will take: generate random int (1-5)
+                            daysUsed = Globals.myRand.Next(6);
+
+                            if (this.days < daysUsed)
+                            {
+                                proceed = false;
+                                toDisplay = "I'm afraid you have run out of days, my lord.";
+                                System.Windows.Forms.MessageBox.Show(toDisplay);
+                            }
                         }
                     }
                 }
             }
 
-            // check if have enough days to recruit
+            // if have passed all checks above, proceed with recruitment
             if (proceed)
             {
                 // generate random double (2-5) to see the number of troops raised
@@ -1545,6 +1558,10 @@ namespace hist_mmorpg
                     {
                         // deduct cost of troops from treasury
                         homeFief.treasury = homeFief.treasury - troopCost;
+                        // add new troops to army
+                        thisArmy.foot += Convert.ToUInt32(troopsRecruited);
+                        // indicate recruitment has occurred in this fief
+                        this.location.hasRecruited = true;
                     }
                 }
 
@@ -1572,6 +1589,10 @@ namespace hist_mmorpg
                         troopCost = revisedRecruited * indivTroopCost;
                         // deduct cost of troops from treasury
                         homeFief.treasury = homeFief.treasury - troopCost;
+                        // add new troops to army
+                        thisArmy.foot += Convert.ToUInt32(revisedRecruited);
+                        // indicate recruitment has occurred in this fief
+                        this.location.hasRecruited = true;
                     }
                 }
             }

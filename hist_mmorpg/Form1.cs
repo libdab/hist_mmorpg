@@ -305,7 +305,7 @@ namespace hist_mmorpg
             List<String> armies006 = new List<string>();
             List<String> armies007 = new List<string>();
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 200000, armies001, false, ra: myRank17);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 2000000, armies001, false, ra: myRank17);
             Globals.fiefMasterList.Add(myFief1.fiefID, myFief1);
             Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 4000, armies002, false, ra: myRank15);
             Globals.fiefMasterList.Add(myFief2.fiefID, myFief2);
@@ -478,17 +478,17 @@ namespace hist_mmorpg
 			myFief1.addCharacter(myNPC1);
 			myFief1.addCharacter(myNPC2);
             myFief1.addCharacter(myWife);
-
-
-            // create an army and add in appropriate places
-            Army myArmy = new Army("army001", null, null, 90, this.clock, null, ft: 100);
+          
+            /* // create an army and add in appropriate places
+            Army myArmy = new Army("army" + Globals.getNextArmyrID(), null, null, 90, this.clock, null, ft: 100);
+            Globals.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
             myArmy.leader = myChar1.charID;
             myArmy.days = Globals.pcMasterList[myArmy.leader].days;
             myChar1.myArmies.Add(myArmy);
             myChar1.armyID = myArmy.armyID;
             myArmy.location = Globals.pcMasterList[myArmy.leader].location.fiefID;
-            myChar1.location.armies.Add(myArmy.armyID);
+            myChar1.location.armies.Add(myArmy.armyID); */
             
             // bar a character from the myFief1 keep
 			myFief2.barCharacter(myNPC1.charID);
@@ -2864,6 +2864,62 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Retrieves information for Army display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="a">Army for which information is to be displayed</param>
+        public string displayArmyData(Army a)
+        {
+            string armyText = "";
+
+            // ID
+            armyText += "ID: " + a.armyID + "\r\n\r\n";
+
+            // days left
+            armyText += "Days left: " + a.days + "\r\n\r\n";
+
+            // location
+            Fief armyLocation = Globals.fiefMasterList[a.location];
+            armyText += "Location: " + armyLocation.name + " (Province: " + armyLocation.province.name + ".  Kingdom: " + armyLocation.province.kingdom.name + ")\r\n\r\n";
+
+            // leader
+            Character armyLeader = null;
+            if (Globals.npcMasterList.ContainsKey(a.leader))
+            {
+                armyLeader = Globals.npcMasterList[a.leader];
+            }
+            else if (a.leader.Equals(this.myChar.charID))
+            {
+                armyLeader = this.myChar;
+            }
+
+            armyText += "Leader: " + armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")\r\n\r\n";
+
+            // troop numbers
+            armyText += "Troop numbers:\r\n";
+            armyText += " - Knights: " + a.knights + "\r\n";
+            armyText += " - Men-at-Arms: " + a.menAtArms + "\r\n";
+            armyText += " - Light Cavalry: " + a.lightCavalry + "\r\n";
+            armyText += " - Yeomen: " + a.yeomen + "\r\n";
+            armyText += " - Foot: " + a.foot + "\r\n";
+            armyText += " - Rabble: " + a.rabble + "\r\n\r\n";
+
+            // whether is maintained (and at what cost)
+            if (a.isMaintained)
+            {
+                uint armyCost = (a.knights + a.menAtArms + a.lightCavalry + a.yeomen + a.foot + a.rabble) * 500;
+
+                armyText += "This army is currently being maintained (at a cost of £" + armyCost + ")\r\n";
+            }
+            else
+            {
+                armyText += "This army is NOT currently being maintained\r\n";
+            }
+
+            return armyText;
+        }
+
+        /// <summary>
         /// Retrieves general information for Fief display screen
         /// </summary>
         /// <returns>String containing information to display</returns>
@@ -3214,6 +3270,48 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Refreshes main Army display screen
+        /// </summary>
+        /// <param name="a">Army whose information is to be displayed</param>
+        public void refreshArmyContainer(Army a = null)
+        {
+            // if army not specified, default to player's current army
+            if (a == null)
+            {
+                if (this.myChar.armyID != null)
+                {
+                    a = Globals.armyMasterList[this.myChar.armyID];
+                }
+            }            
+            
+            // clear existing information
+            this.ArmyTextBox.Text = "";
+
+            // ensure textboxes aren't interactive
+            this.ArmyTextBox.ReadOnly = true;
+
+            if (a == null)
+            {
+                // set correct text and tag for 'recuit' button
+                this.armyRecruitBtn.Text = "Recruit a New Army";
+                this.armyRecruitBtn.Tag = "new";
+                // set text to display in main text area
+                this.ArmyTextBox.Text = "You are not currently leader of an army.";
+            }
+            else
+            {
+                // set correct text and tag for 'recuit' button
+                this.armyRecruitBtn.Text = "Recruit Additional Troops";
+                this.armyRecruitBtn.Tag = "add";
+                // get army data to display
+                this.ArmyTextBox.Text = this.displayArmyData(a);
+            }
+
+            this.armyContainer.BringToFront();
+            this.armyContainer.Focus();
+        }
+        
+        /// <summary>
         /// Refreshes main Fief display screen
         /// </summary>
         /// <param name="f">Fief whose information is to be displayed</param>
@@ -3338,23 +3436,23 @@ namespace hist_mmorpg
                 // calculate and display home treasury
                 Fief home = Globals.fiefMasterList[this.myChar.homeFief];
                 homeTreasury = home.treasury;
-                // deduct home fief expenditure
-                homeTreasury -= home.calcNewExpenses();
                 // deduct home family expenses
                 homeTreasury -= home.calcFamilyExpenses();
                 // deduct home fief overlord taxes
                 homeTreasury -= Convert.ToInt32(home.calcNewOlordTaxes());
-                // display home treasury
-                this.fiefHomeTreasTextBox.Text = Convert.ToString(homeTreasury);
 
 
-                // if in Home Fief only show home treasury amount (can't transfer to self)
+                // check if in home fief
                 if (f == Globals.fiefMasterList[this.myChar.homeFief])
                 {
+                    // don't show fief treasury
                     this.FiefTreasTextBox.Text = "";
                 }
                 else
                 {
+                    // only deduct fief expenditure from home treasury if not in home fief
+                    homeTreasury -= home.calcNewExpenses();
+
                     // calculate available fief treasury
                     fiefTreasury = this.fiefToView.treasury;
                     // deduct fief family expenses
@@ -3365,6 +3463,9 @@ namespace hist_mmorpg
                     // display fief treasury
                     this.FiefTreasTextBox.Text = Convert.ToString(fiefTreasury);
                 }
+
+                // display home treasury
+                this.fiefHomeTreasTextBox.Text = Convert.ToString(homeTreasury);
 
                 // check to see if proposed expenditure level doesn't exceed fief treasury
                 // get fief expenses (includes bailiff modifiers)
@@ -5213,6 +5314,46 @@ namespace hist_mmorpg
                 this.refreshHouseholdDisplay(selectedNPC);
             }
 
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyManagementToolStripMenuItem
+        /// which displays main Army information screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyManagementToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.refreshArmyContainer();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyRecruitBtn button
+        /// allowing the player to create a new army or recruit additional troops
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyRecruitBtn_Click(object sender, EventArgs e)
+        {
+            // get tag from button
+            Button button = sender as Button;
+            String operation = button.Tag.ToString();
+
+            // if no army, create one
+            if (operation.Equals("new"))
+            {
+                Army newArmy = new Army("army" + Globals.getNextArmyrID(), this.myChar.charID, this.myChar.charID, this.myChar.days, this.clock, this.myChar.location.fiefID);
+                Globals.armyMasterList.Add(newArmy.armyID, newArmy);
+                this.myChar.myArmies.Add(newArmy);
+                this.myChar.armyID = newArmy.armyID;
+                this.myChar.location.armies.Add(newArmy.armyID);
+            }
+
+            // recruit troops
+            this.myChar.recuitTroops();
+
+            // refresh display
+            this.refreshArmyContainer();
         }
 
     }

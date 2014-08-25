@@ -1298,6 +1298,9 @@ namespace hist_mmorpg
 
             // reset bailiffDaysInFief
             this.bailiffDaysInFief = 0;
+
+            // reset hasRecruited
+            this.hasRecruited = false;
         }
 
         /// <summary>

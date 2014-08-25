@@ -60,6 +60,10 @@ namespace hist_mmorpg
         /// Holds army location (fiefID)
         /// </summary>
         public string location { get; set; }
+        /// <summary>
+        /// Indicates whether army is being actively maintained by owner
+        /// </summary>
+        public bool isMaintained { get; set; }
 
         /// <summary>
         /// Constructor for Army
@@ -76,7 +80,8 @@ namespace hist_mmorpg
         /// <param name="day">double holding remaining days in season for army</param>
         /// <param name="cl">GameClock holding season</param>
         /// <param name="loc">string holding army location (fiefID)</param>
-        public Army(String id, string ldr, string own, double day, GameClock cl, string loc, uint kni = 0, uint maa = 0, uint ltCav = 0, uint yeo = 0, uint ft = 0, uint rbl = 0)
+        /// <param name="maint">bool indicating whether army is being actively maintained by owner</param>
+        public Army(String id, string ldr, string own, double day, GameClock cl, string loc, uint kni = 0, uint maa = 0, uint ltCav = 0, uint yeo = 0, uint ft = 0, uint rbl = 0, bool maint = false)
         {
 
             // TODO: validate kni = (upper limit?)
@@ -105,6 +110,7 @@ namespace hist_mmorpg
             this.days = day;
             this.clock = cl;
             this.location = loc;
+            this.isMaintained = maint;
         }
 
         /// <summary>
