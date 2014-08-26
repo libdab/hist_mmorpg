@@ -147,5 +147,67 @@ namespace hist_mmorpg
             return armySize;
         }
 
+        /// <summary>
+        /// Moves army to another fief
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        public bool moveArmy()
+        {
+            bool success = false;
+
+            // get leader
+            Character myLeader = null;
+            if (Globals.npcMasterList.ContainsKey(this.leader))
+            {
+                myLeader = Globals.npcMasterList[this.leader];
+            }
+            else
+            {
+                myLeader = Globals.pcMasterList[this.leader];
+            }
+
+            // get old fief
+            Fief myOldFief = Globals.fiefMasterList[this.location];
+            // get new fief
+            Fief myNewFief = Globals.fiefMasterList[myLeader.location.fiefID];
+
+            // remove from old fief
+            myOldFief.removeArmy(this.armyID);
+
+            // add to new fief
+            myNewFief.addArmy(this.armyID);
+
+            // change location
+            this.location = myLeader.location.fiefID;
+
+            // update days
+            this.days = myLeader.days;
+
+            return success;
+        }
+
+        /// <summary>
+        /// Calculates movement modifier for the army
+        /// </summary>
+        /// <returns>uint containing movement modifier</returns>
+        public uint calcMovementModifier()
+        {
+            uint movementMod = 1;
+
+            // generate random double (0-100)
+            Double myRandomDouble = Globals.myRand.NextDouble() * 100;
+
+            // calculate chance of modifier based on army size
+            Double modifierChance = Math.Floor(this.calcArmySize() / (Double)1000);
+
+            // check to see if modifier required
+            if (myRandomDouble <= modifierChance)
+            {
+                movementMod = 3;
+            }
+
+            return movementMod;
+        }
+
     }
 }

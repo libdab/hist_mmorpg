@@ -483,8 +483,8 @@ namespace hist_mmorpg
 			myFief1.addCharacter(myNPC2);
             myFief1.addCharacter(myWife);
           
-            /* // create an army and add in appropriate places
-            Army myArmy = new Army("army" + Globals.getNextArmyrID(), null, null, 90, this.clock, null, ft: 100);
+            // create an army and add in appropriate places
+            Army myArmy = new Army("army" + Globals.getNextArmyrID(), null, null, 90, this.clock, null, ft: 100000);
             Globals.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
             myArmy.leader = myChar1.charID;
@@ -492,7 +492,7 @@ namespace hist_mmorpg
             myChar1.myArmies.Add(myArmy);
             myChar1.armyID = myArmy.armyID;
             myArmy.location = Globals.pcMasterList[myArmy.leader].location.fiefID;
-            myChar1.location.armies.Add(myArmy.armyID); */
+            myChar1.location.armies.Add(myArmy.armyID);
             
             // bar a character from the myFief1 keep
 			myFief2.barCharacter(myNPC1.charID);
@@ -3291,6 +3291,7 @@ namespace hist_mmorpg
             
             // clear existing information
             this.ArmyTextBox.Text = "";
+            this.armyRecruitTextBox.Text = "";
 
             // ensure textboxes aren't interactive
             this.ArmyTextBox.ReadOnly = true;
@@ -3673,12 +3674,23 @@ namespace hist_mmorpg
         /// Gets travel cost (in days) to move to a fief
         /// </summary>
         /// <returns>double containing travel cost</returns>
-        /// <param name="f">Target fief</param>
-        private double getTravelCost(Fief source, Fief target)
+        /// <param name="source">Source fief</param>
+        /// <param name="target">Target fief</param>
+        private double getTravelCost(Fief source, Fief target, String armyID = null)
         {
             double cost = 0;
-            // calculate travel cost based on terrain for both fiefs
-            cost = ((source.terrain.travelCost + target.terrain.travelCost) / 2) * this.clock.calcSeasonTravMod();
+            // calculate base travel cost based on terrain for both fiefs
+            cost = (source.terrain.travelCost + target.terrain.travelCost) / 2;
+
+            // apply season modifier
+            cost = cost * this.clock.calcSeasonTravMod();
+
+            // if necessary, apply army modifier
+            if (armyID != null)
+            {
+                cost = cost * Globals.armyMasterList[armyID].calcMovementModifier();
+            }
+
             return cost;
         }
 
@@ -3751,7 +3763,7 @@ namespace hist_mmorpg
             if (targetFief != null)
             {
                 // get travel cost
-                double travelCost = this.getTravelCost(this.myChar.location, targetFief);
+                double travelCost = this.getTravelCost(this.myChar.location, targetFief, this.myChar.armyID);
                 // attempt to move player to target fief
                 success = this.myChar.moveCharacter(targetFief, travelCost, false);
                 // if move successfull, refresh travel display
@@ -4063,7 +4075,7 @@ namespace hist_mmorpg
             for (int i = 0; i < steps; i++)
             {
                 // get travel cost
-                travelCost = this.getTravelCost(ch.location, ch.goTo.Peek());
+                travelCost = this.getTravelCost(ch.location, ch.goTo.Peek(), ch.armyID);
                 // attempt to move character
                 success = ch.moveCharacter(ch.goTo.Peek(), travelCost, isUpdate);
                 // if move successfull, remove fief from goTo queue
@@ -5356,7 +5368,7 @@ namespace hist_mmorpg
                 UInt32 numberWanted = Convert.ToUInt32(this.armyRecruitTextBox.Text);
 
                 // recruit troops
-                this.myChar.recuitTroops(numberWanted);
+                this.myChar.recruitTroops(numberWanted);
 
                 // refresh display
                 this.refreshArmyContainer();

@@ -139,10 +139,10 @@ namespace hist_mmorpg
             this.houseCharListLabel = new System.Windows.Forms.Label();
             this.houseCharListView = new System.Windows.Forms.ListView();
             this.armyContainer = new System.Windows.Forms.SplitContainer();
+            this.armyRecruitTextBox = new System.Windows.Forms.TextBox();
+            this.armyMaintainBtn = new System.Windows.Forms.Button();
             this.armyRecruitBtn = new System.Windows.Forms.Button();
             this.ArmyTextBox = new System.Windows.Forms.TextBox();
-            this.armyMaintainBtn = new System.Windows.Forms.Button();
-            this.armyRecruitTextBox = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -775,7 +775,7 @@ namespace hist_mmorpg
             // travelContainer
             // 
             this.travelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.travelContainer.Location = new System.Drawing.Point(0, 0);
+            this.travelContainer.Location = new System.Drawing.Point(0, 24);
             this.travelContainer.Name = "travelContainer";
             // 
             // travelContainer.Panel1
@@ -796,7 +796,7 @@ namespace hist_mmorpg
             // travelContainer.Panel2
             // 
             this.travelContainer.Panel2.Controls.Add(this.travelNavigationPanel);
-            this.travelContainer.Size = new System.Drawing.Size(935, 661);
+            this.travelContainer.Size = new System.Drawing.Size(935, 637);
             this.travelContainer.SplitterDistance = 310;
             this.travelContainer.TabIndex = 4;
             // 
@@ -1381,6 +1381,23 @@ namespace hist_mmorpg
             this.armyContainer.SplitterDistance = 311;
             this.armyContainer.TabIndex = 8;
             // 
+            // armyRecruitTextBox
+            // 
+            this.armyRecruitTextBox.Location = new System.Drawing.Point(156, 59);
+            this.armyRecruitTextBox.Name = "armyRecruitTextBox";
+            this.armyRecruitTextBox.Size = new System.Drawing.Size(96, 20);
+            this.armyRecruitTextBox.TabIndex = 2;
+            // 
+            // armyMaintainBtn
+            // 
+            this.armyMaintainBtn.Location = new System.Drawing.Point(12, 86);
+            this.armyMaintainBtn.Name = "armyMaintainBtn";
+            this.armyMaintainBtn.Size = new System.Drawing.Size(138, 23);
+            this.armyMaintainBtn.TabIndex = 1;
+            this.armyMaintainBtn.Text = "Maintain Army";
+            this.armyMaintainBtn.UseVisualStyleBackColor = true;
+            this.armyMaintainBtn.Click += new System.EventHandler(this.armyMaintainBtn_Click);
+            // 
             // armyRecruitBtn
             // 
             this.armyRecruitBtn.Location = new System.Drawing.Point(12, 57);
@@ -1400,34 +1417,17 @@ namespace hist_mmorpg
             this.ArmyTextBox.Size = new System.Drawing.Size(620, 637);
             this.ArmyTextBox.TabIndex = 0;
             // 
-            // armyMaintainBtn
-            // 
-            this.armyMaintainBtn.Location = new System.Drawing.Point(12, 86);
-            this.armyMaintainBtn.Name = "armyMaintainBtn";
-            this.armyMaintainBtn.Size = new System.Drawing.Size(138, 23);
-            this.armyMaintainBtn.TabIndex = 1;
-            this.armyMaintainBtn.Text = "Maintain Army";
-            this.armyMaintainBtn.UseVisualStyleBackColor = true;
-            this.armyMaintainBtn.Click += new System.EventHandler(this.armyMaintainBtn_Click);
-            // 
-            // armyRecruitTextBox
-            // 
-            this.armyRecruitTextBox.Location = new System.Drawing.Point(156, 59);
-            this.armyRecruitTextBox.Name = "armyRecruitTextBox";
-            this.armyRecruitTextBox.Size = new System.Drawing.Size(96, 20);
-            this.armyRecruitTextBox.TabIndex = 2;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
             this.Controls.Add(this.armyContainer);
+            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.meetingPlaceContainer);
-            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.MainMenuStrip = this.menuStrip1;

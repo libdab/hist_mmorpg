@@ -817,6 +817,11 @@ namespace hist_mmorpg
                 this.inKeep = false;
                 // deduct move cost from days left
                 this.days = this.days - cost;
+                // check if has accompanying army, if so move it
+                if (this.armyID != null)
+                {
+                    Globals.armyMasterList[armyID].moveArmy();
+                }
                 success = true;
             }
 
@@ -1442,7 +1447,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>uint containing number of troops recruited</returns>
         /// <param name="number">How many troops to recruit</param>
-        public int recuitTroops(uint number)
+        public int recruitTroops(uint number)
         {
             // used to record outcome of various checks
             bool proceed = true;
@@ -1631,12 +1636,14 @@ namespace hist_mmorpg
                     this.location.hasRecruited = true;
                 }
 
-                // update days
+                // update character's days
                 this.days = this.days - daysUsed;
                 if (this.days < 0)
                 {
                     this.days = 0;
                 }
+                // update army's days
+                thisArmy.days = this.days;
             }
 
             return troopsRecruited;

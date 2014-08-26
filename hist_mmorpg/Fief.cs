@@ -1458,7 +1458,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// removes character from characters list
+        /// Removes character from characters list
         /// </summary>
         /// <returns>bool indicating success/failure</returns>
         /// <param name="ch">Character to be removed from characters list</param>
@@ -1466,6 +1466,29 @@ namespace hist_mmorpg
         {
             // remove character
             bool success = this.characters.Remove(ch);
+
+            return success;
+        }
+
+        /// <summary>
+        /// Adds army to armies list
+        /// </summary>
+        /// <param name="armyID">ID of army to be inserted</param>
+        internal void addArmy(String armyID)
+        {
+            // add army
+            this.armies.Add(armyID);
+        }
+
+        /// <summary>
+        /// Removes army from armies list
+        /// </summary>
+        /// <returns>bool indicating success/failure</returns>
+        /// <param name="armyID">ID of army to be removed</param>
+        internal bool removeArmy(String armyID)
+        {
+            // remove army
+            bool success = this.armies.Remove(armyID);
 
             return success;
         }
