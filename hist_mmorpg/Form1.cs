@@ -483,7 +483,7 @@ namespace hist_mmorpg
 			myFief1.addCharacter(myNPC2);
             myFief1.addCharacter(myWife);
           
-            // create an army and add in appropriate places
+            /* // create an army and add in appropriate places
             Army myArmy = new Army("army" + Globals.getNextArmyrID(), null, null, 90, this.clock, null, ft: 100000);
             Globals.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
@@ -492,7 +492,7 @@ namespace hist_mmorpg
             myChar1.myArmies.Add(myArmy);
             myChar1.armyID = myArmy.armyID;
             myArmy.location = Globals.pcMasterList[myArmy.leader].location.fiefID;
-            myChar1.location.armies.Add(myArmy.armyID);
+            myChar1.location.armies.Add(myArmy.armyID); */
             
             // bar a character from the myFief1 keep
 			myFief2.barCharacter(myNPC1.charID);
@@ -3254,7 +3254,7 @@ namespace hist_mmorpg
 			{
                 if (!this.myChar.myNPCs.Contains(ch))
 				{
-					this.travelMultiMoveBtn.Enabled = false;
+					this.travelMoveToBtn.Enabled = false;
 				}
 			}
 
@@ -3700,7 +3700,7 @@ namespace hist_mmorpg
         private void refreshTravelContainer()
         {
             // clear existing data in TextBoxes
-            this.travelMultiMoveTextBox.Text = "";
+            this.travelMoveToTextBox.Text = "";
             this.travelCampDaysTextBox.Text = "";
             this.travelRouteTextBox.Text = "";
 
@@ -3908,8 +3908,9 @@ namespace hist_mmorpg
             // if in keep
             if (enteredKeep)
             {
-                // set hireNPC_Btn tag to reflect which meeting place
+                // set hireNPC and moveTo button tags to reflect which meeting place
                 this.hireNPC_Btn.Tag = place;
+                this.meetingPlaceMoveToBtn.Tag = place;
                 // refresh court screen 
                 this.refreshMeetingPlaceDisplay(place);
                 // display court screen
@@ -3935,8 +3936,9 @@ namespace hist_mmorpg
             {
                 this.myChar.exitKeep();
             }
-            // set hireNPC_Btn tag to reflect which meeting place
+            // set hireNPC and moveTo button tags to reflect which meeting place
             this.hireNPC_Btn.Tag = place;
+            this.meetingPlaceMoveToBtn.Tag = place;
             // refresh tavern screen 
             this.refreshMeetingPlaceDisplay(place);
             // display tavern screen
@@ -4105,28 +4107,52 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of the travelMultiMoveBtn button
-        /// which finds the shortest path to the target fief (specified in text box),
-        /// populates the character's goTo queue, and invokes characterMultiMove to
-        /// perform the move
+        /// Moves a character to a specified fief using the shortest path
         /// </summary>
-        /// <returns>bool indicating whether odd</returns>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void travelMultiMoveBtn_Click(object sender, EventArgs e)
+        /// <param name="whichScreen">String indicating on which screen the movement command occurred</param>
+        public void moveTo(String whichScreen)
         {
+            // get appropriate TextBox
+            TextBox myTextBox = null;
+            if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
+            {
+                myTextBox = this.meetingPlaceMoveToTextBox;
+            }
+            else if (whichScreen.Equals("house"))
+            {
+                myTextBox = this.houseMoveToTextBox;
+            }
+            else if (whichScreen.Equals("travel"))
+            {
+                myTextBox = this.travelMoveToTextBox;
+            }
+
             // check for existence of fief
-            if (Globals.fiefMasterList.ContainsKey(this.travelMultiMoveTextBox.Text))
+            if (Globals.fiefMasterList.ContainsKey(myTextBox.Text))
             {
                 // retrieves target fief
-                Fief target = Globals.fiefMasterList[this.travelMultiMoveTextBox.Text];
+                Fief target = Globals.fiefMasterList[myTextBox.Text];
+
                 // obtains goTo queue for shortest path to target
                 this.charToView.goTo = this.gameMap.getShortestPath(this.charToView.location, target);
-                // if valid, perform move
+
+                // if retrieve valid path
                 if (this.charToView.goTo.Count > 0)
                 {
+                    // if character is NPC, check entourage and remove if necessary
+                    if (!whichScreen.Equals("travel"))
+                    {
+                        if (this.myChar.myNPCs.Contains(this.charToView))
+                        {
+                            this.myChar.myNPCs.Remove(this.charToView as NonPlayerCharacter);
+                            (this.charToView as NonPlayerCharacter).inEntourage = false;
+                        }
+                    }
+
+                    // perform move
                     this.characterMultiMove(this.charToView, false);
                 }
+
             }
             else
             {
@@ -4134,7 +4160,31 @@ namespace hist_mmorpg
             }
 
         }
+        
+        /// <summary>
+        /// Responds to the click event of the travelMoveToBtn button
+        /// which invokes the moveTo method
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void travelMoveToBtn_Click(object sender, EventArgs e)
+        {
+            // get button
+            Button button = sender as Button;
 
+            // check button tag to see on which screen the movement command occurred
+            String whichScreen = button.Tag.ToString();
+
+            // perform move
+            this.moveTo(whichScreen);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the setBailiffBtn button
+        ///invoking and displaying the character selection screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void setBailiffBtn_Click(object sender, EventArgs e)
         {
             // check for previously opened SelectionForm and close if necessary
@@ -4147,6 +4197,12 @@ namespace hist_mmorpg
             chooseBailiff.Show();
         }
 
+        /// <summary>
+        /// Responds to the click event of the lockoutBtn button
+        /// invoking and displaying the lockout screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void lockoutBtn_Click(object sender, EventArgs e)
         {
             // check for previously opened SelectionForm and close if necessary
@@ -4309,8 +4365,9 @@ namespace hist_mmorpg
             {
                 this.myChar.exitKeep();
             }
-            // set hireNPC_Btn tag to reflect which meeting place
+            // set hireNPC and moveTo button tags to reflect which meeting place
             this.hireNPC_Btn.Tag = place;
+            this.meetingPlaceMoveToBtn.Tag = place;
             // refresh outside keep screen 
             this.refreshMeetingPlaceDisplay(place);
             // display tavern screen
@@ -5440,6 +5497,41 @@ namespace hist_mmorpg
 
         }
 
+        /// <summary>
+        /// Responds to the click event of the meetingPlaceMoveToBtn button
+        /// which invokes the moveTo method
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void meetingPlaceMoveToBtn_Click(object sender, EventArgs e)
+        {
+            // get button
+            Button button = sender as Button;
+
+            // check button tag to see on which screen the movement command occurred
+            String whichScreen = button.Tag.ToString();
+
+            // perform move
+            this.moveTo(whichScreen);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the houseMoveToBtn button
+        /// which invokes the moveTo method
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void houseMoveToBtn_Click(object sender, EventArgs e)
+        {
+            // get button
+            Button button = sender as Button;
+
+            // check button tag to see on which screen the movement command occurred
+            String whichScreen = button.Tag.ToString();
+
+            // perform move
+            this.moveTo(whichScreen);
+        }
     }
 
 }
