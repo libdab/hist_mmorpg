@@ -835,7 +835,7 @@ namespace hist_mmorpg
 
                 if (!isUpdate)
                 {
-                    System.Windows.Forms.MessageBox.Show("I'm afraid you've run out of days, Milord!\r\nYour journey will continue next season.");
+                    System.Windows.Forms.MessageBox.Show("I'm afraid you've run out of days.\r\nYour journey will continue next season.");
                 }
             }
 

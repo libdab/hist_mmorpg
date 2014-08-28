@@ -2212,13 +2212,19 @@ namespace hist_mmorpg
         {
             // refresh general information
             this.meetingPlaceDisplayText();
+
             // remove any previously displayed characters
             this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
             this.meetingPlaceCharDisplayTextBox.Text = "";
+
             // disable controls until character selected in list
             this.hireNPC_Btn.Enabled = false;
             this.hireNPC_TextBox.Text = "";
             this.hireNPC_TextBox.Enabled = false;
+            this.meetingPlaceMoveToBtn.Enabled = false;
+            this.meetingPlaceMoveToTextBox.Enabled = false;
+            this.meetingPlaceMoveToTextBox.Text = "";
+
             // set label
             switch (place)
             {
@@ -2446,6 +2452,9 @@ namespace hist_mmorpg
             this.familyNameChildTextBox.Text = "";
             this.familyNameChildTextBox.Enabled = false;
             this.houseHeirBtn.Enabled = false;
+            this.houseMoveToBtn.Enabled = false;
+            this.houseMoveToTextBox.Text = "";
+            this.houseMoveToTextBox.Enabled = false;
 
             // clear existing items in characters list
             this.houseCharListView.Items.Clear();
@@ -3966,21 +3975,43 @@ namespace hist_mmorpg
                     {
                         charToDisplay = this.fiefToView.characters[i];
 
-                        // set appropriate text for hire/fire button, 
-                        // depending on whether is existing employee
+                        // check whether is employee or family
                         if (this.myChar.myNPCs.Contains(this.fiefToView.characters[i]))
                         {
-                            this.hireNPC_Btn.Text = "Fire NPC";
-                            // if already employee, disable 'salary offer' text box
-                            this.hireNPC_TextBox.Visible = false;
+                            // enable 'move to' controls
+                            this.meetingPlaceMoveToBtn.Enabled = true;
+                            this.meetingPlaceMoveToTextBox.Enabled = true;
+
+                            // if is employee
+                            if (((this.fiefToView.characters[i] as NonPlayerCharacter).myBoss != null)
+                                && ((this.fiefToView.characters[i] as NonPlayerCharacter).myBoss.Equals(this.myChar.charID)))
+                            {
+                                // set appropriate text for hire/fire button, and enable it
+                                this.hireNPC_Btn.Text = "Fire NPC";
+                                this.hireNPC_Btn.Enabled = true;
+                                // disable 'salary offer' text box
+                                this.hireNPC_TextBox.Visible = false;
+                            }
+                            else
+                            {
+                                this.hireNPC_Btn.Enabled = false;
+                                this.hireNPC_TextBox.Enabled = false;
+                            }
                         }
+
+                        // if is not employee or family
                         else
                         {
+                            // set appropriate text for hire/fire controls, and enable them
                             this.hireNPC_Btn.Text = "Hire NPC";
+                            this.hireNPC_Btn.Enabled = true;
                             this.hireNPC_TextBox.Visible = true;
                             this.hireNPC_TextBox.Enabled = true;
+
+                            // disable 'move to' controls
+                            this.meetingPlaceMoveToBtn.Enabled = false;
+                            this.meetingPlaceMoveToTextBox.Enabled = false;
                         }
-                        this.hireNPC_Btn.Enabled = true;
                     }
 
                 }
@@ -4094,11 +4125,10 @@ namespace hist_mmorpg
 
             if (ch == this.myChar)
             {
-                // if player has moved, refresh display
+                // if player has moved, indicate success
                 if (ch.goTo.Count < steps)
                 {
-                    this.fiefToView = this.myChar.location;
-                    this.refreshTravelContainer();
+                    success = true;
                 }
             }
 
@@ -4144,13 +4174,26 @@ namespace hist_mmorpg
                     {
                         if (this.myChar.myNPCs.Contains(this.charToView))
                         {
-                            this.myChar.myNPCs.Remove(this.charToView as NonPlayerCharacter);
                             (this.charToView as NonPlayerCharacter).inEntourage = false;
                         }
                     }
 
                     // perform move
                     this.characterMultiMove(this.charToView, false);
+                }
+
+                // refresh appropriate screen
+                if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
+                {
+                    this.refreshMeetingPlaceDisplay(whichScreen); ;
+                }
+                else if (whichScreen.Equals("house"))
+                {
+                    this.refreshHouseholdDisplay((this.charToView as NonPlayerCharacter));
+                }
+                else if (whichScreen.Equals("travel"))
+                {
+                    this.refreshTravelContainer();
                 }
 
             }
@@ -4429,6 +4472,8 @@ namespace hist_mmorpg
                 // re-enable controls
                 this.houseCampBtn.Enabled = true;
                 this.houseCampDaysTextBox.Enabled = true;
+                this.houseMoveToBtn.Enabled = true;
+                this.houseMoveToTextBox.Enabled = true;
 
                 // if family selected, enable 'choose heir' button
                 if ((this.charToView.familyID != null) && (this.charToView.familyID.Equals(this.myChar.charID)))
@@ -5493,8 +5538,6 @@ namespace hist_mmorpg
                     System.Windows.Forms.MessageBox.Show(toDisplay);
                 }
             }
-
-
         }
 
         /// <summary>
