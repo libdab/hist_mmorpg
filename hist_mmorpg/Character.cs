@@ -1277,6 +1277,8 @@ namespace hist_mmorpg
             npc.myBoss = null;
             // remove NPC from entourage
             npc.inEntourage = false;
+            // eject from keep
+            npc.inKeep = false;
             // if NPC has entries in goTo, clear
             if (npc.goTo.Count > 0)
             {

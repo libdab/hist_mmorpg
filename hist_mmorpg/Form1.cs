@@ -2224,6 +2224,10 @@ namespace hist_mmorpg
             this.meetingPlaceMoveToBtn.Enabled = false;
             this.meetingPlaceMoveToTextBox.Enabled = false;
             this.meetingPlaceMoveToTextBox.Text = "";
+            this.meetingPlaceRouteBtn.Enabled = false;
+            this.meetingPlaceRouteTextBox.Enabled = false;
+            this.meetingPlaceRouteTextBox.Text = "";
+            this.meetingPlaceEntourageBtn.Enabled = false;
 
             // set label
             switch (place)
@@ -2455,6 +2459,10 @@ namespace hist_mmorpg
             this.houseMoveToBtn.Enabled = false;
             this.houseMoveToTextBox.Text = "";
             this.houseMoveToTextBox.Enabled = false;
+            this.houseRouteBtn.Enabled = false;
+            this.houseRouteTextBox.Text = "";
+            this.houseEntourageBtn.Enabled = false;
+            this.houseFireBtn.Enabled = false;
 
             // clear existing items in characters list
             this.houseCharListView.Items.Clear();
@@ -3917,9 +3925,11 @@ namespace hist_mmorpg
             // if in keep
             if (enteredKeep)
             {
-                // set hireNPC and moveTo button tags to reflect which meeting place
+                // set button tags to reflect which meeting place
                 this.hireNPC_Btn.Tag = place;
                 this.meetingPlaceMoveToBtn.Tag = place;
+                this.meetingPlaceRouteBtn.Tag = place;
+                this.meetingPlaceEntourageBtn.Tag = place;
                 // refresh court screen 
                 this.refreshMeetingPlaceDisplay(place);
                 // display court screen
@@ -3945,9 +3955,11 @@ namespace hist_mmorpg
             {
                 this.myChar.exitKeep();
             }
-            // set hireNPC and moveTo button tags to reflect which meeting place
+            // set button tags to reflect which meeting place
             this.hireNPC_Btn.Tag = place;
             this.meetingPlaceMoveToBtn.Tag = place;
+            this.meetingPlaceRouteBtn.Tag = place;
+            this.meetingPlaceEntourageBtn.Tag = place;
             // refresh tavern screen 
             this.refreshMeetingPlaceDisplay(place);
             // display tavern screen
@@ -3978,9 +3990,22 @@ namespace hist_mmorpg
                         // check whether is employee or family
                         if (this.myChar.myNPCs.Contains(this.fiefToView.characters[i]))
                         {
+                            // see if is in entourage to set text of entourage button
+                            if ((this.fiefToView.characters[i] as NonPlayerCharacter).inEntourage)
+                            {
+                                this.meetingPlaceEntourageBtn.Text = "Remove From Entourage";
+                            }
+                            else
+                            {
+                                this.meetingPlaceEntourageBtn.Text = "Add To Entourage";
+                            }
+                            
                             // enable 'move to' controls
                             this.meetingPlaceMoveToBtn.Enabled = true;
                             this.meetingPlaceMoveToTextBox.Enabled = true;
+                            this.meetingPlaceRouteBtn.Enabled = true;
+                            this.meetingPlaceRouteTextBox.Enabled = true;
+                            this.meetingPlaceEntourageBtn.Enabled = true;
 
                             // if is employee
                             if (((this.fiefToView.characters[i] as NonPlayerCharacter).myBoss != null)
@@ -4008,9 +4033,12 @@ namespace hist_mmorpg
                             this.hireNPC_TextBox.Visible = true;
                             this.hireNPC_TextBox.Enabled = true;
 
-                            // disable 'move to' controls
+                            // disable 'move to' and entourage controls
                             this.meetingPlaceMoveToBtn.Enabled = false;
                             this.meetingPlaceMoveToTextBox.Enabled = false;
+                            this.meetingPlaceRouteBtn.Enabled = false;
+                            this.meetingPlaceRouteTextBox.Enabled = false;
+                            this.meetingPlaceEntourageBtn.Enabled = false;
                         }
                     }
 
@@ -4030,14 +4058,14 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of the hireNPC_Btn button
-        /// which allows the player to either invoke processEmployOffer to attempt to hire an NPC
-        /// or invoke fireNPC to fire one
+        /// Responds to the click event of any hireNPC button
+        /// invoking either processEmployOffer or fireNPC
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
         private void hireNPC_Btn_Click(object sender, EventArgs e)
         {
+            bool amHiring = false;
             bool isHired = false;
 
             // get hireNPC_Btn tag (shows which meeting place are in)
@@ -4046,6 +4074,8 @@ namespace hist_mmorpg
             // if selected NPC is not a current employee
             if (!this.myChar.myNPCs.Contains(charToView))
             {
+                amHiring = true;
+
                 try
                 {
                     // get offer amount
@@ -4072,25 +4102,33 @@ namespace hist_mmorpg
                 this.myChar.fireNPC((NonPlayerCharacter)charToView);
             }
 
-            // if in the tavern
-            if (place.Equals("tavern"))
+            // refresh appropriate screen
+            // if firing an NPC
+            if (!amHiring)
             {
-                // if NPC is hired, refresh whole screen (NPC removed from list)
+                if (place.Equals("house"))
+                {
+                    this.refreshHouseholdDisplay();
+                }
+                else
+                {
+                    this.refreshMeetingPlaceDisplay(place);
+                }
+            }
+            // if hiring an NPC
+            else
+            {
+                // if in the tavern and NPC is hired, refresh whole screen (NPC removed from list)
                 if (isHired)
                 {
                     this.refreshMeetingPlaceDisplay(place);
                 }
-                // if NPC not hired, just refresh the character display
                 else
                 {
                     this.meetingPlaceCharDisplayTextBox.Text = this.displayCharacter(charToView);
                 }
             }
-            // if not in tavern, just refresh the character display
-            else
-            {
-                this.meetingPlaceCharDisplayTextBox.Text = this.displayCharacter(charToView);
-            }
+
         }
 
         /// <summary>
@@ -4142,15 +4180,23 @@ namespace hist_mmorpg
         /// <param name="whichScreen">String indicating on which screen the movement command occurred</param>
         public void moveTo(String whichScreen)
         {
-            // get appropriate TextBox
+            // get appropriate TextBox and remove from entourage, if necessary
             TextBox myTextBox = null;
             if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
             {
                 myTextBox = this.meetingPlaceMoveToTextBox;
+                if ((this.charToView as NonPlayerCharacter).inEntourage)
+                {
+                    this.myChar.removeFromEntourage(this.charToView as NonPlayerCharacter);
+                }                
             }
             else if (whichScreen.Equals("house"))
             {
                 myTextBox = this.houseMoveToTextBox;
+                if ((this.charToView as NonPlayerCharacter).inEntourage)
+                {
+                    this.myChar.removeFromEntourage(this.charToView as NonPlayerCharacter);
+                }
             }
             else if (whichScreen.Equals("travel"))
             {
@@ -4203,14 +4249,13 @@ namespace hist_mmorpg
             }
 
         }
-        
+
         /// <summary>
-        /// Responds to the click event of the travelMoveToBtn button
-        /// which invokes the moveTo method
+        /// Responds to the click event of any moveTo buttons invoking the moveTo method
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
-        private void travelMoveToBtn_Click(object sender, EventArgs e)
+        private void moveToBtn_Click(object sender, EventArgs e)
         {
             // get button
             Button button = sender as Button;
@@ -4408,9 +4453,11 @@ namespace hist_mmorpg
             {
                 this.myChar.exitKeep();
             }
-            // set hireNPC and moveTo button tags to reflect which meeting place
+            // set button tags to reflect which meeting place
             this.hireNPC_Btn.Tag = place;
             this.meetingPlaceMoveToBtn.Tag = place;
+            this.meetingPlaceRouteBtn.Tag = place;
+            this.meetingPlaceEntourageBtn.Tag = place;
             // refresh outside keep screen 
             this.refreshMeetingPlaceDisplay(place);
             // display tavern screen
@@ -4469,20 +4516,35 @@ namespace hist_mmorpg
                 this.houseCharTextBox.ReadOnly = true;
                 this.houseCharTextBox.Text = textToDisplay;
 
+                // see if is in entourage to set text of entourage button
+                if ((charToDisplay as NonPlayerCharacter).inEntourage)
+                {
+                    this.houseEntourageBtn.Text = "Remove From Entourage";
+                }
+                else
+                {
+                    this.houseEntourageBtn.Text = "Add To Entourage";
+                }
+
                 // re-enable controls
                 this.houseCampBtn.Enabled = true;
                 this.houseCampDaysTextBox.Enabled = true;
                 this.houseMoveToBtn.Enabled = true;
                 this.houseMoveToTextBox.Enabled = true;
+                this.houseRouteBtn.Enabled = true;
+                this.houseRouteTextBox.Enabled = true;
+                this.houseEntourageBtn.Enabled = true;
 
-                // if family selected, enable 'choose heir' button
+                // if family selected, enable 'choose heir' button, disbale 'fire' button
                 if ((this.charToView.familyID != null) && (this.charToView.familyID.Equals(this.myChar.charID)))
                 {
                     this.houseHeirBtn.Enabled = true;
+                    this.houseFireBtn.Enabled = false;
                 }
                 else
                 {
                     this.houseHeirBtn.Enabled = false;
+                    this.houseFireBtn.Enabled = true;
                 }
 
                 // if character aged 0 and firstname = "Baby", enable 'name child' controls
@@ -4700,19 +4762,40 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of the travelRouteBtn button
-        /// allowing players to enter a specific route by using direction codes (NE, E, SE, SW, W, NW)
+        /// Allows a character to be moved along a specific route by using direction codes
         /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void travelRouteBtn_Click(object sender, EventArgs e)
+        /// <param name="whichScreen">String indicating on which screen the movement command occurred</param>
+        public void takeThisRoute(String whichScreen)
         {
             Fief source = null;
             Fief target = null;
             Queue<Fief> route = new Queue<Fief>();
 
+            // get appropriate TextBox and remove from entourage, if necessary
+            TextBox myTextBox = null;
+            if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
+            {
+                myTextBox = this.meetingPlaceRouteTextBox;
+                if ((this.charToView as NonPlayerCharacter).inEntourage)
+                {
+                    this.myChar.removeFromEntourage(this.charToView as NonPlayerCharacter);
+                }
+            }
+            else if (whichScreen.Equals("house"))
+            {
+                myTextBox = this.houseRouteTextBox;
+                if ((this.charToView as NonPlayerCharacter).inEntourage)
+                {
+                    this.myChar.removeFromEntourage(this.charToView as NonPlayerCharacter);
+                }
+            }
+            else if (whichScreen.Equals("travel"))
+            {
+                myTextBox = this.travelRouteTextBox;
+            }
+
             // get list of directions
-            String[] directions = this.travelRouteTextBox.Text.Split(',').ToArray<String>();
+            String[] directions = myTextBox.Text.Split(',').ToArray<String>();
 
             // convert to Queue of fiefs
             for (int i = 0; i < directions.Length; i++)
@@ -4722,7 +4805,7 @@ namespace hist_mmorpg
                 {
                     source = this.charToView.location;
                 }
-                    // source for all other moves is the previous target fief
+                // source for all other moves is the previous target fief
                 else
                 {
                     source = target;
@@ -4752,6 +4835,37 @@ namespace hist_mmorpg
                 }
             }
 
+            // refresh appropriate screen
+            if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
+            {
+                this.refreshMeetingPlaceDisplay(whichScreen); ;
+            }
+            else if (whichScreen.Equals("house"))
+            {
+                this.refreshHouseholdDisplay((this.charToView as NonPlayerCharacter));
+            }
+            else if (whichScreen.Equals("travel"))
+            {
+                this.refreshTravelContainer();
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of any routeBtn buttons invoking the takeThisRoute method
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void routeBtn_Click(object sender, EventArgs e)
+        {
+            // get button
+            Button button = sender as Button;
+
+            // check button tag to see on which screen the movement command occurred
+            String whichScreen = button.Tag.ToString();
+
+            // perform move
+            this.takeThisRoute(whichScreen);
         }
 
         /// <summary>
@@ -5541,40 +5655,61 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of the meetingPlaceMoveToBtn button
-        /// which invokes the moveTo method
+        /// Responds to the click event of any entourage button
+        /// invoking either addToEntourage or removeFromEntourage
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
-        private void meetingPlaceMoveToBtn_Click(object sender, EventArgs e)
+        private void entourageBtn_Click(object sender, EventArgs e)
         {
+            // for messages
+            String toDisplay = "";
+
             // get button
             Button button = sender as Button;
 
-            // check button tag to see on which screen the movement command occurred
+            // check button tag to see on which screen the command occurred
             String whichScreen = button.Tag.ToString();
 
-            // perform move
-            this.moveTo(whichScreen);
+            // check which action to perform
+            // if is in entourage, remove
+            if ((this.charToView as NonPlayerCharacter).inEntourage)
+            {
+                this.myChar.removeFromEntourage((this.charToView as NonPlayerCharacter));
+            }
+
+            // if is not in entourage, add
+            else
+            {
+                // check to see if NPC is army leader
+                // if not leader, proceed
+                if (this.charToView.armyID == null)
+                {
+                    // add to entourage
+                    this.myChar.addToEntourage((this.charToView as NonPlayerCharacter));
+
+                }
+
+                // if is army leader, can't add to entourage
+                else
+                {
+                    toDisplay += "Sorry, milord, this person is an army leader\r\n";
+                    toDisplay += "and, therefore, cannot be added to your entourage.";
+                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                }
+            }
+
+            // refresh appropriate screen
+            if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
+            {
+                this.refreshMeetingPlaceDisplay(whichScreen); ;
+            }
+            else if (whichScreen.Equals("house"))
+            {
+                this.refreshHouseholdDisplay((this.charToView as NonPlayerCharacter));
+            }
         }
 
-        /// <summary>
-        /// Responds to the click event of the houseMoveToBtn button
-        /// which invokes the moveTo method
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void houseMoveToBtn_Click(object sender, EventArgs e)
-        {
-            // get button
-            Button button = sender as Button;
-
-            // check button tag to see on which screen the movement command occurred
-            String whichScreen = button.Tag.ToString();
-
-            // perform move
-            this.moveTo(whichScreen);
-        }
     }
 
 }
