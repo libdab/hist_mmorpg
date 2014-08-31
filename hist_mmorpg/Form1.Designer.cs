@@ -48,7 +48,6 @@ namespace hist_mmorpg
             this.dealWithHouseholdAffairsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.armyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.armyManagementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.listMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterContainer = new System.Windows.Forms.SplitContainer();
             this.characterTitlesCheckBox = new System.Windows.Forms.CheckBox();
             this.characterTextBox = new System.Windows.Forms.TextBox();
@@ -153,7 +152,10 @@ namespace hist_mmorpg
             this.armyRecruitTextBox = new System.Windows.Forms.TextBox();
             this.armyMaintainBtn = new System.Windows.Forms.Button();
             this.armyRecruitBtn = new System.Windows.Forms.Button();
-            this.ArmyTextBox = new System.Windows.Forms.TextBox();
+            this.armyListContainer = new System.Windows.Forms.SplitContainer();
+            this.armyTextBox = new System.Windows.Forms.TextBox();
+            this.armyListView = new System.Windows.Forms.ListView();
+            this.listMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -215,6 +217,10 @@ namespace hist_mmorpg
             this.armyContainer.Panel1.SuspendLayout();
             this.armyContainer.Panel2.SuspendLayout();
             this.armyContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.armyListContainer)).BeginInit();
+            this.armyListContainer.Panel1.SuspendLayout();
+            this.armyListContainer.Panel2.SuspendLayout();
+            this.armyListContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -365,12 +371,6 @@ namespace hist_mmorpg
             this.armyManagementToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.armyManagementToolStripMenuItem.Text = "My current army";
             this.armyManagementToolStripMenuItem.Click += new System.EventHandler(this.armyManagementToolStripMenuItem_Click);
-            // 
-            // listMToolStripMenuItem
-            // 
-            this.listMToolStripMenuItem.Name = "listMToolStripMenuItem";
-            this.listMToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.listMToolStripMenuItem.Text = "View my armies";
             // 
             // characterContainer
             // 
@@ -1037,13 +1037,13 @@ namespace hist_mmorpg
             // fiefsOwnedContainer
             // 
             this.fiefsOwnedContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fiefsOwnedContainer.Location = new System.Drawing.Point(0, 0);
+            this.fiefsOwnedContainer.Location = new System.Drawing.Point(0, 24);
             this.fiefsOwnedContainer.Name = "fiefsOwnedContainer";
             // 
             // fiefsOwnedContainer.Panel2
             // 
             this.fiefsOwnedContainer.Panel2.Controls.Add(this.fiefsListView);
-            this.fiefsOwnedContainer.Size = new System.Drawing.Size(935, 661);
+            this.fiefsOwnedContainer.Size = new System.Drawing.Size(935, 637);
             this.fiefsOwnedContainer.SplitterDistance = 310;
             this.fiefsOwnedContainer.TabIndex = 5;
             // 
@@ -1054,7 +1054,7 @@ namespace hist_mmorpg
             this.fiefsListView.GridLines = true;
             this.fiefsListView.Location = new System.Drawing.Point(0, 0);
             this.fiefsListView.Name = "fiefsListView";
-            this.fiefsListView.Size = new System.Drawing.Size(621, 661);
+            this.fiefsListView.Size = new System.Drawing.Size(621, 637);
             this.fiefsListView.TabIndex = 0;
             this.fiefsListView.UseCompatibleStateImageBehavior = false;
             this.fiefsListView.View = System.Windows.Forms.View.Details;
@@ -1495,7 +1495,7 @@ namespace hist_mmorpg
             // armyContainer
             // 
             this.armyContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.armyContainer.Location = new System.Drawing.Point(0, 0);
+            this.armyContainer.Location = new System.Drawing.Point(0, 24);
             this.armyContainer.Name = "armyContainer";
             // 
             // armyContainer.Panel1
@@ -1506,9 +1506,9 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel2
             // 
-            this.armyContainer.Panel2.Controls.Add(this.ArmyTextBox);
-            this.armyContainer.Size = new System.Drawing.Size(935, 661);
-            this.armyContainer.SplitterDistance = 311;
+            this.armyContainer.Panel2.Controls.Add(this.armyListContainer);
+            this.armyContainer.Size = new System.Drawing.Size(935, 637);
+            this.armyContainer.SplitterDistance = 282;
             this.armyContainer.TabIndex = 8;
             // 
             // armyRecruitTextBox
@@ -1520,7 +1520,7 @@ namespace hist_mmorpg
             // 
             // armyMaintainBtn
             // 
-            this.armyMaintainBtn.Location = new System.Drawing.Point(12, 86);
+            this.armyMaintainBtn.Location = new System.Drawing.Point(12, 99);
             this.armyMaintainBtn.Name = "armyMaintainBtn";
             this.armyMaintainBtn.Size = new System.Drawing.Size(138, 23);
             this.armyMaintainBtn.TabIndex = 1;
@@ -1532,34 +1532,70 @@ namespace hist_mmorpg
             // 
             this.armyRecruitBtn.Location = new System.Drawing.Point(12, 57);
             this.armyRecruitBtn.Name = "armyRecruitBtn";
-            this.armyRecruitBtn.Size = new System.Drawing.Size(138, 23);
+            this.armyRecruitBtn.Size = new System.Drawing.Size(138, 36);
             this.armyRecruitBtn.TabIndex = 0;
-            this.armyRecruitBtn.Text = "Recruit Additional Troops";
+            this.armyRecruitBtn.Text = "Recruit ...";
             this.armyRecruitBtn.UseVisualStyleBackColor = true;
             this.armyRecruitBtn.Click += new System.EventHandler(this.armyRecruitBtn_Click);
             // 
-            // ArmyTextBox
+            // armyListContainer
             // 
-            this.ArmyTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ArmyTextBox.Location = new System.Drawing.Point(0, 0);
-            this.ArmyTextBox.Multiline = true;
-            this.ArmyTextBox.Name = "ArmyTextBox";
-            this.ArmyTextBox.Size = new System.Drawing.Size(620, 661);
-            this.ArmyTextBox.TabIndex = 0;
+            this.armyListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.armyListContainer.Location = new System.Drawing.Point(0, 0);
+            this.armyListContainer.Name = "armyListContainer";
+            // 
+            // armyListContainer.Panel1
+            // 
+            this.armyListContainer.Panel1.Controls.Add(this.armyTextBox);
+            // 
+            // armyListContainer.Panel2
+            // 
+            this.armyListContainer.Panel2.Controls.Add(this.armyListView);
+            this.armyListContainer.Size = new System.Drawing.Size(649, 637);
+            this.armyListContainer.SplitterDistance = 312;
+            this.armyListContainer.TabIndex = 0;
+            // 
+            // armyTextBox
+            // 
+            this.armyTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.armyTextBox.Location = new System.Drawing.Point(0, 0);
+            this.armyTextBox.Multiline = true;
+            this.armyTextBox.Name = "armyTextBox";
+            this.armyTextBox.Size = new System.Drawing.Size(312, 637);
+            this.armyTextBox.TabIndex = 0;
+            // 
+            // armyListView
+            // 
+            this.armyListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.armyListView.FullRowSelect = true;
+            this.armyListView.HideSelection = false;
+            this.armyListView.Location = new System.Drawing.Point(0, 0);
+            this.armyListView.Name = "armyListView";
+            this.armyListView.Size = new System.Drawing.Size(333, 637);
+            this.armyListView.TabIndex = 0;
+            this.armyListView.UseCompatibleStateImageBehavior = false;
+            this.armyListView.View = System.Windows.Forms.View.Details;
+            this.armyListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.armyListView_ItemSelectionChanged);
+            // 
+            // listMToolStripMenuItem
+            // 
+            this.listMToolStripMenuItem.Name = "listMToolStripMenuItem";
+            this.listMToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.listMToolStripMenuItem.Text = "View my armies";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
+            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.houseContainer);
+            this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.travelContainer);
-            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.characterContainer);
-            this.Controls.Add(this.fiefsOwnedContainer);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
@@ -1640,9 +1676,13 @@ namespace hist_mmorpg
             this.armyContainer.Panel1.ResumeLayout(false);
             this.armyContainer.Panel1.PerformLayout();
             this.armyContainer.Panel2.ResumeLayout(false);
-            this.armyContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.armyContainer)).EndInit();
             this.armyContainer.ResumeLayout(false);
+            this.armyListContainer.Panel1.ResumeLayout(false);
+            this.armyListContainer.Panel1.PerformLayout();
+            this.armyListContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.armyListContainer)).EndInit();
+            this.armyListContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1757,9 +1797,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button houseHeirBtn;
         private System.Windows.Forms.ToolStripMenuItem armyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem armyManagementToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem listMToolStripMenuItem;
         private System.Windows.Forms.SplitContainer armyContainer;
-        private System.Windows.Forms.TextBox ArmyTextBox;
         private System.Windows.Forms.Button armyRecruitBtn;
         private System.Windows.Forms.Button armyMaintainBtn;
         private System.Windows.Forms.TextBox armyRecruitTextBox;
@@ -1774,6 +1812,10 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button houseEntourageBtn;
         private System.Windows.Forms.Button meetingPlaceEntourageBtn;
         private System.Windows.Forms.Button houseFireBtn;
+        private System.Windows.Forms.ToolStripMenuItem listMToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer armyListContainer;
+        private System.Windows.Forms.TextBox armyTextBox;
+        private System.Windows.Forms.ListView armyListView;
 
     }
 }

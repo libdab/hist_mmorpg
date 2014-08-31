@@ -103,6 +103,7 @@ namespace hist_mmorpg
             this.setUpFiefsList();
             this.setUpMeetingPLaceCharsList();
             this.setUpHouseholdCharsList();
+            this.setUpArmyList();
 
             // initialise character display in UI
             this.charToView = this.myChar;
@@ -483,16 +484,16 @@ namespace hist_mmorpg
 			myFief1.addCharacter(myNPC2);
             myFief1.addCharacter(myWife);
           
-            /* // create an army and add in appropriate places
+            // create an army and add in appropriate places
             Army myArmy = new Army("army" + Globals.getNextArmyrID(), null, null, 90, this.clock, null, ft: 100000);
             Globals.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
-            myArmy.leader = myChar1.charID;
-            myArmy.days = Globals.pcMasterList[myArmy.leader].days;
+            myArmy.leader = myNPC1.charID;
+            myArmy.days = Globals.npcMasterList[myArmy.leader].days;
             myChar1.myArmies.Add(myArmy);
-            myChar1.armyID = myArmy.armyID;
-            myArmy.location = Globals.pcMasterList[myArmy.leader].location.fiefID;
-            myChar1.location.armies.Add(myArmy.armyID); */
+            myNPC1.armyID = myArmy.armyID;
+            myArmy.location = Globals.npcMasterList[myArmy.leader].location.fiefID;
+            myNPC1.location.armies.Add(myArmy.armyID);
             
             // bar a character from the myFief1 keep
 			myFief2.barCharacter(myNPC1.charID);
@@ -2180,6 +2181,18 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Creates UI display for list of armies owned by player
+        /// </summary>
+        public void setUpArmyList()
+        {
+            // add necessary columns
+            this.armyListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.armyListView.Columns.Add("Leader", -2, HorizontalAlignment.Left);
+            this.armyListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
+            this.armyListView.Columns.Add("Size", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
         /// Refreshes display of PlayerCharacter's list of owned Fiefs
         /// </summary>
         public void refreshMyFiefs()
@@ -3297,50 +3310,77 @@ namespace hist_mmorpg
         /// <param name="a">Army whose information is to be displayed</param>
         public void refreshArmyContainer(Army a = null)
         {
-            // if army not specified, default to player's current army
-            if (a == null)
-            {
-                if (this.myChar.armyID != null)
-                {
-                    a = Globals.armyMasterList[this.myChar.armyID];
-                }
-            }            
             
             // clear existing information
-            this.ArmyTextBox.Text = "";
+            this.armyTextBox.Text = "";
             this.armyRecruitTextBox.Text = "";
 
             // ensure textboxes aren't interactive
-            this.ArmyTextBox.ReadOnly = true;
+            this.armyTextBox.ReadOnly = true;
+
+            // disable controls until army selected
+            this.armyRecruitBtn.Enabled = false;
+            this.armyRecruitTextBox.Enabled = false;
+            this.armyMaintainBtn.Enabled = false;
+            
+            // clear existing items in armies list
+            this.armyListView.Items.Clear();
+
+            // iterates through player's armies adding information to ListView
+            for (int i = 0; i < this.myChar.myArmies.Count; i++)
+            {
+                ListViewItem thisArmy = null;
+
+                // armyID
+                thisArmy = new ListViewItem(this.myChar.myArmies[i].armyID);
+
+                // leader
+                Character armyLeader = null;
+                if (Globals.npcMasterList.ContainsKey(this.myChar.myArmies[i].leader))
+                {
+                    armyLeader = Globals.npcMasterList[this.myChar.myArmies[i].leader];
+                }
+                else
+                {
+                    armyLeader = Globals.pcMasterList[this.myChar.myArmies[i].leader];
+                }
+                thisArmy.SubItems.Add(armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")");
+
+                // location
+                Fief armyLocation = Globals.fiefMasterList[this.myChar.myArmies[i].location];
+                thisArmy.SubItems.Add(armyLocation.name + " (" + armyLocation.fiefID + ")");
+
+                // size
+                thisArmy.SubItems.Add(this.myChar.myArmies[i].calcArmySize().ToString());
+
+                if (thisArmy != null)
+                {
+                    // if army passed in as parameter, show as selected
+                    if (this.myChar.myArmies[i] == a)
+                    {
+                        thisArmy.Selected = true;
+                    }
+
+                    // add item to armyListView
+                    this.armyListView.Items.Add(thisArmy);
+                }
+
+            }
 
             if (a == null)
             {
-                // disable various controls
-                this.armyMaintainBtn.Enabled = false;
-
-                // set correct text and tag for 'recuit' button
-                this.armyRecruitBtn.Text = "Recruit a New Army";
-                this.armyRecruitBtn.Tag = "new";
-
-                // set text to display in main text area
-                this.ArmyTextBox.Text = "You are not currently leader of an army.";
-            }
-            else
-            {
-                // enable various controls
-                this.armyMaintainBtn.Enabled = true;
-
-                // set correct text and tag for 'recuit' button
-                this.armyRecruitBtn.Text = "Recruit Additional Troops";
-                this.armyRecruitBtn.Tag = "add";
-
-                // get army data to display
-                this.ArmyTextBox.Text = this.displayArmyData(a);
+                // if player is not leading any armies, set button text to 'recruit new' and enable
+                if (this.myChar.armyID == null)
+                {
+                    this.armyRecruitBtn.Text = "Recruit a New Army In Current Fief";
+                    this.armyRecruitBtn.Tag = "new";
+                    this.armyRecruitBtn.Enabled = true;
+                    this.armyRecruitTextBox.Enabled = true;
+                }
             }
 
-            this.armyToView = a;
             this.armyContainer.BringToFront();
-            this.armyContainer.Focus();
+            this.armyListView.Focus();
         }
         
         /// <summary>
@@ -5553,7 +5593,15 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void armyManagementToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.refreshArmyContainer();
+            // get player's army
+            Army thisArmy = null;
+            if ((this.myChar.armyID != null)
+                && (Globals.armyMasterList.ContainsKey(this.myChar.armyID)))
+            {
+                thisArmy = Globals.armyMasterList[this.myChar.armyID];
+            }
+
+            this.refreshArmyContainer(thisArmy);
         }
 
         /// <summary>
@@ -5587,7 +5635,7 @@ namespace hist_mmorpg
                 this.myChar.recruitTroops(numberWanted);
 
                 // refresh display
-                this.refreshArmyContainer();
+                this.refreshArmyContainer(Globals.armyMasterList[this.myChar.armyID]);
             }
             catch (System.FormatException fe)
             {
@@ -5708,6 +5756,59 @@ namespace hist_mmorpg
             {
                 this.refreshHouseholdDisplay((this.charToView as NonPlayerCharacter));
             }
+        }
+
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of the armyListView object,
+        /// invoking the displayArmyData method and passing an Army to display
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            // get army to view
+            if (this.armyListView.SelectedItems.Count > 0)
+            {
+                this.armyToView = Globals.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+            }
+
+            if (this.armyToView != null)
+            {
+                // display data for selected army
+                this.armyTextBox.Text = this.displayArmyData(this.armyToView);
+
+                // if player is leading an army but not the one on view, disable 'recruit' button
+                if ((!(this.armyToView.leader == this.myChar.charID))
+                    && (!(this.myChar.armyID == null)))
+                {
+                    this.armyRecruitBtn.Enabled = false;
+                    this.armyRecruitTextBox.Enabled = false;
+                }
+                // otherwise, enable 'recruit' button
+                else
+                {
+                    this.armyRecruitBtn.Enabled = true;
+                    this.armyRecruitTextBox.Enabled = true;
+
+                    // if army on view is led by player, set button text to 'recruit additional'
+                    if (this.armyToView.leader == this.myChar.charID)
+                    {
+                        this.armyRecruitBtn.Text = "Recruit Additional Troops From Current Fief";
+                        this.armyRecruitBtn.Tag = "add";
+                    }
+                    // if player is not leading any armies, set button text to 'recruit new'
+                    else if (this.myChar.armyID == null)
+                    {
+                        this.armyRecruitBtn.Text = "Recruit a New Army In Current Fief";
+                        this.armyRecruitBtn.Tag = "new";
+                    }
+                }
+
+
+                // re-enable controls
+                this.armyMaintainBtn.Enabled = true;
+            }
+
         }
 
     }
