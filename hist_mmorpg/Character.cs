@@ -816,7 +816,14 @@ namespace hist_mmorpg
                 // arrives outside keep
                 this.inKeep = false;
                 // deduct move cost from days left
-                this.days = this.days - cost;
+                if (this is PlayerCharacter)
+                {
+                    (this as PlayerCharacter).subtractDays(cost);
+                }
+                else
+                {
+                    this.subtractDays(cost);
+                }
                 // check if has accompanying army, if so move it
                 if (this.armyID != null)
                 {
@@ -843,11 +850,21 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Subtracts the specified number of days from the character's remaining days
+        /// </summary>
+        /// <param name="daysToSubtract">Number of days to subtract</param>
+        public virtual void subtractDays(Double daysToSubtract)
+        {
+            // adjust character's days
+            this.days -= daysToSubtract;
+        }
+
+        /// <summary>
         /// Uses up the character's remaining days, which will be added to bailiffDaysInFief if appropriate
         /// </summary>
         public void useUpDays()
         {
-            byte bailiffDays = Convert.ToByte(Math.Truncate(this.days));
+            byte remainingDays = Convert.ToByte(Math.Truncate(this.days));
 
             // adjust character's days for next season
             this.days = 90;
@@ -855,7 +872,7 @@ namespace hist_mmorpg
             // if character is bailiff of this fief, increment bailiffDaysInFief
             if (this.location.bailiff == this)
             {
-                this.location.bailiffDaysInFief += bailiffDays;
+                this.location.bailiffDaysInFief += remainingDays;
             }
         }
 
@@ -885,8 +902,14 @@ namespace hist_mmorpg
                 else
                 {
                     // ensure days are synchronised
-                    this.days = minDays;
-                    wife.days = minDays;
+                    if (this.days != minDays)
+                    {
+                        (this as PlayerCharacter).subtractDays(this.days - minDays);
+                    }
+                    else
+                    {
+                        wife.subtractDays(wife.days - minDays);
+                    }
 
                     // generate random (0 - 100) to see if pregnancy successful
                     double randPercentage = Globals.GetRandomDouble(100);
@@ -991,8 +1014,12 @@ namespace hist_mmorpg
                         }
 
                         // succeed or fail, deduct a day
-                        this.days--;
-                        wife.days--;
+                        if (this is PlayerCharacter)
+                        {
+                            (this as PlayerCharacter).subtractDays(1);
+                        }
+
+                        wife.subtractDays(1);
 
                     }
                     // if pregnancy impossible
@@ -1312,13 +1339,7 @@ namespace hist_mmorpg
             // ensure days of entourage are synched with PC
             if (this.days != myDays)
             {
-                for (int i = 0; i < this.myNPCs.Count; i++)
-                {
-                    if (this.myNPCs[i].inEntourage)
-                    {
-                        this.myNPCs[i].days = this.days;
-                    }
-                }
+                this.subtractDays(0);
             }
         }
 
@@ -1414,6 +1435,26 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Extends base method allowing PlayerCharacter to subtract days from their entourage
+        /// </summary>
+        /// <param name="daysToSubtract">Number of days to subtract</param>
+        public override void subtractDays(Double daysToSubtract)
+        {
+            // use base method to subtract days from PlayerCharacter
+            base.subtractDays(daysToSubtract);
+
+            // iterate through employees
+            for (int i = 0; i < this.myNPCs.Count; i++)
+            {
+                // if employee in entourage, set NPC days to same as player
+                if (this.myNPCs[i].inEntourage)
+                {
+                    this.myNPCs[i].days = this.days;
+                }
+            }
+        }
+
+        /// <summary>
         /// Extends base method allowing PlayerCharacter to target fief. Then moves entourage.
         /// </summary>
         /// <returns>bool indicating success</returns>
@@ -1435,7 +1476,7 @@ namespace hist_mmorpg
                     // if employee in entourage, move employee
                     if (this.myNPCs[i].inEntourage)
                     {
-                        this.myNPCs[i].moveCharacter(target, cost, isUpdate);
+                        this.moveEntourageNPC(target, this.myNPCs[i]);
                     }
                 }
             }
@@ -1444,6 +1485,23 @@ namespace hist_mmorpg
 
         }
 
+        /// <summary>
+        /// Moves an NPC in a player's entourage (i.e. sets new location)
+        /// </summary>
+        /// <param name="target">Target fief</param>
+        /// <param name="npc">NonPlayerCharacter to move</param>
+        public void moveEntourageNPC(Fief target, NonPlayerCharacter npc)
+        {
+            // remove character from current fief's character list
+            npc.location.removeCharacter(npc);
+            // set location to target fief
+            npc.location = target;
+            // add character to target fief's character list
+            npc.location.addCharacter(npc);
+            // arrives outside keep
+            npc.inKeep = false;
+        }
+        
         /// <summary>
         /// Recruits troops from the current fief
         /// </summary>
@@ -1639,11 +1697,8 @@ namespace hist_mmorpg
                 }
 
                 // update character's days
-                this.days = this.days - daysUsed;
-                if (this.days < 0)
-                {
-                    this.days = 0;
-                }
+                this.subtractDays(daysUsed);
+
                 // update army's days
                 thisArmy.days = this.days;
             }

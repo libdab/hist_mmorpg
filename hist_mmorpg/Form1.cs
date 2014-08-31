@@ -484,16 +484,16 @@ namespace hist_mmorpg
 			myFief1.addCharacter(myNPC2);
             myFief1.addCharacter(myWife);
           
-            // create an army and add in appropriate places
+            /* // create an army and add in appropriate places
             Army myArmy = new Army("army" + Globals.getNextArmyrID(), null, null, 90, this.clock, null, ft: 100000);
             Globals.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
-            myArmy.leader = myNPC1.charID;
+            myArmy.leader = myNPC2.charID;
             myArmy.days = Globals.npcMasterList[myArmy.leader].days;
             myChar1.myArmies.Add(myArmy);
-            myNPC1.armyID = myArmy.armyID;
+            myNPC2.armyID = myArmy.armyID;
             myArmy.location = Globals.npcMasterList[myArmy.leader].location.fiefID;
-            myNPC1.location.armies.Add(myArmy.armyID);
+            myNPC2.location.armies.Add(myArmy.armyID); */
             
             // bar a character from the myFief1 keep
 			myFief2.barCharacter(myNPC1.charID);
@@ -4679,43 +4679,23 @@ namespace hist_mmorpg
                         // if is in entourage, give player chance to remove prior to camping
                         if ((ch as NonPlayerCharacter).inEntourage)
                         {
-                            DialogResult dialogResult = MessageBox.Show("Do you wish to remove this character from  your entourage before he camps?", "Remove character from entourage?", MessageBoxButtons.YesNo);
-                            if (dialogResult == DialogResult.No)
-                            {
-                                entourageCamp = true;
-                            }
-                            else
-                            {
-                                (ch as NonPlayerCharacter).inEntourage = false;
-                            }
+                            System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " has been removed from your entourage.");
+                            this.myChar.removeFromEntourage((ch as NonPlayerCharacter));
                         }
                     }
 
                     // adjust character's days
-                    ch.days = ch.days - campDays;
-                    System.Windows.Forms.MessageBox.Show("You remain in " + ch.location.name + " for " + campDays + " days.");
-
-                    // camp entourage (and player) if necessary
-                    if (entourageCamp)
+                    if (ch is PlayerCharacter)
                     {
-                        // iterate through employees to locate entourage
-                        for (int i = 0; i < this.myChar.myNPCs.Count; i++ )
-                        {
-                            if (this.myChar.myNPCs[i].inEntourage)
-                            {
-                                if (this.myChar.myNPCs[i] != ch)
-                                {
-                                    this.myChar.myNPCs[i].days = this.myChar.myNPCs[i].days - campDays;
-                                }
-                            }
-                        }
-
-                        // camp player, if necessary
-                        if (ch != this.myChar)
-                        {
-                            this.myChar.days = this.myChar.days - campDays;
-                        }
+                        (ch as PlayerCharacter).subtractDays(campDays);
                     }
+                    else
+                    {
+                        ch.subtractDays(campDays);
+                    }
+
+                    // inform player
+                    System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " remains in " + ch.location.name + " for " + campDays + " days.");
 
                     // keep track of bailiffDaysInFief before any possible increment
                     byte bailiffDaysBefore = ch.location.bailiffDaysInFief;
@@ -4760,7 +4740,7 @@ namespace hist_mmorpg
                     // if bailiff identified as someone who camped
                     if (myBailiff != null)
                     {
-                        // incremenet bailiffDaysInFief
+                        // increment bailiffDaysInFief
                         ch.location.bailiffDaysInFief += campDays;
                         // if necessary, display message to player
                         if (ch.location.bailiffDaysInFief >= 30)
@@ -5809,6 +5789,17 @@ namespace hist_mmorpg
                 this.armyMaintainBtn.Enabled = true;
             }
 
+        }
+
+        /// <summary>
+        /// Responds to the click event of the listMToolStripMenuItem
+        /// displaying the army management screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void listMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.refreshArmyContainer();
         }
 
     }
