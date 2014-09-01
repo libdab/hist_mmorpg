@@ -818,11 +818,11 @@ namespace hist_mmorpg
                 // deduct move cost from days left
                 if (this is PlayerCharacter)
                 {
-                    (this as PlayerCharacter).subtractDays(cost);
+                    (this as PlayerCharacter).adjustDays(cost);
                 }
                 else
                 {
-                    this.subtractDays(cost);
+                    this.adjustDays(cost);
                 }
                 // check if has accompanying army, if so move it
                 if (this.armyID != null)
@@ -850,10 +850,10 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Subtracts the specified number of days from the character's remaining days
+        /// Adjusts the character's remaining days by subtracting the specified number of days
         /// </summary>
         /// <param name="daysToSubtract">Number of days to subtract</param>
-        public virtual void subtractDays(Double daysToSubtract)
+        public virtual void adjustDays(Double daysToSubtract)
         {
             // adjust character's days
             this.days -= daysToSubtract;
@@ -864,10 +864,7 @@ namespace hist_mmorpg
         /// </summary>
         public void useUpDays()
         {
-            byte remainingDays = Convert.ToByte(Math.Truncate(this.days));
-
-            // adjust character's days for next season
-            this.days = 90;
+            Double remainingDays = this.days;
 
             // if character is bailiff of this fief, increment bailiffDaysInFief
             if (this.location.bailiff == this)
@@ -904,11 +901,11 @@ namespace hist_mmorpg
                     // ensure days are synchronised
                     if (this.days != minDays)
                     {
-                        (this as PlayerCharacter).subtractDays(this.days - minDays);
+                        (this as PlayerCharacter).adjustDays(this.days - minDays);
                     }
                     else
                     {
-                        wife.subtractDays(wife.days - minDays);
+                        wife.adjustDays(wife.days - minDays);
                     }
 
                     // generate random (0 - 100) to see if pregnancy successful
@@ -1016,10 +1013,10 @@ namespace hist_mmorpg
                         // succeed or fail, deduct a day
                         if (this is PlayerCharacter)
                         {
-                            (this as PlayerCharacter).subtractDays(1);
+                            (this as PlayerCharacter).adjustDays(1);
                         }
 
-                        wife.subtractDays(1);
+                        wife.adjustDays(1);
 
                     }
                     // if pregnancy impossible
@@ -1339,7 +1336,7 @@ namespace hist_mmorpg
             // ensure days of entourage are synched with PC
             if (this.days != myDays)
             {
-                this.subtractDays(0);
+                this.adjustDays(0);
             }
         }
 
@@ -1435,13 +1432,13 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Extends base method allowing PlayerCharacter to subtract days from their entourage
+        /// Extends base method allowing PlayerCharacter to synchronise the days of their entourage
         /// </summary>
         /// <param name="daysToSubtract">Number of days to subtract</param>
-        public override void subtractDays(Double daysToSubtract)
+        public override void adjustDays(Double daysToSubtract)
         {
             // use base method to subtract days from PlayerCharacter
-            base.subtractDays(daysToSubtract);
+            base.adjustDays(daysToSubtract);
 
             // iterate through employees
             for (int i = 0; i < this.myNPCs.Count; i++)
@@ -1697,7 +1694,7 @@ namespace hist_mmorpg
                 }
 
                 // update character's days
-                this.subtractDays(daysUsed);
+                this.adjustDays(daysUsed);
 
                 // update army's days
                 thisArmy.days = this.days;

@@ -139,7 +139,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Number of days the bailiff has been resident in the fief (this season)
         /// </summary>
-        public byte bailiffDaysInFief { get; set; }
+        public Double bailiffDaysInFief { get; set; }
         /// <summary>
         /// Holds fief Rank object
         /// </summary>
@@ -1252,13 +1252,9 @@ namespace hist_mmorpg
         public void updateFief()
         {
             // update bailiffDaysInFief if appropriate
-            if (this.characters.Contains(this.bailiff))
+            if (this.bailiff.days > 0)
             {
-                if (this.bailiff.days > 0)
-                {
-                    this.bailiffDaysInFief += Convert.ToByte(this.bailiff.days);
-                    this.bailiff.days = 0;
-                }
+                this.bailiff.useUpDays();
             }
 
             // update previous season's financial data
@@ -1652,7 +1648,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Number of days the bailiff has been resident in the fief (this season)
         /// </summary>
-        public byte bailiffDaysInFief { get; set; }
+        public Double bailiffDaysInFief { get; set; }
         /// <summary>
         /// Holds fief Rank (ID)
         /// </summary>

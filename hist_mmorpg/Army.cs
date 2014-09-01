@@ -183,6 +183,16 @@ namespace hist_mmorpg
             // update days
             this.days = myLeader.days;
 
+            // apply attrition
+            uint troopsLost = this.calcAttrition();
+            this.foot = this.foot - troopsLost;
+
+            // inform player of losses
+            if (troopsLost > 0)
+            {
+                System.Windows.Forms.MessageBox.Show("Your army (" + this.armyID + ") has lost " + troopsLost + " from attrition in " + myNewFief.name);
+            }
+
             return success;
         }
 
@@ -207,6 +217,119 @@ namespace hist_mmorpg
             }
 
             return movementMod;
+        }
+
+        /// <summary>
+        /// Calculates attrition for the army
+        /// </summary>
+        /// <returns>uint containing number of troops lost</returns>
+        public uint calcAttrition()
+        {
+            uint numberLost = 0;
+            Double attritionChance = 0;
+
+            // get fief
+            Fief currentFief = Globals.fiefMasterList[this.location];
+
+            // get leader
+            Character myLeader = null;
+            if (Globals.npcMasterList.ContainsKey(this.leader))
+            {
+                myLeader = Globals.npcMasterList[this.leader];
+            }
+            else if (Globals.pcMasterList.ContainsKey(this.leader))
+            {
+                myLeader = Globals.pcMasterList[this.leader];
+            }
+
+            // calculate base chance of attrition
+            attritionChance = (this.calcArmySize() / currentFief.population) * 100;
+
+            // factor in effect of leader
+            attritionChance = attritionChance - ((myLeader.calculateStature(true) + myLeader.management) / 2);
+
+            // factor in effect of season (add 20 if is winter or spring)
+            if ((this.clock.currentSeason == 0) || (this.clock.currentSeason == 3))
+            {
+                attritionChance = attritionChance + 20;
+            }
+
+            // update potential losses due to attrition
+            numberLost = Convert.ToUInt32(attritionChance);
+
+            // factor in effect of season on potential losses (* 3 if is winter or spring)
+            if ((this.clock.currentSeason == 0) || (this.clock.currentSeason == 3))
+            {
+                numberLost = numberLost * 3;
+            }
+
+            // normalise chance of attrition
+            if (attritionChance < 10)
+            {
+                attritionChance = 10;
+            }
+            else if (attritionChance > 100)
+            {
+                attritionChance = 100;
+            }
+
+            // generate random number (0-100) to check if attrition occurs
+            Double randomPercent = Globals.myRand.NextDouble() * 100;
+
+            // check for attrition and change numberLost back to 0 if appropriate
+            if (randomPercent > attritionChance)
+            {
+                numberLost = 0;
+            }
+
+            return numberLost;
+        }
+
+        /// <summary>
+        /// Updates army data at the end/beginning of the season
+        /// </summary>
+        /// <returns>bool indicating if army has dissolved</returns>
+        public bool updateArmy()
+        {
+            bool hasDissolved = false;
+
+            // get leader
+            Character myLeader = null;
+            if (Globals.npcMasterList.ContainsKey(this.leader))
+            {
+                myLeader = Globals.npcMasterList[this.leader];
+            }
+            else if (Globals.pcMasterList.ContainsKey(this.leader))
+            {
+                myLeader = Globals.pcMasterList[this.leader];
+            }
+
+            // check for additional attrition
+            byte attritionChecks = 0;
+            if ((this.days < 7) && (this.days >= 3))
+            {
+                attritionChecks = 1;
+            }
+            else if (this.days > 7)
+            {
+                attritionChecks = Convert.ToByte(this.days / 7);
+            }
+
+            for (int i = 0; i < attritionChecks; i++ )
+            {
+                this.foot = this.foot - this.calcAttrition();
+            }
+
+            // check if army dissolves (less than 100 men)
+            if (this.calcArmySize() < 100)
+            {
+                hasDissolved = true;
+            }
+
+            // update army days
+            this.days = myLeader.days;
+
+            return hasDissolved;
         }
 
     }

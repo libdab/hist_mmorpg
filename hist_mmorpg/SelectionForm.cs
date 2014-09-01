@@ -24,7 +24,8 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="par">Parent Form1 object</param>
         /// <param name="myFunction">String indicating function to be performed</param>
-        public SelectionForm(Form1 par, String myFunction)
+        /// <param name="armyID">String indicating ID of army (if choosing leader)</param>
+        public SelectionForm(Form1 par, String myFunction, String armyID = null)
         {
             // initialise form elements
             InitializeComponent();
@@ -32,22 +33,23 @@ namespace hist_mmorpg
             this.parent = par;
 
             // initialise NPC display
-            this.initDisplay(myFunction);
+            this.initDisplay(myFunction, armyID);
         }
 
         /// <summary>
         /// Initialises NPC display screen
         /// </summary>
         /// <param name="myFunction">String indicating function to be performed</param>
-        private void initDisplay(String myFunction)
+        /// <param name="armyID">String indicating ID of army (if choosing leader)</param>
+        private void initDisplay(String myFunction, String armyID = null)
         {
-            if ((myFunction.Equals("bailiff")) || (myFunction.Equals("heir")))
+            if ((myFunction.Equals("bailiff")) || (myFunction.Equals("leader")))
             {
                 // format list display
-                this.setUpNpcList(myFunction);
+                this.setUpNpcList(myFunction, armyID);
 
                 // refresh information 
-                this.refreshNPCdisplay();
+                this.refreshNPCdisplay(myFunction, armyID);
 
                 // show container
                 this.npcContainer.BringToFront();
@@ -70,24 +72,24 @@ namespace hist_mmorpg
         /// Configures UI display for list of household NPCs
         /// </summary>
         /// <param name="myFunction">String indicating function to be performed</param>
-        public void setUpNpcList(String myFunction)
+        /// <param name="armyID">String indicating ID of army (if choosing leader)</param>
+        public void setUpNpcList(String myFunction, String armyID = null)
         {
             // add necessary columns
             this.npcListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
             this.npcListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.npcListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
+            this.npcListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
 
-            // set appropriate button tag
-            this.chooseNpcBtn.Tag = myFunction;
-
-            // set appropriate button text
+            // set appropriate button text and tag
             if (myFunction.Equals("bailiff"))
             {
-                this.chooseNpcBtn.Text = "Appoint this person as bailiff";
+                this.chooseNpcBtn.Text = "Appoint This Person As Bailiff";
+                this.chooseNpcBtn.Tag = myFunction;
             }
-            else if (myFunction.Equals("heir"))
+            else if (myFunction.Equals("leader"))
             {
-                this.chooseNpcBtn.Text = "Appoint this person as my heir";
+                this.chooseNpcBtn.Text = "Appoint This Person As Leader";
+                this.chooseNpcBtn.Tag = armyID;
             }
 
             // disable button (until NPC selected)
@@ -97,7 +99,9 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes NPC list
         /// </summary>
-        public void refreshNPCdisplay()
+        /// <param name="myFunction">String indicating function to be performed</param>
+        /// <param name="armyID">String indicating ID of army (if choosing leader)</param>
+        public void refreshNPCdisplay(String myFunction, String armyID = null)
         {
             // remove any previously displayed characters
             this.npcDetailsTextBox.ReadOnly = true;
@@ -106,7 +110,14 @@ namespace hist_mmorpg
             // clear existing items in list
             this.npcListView.Items.Clear();
 
-            ListViewItem[] myNPCs = new ListViewItem[this.parent.myChar.myNPCs.Count];
+            // if choosing army leader, get army
+            Army myArmy = null;
+            if (myFunction.Equals("leader"))
+            {
+                myArmy = Globals.armyMasterList[armyID];
+            }
+
+            ListViewItem myNPCs = null;
 
             // iterates through employees
             for (int i = 0; i < this.parent.myChar.myNPCs.Count; i++)
@@ -114,19 +125,27 @@ namespace hist_mmorpg
                 // Create an item and subitems for each character
 
                 // name
-                myNPCs[i] = new ListViewItem(this.parent.myChar.myNPCs[i].firstName + " " + this.parent.myChar.myNPCs[i].familyName);
+                myNPCs = new ListViewItem(this.parent.myChar.myNPCs[i].firstName + " " + this.parent.myChar.myNPCs[i].familyName);
 
                 // charID
-                myNPCs[i].SubItems.Add(this.parent.myChar.myNPCs[i].charID);
+                myNPCs.SubItems.Add(this.parent.myChar.myNPCs[i].charID);
 
-                // if is in player's entourage
-                if (this.parent.myChar.myNPCs[i].inEntourage)
-                {
-                    myNPCs[i].SubItems.Add("Yes");
-                }
+                // location
+                myNPCs.SubItems.Add(this.parent.myChar.myNPCs[i].location.fiefID);
 
                 // add item to fiefsListView
-                this.npcListView.Items.Add(myNPCs[i]);
+                if (myFunction.Equals("bailiff"))
+                {
+                    this.npcListView.Items.Add(myNPCs);
+                }
+                // if appointing leader, only add item to fiefsListView if is in same fief as army
+                else if (myFunction.Equals("leader"))
+                {
+                    if (this.parent.myChar.myNPCs[i].location.fiefID == myArmy.location)
+                    {
+                        this.npcListView.Items.Add(myNPCs);
+                    }
+                }
             }
         }
 
@@ -274,10 +293,10 @@ namespace hist_mmorpg
                 NonPlayerCharacter selectedNPC = Globals.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
 
                 // get chooseNpcBtn tag (determines function)
-                String myFunction = Convert.ToString(((Button)sender).Tag);
+                String myButtonTag = Convert.ToString(((Button)sender).Tag);
 
                 // if appointing a bailiff
-                if (myFunction.Equals("bailiff"))
+                if (myButtonTag.Equals("bailiff"))
                 {
                     // set the selected NPC as bailiff
                     this.parent.fiefToView.bailiff = selectedNPC;
@@ -287,23 +306,36 @@ namespace hist_mmorpg
                     this.parent.refreshFiefContainer(this.parent.fiefToView);
                 }
 
-                // if appointing an heir
-                else if (myFunction.Equals("heir"))
+                // if appointing an army leader
+                else
                 {
-                    // check for an existing heir and remove
-                    foreach (NonPlayerCharacter npc in this.parent.myChar.myNPCs)
+                    // get army
+                    Army thisArmy = Globals.armyMasterList[myButtonTag];
+
+                    // Remove army from current leader
+                    if (Globals.npcMasterList.ContainsKey(thisArmy.leader))
                     {
-                        if (npc.isHeir)
-                        {
-                            npc.isHeir = false;
-                        }
+                        Globals.npcMasterList[thisArmy.leader].armyID = null;
+                    }
+                    else if (Globals.pcMasterList.ContainsKey(thisArmy.leader))
+                    {
+                        Globals.pcMasterList[thisArmy.leader].armyID = null;
                     }
 
-                    // appoint NPC as heir
-                    selectedNPC.isHeir = true;
+                    // add army to new leader
+                    selectedNPC.armyID = thisArmy.armyID;
 
-                    // refresh the household screen (in the main form)
-                    this.parent.refreshHouseholdDisplay(selectedNPC);
+                    // in army, set new leader
+                    thisArmy.leader = selectedNPC.charID;
+
+                    // refresh the army information (in the main form)
+                    this.parent.refreshArmyContainer(thisArmy);
+
+                    // if new leader in player's entourage, remove
+                    if (selectedNPC.inEntourage)
+                    {
+                        selectedNPC.inEntourage = false;
+                    }
                 }
             }
 

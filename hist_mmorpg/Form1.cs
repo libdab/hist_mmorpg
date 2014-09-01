@@ -484,16 +484,16 @@ namespace hist_mmorpg
 			myFief1.addCharacter(myNPC2);
             myFief1.addCharacter(myWife);
           
-            /* // create an army and add in appropriate places
-            Army myArmy = new Army("army" + Globals.getNextArmyrID(), null, null, 90, this.clock, null, ft: 100000);
+            // create an army and add in appropriate places
+            Army myArmy = new Army("army" + Globals.getNextArmyrID(), null, null, 90, this.clock, null, ft: 2000);
             Globals.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
-            myArmy.leader = myNPC2.charID;
-            myArmy.days = Globals.npcMasterList[myArmy.leader].days;
+            myArmy.leader = myChar1.charID;
+            myArmy.days = Globals.pcMasterList[myArmy.leader].days;
             myChar1.myArmies.Add(myArmy);
-            myNPC2.armyID = myArmy.armyID;
-            myArmy.location = Globals.npcMasterList[myArmy.leader].location.fiefID;
-            myNPC2.location.armies.Add(myArmy.armyID); */
+            myChar1.armyID = myArmy.armyID;
+            myArmy.location = Globals.pcMasterList[myArmy.leader].location.fiefID;
+            myChar1.location.armies.Add(myArmy.armyID);
             
             // bar a character from the myFief1 keep
 			myFief2.barCharacter(myNPC1.charID);
@@ -1988,9 +1988,6 @@ namespace hist_mmorpg
             // used to check if character update is necessary
             bool performCharacterUpdate = true;
 
-            // season and year
-            this.clock.advanceSeason();
-
             if (!type.Equals("character"))
             {
                 // fiefs
@@ -2073,6 +2070,71 @@ namespace hist_mmorpg
                     }
                 }
             }
+
+            // update armies
+
+            // keep track of any armies requiring removal (if hav fallen below 100 men)
+            List<Army> dissolvedArmies = new List<Army>();
+            bool hasDissolved = false;
+
+            // iterate through armies
+            foreach (KeyValuePair<string, Army> armyEntry in Globals.armyMasterList)
+            {
+                hasDissolved = armyEntry.Value.updateArmy();
+
+                // add to dissolvedArmies if appropriate
+                if (hasDissolved)
+                {
+                    dissolvedArmies.Add(armyEntry.Value);
+                }
+            }
+
+            // remove any dissolved armies
+            if (dissolvedArmies.Count > 0)
+            {
+                foreach (Army armyEntry in dissolvedArmies)
+                {
+                    // get fief
+                    Fief myFief = Globals.fiefMasterList[armyEntry.location];
+
+                    // get owner
+                    PlayerCharacter myOwner = null;
+                    myOwner = Globals.pcMasterList[armyEntry.owner];
+
+                    // get leader
+                    Character myLeader = null;
+                    if (armyEntry.leader == armyEntry.owner)
+                    {
+                        myLeader = myOwner;
+                    }
+                    else if (Globals.npcMasterList.ContainsKey(armyEntry.leader))
+                    {
+                        myLeader = Globals.npcMasterList[armyEntry.leader];
+                    }
+                    else if (Globals.pcMasterList.ContainsKey(armyEntry.leader))
+                    {
+                        myLeader = Globals.pcMasterList[armyEntry.leader];
+                    }
+
+                    // remove from armyMasterList
+                    Globals.armyMasterList.Remove(armyEntry.armyID);
+
+                    // remove from owner's army list
+                    myOwner.myArmies.Remove(armyEntry);
+
+                    // remove from leader
+                    myLeader.armyID = null;
+
+                    // remove from fief
+                    myFief.armies.Remove(armyEntry.armyID);
+                }
+
+                // clear dissolvedArmies
+                dissolvedArmies.Clear();
+            }
+
+            // when finished, advance season and year
+            this.clock.advanceSeason();
 
             // refresh current screen
             // fief
@@ -4687,18 +4749,18 @@ namespace hist_mmorpg
                     // adjust character's days
                     if (ch is PlayerCharacter)
                     {
-                        (ch as PlayerCharacter).subtractDays(campDays);
+                        (ch as PlayerCharacter).adjustDays(campDays);
                     }
                     else
                     {
-                        ch.subtractDays(campDays);
+                        ch.adjustDays(campDays);
                     }
 
                     // inform player
                     System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " remains in " + ch.location.name + " for " + campDays + " days.");
 
                     // keep track of bailiffDaysInFief before any possible increment
-                    byte bailiffDaysBefore = ch.location.bailiffDaysInFief;
+                    Double bailiffDaysBefore = ch.location.bailiffDaysInFief;
 
                     // keep track of identity of bailiff
                     Character myBailiff = null;
@@ -5801,6 +5863,39 @@ namespace hist_mmorpg
         {
             this.refreshArmyContainer();
         }
+
+        /// <summary>
+        /// Responds to the click event of the armyAppointLeaderBtn button
+        ///invoking and displaying the character selection screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyAppointLeaderBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            String thisArmyID = null;
+            if (this.armyListView.SelectedItems.Count > 0)
+            {
+                // get armyID
+                thisArmyID = this.armyListView.SelectedItems[0].SubItems[0].Text;
+
+                // display selection form
+                SelectionForm chooseBailiff = new SelectionForm(this, "leader", armyID: thisArmyID);
+                chooseBailiff.Show();
+            }
+            // if no army selected
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("No army selected!");
+            }
+
+        }
+
 
     }
 
