@@ -3384,6 +3384,8 @@ namespace hist_mmorpg
             this.armyRecruitBtn.Enabled = false;
             this.armyRecruitTextBox.Enabled = false;
             this.armyMaintainBtn.Enabled = false;
+            this.armyAppointLeaderBtn.Enabled = false;
+            this.armyAppointSelfBtn.Enabled = false;
             
             // clear existing items in armies list
             this.armyListView.Items.Clear();
@@ -5849,6 +5851,8 @@ namespace hist_mmorpg
 
                 // re-enable controls
                 this.armyMaintainBtn.Enabled = true;
+                this.armyAppointLeaderBtn.Enabled = true;
+                this.armyAppointSelfBtn.Enabled = true;
             }
 
         }
@@ -5866,7 +5870,7 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Responds to the click event of the armyAppointLeaderBtn button
-        ///invoking and displaying the character selection screen
+        /// invoking and displaying the character selection screen
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
@@ -5881,19 +5885,75 @@ namespace hist_mmorpg
             String thisArmyID = null;
             if (this.armyListView.SelectedItems.Count > 0)
             {
-                // get armyID
+                // get armyID and army
                 thisArmyID = this.armyListView.SelectedItems[0].SubItems[0].Text;
 
                 // display selection form
                 SelectionForm chooseBailiff = new SelectionForm(this, "leader", armyID: thisArmyID);
                 chooseBailiff.Show();
             }
+
             // if no army selected
             else
             {
                 System.Windows.Forms.MessageBox.Show("No army selected!");
             }
 
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyAppointSelfBtn button
+        /// allowing the player to appoint themselves as army leader
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyAppointSelfBtn_Click(object sender, EventArgs e)
+        {
+            // get army
+            Army thisArmy = Globals.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+
+            // Remove army from current leader
+            if (Globals.npcMasterList.ContainsKey(thisArmy.leader))
+            {
+                Globals.npcMasterList[thisArmy.leader].armyID = null;
+            }
+            else if (Globals.pcMasterList.ContainsKey(thisArmy.leader))
+            {
+                Globals.pcMasterList[thisArmy.leader].armyID = null;
+            }
+
+            // add army to new leader
+            this.myChar.armyID = thisArmy.armyID;
+
+            // in army, set new leader
+            thisArmy.leader = this.myChar.charID;
+
+
+            // synchronise army/leader days
+            double minDays = Math.Min(thisArmy.days, this.myChar.days);
+
+            if (this.myChar.days != minDays)
+            {
+                // synchronise leader (and entourage) days
+                this.myChar.adjustDays(this.myChar.days - minDays);
+            }
+            else
+            {
+                // check for attrition (if army had to wait for leader)
+                byte attritionChecks = 0;
+                attritionChecks = Convert.ToByte((thisArmy.days - this.myChar.days) / 7);
+
+                for (int i = 0; i < attritionChecks; i++)
+                {
+                    thisArmy.foot = thisArmy.foot - thisArmy.calcAttrition();
+                }
+
+                // synchronise army days
+                thisArmy.days = minDays;
+            }
+
+            // refresh the army information (in the main form)
+            this.refreshArmyContainer(thisArmy);
         }
 
 

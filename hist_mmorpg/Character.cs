@@ -857,6 +857,16 @@ namespace hist_mmorpg
         {
             // adjust character's days
             this.days -= daysToSubtract;
+
+            // if army leader, synchronise army days
+            if (this.armyID != null)
+            {
+                // get army
+                Army thisArmy = Globals.armyMasterList[this.armyID];
+
+                // synchronise days
+                thisArmy.days = this.days;
+            }
         }
 
         /// <summary>
@@ -1449,6 +1459,7 @@ namespace hist_mmorpg
                     this.myNPCs[i].days = this.days;
                 }
             }
+
         }
 
         /// <summary>

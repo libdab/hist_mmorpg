@@ -157,6 +157,7 @@ namespace hist_mmorpg
             this.armyTextBox = new System.Windows.Forms.TextBox();
             this.armyListView = new System.Windows.Forms.ListView();
             this.armyAppointLeaderBtn = new System.Windows.Forms.Button();
+            this.armyAppointSelfBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -1508,6 +1509,7 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel1
             // 
+            this.armyContainer.Panel1.Controls.Add(this.armyAppointSelfBtn);
             this.armyContainer.Panel1.Controls.Add(this.armyAppointLeaderBtn);
             this.armyContainer.Panel1.Controls.Add(this.armyRecruitTextBox);
             this.armyContainer.Panel1.Controls.Add(this.armyMaintainBtn);
@@ -1596,15 +1598,25 @@ namespace hist_mmorpg
             this.armyAppointLeaderBtn.UseVisualStyleBackColor = true;
             this.armyAppointLeaderBtn.Click += new System.EventHandler(this.armyAppointLeaderBtn_Click);
             // 
+            // armyAppointSelfBtn
+            // 
+            this.armyAppointSelfBtn.Location = new System.Drawing.Point(12, 157);
+            this.armyAppointSelfBtn.Name = "armyAppointSelfBtn";
+            this.armyAppointSelfBtn.Size = new System.Drawing.Size(138, 23);
+            this.armyAppointSelfBtn.TabIndex = 4;
+            this.armyAppointSelfBtn.Text = "Appoint Myself As Leader";
+            this.armyAppointSelfBtn.UseVisualStyleBackColor = true;
+            this.armyAppointSelfBtn.Click += new System.EventHandler(this.armyAppointSelfBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
-            this.Controls.Add(this.meetingPlaceContainer);
+            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.fiefContainer);
-            this.Controls.Add(this.travelContainer);
+            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.menuStrip1);
@@ -1830,6 +1842,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.TextBox armyTextBox;
         private System.Windows.Forms.ListView armyListView;
         private System.Windows.Forms.Button armyAppointLeaderBtn;
+        private System.Windows.Forms.Button armyAppointSelfBtn;
 
     }
 }
