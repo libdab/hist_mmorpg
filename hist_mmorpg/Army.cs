@@ -151,7 +151,8 @@ namespace hist_mmorpg
         /// Moves army to another fief
         /// </summary>
         /// <returns>bool indicating success</returns>
-        public bool moveArmy()
+        /// <param name="showAttrition">bool indicating whether to display message containing attrition losses</param>
+        public bool moveArmy(bool showAttrition = false)
         {
             bool success = false;
 
@@ -188,9 +189,12 @@ namespace hist_mmorpg
             this.foot = this.foot - troopsLost;
 
             // inform player of losses
-            if (troopsLost > 0)
+            if (showAttrition)
             {
-                System.Windows.Forms.MessageBox.Show("Your army (" + this.armyID + ") has lost " + troopsLost + " from attrition in " + myNewFief.name);
+                if (troopsLost > 0)
+                {
+                    System.Windows.Forms.MessageBox.Show("Your army (" + this.armyID + ") has lost " + troopsLost + " from attrition in " + myNewFief.name);
+                }
             }
 
             return success;

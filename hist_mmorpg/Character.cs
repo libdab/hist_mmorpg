@@ -773,7 +773,7 @@ namespace hist_mmorpg
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
         /// <param name="isUpdate">Indicates if is update mode</param>
-        public virtual bool moveCharacter(Fief target, double cost, bool isUpdate)
+        public virtual bool moveCharacter(Fief target, double cost, bool isUpdate = false)
         {
             bool success = false;
 
@@ -847,6 +847,60 @@ namespace hist_mmorpg
             }
 
             return success;
+        }
+
+        /// <summary>
+        /// Appoints the character as leader of the specified army
+        /// </summary>
+        /// <param name="thisArmy">The Army the character will lead</param>
+        public void appointAsLeader(Army thisArmy)
+        {
+            // Remove army from current leader
+            if (Globals.npcMasterList.ContainsKey(thisArmy.leader))
+            {
+                Globals.npcMasterList[thisArmy.leader].armyID = null;
+            }
+            else if (Globals.pcMasterList.ContainsKey(thisArmy.leader))
+            {
+                Globals.pcMasterList[thisArmy.leader].armyID = null;
+            }
+
+            // add army to new leader
+            this.armyID = thisArmy.armyID;
+
+            // in army, set new leader
+            thisArmy.leader = this.charID;
+
+            // if new leader is NPC, remove from player's entourage
+            if (this is NonPlayerCharacter)
+            {
+                (this as NonPlayerCharacter).inEntourage = false;
+            }
+
+            // calculate days synchronisation
+            double minDays = Math.Min(thisArmy.days, this.days);
+            double daysToAdjust = 0;
+
+            if (this.days != minDays)
+            {
+                daysToAdjust = (this.days - minDays);
+            }
+            else
+            {
+                // check for attrition (i.e. army had to wait for leader)
+                byte attritionChecks = 0;
+                attritionChecks = Convert.ToByte((thisArmy.days - this.days) / 7);
+
+                for (int i = 0; i < attritionChecks; i++)
+                {
+                    uint attrition = thisArmy.calcAttrition();
+                    thisArmy.foot = thisArmy.foot - attrition;
+                }
+
+            }
+
+            // synchronise days
+            this.adjustDays(daysToAdjust);
         }
 
         /// <summary>
@@ -1469,7 +1523,7 @@ namespace hist_mmorpg
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
         /// <param name="isUpdate">Indicates if is update mode</param>
-        public override bool moveCharacter(Fief target, double cost, bool isUpdate)
+        public override bool moveCharacter(Fief target, double cost, bool isUpdate = false)
         {
 
             // use base method to move PlayerCharacter
@@ -1946,6 +2000,21 @@ namespace hist_mmorpg
 
                             myFunction += "Bailiff of " + bigCheese.ownedFiefs[i].name + " (" + bigCheese.ownedFiefs[i].fiefID + ")";
                         }
+                    }
+
+                    // check if is army leader
+                    if (this.armyID != null)
+                    {
+                        if (!isFirstEntry)
+                        {
+                            myFunction += " & ";
+                        }
+                        else
+                        {
+                            isFirstEntry = false;
+                        }
+
+                        myFunction += "Leader of " + this.armyID;
                     }
 
                     if (myFunction.Equals(""))

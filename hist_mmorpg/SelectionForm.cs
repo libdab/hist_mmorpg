@@ -312,44 +312,7 @@ namespace hist_mmorpg
                     // get army
                     Army thisArmy = Globals.armyMasterList[myButtonTag];
 
-                    // Remove army from current leader
-                    if (Globals.npcMasterList.ContainsKey(thisArmy.leader))
-                    {
-                        Globals.npcMasterList[thisArmy.leader].armyID = null;
-                    }
-                    else if (Globals.pcMasterList.ContainsKey(thisArmy.leader))
-                    {
-                        Globals.pcMasterList[thisArmy.leader].armyID = null;
-                    }
-
-                    // add army to new leader
-                    selectedNPC.armyID = thisArmy.armyID;
-
-                    // in army, set new leader
-                    thisArmy.leader = selectedNPC.charID;
-
-                    // if new leader in player's entourage, remove
-                    if (selectedNPC.inEntourage)
-                    {
-                        selectedNPC.inEntourage = false;
-                    }
-
-                    // check for attrition (if army had to wait for leader)
-                    byte attritionChecks = 0;
-                    if (thisArmy.days > selectedNPC.days)
-                    {
-                        attritionChecks = Convert.ToByte((thisArmy.days - selectedNPC.days) / 7);
-
-                        for (int i = 0; i < attritionChecks; i++)
-                        {
-                            thisArmy.foot = thisArmy.foot - thisArmy.calcAttrition();
-                        }
-                    }
-
-                    // synchronise army/leader days
-                    double minDays = Math.Min(thisArmy.days, selectedNPC.days);
-                    thisArmy.days = minDays;
-                    selectedNPC.days = minDays;
+                    selectedNPC.appointAsLeader(thisArmy);
 
                     // refresh the army information (in the main form)
                     this.parent.refreshArmyContainer(thisArmy);

@@ -2185,7 +2185,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="npc">NPC to move</param>
         /// <param name="isUpdate">Indicates if is update mode</param>
-        public bool randomMoveNPC(NonPlayerCharacter npc, bool isUpdate)
+        public bool randomMoveNPC(NonPlayerCharacter npc, bool isUpdate = false)
         {
             bool success = false;
 
@@ -3886,7 +3886,7 @@ namespace hist_mmorpg
                 // get travel cost
                 double travelCost = this.getTravelCost(this.myChar.location, targetFief, this.myChar.armyID);
                 // attempt to move player to target fief
-                success = this.myChar.moveCharacter(targetFief, travelCost, false);
+                success = this.myChar.moveCharacter(targetFief, travelCost);
                 // if move successfull, refresh travel display
                 if (success)
                 {
@@ -4241,7 +4241,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="ch">Character to be moved</param>
         /// <param name="isUpdate">Indicates if is update mode</param>
-        private bool characterMultiMove(Character ch, bool isUpdate)
+        private bool characterMultiMove(Character ch, bool isUpdate = false)
         {
             bool success = false;
             double travelCost = 0;
@@ -4329,7 +4329,7 @@ namespace hist_mmorpg
                     }
 
                     // perform move
-                    this.characterMultiMove(this.charToView, false);
+                    this.characterMultiMove(this.charToView);
                 }
 
                 // refresh appropriate screen
@@ -4761,6 +4761,35 @@ namespace hist_mmorpg
                     // inform player
                     System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " remains in " + ch.location.name + " for " + campDays + " days.");
 
+                    // check if character is army leader, if so check for army attrition
+                    if (ch.armyID != null)
+                    {
+                        // get army
+                        Army thisArmy = Globals.armyMasterList[ch.armyID];
+
+                        // number of attrition checks
+                        byte attritionChecks = 0;
+                        attritionChecks = Convert.ToByte(campDays / 7);
+                        // total attrition
+                        uint totalAttrition = 0;
+
+                        for (int i = 0; i < attritionChecks; i++)
+                        {
+                            // calculate attrition
+                            uint attrition = thisArmy.calcAttrition();
+                            // adjust army size
+                            thisArmy.foot = thisArmy.foot - attrition;
+                            // keep tally of total
+                            totalAttrition += attrition;
+                        }
+
+                        // inform player
+                        if (totalAttrition > 0)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Army (" + thisArmy.armyID + ") lost " + totalAttrition + " troops due to attrition.");
+                        }
+                    }
+                    
                     // keep track of bailiffDaysInFief before any possible increment
                     Double bailiffDaysBefore = ch.location.bailiffDaysInFief;
 
@@ -4915,7 +4944,7 @@ namespace hist_mmorpg
                 if (route.Count > 0)
                 {
                     this.charToView.goTo = route;
-                    this.characterMultiMove(this.charToView, false);
+                    this.characterMultiMove(this.charToView);
                 }
             }
 
@@ -5912,45 +5941,7 @@ namespace hist_mmorpg
             // get army
             Army thisArmy = Globals.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
 
-            // Remove army from current leader
-            if (Globals.npcMasterList.ContainsKey(thisArmy.leader))
-            {
-                Globals.npcMasterList[thisArmy.leader].armyID = null;
-            }
-            else if (Globals.pcMasterList.ContainsKey(thisArmy.leader))
-            {
-                Globals.pcMasterList[thisArmy.leader].armyID = null;
-            }
-
-            // add army to new leader
-            this.myChar.armyID = thisArmy.armyID;
-
-            // in army, set new leader
-            thisArmy.leader = this.myChar.charID;
-
-
-            // synchronise army/leader days
-            double minDays = Math.Min(thisArmy.days, this.myChar.days);
-
-            if (this.myChar.days != minDays)
-            {
-                // synchronise leader (and entourage) days
-                this.myChar.adjustDays(this.myChar.days - minDays);
-            }
-            else
-            {
-                // check for attrition (if army had to wait for leader)
-                byte attritionChecks = 0;
-                attritionChecks = Convert.ToByte((thisArmy.days - this.myChar.days) / 7);
-
-                for (int i = 0; i < attritionChecks; i++)
-                {
-                    thisArmy.foot = thisArmy.foot - thisArmy.calcAttrition();
-                }
-
-                // synchronise army days
-                thisArmy.days = minDays;
-            }
+            this.myChar.appointAsLeader(thisArmy);
 
             // refresh the army information (in the main form)
             this.refreshArmyContainer(thisArmy);
