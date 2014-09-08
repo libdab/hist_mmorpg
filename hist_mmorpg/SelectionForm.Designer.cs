@@ -43,6 +43,8 @@
             this.barredListContainer = new System.Windows.Forms.SplitContainer();
             this.barredListLabel = new System.Windows.Forms.Label();
             this.barredListView = new System.Windows.Forms.ListView();
+            this.transferContainer = new System.Windows.Forms.SplitContainer();
+            this.transferListView = new System.Windows.Forms.ListView();
             ((System.ComponentModel.ISupportInitialize)(this.npcContainer)).BeginInit();
             this.npcContainer.Panel1.SuspendLayout();
             this.npcContainer.Panel2.SuspendLayout();
@@ -59,6 +61,9 @@
             this.barredListContainer.Panel1.SuspendLayout();
             this.barredListContainer.Panel2.SuspendLayout();
             this.barredListContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.transferContainer)).BeginInit();
+            this.transferContainer.Panel2.SuspendLayout();
+            this.transferContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // npcContainer
@@ -249,11 +254,37 @@
             this.barredListView.View = System.Windows.Forms.View.Details;
             this.barredListView.SelectedIndexChanged += new System.EventHandler(this.barredListView_SelectedIndexChanged);
             // 
+            // transferContainer
+            // 
+            this.transferContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.transferContainer.Location = new System.Drawing.Point(0, 0);
+            this.transferContainer.Name = "transferContainer";
+            // 
+            // transferContainer.Panel2
+            // 
+            this.transferContainer.Panel2.Controls.Add(this.transferListView);
+            this.transferContainer.Size = new System.Drawing.Size(620, 547);
+            this.transferContainer.SplitterDistance = 206;
+            this.transferContainer.TabIndex = 2;
+            // 
+            // transferListView
+            // 
+            this.transferListView.CheckBoxes = true;
+            this.transferListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.transferListView.FullRowSelect = true;
+            this.transferListView.Location = new System.Drawing.Point(0, 0);
+            this.transferListView.Name = "transferListView";
+            this.transferListView.Size = new System.Drawing.Size(410, 547);
+            this.transferListView.TabIndex = 0;
+            this.transferListView.UseCompatibleStateImageBehavior = false;
+            this.transferListView.View = System.Windows.Forms.View.Details;
+            // 
             // SelectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(620, 547);
+            this.Controls.Add(this.transferContainer);
             this.Controls.Add(this.npcContainer);
             this.Controls.Add(this.lockOutContainer);
             this.Name = "SelectionForm";
@@ -277,6 +308,9 @@
             this.barredListContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.barredListContainer)).EndInit();
             this.barredListContainer.ResumeLayout(false);
+            this.transferContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.transferContainer)).EndInit();
+            this.transferContainer.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -298,6 +332,8 @@
         private System.Windows.Forms.CheckBox barEnglishCheckBox;
         private System.Windows.Forms.CheckBox barFrenchCheckBox;
         private System.Windows.Forms.Button closeBtn;
+        private System.Windows.Forms.SplitContainer transferContainer;
+        private System.Windows.Forms.ListView transferListView;
 
     }
 }

@@ -912,6 +912,12 @@ namespace hist_mmorpg
             // adjust character's days
             this.days -= daysToSubtract;
 
+            // ensure days not < 0
+            if (this.days < 0)
+            {
+                this.days = 0;
+            }
+
             // if army leader, synchronise army days
             if (this.armyID != null)
             {

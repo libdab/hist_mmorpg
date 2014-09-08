@@ -301,7 +301,7 @@ namespace hist_mmorpg
             double[] prevFin007 = new double[14];
             double[] currFin007 = new double[14];
 
-            // create armies list for fiefs
+            // create armies lists for fiefs
             List<String> armies001 = new List<string>();
             List<String> armies002 = new List<string>();
             List<String> armies003 = new List<string>();
@@ -310,19 +310,28 @@ namespace hist_mmorpg
             List<String> armies006 = new List<string>();
             List<String> armies007 = new List<string>();
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 2000000, armies001, false, ra: myRank17);
+            // create troop transfer lists for fiefs
+            List<string[]> transfers001 = new List<string[]>();
+            List<string[]> transfers002 = new List<string[]>();
+            List<string[]> transfers003 = new List<string[]>();
+            List<string[]> transfers004 = new List<string[]>();
+            List<string[]> transfers005 = new List<string[]>();
+            List<string[]> transfers006 = new List<string[]>();
+            List<string[]> transfers007 = new List<string[]>();
+
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 2000000, armies001, false, transfers001, ra: myRank17);
             Globals.fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 4000, armies002, false, ra: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, this.clock, 0, 4000, armies002, false, transfers002, ra: myRank15);
             Globals.fiefMasterList.Add(myFief2.fiefID, myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, 0, 100000, armies003, false, ra: myRank17);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, this.clock, 0, 100000, armies003, false, transfers003, ra: myRank17);
             Globals.fiefMasterList.Add(myFief3.fiefID, myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock, 0, 100000, armies004, false, ra: myRank17);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, this.clock, 0, 100000, armies004, false, transfers004, ra: myRank17);
             Globals.fiefMasterList.Add(myFief4.fiefID, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock, 0, 100000, armies005, false, ra: myRank15);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, this.clock, 0, 100000, armies005, false, transfers005, ra: myRank15);
             Globals.fiefMasterList.Add(myFief5.fiefID, myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, this.clock, 0, 100000, armies006, false, ra: myRank17);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, this.clock, 0, 100000, armies006, false, transfers006, ra: myRank17);
             Globals.fiefMasterList.Add(myFief6.fiefID, myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, this.clock, 0, 100000, armies007, false, ra: myRank15);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, this.clock, 0, 100000, armies007, false, transfers007, ra: myRank15);
             Globals.fiefMasterList.Add(myFief7.fiefID, myFief7);
 
 			// create QuickGraph undirected graph
@@ -3376,6 +3385,8 @@ namespace hist_mmorpg
             // clear existing information
             this.armyTextBox.Text = "";
             this.armyRecruitTextBox.Text = "";
+            this.armyTransDropWhoTextBox.Text = "";
+            this.armyTransDropNumTextBox.Text = "";
 
             // ensure textboxes aren't interactive
             this.armyTextBox.ReadOnly = true;
@@ -3386,6 +3397,10 @@ namespace hist_mmorpg
             this.armyMaintainBtn.Enabled = false;
             this.armyAppointLeaderBtn.Enabled = false;
             this.armyAppointSelfBtn.Enabled = false;
+            this.armyTransDropBtn.Enabled = false;
+            this.armyTransDropWhoTextBox.Enabled = false;
+            this.armyTransDropNumTextBox.Enabled = false;
+            this.armyTransPickupBtn.Enabled = false;
             
             // clear existing items in armies list
             this.armyListView.Items.Clear();
@@ -5882,6 +5897,14 @@ namespace hist_mmorpg
                 this.armyMaintainBtn.Enabled = true;
                 this.armyAppointLeaderBtn.Enabled = true;
                 this.armyAppointSelfBtn.Enabled = true;
+                this.armyTransDropBtn.Enabled = true;
+                this.armyTransDropNumTextBox.Enabled = true;
+                this.armyTransDropWhoTextBox.Enabled = true;
+                this.armyTransPickupBtn.Enabled = true;
+
+                // preload own ID in 'drop off to' textbox (assumes transferring between own armies)
+                this.armyTransDropWhoTextBox.Text = this.myChar.charID;
+
             }
 
         }
@@ -5947,6 +5970,163 @@ namespace hist_mmorpg
             this.refreshArmyContainer(thisArmy);
         }
 
+        /// <summary>
+        /// Responds to the click event of the armyTransDropBtn button
+        /// allowing the player to leave troops in the fief for transfer to other armies
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyTransDropBtn_Click(object sender, EventArgs e)
+        {
+            bool proceed = true;
+            bool adjustDays = true;
+            int daysTaken = 0;
+
+            if (this.armyToView != null)
+            {
+                // run checks on data in fields
+                try
+                {
+                    // get number of troops to transfer
+                    UInt32 troopsToTransfer = Convert.ToUInt32(this.armyTransDropNumTextBox.Text);
+
+                    // if not enough troops in army, cancel
+                    if (troopsToTransfer > this.armyToView.calcArmySize())
+                    {
+                        System.Windows.Forms.MessageBox.Show("You don't have enough troops in your army for that transfer.  Transfer cancelled.");
+                        proceed = false;
+                        adjustDays = false;
+                    }
+
+                    // if reduces army to < 100 troops, warn
+                    else if ((this.armyToView.calcArmySize() - troopsToTransfer) < 100)
+                    {
+                        DialogResult dialogResult = MessageBox.Show("This transfer will reduce your army manpower to dangerous levels.  Click OK to proceed.", "Proceed with transfer?", MessageBoxButtons.OKCancel);
+
+                        // if choose to cancel
+                        if (dialogResult == DialogResult.Cancel)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Transfer cancelled.");
+                            proceed = false;
+                            adjustDays = false;
+                        }
+                    }
+
+                    // check have minimum days necessary for transfer
+                    if (this.armyToView.days < 10)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You don't have enough days left for this transfer.  Transfer cancelled.");
+                        proceed = false;
+                        adjustDays = false;
+                    }
+                    else
+                    {
+                        // calculate time taken for transfer
+                        daysTaken = Globals.myRand.Next(10, 31);
+
+                        // check if have enough days for transfer in this instance
+                        if (daysTaken > this.armyToView.days)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.");
+                            proceed = false;
+                        }
+                    }
+
+                    // check transfer recipient exists
+                    if (!Globals.pcMasterList.ContainsKey(this.armyTransDropWhoTextBox.Text))
+                    {
+                        System.Windows.Forms.MessageBox.Show("Cannot identify transfer recipient.  Transfer cancelled.");
+                        proceed = false;
+                    }
+
+                    if (proceed)
+                    {
+                        // remove troops from army
+                        this.armyToView.foot = this.armyToView.foot - troopsToTransfer;
+
+                        // get fief
+                        Fief thisFief = Globals.fiefMasterList[this.armyToView.location];
+
+                        // create transfer entry
+                        string[] thisTransfer = new string[4] { this.myChar.charID, this.armyTransDropWhoTextBox.Text, troopsToTransfer.ToString(), (this.armyToView.days - daysTaken).ToString() };
+
+                        // add to fief's troopTransfers list
+                        thisFief.troopTransfers.Add(thisTransfer);
+                    }
+
+                    if (adjustDays)
+                    {
+                        // get leader
+                        Character myLeader = null;
+                        if (Globals.npcMasterList.ContainsKey(this.armyToView.leader))
+                        {
+                            myLeader = Globals.npcMasterList[this.armyToView.leader];
+                        }
+                        else if (Globals.pcMasterList.ContainsKey(this.armyToView.leader))
+                        {
+                            myLeader = Globals.pcMasterList[this.armyToView.leader];
+                        }
+
+                        // adjust days
+                        myLeader.adjustDays(daysTaken);
+
+                        // calculate possible attrition for army
+                        byte attritionChecks = Convert.ToByte(daysTaken / 7);
+                        for (int i = 0; i < attritionChecks; i++)
+                        {
+                            this.armyToView.foot = this.armyToView.foot - this.armyToView.calcAttrition();
+                        }
+                    }
+
+                }
+                catch (System.FormatException fe)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+                catch (System.OverflowException ofe)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+                finally
+                {
+                    this.refreshArmyContainer(this.armyToView);
+                }
+
+            }            
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyTransPickupBtn button, invoking and displaying the
+        /// transfer selection screen, allowing detachments in the current fief to be added to the army
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyTransPickupBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            String thisArmyID = null;
+            if (this.armyListView.SelectedItems.Count > 0)
+            {
+                // get armyID and army
+                thisArmyID = this.armyListView.SelectedItems[0].SubItems[0].Text;
+
+                // display selection form
+                SelectionForm chooseTroops = new SelectionForm(this, "transfer", armyID: thisArmyID);
+                chooseTroops.Show();
+            }
+
+            // if no army selected
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("No army selected!");
+            }
+        }
 
     }
 

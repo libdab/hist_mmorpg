@@ -150,6 +150,11 @@ namespace hist_mmorpg
             this.houseCharListLabel = new System.Windows.Forms.Label();
             this.houseCharListView = new System.Windows.Forms.ListView();
             this.armyContainer = new System.Windows.Forms.SplitContainer();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.armyTransDropNumTextBox = new System.Windows.Forms.TextBox();
+            this.armyTransDropWhoTextBox = new System.Windows.Forms.TextBox();
+            this.armyTransDropBtn = new System.Windows.Forms.Button();
             this.armyAppointSelfBtn = new System.Windows.Forms.Button();
             this.armyAppointLeaderBtn = new System.Windows.Forms.Button();
             this.armyRecruitTextBox = new System.Windows.Forms.TextBox();
@@ -158,6 +163,7 @@ namespace hist_mmorpg
             this.armyListContainer = new System.Windows.Forms.SplitContainer();
             this.armyTextBox = new System.Windows.Forms.TextBox();
             this.armyListView = new System.Windows.Forms.ListView();
+            this.armyTransPickupBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -1509,6 +1515,12 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel1
             // 
+            this.armyContainer.Panel1.Controls.Add(this.armyTransPickupBtn);
+            this.armyContainer.Panel1.Controls.Add(this.label5);
+            this.armyContainer.Panel1.Controls.Add(this.label4);
+            this.armyContainer.Panel1.Controls.Add(this.armyTransDropNumTextBox);
+            this.armyContainer.Panel1.Controls.Add(this.armyTransDropWhoTextBox);
+            this.armyContainer.Panel1.Controls.Add(this.armyTransDropBtn);
             this.armyContainer.Panel1.Controls.Add(this.armyAppointSelfBtn);
             this.armyContainer.Panel1.Controls.Add(this.armyAppointLeaderBtn);
             this.armyContainer.Panel1.Controls.Add(this.armyRecruitTextBox);
@@ -1521,6 +1533,48 @@ namespace hist_mmorpg
             this.armyContainer.Size = new System.Drawing.Size(935, 637);
             this.armyContainer.SplitterDistance = 282;
             this.armyContainer.TabIndex = 8;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(151, 215);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(46, 13);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "Troops: ";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(171, 189);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(26, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "To: ";
+            // 
+            // armyTransDropNumTextBox
+            // 
+            this.armyTransDropNumTextBox.Location = new System.Drawing.Point(203, 212);
+            this.armyTransDropNumTextBox.Name = "armyTransDropNumTextBox";
+            this.armyTransDropNumTextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransDropNumTextBox.TabIndex = 7;
+            // 
+            // armyTransDropWhoTextBox
+            // 
+            this.armyTransDropWhoTextBox.Location = new System.Drawing.Point(203, 186);
+            this.armyTransDropWhoTextBox.Name = "armyTransDropWhoTextBox";
+            this.armyTransDropWhoTextBox.Size = new System.Drawing.Size(61, 20);
+            this.armyTransDropWhoTextBox.TabIndex = 6;
+            // 
+            // armyTransDropBtn
+            // 
+            this.armyTransDropBtn.Location = new System.Drawing.Point(12, 186);
+            this.armyTransDropBtn.Name = "armyTransDropBtn";
+            this.armyTransDropBtn.Size = new System.Drawing.Size(138, 48);
+            this.armyTransDropBtn.TabIndex = 5;
+            this.armyTransDropBtn.Text = "Drop Off Troops For Transfer";
+            this.armyTransDropBtn.UseVisualStyleBackColor = true;
+            this.armyTransDropBtn.Click += new System.EventHandler(this.armyTransDropBtn_Click);
             // 
             // armyAppointSelfBtn
             // 
@@ -1607,6 +1661,16 @@ namespace hist_mmorpg
             this.armyListView.UseCompatibleStateImageBehavior = false;
             this.armyListView.View = System.Windows.Forms.View.Details;
             this.armyListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.armyListView_ItemSelectionChanged);
+            // 
+            // armyTransPickupBtn
+            // 
+            this.armyTransPickupBtn.Location = new System.Drawing.Point(12, 240);
+            this.armyTransPickupBtn.Name = "armyTransPickupBtn";
+            this.armyTransPickupBtn.Size = new System.Drawing.Size(138, 48);
+            this.armyTransPickupBtn.TabIndex = 10;
+            this.armyTransPickupBtn.Text = "Pick Up Transferred Troops";
+            this.armyTransPickupBtn.UseVisualStyleBackColor = true;
+            this.armyTransPickupBtn.Click += new System.EventHandler(this.armyTransPickupBtn_Click);
             // 
             // Form1
             // 
@@ -1843,6 +1907,12 @@ namespace hist_mmorpg
         private System.Windows.Forms.ListView armyListView;
         private System.Windows.Forms.Button armyAppointLeaderBtn;
         private System.Windows.Forms.Button armyAppointSelfBtn;
+        private System.Windows.Forms.TextBox armyTransDropNumTextBox;
+        private System.Windows.Forms.TextBox armyTransDropWhoTextBox;
+        private System.Windows.Forms.Button armyTransDropBtn;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button armyTransPickupBtn;
 
     }
 }

@@ -231,6 +231,7 @@ namespace hist_mmorpg
         {
             uint numberLost = 0;
             Double attritionChance = 0;
+            String toDisplay = "";
 
             // get fief
             Fief currentFief = Globals.fiefMasterList[this.location];
@@ -247,23 +248,28 @@ namespace hist_mmorpg
             }
 
             // calculate base chance of attrition
-            attritionChance = (this.calcArmySize() / currentFief.population) * 100;
+            attritionChance = (this.calcArmySize() / Convert.ToDouble(currentFief.population)) * 100;
+            numberLost = Convert.ToUInt32(attritionChance);
+            toDisplay += "Base chance: " + attritionChance + "\r\n";
 
             // factor in effect of leader
             attritionChance = attritionChance - ((myLeader.calculateStature(true) + myLeader.management) / 2);
+            toDisplay += "Leader effect: " + (myLeader.calculateStature(true) + myLeader.management) / 2 + "\r\n";
 
             // factor in effect of season (add 20 if is winter or spring)
             if ((this.clock.currentSeason == 0) || (this.clock.currentSeason == 3))
             {
                 attritionChance = attritionChance + 20;
+                toDisplay += "Season effect: 20\r\n";
             }
 
             // update potential losses due to attrition
-            numberLost = Convert.ToUInt32(attritionChance);
+            toDisplay += "Base troops lost: " + numberLost + "\r\n";
 
             // factor in effect of season on potential losses (* 3 if is winter or spring)
             if ((this.clock.currentSeason == 0) || (this.clock.currentSeason == 3))
             {
+                toDisplay += "Troops lost after seasonal effect: " + (numberLost * 3) + "\r\n";
                 numberLost = numberLost * 3;
             }
 
@@ -284,6 +290,11 @@ namespace hist_mmorpg
             if (randomPercent > attritionChance)
             {
                 numberLost = 0;
+            }
+
+            if (numberLost > 0)
+            {
+                System.Windows.Forms.MessageBox.Show(toDisplay);
             }
 
             return numberLost;
@@ -309,16 +320,7 @@ namespace hist_mmorpg
             }
 
             // check for additional attrition
-            byte attritionChecks = 0;
-            if ((this.days < 7) && (this.days >= 3))
-            {
-                attritionChecks = 1;
-            }
-            else if (this.days > 7)
-            {
-                attritionChecks = Convert.ToByte(this.days / 7);
-            }
-
+            byte attritionChecks = Convert.ToByte(this.days / 7);
             for (int i = 0; i < attritionChecks; i++ )
             {
                 this.foot = this.foot - this.calcAttrition();
@@ -331,7 +333,10 @@ namespace hist_mmorpg
             }
 
             // update army days
-            this.days = myLeader.days;
+            if (!hasDissolved)
+            {
+                this.days = myLeader.days;
+            }
 
             return hasDissolved;
         }

@@ -66,6 +66,18 @@ namespace hist_mmorpg
                 // show container
                 this.lockOutContainer.BringToFront();
             }
+
+            if (myFunction.Equals("transfer"))
+            {
+                // format list display
+                this.setUpTransferList();
+
+                // refresh information 
+                this.refreshTransferDisplay(armyID);
+
+                // show container
+                this.transferContainer.BringToFront();
+            }
         }
 
         /// <summary>
@@ -385,6 +397,65 @@ namespace hist_mmorpg
             // ensure the nationality bar CheckBoxes are displaying correctly
             this.barEnglishCheckBox.Checked = this.parent.fiefToView.englishBarred;
             this.barFrenchCheckBox.Checked = this.parent.fiefToView.frenchBarred;
+        }
+
+        /// <summary>
+        /// Configures UI display for list of barred characters
+        /// </summary>
+        public void setUpTransferList()
+        {
+            // add necessary columns
+            //this.transferListView.Columns.Add("", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("   Troops", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("Days", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("For", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Refreshes troop transfer list
+        /// </summary>
+        /// <param name="armyID">String indicating ID of army receiving troops</param>
+        public void refreshTransferDisplay(string armyID)
+        {
+            ListViewItem thisDetachment = null;
+
+            // get army
+            Army thisArmy = Globals.armyMasterList[armyID];
+
+            // get fief
+            Fief thisFief = Globals.fiefMasterList[thisArmy.location];
+
+            // add troop detachments to list
+            foreach (String[] troopDetachment in thisFief.troopTransfers)
+            {
+                if ((troopDetachment[0] == thisArmy.owner) || (troopDetachment[1] == thisArmy.owner))
+                {
+                    // Create an item and subitems for each character
+
+                    // troops
+                    thisDetachment = new ListViewItem(troopDetachment[2]);
+
+                    // days
+                    thisDetachment.SubItems.Add(troopDetachment[3]);
+
+                    // owner
+                    thisDetachment.SubItems.Add(troopDetachment[0]);
+
+                    // for
+                    thisDetachment.SubItems.Add(troopDetachment[1]);
+
+                    // add item to fiefsListView
+                    this.transferListView.Items.Add(thisDetachment);
+
+                    /*
+                    thisDetachment += "Troops: " + troopDetachment[2] + ", ";
+                    thisDetachment += "Days left: " + troopDetachment[3] + ", ";
+                    thisDetachment += "Owner: " + troopDetachment[0] + ", ";
+                    thisDetachment += "For: " + troopDetachment[2];
+                    this.transferCheckedListBox.Items.Add(thisDetachment); */
+                }
+            }
         }
 
         /// <summary>
