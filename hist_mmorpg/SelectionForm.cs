@@ -405,8 +405,8 @@ namespace hist_mmorpg
         public void setUpTransferList()
         {
             // add necessary columns
-            //this.transferListView.Columns.Add("", -2, HorizontalAlignment.Left);
-            this.transferListView.Columns.Add("   Troops", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("   ID", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("Troops", -2, HorizontalAlignment.Left);
             this.transferListView.Columns.Add("Days", -2, HorizontalAlignment.Left);
             this.transferListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
             this.transferListView.Columns.Add("For", -2, HorizontalAlignment.Left);
@@ -420,6 +420,9 @@ namespace hist_mmorpg
         {
             ListViewItem thisDetachment = null;
 
+            // disable pickup button until detachment chosen in listview
+            this.transferPickupBtn.Enabled = false;
+
             // get army
             Army thisArmy = Globals.armyMasterList[armyID];
 
@@ -427,23 +430,26 @@ namespace hist_mmorpg
             Fief thisFief = Globals.fiefMasterList[thisArmy.location];
 
             // add troop detachments to list
-            foreach (String[] troopDetachment in thisFief.troopTransfers)
+            foreach (KeyValuePair<string, string[]> troopDetachment in thisFief.troopTransfers)
             {
-                if ((troopDetachment[0] == thisArmy.owner) || (troopDetachment[1] == thisArmy.owner))
+                if ((troopDetachment.Value[0] == thisArmy.owner) || (troopDetachment.Value[1] == thisArmy.owner))
                 {
                     // Create an item and subitems for each character
 
+                    // ID
+                    thisDetachment = new ListViewItem(troopDetachment.Key);
+
                     // troops
-                    thisDetachment = new ListViewItem(troopDetachment[2]);
+                    thisDetachment.SubItems.Add(troopDetachment.Value[2]);
 
                     // days
-                    thisDetachment.SubItems.Add(troopDetachment[3]);
+                    thisDetachment.SubItems.Add(troopDetachment.Value[3]);
 
                     // owner
-                    thisDetachment.SubItems.Add(troopDetachment[0]);
+                    thisDetachment.SubItems.Add(troopDetachment.Value[0]);
 
                     // for
-                    thisDetachment.SubItems.Add(troopDetachment[1]);
+                    thisDetachment.SubItems.Add(troopDetachment.Value[1]);
 
                     // add item to fiefsListView
                     this.transferListView.Items.Add(thisDetachment);
@@ -576,6 +582,118 @@ namespace hist_mmorpg
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
         private void closeBtn_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        /// <summary>
+        /// Responds to the SelectedIndexChanged event of the transferListView,
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void transferListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // enable 'pickup' button
+            this.transferPickupBtn.Enabled = true;
+        }
+
+        /// <summary>
+        /// Responds to the click event of the transferPickupBtn button,
+        /// allowing any selected detachments to be added to the currently displayed army
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void transferPickupBtn_Click(object sender, EventArgs e)
+        {
+            bool proceed = true;
+            bool adjustDays = true;
+            int daysTaken = 0;
+
+            // get army
+            Army thisArmy = parent.armyToView;
+
+            // get leader
+            Character myLeader = null;
+            if (Globals.npcMasterList.ContainsKey(thisArmy.leader))
+            {
+                myLeader = Globals.npcMasterList[thisArmy.leader];
+            }
+            else if (Globals.pcMasterList.ContainsKey(thisArmy.leader))
+            {
+                myLeader = Globals.pcMasterList[thisArmy.leader];
+            }
+
+            // get checked items in listview
+            ListView.CheckedListViewItemCollection checkedItems = this.transferListView.CheckedItems;
+
+            if (checkedItems.Count < 1)
+            {
+                System.Windows.Forms.MessageBox.Show("No detachments have been selected.");
+                proceed = false;
+                adjustDays = false;
+            }
+
+            // check have minimum days necessary for transfer
+            if (thisArmy.days < 10)
+            {
+                System.Windows.Forms.MessageBox.Show("You don't have enough days left for this transfer.  Transfer cancelled.");
+                proceed = false;
+                adjustDays = false;
+            }
+            else
+            {
+                // calculate time taken for transfer
+                daysTaken = Globals.myRand.Next(10, 31);
+
+                // check if have enough days for transfer in this instance
+                if (daysTaken > thisArmy.days)
+                {
+                    System.Windows.Forms.MessageBox.Show("Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.");
+                    proceed = false;
+                }
+            }
+
+            if (proceed)
+            {
+                // get fief
+                Fief thisFief = Globals.fiefMasterList[thisArmy.location];
+
+                foreach (ListViewItem item in checkedItems)
+                {
+                    // add troops to army
+                    thisArmy.foot += Convert.ToUInt32(item.SubItems[1].Text);
+
+                    // remove detachment from fief
+                    thisFief.troopTransfers.Remove(item.SubItems[0].Text);
+                }
+
+            }
+
+            if (adjustDays)
+            {
+                // adjust days
+                myLeader.adjustDays(daysTaken);
+
+                // calculate possible attrition for army
+                byte attritionChecks = Convert.ToByte(daysTaken / 7);
+                for (int i = 0; i < attritionChecks; i++)
+                {
+                    thisArmy.foot = thisArmy.foot - thisArmy.calcAttrition();
+                }
+            }
+
+            // refresh the army screen (in the main form) and close form
+            this.parent.refreshArmyContainer(thisArmy);
+            this.Close();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the transferCancelBtn button,
+        /// closing the selection form
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void transferCancelBtn_Click(object sender, EventArgs e)
         {
             this.Close();
         }

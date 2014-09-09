@@ -45,6 +45,8 @@
             this.barredListView = new System.Windows.Forms.ListView();
             this.transferContainer = new System.Windows.Forms.SplitContainer();
             this.transferListView = new System.Windows.Forms.ListView();
+            this.transferPickupBtn = new System.Windows.Forms.Button();
+            this.transferCancelBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.npcContainer)).BeginInit();
             this.npcContainer.Panel1.SuspendLayout();
             this.npcContainer.Panel2.SuspendLayout();
@@ -62,6 +64,7 @@
             this.barredListContainer.Panel2.SuspendLayout();
             this.barredListContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.transferContainer)).BeginInit();
+            this.transferContainer.Panel1.SuspendLayout();
             this.transferContainer.Panel2.SuspendLayout();
             this.transferContainer.SuspendLayout();
             this.SuspendLayout();
@@ -260,6 +263,11 @@
             this.transferContainer.Location = new System.Drawing.Point(0, 0);
             this.transferContainer.Name = "transferContainer";
             // 
+            // transferContainer.Panel1
+            // 
+            this.transferContainer.Panel1.Controls.Add(this.transferCancelBtn);
+            this.transferContainer.Panel1.Controls.Add(this.transferPickupBtn);
+            // 
             // transferContainer.Panel2
             // 
             this.transferContainer.Panel2.Controls.Add(this.transferListView);
@@ -278,15 +286,36 @@
             this.transferListView.TabIndex = 0;
             this.transferListView.UseCompatibleStateImageBehavior = false;
             this.transferListView.View = System.Windows.Forms.View.Details;
+            this.transferListView.SelectedIndexChanged += new System.EventHandler(this.transferListView_SelectedIndexChanged);
+            // 
+            // transferPickupBtn
+            // 
+            this.transferPickupBtn.Location = new System.Drawing.Point(17, 23);
+            this.transferPickupBtn.Name = "transferPickupBtn";
+            this.transferPickupBtn.Size = new System.Drawing.Size(168, 24);
+            this.transferPickupBtn.TabIndex = 0;
+            this.transferPickupBtn.Text = "Pick Up Selected Troops";
+            this.transferPickupBtn.UseVisualStyleBackColor = true;
+            this.transferPickupBtn.Click += new System.EventHandler(this.transferPickupBtn_Click);
+            // 
+            // transferCancelBtn
+            // 
+            this.transferCancelBtn.Location = new System.Drawing.Point(17, 53);
+            this.transferCancelBtn.Name = "transferCancelBtn";
+            this.transferCancelBtn.Size = new System.Drawing.Size(79, 24);
+            this.transferCancelBtn.TabIndex = 1;
+            this.transferCancelBtn.Text = "Cancel";
+            this.transferCancelBtn.UseVisualStyleBackColor = true;
+            this.transferCancelBtn.Click += new System.EventHandler(this.transferCancelBtn_Click);
             // 
             // SelectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(620, 547);
-            this.Controls.Add(this.transferContainer);
             this.Controls.Add(this.npcContainer);
             this.Controls.Add(this.lockOutContainer);
+            this.Controls.Add(this.transferContainer);
             this.Name = "SelectionForm";
             this.Text = "SelectionForm";
             this.npcContainer.Panel1.ResumeLayout(false);
@@ -308,6 +337,7 @@
             this.barredListContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.barredListContainer)).EndInit();
             this.barredListContainer.ResumeLayout(false);
+            this.transferContainer.Panel1.ResumeLayout(false);
             this.transferContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.transferContainer)).EndInit();
             this.transferContainer.ResumeLayout(false);
@@ -334,6 +364,8 @@
         private System.Windows.Forms.Button closeBtn;
         private System.Windows.Forms.SplitContainer transferContainer;
         private System.Windows.Forms.ListView transferListView;
+        private System.Windows.Forms.Button transferPickupBtn;
+        private System.Windows.Forms.Button transferCancelBtn;
 
     }
 }

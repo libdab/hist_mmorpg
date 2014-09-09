@@ -227,11 +227,16 @@ namespace hist_mmorpg
         /// Calculates attrition for the army
         /// </summary>
         /// <returns>uint containing number of troops lost</returns>
-        public uint calcAttrition()
+        public uint calcAttrition(uint troopNumbers = 0)
         {
             uint numberLost = 0;
             Double attritionChance = 0;
             String toDisplay = "";
+
+            if (troopNumbers == 0)
+            {
+                troopNumbers = this.calcArmySize();
+            }
 
             // get fief
             Fief currentFief = Globals.fiefMasterList[this.location];
@@ -248,7 +253,7 @@ namespace hist_mmorpg
             }
 
             // calculate base chance of attrition
-            attritionChance = (this.calcArmySize() / Convert.ToDouble(currentFief.population)) * 100;
+            attritionChance = (troopNumbers / Convert.ToDouble(currentFief.population)) * 100;
             numberLost = Convert.ToUInt32(attritionChance);
             toDisplay += "Base chance: " + attritionChance + "\r\n";
 

@@ -311,13 +311,13 @@ namespace hist_mmorpg
             List<String> armies007 = new List<string>();
 
             // create troop transfer lists for fiefs
-            List<string[]> transfers001 = new List<string[]>();
-            List<string[]> transfers002 = new List<string[]>();
-            List<string[]> transfers003 = new List<string[]>();
-            List<string[]> transfers004 = new List<string[]>();
-            List<string[]> transfers005 = new List<string[]>();
-            List<string[]> transfers006 = new List<string[]>();
-            List<string[]> transfers007 = new List<string[]>();
+            Dictionary<string, string[]> transfers001 = new Dictionary<string, string[]>();
+            Dictionary<string, string[]> transfers002 = new Dictionary<string, string[]>();
+            Dictionary<string, string[]> transfers003 = new Dictionary<string, string[]>();
+            Dictionary<string, string[]> transfers004 = new Dictionary<string, string[]>();
+            Dictionary<string, string[]> transfers005 = new Dictionary<string, string[]>();
+            Dictionary<string, string[]> transfers006 = new Dictionary<string, string[]>();
+            Dictionary<string, string[]> transfers007 = new Dictionary<string, string[]>();
 
             Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, this.clock, 0, 2000000, armies001, false, transfers001, ra: myRank17);
             Globals.fiefMasterList.Add(myFief1.fiefID, myFief1);
@@ -494,7 +494,7 @@ namespace hist_mmorpg
             myFief1.addCharacter(myWife);
           
             // create an army and add in appropriate places
-            Army myArmy = new Army("army" + Globals.getNextArmyrID(), null, null, 90, this.clock, null, ft: 2000);
+            Army myArmy = new Army("army" + Globals.getNextArmyID(), null, null, 90, this.clock, null, ft: 2000);
             Globals.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
             myArmy.leader = myChar1.charID;
@@ -5707,7 +5707,7 @@ namespace hist_mmorpg
             // if no army, create one
             if (operation.Equals("new"))
             {
-                Army newArmy = new Army("army" + Globals.getNextArmyrID(), this.myChar.charID, this.myChar.charID, this.myChar.days, this.clock, this.myChar.location.fiefID);
+                Army newArmy = new Army("army" + Globals.getNextArmyID(), this.myChar.charID, this.myChar.charID, this.myChar.days, this.clock, this.myChar.location.fiefID);
                 Globals.armyMasterList.Add(newArmy.armyID, newArmy);
                 this.myChar.myArmies.Add(newArmy);
                 this.myChar.armyID = newArmy.armyID;
@@ -6051,7 +6051,7 @@ namespace hist_mmorpg
                         string[] thisTransfer = new string[4] { this.myChar.charID, this.armyTransDropWhoTextBox.Text, troopsToTransfer.ToString(), (this.armyToView.days - daysTaken).ToString() };
 
                         // add to fief's troopTransfers list
-                        thisFief.troopTransfers.Add(thisTransfer);
+                        thisFief.troopTransfers.Add(Globals.getNextDetachmentID(), thisTransfer);
                     }
 
                     if (adjustDays)

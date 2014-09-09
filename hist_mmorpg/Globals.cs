@@ -106,6 +106,10 @@ namespace hist_mmorpg
         /// Holds next value for army ID
         /// </summary>
         public static uint newArmyID = 1;
+        /// <summary>
+        /// Holds next value for detachment ID
+        /// </summary>
+        public static uint newDetachmentID = 1;
 
         /// <summary>
         /// Gets the next available newCharID, then increments it
@@ -122,10 +126,21 @@ namespace hist_mmorpg
         /// Gets the next available newArmyID, then increments it
         /// </summary>
         /// <returns>uint containing newArmyID</returns>
-        public static uint getNextArmyrID()
+        public static uint getNextArmyID()
         {
             uint armyID = Globals.newArmyID;
             Globals.newArmyID++;
+            return armyID;
+        }
+
+        /// <summary>
+        /// Gets the next available newDetachmentID, then increments it
+        /// </summary>
+        /// <returns>string containing newDetachmentID</returns>
+        public static string getNextDetachmentID()
+        {
+            string armyID = "D" + Globals.newDetachmentID;
+            Globals.newDetachmentID++;
             return armyID;
         }
 

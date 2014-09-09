@@ -164,7 +164,7 @@ namespace hist_mmorpg
         /// Holds troop detachments in the fief awaiting transfer
         /// String[] contains from (charID), to (charID), size, days left when detached
         /// </summary>
-        public List<string[]> troopTransfers = new List<string[]>();
+        public Dictionary<string, string[]> troopTransfers = new Dictionary<string, string[]>();
 
         /// <summary>
         /// Constructor for Fief
@@ -203,11 +203,11 @@ namespace hist_mmorpg
         /// <param name="tiHo">Fief title holder (charID)</param>
         /// <param name="arms">List holding IDs of armies present in fief</param>
         /// <param name="rec">bool indicating whether recruitment has occurred in the fief</param>
-        /// <param name="trans">List<string[]> containing troop detachments in the fief awaiting transfer</param>
+        /// <param name="trans">Dictionary<string, string[]> containing troop detachments in the fief awaiting transfer</param>
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
             Double kpLvl, Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
-            GameClock cl, byte bailInF, int treas, List<string> arms, bool rec, List<string[]> trans, String tiHo = null, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
+            GameClock cl, byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, String tiHo = null, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -1681,7 +1681,7 @@ namespace hist_mmorpg
         /// Holds troop detachments in the fief awaiting transfer
         /// String[] contains from (charID), to (charID), size, days left when detached
         /// </summary>
-        public List<string[]> troopTransfers = new List<string[]>();
+        public Dictionary<string, string[]> troopTransfers = new Dictionary<string, string[]>();
 
 		/// <summary>
 		/// Constructor for Fief_Riak
