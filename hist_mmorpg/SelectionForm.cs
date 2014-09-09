@@ -608,6 +608,10 @@ namespace hist_mmorpg
             bool proceed = true;
             bool adjustDays = true;
             int daysTaken = 0;
+            double minDays = 0;
+            bool displayNotAllMsg = false;
+            uint troopsToAdd = 0;
+            string toDisplay = "";
 
             // get army
             Army thisArmy = parent.armyToView;
@@ -658,13 +662,59 @@ namespace hist_mmorpg
                 // get fief
                 Fief thisFief = Globals.fiefMasterList[thisArmy.location];
 
+                // check for minimum days
+                minDays = thisArmy.days;
                 foreach (ListViewItem item in checkedItems)
                 {
-                    // add troops to army
-                    thisArmy.foot += Convert.ToUInt32(item.SubItems[1].Text);
+                    double thisDays = Convert.ToDouble(item.SubItems[2].Text);
 
-                    // remove detachment from fief
-                    thisFief.troopTransfers.Remove(item.SubItems[0].Text);
+                    // check if detachment has enough days for transfer in this instance
+                    // if not, flag display of message at end of process, but do nothing else
+                    if (thisDays < daysTaken)
+                    {
+                        displayNotAllMsg = true;
+                        toDisplay = "At least one detachment could not be added due to poor organisation.";
+                    }
+                    else
+                    {
+                        if (thisDays < minDays)
+                        {
+                            minDays = thisDays;
+                        }
+                    }
+                }
+                    
+                foreach (ListViewItem item in checkedItems)
+                {
+                    double thisDays = Convert.ToDouble(item.SubItems[2].Text);
+                    uint thisTroops = Convert.ToUInt32(item.SubItems[1].Text);
+                       
+                    // if does have enough days, proceed
+                    if (thisDays >= daysTaken)
+                    {
+                        // compare days to minDays, apply attrition if necessary
+                        // then add to troopsToAdd
+                        if (thisDays > minDays)
+                        {
+                            // check for attrition
+                            byte attritionChecks = 0;
+                            attritionChecks = Convert.ToByte((thisDays - minDays) / 7);
+
+                            for (int i = 0; i < attritionChecks; i++)
+                            {
+                                thisTroops = thisTroops - thisArmy.calcAttrition(thisTroops);
+                            }
+                            troopsToAdd += (thisTroops - thisArmy.calcAttrition(thisTroops));
+                        }
+                        else
+                        {
+                            troopsToAdd += thisTroops;
+                        }
+
+                        // remove detachment from fief
+                        thisFief.troopTransfers.Remove(item.SubItems[0].Text);
+                    }
+
                 }
 
             }
