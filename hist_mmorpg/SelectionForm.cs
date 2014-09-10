@@ -607,7 +607,7 @@ namespace hist_mmorpg
         {
             bool proceed = true;
             bool adjustDays = true;
-            int daysTaken = 0;
+            double daysTaken = 0;
             double minDays = 0;
             bool displayNotAllMsg = false;
             uint troopsToAdd = 0;
@@ -615,6 +615,9 @@ namespace hist_mmorpg
 
             // get army
             Army thisArmy = parent.armyToView;
+
+            // set minDays to thisArmy.days (as default value)
+            minDays = thisArmy.days;
 
             // get leader
             Character myLeader = null;
@@ -652,6 +655,7 @@ namespace hist_mmorpg
                 // check if have enough days for transfer in this instance
                 if (daysTaken > thisArmy.days)
                 {
+                    daysTaken = thisArmy.days;
                     System.Windows.Forms.MessageBox.Show("Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.");
                     proceed = false;
                 }
@@ -663,7 +667,6 @@ namespace hist_mmorpg
                 Fief thisFief = Globals.fiefMasterList[thisArmy.location];
 
                 // check for minimum days
-                minDays = thisArmy.days;
                 foreach (ListViewItem item in checkedItems)
                 {
                     double thisDays = Convert.ToDouble(item.SubItems[2].Text);
@@ -696,7 +699,7 @@ namespace hist_mmorpg
                         // then add to troopsToAdd
                         if (thisDays > minDays)
                         {
-                            // check for attrition
+                            // check for attrition (to bring it down to minDays)
                             byte attritionChecks = 0;
                             attritionChecks = Convert.ToByte((thisDays - minDays) / 7);
 
@@ -721,14 +724,61 @@ namespace hist_mmorpg
 
             if (adjustDays)
             {
-                // adjust days
-                myLeader.adjustDays(daysTaken);
-
-                // calculate possible attrition for army
-                byte attritionChecks = Convert.ToByte(daysTaken / 7);
-                for (int i = 0; i < attritionChecks; i++)
+                if (thisArmy.days == minDays)
                 {
-                    thisArmy.foot = thisArmy.foot - thisArmy.calcAttrition();
+                    // add detachments to army (this could be 0)
+                    thisArmy.foot += troopsToAdd;
+
+                    // adjust days
+                    myLeader.adjustDays(daysTaken);
+
+                    // calculate attrition for army
+                    byte attritionChecks = Convert.ToByte(daysTaken / 7);
+                    for (int i = 0; i < attritionChecks; i++)
+                    {
+                        thisArmy.foot = thisArmy.foot - thisArmy.calcAttrition();
+                    }
+                }
+                else
+                {
+                    // any days army has had to 'wait' should go towards days taken
+                    // for the transfer (daysTaken)
+                    double differenceToMin = (thisArmy.days - minDays);
+                    if (differenceToMin >= daysTaken)
+                    {
+                        daysTaken = 0;
+                    }
+                    else
+                    {
+                        daysTaken = daysTaken - differenceToMin;
+                    }
+
+                    // adjust days
+                    myLeader.adjustDays(differenceToMin);
+
+                    // calculate attrition for army (to bring it down to minDays)
+                    byte attritionChecks = Convert.ToByte(differenceToMin / 7);
+                    for (int i = 0; i < attritionChecks; i++)
+                    {
+                        thisArmy.foot = thisArmy.foot - thisArmy.calcAttrition();
+                    }
+
+                    // add detachments to army
+                    thisArmy.foot += troopsToAdd;
+
+                    // check if are any remaining days taken for the transfer (daysTaken) 
+                    if (daysTaken > 0)
+                    {
+                        // adjust days
+                        myLeader.adjustDays(daysTaken);
+
+                        // calculate attrition for army (to bring it down to minDays)
+                        attritionChecks = Convert.ToByte(daysTaken / 7);
+                        for (int i = 0; i < attritionChecks; i++)
+                        {
+                            thisArmy.foot = thisArmy.foot - thisArmy.calcAttrition();
+                        }
+                    }
                 }
             }
 

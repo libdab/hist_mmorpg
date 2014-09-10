@@ -237,6 +237,7 @@ namespace hist_mmorpg
             {
                 troopNumbers = this.calcArmySize();
             }
+            toDisplay += "Original troops: " + troopNumbers + "\r\n";
 
             // get fief
             Fief currentFief = Globals.fiefMasterList[this.location];
