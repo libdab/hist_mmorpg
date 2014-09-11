@@ -44,9 +44,9 @@
             this.barredListLabel = new System.Windows.Forms.Label();
             this.barredListView = new System.Windows.Forms.ListView();
             this.transferContainer = new System.Windows.Forms.SplitContainer();
-            this.transferListView = new System.Windows.Forms.ListView();
-            this.transferPickupBtn = new System.Windows.Forms.Button();
             this.transferCancelBtn = new System.Windows.Forms.Button();
+            this.transferPickupBtn = new System.Windows.Forms.Button();
+            this.transferListView = new System.Windows.Forms.ListView();
             ((System.ComponentModel.ISupportInitialize)(this.npcContainer)).BeginInit();
             this.npcContainer.Panel1.SuspendLayout();
             this.npcContainer.Panel2.SuspendLayout();
@@ -275,18 +275,15 @@
             this.transferContainer.SplitterDistance = 206;
             this.transferContainer.TabIndex = 2;
             // 
-            // transferListView
+            // transferCancelBtn
             // 
-            this.transferListView.CheckBoxes = true;
-            this.transferListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.transferListView.FullRowSelect = true;
-            this.transferListView.Location = new System.Drawing.Point(0, 0);
-            this.transferListView.Name = "transferListView";
-            this.transferListView.Size = new System.Drawing.Size(410, 547);
-            this.transferListView.TabIndex = 0;
-            this.transferListView.UseCompatibleStateImageBehavior = false;
-            this.transferListView.View = System.Windows.Forms.View.Details;
-            this.transferListView.SelectedIndexChanged += new System.EventHandler(this.transferListView_SelectedIndexChanged);
+            this.transferCancelBtn.Location = new System.Drawing.Point(17, 53);
+            this.transferCancelBtn.Name = "transferCancelBtn";
+            this.transferCancelBtn.Size = new System.Drawing.Size(79, 24);
+            this.transferCancelBtn.TabIndex = 1;
+            this.transferCancelBtn.Text = "Cancel";
+            this.transferCancelBtn.UseVisualStyleBackColor = true;
+            this.transferCancelBtn.Click += new System.EventHandler(this.transferCancelBtn_Click);
             // 
             // transferPickupBtn
             // 
@@ -298,24 +295,26 @@
             this.transferPickupBtn.UseVisualStyleBackColor = true;
             this.transferPickupBtn.Click += new System.EventHandler(this.transferPickupBtn_Click);
             // 
-            // transferCancelBtn
+            // transferListView
             // 
-            this.transferCancelBtn.Location = new System.Drawing.Point(17, 53);
-            this.transferCancelBtn.Name = "transferCancelBtn";
-            this.transferCancelBtn.Size = new System.Drawing.Size(79, 24);
-            this.transferCancelBtn.TabIndex = 1;
-            this.transferCancelBtn.Text = "Cancel";
-            this.transferCancelBtn.UseVisualStyleBackColor = true;
-            this.transferCancelBtn.Click += new System.EventHandler(this.transferCancelBtn_Click);
+            this.transferListView.CheckBoxes = true;
+            this.transferListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.transferListView.FullRowSelect = true;
+            this.transferListView.Location = new System.Drawing.Point(0, 0);
+            this.transferListView.Name = "transferListView";
+            this.transferListView.Size = new System.Drawing.Size(410, 547);
+            this.transferListView.TabIndex = 0;
+            this.transferListView.UseCompatibleStateImageBehavior = false;
+            this.transferListView.View = System.Windows.Forms.View.Details;
             // 
             // SelectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(620, 547);
+            this.Controls.Add(this.transferContainer);
             this.Controls.Add(this.npcContainer);
             this.Controls.Add(this.lockOutContainer);
-            this.Controls.Add(this.transferContainer);
             this.Name = "SelectionForm";
             this.Text = "SelectionForm";
             this.npcContainer.Panel1.ResumeLayout(false);

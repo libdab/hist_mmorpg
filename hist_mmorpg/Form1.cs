@@ -6128,6 +6128,39 @@ namespace hist_mmorpg
             }
         }
 
+        /// <summary>
+        /// Disbands the specified army
+        /// </summary>
+        /// <param name="a">Army to be disbanded</param>
+        public void disbandArmy(Army a)
+        {
+            // remove from armyMasterList
+            Globals.armyMasterList.Remove(a.armyID);
+
+            // remove from fief
+            Fief thisFief = Globals.fiefMasterList[a.location];
+            thisFief.armies.Remove(a.armyID);
+
+            // remove from owner
+            PlayerCharacter thisOwner = Globals.pcMasterList[a.owner];
+            thisOwner.myArmies.Remove(a);
+
+            // remove from leader
+            Character thisLeader = null;
+            if (Globals.npcMasterList.ContainsKey(a.leader))
+            {
+                thisLeader = Globals.npcMasterList[a.leader];
+            }
+            else if (Globals.pcMasterList.ContainsKey(a.leader))
+            {
+                thisLeader = Globals.pcMasterList[a.leader];
+            }
+            thisLeader.armyID = null;
+
+            // set to null
+            a = null;
+        }
+
     }
 
 }
