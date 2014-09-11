@@ -3008,6 +3008,7 @@ namespace hist_mmorpg
             armyText += " - Yeomen: " + a.yeomen + "\r\n";
             armyText += " - Foot: " + a.foot + "\r\n";
             armyText += " - Rabble: " + a.rabble + "\r\n";
+            armyText += "   ==================\r\n";
             armyText += " - TOTAL: " + a.calcArmySize() + "\r\n\r\n";
 
             // whether is maintained (and at what cost)
@@ -3021,6 +3022,12 @@ namespace hist_mmorpg
             {
                 armyText += "This army is NOT currently being maintained\r\n";
             }
+
+            // aggression level
+            armyText += "Aggression level: " + a.aggression + "\r\n\r\n";
+
+            // sally value
+            armyText += "Sally value: " + a.sally + "\r\n\r\n";
 
             return armyText;
         }
@@ -3401,6 +3408,7 @@ namespace hist_mmorpg
             this.armyTransDropWhoTextBox.Enabled = false;
             this.armyTransDropNumTextBox.Enabled = false;
             this.armyTransPickupBtn.Enabled = false;
+            this.armyDisbandBtn.Enabled = false;
             
             // clear existing items in armies list
             this.armyListView.Items.Clear();
@@ -5749,7 +5757,7 @@ namespace hist_mmorpg
                 this.mantainArmy(armyToView);
 
                 // refresh display
-                this.refreshArmyContainer();
+                this.refreshArmyContainer(armyToView);
             }
         }
 
@@ -5901,6 +5909,7 @@ namespace hist_mmorpg
                 this.armyTransDropNumTextBox.Enabled = true;
                 this.armyTransDropWhoTextBox.Enabled = true;
                 this.armyTransPickupBtn.Enabled = true;
+                this.armyDisbandBtn.Enabled = true;
 
                 // preload own ID in 'drop off to' textbox (assumes transferring between own armies)
                 this.armyTransDropWhoTextBox.Text = this.myChar.charID;
@@ -6159,6 +6168,23 @@ namespace hist_mmorpg
 
             // set to null
             a = null;
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyDisbandBtn button, disbanding the selected army
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyDisbandBtn_Click(object sender, EventArgs e)
+        {
+            if (this.armyToView != null)
+            {
+                // disband army
+                this.disbandArmy(armyToView);
+
+                // refresh display
+                this.refreshArmyContainer();
+            }
         }
 
     }

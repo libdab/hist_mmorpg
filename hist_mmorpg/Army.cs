@@ -64,6 +64,14 @@ namespace hist_mmorpg
         /// Indicates whether army is being actively maintained by owner
         /// </summary>
         public bool isMaintained { get; set; }
+        /// <summary>
+        /// Indicates army's aggression level (automated response to combat)
+        /// </summary>
+        public byte aggression { get; set; }
+        /// <summary>
+        /// Indicates army's sally value (whether will attempt to attack a besieging army)
+        /// </summary>
+        public byte sally { get; set; }
 
         /// <summary>
         /// Constructor for Army
@@ -81,7 +89,9 @@ namespace hist_mmorpg
         /// <param name="cl">GameClock holding season</param>
         /// <param name="loc">string holding army location (fiefID)</param>
         /// <param name="maint">bool indicating whether army is being actively maintained by owner</param>
-        public Army(String id, string ldr, string own, double day, GameClock cl, string loc, uint kni = 0, uint maa = 0, uint ltCav = 0, uint yeo = 0, uint ft = 0, uint rbl = 0, bool maint = false)
+        /// <param name="aggr">byte indicating army's aggression level</param>
+        /// <param name="sal">byte indicating army's sally value</param>
+        public Army(String id, string ldr, string own, double day, GameClock cl, string loc, byte aggr = 0, byte sal = 9, uint kni = 0, uint maa = 0, uint ltCav = 0, uint yeo = 0, uint ft = 0, uint rbl = 0, bool maint = false)
         {
 
             // TODO: validate kni = (upper limit?)

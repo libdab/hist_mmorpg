@@ -150,6 +150,7 @@ namespace hist_mmorpg
             this.houseCharListLabel = new System.Windows.Forms.Label();
             this.houseCharListView = new System.Windows.Forms.ListView();
             this.armyContainer = new System.Windows.Forms.SplitContainer();
+            this.armyTransPickupBtn = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.armyTransDropNumTextBox = new System.Windows.Forms.TextBox();
@@ -163,7 +164,7 @@ namespace hist_mmorpg
             this.armyListContainer = new System.Windows.Forms.SplitContainer();
             this.armyTextBox = new System.Windows.Forms.TextBox();
             this.armyListView = new System.Windows.Forms.ListView();
-            this.armyTransPickupBtn = new System.Windows.Forms.Button();
+            this.armyDisbandBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -1515,6 +1516,7 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel1
             // 
+            this.armyContainer.Panel1.Controls.Add(this.armyDisbandBtn);
             this.armyContainer.Panel1.Controls.Add(this.armyTransPickupBtn);
             this.armyContainer.Panel1.Controls.Add(this.label5);
             this.armyContainer.Panel1.Controls.Add(this.label4);
@@ -1533,6 +1535,16 @@ namespace hist_mmorpg
             this.armyContainer.Size = new System.Drawing.Size(935, 637);
             this.armyContainer.SplitterDistance = 282;
             this.armyContainer.TabIndex = 8;
+            // 
+            // armyTransPickupBtn
+            // 
+            this.armyTransPickupBtn.Location = new System.Drawing.Point(12, 240);
+            this.armyTransPickupBtn.Name = "armyTransPickupBtn";
+            this.armyTransPickupBtn.Size = new System.Drawing.Size(138, 48);
+            this.armyTransPickupBtn.TabIndex = 10;
+            this.armyTransPickupBtn.Text = "Pick Up Transferred Troops";
+            this.armyTransPickupBtn.UseVisualStyleBackColor = true;
+            this.armyTransPickupBtn.Click += new System.EventHandler(this.armyTransPickupBtn_Click);
             // 
             // label5
             // 
@@ -1662,15 +1674,15 @@ namespace hist_mmorpg
             this.armyListView.View = System.Windows.Forms.View.Details;
             this.armyListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.armyListView_ItemSelectionChanged);
             // 
-            // armyTransPickupBtn
+            // armyDisbandBtn
             // 
-            this.armyTransPickupBtn.Location = new System.Drawing.Point(12, 240);
-            this.armyTransPickupBtn.Name = "armyTransPickupBtn";
-            this.armyTransPickupBtn.Size = new System.Drawing.Size(138, 48);
-            this.armyTransPickupBtn.TabIndex = 10;
-            this.armyTransPickupBtn.Text = "Pick Up Transferred Troops";
-            this.armyTransPickupBtn.UseVisualStyleBackColor = true;
-            this.armyTransPickupBtn.Click += new System.EventHandler(this.armyTransPickupBtn_Click);
+            this.armyDisbandBtn.Location = new System.Drawing.Point(12, 294);
+            this.armyDisbandBtn.Name = "armyDisbandBtn";
+            this.armyDisbandBtn.Size = new System.Drawing.Size(138, 23);
+            this.armyDisbandBtn.TabIndex = 11;
+            this.armyDisbandBtn.Text = "Disband Army";
+            this.armyDisbandBtn.UseVisualStyleBackColor = true;
+            this.armyDisbandBtn.Click += new System.EventHandler(this.armyDisbandBtn_Click);
             // 
             // Form1
             // 
@@ -1913,6 +1925,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button armyTransPickupBtn;
+        private System.Windows.Forms.Button armyDisbandBtn;
 
     }
 }
