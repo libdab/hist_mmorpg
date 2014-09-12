@@ -3396,6 +3396,7 @@ namespace hist_mmorpg
             this.armyTransDropNumTextBox.Text = "";
             this.armyAggroTextBox.Text = "";
             this.armyOddsTextBox.Text = "";
+            this.armyCampTextBox.Text = "";
 
             // ensure textboxes aren't interactive
             this.armyTextBox.ReadOnly = true;
@@ -3414,6 +3415,8 @@ namespace hist_mmorpg
             this.armyAutoCombatBtn.Enabled = false;
             this.armyAggroTextBox.Enabled = false;
             this.armyOddsTextBox.Enabled = false;
+            this.armyCampBtn.Enabled = false;
+            this.armyCampTextBox.Enabled = false;
             
             // clear existing items in armies list
             this.armyListView.Items.Clear();
@@ -4702,179 +4705,13 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void houseCampBtn_Click(object sender, EventArgs e)
         {
-            this.campWaitHere(this.charToView);
-        }
-
-        /// <summary>
-        /// Responds to the click event of the travelCampBtn button
-        /// invoking the campWaitHere method
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void travelCampBtn_Click(object sender, EventArgs e)
-        {
-            this.campWaitHere(this.charToView);
-        }
-
-        /// <summary>
-        /// Allows the character to remain in their current location for the specified
-        /// number of days, incrementing bailiffDaysInFief if appropriate
-        /// </summary>
-        /// <param name="ch">The Character who wishes to camp (wait here)</param>
-        public void campWaitHere(Character ch)
-        {
-            bool proceed = true;
-            byte campDays = 0;
-
             try
             {
-                // get number of days to camp
-                // if player, get from travel screen
-                if (ch == this.myChar)
-                {
-                    campDays = Convert.ToByte(this.travelCampDaysTextBox.Text);
-                }
-                // if not player, get from household screen
-                else
-                {
-                    campDays = Convert.ToByte(this.houseCampDaysTextBox.Text);
-                }
+                // get days to camp
+                byte campDays = Convert.ToByte(this.houseCampDaysTextBox.Text);
 
-                // check has enough days available
-                if (ch.days < (Double)campDays)
-                {
-                    campDays = Convert.ToByte(Math.Truncate(ch.days));
-                    DialogResult dialogResult = MessageBox.Show("You only have " + campDays + " available.  Click 'OK' to proceed.", "Proceed with camp?", MessageBoxButtons.OKCancel);
-
-                    // if choose to cancel
-                    if (dialogResult == DialogResult.Cancel)
-                    {
-                        proceed = false;
-                        System.Windows.Forms.MessageBox.Show("You decide not to camp after all.");
-                    }
-                }
-
-                if (proceed)
-                {
-                    // check if player's entourage needs to camp
-                    bool entourageCamp = false;
-
-                    // if character is player, camp entourage
-                    if (ch == this.myChar)
-                    {
-                        entourageCamp = true;
-                    }
-
-                    // if character NOT player
-                    else
-                    {
-                        // if is in entourage, give player chance to remove prior to camping
-                        if ((ch as NonPlayerCharacter).inEntourage)
-                        {
-                            System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " has been removed from your entourage.");
-                            this.myChar.removeFromEntourage((ch as NonPlayerCharacter));
-                        }
-                    }
-
-                    // adjust character's days
-                    if (ch is PlayerCharacter)
-                    {
-                        (ch as PlayerCharacter).adjustDays(campDays);
-                    }
-                    else
-                    {
-                        ch.adjustDays(campDays);
-                    }
-
-                    // inform player
-                    System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " remains in " + ch.location.name + " for " + campDays + " days.");
-
-                    // check if character is army leader, if so check for army attrition
-                    if (ch.armyID != null)
-                    {
-                        // get army
-                        Army thisArmy = Globals.armyMasterList[ch.armyID];
-
-                        // number of attrition checks
-                        byte attritionChecks = 0;
-                        attritionChecks = Convert.ToByte(campDays / 7);
-                        // total attrition
-                        uint totalAttrition = 0;
-
-                        for (int i = 0; i < attritionChecks; i++)
-                        {
-                            // calculate attrition
-                            uint attrition = thisArmy.calcAttrition();
-                            // adjust army size
-                            thisArmy.foot = thisArmy.foot - attrition;
-                            // keep tally of total
-                            totalAttrition += attrition;
-                        }
-
-                        // inform player
-                        if (totalAttrition > 0)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Army (" + thisArmy.armyID + ") lost " + totalAttrition + " troops due to attrition.");
-                        }
-                    }
-                    
-                    // keep track of bailiffDaysInFief before any possible increment
-                    Double bailiffDaysBefore = ch.location.bailiffDaysInFief;
-
-                    // keep track of identity of bailiff
-                    Character myBailiff = null;
-
-                    // check if character is bailiff of this fief
-                    if (ch.location.bailiff == ch)
-                    {
-                        myBailiff = ch;
-                    }
-
-                    // if character not bailiff, if appropriate, check to see if anyone in entourage is
-                    else if (entourageCamp)
-                    {
-                        // if player is bailiff
-                        if (this.myChar == ch.location.bailiff)
-                        {
-                            myBailiff = this.myChar;
-                        }
-                        // if not, check for bailiff in entourage
-                        else
-                        {
-                            for (int i = 0; i < this.myChar.myNPCs.Count; i++)
-                            {
-                                if (this.myChar.myNPCs[i].inEntourage)
-                                {
-                                    if (this.myChar.myNPCs[i] != ch)
-                                    {
-                                        if (this.myChar.myNPCs[i] == ch.location.bailiff)
-                                        {
-                                            myBailiff = this.myChar.myNPCs[i];
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-
-                    // if bailiff identified as someone who camped
-                    if (myBailiff != null)
-                    {
-                        // increment bailiffDaysInFief
-                        ch.location.bailiffDaysInFief += campDays;
-                        // if necessary, display message to player
-                        if (ch.location.bailiffDaysInFief >= 30)
-                        {
-                            // don't display this message if min bailiffDaysInFief was already achieved
-                            if (!(bailiffDaysBefore >= 30))
-                            {
-                                System.Windows.Forms.MessageBox.Show(myBailiff.firstName + " " + myBailiff.familyName + " has fulfilled his bailiff duties in " + ch.location.name + ".");
-                            }
-                        }
-                    }
-                }
-
+                // camp
+                this.campWaitHere(this.charToView, campDays);
             }
             catch (System.FormatException fe)
             {
@@ -4887,16 +4724,198 @@ namespace hist_mmorpg
             finally
             {
                 // refresh display
-                if (proceed)
+                this.refreshHouseholdDisplay((this.charToView as NonPlayerCharacter));
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the travelCampBtn button
+        /// invoking the campWaitHere method
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void travelCampBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // get days to camp
+                byte campDays = Convert.ToByte(this.travelCampDaysTextBox.Text);
+
+                // camp
+                this.campWaitHere(this.myChar, campDays);
+            }
+            catch (System.FormatException fe)
+            {
+                System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+            }
+            catch (System.OverflowException ofe)
+            {
+                System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+            }
+            finally
+            {
+                // refresh display
+                this.refreshTravelContainer();
+            }
+
+        }
+
+        /// <summary>
+        /// Allows the character to remain in their current location for the specified
+        /// number of days, incrementing bailiffDaysInFief if appropriate
+        /// </summary>
+        /// <param name="ch">The Character who wishes to camp</param>
+        /// <param name="campDays">Number of days to camp</param>
+        public void campWaitHere(Character ch, byte campDays)
+        {
+            bool proceed = true;
+
+            // check has enough days available
+            if (ch.days < (Double)campDays)
+            {
+                campDays = Convert.ToByte(Math.Truncate(ch.days));
+                DialogResult dialogResult = MessageBox.Show("You only have " + campDays + " available.  Click 'OK' to proceed.", "Proceed with camp?", MessageBoxButtons.OKCancel);
+
+                // if choose to cancel
+                if (dialogResult == DialogResult.Cancel)
                 {
-                    if (ch == this.myChar)
+                    proceed = false;
+                    System.Windows.Forms.MessageBox.Show("You decide not to camp after all.");
+                }
+            }
+
+            if (proceed)
+            {
+                // check if player's entourage needs to camp
+                bool entourageCamp = false;
+
+                // if character is player, camp entourage
+                if (ch == this.myChar)
+                {
+                    entourageCamp = true;
+                }
+
+                // if character NOT player
+                else
+                {
+                    // if is in entourage, give player chance to remove prior to camping
+                    if ((ch as NonPlayerCharacter).inEntourage)
                     {
-                        this.refreshTravelContainer();
+                        System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " has been removed from your entourage.");
+                        this.myChar.removeFromEntourage((ch as NonPlayerCharacter));
                     }
+                }
+
+                // adjust character's days
+                if (ch is PlayerCharacter)
+                {
+                    (ch as PlayerCharacter).adjustDays(campDays);
+                }
+                else
+                {
+                    ch.adjustDays(campDays);
+                }
+
+                // inform player
+                System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " remains in " + ch.location.name + " for " + campDays + " days.");
+
+                // check if character is army leader, if so check for army attrition
+                if (ch.armyID != null)
+                {
+                    // get army
+                    Army thisArmy = Globals.armyMasterList[ch.armyID];
+
+                    // number of attrition checks
+                    byte attritionChecks = 0;
+                    attritionChecks = Convert.ToByte(campDays / 7);
+                    // total attrition
+                    uint totalAttrition = 0;
+
+                    for (int i = 0; i < attritionChecks; i++)
+                    {
+                        // calculate attrition
+                        uint attrition = thisArmy.calcAttrition();
+                        // adjust army size
+                        thisArmy.foot = thisArmy.foot - attrition;
+                        // keep tally of total
+                        totalAttrition += attrition;
+                    }
+
+                    // inform player
+                    if (totalAttrition > 0)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Army (" + thisArmy.armyID + ") lost " + totalAttrition + " troops due to attrition.");
+                    }
+                }
+
+                // keep track of bailiffDaysInFief before any possible increment
+                Double bailiffDaysBefore = ch.location.bailiffDaysInFief;
+
+                // keep track of identity of bailiff
+                Character myBailiff = null;
+
+                // check if character is bailiff of this fief
+                if (ch.location.bailiff == ch)
+                {
+                    myBailiff = ch;
+                }
+
+                // if character not bailiff, if appropriate, check to see if anyone in entourage is
+                else if (entourageCamp)
+                {
+                    // if player is bailiff
+                    if (this.myChar == ch.location.bailiff)
+                    {
+                        myBailiff = this.myChar;
+                    }
+                    // if not, check for bailiff in entourage
                     else
                     {
-                        this.refreshHouseholdDisplay((this.charToView as NonPlayerCharacter));
+                        for (int i = 0; i < this.myChar.myNPCs.Count; i++)
+                        {
+                            if (this.myChar.myNPCs[i].inEntourage)
+                            {
+                                if (this.myChar.myNPCs[i] != ch)
+                                {
+                                    if (this.myChar.myNPCs[i] == ch.location.bailiff)
+                                    {
+                                        myBailiff = this.myChar.myNPCs[i];
+                                    }
+                                }
+                            }
+                        }
                     }
+
+                }
+
+                // if bailiff identified as someone who camped
+                if (myBailiff != null)
+                {
+                    // increment bailiffDaysInFief
+                    ch.location.bailiffDaysInFief += campDays;
+                    // if necessary, display message to player
+                    if (ch.location.bailiffDaysInFief >= 30)
+                    {
+                        // don't display this message if min bailiffDaysInFief was already achieved
+                        if (!(bailiffDaysBefore >= 30))
+                        {
+                            System.Windows.Forms.MessageBox.Show(myBailiff.firstName + " " + myBailiff.familyName + " has fulfilled his bailiff duties in " + ch.location.name + ".");
+                        }
+                    }
+                }
+            }
+
+            // refresh display
+            if (proceed)
+            {
+                if (ch == this.myChar)
+                {
+                    this.refreshTravelContainer();
+                }
+                else
+                {
+                    this.refreshHouseholdDisplay((this.charToView as NonPlayerCharacter));
                 }
             }
 
@@ -5918,6 +5937,8 @@ namespace hist_mmorpg
                 this.armyAutoCombatBtn.Enabled = true;
                 this.armyAggroTextBox.Enabled = true;
                 this.armyOddsTextBox.Enabled = true;
+                this.armyCampBtn.Enabled = true;
+                this.armyCampTextBox.Enabled = true;
 
                 // set auto combat values
                 this.armyAggroTextBox.Text = this.armyToView.aggression.ToString();
@@ -6253,6 +6274,53 @@ namespace hist_mmorpg
                     this.refreshArmyContainer(this.armyToView);
                 }
  
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyCampBtn button
+        /// invoking the campWaitHere method for the army leader (and army)
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyCampBtn_Click(object sender, EventArgs e)
+        {
+            if (this.armyToView != null)
+            {
+                try
+                {
+                    // get days to camp
+                    byte campDays = Convert.ToByte(this.armyCampTextBox.Text);
+
+                    // get leader
+                    Character thisLeader = null;
+                    if (Globals.npcMasterList.ContainsKey(this.armyToView.leader))
+                    {
+                        thisLeader = Globals.npcMasterList[this.armyToView.leader];
+                    }
+                    else if (Globals.pcMasterList.ContainsKey(this.armyToView.leader))
+                    {
+                        thisLeader = Globals.pcMasterList[this.armyToView.leader];
+                    }
+
+                    // camp
+                    this.campWaitHere(thisLeader, campDays);
+                }
+                catch (System.FormatException fe)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+                catch (System.OverflowException ofe)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+                finally
+                {
+                    // refresh display
+                    this.refreshArmyContainer(this.armyToView);
+                }
+
             }
 
         }
