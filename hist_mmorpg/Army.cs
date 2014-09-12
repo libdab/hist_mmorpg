@@ -69,9 +69,9 @@ namespace hist_mmorpg
         /// </summary>
         public byte aggression { get; set; }
         /// <summary>
-        /// Indicates army's sally value (whether will attempt to attack a besieging army)
+        /// Indicates army's combat odds value (i.e. at what odds will attempt automated combat action)
         /// </summary>
-        public byte sally { get; set; }
+        public byte combatOdds { get; set; }
 
         /// <summary>
         /// Constructor for Army
@@ -90,8 +90,8 @@ namespace hist_mmorpg
         /// <param name="loc">string holding army location (fiefID)</param>
         /// <param name="maint">bool indicating whether army is being actively maintained by owner</param>
         /// <param name="aggr">byte indicating army's aggression level</param>
-        /// <param name="sal">byte indicating army's sally value</param>
-        public Army(String id, string ldr, string own, double day, GameClock cl, string loc, byte aggr = 0, byte sal = 9, uint kni = 0, uint maa = 0, uint ltCav = 0, uint yeo = 0, uint ft = 0, uint rbl = 0, bool maint = false)
+        /// <param name="odds">byte indicating army's combat odds value</param>
+        public Army(String id, string ldr, string own, double day, GameClock cl, string loc, uint kni = 0, uint maa = 0, uint ltCav = 0, uint yeo = 0, uint ft = 0, uint rbl = 0, bool maint = false, byte aggr = 1, byte odds = 9)
         {
 
             // TODO: validate kni = (upper limit?)
@@ -121,6 +121,8 @@ namespace hist_mmorpg
             this.clock = cl;
             this.location = loc;
             this.isMaintained = maint;
+            this.aggression = aggr;
+            this.combatOdds = odds;
         }
 
         /// <summary>

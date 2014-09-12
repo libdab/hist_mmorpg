@@ -150,6 +150,7 @@ namespace hist_mmorpg
             this.houseCharListLabel = new System.Windows.Forms.Label();
             this.houseCharListView = new System.Windows.Forms.ListView();
             this.armyContainer = new System.Windows.Forms.SplitContainer();
+            this.armyDisbandBtn = new System.Windows.Forms.Button();
             this.armyTransPickupBtn = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -164,7 +165,12 @@ namespace hist_mmorpg
             this.armyListContainer = new System.Windows.Forms.SplitContainer();
             this.armyTextBox = new System.Windows.Forms.TextBox();
             this.armyListView = new System.Windows.Forms.ListView();
-            this.armyDisbandBtn = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.armyOddsTextBox = new System.Windows.Forms.TextBox();
+            this.armyAggroTextBox = new System.Windows.Forms.TextBox();
+            this.armyAutoCombatBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -1516,6 +1522,12 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel1
             // 
+            this.armyContainer.Panel1.Controls.Add(this.armyAutoCombatBtn);
+            this.armyContainer.Panel1.Controls.Add(this.label7);
+            this.armyContainer.Panel1.Controls.Add(this.label8);
+            this.armyContainer.Panel1.Controls.Add(this.armyOddsTextBox);
+            this.armyContainer.Panel1.Controls.Add(this.armyAggroTextBox);
+            this.armyContainer.Panel1.Controls.Add(this.label6);
             this.armyContainer.Panel1.Controls.Add(this.armyDisbandBtn);
             this.armyContainer.Panel1.Controls.Add(this.armyTransPickupBtn);
             this.armyContainer.Panel1.Controls.Add(this.label5);
@@ -1535,6 +1547,16 @@ namespace hist_mmorpg
             this.armyContainer.Size = new System.Drawing.Size(935, 637);
             this.armyContainer.SplitterDistance = 282;
             this.armyContainer.TabIndex = 8;
+            // 
+            // armyDisbandBtn
+            // 
+            this.armyDisbandBtn.Location = new System.Drawing.Point(12, 294);
+            this.armyDisbandBtn.Name = "armyDisbandBtn";
+            this.armyDisbandBtn.Size = new System.Drawing.Size(138, 23);
+            this.armyDisbandBtn.TabIndex = 11;
+            this.armyDisbandBtn.Text = "Disband Army";
+            this.armyDisbandBtn.UseVisualStyleBackColor = true;
+            this.armyDisbandBtn.Click += new System.EventHandler(this.armyDisbandBtn_Click);
             // 
             // armyTransPickupBtn
             // 
@@ -1674,15 +1696,57 @@ namespace hist_mmorpg
             this.armyListView.View = System.Windows.Forms.View.Details;
             this.armyListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.armyListView_ItemSelectionChanged);
             // 
-            // armyDisbandBtn
+            // label6
             // 
-            this.armyDisbandBtn.Location = new System.Drawing.Point(12, 294);
-            this.armyDisbandBtn.Name = "armyDisbandBtn";
-            this.armyDisbandBtn.Size = new System.Drawing.Size(138, 23);
-            this.armyDisbandBtn.TabIndex = 11;
-            this.armyDisbandBtn.Text = "Disband Army";
-            this.armyDisbandBtn.UseVisualStyleBackColor = true;
-            this.armyDisbandBtn.Click += new System.EventHandler(this.armyDisbandBtn_Click);
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(12, 354);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(253, 13);
+            this.label6.TabIndex = 32;
+            this.label6.Text = "--------- Automated Combat Response ---------";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(49, 412);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(107, 13);
+            this.label7.TabIndex = 36;
+            this.label7.Text = "Combat Odds Value: ";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(62, 386);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(94, 13);
+            this.label8.TabIndex = 35;
+            this.label8.Text = "Aggression Level: ";
+            // 
+            // armyOddsTextBox
+            // 
+            this.armyOddsTextBox.Location = new System.Drawing.Point(162, 409);
+            this.armyOddsTextBox.Name = "armyOddsTextBox";
+            this.armyOddsTextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyOddsTextBox.TabIndex = 34;
+            // 
+            // armyAggroTextBox
+            // 
+            this.armyAggroTextBox.Location = new System.Drawing.Point(162, 383);
+            this.armyAggroTextBox.Name = "armyAggroTextBox";
+            this.armyAggroTextBox.Size = new System.Drawing.Size(61, 20);
+            this.armyAggroTextBox.TabIndex = 33;
+            // 
+            // armyAutoCombatBtn
+            // 
+            this.armyAutoCombatBtn.Location = new System.Drawing.Point(71, 444);
+            this.armyAutoCombatBtn.Name = "armyAutoCombatBtn";
+            this.armyAutoCombatBtn.Size = new System.Drawing.Size(138, 23);
+            this.armyAutoCombatBtn.TabIndex = 37;
+            this.armyAutoCombatBtn.Text = "Set These Values";
+            this.armyAutoCombatBtn.UseVisualStyleBackColor = true;
+            this.armyAutoCombatBtn.Click += new System.EventHandler(this.armyAutoCombatBtn_Click);
             // 
             // Form1
             // 
@@ -1690,8 +1754,8 @@ namespace hist_mmorpg
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
             this.Controls.Add(this.armyContainer);
-            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.fiefContainer);
+            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
@@ -1926,6 +1990,12 @@ namespace hist_mmorpg
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button armyTransPickupBtn;
         private System.Windows.Forms.Button armyDisbandBtn;
+        private System.Windows.Forms.Button armyAutoCombatBtn;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox armyOddsTextBox;
+        private System.Windows.Forms.TextBox armyAggroTextBox;
+        private System.Windows.Forms.Label label6;
 
     }
 }

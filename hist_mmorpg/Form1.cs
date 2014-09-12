@@ -3016,18 +3016,18 @@ namespace hist_mmorpg
             {
                 uint armyCost = a.calcArmySize() * 500;
 
-                armyText += "This army is currently being maintained (at a cost of £" + armyCost + ")\r\n";
+                armyText += "This army is currently being maintained (at a cost of £" + armyCost + ")\r\n\r\n";
             }
             else
             {
-                armyText += "This army is NOT currently being maintained\r\n";
+                armyText += "This army is NOT currently being maintained\r\n\r\n";
             }
 
             // aggression level
             armyText += "Aggression level: " + a.aggression + "\r\n\r\n";
 
             // sally value
-            armyText += "Sally value: " + a.sally + "\r\n\r\n";
+            armyText += "Sally value: " + a.combatOdds + "\r\n\r\n";
 
             return armyText;
         }
@@ -3394,6 +3394,8 @@ namespace hist_mmorpg
             this.armyRecruitTextBox.Text = "";
             this.armyTransDropWhoTextBox.Text = "";
             this.armyTransDropNumTextBox.Text = "";
+            this.armyAggroTextBox.Text = "";
+            this.armyOddsTextBox.Text = "";
 
             // ensure textboxes aren't interactive
             this.armyTextBox.ReadOnly = true;
@@ -3409,6 +3411,9 @@ namespace hist_mmorpg
             this.armyTransDropNumTextBox.Enabled = false;
             this.armyTransPickupBtn.Enabled = false;
             this.armyDisbandBtn.Enabled = false;
+            this.armyAutoCombatBtn.Enabled = false;
+            this.armyAggroTextBox.Enabled = false;
+            this.armyOddsTextBox.Enabled = false;
             
             // clear existing items in armies list
             this.armyListView.Items.Clear();
@@ -5910,6 +5915,13 @@ namespace hist_mmorpg
                 this.armyTransDropWhoTextBox.Enabled = true;
                 this.armyTransPickupBtn.Enabled = true;
                 this.armyDisbandBtn.Enabled = true;
+                this.armyAutoCombatBtn.Enabled = true;
+                this.armyAggroTextBox.Enabled = true;
+                this.armyOddsTextBox.Enabled = true;
+
+                // set auto combat values
+                this.armyAggroTextBox.Text = this.armyToView.aggression.ToString();
+                this.armyOddsTextBox.Text = this.armyToView.combatOdds.ToString();
 
                 // preload own ID in 'drop off to' textbox (assumes transferring between own armies)
                 this.armyTransDropWhoTextBox.Text = this.myChar.charID;
@@ -6185,6 +6197,64 @@ namespace hist_mmorpg
                 // refresh display
                 this.refreshArmyContainer();
             }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyAutoCombatBtn button, setting the army's
+        /// aggression and combat odds values to those in the text fields
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyAutoCombatBtn_Click(object sender, EventArgs e)
+        {
+            if (this.armyToView != null)
+            {
+                try
+                {
+                    // get new aggression level
+                    byte newAggroLevel = Convert.ToByte(this.armyAggroTextBox.Text);
+
+                    // get new combat odds value
+                    byte newOddsValue = Convert.ToByte(this.armyOddsTextBox.Text);
+
+                    // check values and alter if appropriate
+                    if (newAggroLevel < 0)
+                    {
+                        newAggroLevel = 0;
+                    }
+                    else if (newAggroLevel > 2)
+                    {
+                        newAggroLevel = 2;
+                    }
+                    if (newOddsValue < 0)
+                    {
+                        newOddsValue = 0;
+                    }
+                    else if (newOddsValue > 9)
+                    {
+                        newOddsValue = 9;
+                    }
+
+                    // update army's values
+                    this.armyToView.aggression = newAggroLevel;
+                    this.armyToView.combatOdds = newOddsValue;
+                }
+                catch (System.FormatException fe)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+                catch (System.OverflowException ofe)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+                finally
+                {
+                    // refresh display
+                    this.refreshArmyContainer(this.armyToView);
+                }
+ 
+            }
+
         }
 
     }
