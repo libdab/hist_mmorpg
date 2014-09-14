@@ -47,6 +47,10 @@
             this.transferCancelBtn = new System.Windows.Forms.Button();
             this.transferPickupBtn = new System.Windows.Forms.Button();
             this.transferListView = new System.Windows.Forms.ListView();
+            this.armiesContainer = new System.Windows.Forms.SplitContainer();
+            this.armiesListContainer = new System.Windows.Forms.SplitContainer();
+            this.armiesTextBox = new System.Windows.Forms.TextBox();
+            this.armiesListView = new System.Windows.Forms.ListView();
             ((System.ComponentModel.ISupportInitialize)(this.npcContainer)).BeginInit();
             this.npcContainer.Panel1.SuspendLayout();
             this.npcContainer.Panel2.SuspendLayout();
@@ -67,6 +71,13 @@
             this.transferContainer.Panel1.SuspendLayout();
             this.transferContainer.Panel2.SuspendLayout();
             this.transferContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.armiesContainer)).BeginInit();
+            this.armiesContainer.Panel2.SuspendLayout();
+            this.armiesContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.armiesListContainer)).BeginInit();
+            this.armiesListContainer.Panel1.SuspendLayout();
+            this.armiesListContainer.Panel2.SuspendLayout();
+            this.armiesListContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // npcContainer
@@ -307,13 +318,65 @@
             this.transferListView.UseCompatibleStateImageBehavior = false;
             this.transferListView.View = System.Windows.Forms.View.Details;
             // 
+            // armiesContainer
+            // 
+            this.armiesContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.armiesContainer.Location = new System.Drawing.Point(0, 0);
+            this.armiesContainer.Name = "armiesContainer";
+            this.armiesContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // armiesContainer.Panel2
+            // 
+            this.armiesContainer.Panel2.Controls.Add(this.armiesListContainer);
+            this.armiesContainer.Size = new System.Drawing.Size(620, 547);
+            this.armiesContainer.SplitterDistance = 57;
+            this.armiesContainer.TabIndex = 3;
+            // 
+            // armiesListContainer
+            // 
+            this.armiesListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.armiesListContainer.Location = new System.Drawing.Point(0, 0);
+            this.armiesListContainer.Name = "armiesListContainer";
+            // 
+            // armiesListContainer.Panel1
+            // 
+            this.armiesListContainer.Panel1.Controls.Add(this.armiesTextBox);
+            // 
+            // armiesListContainer.Panel2
+            // 
+            this.armiesListContainer.Panel2.Controls.Add(this.armiesListView);
+            this.armiesListContainer.Size = new System.Drawing.Size(620, 486);
+            this.armiesListContainer.SplitterDistance = 262;
+            this.armiesListContainer.TabIndex = 0;
+            // 
+            // armiesTextBox
+            // 
+            this.armiesTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.armiesTextBox.Location = new System.Drawing.Point(0, 0);
+            this.armiesTextBox.Multiline = true;
+            this.armiesTextBox.Name = "armiesTextBox";
+            this.armiesTextBox.Size = new System.Drawing.Size(262, 486);
+            this.armiesTextBox.TabIndex = 0;
+            // 
+            // armiesListView
+            // 
+            this.armiesListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.armiesListView.FullRowSelect = true;
+            this.armiesListView.Location = new System.Drawing.Point(0, 0);
+            this.armiesListView.Name = "armiesListView";
+            this.armiesListView.Size = new System.Drawing.Size(354, 486);
+            this.armiesListView.TabIndex = 0;
+            this.armiesListView.UseCompatibleStateImageBehavior = false;
+            this.armiesListView.View = System.Windows.Forms.View.Details;
+            // 
             // SelectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(620, 547);
-            this.Controls.Add(this.transferContainer);
             this.Controls.Add(this.npcContainer);
+            this.Controls.Add(this.armiesContainer);
+            this.Controls.Add(this.transferContainer);
             this.Controls.Add(this.lockOutContainer);
             this.Name = "SelectionForm";
             this.Text = "SelectionForm";
@@ -340,6 +403,14 @@
             this.transferContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.transferContainer)).EndInit();
             this.transferContainer.ResumeLayout(false);
+            this.armiesContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.armiesContainer)).EndInit();
+            this.armiesContainer.ResumeLayout(false);
+            this.armiesListContainer.Panel1.ResumeLayout(false);
+            this.armiesListContainer.Panel1.PerformLayout();
+            this.armiesListContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.armiesListContainer)).EndInit();
+            this.armiesListContainer.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -365,6 +436,10 @@
         private System.Windows.Forms.ListView transferListView;
         private System.Windows.Forms.Button transferPickupBtn;
         private System.Windows.Forms.Button transferCancelBtn;
+        private System.Windows.Forms.SplitContainer armiesContainer;
+        private System.Windows.Forms.SplitContainer armiesListContainer;
+        private System.Windows.Forms.TextBox armiesTextBox;
+        private System.Windows.Forms.ListView armiesListView;
 
     }
 }

@@ -78,6 +78,18 @@ namespace hist_mmorpg
                 // show container
                 this.transferContainer.BringToFront();
             }
+
+            if (myFunction.Equals("armies"))
+            {
+                // format list display
+                this.setUpArmiesList();
+
+                // refresh information 
+                this.refreshArmiesDisplay();
+
+                // show container
+                this.transferContainer.BringToFront();
+            }
         }
 
         /// <summary>
@@ -171,34 +183,38 @@ namespace hist_mmorpg
         {
             NonPlayerCharacter npcToDisplay = null;
 
-            // loop through employees
-            for (int i = 0; i < this.parent.myChar.myNPCs.Count; i++)
+            string textToDisplay = "";
+
+            if (npcListView.SelectedItems.Count > 0)
             {
-                if (npcListView.SelectedItems.Count > 0)
-                {
-                    // enable 'appoint this NPC' button
-                    this.chooseNpcBtn.Enabled = true;
+                // enable 'appoint this NPC' button
+                this.chooseNpcBtn.Enabled = true;
+                // set textbox to read only
+                this.npcDetailsTextBox.ReadOnly = true;
 
-                    // find matching character
-                    if (this.parent.myChar.myNPCs[i].charID.Equals(this.npcListView.SelectedItems[0].SubItems[1].Text))
-                    {
-                        npcToDisplay = this.parent.myChar.myNPCs[i];
-                    }
+                // get employee
+                npcToDisplay = Globals.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
 
-                }
-
-            }
-
-            // retrieve and display character information
-            if (npcToDisplay != null)
-            {
-                string textToDisplay = "";
                 // get details
                 textToDisplay += this.displayNPC(npcToDisplay);
-                this.npcDetailsTextBox.ReadOnly = true;
+
                 // display details
                 this.npcDetailsTextBox.Text = textToDisplay;
             }
+        }
+
+        /// <summary>
+        /// Retrieves army details for display
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="a">Army whose information is to be displayed</param>
+        public string displayArmy(Army a)
+        {
+            string armyText = "";
+
+            // get data here (need estimate method)
+
+            return armyText;
         }
 
         /// <summary>
@@ -400,7 +416,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Configures UI display for list of barred characters
+        /// Configures UI display for list of troop detachments
         /// </summary>
         public void setUpTransferList()
         {
@@ -410,6 +426,16 @@ namespace hist_mmorpg
             this.transferListView.Columns.Add("Days", -2, HorizontalAlignment.Left);
             this.transferListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
             this.transferListView.Columns.Add("For", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Configures UI display for list of armies in feif
+        /// </summary>
+        public void setUpArmiesList()
+        {
+            // add necessary columns
+            this.transferListView.Columns.Add("   ID", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -431,7 +457,7 @@ namespace hist_mmorpg
             {
                 if ((troopDetachment.Value[0] == thisArmy.owner) || (troopDetachment.Value[1] == thisArmy.owner))
                 {
-                    // Create an item and subitems for each character
+                    // Create an item and subitems for each detachment
 
                     // ID
                     thisDetachment = new ListViewItem(troopDetachment.Key);
@@ -451,13 +477,37 @@ namespace hist_mmorpg
                     // add item to fiefsListView
                     this.transferListView.Items.Add(thisDetachment);
 
-                    /*
-                    thisDetachment += "Troops: " + troopDetachment[2] + ", ";
-                    thisDetachment += "Days left: " + troopDetachment[3] + ", ";
-                    thisDetachment += "Owner: " + troopDetachment[0] + ", ";
-                    thisDetachment += "For: " + troopDetachment[2];
-                    this.transferCheckedListBox.Items.Add(thisDetachment); */
                 }
+            }
+        }
+
+        /// <summary>
+        /// Refreshes list of armies in fief
+        /// </summary>
+        public void refreshArmiesDisplay()
+        {
+            ListViewItem armyEntry = null;
+
+            // get my army
+            Army myArmy = this.parent.armyToView;
+
+            // get fief
+            Fief thisFief = Globals.fiefMasterList[myArmy.location];
+
+            // Create an item and subitems for each army and add to list
+            foreach (string armyID in thisFief.armies)
+            {
+                // get army
+                Army thisArmy = Globals.armyMasterList[armyID];
+
+                // ID
+                armyEntry = new ListViewItem(armyID);
+
+                // owner
+                armyEntry.SubItems.Add(thisArmy.owner);
+
+                // add item to fiefsListView
+                this.transferListView.Items.Add(armyEntry);
             }
         }
 
