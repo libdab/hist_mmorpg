@@ -61,7 +61,7 @@ namespace hist_mmorpg
         /// </summary>
         public double days { get; set; }
         /// <summary>
-        /// Holds character's stature
+        /// Holds modifier to character's base stature
         /// </summary>
         public Double statureModifier { get; set; }
         /// <summary>
@@ -353,7 +353,7 @@ namespace hist_mmorpg
         }
        
         /// <summary>
-        /// Calculates character's base stature
+        /// Calculates character's base or current stature
         /// </summary>
         /// <returns>Double containing character's base stature</returns>
         /// <param name="type">bool indicating whether to return current stature (or just base)</param>
@@ -416,10 +416,11 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates character's base health
+        /// Calculates character's base or current health
         /// </summary>
-        /// <returns>Double containing character's base health</returns>
-        public double calculateHealth()
+        /// <returns>Double containing character's health</returns>
+        /// <param name="currentHealth">bool indicating whether to return current health</param>
+        public double calculateHealth(bool currentHealth = true)
         {
 
             double charHealth = 0;
@@ -477,6 +478,12 @@ namespace hist_mmorpg
 
             // calculate health based on maxHealth and health age modifier
             charHealth = (this.maxHealth * ageModifier);
+
+            // factor in current health modifers if appropriate
+            /* if (currentHealth)
+            {
+                charHealth = charHealth + this.ailments;
+            } */
 
             return charHealth;
         }
@@ -748,19 +755,22 @@ namespace hist_mmorpg
             for (int i = 0; i < this.skills.Length; i++)
             {
                 // iterate through skill effects, looking for effect
-                foreach (KeyValuePair<string, int> entry in this.skills[i].Item1.effects)
+                foreach (KeyValuePair<string, double> entry in this.skills[i].Item1.effects)
                 {
-                    // if present, add to modifier
+                    // if present, update total modifier
                     if (entry.Key.Equals(effect))
                     {
-                        skillEffectModifier += (entry.Value * (this.skills[i].Item2 * 0.111));
+                        // get this particular modifer (based on character's skill level)
+                        // and round up if necessary (i.e. to get the full effect)
+                        double thisModifier = (this.skills[i].Item2 * 0.111);
+                        if (this.skills[i].Item2 == 9)
+                        {
+                            thisModifier = 1;
+                        }
+                        // add to exisiting total modifier
+                        skillEffectModifier += (entry.Value * thisModifier);
                     }
                 }
-            }
-
-            if (skillEffectModifier != 0)
-            {
-                skillEffectModifier = (skillEffectModifier / 100);
             }
 
             return skillEffectModifier;
@@ -856,14 +866,8 @@ namespace hist_mmorpg
         public void appointAsLeader(Army thisArmy)
         {
             // Remove army from current leader
-            if (Globals.npcMasterList.ContainsKey(thisArmy.leader))
-            {
-                Globals.npcMasterList[thisArmy.leader].armyID = null;
-            }
-            else if (Globals.pcMasterList.ContainsKey(thisArmy.leader))
-            {
-                Globals.pcMasterList[thisArmy.leader].armyID = null;
-            }
+            Character oldLeader = thisArmy.getLeader();
+            oldLeader.armyID = null;            
 
             // add army to new leader
             this.armyID = thisArmy.armyID;
@@ -1099,6 +1103,44 @@ namespace hist_mmorpg
             }
 
             return success;
+        }
+
+        /// <summary>
+        /// Calculates the character's leadership value (for army leaders)
+        /// </summary>
+        /// <returns>double containg leadership value</returns>
+        public double getLeadershipValue()
+        {
+            double lv = 0;
+
+            // get base LV
+            lv = (this.combat + this.management + this.calculateStature(true)) / 3;
+
+            // factor in skills effect
+            double combatSkillsMOd = this.calcSkillEffect("battle");
+            if (combatSkillsMOd != 0)
+            {
+                lv = lv + (lv * combatSkillsMOd);
+            }
+
+            return lv;
+        }
+
+        /// <summary>
+        /// Calculates the character's combat value for a combat engagement
+        /// </summary>
+        /// <returns>double containg combat value</returns>
+        public double getCombatValue()
+        {
+            double cv = 0;
+
+            // get base CV
+            cv = (this.combat + this.calculateHealth()) / 2;
+
+            // factor in armour
+            cv = cv + 5;
+
+            return cv;
         }
 
         /// <summary>
@@ -2430,8 +2472,7 @@ namespace hist_mmorpg
         public NonPlayerCharacter_Riak()
 		{
 		}
+
 	}
-
-
 
 }

@@ -129,67 +129,67 @@ namespace hist_mmorpg
 
 			// create skills
 			// Dictionary of skill effects
-			Dictionary<string, int> effectsCommand = new Dictionary<string, int>();
-			effectsCommand.Add("battle", 40);
-			effectsCommand.Add("siege", 40);
-			effectsCommand.Add("npcHire", 20);
+            Dictionary<string, double> effectsCommand = new Dictionary<string, double>();
+			effectsCommand.Add("battle", 0.4);
+            effectsCommand.Add("siege", 0.4);
+			effectsCommand.Add("npcHire", 0.2);
 			// create skill
 			Skill command = new Skill("sk001", "Command", effectsCommand);
 			// add to skillsCollection
 			Globals.skillMasterList.Add(command.skillID, command);
 
-			Dictionary<string, int> effectsChivalry = new Dictionary<string, int>();
-			effectsChivalry.Add("famExpense", 20);
-			effectsChivalry.Add("fiefExpense", 10);
-			effectsChivalry.Add("fiefLoy", 20);
-			effectsChivalry.Add("npcHire", 10);
-			effectsChivalry.Add("siege", 10);
+            Dictionary<string, double> effectsChivalry = new Dictionary<string, double>();
+            effectsChivalry.Add("famExpense", 0.2);
+			effectsChivalry.Add("fiefExpense", 0.1);
+            effectsChivalry.Add("fiefLoy", 0.2);
+            effectsChivalry.Add("npcHire", 0.1);
+            effectsChivalry.Add("siege", 0.1);
 			Skill chivalry = new Skill("sk002", "Chivalry", effectsChivalry);
             Globals.skillMasterList.Add(chivalry.skillID, chivalry);
 
-			Dictionary<string, int> effectsAbrasiveness = new Dictionary<string, int>();
-			effectsAbrasiveness.Add("battle", 15);
-			effectsAbrasiveness.Add("death", 5);
-			effectsAbrasiveness.Add("fiefExpense", -5);
-			effectsAbrasiveness.Add("famExpense", 5);
-			effectsAbrasiveness.Add("time", 5);
-			effectsAbrasiveness.Add("siege", -10);
+            Dictionary<string, double> effectsAbrasiveness = new Dictionary<string, double>();
+			effectsAbrasiveness.Add("battle", 0.15);
+			effectsAbrasiveness.Add("death", 0.05);
+            effectsAbrasiveness.Add("fiefExpense", -0.05);
+            effectsAbrasiveness.Add("famExpense", 0.05);
+            effectsAbrasiveness.Add("time", 0.05);
+            effectsAbrasiveness.Add("siege", -0.1);
 			Skill abrasiveness = new Skill("sk003", "Abrasiveness", effectsAbrasiveness);
             Globals.skillMasterList.Add(abrasiveness.skillID, abrasiveness);
 
-			Dictionary<string, int> effectsAccountancy = new Dictionary<string, int>();
-			effectsAccountancy.Add("time", 10);
-			effectsAccountancy.Add("fiefExpense", -20);
-			effectsAccountancy.Add("famExpense", -20);
-			effectsAccountancy.Add("fiefLoy", -5);
+            Dictionary<string, double> effectsAccountancy = new Dictionary<string, double>();
+            effectsAccountancy.Add("time", 0.1);
+            effectsAccountancy.Add("fiefExpense", -0.2);
+            effectsAccountancy.Add("famExpense", -0.2);
+            effectsAccountancy.Add("fiefLoy", -0.05);
 			Skill accountancy = new Skill("sk004", "Accountancy", effectsAccountancy);
             Globals.skillMasterList.Add(accountancy.skillID, accountancy);
 
-			Dictionary<string, int> effectsStupidity = new Dictionary<string, int>();
-			effectsStupidity.Add("battle", -40);
-			effectsStupidity.Add("death", 5);
-			effectsStupidity.Add("fiefExpense", 20);
-			effectsStupidity.Add("famExpense", 20);
-			effectsStupidity.Add("fiefLoy", -10);
-			effectsStupidity.Add("npcHire", -10);
-			effectsStupidity.Add("time", -10);
-			effectsStupidity.Add("siege", -40);
+            Dictionary<string, double> effectsStupidity = new Dictionary<string, double>();
+            effectsStupidity.Add("battle", -0.4);
+            effectsStupidity.Add("death", 0.05);
+            effectsStupidity.Add("fiefExpense", 0.2);
+            effectsStupidity.Add("famExpense", 0.2);
+            effectsStupidity.Add("fiefLoy", -0.1);
+            effectsStupidity.Add("npcHire", -0.1);
+            effectsStupidity.Add("time", -0.1);
+            effectsStupidity.Add("siege", -0.4);
 			Skill stupidity = new Skill("sk005", "Stupidity", effectsStupidity);
             Globals.skillMasterList.Add(stupidity.skillID, stupidity);
 
-			Dictionary<string, int> effectsRobust = new Dictionary<string, int>();
-			effectsRobust.Add("virility", 20);
-			effectsRobust.Add("npcHire", 5);
-			effectsRobust.Add("fiefLoy", 5);
-			effectsRobust.Add("death", -20);
+            Dictionary<string, double> effectsRobust = new Dictionary<string, double>();
+            effectsRobust.Add("virility", 0.2);
+            effectsRobust.Add("npcHire", 0.05);
+            effectsRobust.Add("fiefLoy", 0.05);
+            effectsRobust.Add("death", -0.2);
 			Skill robust = new Skill("sk006", "Robust", effectsRobust);
             Globals.skillMasterList.Add(robust.skillID, robust);
 
-			Dictionary<string, int> effectsPious = new Dictionary<string, int>();
-			effectsPious.Add("virility", -20);
-			effectsPious.Add("npcHire", 10);
-			effectsPious.Add("fiefLoy", 10);
-			effectsPious.Add("time", -10);
+            Dictionary<string, double> effectsPious = new Dictionary<string, double>();
+            effectsPious.Add("virility", -0.2);
+            effectsPious.Add("npcHire", 0.1);
+            effectsPious.Add("fiefLoy", 0.1);
+            effectsPious.Add("time", -0.1);
 			Skill pious = new Skill("sk007", "Pious", effectsPious);
             Globals.skillMasterList.Add(pious.skillID, pious);
 
@@ -2111,19 +2111,7 @@ namespace hist_mmorpg
                     myOwner = Globals.pcMasterList[armyEntry.owner];
 
                     // get leader
-                    Character myLeader = null;
-                    if (armyEntry.leader == armyEntry.owner)
-                    {
-                        myLeader = myOwner;
-                    }
-                    else if (Globals.npcMasterList.ContainsKey(armyEntry.leader))
-                    {
-                        myLeader = Globals.npcMasterList[armyEntry.leader];
-                    }
-                    else if (Globals.pcMasterList.ContainsKey(armyEntry.leader))
-                    {
-                        myLeader = Globals.pcMasterList[armyEntry.leader];
-                    }
+                    Character myLeader = armyEntry.getLeader();
 
                     // remove from armyMasterList
                     Globals.armyMasterList.Remove(armyEntry.armyID);
@@ -2988,15 +2976,7 @@ namespace hist_mmorpg
             armyText += "Location: " + armyLocation.name + " (Province: " + armyLocation.province.name + ".  Kingdom: " + armyLocation.province.kingdom.name + ")\r\n\r\n";
 
             // leader
-            Character armyLeader = null;
-            if (Globals.npcMasterList.ContainsKey(a.leader))
-            {
-                armyLeader = Globals.npcMasterList[a.leader];
-            }
-            else if (a.leader.Equals(this.myChar.charID))
-            {
-                armyLeader = this.myChar;
-            }
+            Character armyLeader = a.getLeader();
 
             armyText += "Leader: " + armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")\r\n\r\n";
 
@@ -3430,15 +3410,7 @@ namespace hist_mmorpg
                 thisArmy = new ListViewItem(this.myChar.myArmies[i].armyID);
 
                 // leader
-                Character armyLeader = null;
-                if (Globals.npcMasterList.ContainsKey(this.myChar.myArmies[i].leader))
-                {
-                    armyLeader = Globals.npcMasterList[this.myChar.myArmies[i].leader];
-                }
-                else
-                {
-                    armyLeader = Globals.pcMasterList[this.myChar.myArmies[i].leader];
-                }
+                Character armyLeader = this.myChar.myArmies[i].getLeader();
                 thisArmy.SubItems.Add(armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")");
 
                 // location
@@ -5736,20 +5708,20 @@ namespace hist_mmorpg
             Button button = sender as Button;
             String operation = button.Tag.ToString();
 
-            // if no army, create one
-            if (operation.Equals("new"))
-            {
-                Army newArmy = new Army("army" + Globals.getNextArmyID(), this.myChar.charID, this.myChar.charID, this.myChar.days, this.clock, this.myChar.location.fiefID);
-                Globals.armyMasterList.Add(newArmy.armyID, newArmy);
-                this.myChar.myArmies.Add(newArmy);
-                this.myChar.armyID = newArmy.armyID;
-                this.myChar.location.armies.Add(newArmy.armyID);
-            }
-
             try
             {
                 // get number of troops specified
                 UInt32 numberWanted = Convert.ToUInt32(this.armyRecruitTextBox.Text);
+
+                // if no existing army, create one
+                if (operation.Equals("new"))
+                {
+                    Army newArmy = new Army("army" + Globals.getNextArmyID(), this.myChar.charID, this.myChar.charID, this.myChar.days, this.clock, this.myChar.location.fiefID);
+                    Globals.armyMasterList.Add(newArmy.armyID, newArmy);
+                    this.myChar.myArmies.Add(newArmy);
+                    this.myChar.armyID = newArmy.armyID;
+                    this.myChar.location.armies.Add(newArmy.armyID);
+                }
 
                 // recruit troops
                 this.myChar.recruitTroops(numberWanted);
@@ -6099,15 +6071,7 @@ namespace hist_mmorpg
                     if (adjustDays)
                     {
                         // get leader
-                        Character myLeader = null;
-                        if (Globals.npcMasterList.ContainsKey(this.armyToView.leader))
-                        {
-                            myLeader = Globals.npcMasterList[this.armyToView.leader];
-                        }
-                        else if (Globals.pcMasterList.ContainsKey(this.armyToView.leader))
-                        {
-                            myLeader = Globals.pcMasterList[this.armyToView.leader];
-                        }
+                        Character myLeader = this.armyToView.getLeader();
 
                         // adjust days
                         myLeader.adjustDays(daysTaken);
@@ -6188,15 +6152,7 @@ namespace hist_mmorpg
             thisOwner.myArmies.Remove(a);
 
             // remove from leader
-            Character thisLeader = null;
-            if (Globals.npcMasterList.ContainsKey(a.leader))
-            {
-                thisLeader = Globals.npcMasterList[a.leader];
-            }
-            else if (Globals.pcMasterList.ContainsKey(a.leader))
-            {
-                thisLeader = Globals.pcMasterList[a.leader];
-            }
+            Character thisLeader = a.getLeader();
             thisLeader.armyID = null;
 
             // set to null
@@ -6294,15 +6250,7 @@ namespace hist_mmorpg
                     byte campDays = Convert.ToByte(this.armyCampTextBox.Text);
 
                     // get leader
-                    Character thisLeader = null;
-                    if (Globals.npcMasterList.ContainsKey(this.armyToView.leader))
-                    {
-                        thisLeader = Globals.npcMasterList[this.armyToView.leader];
-                    }
-                    else if (Globals.pcMasterList.ContainsKey(this.armyToView.leader))
-                    {
-                        thisLeader = Globals.pcMasterList[this.armyToView.leader];
-                    }
+                    Character thisLeader = this.armyToView.getLeader();
 
                     // camp
                     this.campWaitHere(thisLeader, campDays);

@@ -21,7 +21,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds skill effects
         /// </summary>
-        public Dictionary<string, int> effects;
+        public Dictionary<string, double> effects;
 
         /// <summary>
         /// Constructor for Skill
@@ -29,7 +29,7 @@ namespace hist_mmorpg
 		/// <param name="id">String holding skill ID</param>
 		/// <param name="nam">String holding skill name</param>
         /// <param name="effs">Dictionary<string name, int effect> holding skill effects</param>
-		public Skill(String id, String nam, Dictionary<string, int> effs)
+        public Skill(String id, String nam, Dictionary<string, double> effs)
         {
 
             // validate nam length = 1-20

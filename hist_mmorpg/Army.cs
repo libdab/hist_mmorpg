@@ -169,15 +169,7 @@ namespace hist_mmorpg
             bool success = false;
 
             // get leader
-            Character myLeader = null;
-            if (Globals.npcMasterList.ContainsKey(this.leader))
-            {
-                myLeader = Globals.npcMasterList[this.leader];
-            }
-            else
-            {
-                myLeader = Globals.pcMasterList[this.leader];
-            }
+            Character myLeader = this.getLeader();
 
             // get old fief
             Fief myOldFief = Globals.fiefMasterList[this.location];
@@ -255,15 +247,7 @@ namespace hist_mmorpg
             Fief currentFief = Globals.fiefMasterList[this.location];
 
             // get leader
-            Character myLeader = null;
-            if (Globals.npcMasterList.ContainsKey(this.leader))
-            {
-                myLeader = Globals.npcMasterList[this.leader];
-            }
-            else if (Globals.pcMasterList.ContainsKey(this.leader))
-            {
-                myLeader = Globals.pcMasterList[this.leader];
-            }
+            Character myLeader = this.getLeader();
 
             // calculate base chance of attrition
             attritionChance = (troopNumbers / Convert.ToDouble(currentFief.population)) * 100;
@@ -319,15 +303,41 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Updates army data at the end/beginning of the season
+        /// Calculates the army's combat value for a combat engagement
         /// </summary>
-        /// <returns>bool indicating if army has dissolved</returns>
-        public bool updateArmy()
+        /// <returns>double containg combat value</returns>
+        public double calculateCombatValue()
         {
-            bool hasDissolved = false;
+            double cv = 0;
 
-            // get leader
+            // get base CV (for troops)
+            cv = this.foot * 3;
+
+            // get leader's CV
+            Character myLeader = this.getLeader();
+            cv = cv + myLeader.getCombatValue();
+
+            // if leader is PC, get CV of entourage
+            if (myLeader is PlayerCharacter)
+            {
+                for (int i = 0; i < (myLeader as PlayerCharacter).myNPCs.Count; i++ )
+                {
+                    cv = cv + (myLeader as PlayerCharacter).myNPCs[i].getCombatValue();
+                }
+            }
+
+            return cv;
+        }
+
+        /// <summary>
+        /// Gets the army's leader
+        /// </summary>
+        /// <returns>the leader</returns>
+        public Character getLeader()
+        {
             Character myLeader = null;
+
+            // get leader from appropriate master list
             if (Globals.npcMasterList.ContainsKey(this.leader))
             {
                 myLeader = Globals.npcMasterList[this.leader];
@@ -336,6 +346,20 @@ namespace hist_mmorpg
             {
                 myLeader = Globals.pcMasterList[this.leader];
             }
+
+            return myLeader;
+        }
+        
+        /// <summary>
+        /// Updates army data at the end/beginning of the season
+        /// </summary>
+        /// <returns>bool indicating if army has dissolved</returns>
+        public bool updateArmy()
+        {
+            bool hasDissolved = false;
+
+            // get leader
+            Character myLeader = this.getLeader();
 
             // check for additional attrition
             byte attritionChecks = Convert.ToByte(this.days / 7);

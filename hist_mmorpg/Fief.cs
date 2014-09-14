@@ -615,16 +615,9 @@ namespace hist_mmorpg
                 double famSkillsModifier = 0;
 
                 // get famExpense rating of whoever has highest management rating
-                if (this.owner.isMarried)
+                if ((this.owner.isMarried) && (this.owner.management < Globals.npcMasterList[this.owner.spouse].management))
                 {
-                    if (this.owner.management > Globals.npcMasterList[this.owner.spouse].management)
-                    {
-                        famSkillsModifier = this.owner.calcSkillEffect("famExpense");
-                    }
-                    else
-                    {
-                        famSkillsModifier = Globals.npcMasterList[this.owner.spouse].calcSkillEffect("famExpense");
-                    }
+                    famSkillsModifier = Globals.npcMasterList[this.owner.spouse].calcSkillEffect("famExpense");
                 }
                 else
                 {

@@ -606,15 +606,7 @@ namespace hist_mmorpg
             minDays = thisArmy.days;
 
             // get leader
-            Character myLeader = null;
-            if (Globals.npcMasterList.ContainsKey(thisArmy.leader))
-            {
-                myLeader = Globals.npcMasterList[thisArmy.leader];
-            }
-            else if (Globals.pcMasterList.ContainsKey(thisArmy.leader))
-            {
-                myLeader = Globals.pcMasterList[thisArmy.leader];
-            }
+            Character myLeader = thisArmy.getLeader();
 
             // get checked items in listview
             ListView.CheckedListViewItemCollection checkedItems = this.transferListView.CheckedItems;
