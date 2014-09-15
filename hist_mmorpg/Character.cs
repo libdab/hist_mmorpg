@@ -1144,6 +1144,24 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Calculates the character's estimate variance when estimating the size of an enemy army
+        /// </summary>
+        /// <returns>double containg estimate variance</returns>
+        public double getEstimateVariance()
+        {
+            // base estimate variance
+            double ev = 0.05;
+
+            // apply effects of leadership value
+            ev = ev + ((10 - this.getLeadershipValue()) * 0.05);
+
+            // factor in skills effect
+            ev = ev - (ev * this.calcSkillEffect("battle"));
+
+            return ev;
+        }
+        
+        /// <summary>
         /// Updates character data at the end/beginning of the season
         /// </summary>
         public void updateCharacter()

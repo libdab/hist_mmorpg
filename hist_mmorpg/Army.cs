@@ -305,7 +305,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Calculates the army's combat value for a combat engagement
         /// </summary>
-        /// <returns>double containg combat value</returns>
+        /// <returns>double containing combat value</returns>
         public double calculateCombatValue()
         {
             double cv = 0;
@@ -329,6 +329,70 @@ namespace hist_mmorpg
             return cv;
         }
 
+        /// <summary>
+        /// Calculates the estimated number of a particular type of troop in the army
+        /// or total troop numbers
+        /// </summary>
+        /// <returns>uint containing estimated troop number</returns>
+        /// <param name="observer">The character making the estimate</param>
+        /// <param name="troopType">string containing troop type to estimate</param>
+        public uint getTroopsEstimate(Character observer, string troopType)
+        {
+            uint troopNumber = 0;
+
+            // get troop number upon which to base estimate
+            // dependant on troopType passed in
+            switch (troopType)
+            {
+                case "knights":
+                    troopNumber = this.knights;
+                    break;
+                case "menAtArms":
+                    troopNumber = this.menAtArms;
+                    break;
+                case "lightCavalry":
+                    troopNumber = this.lightCavalry;
+                    break;
+                case "yeomen":
+                    troopNumber = this.yeomen;
+                    break;
+                case "foot":
+                    troopNumber = this.foot;
+                    break;
+                case "rabble":
+                    troopNumber = this.rabble;
+                    break;
+                case "total":
+                    troopNumber = this.calcArmySize();
+                    break;
+                default:
+                    troopNumber = this.calcArmySize();
+                    break;
+            }
+
+            // get random int (0-2) to decide whether to over- or under-estimate troop number
+            // 0 = under-estimate, 1-2 = over-estimate
+            int overUnder = Globals.myRand.Next(3);
+
+            // get observer's estimate variance (based on his leadership value)
+            double estimateVariance = observer.getEstimateVariance();
+
+            // generate random double between 0 and estimate variance to decide variance in this case
+            double thisVariance = Globals.GetRandomDouble(estimateVariance);
+
+            // apply variance (negatively or positively) to troop number
+            if (overUnder == 0)
+            {
+                troopNumber = troopNumber - Convert.ToUInt32(troopNumber * thisVariance);
+            }
+            else
+            {
+                troopNumber = troopNumber + Convert.ToUInt32(troopNumber * thisVariance);
+            }
+
+            return troopNumber;
+        }
+        
         /// <summary>
         /// Gets the army's leader
         /// </summary>

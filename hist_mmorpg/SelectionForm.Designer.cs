@@ -51,6 +51,7 @@
             this.armiesListContainer = new System.Windows.Forms.SplitContainer();
             this.armiesTextBox = new System.Windows.Forms.TextBox();
             this.armiesListView = new System.Windows.Forms.ListView();
+            this.armiesCloseBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.npcContainer)).BeginInit();
             this.npcContainer.Panel1.SuspendLayout();
             this.npcContainer.Panel2.SuspendLayout();
@@ -72,6 +73,7 @@
             this.transferContainer.Panel2.SuspendLayout();
             this.transferContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.armiesContainer)).BeginInit();
+            this.armiesContainer.Panel1.SuspendLayout();
             this.armiesContainer.Panel2.SuspendLayout();
             this.armiesContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.armiesListContainer)).BeginInit();
@@ -325,11 +327,15 @@
             this.armiesContainer.Name = "armiesContainer";
             this.armiesContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
+            // armiesContainer.Panel1
+            // 
+            this.armiesContainer.Panel1.Controls.Add(this.armiesCloseBtn);
+            // 
             // armiesContainer.Panel2
             // 
             this.armiesContainer.Panel2.Controls.Add(this.armiesListContainer);
             this.armiesContainer.Size = new System.Drawing.Size(620, 547);
-            this.armiesContainer.SplitterDistance = 57;
+            this.armiesContainer.SplitterDistance = 85;
             this.armiesContainer.TabIndex = 3;
             // 
             // armiesListContainer
@@ -345,8 +351,8 @@
             // armiesListContainer.Panel2
             // 
             this.armiesListContainer.Panel2.Controls.Add(this.armiesListView);
-            this.armiesListContainer.Size = new System.Drawing.Size(620, 486);
-            this.armiesListContainer.SplitterDistance = 262;
+            this.armiesListContainer.Size = new System.Drawing.Size(620, 458);
+            this.armiesListContainer.SplitterDistance = 308;
             this.armiesListContainer.TabIndex = 0;
             // 
             // armiesTextBox
@@ -355,7 +361,7 @@
             this.armiesTextBox.Location = new System.Drawing.Point(0, 0);
             this.armiesTextBox.Multiline = true;
             this.armiesTextBox.Name = "armiesTextBox";
-            this.armiesTextBox.Size = new System.Drawing.Size(262, 486);
+            this.armiesTextBox.Size = new System.Drawing.Size(308, 458);
             this.armiesTextBox.TabIndex = 0;
             // 
             // armiesListView
@@ -364,20 +370,31 @@
             this.armiesListView.FullRowSelect = true;
             this.armiesListView.Location = new System.Drawing.Point(0, 0);
             this.armiesListView.Name = "armiesListView";
-            this.armiesListView.Size = new System.Drawing.Size(354, 486);
+            this.armiesListView.Size = new System.Drawing.Size(308, 458);
             this.armiesListView.TabIndex = 0;
             this.armiesListView.UseCompatibleStateImageBehavior = false;
             this.armiesListView.View = System.Windows.Forms.View.Details;
+            this.armiesListView.SelectedIndexChanged += new System.EventHandler(this.armiesListView_SelectedIndexChanged);
+            // 
+            // armiesCloseBtn
+            // 
+            this.armiesCloseBtn.Location = new System.Drawing.Point(261, 18);
+            this.armiesCloseBtn.Name = "armiesCloseBtn";
+            this.armiesCloseBtn.Size = new System.Drawing.Size(108, 35);
+            this.armiesCloseBtn.TabIndex = 7;
+            this.armiesCloseBtn.Text = "Close";
+            this.armiesCloseBtn.UseVisualStyleBackColor = true;
+            this.armiesCloseBtn.Click += new System.EventHandler(this.armiesCloseBtn_Click);
             // 
             // SelectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(620, 547);
-            this.Controls.Add(this.npcContainer);
             this.Controls.Add(this.armiesContainer);
-            this.Controls.Add(this.transferContainer);
             this.Controls.Add(this.lockOutContainer);
+            this.Controls.Add(this.npcContainer);
+            this.Controls.Add(this.transferContainer);
             this.Name = "SelectionForm";
             this.Text = "SelectionForm";
             this.npcContainer.Panel1.ResumeLayout(false);
@@ -403,6 +420,7 @@
             this.transferContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.transferContainer)).EndInit();
             this.transferContainer.ResumeLayout(false);
+            this.armiesContainer.Panel1.ResumeLayout(false);
             this.armiesContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.armiesContainer)).EndInit();
             this.armiesContainer.ResumeLayout(false);
@@ -440,6 +458,7 @@
         private System.Windows.Forms.SplitContainer armiesListContainer;
         private System.Windows.Forms.TextBox armiesTextBox;
         private System.Windows.Forms.ListView armiesListView;
+        private System.Windows.Forms.Button armiesCloseBtn;
 
     }
 }

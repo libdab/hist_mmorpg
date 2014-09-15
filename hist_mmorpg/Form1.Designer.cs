@@ -175,6 +175,9 @@ namespace hist_mmorpg
             this.armyListContainer = new System.Windows.Forms.SplitContainer();
             this.armyTextBox = new System.Windows.Forms.TextBox();
             this.armyListView = new System.Windows.Forms.ListView();
+            this.armyExamineBtn = new System.Windows.Forms.Button();
+            this.houseExamineArmiesBtn = new System.Windows.Forms.Button();
+            this.travelExamineArmiesBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -817,6 +820,7 @@ namespace hist_mmorpg
             // 
             // travelContainer.Panel1
             // 
+            this.travelContainer.Panel1.Controls.Add(this.travelExamineArmiesBtn);
             this.travelContainer.Panel1.Controls.Add(this.travelRouteTextBox);
             this.travelContainer.Panel1.Controls.Add(this.travelRouteBtn);
             this.travelContainer.Panel1.Controls.Add(this.charCampDaysLabel);
@@ -1275,6 +1279,7 @@ namespace hist_mmorpg
             // 
             // houseContainer.Panel1
             // 
+            this.houseContainer.Panel1.Controls.Add(this.houseExamineArmiesBtn);
             this.houseContainer.Panel1.Controls.Add(this.houseFireBtn);
             this.houseContainer.Panel1.Controls.Add(this.houseEntourageBtn);
             this.houseContainer.Panel1.Controls.Add(this.houseRouteTextBox);
@@ -1526,6 +1531,7 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel1
             // 
+            this.armyContainer.Panel1.Controls.Add(this.armyExamineBtn);
             this.armyContainer.Panel1.Controls.Add(this.label9);
             this.armyContainer.Panel1.Controls.Add(this.armyCampTextBox);
             this.armyContainer.Panel1.Controls.Add(this.label10);
@@ -1594,7 +1600,7 @@ namespace hist_mmorpg
             // 
             // armyAutoCombatBtn
             // 
-            this.armyAutoCombatBtn.Location = new System.Drawing.Point(71, 444);
+            this.armyAutoCombatBtn.Location = new System.Drawing.Point(75, 483);
             this.armyAutoCombatBtn.Name = "armyAutoCombatBtn";
             this.armyAutoCombatBtn.Size = new System.Drawing.Size(138, 23);
             this.armyAutoCombatBtn.TabIndex = 37;
@@ -1605,7 +1611,7 @@ namespace hist_mmorpg
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(49, 412);
+            this.label7.Location = new System.Drawing.Point(53, 451);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(107, 13);
             this.label7.TabIndex = 36;
@@ -1614,7 +1620,7 @@ namespace hist_mmorpg
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(62, 386);
+            this.label8.Location = new System.Drawing.Point(66, 425);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(94, 13);
             this.label8.TabIndex = 35;
@@ -1622,14 +1628,14 @@ namespace hist_mmorpg
             // 
             // armyOddsTextBox
             // 
-            this.armyOddsTextBox.Location = new System.Drawing.Point(162, 409);
+            this.armyOddsTextBox.Location = new System.Drawing.Point(166, 448);
             this.armyOddsTextBox.Name = "armyOddsTextBox";
             this.armyOddsTextBox.Size = new System.Drawing.Size(62, 20);
             this.armyOddsTextBox.TabIndex = 34;
             // 
             // armyAggroTextBox
             // 
-            this.armyAggroTextBox.Location = new System.Drawing.Point(162, 383);
+            this.armyAggroTextBox.Location = new System.Drawing.Point(166, 422);
             this.armyAggroTextBox.Name = "armyAggroTextBox";
             this.armyAggroTextBox.Size = new System.Drawing.Size(61, 20);
             this.armyAggroTextBox.TabIndex = 33;
@@ -1638,7 +1644,7 @@ namespace hist_mmorpg
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(12, 354);
+            this.label6.Location = new System.Drawing.Point(16, 393);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(253, 13);
             this.label6.TabIndex = 32;
@@ -1792,14 +1798,44 @@ namespace hist_mmorpg
             this.armyListView.View = System.Windows.Forms.View.Details;
             this.armyListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.armyListView_ItemSelectionChanged);
             // 
+            // armyExamineBtn
+            // 
+            this.armyExamineBtn.Location = new System.Drawing.Point(12, 303);
+            this.armyExamineBtn.Name = "armyExamineBtn";
+            this.armyExamineBtn.Size = new System.Drawing.Size(138, 48);
+            this.armyExamineBtn.TabIndex = 42;
+            this.armyExamineBtn.Text = "Examine All Armies In This Fief";
+            this.armyExamineBtn.UseVisualStyleBackColor = true;
+            this.armyExamineBtn.Click += new System.EventHandler(this.armyExamineBtn_Click);
+            // 
+            // houseExamineArmiesBtn
+            // 
+            this.houseExamineArmiesBtn.Location = new System.Drawing.Point(12, 189);
+            this.houseExamineArmiesBtn.Name = "houseExamineArmiesBtn";
+            this.houseExamineArmiesBtn.Size = new System.Drawing.Size(138, 48);
+            this.houseExamineArmiesBtn.TabIndex = 44;
+            this.houseExamineArmiesBtn.Text = "Examine All Armies In This Fief";
+            this.houseExamineArmiesBtn.UseVisualStyleBackColor = true;
+            this.houseExamineArmiesBtn.Click += new System.EventHandler(this.houseExamineArmiesBtn_Click);
+            // 
+            // travelExamineArmiesBtn
+            // 
+            this.travelExamineArmiesBtn.Location = new System.Drawing.Point(15, 243);
+            this.travelExamineArmiesBtn.Name = "travelExamineArmiesBtn";
+            this.travelExamineArmiesBtn.Size = new System.Drawing.Size(122, 48);
+            this.travelExamineArmiesBtn.TabIndex = 45;
+            this.travelExamineArmiesBtn.Text = "Examine All Armies In This Fief";
+            this.travelExamineArmiesBtn.UseVisualStyleBackColor = true;
+            this.travelExamineArmiesBtn.Click += new System.EventHandler(this.travelExamineArmiesBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
             this.Controls.Add(this.travelContainer);
-            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.houseContainer);
+            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
@@ -2044,6 +2080,9 @@ namespace hist_mmorpg
         private System.Windows.Forms.TextBox armyCampTextBox;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Button armyCampBtn;
+        private System.Windows.Forms.Button armyExamineBtn;
+        private System.Windows.Forms.Button houseExamineArmiesBtn;
+        private System.Windows.Forms.Button travelExamineArmiesBtn;
 
     }
 }

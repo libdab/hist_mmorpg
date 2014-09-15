@@ -18,6 +18,10 @@ namespace hist_mmorpg
         /// Holds parent form, allowing access to its public variables
         /// </summary>
         public Form1 parent;
+        /// <summary>
+        /// Holds observer (if examining armies in fief)
+        /// </summary>
+        public Character observer { get; set; }
 
         /// <summary>
         /// Constructor for SelectionForm
@@ -25,12 +29,14 @@ namespace hist_mmorpg
         /// <param name="par">Parent Form1 object</param>
         /// <param name="myFunction">String indicating function to be performed</param>
         /// <param name="armyID">String indicating ID of army (if choosing leader)</param>
-        public SelectionForm(Form1 par, String myFunction, String armyID = null)
+        /// <param name="observer">Observer (if examining armies in fief)</param>
+        public SelectionForm(Form1 par, String myFunction, String armyID = null, Character obs = null)
         {
             // initialise form elements
             InitializeComponent();
 
             this.parent = par;
+            this.observer = obs;
 
             // initialise NPC display
             this.initDisplay(myFunction, armyID);
@@ -88,7 +94,7 @@ namespace hist_mmorpg
                 this.refreshArmiesDisplay();
 
                 // show container
-                this.transferContainer.BringToFront();
+                this.armiesContainer.BringToFront();
             }
         }
 
@@ -210,9 +216,126 @@ namespace hist_mmorpg
         /// <param name="a">Army whose information is to be displayed</param>
         public string displayArmy(Army a)
         {
+            bool isMyArmy = false;
+            uint totalTroops = 0;
             string armyText = "";
 
-            // get data here (need estimate method)
+            // ID
+            armyText += "ID: " + a.armyID + "\r\n\r\n";
+
+            // owner
+            PlayerCharacter thisOwner = Globals.pcMasterList[a.owner];
+            armyText += "Owner: " + thisOwner.firstName + " " + thisOwner.familyName + " (" + thisOwner.charID + ")\r\n\r\n";
+            // check if is your army (will effect display of troop numbers)
+            if (thisOwner == this.parent.myChar)
+            {
+                isMyArmy = true;
+            }
+
+            // leader
+            Character armyLeader = a.getLeader();
+            armyText += "Leader: " + armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")\r\n\r\n";
+
+            // troop numbers
+            armyText += "Troop numbers";
+            if (!isMyArmy)
+            {
+                armyText += " (ESTIMATE)";
+            }
+            armyText += ":\r\n";
+
+            // knights
+            armyText += " - Knights: ";
+            if (isMyArmy)
+            {
+                armyText += a.knights;
+                totalTroops += a.knights;
+            }
+            else
+            {
+                uint knightsNumber = a.getTroopsEstimate(observer, "knights");
+                armyText += knightsNumber;
+                totalTroops += knightsNumber;
+            }
+            armyText += "\r\n";
+
+            // menAtArms
+            armyText += " - Men-at-Arms: ";
+            if (isMyArmy)
+            {
+                armyText += a.menAtArms;
+                totalTroops += a.menAtArms;
+            }
+            else
+            {
+                uint menAtArmsNumber = a.getTroopsEstimate(observer, "menAtArms");
+                armyText += menAtArmsNumber;
+                totalTroops += menAtArmsNumber;
+            }
+            armyText += "\r\n";
+
+            // lightCavalry
+            armyText += " - Light Cavalry: ";
+            if (isMyArmy)
+            {
+                armyText += a.lightCavalry;
+                totalTroops += a.lightCavalry;
+            }
+            else
+            {
+                uint lightCavalryNumber = a.getTroopsEstimate(observer, "lightCavalry");
+                armyText += lightCavalryNumber;
+                totalTroops += lightCavalryNumber;
+            }
+            armyText += "\r\n";
+
+            // yeomen
+            armyText += " - Yeomen: ";
+            if (isMyArmy)
+            {
+                armyText += a.yeomen;
+                totalTroops += a.yeomen;
+            }
+            else
+            {
+                uint yeomenNumber = a.getTroopsEstimate(observer, "yeomen");
+                armyText += yeomenNumber;
+                totalTroops += yeomenNumber;
+            }
+            armyText += "\r\n";
+
+            // foot
+            armyText += " - Foot: ";
+            if (isMyArmy)
+            {
+                armyText += a.foot;
+                totalTroops += a.foot;
+            }
+            else
+            {
+                uint footNumber = a.getTroopsEstimate(observer, "foot");
+                armyText += footNumber;
+                totalTroops += footNumber;
+            }
+            armyText += "\r\n";
+
+            // rabble
+            armyText += " - Rabble: ";
+            if (isMyArmy)
+            {
+                armyText += a.rabble;
+                totalTroops += a.rabble;
+            }
+            else
+            {
+                uint rabbleNumber = a.getTroopsEstimate(observer, "rabble");
+                armyText += rabbleNumber;
+                totalTroops += rabbleNumber;
+            }
+            armyText += "\r\n";
+
+            armyText += "   ==================\r\n";
+            armyText += " - TOTAL: " + totalTroops + "\r\n\r\n";
 
             return armyText;
         }
@@ -434,8 +557,8 @@ namespace hist_mmorpg
         public void setUpArmiesList()
         {
             // add necessary columns
-            this.transferListView.Columns.Add("   ID", -2, HorizontalAlignment.Left);
-            this.transferListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
+            this.armiesListView.Columns.Add("   ID", -2, HorizontalAlignment.Left);
+            this.armiesListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -488,13 +611,10 @@ namespace hist_mmorpg
         {
             ListViewItem armyEntry = null;
 
-            // get my army
-            Army myArmy = this.parent.armyToView;
-
             // get fief
-            Fief thisFief = Globals.fiefMasterList[myArmy.location];
+            Fief thisFief = this.observer.location;
 
-            // Create an item and subitems for each army and add to list
+            // Create an item and subitems for each army in the fief and add to list
             foreach (string armyID in thisFief.armies)
             {
                 // get army
@@ -507,7 +627,7 @@ namespace hist_mmorpg
                 armyEntry.SubItems.Add(thisArmy.owner);
 
                 // add item to fiefsListView
-                this.transferListView.Items.Add(armyEntry);
+                this.armiesListView.Items.Add(armyEntry);
             }
         }
 
@@ -832,6 +952,40 @@ namespace hist_mmorpg
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
         private void transferCancelBtn_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        /// <summary>
+        /// Responds to the SelectedIndexChanged event of the armiesListView,
+        /// displaying the details of the selected army
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armiesListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string textToDisplay = "";
+
+            if (armiesListView.SelectedItems.Count > 0)
+            {
+                // set textbox to read only
+                this.armiesTextBox.ReadOnly = true;
+
+                // get details
+                textToDisplay += this.displayArmy(Globals.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text]);
+
+                // display details
+                this.armiesTextBox.Text = textToDisplay;
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armiesCloseBtn button,
+        /// closing the armies list
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armiesCloseBtn_Click(object sender, EventArgs e)
         {
             this.Close();
         }

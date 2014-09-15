@@ -27,7 +27,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds Character to view in UI
         /// </summary>
-        private Character charToView;
+        public Character charToView;
         /// <summary>
         /// Holds Fief to view in UI
         /// </summary>
@@ -503,7 +503,18 @@ namespace hist_mmorpg
             myChar1.armyID = myArmy.armyID;
             myArmy.location = Globals.pcMasterList[myArmy.leader].location.fiefID;
             myChar1.location.armies.Add(myArmy.armyID);
-            
+
+            // create another (enemy) army and add in appropriate places
+            Army myArmy2 = new Army("army" + Globals.getNextArmyID(), null, null, 90, this.clock, null, ft: 2000);
+            Globals.armyMasterList.Add(myArmy2.armyID, myArmy2);
+            myArmy2.owner = myChar2.charID;
+            myArmy2.leader = myChar2.charID;
+            myArmy2.days = Globals.pcMasterList[myArmy2.leader].days;
+            myChar2.myArmies.Add(myArmy2);
+            myChar2.armyID = myArmy2.armyID;
+            myArmy2.location = Globals.pcMasterList[myArmy2.leader].location.fiefID;
+            myChar2.location.armies.Add(myArmy2.armyID);
+
             // bar a character from the myFief1 keep
 			myFief2.barCharacter(myNPC1.charID);
             myFief2.barCharacter(myChar2.charID);
@@ -2535,6 +2546,7 @@ namespace hist_mmorpg
             this.houseRouteTextBox.Text = "";
             this.houseEntourageBtn.Enabled = false;
             this.houseFireBtn.Enabled = false;
+            this.houseExamineArmiesBtn.Enabled = false;
 
             // clear existing items in characters list
             this.houseCharListView.Items.Clear();
@@ -3397,6 +3409,7 @@ namespace hist_mmorpg
             this.armyOddsTextBox.Enabled = false;
             this.armyCampBtn.Enabled = false;
             this.armyCampTextBox.Enabled = false;
+            this.armyExamineBtn.Enabled = false;
             
             // clear existing items in armies list
             this.armyListView.Items.Clear();
@@ -4641,6 +4654,7 @@ namespace hist_mmorpg
                 this.houseRouteBtn.Enabled = true;
                 this.houseRouteTextBox.Enabled = true;
                 this.houseEntourageBtn.Enabled = true;
+                this.houseExamineArmiesBtn.Enabled = true;
 
                 // if family selected, enable 'choose heir' button, disbale 'fire' button
                 if ((this.charToView.familyID != null) && (this.charToView.familyID.Equals(this.myChar.charID)))
@@ -5911,6 +5925,7 @@ namespace hist_mmorpg
                 this.armyOddsTextBox.Enabled = true;
                 this.armyCampBtn.Enabled = true;
                 this.armyCampTextBox.Enabled = true;
+                this.armyExamineBtn.Enabled = true;
 
                 // set auto combat values
                 this.armyAggroTextBox.Text = this.armyToView.aggression.ToString();
@@ -5955,8 +5970,8 @@ namespace hist_mmorpg
                 thisArmyID = this.armyListView.SelectedItems[0].SubItems[0].Text;
 
                 // display selection form
-                SelectionForm chooseBailiff = new SelectionForm(this, "leader", armyID: thisArmyID);
-                chooseBailiff.Show();
+                SelectionForm chooseLeader = new SelectionForm(this, "leader", armyID: thisArmyID);
+                chooseLeader.Show();
             }
 
             // if no army selected
@@ -6270,6 +6285,90 @@ namespace hist_mmorpg
                 }
 
             }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyExamineBtn button
+        /// displaying a list of all armies in the current army's fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyExamineBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            if (this.armyListView.SelectedItems.Count > 0)
+            {
+                // army leader
+                Character thisLeader = this.armyToView.getLeader();
+
+                // display armies list
+                SelectionForm examineArmies = new SelectionForm(this, "armies", obs: thisLeader);
+                examineArmies.Show();
+            }
+
+            // if no army selected
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("No army selected!");
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the houseExamineArmiesBtn button
+        /// displaying a list of all armies in the current NPC's fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void houseExamineArmiesBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            if (this.houseCharListView.SelectedItems.Count > 0)
+            {
+                // NPC
+                Character thisObserver = this.charToView;
+
+                // display armies list
+                SelectionForm examineArmies = new SelectionForm(this, "armies", obs: thisObserver);
+                examineArmies.Show();
+            }
+
+            // if no NPC selected
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("No NPC selected!");
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the travelExamineArmiesBtn button
+        /// displaying a list of all armies in the Player's current fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void travelExamineArmiesBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            // display armies list
+            SelectionForm examineArmies = new SelectionForm(this, "armies", obs: this.myChar);
+            examineArmies.Show();
 
         }
 
