@@ -310,19 +310,50 @@ namespace hist_mmorpg
         {
             double cv = 0;
 
-            // get base CV (for troops)
-            cv = this.foot * 3;
+            // get leader
+            Character myLeader = this.getLeader();
+
+            // get nationality (effects combat values)
+            string troopNationality = "";
+            if (myLeader.nationality.Equals("E"))
+            {
+                troopNationality = "E";
+            }
+            else
+            {
+                troopNationality = "O";
+            }
+
+            // get combat values for that nationality
+            uint[] thisCombatValues = Globals.combatValues[troopNationality];
+
+            // get CV for knights
+            cv += this.knights * thisCombatValues[0];
+
+            // get CV for menAtArms
+            cv += this.menAtArms * thisCombatValues[1];
+
+            // get CV for lightCavalry
+            cv += this.lightCavalry * thisCombatValues[2];
+
+            // get CV for yeomen
+            cv += this.yeomen * thisCombatValues[3];
+
+            // get CV for foot
+            cv += this.foot * thisCombatValues[4];
+
+            // get CV for rabble
+            cv += this.rabble * thisCombatValues[5];
 
             // get leader's CV
-            Character myLeader = this.getLeader();
-            cv = cv + myLeader.getCombatValue();
+            cv += myLeader.getCombatValue();
 
             // if leader is PC, get CV of entourage
             if (myLeader is PlayerCharacter)
             {
                 for (int i = 0; i < (myLeader as PlayerCharacter).myNPCs.Count; i++ )
                 {
-                    cv = cv + (myLeader as PlayerCharacter).myNPCs[i].getCombatValue();
+                    cv += (myLeader as PlayerCharacter).myNPCs[i].getCombatValue();
                 }
             }
 
@@ -392,7 +423,21 @@ namespace hist_mmorpg
 
             return troopNumber;
         }
-        
+
+        /// <summary>
+        /// Gets the army's owner
+        /// </summary>
+        /// <returns>the owner</returns>
+        public PlayerCharacter getOwner()
+        {
+            PlayerCharacter myOwner = null;
+
+            // get leader from PC master list
+            myOwner = Globals.pcMasterList[this.owner];
+
+            return myOwner;
+        }
+
         /// <summary>
         /// Gets the army's leader
         /// </summary>

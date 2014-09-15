@@ -218,19 +218,35 @@ namespace hist_mmorpg
         {
             bool isMyArmy = false;
             uint totalTroops = 0;
+            double combatValue = 0;
             string armyText = "";
 
             // ID
             armyText += "ID: " + a.armyID + "\r\n\r\n";
 
             // owner
-            PlayerCharacter thisOwner = Globals.pcMasterList[a.owner];
+            PlayerCharacter thisOwner = a.getOwner();
             armyText += "Owner: " + thisOwner.firstName + " " + thisOwner.familyName + " (" + thisOwner.charID + ")\r\n\r\n";
+
             // check if is your army (will effect display of troop numbers)
             if (thisOwner == this.parent.myChar)
             {
                 isMyArmy = true;
             }
+
+            // get nationality (effects combat values)
+            string troopNationality = "";
+            if (thisOwner.nationality.Equals("E"))
+            {
+                troopNationality = "E";
+            }
+            else
+            {
+                troopNationality = "O";
+            }
+
+            // get combat values for that nationality
+            uint[] thisCombatValues = Globals.combatValues[troopNationality];
 
             // leader
             Character armyLeader = a.getLeader();
@@ -250,12 +266,16 @@ namespace hist_mmorpg
             {
                 armyText += a.knights;
                 totalTroops += a.knights;
+                // combat value
+                combatValue += a.knights * thisCombatValues[0];
             }
             else
             {
                 uint knightsNumber = a.getTroopsEstimate(observer, "knights");
                 armyText += knightsNumber;
                 totalTroops += knightsNumber;
+                // combat value
+                combatValue += knightsNumber * thisCombatValues[0];
             }
             armyText += "\r\n";
 
@@ -265,12 +285,16 @@ namespace hist_mmorpg
             {
                 armyText += a.menAtArms;
                 totalTroops += a.menAtArms;
+                // combat value
+                combatValue += a.menAtArms * thisCombatValues[1];
             }
             else
             {
                 uint menAtArmsNumber = a.getTroopsEstimate(observer, "menAtArms");
                 armyText += menAtArmsNumber;
                 totalTroops += menAtArmsNumber;
+                // combat value
+                combatValue += menAtArmsNumber * thisCombatValues[1];
             }
             armyText += "\r\n";
 
@@ -280,12 +304,16 @@ namespace hist_mmorpg
             {
                 armyText += a.lightCavalry;
                 totalTroops += a.lightCavalry;
+                // combat value
+                combatValue += a.lightCavalry * thisCombatValues[2];
             }
             else
             {
                 uint lightCavalryNumber = a.getTroopsEstimate(observer, "lightCavalry");
                 armyText += lightCavalryNumber;
                 totalTroops += lightCavalryNumber;
+                // combat value
+                combatValue += lightCavalryNumber * thisCombatValues[2];
             }
             armyText += "\r\n";
 
@@ -295,12 +323,16 @@ namespace hist_mmorpg
             {
                 armyText += a.yeomen;
                 totalTroops += a.yeomen;
+                // combat value
+                combatValue += a.yeomen * thisCombatValues[3];
             }
             else
             {
                 uint yeomenNumber = a.getTroopsEstimate(observer, "yeomen");
                 armyText += yeomenNumber;
                 totalTroops += yeomenNumber;
+                // combat value
+                combatValue += yeomenNumber * thisCombatValues[3];
             }
             armyText += "\r\n";
 
@@ -310,12 +342,16 @@ namespace hist_mmorpg
             {
                 armyText += a.foot;
                 totalTroops += a.foot;
+                // combat value
+                combatValue += a.foot * thisCombatValues[4];
             }
             else
             {
                 uint footNumber = a.getTroopsEstimate(observer, "foot");
                 armyText += footNumber;
                 totalTroops += footNumber;
+                // combat value
+                combatValue += footNumber * thisCombatValues[4];
             }
             armyText += "\r\n";
 
@@ -325,17 +361,24 @@ namespace hist_mmorpg
             {
                 armyText += a.rabble;
                 totalTroops += a.rabble;
+                // combat value
+                combatValue += a.rabble * thisCombatValues[5];
             }
             else
             {
                 uint rabbleNumber = a.getTroopsEstimate(observer, "rabble");
                 armyText += rabbleNumber;
                 totalTroops += rabbleNumber;
+                // combat value
+                combatValue += rabbleNumber * thisCombatValues[5];
             }
             armyText += "\r\n";
 
             armyText += "   ==================\r\n";
             armyText += " - TOTAL: " + totalTroops + "\r\n\r\n";
+
+            // get army's combat value and pass to army screen's CheckBox tag
+            this.armiesCheckBox.Tag = combatValue.ToString();
 
             return armyText;
         }
@@ -559,6 +602,10 @@ namespace hist_mmorpg
             // add necessary columns
             this.armiesListView.Columns.Add("   ID", -2, HorizontalAlignment.Left);
             this.armiesListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
+
+            // disable checkbox
+            this.armiesCheckBox.Checked = false;
+            this.armiesCheckBox.Enabled = false;
         }
 
         /// <summary>
@@ -972,10 +1019,23 @@ namespace hist_mmorpg
                 this.armiesTextBox.ReadOnly = true;
 
                 // get details
-                textToDisplay += this.displayArmy(Globals.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text]);
+                Army otherArmy = Globals.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
+                textToDisplay += this.displayArmy(otherArmy);
 
                 // display details
                 this.armiesTextBox.Text = textToDisplay;
+
+                // enable checkbox if appropriate
+                // observer must have an army
+                if (this.observer.armyID != null)
+                {
+                    // other army must not be owned by player
+                    PlayerCharacter otherOwner = otherArmy.getOwner();
+                    if (otherOwner != this.parent.myChar)
+                    {
+                        this.armiesCheckBox.Enabled = true;
+                    }
+                }
             }
         }
 
@@ -988,6 +1048,20 @@ namespace hist_mmorpg
         private void armiesCloseBtn_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        /// <summary>
+        /// Responds to the CheckedChanged event of the armiesCheckBox,
+        /// showing estimated combat odds between the selected army and the observer's army
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armiesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            // if checkbox checked, calculate rough odds and display
+            if (this.armiesCheckBox.Checked)
+            {
+            }
         }
 
     }

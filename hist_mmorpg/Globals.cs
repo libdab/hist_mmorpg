@@ -110,6 +110,11 @@ namespace hist_mmorpg
         /// Holds next value for detachment ID
         /// </summary>
         public static uint newDetachmentID = 1;
+        /// <summary>
+        /// Holds combat values for different troop types and nationalities
+        /// Key = nationality & Value = combat value for knights, menAtArms, lightCavalry, yeomen, foot, rabble
+        /// </summary>
+        public static Dictionary<string, uint[]> combatValues = new Dictionary<string, uint[]>();
 
         /// <summary>
         /// Gets the next available newCharID, then increments it

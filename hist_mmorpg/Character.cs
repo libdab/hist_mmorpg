@@ -174,11 +174,7 @@ namespace hist_mmorpg
 				this.isPregnant = false;
             }
 
-            // validate nat = Eng/Fr
-            if ((!nat.Equals("Eng")) && (!nat.Equals("Fr")))
-            {
-                throw new InvalidDataException("Character nationality must be either 'Eng' or 'Fr'");
-            }
+            //  TODO: validate nat
 
             // validate maxHea = 1-9.00
             if ((mxHea < 1) || (mxHea > 9))
@@ -675,7 +671,7 @@ namespace hist_mmorpg
             // if character is English and English barred, don't allow entry
             if (location.englishBarred)                
             {                    
-                if (this.nationality.Equals("Eng"))                    
+                if (this.nationality.Equals("E"))                    
                 {                       
                     success = false;
                     System.Windows.Forms.MessageBox.Show("Bailiff: The duplicitous English are barred from entering this keep, Good Sir!");
@@ -685,7 +681,7 @@ namespace hist_mmorpg
             // if character is French and French barred, don't allow entry
             else if (location.frenchBarred)
             {
-                if (this.nationality.Equals("Fr"))
+                if (this.nationality.Equals("F"))
                 {
                     success = false;
                     System.Windows.Forms.MessageBox.Show("Bailiff: The perfidious French are barred from entering this keep, Mon Seigneur!");
@@ -1135,10 +1131,16 @@ namespace hist_mmorpg
             double cv = 0;
 
             // get base CV
-            cv = (this.combat + this.calculateHealth()) / 2;
+            cv += (this.combat + this.calculateHealth()) / 2;
 
             // factor in armour
-            cv = cv + 5;
+            cv += 5;
+
+            // factor in nationality
+            if (this.nationality.Equals("E"))
+            {
+                cv += 5;
+            }
 
             return cv;
         }
