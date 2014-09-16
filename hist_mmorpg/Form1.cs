@@ -6384,6 +6384,163 @@ namespace hist_mmorpg
 
         }
 
+        /// <summary>
+        /// Calculates battle values of both armies participating in a battle
+        /// </summary>
+        /// <returns>uint[] containing battle values of attacking & defending armies</returns>
+        /// <param name="attacker">The attacking army</param>
+        /// <param name="defender">The defending army</param>
+        public uint[] calculateBattleValue(Army attacker, Army defender)
+        {
+            uint[] battleValues = new uint[2];
+
+            // get leadership values for each army leader
+            double attackerLV = attacker.getLeader().getLeadershipValue();
+            double defenderLV = defender.getLeader().getLeadershipValue();
+
+            // calculate battle modifier based on LVs
+            // determine highest/lowest of 2 LVs
+            double maxLV = Math.Max(attackerLV, defenderLV);
+            double minLV = Math.Min(attackerLV, defenderLV);
+            double battleModifier = maxLV / minLV;
+
+            // get base combat value for each army
+            uint attackerCV = Convert.ToUInt32(attacker.calculateCombatValue());
+            uint defenderCV = Convert.ToUInt32(defender.calculateCombatValue());
+
+            // apply battle modifer to the army CV corresponding to the highest LV
+            if (attackerLV == maxLV)
+            {
+                attackerCV = Convert.ToUInt32(attackerCV * battleModifier);
+            }
+            else
+            {
+                defenderCV = Convert.ToUInt32(defenderCV * battleModifier);
+            }
+
+            battleValues[0] = attackerCV;
+            battleValues[1] = defenderCV;
+
+            return battleValues;
+        }
+
+        /// <summary>
+        /// Calculates whether the attacking army is able to successfully bring
+        /// the defending army to battle
+        /// </summary>
+        /// <returns>bool indicating whether battle has commenced</returns>
+        /// <param name="attackerValue">uint containing attacking army battle value</param>
+        /// <param name="defenderValue">uint containing defending army battle value</param>
+        public bool bringToBattle(uint attackerValue, uint defenderValue)
+        {
+            bool battleHasCommenced = false;
+            int battleChance = 0;
+
+            if (attackerValue / defenderValue < 2)
+            {
+                battleChance = 10;
+            }
+            else if (attackerValue / defenderValue < 3)
+            {
+                battleChance = 30;
+            }
+            else if (attackerValue / defenderValue < 4)
+            {
+                battleChance = 50;
+            }
+            else if (attackerValue / defenderValue < 5)
+            {
+                battleChance = 70;
+            }
+            else if (attackerValue / defenderValue < 6)
+            {
+                battleChance = 80;
+            }
+            else
+            {
+                battleChance = 90;
+            }
+
+            // generate random percentage
+            int randomPercentage = Globals.myRand.Next(101);
+
+            // compare random percentage to battleChance
+            if (randomPercentage <= battleChance)
+            {
+                battleHasCommenced = true;
+            }
+
+            return battleHasCommenced;
+        }
+
+        /// <summary>
+        /// Calculates whether the attacking army is victorious in a battle
+        /// </summary>
+        /// <returns>bool indicating whether attacking army is victorious</returns>
+        /// <param name="attackerValue">uint containing attacking army battle value</param>
+        /// <param name="defenderValue">uint containing defending army battle value</param>
+        public bool decideBattleVictory(uint attackerValue, uint defenderValue)
+        {
+            bool attackerVictorious = false;
+
+            // calculate chance of victory
+            double attackerVictoryChance = (attackerValue / (attackerValue + defenderValue)) * 100;
+
+            // generate random percentage
+            int randomPercentage = Globals.myRand.Next(101);
+
+            // compare random percentage to attackerVictoryChance
+            if (randomPercentage <= attackerVictoryChance)
+            {
+                attackerVictorious = true;
+            }
+
+            return attackerVictorious;
+        }
+
+        /// <summary>
+        /// Calculates the outcome of a battle, including troop losses and PC/NPC casualties
+        /// </summary>
+        /// <param name="attacker">The attacking army</param>
+        /// <param name="defender">The defending army</param>
+        public void giveBattle(Army attacker, Army defender)
+        {
+            bool battleHasCommenced = false;
+            uint[] battleValues = new uint[2];          
+
+            // get battle values for both armies
+            battleValues = this.calculateBattleValue(attacker, defender);
+
+            // check if attacker has managed to bring defender to battle
+            if (defender.aggression != 0)
+            {
+                battleHasCommenced = true;
+            }
+            else
+            {
+                battleHasCommenced = this.bringToBattle(battleValues[0], battleValues[1]);
+            }
+
+            if (battleHasCommenced)
+            {
+                // calculate if attacker has won
+                bool attackerVictorious = this.decideBattleVictory(battleValues[0], battleValues[1]);
+
+                // calculate casualties for both sides
+
+                // check if either army has disbanded
+
+                // check if any PCs/NPCs have been wounded or killed
+
+                // check if either army needs to retreat, and perform it
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show(defender.armyID + " has refused battle and has retreated to an adjacent fief.");
+            }
+
+        }
+
     }
 
 }
