@@ -162,7 +162,7 @@ namespace hist_mmorpg
         public bool hasRecruited { get; set; }
         /// <summary>
         /// Holds troop detachments in the fief awaiting transfer
-        /// String[] contains from (charID), to (charID), size, days left when detached
+        /// String[] contains from (charID), to (charID), troop numbers (each type), days left when detached
         /// </summary>
         public Dictionary<string, string[]> troopTransfers = new Dictionary<string, string[]>();
 

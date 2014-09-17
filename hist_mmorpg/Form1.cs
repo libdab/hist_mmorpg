@@ -3391,7 +3391,12 @@ namespace hist_mmorpg
             this.armyTextBox.Text = "";
             this.armyRecruitTextBox.Text = "";
             this.armyTransDropWhoTextBox.Text = "";
-            this.armyTransDropNumTextBox.Text = "";
+            this.armyTransKnightTextBox.Text = "";
+            this.armyTransMAAtextBox.Text = "";
+            this.armyTransLCavTextBox.Text = "";
+            this.armyTransYeomenTextBox.Text = "";
+            this.armyTransFootTextBox.Text = "";
+            this.armyTransRabbleTextBox.Text = "";
             this.armyAggroTextBox.Text = "";
             this.armyOddsTextBox.Text = "";
             this.armyCampTextBox.Text = "";
@@ -3407,7 +3412,12 @@ namespace hist_mmorpg
             this.armyAppointSelfBtn.Enabled = false;
             this.armyTransDropBtn.Enabled = false;
             this.armyTransDropWhoTextBox.Enabled = false;
-            this.armyTransDropNumTextBox.Enabled = false;
+            this.armyTransKnightTextBox.Enabled = false;
+            this.armyTransMAAtextBox.Enabled = false;
+            this.armyTransLCavTextBox.Enabled = false;
+            this.armyTransYeomenTextBox.Enabled = false;
+            this.armyTransFootTextBox.Enabled = false;
+            this.armyTransRabbleTextBox.Enabled = false;
             this.armyTransPickupBtn.Enabled = false;
             this.armyDisbandBtn.Enabled = false;
             this.armyAutoCombatBtn.Enabled = false;
@@ -5926,7 +5936,12 @@ namespace hist_mmorpg
                 this.armyAppointLeaderBtn.Enabled = true;
                 this.armyAppointSelfBtn.Enabled = true;
                 this.armyTransDropBtn.Enabled = true;
-                this.armyTransDropNumTextBox.Enabled = true;
+                this.armyTransKnightTextBox.Enabled = true;
+                this.armyTransMAAtextBox.Enabled = true;
+                this.armyTransLCavTextBox.Enabled = true;
+                this.armyTransYeomenTextBox.Enabled = true;
+                this.armyTransFootTextBox.Enabled = true;
+                this.armyTransRabbleTextBox.Enabled = true;
                 this.armyTransDropWhoTextBox.Enabled = true;
                 this.armyTransPickupBtn.Enabled = true;
                 this.armyDisbandBtn.Enabled = true;
@@ -6020,6 +6035,7 @@ namespace hist_mmorpg
             bool proceed = true;
             bool adjustDays = true;
             int daysTaken = 0;
+            uint totalTroopsToTransfer = 0;
 
             if (this.armyToView != null)
             {
@@ -6027,18 +6043,88 @@ namespace hist_mmorpg
                 try
                 {
                     // get number of troops to transfer
-                    UInt32 troopsToTransfer = Convert.ToUInt32(this.armyTransDropNumTextBox.Text);
+                    UInt32 knightsToTransfer = Convert.ToUInt32(this.armyTransKnightTextBox.Text);
+                    UInt32 maaToTransfer = Convert.ToUInt32(this.armyTransMAAtextBox.Text);
+                    UInt32 lcavToTransfer = Convert.ToUInt32(this.armyTransLCavTextBox.Text);
+                    UInt32 yeomenToTransfer = Convert.ToUInt32(this.armyTransYeomenTextBox.Text);
+                    UInt32 footToTransfer = Convert.ToUInt32(this.armyTransFootTextBox.Text);
+                    UInt32 rabbleToTransfer = Convert.ToUInt32(this.armyTransRabbleTextBox.Text);
 
-                    // if not enough troops in army, cancel
-                    if (troopsToTransfer > this.armyToView.calcArmySize())
+                    // check each troop type; if not enough in army, cancel
+                    // knights
+                    if (knightsToTransfer > this.armyToView.knights)
                     {
-                        System.Windows.Forms.MessageBox.Show("You don't have enough troops in your army for that transfer.  Transfer cancelled.");
+                        System.Windows.Forms.MessageBox.Show("You don't have enough knights in your army for that transfer.  Transfer cancelled.");
                         proceed = false;
                         adjustDays = false;
                     }
+                    else
+                    {
+                        totalTroopsToTransfer += knightsToTransfer;
+                    }
+
+                    // men-at-arms
+                    if (maaToTransfer > this.armyToView.menAtArms)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You don't have enough men-at-arms in your army for that transfer.  Transfer cancelled.");
+                        proceed = false;
+                        adjustDays = false;
+                    }
+                    else
+                    {
+                        totalTroopsToTransfer += maaToTransfer;
+                    }
+
+                    // lightCavalry
+                    if (lcavToTransfer > this.armyToView.lightCavalry)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You don't have enough light cavalry in your army for that transfer.  Transfer cancelled.");
+                        proceed = false;
+                        adjustDays = false;
+                    }
+                    else
+                    {
+                        totalTroopsToTransfer += lcavToTransfer;
+                    }
+
+                    // yeomen
+                    if (yeomenToTransfer > this.armyToView.yeomen)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You don't have enough yeomen in your army for that transfer.  Transfer cancelled.");
+                        proceed = false;
+                        adjustDays = false;
+                    }
+                    else
+                    {
+                        totalTroopsToTransfer += yeomenToTransfer;
+                    }
+
+                    // foot
+                    if (footToTransfer > this.armyToView.foot)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You don't have enough foot in your army for that transfer.  Transfer cancelled.");
+                        proceed = false;
+                        adjustDays = false;
+                    }
+                    else
+                    {
+                        totalTroopsToTransfer += footToTransfer;
+                    }
+
+                    // rabble
+                    if (rabbleToTransfer > this.armyToView.rabble)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You don't have enough rabble in your army for that transfer.  Transfer cancelled.");
+                        proceed = false;
+                        adjustDays = false;
+                    }
+                    else
+                    {
+                        totalTroopsToTransfer += rabbleToTransfer;
+                    }
 
                     // if reduces army to < 100 troops, warn
-                    else if ((this.armyToView.calcArmySize() - troopsToTransfer) < 100)
+                    if (((this.armyToView.calcArmySize() - totalTroopsToTransfer) < 100) && (proceed))
                     {
                         DialogResult dialogResult = MessageBox.Show("This transfer will reduce your army manpower to dangerous levels.  Click OK to proceed.", "Proceed with transfer?", MessageBoxButtons.OKCancel);
 
@@ -6081,13 +6167,27 @@ namespace hist_mmorpg
                     if (proceed)
                     {
                         // remove troops from army
-                        this.armyToView.foot = this.armyToView.foot - troopsToTransfer;
+                        // knights
+                        this.armyToView.knights -= knightsToTransfer;
+                        // menAtArms
+                        this.armyToView.menAtArms -= maaToTransfer;
+                        // lightCavalry
+                        this.armyToView.lightCavalry -= lcavToTransfer;
+                        // yeomen
+                        this.armyToView.yeomen -= yeomenToTransfer;
+                        // foot
+                        this.armyToView.foot -= footToTransfer;
+                        // rabble
+                        this.armyToView.rabble -= rabbleToTransfer;
 
                         // get fief
                         Fief thisFief = Globals.fiefMasterList[this.armyToView.location];
 
                         // create transfer entry
-                        string[] thisTransfer = new string[4] { this.myChar.charID, this.armyTransDropWhoTextBox.Text, troopsToTransfer.ToString(), (this.armyToView.days - daysTaken).ToString() };
+                        string[] thisTransfer = new string[9] { this.myChar.charID, this.armyTransDropWhoTextBox.Text,
+                            knightsToTransfer.ToString(), maaToTransfer.ToString(), lcavToTransfer.ToString(),
+                            yeomenToTransfer.ToString(), footToTransfer.ToString(), rabbleToTransfer.ToString(),
+                            (this.armyToView.days - daysTaken).ToString() };
 
                         // add to fief's troopTransfers list
                         thisFief.troopTransfers.Add(Globals.getNextDetachmentID(), thisTransfer);

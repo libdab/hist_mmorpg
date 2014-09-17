@@ -167,7 +167,7 @@ namespace hist_mmorpg
             this.armyTransPickupBtn = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.armyTransDropNumTextBox = new System.Windows.Forms.TextBox();
+            this.armyTransKnightTextBox = new System.Windows.Forms.TextBox();
             this.armyTransDropWhoTextBox = new System.Windows.Forms.TextBox();
             this.armyTransDropBtn = new System.Windows.Forms.Button();
             this.armyAppointSelfBtn = new System.Windows.Forms.Button();
@@ -178,6 +178,16 @@ namespace hist_mmorpg
             this.armyListContainer = new System.Windows.Forms.SplitContainer();
             this.armyTextBox = new System.Windows.Forms.TextBox();
             this.armyListView = new System.Windows.Forms.ListView();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.armyTransMAAtextBox = new System.Windows.Forms.TextBox();
+            this.armyTransLCavTextBox = new System.Windows.Forms.TextBox();
+            this.armyTransYeomenTextBox = new System.Windows.Forms.TextBox();
+            this.armyTransFootTextBox = new System.Windows.Forms.TextBox();
+            this.armyTransRabbleTextBox = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -1551,6 +1561,16 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel1
             // 
+            this.armyContainer.Panel1.Controls.Add(this.armyTransRabbleTextBox);
+            this.armyContainer.Panel1.Controls.Add(this.armyTransFootTextBox);
+            this.armyContainer.Panel1.Controls.Add(this.armyTransYeomenTextBox);
+            this.armyContainer.Panel1.Controls.Add(this.armyTransLCavTextBox);
+            this.armyContainer.Panel1.Controls.Add(this.armyTransMAAtextBox);
+            this.armyContainer.Panel1.Controls.Add(this.label15);
+            this.armyContainer.Panel1.Controls.Add(this.label14);
+            this.armyContainer.Panel1.Controls.Add(this.label13);
+            this.armyContainer.Panel1.Controls.Add(this.label12);
+            this.armyContainer.Panel1.Controls.Add(this.label11);
             this.armyContainer.Panel1.Controls.Add(this.armyExamineBtn);
             this.armyContainer.Panel1.Controls.Add(this.label9);
             this.armyContainer.Panel1.Controls.Add(this.armyCampTextBox);
@@ -1566,7 +1586,7 @@ namespace hist_mmorpg
             this.armyContainer.Panel1.Controls.Add(this.armyTransPickupBtn);
             this.armyContainer.Panel1.Controls.Add(this.label5);
             this.armyContainer.Panel1.Controls.Add(this.label4);
-            this.armyContainer.Panel1.Controls.Add(this.armyTransDropNumTextBox);
+            this.armyContainer.Panel1.Controls.Add(this.armyTransKnightTextBox);
             this.armyContainer.Panel1.Controls.Add(this.armyTransDropWhoTextBox);
             this.armyContainer.Panel1.Controls.Add(this.armyTransDropBtn);
             this.armyContainer.Panel1.Controls.Add(this.armyAppointSelfBtn);
@@ -1584,7 +1604,7 @@ namespace hist_mmorpg
             // 
             // armyExamineBtn
             // 
-            this.armyExamineBtn.Location = new System.Drawing.Point(12, 389);
+            this.armyExamineBtn.Location = new System.Drawing.Point(12, 448);
             this.armyExamineBtn.Name = "armyExamineBtn";
             this.armyExamineBtn.Size = new System.Drawing.Size(138, 48);
             this.armyExamineBtn.TabIndex = 42;
@@ -1682,7 +1702,7 @@ namespace hist_mmorpg
             // 
             // armyDisbandBtn
             // 
-            this.armyDisbandBtn.Location = new System.Drawing.Point(12, 360);
+            this.armyDisbandBtn.Location = new System.Drawing.Point(12, 419);
             this.armyDisbandBtn.Name = "armyDisbandBtn";
             this.armyDisbandBtn.Size = new System.Drawing.Size(138, 23);
             this.armyDisbandBtn.TabIndex = 11;
@@ -1692,7 +1712,7 @@ namespace hist_mmorpg
             // 
             // armyTransPickupBtn
             // 
-            this.armyTransPickupBtn.Location = new System.Drawing.Point(12, 306);
+            this.armyTransPickupBtn.Location = new System.Drawing.Point(12, 365);
             this.armyTransPickupBtn.Name = "armyTransPickupBtn";
             this.armyTransPickupBtn.Size = new System.Drawing.Size(138, 48);
             this.armyTransPickupBtn.TabIndex = 10;
@@ -1703,38 +1723,38 @@ namespace hist_mmorpg
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(151, 195);
+            this.label5.Location = new System.Drawing.Point(151, 206);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(46, 13);
+            this.label5.Size = new System.Drawing.Size(48, 13);
             this.label5.TabIndex = 9;
-            this.label5.Text = "Troops: ";
+            this.label5.Text = "Knights: ";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(171, 169);
+            this.label4.Location = new System.Drawing.Point(171, 180);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(26, 13);
             this.label4.TabIndex = 8;
             this.label4.Text = "To: ";
             // 
-            // armyTransDropNumTextBox
+            // armyTransKnightTextBox
             // 
-            this.armyTransDropNumTextBox.Location = new System.Drawing.Point(203, 192);
-            this.armyTransDropNumTextBox.Name = "armyTransDropNumTextBox";
-            this.armyTransDropNumTextBox.Size = new System.Drawing.Size(62, 20);
-            this.armyTransDropNumTextBox.TabIndex = 7;
+            this.armyTransKnightTextBox.Location = new System.Drawing.Point(202, 203);
+            this.armyTransKnightTextBox.Name = "armyTransKnightTextBox";
+            this.armyTransKnightTextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransKnightTextBox.TabIndex = 7;
             // 
             // armyTransDropWhoTextBox
             // 
-            this.armyTransDropWhoTextBox.Location = new System.Drawing.Point(203, 166);
+            this.armyTransDropWhoTextBox.Location = new System.Drawing.Point(203, 177);
             this.armyTransDropWhoTextBox.Name = "armyTransDropWhoTextBox";
             this.armyTransDropWhoTextBox.Size = new System.Drawing.Size(61, 20);
             this.armyTransDropWhoTextBox.TabIndex = 6;
             // 
             // armyTransDropBtn
             // 
-            this.armyTransDropBtn.Location = new System.Drawing.Point(12, 166);
+            this.armyTransDropBtn.Location = new System.Drawing.Point(12, 177);
             this.armyTransDropBtn.Name = "armyTransDropBtn";
             this.armyTransDropBtn.Size = new System.Drawing.Size(138, 48);
             this.armyTransDropBtn.TabIndex = 5;
@@ -1827,6 +1847,86 @@ namespace hist_mmorpg
             this.armyListView.UseCompatibleStateImageBehavior = false;
             this.armyListView.View = System.Windows.Forms.View.Details;
             this.armyListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.armyListView_ItemSelectionChanged);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(150, 335);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(47, 13);
+            this.label11.TabIndex = 43;
+            this.label11.Text = "Rabble: ";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(163, 309);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(34, 13);
+            this.label12.TabIndex = 44;
+            this.label12.Text = "Foot: ";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(147, 283);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(52, 13);
+            this.label13.TabIndex = 45;
+            this.label13.Text = "Yeomen: ";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(139, 257);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(58, 13);
+            this.label14.TabIndex = 46;
+            this.label14.Text = "Light Cav: ";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(125, 235);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(72, 13);
+            this.label15.TabIndex = 47;
+            this.label15.Text = "Men at Arms: ";
+            // 
+            // armyTransMAAtextBox
+            // 
+            this.armyTransMAAtextBox.Location = new System.Drawing.Point(202, 228);
+            this.armyTransMAAtextBox.Name = "armyTransMAAtextBox";
+            this.armyTransMAAtextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransMAAtextBox.TabIndex = 48;
+            // 
+            // armyTransLCavTextBox
+            // 
+            this.armyTransLCavTextBox.Location = new System.Drawing.Point(202, 254);
+            this.armyTransLCavTextBox.Name = "armyTransLCavTextBox";
+            this.armyTransLCavTextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransLCavTextBox.TabIndex = 49;
+            // 
+            // armyTransYeomenTextBox
+            // 
+            this.armyTransYeomenTextBox.Location = new System.Drawing.Point(203, 280);
+            this.armyTransYeomenTextBox.Name = "armyTransYeomenTextBox";
+            this.armyTransYeomenTextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransYeomenTextBox.TabIndex = 50;
+            // 
+            // armyTransFootTextBox
+            // 
+            this.armyTransFootTextBox.Location = new System.Drawing.Point(202, 306);
+            this.armyTransFootTextBox.Name = "armyTransFootTextBox";
+            this.armyTransFootTextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransFootTextBox.TabIndex = 51;
+            // 
+            // armyTransRabbleTextBox
+            // 
+            this.armyTransRabbleTextBox.Location = new System.Drawing.Point(203, 332);
+            this.armyTransRabbleTextBox.Name = "armyTransRabbleTextBox";
+            this.armyTransRabbleTextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransRabbleTextBox.TabIndex = 52;
             // 
             // Form1
             // 
@@ -2063,7 +2163,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.ListView armyListView;
         private System.Windows.Forms.Button armyAppointLeaderBtn;
         private System.Windows.Forms.Button armyAppointSelfBtn;
-        private System.Windows.Forms.TextBox armyTransDropNumTextBox;
+        private System.Windows.Forms.TextBox armyTransKnightTextBox;
         private System.Windows.Forms.TextBox armyTransDropWhoTextBox;
         private System.Windows.Forms.Button armyTransDropBtn;
         private System.Windows.Forms.Label label5;
@@ -2083,6 +2183,16 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button armyExamineBtn;
         private System.Windows.Forms.Button houseExamineArmiesBtn;
         private System.Windows.Forms.Button travelExamineArmiesBtn;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox armyTransRabbleTextBox;
+        private System.Windows.Forms.TextBox armyTransFootTextBox;
+        private System.Windows.Forms.TextBox armyTransYeomenTextBox;
+        private System.Windows.Forms.TextBox armyTransLCavTextBox;
+        private System.Windows.Forms.TextBox armyTransMAAtextBox;
 
     }
 }

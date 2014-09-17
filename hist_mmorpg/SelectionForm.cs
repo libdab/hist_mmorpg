@@ -585,7 +585,12 @@ namespace hist_mmorpg
         {
             // add necessary columns
             this.transferListView.Columns.Add("   ID", -2, HorizontalAlignment.Left);
-            this.transferListView.Columns.Add("Troops", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("Knights", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("M-A-A", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("LightCav", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("Yeomen", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("Foot", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("Rabble", -2, HorizontalAlignment.Left);
             this.transferListView.Columns.Add("Days", -2, HorizontalAlignment.Left);
             this.transferListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
             this.transferListView.Columns.Add("For", -2, HorizontalAlignment.Left);
@@ -625,11 +630,21 @@ namespace hist_mmorpg
                     // ID
                     thisDetachment = new ListViewItem(troopDetachment.Key);
 
-                    // troops
+                    // knights
                     thisDetachment.SubItems.Add(troopDetachment.Value[2]);
+                    // menAtArms
+                    thisDetachment.SubItems.Add(troopDetachment.Value[3]);
+                    // lightCav
+                    thisDetachment.SubItems.Add(troopDetachment.Value[4]);
+                    // yeomen
+                    thisDetachment.SubItems.Add(troopDetachment.Value[5]);
+                    // foot
+                    thisDetachment.SubItems.Add(troopDetachment.Value[6]);
+                    // rabble
+                    thisDetachment.SubItems.Add(troopDetachment.Value[7]);
 
                     // days
-                    thisDetachment.SubItems.Add(troopDetachment.Value[3]);
+                    thisDetachment.SubItems.Add(troopDetachment.Value[8]);
 
                     // owner
                     thisDetachment.SubItems.Add(troopDetachment.Value[0]);
@@ -806,7 +821,12 @@ namespace hist_mmorpg
             double daysTaken = 0;
             double minDays = 0;
             bool displayNotAllMsg = false;
-            uint troopsToAdd = 0;
+            uint totKnightsToAdd = 0;
+            uint totMaaToAdd = 0;
+            uint totLcavToAdd = 0;
+            uint totYeomenToAdd = 0;
+            uint totFootToAdd = 0;
+            uint totRabbleToAdd = 0;
             string toDisplay = "";
 
             // get army
@@ -879,8 +899,14 @@ namespace hist_mmorpg
 
                     foreach (ListViewItem item in checkedItems)
                     {
-                        double thisDays = Convert.ToDouble(item.SubItems[2].Text);
-                        uint thisTroops = Convert.ToUInt32(item.SubItems[1].Text);
+                        double thisDays = Convert.ToDouble(item.SubItems[7].Text);
+                        uint thisKnights = Convert.ToUInt32(item.SubItems[1].Text);
+                        uint thisMaa = Convert.ToUInt32(item.SubItems[2].Text);
+                        uint thisLcav = Convert.ToUInt32(item.SubItems[3].Text);
+                        uint thisYeomen = Convert.ToUInt32(item.SubItems[4].Text);
+                        uint thisFoot = Convert.ToUInt32(item.SubItems[5].Text);
+                        uint thisRabble = Convert.ToUInt32(item.SubItems[6].Text);
+                        uint thisTroops = thisKnights + thisMaa + thisLcav + thisYeomen + thisFoot + thisRabble;
 
                         // if does have enough days, proceed
                         if (thisDays >= daysTaken)
@@ -892,16 +918,27 @@ namespace hist_mmorpg
                                 // check for attrition (to bring it down to minDays)
                                 byte attritionChecks = 0;
                                 attritionChecks = Convert.ToByte((thisDays - minDays) / 7);
+                                double attritionModifier = 0;
 
                                 for (int i = 0; i < attritionChecks; i++)
                                 {
-                                    thisTroops = thisTroops - thisArmy.calcAttrition(thisTroops);
+                                    attritionModifier = thisArmy.calcAttrition(thisTroops);
                                 }
-                                troopsToAdd += (thisTroops - thisArmy.calcAttrition(thisTroops));
+                                totKnightsToAdd += (thisKnights - Convert.ToUInt32(thisKnights * attritionModifier));
+                                totMaaToAdd += (thisMaa - Convert.ToUInt32(thisMaa * attritionModifier));
+                                totLcavToAdd += (thisLcav - Convert.ToUInt32(thisLcav * attritionModifier));
+                                totYeomenToAdd += (thisYeomen - Convert.ToUInt32(thisYeomen * attritionModifier));
+                                totFootToAdd += (thisFoot - Convert.ToUInt32(thisFoot * attritionModifier));
+                                totRabbleToAdd += (thisRabble - Convert.ToUInt32(thisRabble * attritionModifier));
                             }
                             else
                             {
-                                troopsToAdd += thisTroops;
+                                totKnightsToAdd += thisKnights;
+                                totMaaToAdd += thisMaa;
+                                totLcavToAdd += thisLcav;
+                                totYeomenToAdd += thisYeomen;
+                                totFootToAdd += thisFoot;
+                                totRabbleToAdd += thisRabble;
                             }
 
                             // remove detachment from fief
@@ -917,7 +954,12 @@ namespace hist_mmorpg
                     if (thisArmy.days == minDays)
                     {
                         // add detachments to army (this could be 0)
-                        thisArmy.foot += troopsToAdd;
+                        thisArmy.knights += totKnightsToAdd;
+                        thisArmy.menAtArms += totMaaToAdd;
+                        thisArmy.lightCavalry += totLcavToAdd;
+                        thisArmy.yeomen += totYeomenToAdd;
+                        thisArmy.foot += totFootToAdd;
+                        thisArmy.rabble += totRabbleToAdd;
 
                         // adjust days
                         myLeader.adjustDays(daysTaken);
@@ -954,7 +996,7 @@ namespace hist_mmorpg
                         }
 
                         // add detachments to army
-                        thisArmy.foot += troopsToAdd;
+                        thisArmy.foot += totKnightsToAdd;
 
                         // check if are any remaining days taken for the transfer (daysTaken) 
                         if (daysTaken > 0)

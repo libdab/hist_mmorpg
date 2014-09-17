@@ -391,10 +391,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(620, 547);
+            this.Controls.Add(this.transferContainer);
             this.Controls.Add(this.armiesContainer);
             this.Controls.Add(this.lockOutContainer);
             this.Controls.Add(this.npcContainer);
-            this.Controls.Add(this.transferContainer);
             this.Name = "SelectionForm";
             this.Text = "SelectionForm";
             this.npcContainer.Panel1.ResumeLayout(false);
