@@ -4833,11 +4833,9 @@ namespace hist_mmorpg
                     for (int i = 0; i < attritionChecks; i++)
                     {
                         // calculate attrition
-                        uint attrition = thisArmy.calcAttrition();
-                        // adjust army size
-                        thisArmy.foot = thisArmy.foot - attrition;
-                        // keep tally of total
-                        totalAttrition += attrition;
+                        double attritionModifer = thisArmy.calcAttrition();
+                        // apply attrition
+                        totalAttrition += thisArmy.applyTroopLosses(attritionModifer);
                     }
 
                     // inform player
@@ -6107,7 +6105,10 @@ namespace hist_mmorpg
                         byte attritionChecks = Convert.ToByte(daysTaken / 7);
                         for (int i = 0; i < attritionChecks; i++)
                         {
-                            this.armyToView.foot = this.armyToView.foot - this.armyToView.calcAttrition();
+                            // calculate attrition
+                            double attritionModifer = this.armyToView.calcAttrition();
+                            // apply attrition
+                            this.armyToView.applyTroopLosses(attritionModifer);
                         }
                     }
 
@@ -6499,6 +6500,43 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Calculates casualties from a battle for both sides
+        /// </summary>
+        /// <returns>double[] containing percentage loss modifier for each side</returns>
+        /// <param name="attackerValue">uint containing attacking army battle value</param>
+        /// <param name="defenderValue">uint containing defending army battle value</param>
+        /// <param name="attackerVictorious">bool indicating whether attacking army was victorious</param>
+        public double[] calculateBattleCasualties(uint attackerValue, uint defenderValue, bool attackerVictorious)
+        {
+            double[] battleCasualties = new double[2];
+
+            // generate casualty increments
+            double winnerIncrement = Globals.GetRandomDouble(min: 0.02, max: 0.04);
+            double loserIncrement = Globals.GetRandomDouble(min: 0.05, max: 0.1);
+
+            // determine highest/lowest battle value
+            double maxBV = Math.Max(attackerValue, defenderValue);
+            double minBV = Math.Min(attackerValue, defenderValue);
+
+            // derive increment multiplier
+            double incrementMultiplier = maxBV / minBV;
+
+            // calculate casualty increment
+            if (attackerVictorious)
+            {
+                battleCasualties[0] = winnerIncrement * incrementMultiplier;
+                battleCasualties[1] = loserIncrement * incrementMultiplier;
+            }
+            else
+            {
+                battleCasualties[0] = loserIncrement * incrementMultiplier;
+                battleCasualties[1] = winnerIncrement * incrementMultiplier;
+            }
+
+            return battleCasualties;
+        }
+
+        /// <summary>
         /// Calculates the outcome of a battle, including troop losses and PC/NPC casualties
         /// </summary>
         /// <param name="attacker">The attacking army</param>
@@ -6506,7 +6544,8 @@ namespace hist_mmorpg
         public void giveBattle(Army attacker, Army defender)
         {
             bool battleHasCommenced = false;
-            uint[] battleValues = new uint[2];          
+            uint[] battleValues = new uint[2];
+            double[] casualtyModifiers = new double[2];
 
             // get battle values for both armies
             battleValues = this.calculateBattleValue(attacker, defender);
@@ -6526,9 +6565,28 @@ namespace hist_mmorpg
                 // calculate if attacker has won
                 bool attackerVictorious = this.decideBattleVictory(battleValues[0], battleValues[1]);
 
-                // calculate casualties for both sides
+                // calculate troop casualties for both sides
+                casualtyModifiers = this.calculateBattleCasualties(battleValues[0], battleValues[1], attackerVictorious);
 
-                // check if either army has disbanded
+                // check if losing army has disbanded
+                if (attackerVictorious)
+                {
+                    if (casualtyModifiers[1] >= 0.5)
+                    {
+                        this.disbandArmy(defender);
+                    }
+                }
+                else
+                {
+                    if (casualtyModifiers[0] >= 0.5)
+                    {
+                        this.disbandArmy(attacker);
+                    }
+                }
+
+                // apply troop casualties
+                attacker.applyTroopLosses(casualtyModifiers[0]);
+                defender.applyTroopLosses(casualtyModifiers[1]);
 
                 // check if any PCs/NPCs have been wounded or killed
 

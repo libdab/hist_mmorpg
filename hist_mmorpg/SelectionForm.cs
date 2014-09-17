@@ -377,9 +377,6 @@ namespace hist_mmorpg
             armyText += "   ==================\r\n";
             armyText += " - TOTAL: " + totalTroops + "\r\n\r\n";
 
-            // get army's combat value and pass to army screen's CheckBox tag
-            this.armiesCheckBox.Tag = combatValue.ToString();
-
             return armyText;
         }
 
@@ -602,10 +599,6 @@ namespace hist_mmorpg
             // add necessary columns
             this.armiesListView.Columns.Add("   ID", -2, HorizontalAlignment.Left);
             this.armiesListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
-
-            // disable checkbox
-            this.armiesCheckBox.Checked = false;
-            this.armiesCheckBox.Enabled = false;
         }
 
         /// <summary>
@@ -1025,17 +1018,6 @@ namespace hist_mmorpg
                 // display details
                 this.armiesTextBox.Text = textToDisplay;
 
-                // enable checkbox if appropriate
-                // observer must have an army
-                if (this.observer.armyID != null)
-                {
-                    // other army must not be owned by player
-                    PlayerCharacter otherOwner = otherArmy.getOwner();
-                    if (otherOwner != this.parent.myChar)
-                    {
-                        this.armiesCheckBox.Enabled = true;
-                    }
-                }
             }
         }
 
@@ -1048,20 +1030,6 @@ namespace hist_mmorpg
         private void armiesCloseBtn_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        /// <summary>
-        /// Responds to the CheckedChanged event of the armiesCheckBox,
-        /// showing estimated combat odds between the selected army and the observer's army
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armiesCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            // if checkbox checked, calculate rough odds and display
-            if (this.armiesCheckBox.Checked)
-            {
-            }
         }
 
     }

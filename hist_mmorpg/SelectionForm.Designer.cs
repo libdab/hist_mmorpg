@@ -52,9 +52,6 @@
             this.armiesListContainer = new System.Windows.Forms.SplitContainer();
             this.armiesTextBox = new System.Windows.Forms.TextBox();
             this.armiesListView = new System.Windows.Forms.ListView();
-            this.armiesDetailsContainer = new System.Windows.Forms.SplitContainer();
-            this.armiesCheckBox = new System.Windows.Forms.CheckBox();
-            this.armiesOddsTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.npcContainer)).BeginInit();
             this.npcContainer.Panel1.SuspendLayout();
             this.npcContainer.Panel2.SuspendLayout();
@@ -83,10 +80,6 @@
             this.armiesListContainer.Panel1.SuspendLayout();
             this.armiesListContainer.Panel2.SuspendLayout();
             this.armiesListContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.armiesDetailsContainer)).BeginInit();
-            this.armiesDetailsContainer.Panel1.SuspendLayout();
-            this.armiesDetailsContainer.Panel2.SuspendLayout();
-            this.armiesDetailsContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // npcContainer
@@ -363,7 +356,7 @@
             // 
             // armiesListContainer.Panel1
             // 
-            this.armiesListContainer.Panel1.Controls.Add(this.armiesDetailsContainer);
+            this.armiesListContainer.Panel1.Controls.Add(this.armiesTextBox);
             // 
             // armiesListContainer.Panel2
             // 
@@ -378,7 +371,7 @@
             this.armiesTextBox.Location = new System.Drawing.Point(0, 0);
             this.armiesTextBox.Multiline = true;
             this.armiesTextBox.Name = "armiesTextBox";
-            this.armiesTextBox.Size = new System.Drawing.Size(308, 371);
+            this.armiesTextBox.Size = new System.Drawing.Size(308, 458);
             this.armiesTextBox.TabIndex = 0;
             // 
             // armiesListView
@@ -392,45 +385,6 @@
             this.armiesListView.UseCompatibleStateImageBehavior = false;
             this.armiesListView.View = System.Windows.Forms.View.Details;
             this.armiesListView.SelectedIndexChanged += new System.EventHandler(this.armiesListView_SelectedIndexChanged);
-            // 
-            // armiesDetailsContainer
-            // 
-            this.armiesDetailsContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.armiesDetailsContainer.Location = new System.Drawing.Point(0, 0);
-            this.armiesDetailsContainer.Name = "armiesDetailsContainer";
-            this.armiesDetailsContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // armiesDetailsContainer.Panel1
-            // 
-            this.armiesDetailsContainer.Panel1.Controls.Add(this.armiesCheckBox);
-            this.armiesDetailsContainer.Panel1.Controls.Add(this.armiesTextBox);
-            // 
-            // armiesDetailsContainer.Panel2
-            // 
-            this.armiesDetailsContainer.Panel2.Controls.Add(this.armiesOddsTextBox);
-            this.armiesDetailsContainer.Size = new System.Drawing.Size(308, 458);
-            this.armiesDetailsContainer.SplitterDistance = 371;
-            this.armiesDetailsContainer.TabIndex = 0;
-            // 
-            // armiesCheckBox
-            // 
-            this.armiesCheckBox.AutoSize = true;
-            this.armiesCheckBox.Location = new System.Drawing.Point(41, 354);
-            this.armiesCheckBox.Name = "armiesCheckBox";
-            this.armiesCheckBox.Size = new System.Drawing.Size(231, 17);
-            this.armiesCheckBox.TabIndex = 0;
-            this.armiesCheckBox.Text = "Compare combat odds with my current army";
-            this.armiesCheckBox.UseVisualStyleBackColor = true;
-            this.armiesCheckBox.CheckedChanged += new System.EventHandler(this.armiesCheckBox_CheckedChanged);
-            // 
-            // armiesOddsTextBox
-            // 
-            this.armiesOddsTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.armiesOddsTextBox.Location = new System.Drawing.Point(0, 0);
-            this.armiesOddsTextBox.Multiline = true;
-            this.armiesOddsTextBox.Name = "armiesOddsTextBox";
-            this.armiesOddsTextBox.Size = new System.Drawing.Size(308, 83);
-            this.armiesOddsTextBox.TabIndex = 0;
             // 
             // SelectionForm
             // 
@@ -471,15 +425,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.armiesContainer)).EndInit();
             this.armiesContainer.ResumeLayout(false);
             this.armiesListContainer.Panel1.ResumeLayout(false);
+            this.armiesListContainer.Panel1.PerformLayout();
             this.armiesListContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.armiesListContainer)).EndInit();
             this.armiesListContainer.ResumeLayout(false);
-            this.armiesDetailsContainer.Panel1.ResumeLayout(false);
-            this.armiesDetailsContainer.Panel1.PerformLayout();
-            this.armiesDetailsContainer.Panel2.ResumeLayout(false);
-            this.armiesDetailsContainer.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.armiesDetailsContainer)).EndInit();
-            this.armiesDetailsContainer.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -510,9 +459,6 @@
         private System.Windows.Forms.TextBox armiesTextBox;
         private System.Windows.Forms.ListView armiesListView;
         private System.Windows.Forms.Button armiesCloseBtn;
-        private System.Windows.Forms.SplitContainer armiesDetailsContainer;
-        private System.Windows.Forms.CheckBox armiesCheckBox;
-        private System.Windows.Forms.TextBox armiesOddsTextBox;
 
     }
 }

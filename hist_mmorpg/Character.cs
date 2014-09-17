@@ -893,8 +893,10 @@ namespace hist_mmorpg
 
                 for (int i = 0; i < attritionChecks; i++)
                 {
-                    uint attrition = thisArmy.calcAttrition();
-                    thisArmy.foot = thisArmy.foot - attrition;
+                    // calculate attrition
+                    double attritionModifer = thisArmy.calcAttrition();
+                    // apply attrition
+                    thisArmy.applyTroopLosses(attritionModifer);
                 }
 
             }

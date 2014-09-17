@@ -188,9 +188,10 @@ namespace hist_mmorpg
             // update days
             this.days = myLeader.days;
 
+            // calculate attrition
+            double attritionModifer = this.calcAttrition();
             // apply attrition
-            uint troopsLost = this.calcAttrition();
-            this.foot = this.foot - troopsLost;
+            uint troopsLost = this.applyTroopLosses(attritionModifer);
 
             // inform player of losses
             if (showAttrition)
@@ -230,18 +231,18 @@ namespace hist_mmorpg
         /// <summary>
         /// Calculates attrition for the army
         /// </summary>
-        /// <returns>uint containing number of troops lost</returns>
-        public uint calcAttrition(uint troopNumbers = 0)
+        /// <returns>double containing casualty modifier to be applied troops</returns>
+        public double calcAttrition(uint troopNumbers = 0)
         {
-            uint numberLost = 0;
+            double casualtyModifier = 1;
             Double attritionChance = 0;
             String toDisplay = "";
 
+            // if no specific troop number passed in, use army size
             if (troopNumbers == 0)
             {
                 troopNumbers = this.calcArmySize();
             }
-            toDisplay += "Original troops: " + troopNumbers + "\r\n";
 
             // get fief
             Fief currentFief = Globals.fiefMasterList[this.location];
@@ -251,7 +252,6 @@ namespace hist_mmorpg
 
             // calculate base chance of attrition
             attritionChance = (troopNumbers / Convert.ToDouble(currentFief.population)) * 100;
-            numberLost = Convert.ToUInt32(attritionChance);
             toDisplay += "Base chance: " + attritionChance + "\r\n";
 
             // factor in effect of leader
@@ -263,16 +263,6 @@ namespace hist_mmorpg
             {
                 attritionChance = attritionChance + 20;
                 toDisplay += "Season effect: 20\r\n";
-            }
-
-            // update potential losses due to attrition
-            toDisplay += "Base troops lost: " + numberLost + "\r\n";
-
-            // factor in effect of season on potential losses (* 3 if is winter or spring)
-            if ((this.clock.currentSeason == 0) || (this.clock.currentSeason == 3))
-            {
-                toDisplay += "Troops lost after seasonal effect: " + (numberLost * 3) + "\r\n";
-                numberLost = numberLost * 3;
             }
 
             // normalise chance of attrition
@@ -288,18 +278,70 @@ namespace hist_mmorpg
             // generate random number (0-100) to check if attrition occurs
             Double randomPercent = Globals.myRand.NextDouble() * 100;
 
-            // check for attrition and change numberLost back to 0 if appropriate
-            if (randomPercent > attritionChance)
+            // check for attrition and change casualtyModifier back to 0 if appropriate
+            if (randomPercent <= attritionChance)
             {
-                numberLost = 0;
+                // calculate base casualtyModifier
+                casualtyModifier = (troopNumbers / Convert.ToDouble(currentFief.population)) / 10;
+                toDisplay += "casualtyModifier: " + casualtyModifier + "\r\n";
+
+                // factor in effect of season on potential losses (* 3 if is winter or spring)
+                if ((this.clock.currentSeason == 0) || (this.clock.currentSeason == 3))
+                {
+                    casualtyModifier = casualtyModifier * 3;
+                    toDisplay += "casualtyModifier after seasonal effect: " + casualtyModifier + "\r\n";
+                }
+
             }
 
-            if (numberLost > 0)
+            if (casualtyModifier < 1)
             {
                 System.Windows.Forms.MessageBox.Show(toDisplay);
             }
 
-            return numberLost;
+            return casualtyModifier;
+        }
+
+        /// <summary>
+        /// Applies troop losses after attrition, battle, siege, etc.
+        /// </summary>
+        /// <returns>uint containing total number of troops lost</returns>
+        /// <param name="lossModifier">modifier to be applied to each troop type</param>
+        public uint applyTroopLosses(double lossModifier)
+        {
+            uint troopsLost = 0;
+
+            // knights
+            uint knightsLost = Convert.ToUInt32(this.knights * lossModifier);
+            troopsLost += knightsLost;
+            this.knights -= knightsLost;
+
+            // menAtArms
+            uint menAtArmsLost = Convert.ToUInt32(this.menAtArms * lossModifier);
+            troopsLost += menAtArmsLost;
+            this.menAtArms -= menAtArmsLost;
+
+            // lightCavalry
+            uint lightCavalryLost = Convert.ToUInt32(this.lightCavalry * lossModifier);
+            troopsLost += lightCavalryLost;
+            this.lightCavalry -= lightCavalryLost;
+
+            // yeomen
+            uint yeomenLost = Convert.ToUInt32(this.yeomen * lossModifier);
+            troopsLost += yeomenLost;
+            this.yeomen -= yeomenLost;
+
+            // foot
+            uint footLost = Convert.ToUInt32(this.foot * lossModifier);
+            troopsLost += footLost;
+            this.foot -= footLost;
+
+            // rabble
+            uint rabbleLost = Convert.ToUInt32(this.rabble * lossModifier);
+            troopsLost += rabbleLost;
+            this.rabble -= rabbleLost;
+
+            return troopsLost;
         }
 
         /// <summary>
@@ -474,7 +516,10 @@ namespace hist_mmorpg
             byte attritionChecks = Convert.ToByte(this.days / 7);
             for (int i = 0; i < attritionChecks; i++ )
             {
-                this.foot = this.foot - this.calcAttrition();
+                // calculate attrition
+                double attritionModifer = this.calcAttrition();
+                // apply attrition
+                this.applyTroopLosses(attritionModifer);
             }
 
             // check if army dissolves (less than 100 men)
