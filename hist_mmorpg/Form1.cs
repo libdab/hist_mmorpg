@@ -498,9 +498,16 @@ namespace hist_mmorpg
             Globals.combatValues.Add("E", eCombatValues);
             uint[] oCombatValues = new uint[] {7, 7, 3, 2, 2, 1};
             Globals.combatValues.Add("O", oCombatValues);
-          
+
+            // populate Globals.recruitRatios
+            double[] eRecruitRatios = new double[] { 0.01, 0.02, 0, 0.15, 0.33, 0.49 };
+            Globals.recruitRatios.Add("E", eRecruitRatios);
+            double[] oRecruitRatios = new double[] { 0.01, 0.02, 0.03, 0, 0.45, 0.49 };
+            Globals.recruitRatios.Add("O", oRecruitRatios);
+
             // create an army and add in appropriate places
-            Army myArmy = new Army("army" + Globals.getNextArmyID(), null, null, 90, this.clock, null, kni: 100, maa: 100, ltCav: 50, yeo: 200, ft: 2000, rbl: 4000);
+            uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 200, 400};
+            Army myArmy = new Army("army" + Globals.getNextArmyID(), null, null, 90, this.clock, null, trp: myArmyTroops);
             Globals.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
             myArmy.leader = myChar1.charID;
@@ -511,7 +518,8 @@ namespace hist_mmorpg
             myChar1.location.armies.Add(myArmy.armyID);
 
             // create another (enemy) army and add in appropriate places
-            Army myArmy2 = new Army("army" + Globals.getNextArmyID(), null, null, 90, this.clock, null, ft: 2000);
+            uint[] myArmyTroops2 = new uint[] { 10, 10, 30, 0, 200, 400 };
+            Army myArmy2 = new Army("army" + Globals.getNextArmyID(), null, null, 90, this.clock, null, trp: myArmyTroops2);
             Globals.armyMasterList.Add(myArmy2.armyID, myArmy2);
             myArmy2.owner = myChar2.charID;
             myArmy2.leader = myChar2.charID;
@@ -2982,6 +2990,7 @@ namespace hist_mmorpg
         public string displayArmyData(Army a)
         {
             string armyText = "";
+            uint[] troopNumbers = a.troops;
 
             // ID
             armyText += "ID: " + a.armyID + "\r\n\r\n";
@@ -2998,14 +3007,15 @@ namespace hist_mmorpg
 
             armyText += "Leader: " + armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")\r\n\r\n";
 
-            // troop numbers
-            armyText += "Troop numbers:\r\n";
-            armyText += " - Knights: " + a.knights + "\r\n";
-            armyText += " - Men-at-Arms: " + a.menAtArms + "\r\n";
-            armyText += " - Light Cavalry: " + a.lightCavalry + "\r\n";
-            armyText += " - Yeomen: " + a.yeomen + "\r\n";
-            armyText += " - Foot: " + a.foot + "\r\n";
-            armyText += " - Rabble: " + a.rabble + "\r\n";
+            // labels for troop types
+            string[] troopTypeLabels = new string[] { " - Knights: ", " - Men-at-Arms: ", " - Light Cavalry: ", " - Yeomen: ", " - Foot: ", " - Rabble: " };
+
+            // display numbers for each troop type
+            for (int i = 0; i < troopNumbers.Length; i++)
+            {
+                armyText += troopTypeLabels[i] + troopNumbers[i];
+                armyText += "\r\n";
+            }
             armyText += "   ==================\r\n";
             armyText += " - TOTAL: " + a.calcArmySize() + "\r\n\r\n";
 

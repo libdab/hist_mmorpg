@@ -17,6 +17,16 @@ namespace hist_mmorpg
 		/// </summary>
 		public String armyID { get; set; }
         /// <summary>
+        /// Holds troops in army
+        /// 0 = knights
+        /// 1 = menAtArms
+        /// 2 = lightCav
+        /// 3 = yeomen
+        /// 4 = foot
+        /// 5 = rabble
+        /// </summary>
+        public uint[] troops = new uint[6] {0, 0, 0, 0, 0, 0};
+        /* /// <summary>
         /// Holds no. knights in army
         /// </summary>
         public uint knights { get; set; }
@@ -39,7 +49,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds no. rabble in army
         /// </summary>
-        public uint rabble { get; set; }
+        public uint rabble { get; set; } */
         /// <summary>
         /// Holds army leader (ID)
         /// </summary>
@@ -77,12 +87,6 @@ namespace hist_mmorpg
         /// Constructor for Army
         /// </summary>
 		/// <param name="own">String holding ID of army</param>
-        /// <param name="kni">uint holding no. of knights in army</param>
-        /// <param name="maa">uint holding no. of men-at-arms in army</param>
-        /// <param name="ltCav">uint holding no. of light cavalry in army</param>
-        /// <param name="yeo">uint holding no. of yeomen in army</param>
-        /// <param name="ft">uint holding no. of foot in army</param>
-        /// <param name="rbl">uint holding no. of rabble in army</param>
         /// <param name="ldr">string holding ID of army leader</param>
         /// <param name="own">string holding ID of army owner</param>
         /// <param name="day">double holding remaining days in season for army</param>
@@ -91,15 +95,11 @@ namespace hist_mmorpg
         /// <param name="maint">bool indicating whether army is being actively maintained by owner</param>
         /// <param name="aggr">byte indicating army's aggression level</param>
         /// <param name="odds">byte indicating army's combat odds value</param>
-        public Army(String id, string ldr, string own, double day, GameClock cl, string loc, uint kni = 0, uint maa = 0, uint ltCav = 0, uint yeo = 0, uint ft = 0, uint rbl = 0, bool maint = false, byte aggr = 1, byte odds = 9)
+        /// <param name="trp">uint[] holding troops in army</param>
+        public Army(String id, string ldr, string own, double day, GameClock cl, string loc, bool maint = false, byte aggr = 1, byte odds = 9, uint[] trp = null)
         {
 
-            // TODO: validate kni = (upper limit?)
-            // TODO: validate maa = (upper limit?)
-            // TODO: validate ltCav = (upper limit?)
-            // TODO: validate yeo = (upper limit?)
-            // TODO: validate ft = (upper limit?)
-            // TODO: validate rbl = (upper limit?)
+            // TODO: validate trp = (upper limit?)
             // TODO: validate ldr ID = 1-10000?
 
             // validate day > 90
@@ -109,12 +109,6 @@ namespace hist_mmorpg
             }
 
 			this.armyID = id;
-            this.knights = kni;
-            this.menAtArms = maa;
-            this.lightCavalry = ltCav;
-            this.yeomen = yeo;
-            this.foot = ft;
-            this.rabble = rbl;
             this.leader = ldr;
             this.owner = own;
             this.days = day;
@@ -123,6 +117,10 @@ namespace hist_mmorpg
             this.isMaintained = maint;
             this.aggression = aggr;
             this.combatOdds = odds;
+            if (trp != null)
+            {
+                this.troops = trp;
+            }
         }
 
         /// <summary>
@@ -154,7 +152,10 @@ namespace hist_mmorpg
         {
             uint armySize = 0;
 
-            armySize = this.foot + this.knights + this.lightCavalry + this.menAtArms + this.rabble + this.yeomen;
+            foreach (uint troopType in this.troops)
+            {
+                armySize += troopType;
+            }
 
             return armySize;
         }
@@ -312,35 +313,12 @@ namespace hist_mmorpg
             // keep track of total troops lost
             uint troopsLost = 0;
 
-            // knights
-            uint knightsLost = Convert.ToUInt32(this.knights * lossModifier);
-            troopsLost += knightsLost;
-            this.knights -= knightsLost;
-
-            // menAtArms
-            uint menAtArmsLost = Convert.ToUInt32(this.menAtArms * lossModifier);
-            troopsLost += menAtArmsLost;
-            this.menAtArms -= menAtArmsLost;
-
-            // lightCavalry
-            uint lightCavalryLost = Convert.ToUInt32(this.lightCavalry * lossModifier);
-            troopsLost += lightCavalryLost;
-            this.lightCavalry -= lightCavalryLost;
-
-            // yeomen
-            uint yeomenLost = Convert.ToUInt32(this.yeomen * lossModifier);
-            troopsLost += yeomenLost;
-            this.yeomen -= yeomenLost;
-
-            // foot
-            uint footLost = Convert.ToUInt32(this.foot * lossModifier);
-            troopsLost += footLost;
-            this.foot -= footLost;
-
-            // rabble
-            uint rabbleLost = Convert.ToUInt32(this.rabble * lossModifier);
-            troopsLost += rabbleLost;
-            this.rabble -= rabbleLost;
+            for (int i = 0; i < this.troops.Length; i++ )
+            {
+                uint thisTypeLost = Convert.ToUInt32(this.troops[i] * lossModifier);
+                troopsLost += thisTypeLost;
+                this.troops[i] -= thisTypeLost;
+            }
 
             return troopsLost;
         }
@@ -370,23 +348,11 @@ namespace hist_mmorpg
             // get combat values for that nationality
             uint[] thisCombatValues = Globals.combatValues[troopNationality];
 
-            // get CV for knights
-            cv += this.knights * thisCombatValues[0];
-
-            // get CV for menAtArms
-            cv += this.menAtArms * thisCombatValues[1];
-
-            // get CV for lightCavalry
-            cv += this.lightCavalry * thisCombatValues[2];
-
-            // get CV for yeomen
-            cv += this.yeomen * thisCombatValues[3];
-
-            // get CV for foot
-            cv += this.foot * thisCombatValues[4];
-
-            // get CV for rabble
-            cv += this.rabble * thisCombatValues[5];
+            // get CV for each troop type
+            for (int i = 0; i < this.troops.Length; i++)
+            {
+                cv += this.troops[i] * thisCombatValues[i];
+            }
 
             // get leader's CV
             cv += myLeader.getCombatValue();
@@ -404,67 +370,42 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates the estimated number of a particular type of troop in the army
-        /// or total troop numbers
+        /// Calculates the estimated number of troops of all types in the army
         /// </summary>
-        /// <returns>uint containing estimated troop number</returns>
+        /// <returns>uint[] containing estimated troop numbers for all types</returns>
         /// <param name="observer">The character making the estimate</param>
-        /// <param name="troopType">string containing troop type to estimate</param>
-        public uint getTroopsEstimate(Character observer, string troopType)
+        public uint[] getTroopsEstimate(Character observer)
         {
-            uint troopNumber = 0;
-
-            // get troop number upon which to base estimate
-            // dependant on troopType passed in
-            switch (troopType)
-            {
-                case "knights":
-                    troopNumber = this.knights;
-                    break;
-                case "menAtArms":
-                    troopNumber = this.menAtArms;
-                    break;
-                case "lightCavalry":
-                    troopNumber = this.lightCavalry;
-                    break;
-                case "yeomen":
-                    troopNumber = this.yeomen;
-                    break;
-                case "foot":
-                    troopNumber = this.foot;
-                    break;
-                case "rabble":
-                    troopNumber = this.rabble;
-                    break;
-                case "total":
-                    troopNumber = this.calcArmySize();
-                    break;
-                default:
-                    troopNumber = this.calcArmySize();
-                    break;
-            }
+            uint[] troopNumbers = new uint[6] {0, 0, 0, 0, 0, 0};
 
             // get random int (0-2) to decide whether to over- or under-estimate troop number
-            // 0 = under-estimate, 1-2 = over-estimate
             int overUnder = Globals.myRand.Next(3);
 
             // get observer's estimate variance (based on his leadership value)
             double estimateVariance = observer.getEstimateVariance();
 
-            // generate random double between 0 and estimate variance to decide variance in this case
-            double thisVariance = Globals.GetRandomDouble(estimateVariance);
-
-            // apply variance (negatively or positively) to troop number
-            if (overUnder == 0)
+            // perform estimate for each troop type
+            for (int i = 0; i < troopNumbers.Length; i++)
             {
-                troopNumber = troopNumber - Convert.ToUInt32(troopNumber * thisVariance);
-            }
-            else
-            {
-                troopNumber = troopNumber + Convert.ToUInt32(troopNumber * thisVariance);
+                // get troop number upon which to base estimate
+                troopNumbers[i] = this.troops[i];
+
+                // generate random double between 0 and estimate variance to decide variance in this case
+                double thisVariance = Globals.GetRandomDouble(estimateVariance);
+
+                // apply variance (negatively or positively) to troop number
+                // 0 = under-estimate, 1-2 = over-estimate
+                if (overUnder == 0)
+                {
+                    troopNumbers[i] = troopNumbers[i] - Convert.ToUInt32(troopNumbers[i] * thisVariance);
+                }
+                else
+                {
+                    troopNumbers[i] = troopNumbers[i] + Convert.ToUInt32(troopNumbers[i] * thisVariance);
+                }
             }
 
-            return troopNumber;
+            return troopNumbers;
         }
 
         /// <summary>

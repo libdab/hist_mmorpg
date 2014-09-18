@@ -1822,8 +1822,31 @@ namespace hist_mmorpg
                 {
                     // deduct cost of troops from treasury
                     homeFief.treasury = homeFief.treasury - troopCost;
+
+                    // work out how many of each type recruited
+                    uint[] typesRecruited = new uint[] {0, 0, 0, 0, 0, 0};
+                    uint totalSoFar = 0;
+                    for (int i = 0; i < typesRecruited.Length; i++ )
+                    {
+                        // work out 'trained' troops numbers
+                        if (i < typesRecruited.Length - 1)
+                        {
+                            typesRecruited[i] = Convert.ToUInt32(troopsRecruited * Globals.recruitRatios[this.nationality][i]);
+                            totalSoFar += typesRecruited[i];
+                        }
+                        // fill up with rabble
+                        else
+                        {
+                            typesRecruited[i] = Convert.ToUInt32(troopsRecruited) - totalSoFar;
+                        }
+                    }
+
                     // add new troops to army
-                    thisArmy.foot += Convert.ToUInt32(troopsRecruited);
+                    for (int i = 0; i < thisArmy.troops.Length; i++ )
+                    {
+                        thisArmy.troops[i] += typesRecruited[i];
+                    }
+
                     // indicate recruitment has occurred in this fief
                     this.location.hasRecruited = true;
                 }

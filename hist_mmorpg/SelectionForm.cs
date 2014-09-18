@@ -217,8 +217,8 @@ namespace hist_mmorpg
         public string displayArmy(Army a)
         {
             bool isMyArmy = false;
+            uint[] troopNumbers = new uint[6];
             uint totalTroops = 0;
-            double combatValue = 0;
             string armyText = "";
 
             // ID
@@ -234,25 +234,22 @@ namespace hist_mmorpg
                 isMyArmy = true;
             }
 
-            // get nationality (effects combat values)
-            string troopNationality = "";
-            if (thisOwner.nationality.Equals("E"))
-            {
-                troopNationality = "E";
-            }
-            else
-            {
-                troopNationality = "O";
-            }
-
-            // get combat values for that nationality
-            uint[] thisCombatValues = Globals.combatValues[troopNationality];
-
             // leader
             Character armyLeader = a.getLeader();
             armyText += "Leader: " + armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")\r\n\r\n";
 
-            // troop numbers
+            // get troop numbers
+            if (!isMyArmy)
+            {
+                // actual troop numbers if is player's army
+                troopNumbers = a.troops;
+            }
+            else
+            {
+                // estimated troop numbers if is NOT player's army
+                troopNumbers = a.getTroopsEstimate(observer);
+            }
+
             armyText += "Troop numbers";
             if (!isMyArmy)
             {
@@ -260,120 +257,18 @@ namespace hist_mmorpg
             }
             armyText += ":\r\n";
 
-            // knights
-            armyText += " - Knights: ";
-            if (isMyArmy)
-            {
-                armyText += a.knights;
-                totalTroops += a.knights;
-                // combat value
-                combatValue += a.knights * thisCombatValues[0];
-            }
-            else
-            {
-                uint knightsNumber = a.getTroopsEstimate(observer, "knights");
-                armyText += knightsNumber;
-                totalTroops += knightsNumber;
-                // combat value
-                combatValue += knightsNumber * thisCombatValues[0];
-            }
-            armyText += "\r\n";
+            // labels for troop types
+            string[] troopTypeLabels = new string[] { " - Knights: ", " - Men-at-Arms: ", " - Light Cavalry: ", " - Yeomen: ", " - Foot: ", " - Rabble: " };
 
-            // menAtArms
-            armyText += " - Men-at-Arms: ";
-            if (isMyArmy)
+            // display numbers for each troop type
+            for (int i = 0; i < troopNumbers.Length; i++ )
             {
-                armyText += a.menAtArms;
-                totalTroops += a.menAtArms;
-                // combat value
-                combatValue += a.menAtArms * thisCombatValues[1];
+                armyText += troopTypeLabels[i] + troopNumbers[i];
+                totalTroops += troopNumbers[i];
+                armyText += "\r\n";
             }
-            else
-            {
-                uint menAtArmsNumber = a.getTroopsEstimate(observer, "menAtArms");
-                armyText += menAtArmsNumber;
-                totalTroops += menAtArmsNumber;
-                // combat value
-                combatValue += menAtArmsNumber * thisCombatValues[1];
-            }
-            armyText += "\r\n";
 
-            // lightCavalry
-            armyText += " - Light Cavalry: ";
-            if (isMyArmy)
-            {
-                armyText += a.lightCavalry;
-                totalTroops += a.lightCavalry;
-                // combat value
-                combatValue += a.lightCavalry * thisCombatValues[2];
-            }
-            else
-            {
-                uint lightCavalryNumber = a.getTroopsEstimate(observer, "lightCavalry");
-                armyText += lightCavalryNumber;
-                totalTroops += lightCavalryNumber;
-                // combat value
-                combatValue += lightCavalryNumber * thisCombatValues[2];
-            }
-            armyText += "\r\n";
-
-            // yeomen
-            armyText += " - Yeomen: ";
-            if (isMyArmy)
-            {
-                armyText += a.yeomen;
-                totalTroops += a.yeomen;
-                // combat value
-                combatValue += a.yeomen * thisCombatValues[3];
-            }
-            else
-            {
-                uint yeomenNumber = a.getTroopsEstimate(observer, "yeomen");
-                armyText += yeomenNumber;
-                totalTroops += yeomenNumber;
-                // combat value
-                combatValue += yeomenNumber * thisCombatValues[3];
-            }
-            armyText += "\r\n";
-
-            // foot
-            armyText += " - Foot: ";
-            if (isMyArmy)
-            {
-                armyText += a.foot;
-                totalTroops += a.foot;
-                // combat value
-                combatValue += a.foot * thisCombatValues[4];
-            }
-            else
-            {
-                uint footNumber = a.getTroopsEstimate(observer, "foot");
-                armyText += footNumber;
-                totalTroops += footNumber;
-                // combat value
-                combatValue += footNumber * thisCombatValues[4];
-            }
-            armyText += "\r\n";
-
-            // rabble
-            armyText += " - Rabble: ";
-            if (isMyArmy)
-            {
-                armyText += a.rabble;
-                totalTroops += a.rabble;
-                // combat value
-                combatValue += a.rabble * thisCombatValues[5];
-            }
-            else
-            {
-                uint rabbleNumber = a.getTroopsEstimate(observer, "rabble");
-                armyText += rabbleNumber;
-                totalTroops += rabbleNumber;
-                // combat value
-                combatValue += rabbleNumber * thisCombatValues[5];
-            }
-            armyText += "\r\n";
-
+            // display total
             armyText += "   ==================\r\n";
             armyText += " - TOTAL: " + totalTroops + "\r\n\r\n";
 
@@ -821,12 +716,7 @@ namespace hist_mmorpg
             double daysTaken = 0;
             double minDays = 0;
             bool displayNotAllMsg = false;
-            uint totKnightsToAdd = 0;
-            uint totMaaToAdd = 0;
-            uint totLcavToAdd = 0;
-            uint totYeomenToAdd = 0;
-            uint totFootToAdd = 0;
-            uint totRabbleToAdd = 0;
+            uint[] totTroopsToAdd = new uint[] {0, 0, 0, 0, 0, 0};
             string toDisplay = "";
 
             // get army
@@ -900,13 +790,15 @@ namespace hist_mmorpg
                     foreach (ListViewItem item in checkedItems)
                     {
                         double thisDays = Convert.ToDouble(item.SubItems[7].Text);
-                        uint thisKnights = Convert.ToUInt32(item.SubItems[1].Text);
-                        uint thisMaa = Convert.ToUInt32(item.SubItems[2].Text);
-                        uint thisLcav = Convert.ToUInt32(item.SubItems[3].Text);
-                        uint thisYeomen = Convert.ToUInt32(item.SubItems[4].Text);
-                        uint thisFoot = Convert.ToUInt32(item.SubItems[5].Text);
-                        uint thisRabble = Convert.ToUInt32(item.SubItems[6].Text);
-                        uint thisTroops = thisKnights + thisMaa + thisLcav + thisYeomen + thisFoot + thisRabble;
+
+                        // get numbers of each type to add
+                        uint[] thisTroops = new uint[] { 0, 0, 0, 0, 0, 0 };
+                        uint thisTotal = 0;
+                        for (int i = 0; i < thisTroops.Length; i++)
+                        {
+                            thisTroops[i] = Convert.ToUInt32(item.SubItems[i+1].Text);
+                            thisTotal += thisTroops[i];
+                        }
 
                         // if does have enough days, proceed
                         if (thisDays >= daysTaken)
@@ -922,23 +814,21 @@ namespace hist_mmorpg
 
                                 for (int i = 0; i < attritionChecks; i++)
                                 {
-                                    attritionModifier = thisArmy.calcAttrition(thisTroops);
+                                    attritionModifier = thisArmy.calcAttrition(thisTotal);
                                 }
-                                totKnightsToAdd += (thisKnights - Convert.ToUInt32(thisKnights * attritionModifier));
-                                totMaaToAdd += (thisMaa - Convert.ToUInt32(thisMaa * attritionModifier));
-                                totLcavToAdd += (thisLcav - Convert.ToUInt32(thisLcav * attritionModifier));
-                                totYeomenToAdd += (thisYeomen - Convert.ToUInt32(thisYeomen * attritionModifier));
-                                totFootToAdd += (thisFoot - Convert.ToUInt32(thisFoot * attritionModifier));
-                                totRabbleToAdd += (thisRabble - Convert.ToUInt32(thisRabble * attritionModifier));
+
+                                // apply attrition
+                                for (int i = 0; i < totTroopsToAdd.Length; i++)
+                                {
+                                    totTroopsToAdd[i] += (thisTroops[i] - Convert.ToUInt32(thisTroops[i] * attritionModifier));
+                                }
                             }
                             else
                             {
-                                totKnightsToAdd += thisKnights;
-                                totMaaToAdd += thisMaa;
-                                totLcavToAdd += thisLcav;
-                                totYeomenToAdd += thisYeomen;
-                                totFootToAdd += thisFoot;
-                                totRabbleToAdd += thisRabble;
+                                for (int i = 0; i < totTroopsToAdd.Length; i++)
+                                {
+                                    totTroopsToAdd[i] += thisTroops[i];
+                                }
                             }
 
                             // remove detachment from fief
@@ -953,13 +843,11 @@ namespace hist_mmorpg
                 {
                     if (thisArmy.days == minDays)
                     {
-                        // add detachments to army (this could be 0)
-                        thisArmy.knights += totKnightsToAdd;
-                        thisArmy.menAtArms += totMaaToAdd;
-                        thisArmy.lightCavalry += totLcavToAdd;
-                        thisArmy.yeomen += totYeomenToAdd;
-                        thisArmy.foot += totFootToAdd;
-                        thisArmy.rabble += totRabbleToAdd;
+                        // add troops to army (this could be 0)
+                        for (int i = 0; i < thisArmy.troops.Length; i++ )
+                        {
+                            thisArmy.troops[i] += totTroopsToAdd[i];
+                        }
 
                         // adjust days
                         myLeader.adjustDays(daysTaken);
@@ -1001,13 +889,11 @@ namespace hist_mmorpg
                             thisArmy.applyTroopLosses(attritionModifier);
                         }
 
-                        // add detachments to army
-                        thisArmy.knights += totKnightsToAdd;
-                        thisArmy.menAtArms += totMaaToAdd;
-                        thisArmy.lightCavalry += totLcavToAdd;
-                        thisArmy.yeomen += totYeomenToAdd;
-                        thisArmy.foot += totFootToAdd;
-                        thisArmy.rabble += totRabbleToAdd;
+                       // add troops to army
+                        for (int i = 0; i < thisArmy.troops.Length; i++ )
+                        {
+                            thisArmy.troops[i] += totTroopsToAdd[i];
+                        }
 
                         // check if are any remaining days taken for the transfer (daysTaken) 
                         if (daysTaken > 0)

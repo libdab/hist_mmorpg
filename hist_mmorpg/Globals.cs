@@ -115,6 +115,11 @@ namespace hist_mmorpg
         /// Key = nationality & Value = combat value for knights, menAtArms, lightCavalry, yeomen, foot, rabble
         /// </summary>
         public static Dictionary<string, uint[]> combatValues = new Dictionary<string, uint[]>();
+        /// <summary>
+        /// Holds recruitment ratios for different troop types and nationalities
+        /// Key = nationality & Value = % ratio for knights, menAtArms, lightCavalry, yeomen, foot, rabble
+        /// </summary>
+        public static Dictionary<string, double[]> recruitRatios = new Dictionary<string, double[]>();
 
         /// <summary>
         /// Gets the next available newCharID, then increments it
