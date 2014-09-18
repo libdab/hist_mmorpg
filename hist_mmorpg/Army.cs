@@ -234,7 +234,7 @@ namespace hist_mmorpg
         /// <returns>double containing casualty modifier to be applied troops</returns>
         public double calcAttrition(uint troopNumbers = 0)
         {
-            double casualtyModifier = 1;
+            double casualtyModifier = 0;
             Double attritionChance = 0;
             String toDisplay = "";
 
@@ -278,7 +278,7 @@ namespace hist_mmorpg
             // generate random number (0-100) to check if attrition occurs
             Double randomPercent = Globals.myRand.NextDouble() * 100;
 
-            // check for attrition and change casualtyModifier back to 0 if appropriate
+            // check if attrition occurs
             if (randomPercent <= attritionChance)
             {
                 // calculate base casualtyModifier
@@ -294,7 +294,7 @@ namespace hist_mmorpg
 
             }
 
-            if (casualtyModifier < 1)
+            if (casualtyModifier > 0)
             {
                 System.Windows.Forms.MessageBox.Show(toDisplay);
             }
@@ -309,6 +309,7 @@ namespace hist_mmorpg
         /// <param name="lossModifier">modifier to be applied to each troop type</param>
         public uint applyTroopLosses(double lossModifier)
         {
+            // keep track of total troops lost
             uint troopsLost = 0;
 
             // knights

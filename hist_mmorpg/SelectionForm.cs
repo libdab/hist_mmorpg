@@ -879,7 +879,7 @@ namespace hist_mmorpg
                     // check for minimum days
                     foreach (ListViewItem item in checkedItems)
                     {
-                        double thisDays = Convert.ToDouble(item.SubItems[2].Text);
+                        double thisDays = Convert.ToDouble(item.SubItems[7].Text);
 
                         // check if detachment has enough days for transfer in this instance
                         // if not, flag display of message at end of process, but do nothing else
@@ -966,9 +966,12 @@ namespace hist_mmorpg
 
                         // calculate attrition for army
                         byte attritionChecks = Convert.ToByte(daysTaken / 7);
+                        double attritionModifier = 0;
+
                         for (int i = 0; i < attritionChecks; i++)
                         {
-                            thisArmy.foot = thisArmy.foot - thisArmy.calcAttrition();
+                            attritionModifier = thisArmy.calcAttrition();
+                            thisArmy.applyTroopLosses(attritionModifier);
                         }
                     }
                     else
@@ -990,13 +993,21 @@ namespace hist_mmorpg
 
                         // calculate attrition for army (to bring it down to minDays)
                         byte attritionChecks = Convert.ToByte(differenceToMin / 7);
+                        double attritionModifier = 0;
+
                         for (int i = 0; i < attritionChecks; i++)
                         {
-                            thisArmy.foot = thisArmy.foot - thisArmy.calcAttrition();
+                            attritionModifier = thisArmy.calcAttrition();
+                            thisArmy.applyTroopLosses(attritionModifier);
                         }
 
                         // add detachments to army
-                        thisArmy.foot += totKnightsToAdd;
+                        thisArmy.knights += totKnightsToAdd;
+                        thisArmy.menAtArms += totMaaToAdd;
+                        thisArmy.lightCavalry += totLcavToAdd;
+                        thisArmy.yeomen += totYeomenToAdd;
+                        thisArmy.foot += totFootToAdd;
+                        thisArmy.rabble += totRabbleToAdd;
 
                         // check if are any remaining days taken for the transfer (daysTaken) 
                         if (daysTaken > 0)
@@ -1006,9 +1017,11 @@ namespace hist_mmorpg
 
                             // calculate attrition for army for days taken for transfer
                             attritionChecks = Convert.ToByte(daysTaken / 7);
+
                             for (int i = 0; i < attritionChecks; i++)
                             {
-                                thisArmy.foot = thisArmy.foot - thisArmy.calcAttrition();
+                                attritionModifier = thisArmy.calcAttrition();
+                                thisArmy.applyTroopLosses(attritionModifier);
                             }
                         }
                     }

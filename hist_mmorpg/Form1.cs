@@ -500,7 +500,7 @@ namespace hist_mmorpg
             Globals.combatValues.Add("O", oCombatValues);
           
             // create an army and add in appropriate places
-            Army myArmy = new Army("army" + Globals.getNextArmyID(), null, null, 90, this.clock, null, ft: 2000);
+            Army myArmy = new Army("army" + Globals.getNextArmyID(), null, null, 90, this.clock, null, kni: 100, maa: 100, ltCav: 50, yeo: 200, ft: 2000, rbl: 4000);
             Globals.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
             myArmy.leader = myChar1.charID;
@@ -5958,6 +5958,13 @@ namespace hist_mmorpg
 
                 // preload own ID in 'drop off to' textbox (assumes transferring between own armies)
                 this.armyTransDropWhoTextBox.Text = this.myChar.charID;
+                // and set all troop transfer numbers to 0
+                this.armyTransKnightTextBox.Text = "0";
+                this.armyTransMAAtextBox.Text = "0";
+                this.armyTransLCavTextBox.Text = "0";
+                this.armyTransYeomenTextBox.Text = "0";
+                this.armyTransFootTextBox.Text = "0";
+                this.armyTransRabbleTextBox.Text = "0";
 
             }
 
@@ -6121,6 +6128,14 @@ namespace hist_mmorpg
                     else
                     {
                         totalTroopsToTransfer += rabbleToTransfer;
+                    }
+
+                    // if no troops selected for transfer, cancel
+                    if ((totalTroopsToTransfer == 0) && (proceed))
+                    {
+                        System.Windows.Forms.MessageBox.Show("You haven't selected any troops for transfer.  Transfer cancelled.");
+                        proceed = false;
+                        adjustDays = false;
                     }
 
                     // if reduces army to < 100 troops, warn
@@ -6689,6 +6704,8 @@ namespace hist_mmorpg
                 defender.applyTroopLosses(casualtyModifiers[1]);
 
                 // check if any PCs/NPCs have been wounded or killed
+
+                // adjust days
 
                 // check if either army needs to retreat, and perform it
             }
