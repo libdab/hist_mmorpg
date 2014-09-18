@@ -152,6 +152,16 @@ namespace hist_mmorpg
             this.houseCharListLabel = new System.Windows.Forms.Label();
             this.houseCharListView = new System.Windows.Forms.ListView();
             this.armyContainer = new System.Windows.Forms.SplitContainer();
+            this.armyTransRabbleTextBox = new System.Windows.Forms.TextBox();
+            this.armyTransFootTextBox = new System.Windows.Forms.TextBox();
+            this.armyTransYeomenTextBox = new System.Windows.Forms.TextBox();
+            this.armyTransLCavTextBox = new System.Windows.Forms.TextBox();
+            this.armyTransMAAtextBox = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             this.armyExamineBtn = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.armyCampTextBox = new System.Windows.Forms.TextBox();
@@ -178,16 +188,6 @@ namespace hist_mmorpg
             this.armyListContainer = new System.Windows.Forms.SplitContainer();
             this.armyTextBox = new System.Windows.Forms.TextBox();
             this.armyListView = new System.Windows.Forms.ListView();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.armyTransMAAtextBox = new System.Windows.Forms.TextBox();
-            this.armyTransLCavTextBox = new System.Windows.Forms.TextBox();
-            this.armyTransYeomenTextBox = new System.Windows.Forms.TextBox();
-            this.armyTransFootTextBox = new System.Windows.Forms.TextBox();
-            this.armyTransRabbleTextBox = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -825,7 +825,7 @@ namespace hist_mmorpg
             // travelContainer
             // 
             this.travelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.travelContainer.Location = new System.Drawing.Point(0, 0);
+            this.travelContainer.Location = new System.Drawing.Point(0, 24);
             this.travelContainer.Name = "travelContainer";
             // 
             // travelContainer.Panel1
@@ -847,7 +847,7 @@ namespace hist_mmorpg
             // travelContainer.Panel2
             // 
             this.travelContainer.Panel2.Controls.Add(this.travelNavigationPanel);
-            this.travelContainer.Size = new System.Drawing.Size(935, 661);
+            this.travelContainer.Size = new System.Drawing.Size(935, 637);
             this.travelContainer.SplitterDistance = 310;
             this.travelContainer.TabIndex = 4;
             // 
@@ -1294,7 +1294,7 @@ namespace hist_mmorpg
             // houseContainer
             // 
             this.houseContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.houseContainer.Location = new System.Drawing.Point(0, 0);
+            this.houseContainer.Location = new System.Drawing.Point(0, 24);
             this.houseContainer.Name = "houseContainer";
             // 
             // houseContainer.Panel1
@@ -1321,7 +1321,7 @@ namespace hist_mmorpg
             // houseContainer.Panel2
             // 
             this.houseContainer.Panel2.Controls.Add(this.houseCharContainer);
-            this.houseContainer.Size = new System.Drawing.Size(935, 661);
+            this.houseContainer.Size = new System.Drawing.Size(935, 637);
             this.houseContainer.SplitterDistance = 259;
             this.houseContainer.TabIndex = 7;
             // 
@@ -1500,7 +1500,7 @@ namespace hist_mmorpg
             // houseCharContainer.Panel2
             // 
             this.houseCharContainer.Panel2.Controls.Add(this.houseCharListContainer);
-            this.houseCharContainer.Size = new System.Drawing.Size(672, 661);
+            this.houseCharContainer.Size = new System.Drawing.Size(672, 637);
             this.houseCharContainer.SplitterDistance = 329;
             this.houseCharContainer.TabIndex = 0;
             // 
@@ -1510,7 +1510,7 @@ namespace hist_mmorpg
             this.houseCharTextBox.Location = new System.Drawing.Point(0, 0);
             this.houseCharTextBox.Multiline = true;
             this.houseCharTextBox.Name = "houseCharTextBox";
-            this.houseCharTextBox.Size = new System.Drawing.Size(329, 661);
+            this.houseCharTextBox.Size = new System.Drawing.Size(329, 637);
             this.houseCharTextBox.TabIndex = 0;
             // 
             // houseCharListContainer
@@ -1527,8 +1527,8 @@ namespace hist_mmorpg
             // houseCharListContainer.Panel2
             // 
             this.houseCharListContainer.Panel2.Controls.Add(this.houseCharListView);
-            this.houseCharListContainer.Size = new System.Drawing.Size(339, 661);
-            this.houseCharListContainer.SplitterDistance = 54;
+            this.houseCharListContainer.Size = new System.Drawing.Size(339, 637);
+            this.houseCharListContainer.SplitterDistance = 52;
             this.houseCharListContainer.TabIndex = 0;
             // 
             // houseCharListLabel
@@ -1547,7 +1547,7 @@ namespace hist_mmorpg
             this.houseCharListView.FullRowSelect = true;
             this.houseCharListView.Location = new System.Drawing.Point(0, 0);
             this.houseCharListView.Name = "houseCharListView";
-            this.houseCharListView.Size = new System.Drawing.Size(339, 603);
+            this.houseCharListView.Size = new System.Drawing.Size(339, 581);
             this.houseCharListView.TabIndex = 0;
             this.houseCharListView.UseCompatibleStateImageBehavior = false;
             this.houseCharListView.View = System.Windows.Forms.View.Details;
@@ -1601,6 +1601,86 @@ namespace hist_mmorpg
             this.armyContainer.Size = new System.Drawing.Size(935, 637);
             this.armyContainer.SplitterDistance = 282;
             this.armyContainer.TabIndex = 8;
+            // 
+            // armyTransRabbleTextBox
+            // 
+            this.armyTransRabbleTextBox.Location = new System.Drawing.Point(203, 332);
+            this.armyTransRabbleTextBox.Name = "armyTransRabbleTextBox";
+            this.armyTransRabbleTextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransRabbleTextBox.TabIndex = 52;
+            // 
+            // armyTransFootTextBox
+            // 
+            this.armyTransFootTextBox.Location = new System.Drawing.Point(202, 306);
+            this.armyTransFootTextBox.Name = "armyTransFootTextBox";
+            this.armyTransFootTextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransFootTextBox.TabIndex = 51;
+            // 
+            // armyTransYeomenTextBox
+            // 
+            this.armyTransYeomenTextBox.Location = new System.Drawing.Point(203, 280);
+            this.armyTransYeomenTextBox.Name = "armyTransYeomenTextBox";
+            this.armyTransYeomenTextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransYeomenTextBox.TabIndex = 50;
+            // 
+            // armyTransLCavTextBox
+            // 
+            this.armyTransLCavTextBox.Location = new System.Drawing.Point(202, 254);
+            this.armyTransLCavTextBox.Name = "armyTransLCavTextBox";
+            this.armyTransLCavTextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransLCavTextBox.TabIndex = 49;
+            // 
+            // armyTransMAAtextBox
+            // 
+            this.armyTransMAAtextBox.Location = new System.Drawing.Point(202, 228);
+            this.armyTransMAAtextBox.Name = "armyTransMAAtextBox";
+            this.armyTransMAAtextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransMAAtextBox.TabIndex = 48;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(125, 235);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(72, 13);
+            this.label15.TabIndex = 47;
+            this.label15.Text = "Men at Arms: ";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(139, 257);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(58, 13);
+            this.label14.TabIndex = 46;
+            this.label14.Text = "Light Cav: ";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(147, 283);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(52, 13);
+            this.label13.TabIndex = 45;
+            this.label13.Text = "Yeomen: ";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(163, 309);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(34, 13);
+            this.label12.TabIndex = 44;
+            this.label12.Text = "Foot: ";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(150, 335);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(47, 13);
+            this.label11.TabIndex = 43;
+            this.label11.Text = "Rabble: ";
             // 
             // armyExamineBtn
             // 
@@ -1848,97 +1928,17 @@ namespace hist_mmorpg
             this.armyListView.View = System.Windows.Forms.View.Details;
             this.armyListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.armyListView_ItemSelectionChanged);
             // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(150, 335);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(47, 13);
-            this.label11.TabIndex = 43;
-            this.label11.Text = "Rabble: ";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(163, 309);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(34, 13);
-            this.label12.TabIndex = 44;
-            this.label12.Text = "Foot: ";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(147, 283);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(52, 13);
-            this.label13.TabIndex = 45;
-            this.label13.Text = "Yeomen: ";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(139, 257);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(58, 13);
-            this.label14.TabIndex = 46;
-            this.label14.Text = "Light Cav: ";
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(125, 235);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(72, 13);
-            this.label15.TabIndex = 47;
-            this.label15.Text = "Men at Arms: ";
-            // 
-            // armyTransMAAtextBox
-            // 
-            this.armyTransMAAtextBox.Location = new System.Drawing.Point(202, 228);
-            this.armyTransMAAtextBox.Name = "armyTransMAAtextBox";
-            this.armyTransMAAtextBox.Size = new System.Drawing.Size(62, 20);
-            this.armyTransMAAtextBox.TabIndex = 48;
-            // 
-            // armyTransLCavTextBox
-            // 
-            this.armyTransLCavTextBox.Location = new System.Drawing.Point(202, 254);
-            this.armyTransLCavTextBox.Name = "armyTransLCavTextBox";
-            this.armyTransLCavTextBox.Size = new System.Drawing.Size(62, 20);
-            this.armyTransLCavTextBox.TabIndex = 49;
-            // 
-            // armyTransYeomenTextBox
-            // 
-            this.armyTransYeomenTextBox.Location = new System.Drawing.Point(203, 280);
-            this.armyTransYeomenTextBox.Name = "armyTransYeomenTextBox";
-            this.armyTransYeomenTextBox.Size = new System.Drawing.Size(62, 20);
-            this.armyTransYeomenTextBox.TabIndex = 50;
-            // 
-            // armyTransFootTextBox
-            // 
-            this.armyTransFootTextBox.Location = new System.Drawing.Point(202, 306);
-            this.armyTransFootTextBox.Name = "armyTransFootTextBox";
-            this.armyTransFootTextBox.Size = new System.Drawing.Size(62, 20);
-            this.armyTransFootTextBox.TabIndex = 51;
-            // 
-            // armyTransRabbleTextBox
-            // 
-            this.armyTransRabbleTextBox.Location = new System.Drawing.Point(203, 332);
-            this.armyTransRabbleTextBox.Name = "armyTransRabbleTextBox";
-            this.armyTransRabbleTextBox.Size = new System.Drawing.Size(62, 20);
-            this.armyTransRabbleTextBox.TabIndex = 52;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
+            this.Controls.Add(this.travelContainer);
+            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.travelContainer);
-            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.MainMenuStrip = this.menuStrip1;

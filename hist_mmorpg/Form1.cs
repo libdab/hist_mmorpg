@@ -409,9 +409,9 @@ namespace hist_mmorpg
             List<Army> myArmies002 = new List<Army>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "F", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, true, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, true, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, cl: this.clock, loc: myFief1);
             Globals.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "E", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, cl: this.clock, loc: myFief1);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, cl: this.clock, loc: myFief1);
             Globals.pcMasterList.Add(myChar2.charID, myChar2);
             NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "E", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, false, null, null, null, 0, false, false, myTitles003, cl: this.clock, loc: myFief1);
             Globals.npcMasterList.Add(myNPC1.charID, myNPC1);
@@ -6059,85 +6059,31 @@ namespace hist_mmorpg
                 // run checks on data in fields
                 try
                 {
+                    // labels for troop types
+                    string[] troopTypeLabels = new string[] { "knights", "men-at-arms", "light cavalry", "yeomen", "foot", "rabble" };
+
                     // get number of troops to transfer
-                    UInt32 knightsToTransfer = Convert.ToUInt32(this.armyTransKnightTextBox.Text);
-                    UInt32 maaToTransfer = Convert.ToUInt32(this.armyTransMAAtextBox.Text);
-                    UInt32 lcavToTransfer = Convert.ToUInt32(this.armyTransLCavTextBox.Text);
-                    UInt32 yeomenToTransfer = Convert.ToUInt32(this.armyTransYeomenTextBox.Text);
-                    UInt32 footToTransfer = Convert.ToUInt32(this.armyTransFootTextBox.Text);
-                    UInt32 rabbleToTransfer = Convert.ToUInt32(this.armyTransRabbleTextBox.Text);
+                    uint[] troopsToTransfer = new uint[] {0, 0, 0, 0, 0, 0};
+                    troopsToTransfer[0] = Convert.ToUInt32(this.armyTransKnightTextBox.Text);
+                    troopsToTransfer[1] = Convert.ToUInt32(this.armyTransMAAtextBox.Text);
+                    troopsToTransfer[2] = Convert.ToUInt32(this.armyTransLCavTextBox.Text);
+                    troopsToTransfer[3] = Convert.ToUInt32(this.armyTransYeomenTextBox.Text);
+                    troopsToTransfer[4] = Convert.ToUInt32(this.armyTransFootTextBox.Text);
+                    troopsToTransfer[5] = Convert.ToUInt32(this.armyTransRabbleTextBox.Text);
 
                     // check each troop type; if not enough in army, cancel
-                    // knights
-                    if (knightsToTransfer > this.armyToView.knights)
+                    for (int i = 0; i < troopsToTransfer.Length; i++)
                     {
-                        System.Windows.Forms.MessageBox.Show("You don't have enough knights in your army for that transfer.  Transfer cancelled.");
-                        proceed = false;
-                        adjustDays = false;
-                    }
-                    else
-                    {
-                        totalTroopsToTransfer += knightsToTransfer;
-                    }
-
-                    // men-at-arms
-                    if (maaToTransfer > this.armyToView.menAtArms)
-                    {
-                        System.Windows.Forms.MessageBox.Show("You don't have enough men-at-arms in your army for that transfer.  Transfer cancelled.");
-                        proceed = false;
-                        adjustDays = false;
-                    }
-                    else
-                    {
-                        totalTroopsToTransfer += maaToTransfer;
-                    }
-
-                    // lightCavalry
-                    if (lcavToTransfer > this.armyToView.lightCavalry)
-                    {
-                        System.Windows.Forms.MessageBox.Show("You don't have enough light cavalry in your army for that transfer.  Transfer cancelled.");
-                        proceed = false;
-                        adjustDays = false;
-                    }
-                    else
-                    {
-                        totalTroopsToTransfer += lcavToTransfer;
-                    }
-
-                    // yeomen
-                    if (yeomenToTransfer > this.armyToView.yeomen)
-                    {
-                        System.Windows.Forms.MessageBox.Show("You don't have enough yeomen in your army for that transfer.  Transfer cancelled.");
-                        proceed = false;
-                        adjustDays = false;
-                    }
-                    else
-                    {
-                        totalTroopsToTransfer += yeomenToTransfer;
-                    }
-
-                    // foot
-                    if (footToTransfer > this.armyToView.foot)
-                    {
-                        System.Windows.Forms.MessageBox.Show("You don't have enough foot in your army for that transfer.  Transfer cancelled.");
-                        proceed = false;
-                        adjustDays = false;
-                    }
-                    else
-                    {
-                        totalTroopsToTransfer += footToTransfer;
-                    }
-
-                    // rabble
-                    if (rabbleToTransfer > this.armyToView.rabble)
-                    {
-                        System.Windows.Forms.MessageBox.Show("You don't have enough rabble in your army for that transfer.  Transfer cancelled.");
-                        proceed = false;
-                        adjustDays = false;
-                    }
-                    else
-                    {
-                        totalTroopsToTransfer += rabbleToTransfer;
+                        if (troopsToTransfer[i] > this.armyToView.troops[i])
+                        {
+                            System.Windows.Forms.MessageBox.Show("You don't have enough "+ troopTypeLabels[i] + " in your army for that transfer.  Transfer cancelled.");
+                            proceed = false;
+                            adjustDays = false;
+                        }
+                        else
+                        {
+                            totalTroopsToTransfer += troopsToTransfer[i];
+                        }
                     }
 
                     // if no troops selected for transfer, cancel
@@ -6192,26 +6138,18 @@ namespace hist_mmorpg
                     if (proceed)
                     {
                         // remove troops from army
-                        // knights
-                        this.armyToView.knights -= knightsToTransfer;
-                        // menAtArms
-                        this.armyToView.menAtArms -= maaToTransfer;
-                        // lightCavalry
-                        this.armyToView.lightCavalry -= lcavToTransfer;
-                        // yeomen
-                        this.armyToView.yeomen -= yeomenToTransfer;
-                        // foot
-                        this.armyToView.foot -= footToTransfer;
-                        // rabble
-                        this.armyToView.rabble -= rabbleToTransfer;
+                        for (int i = 0; i < this.armyToView.troops.Length; i++)
+                        {
+                            this.armyToView.troops[i] -= troopsToTransfer[i];
+                        }
 
                         // get fief
                         Fief thisFief = Globals.fiefMasterList[this.armyToView.location];
 
                         // create transfer entry
                         string[] thisTransfer = new string[9] { this.myChar.charID, this.armyTransDropWhoTextBox.Text,
-                            knightsToTransfer.ToString(), maaToTransfer.ToString(), lcavToTransfer.ToString(),
-                            yeomenToTransfer.ToString(), footToTransfer.ToString(), rabbleToTransfer.ToString(),
+                            troopsToTransfer[0].ToString(), troopsToTransfer[1].ToString(), troopsToTransfer[2].ToString(),
+                            troopsToTransfer[3].ToString(), troopsToTransfer[4].ToString(), troopsToTransfer[5].ToString(),
                             (this.armyToView.days - daysTaken).ToString() };
 
                         // add to fief's troopTransfers list
@@ -6434,26 +6372,59 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void armyExamineBtn_Click(object sender, EventArgs e)
         {
+            // army leader
+            Character thisLeader = this.armyToView.getLeader();
+
             // check for previously opened SelectionForm and close if necessary
             if (Application.OpenForms.OfType<SelectionForm>().Any())
             {
                 Application.OpenForms.OfType<SelectionForm>().First().Close();
             }
 
-            if (this.armyListView.SelectedItems.Count > 0)
-            {
-                // army leader
-                Character thisLeader = this.armyToView.getLeader();
-
-                // display armies list
-                SelectionForm examineArmies = new SelectionForm(this, "armies", obs: thisLeader);
-                examineArmies.Show();
-            }
-
             // if no army selected
-            else
+            if (this.armyListView.SelectedItems.Count < 1)
             {
                 System.Windows.Forms.MessageBox.Show("No army selected!");
+            }
+
+            // if army selected
+            else
+            {
+                // check if has minimum days
+                if (this.armyToView.days < 1)
+                {
+                    System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
+                }
+
+                // has minimum days
+                else
+                {
+                    // see how long reconnaissance takes
+                    int reconDays = Globals.myRand.Next(1, 4);
+
+                    // check if runs out of time
+                    if (this.armyToView.days < reconDays)
+                    {
+                        // set days to 0
+                        thisLeader.adjustDays(this.armyToView.days);
+                        this.refreshArmyContainer(this.armyToView);
+                        System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
+                    }
+
+                    // doesn't run out of time
+                    else
+                    {
+                        // adjust days
+                        thisLeader.adjustDays(reconDays);
+                        this.refreshArmyContainer(this.armyToView);
+
+                        // display armies list
+                        SelectionForm examineArmies = new SelectionForm(this, "armies", obs: thisLeader);
+                        examineArmies.Show();
+                    }
+
+                }
+
             }
 
         }
@@ -6466,26 +6437,59 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void houseExamineArmiesBtn_Click(object sender, EventArgs e)
         {
+            // NPC
+            Character thisObserver = this.charToView;
+
             // check for previously opened SelectionForm and close if necessary
             if (Application.OpenForms.OfType<SelectionForm>().Any())
             {
                 Application.OpenForms.OfType<SelectionForm>().First().Close();
             }
 
-            if (this.houseCharListView.SelectedItems.Count > 0)
-            {
-                // NPC
-                Character thisObserver = this.charToView;
-
-                // display armies list
-                SelectionForm examineArmies = new SelectionForm(this, "armies", obs: thisObserver);
-                examineArmies.Show();
-            }
-
             // if no NPC selected
-            else
+            if (this.houseCharListView.SelectedItems.Count < 1)
             {
                 System.Windows.Forms.MessageBox.Show("No NPC selected!");
+            }
+
+            // if NPC selected
+            else
+            {
+                // check if has minimum days
+                if (this.charToView.days < 1)
+                {
+                    System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
+                }
+
+                // has minimum days
+                else
+                {
+                    // see how long reconnaissance takes
+                    int reconDays = Globals.myRand.Next(1, 4);
+
+                    // check if runs out of time
+                    if (this.charToView.days < reconDays)
+                    {
+                        // set days to 0
+                        this.charToView.adjustDays(this.armyToView.days);
+                        this.refreshHouseholdDisplay((this.charToView as NonPlayerCharacter));
+                        System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
+                    }
+
+                    // doesn't run out of time
+                    else
+                    {
+                        // adjust days
+                        this.charToView.adjustDays(reconDays);
+                        this.refreshHouseholdDisplay((this.charToView as NonPlayerCharacter));
+
+                        // display armies list
+                        SelectionForm examineArmies = new SelectionForm(this, "armies", obs: thisObserver);
+                        examineArmies.Show();
+                    }
+
+                }
+
             }
 
         }
@@ -6504,9 +6508,40 @@ namespace hist_mmorpg
                 Application.OpenForms.OfType<SelectionForm>().First().Close();
             }
 
-            // display armies list
-            SelectionForm examineArmies = new SelectionForm(this, "armies", obs: this.myChar);
-            examineArmies.Show();
+            // check if has minimum days
+            if (this.myChar.days < 1)
+            {
+                System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
+            }
+
+            // has minimum days
+            else
+            {
+                // see how long reconnaissance takes
+                int reconDays = Globals.myRand.Next(1, 4);
+
+                // check if runs out of time
+                if (this.myChar.days < reconDays)
+                {
+                    // set days to 0
+                    this.myChar.adjustDays(this.myChar.days);
+                    this.refreshTravelContainer();
+                    System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
+                }
+
+                // doesn't run out of time
+                else
+                {
+                    // adjust days
+                    this.myChar.adjustDays(reconDays);
+                    this.refreshTravelContainer();
+
+                    // display armies list
+                    SelectionForm examineArmies = new SelectionForm(this, "armies", obs: this.myChar);
+                    examineArmies.Show();
+                }
+
+            }
 
         }
 
@@ -6596,6 +6631,11 @@ namespace hist_mmorpg
                 battleHasCommenced = true;
             }
 
+            if (battleHasCommenced)
+            {
+                System.Windows.Forms.MessageBox.Show("The attacker has successfully brought the defender to battle");
+            }
+
             return battleHasCommenced;
         }
 
@@ -6662,6 +6702,43 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Calculates chance and effect of character injuries resulting from a battle
+        /// </summary>
+        /// <returns>byte containing health loss due to injury</returns>
+        /// <param name="ch">character to assess</param>
+        /// <param name="friendlyBV">uint containing friendly army battle value</param>
+        /// <param name="enemyBV">uint containing enemy army battle value</param>
+        /// <param name="friendlyVictorious">bool indicating whether friendly army was victorious</param>
+        public int calculateCombatInjury(Character ch, uint friendlyBV, uint enemyBV, bool friendlyVictorious)
+        {
+            int healthLoss = 0;
+
+            // calculate base chance of injury (based on combat skill)
+            double injuryChance = 5 - (ch.combat * 0.25);
+
+            // factor in battlefield odds
+            injuryChance += (enemyBV / friendlyBV);
+
+            // factor in whether was on losing side (high losses during withdrawal)
+            if (!friendlyVictorious)
+            {
+                injuryChance = injuryChance * 3;
+            }
+
+            // generate random percentage
+            int randomPercent = Globals.myRand.Next(101);
+
+            // compare randomPercent with injuryChance to see if injury occurred
+            if (randomPercent <= injuryChance)
+            {
+                // generate random int 1-5 specifying health loss
+                healthLoss = Globals.myRand.Next(1, 6);
+            }
+
+            return healthLoss;
+        }
+        
+        /// <summary>
         /// Calculates the outcome of a battle, including troop losses and PC/NPC casualties
         /// </summary>
         /// <param name="attacker">The attacking army</param>
@@ -6671,7 +6748,7 @@ namespace hist_mmorpg
             bool battleHasCommenced = false;
             uint[] battleValues = new uint[2];
             double[] casualtyModifiers = new double[2];
-
+           
             // get battle values for both armies
             battleValues = this.calculateBattleValue(attacker, defender);
 
@@ -6714,6 +6791,31 @@ namespace hist_mmorpg
                 defender.applyTroopLosses(casualtyModifiers[1]);
 
                 // check if any PCs/NPCs have been wounded or killed
+                bool friendlyVictory = new bool();
+
+                // 1. attacker
+                uint friendlyBV = battleValues[0];
+                uint enemyBV = battleValues[1];
+
+                if (attackerVictorious)
+                {
+                    friendlyVictory = true;
+                }
+                else
+                {
+                    friendlyVictory = false;
+                }
+
+                // get leader
+                Character attackerLeader = attacker.getLeader();
+
+                // check army leader
+                this.calculateCombatInjury(attackerLeader, friendlyBV, enemyBV, friendlyVictory);
+
+                // if army leader a PC, check entourage
+                if (attackerLeader is PlayerCharacter)
+                {
+                }
 
                 // adjust days
 

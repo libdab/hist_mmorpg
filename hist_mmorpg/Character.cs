@@ -1831,7 +1831,13 @@ namespace hist_mmorpg
                         // work out 'trained' troops numbers
                         if (i < typesRecruited.Length - 1)
                         {
-                            typesRecruited[i] = Convert.ToUInt32(troopsRecruited * Globals.recruitRatios[this.nationality][i]);
+                            // get army nationality
+                            string thisNationality = this.nationality.ToUpper();
+                            if (!thisNationality.Equals("E"))
+                            {
+                                thisNationality = "O";
+                            }
+                            typesRecruited[i] = Convert.ToUInt32(troopsRecruited * Globals.recruitRatios[thisNationality][i]);
                             totalSoFar += typesRecruited[i];
                         }
                         // fill up with rabble

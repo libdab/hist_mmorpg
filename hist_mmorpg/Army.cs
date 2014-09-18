@@ -336,7 +336,7 @@ namespace hist_mmorpg
 
             // get nationality (effects combat values)
             string troopNationality = "";
-            if (myLeader.nationality.Equals("E"))
+            if (myLeader.nationality.ToUpper().Equals("E"))
             {
                 troopNationality = "E";
             }

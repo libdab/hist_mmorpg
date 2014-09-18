@@ -239,7 +239,7 @@ namespace hist_mmorpg
             armyText += "Leader: " + armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")\r\n\r\n";
 
             // get troop numbers
-            if (!isMyArmy)
+            if (isMyArmy)
             {
                 // actual troop numbers if is player's army
                 troopNumbers = a.troops;
