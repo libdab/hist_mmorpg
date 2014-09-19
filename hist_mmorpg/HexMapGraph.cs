@@ -211,30 +211,82 @@ namespace hist_mmorpg
         /// Selects random adjoining hex (also equal chance to select current hex)
         /// </summary>
         /// <returns>Fief to move to (or null)</returns>
-        /// <param name="f">Current location of NPC</param>
-        public Fief chooseRandomHex(Fief f)
+        /// <param name="from">Current fief</param>
+        /// <param name="getOwned">bool indicating whether or not to try to return an owned fief</param>
+        /// <param name="owner">owner, when looking for an owned fief</param>
+        /// <param name="avoid">Fief to avoid (for retreats)</param>
+        public Fief chooseRandomHex(Fief from, bool getOwned = false, PlayerCharacter fiefOwner = null, Fief avoid = null)
         {
-            // list to store all out edges
+            // list to store all edges
             List<TaggedEdge<Fief, string>> choices = new List<TaggedEdge<Fief, string>>();
+            // list to store all edges to owned fiefs
+            List<TaggedEdge<Fief, string>> ownedChoices = new List<TaggedEdge<Fief, string>>();
+            // int to use in edge selection
+            int selection = 0;
             // string to contain chosen move direction
             Fief goTo = null;
 
             // identify and store all target hexes from source hex
             foreach (var e in this.myMap.Edges)
             {
-                if (e.Source == f)
+                bool okToAdd = true;
+                if (e.Source == from)
                 {
-                    choices.Add(e);
+                    // no 'avoid' fief specified
+                    if (avoid == null)
+                    {
+                        okToAdd = true;
+                    }
+
+                    // if 'avoid' fief specified
+                    else
+                    {
+                        // if is NOT specified 'avoid' fief
+                        if (e.Target != avoid)
+                        {
+                            okToAdd = true;
+                        }
+
+                        // if IS specified 'avoid' fief
+                        else
+                        {
+                            okToAdd = false;
+                        }
+                    }
+
+                    if (okToAdd)
+                    {
+                        choices.Add(e);
+
+                        // if getOwned, also check for target ownership
+                        if (getOwned)
+                        {
+                            if (e.Target.owner == fiefOwner)
+                            {
+                                ownedChoices.Add(e);
+                            }
+                        }
+                    }
                 }
             }
 
-            // generate random int between 0 and no. of targets
-            int selection = Globals.myRand.Next(0, (choices.Count + 1));
-
-            // if random number = highest possible number, null is returned (i.e. don't move)
-            // if not, appropriate Fief returned
-            if (selection != choices.Count)
+            // if looking for owned fief, get one if possible
+            if ((getOwned) && (ownedChoices.Count > 0))
             {
+                // choose fief by generating random int between 0 and no. of targets
+                selection = Globals.myRand.Next(0, ownedChoices.Count);
+
+                // get Fief
+                goTo = ownedChoices[selection].Target;
+            }
+
+            // if ownership not required, choose from all adjoining fiefs
+            else
+            {
+                // choose fief by generating random int between 0 and no. of targets
+                selection = Globals.myRand.Next(0, choices.Count);
+
+                // get Fief
                 goTo = choices[selection].Target;
             }
 

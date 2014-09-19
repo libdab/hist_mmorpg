@@ -2211,11 +2211,14 @@ namespace hist_mmorpg
         {
             bool success = false;
 
-            // get a destination
-            Fief target = this.gameMap.chooseRandomHex(npc.location);
+            // generate random int 0-6 to see if moves
+            int randomInt = Globals.myRand.Next(7);
 
-            if (target != null)
+            if (randomInt > 0)
             {
+                // get a destination
+                Fief target = this.gameMap.chooseRandomHex(npc.location);
+
                 // get travel cost
                 double travelCost = this.getTravelCost(npc.location, target);
 
@@ -6764,16 +6767,55 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates the outcome of a battle, including troop losses and PC/NPC casualties
+        /// Calculates whether either army has retreated due to the outcome of a battle
         /// </summary>
-        /// <returns>bool indicating whether army has retreated</returns>
-        /// <param name="friendlyCasualties">Double cobtaining casualtyModifier for army</param>
-        /// <param name="friendlyVictorious">bool indicating if army was victorious</param>
-        public bool conductRetreat(double friendlyCasualties, bool friendlyVictorious)
+        /// <returns>bool[] indicating whether either army has retreated</returns>
+        /// <param name="attacker">The attacking army</param>
+        /// <param name="defender">The defending army</param>
+        /// <param name="aCasualties">The attacking army casualty modifier</param>
+        /// <param name="dCasualties">The defending army casualty modifier</param>
+        /// <param name="attackerVictorious">bool indicating if attacking army was victorious</param>
+        public bool[] checkForRetreat(Army attacker, Army defender, double aCasualties, double dCasualties, bool attackerVictorious)
         {
-            bool hasRetreated = false;
+            bool[] hasRetreated = {false, false};
+            int retreatDistance = 0;
 
+            // check if loser retreats due to battlefield casualties
+            if (!attackerVictorious)
+            {
+                // if have >= 20% casualties
+                if (aCasualties >= 0.2)
+                {
+                    // indicate attacker has retreated
+                    hasRetreated[0] = true;
 
+                    // generate random 1-6 to determine retreat distance
+                    retreatDistance = Globals.myRand.Next(1, 7);
+                }
+            }
+            else
+            {
+                // if have >= 20% casualties
+                if (dCasualties >= 0.2)
+                {
+                    // indicate attacker has retreated
+                    hasRetreated[1] = true;
+
+                    // generate random 1-6 to determine retreat distance
+                    retreatDistance = Globals.myRand.Next(1, 7);
+                }
+            }
+
+            // check to see if defender retreats due to aggression setting (i.e. was forced into battle)
+            // NOTE: this will only happen if attacker and defender still present in fief
+            if ((defender.aggression == 0) && (!hasRetreated[0] && !hasRetreated[1]))
+            {
+                // indicate attacker has retreated
+                hasRetreated[1] = true;
+
+                // generate random 1-6 to determine retreat distance
+                retreatDistance = 1;
+            }
 
             return hasRetreated;
         }
