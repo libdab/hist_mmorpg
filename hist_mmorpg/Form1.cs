@@ -507,7 +507,7 @@ namespace hist_mmorpg
 
             // create an army and add in appropriate places
             uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 200, 400};
-            Army myArmy = new Army("army" + Globals.getNextArmyID(), null, null, 90, this.clock, null, trp: myArmyTroops);
+            Army myArmy = new Army(Globals.getNextArmyID(), null, null, 90, this.clock, null, trp: myArmyTroops);
             Globals.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
             myArmy.leader = myChar1.charID;
@@ -519,7 +519,7 @@ namespace hist_mmorpg
 
             // create another (enemy) army and add in appropriate places
             uint[] myArmyTroops2 = new uint[] { 10, 10, 30, 0, 200, 400 };
-            Army myArmy2 = new Army("army" + Globals.getNextArmyID(), null, null, 90, this.clock, null, trp: myArmyTroops2);
+            Army myArmy2 = new Army(Globals.getNextArmyID(), null, null, 90, this.clock, null, trp: myArmyTroops2);
             Globals.armyMasterList.Add(myArmy2.armyID, myArmy2);
             myArmy2.owner = myChar2.charID;
             myArmy2.leader = myChar2.charID;
@@ -5760,7 +5760,7 @@ namespace hist_mmorpg
                 // if no existing army, create one
                 if (operation.Equals("new"))
                 {
-                    Army newArmy = new Army("army" + Globals.getNextArmyID(), this.myChar.charID, this.myChar.charID, this.myChar.days, this.clock, this.myChar.location.fiefID);
+                    Army newArmy = new Army(Globals.getNextArmyID(), this.myChar.charID, this.myChar.charID, this.myChar.days, this.clock, this.myChar.location.fiefID);
                     Globals.armyMasterList.Add(newArmy.armyID, newArmy);
                     this.myChar.myArmies.Add(newArmy);
                     this.myChar.armyID = newArmy.armyID;
@@ -6704,14 +6704,15 @@ namespace hist_mmorpg
         /// <summary>
         /// Calculates chance and effect of character injuries resulting from a battle
         /// </summary>
-        /// <returns>byte containing health loss due to injury</returns>
+        /// <returns>bool indicating whether character has died of injuries</returns>
         /// <param name="ch">character to assess</param>
         /// <param name="friendlyBV">uint containing friendly army battle value</param>
         /// <param name="enemyBV">uint containing enemy army battle value</param>
         /// <param name="friendlyVictorious">bool indicating whether friendly army was victorious</param>
-        public int calculateCombatInjury(Character ch, uint friendlyBV, uint enemyBV, bool friendlyVictorious)
+        public bool calculateCombatInjury(Character ch, uint friendlyBV, uint enemyBV, bool friendlyVictorious)
         {
-            int healthLoss = 0;
+            bool isDead = false;
+            uint healthLoss = 0;
 
             // calculate base chance of injury (based on combat skill)
             double injuryChance = 5 - (ch.combat * 0.25);
@@ -6732,10 +6733,49 @@ namespace hist_mmorpg
             if (randomPercent <= injuryChance)
             {
                 // generate random int 1-5 specifying health loss
-                healthLoss = Globals.myRand.Next(1, 6);
+                healthLoss =Convert.ToUInt32(Globals.myRand.Next(1, 6));
             }
 
-            return healthLoss;
+            // check if should create and add an ailment
+            if (healthLoss > 0)
+            {
+                uint minEffect = 0;
+
+                // check if character has died of injuries
+                if (ch.calculateHealth() < healthLoss)
+                {
+                    isDead = true;
+                }
+
+                // check if results in permanent damage
+                if (healthLoss > 4)
+                {
+                    minEffect = 1;
+                }
+
+                // create ailment
+                Ailment myAilment = new Ailment(Globals.getNextAilmentID(), "Battlefield injury", this.clock.seasons[this.clock.currentSeason] + ", " + this.clock.currentYear, healthLoss, minEffect);
+
+                // add to character
+                ch.ailments.Add(myAilment.ailmentID, myAilment);
+            }
+
+            return isDead;
+        }
+
+        /// <summary>
+        /// Calculates the outcome of a battle, including troop losses and PC/NPC casualties
+        /// </summary>
+        /// <returns>bool indicating whether army has retreated</returns>
+        /// <param name="friendlyCasualties">Double cobtaining casualtyModifier for army</param>
+        /// <param name="friendlyVictorious">bool indicating if army was victorious</param>
+        public bool conductRetreat(double friendlyCasualties, bool friendlyVictorious)
+        {
+            bool hasRetreated = false;
+
+
+
+            return hasRetreated;
         }
         
         /// <summary>
@@ -6748,7 +6788,11 @@ namespace hist_mmorpg
             bool battleHasCommenced = false;
             uint[] battleValues = new uint[2];
             double[] casualtyModifiers = new double[2];
-           
+
+            // get leaders
+            Character attackerLeader = attacker.getLeader();
+            Character defenderLeader = defender.getLeader();
+
             // get battle values for both armies
             battleValues = this.calculateBattleValue(attacker, defender);
 
@@ -6790,8 +6834,13 @@ namespace hist_mmorpg
                 attacker.applyTroopLosses(casualtyModifiers[0]);
                 defender.applyTroopLosses(casualtyModifiers[1]);
 
+                // adjust days
+                attackerLeader.adjustDays(1);
+                defenderLeader.adjustDays(1);
+
                 // check if any PCs/NPCs have been wounded or killed
                 bool friendlyVictory = new bool();
+                bool characterDead = false;
 
                 // 1. attacker
                 uint friendlyBV = battleValues[0];
@@ -6806,18 +6855,45 @@ namespace hist_mmorpg
                     friendlyVictory = false;
                 }
 
-                // get leader
-                Character attackerLeader = attacker.getLeader();
-
                 // check army leader
-                this.calculateCombatInjury(attackerLeader, friendlyBV, enemyBV, friendlyVictory);
+                characterDead = this.calculateCombatInjury(attackerLeader, friendlyBV, enemyBV, friendlyVictory);
 
                 // if army leader a PC, check entourage
                 if (attackerLeader is PlayerCharacter)
                 {
+                    for (int i = 0; i < (attackerLeader as PlayerCharacter).myNPCs.Count; i++)
+                    {
+                        if ((attackerLeader as PlayerCharacter).myNPCs[i].inEntourage)
+                        {
+                            characterDead = this.calculateCombatInjury((attackerLeader as PlayerCharacter).myNPCs[i], friendlyBV, enemyBV, friendlyVictory);
+                        }
+                    }
                 }
 
-                // adjust days
+                // 2. defender
+                if (attackerVictorious)
+                {
+                    friendlyVictory = false;
+                }
+                else
+                {
+                    friendlyVictory = true;
+                }
+
+                // check army leader
+                characterDead = this.calculateCombatInjury(defenderLeader, friendlyBV, enemyBV, friendlyVictory);
+
+                // if army leader a PC, check entourage
+                if (attackerLeader is PlayerCharacter)
+                {
+                    for (int i = 0; i < (defenderLeader as PlayerCharacter).myNPCs.Count; i++)
+                    {
+                        if ((defenderLeader as PlayerCharacter).myNPCs[i].inEntourage)
+                        {
+                            characterDead = this.calculateCombatInjury((defenderLeader as PlayerCharacter).myNPCs[i], friendlyBV, enemyBV, friendlyVictory);
+                        }
+                    }
+                }
 
                 // check if either army needs to retreat, and perform it
             }

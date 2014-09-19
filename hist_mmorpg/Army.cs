@@ -86,7 +86,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Constructor for Army
         /// </summary>
-		/// <param name="own">String holding ID of army</param>
+		/// <param name="id">String holding ID of army</param>
         /// <param name="ldr">string holding ID of army leader</param>
         /// <param name="own">string holding ID of army owner</param>
         /// <param name="day">double holding remaining days in season for army</param>

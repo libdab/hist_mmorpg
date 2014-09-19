@@ -111,6 +111,10 @@ namespace hist_mmorpg
         /// </summary>
         public static uint newDetachmentID = 1;
         /// <summary>
+        /// Holds next value for ailment ID
+        /// </summary>
+        public static uint newAilmentID = 1;
+        /// <summary>
         /// Holds combat values for different troop types and nationalities
         /// Key = nationality & Value = combat value for knights, menAtArms, lightCavalry, yeomen, foot, rabble
         /// </summary>
@@ -135,10 +139,10 @@ namespace hist_mmorpg
         /// <summary>
         /// Gets the next available newArmyID, then increments it
         /// </summary>
-        /// <returns>uint containing newArmyID</returns>
-        public static uint getNextArmyID()
+        /// <returns>string containing newArmyID</returns>
+        public static string getNextArmyID()
         {
-            uint armyID = Globals.newArmyID;
+            string armyID = "Army" + Globals.newArmyID;
             Globals.newArmyID++;
             return armyID;
         }
@@ -149,9 +153,20 @@ namespace hist_mmorpg
         /// <returns>string containing newDetachmentID</returns>
         public static string getNextDetachmentID()
         {
-            string armyID = "D" + Globals.newDetachmentID;
+            string detachmentID = "D" + Globals.newDetachmentID;
             Globals.newDetachmentID++;
-            return armyID;
+            return detachmentID;
+        }
+
+        /// <summary>
+        /// Gets the next available newAilmentID, then increments it
+        /// </summary>
+        /// <returns>string containing newAilmentID</returns>
+        public static string getNextAilmentID()
+        {
+            string ailmentID = "A" + Globals.newAilmentID;
+            Globals.newAilmentID++;
+            return ailmentID;
         }
 
         /// <summary>

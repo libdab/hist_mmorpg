@@ -70,6 +70,7 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ailment.cs" />
     <Compile Include="Army.cs" />
     <Compile Include="Character.cs" />
     <Compile Include="Fief.cs" />

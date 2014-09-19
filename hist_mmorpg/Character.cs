@@ -116,6 +116,10 @@ namespace hist_mmorpg
         /// Holds armyID of army character is leading
         /// </summary>
         public String armyID { get; set; }
+        /// <summary>
+        /// Holds ailments effecting character's health
+        /// </summary>
+        public Dictionary<string, Ailment> ailments = new Dictionary<string, Ailment>();
 
         /// <summary>
         /// Constructor for Character
@@ -146,9 +150,10 @@ namespace hist_mmorpg
 		/// <param name="loc">Fief holding current location</param>
         /// <param name="myTi">List holding character's titles (fiefIDs)</param>
         /// <param name="aID">String holding armyID of army character is leading</param>
+        /// <param name="ails">Dictionary<string, Ailment> holding ailments effecting character's health</param>
         public Character(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg,
-            String famID, String sp, String fath, List<String> myTi, GameClock cl = null, Fief loc = null, String aID = null)
+            String famID, String sp, String fath, List<String> myTi, Dictionary<string, Ailment> ails = null, GameClock cl = null, Fief loc = null, String aID = null)
         {
 
             // validation
@@ -247,6 +252,10 @@ namespace hist_mmorpg
             this.familyID = famID;
             this.myTitles = myTi;
             this.armyID = aID;
+            if (ails != null)
+            {
+                this.ailments = ails;
+            }
         }
 
 		/// <summary>
@@ -307,6 +316,7 @@ namespace hist_mmorpg
 				this.location = null;
                 this.myTitles = charToUse.myTitles;
                 this.armyID = charToUse.armyID;
+                this.ailments = charToUse.ailments;
 			}
 		}
 
@@ -476,10 +486,13 @@ namespace hist_mmorpg
             charHealth = (this.maxHealth * ageModifier);
 
             // factor in current health modifers if appropriate
-            /* if (currentHealth)
+            if (currentHealth)
             {
-                charHealth = charHealth + this.ailments;
-            } */
+                foreach (KeyValuePair<string, Ailment> ailment in this.ailments)
+                {
+                    charHealth -= ailment.Value.effect;
+                }
+            }
 
             return charHealth;
         }
@@ -1164,7 +1177,7 @@ namespace hist_mmorpg
 
             return ev;
         }
-        
+
         /// <summary>
         /// Updates character data at the end/beginning of the season
         /// </summary>
@@ -1178,6 +1191,8 @@ namespace hist_mmorpg
 
             if (this.isAlive)
             {
+                // TODO: check ailments (decrement effects, remove)
+
                 if (this is NonPlayerCharacter)
                 {
                     // if (age >= 1) && (firstName.Equals("Baby")), character firstname = king's
@@ -1254,8 +1269,9 @@ namespace hist_mmorpg
         /// <param name="myA">List<Army> holding character's armies</param>
         public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
-            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, List<Army> myA, GameClock cl = null, Fief loc = null, String pID = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, myTi, cl, loc)
+            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, List<Army> myA,
+            Dictionary<string, Ailment> ails = null, GameClock cl = null, Fief loc = null, String pID = null)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, myTi, ails, cl, loc)
         {
             this.outlawed = outl;
             this.purse = pur;
@@ -1905,8 +1921,8 @@ namespace hist_mmorpg
         /// <param name="isH">bool denoting if is player's heir</param>
         public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
-            String sp, String fath, uint wa, bool inEnt, bool isH, List<String> myTi, String mb = null, GameClock cl = null, Fief loc = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, myTi, cl, loc)
+            String sp, String fath, uint wa, bool inEnt, bool isH, List<String> myTi, Dictionary<string, Ailment> ails = null, String mb = null, GameClock cl = null, Fief loc = null)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, myTi, ails, cl, loc)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -2311,6 +2327,10 @@ namespace hist_mmorpg
         /// Holds armyID of army character is leading
         /// </summary>
         public String armyID { get; set; }
+        /// <summary>
+        /// Holds ailments effecting character's health
+        /// </summary>
+        public Dictionary<string, Ailment> ailments = new Dictionary<string, Ailment>();
 
 		/// <summary>
 		/// Constructor for Character_Riak
@@ -2381,7 +2401,8 @@ namespace hist_mmorpg
 				}
                 this.myTitles = charToUse.myTitles;
                 this.armyID = charToUse.armyID;
-			}
+                this.ailments = charToUse.ailments;
+            }
 		}
 
 	}
