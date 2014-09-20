@@ -1214,6 +1214,54 @@ namespace hist_mmorpg
 
         }
 
+        /// <summary>
+        /// Calculates the character's fief management rating (i.e. how good they are at managing a fief)
+        /// </summary>
+        /// <returns>double containing fief management rating</returns>
+        public double calcFiefManagementRating()
+        {
+            // baseline rating
+            double fiefMgtRating = (this.management + this.calculateStature(true)) / 2;
+
+            // check for skills effecting fief loyalty
+            double fiefLoySkill = this.calcSkillEffect("fiefLoy");
+
+            // check for skills effecting fief expenses
+            double fiefExpSkill = this.calcSkillEffect("fiefExpense");
+
+            // combine skills into single modifier. Note: fiefExpSkill is * by -1 because 
+            // a negative effect on expenses is good, so needs to be normalised
+            double mgtSkills = (fiefLoySkill + (-1 * fiefExpSkill));
+
+            // calculate final fief management rating
+            fiefMgtRating += (fiefMgtRating * mgtSkills);
+
+            return fiefMgtRating;
+        }
+
+        /// <summary>
+        /// Calculates the character's army leadership rating (i.e. how good they are at leading an army)
+        /// </summary>
+        /// <returns>double containing army leadership rating</returns>
+        public double calcArmyLeadershipRating()
+        {
+            // baseline rating
+            double armyLeaderRating = (this.management + this.calculateStature(true) + this.combat) / 3;
+
+            // check for skills effecting battle
+            double battleSkills = this.calcSkillEffect("battle");
+
+            // check for skills effecting siege
+            double siegeSkills = this.calcSkillEffect("siege");
+
+            // combine skills into single modifier 
+            double combatSkills = battleSkills + siegeSkills;
+
+            // calculate final combat rating
+            armyLeaderRating += (armyLeaderRating * combatSkills);
+
+            return armyLeaderRating;
+        }
 
     }
 
@@ -2165,40 +2213,22 @@ namespace hist_mmorpg
         /// taking into account the stature of the hiring PlayerCharacter
         /// </summary>
         /// <returns>uint containing salary</returns>
-        public uint calcWage(PlayerCharacter pc)
+        /// <param name="hiringPC">Hiring PC</param>
+        public uint calcWage(PlayerCharacter hiringPC)
         {
             double salary = 0;
             double basicSalary = 1500;
 
-            // calculate fief management rating
-            // baseline rating
-            double fiefMgtRating = (this.management + this.calculateStature(true)) / 2;
-            // check for skills effecting fief loyalty
-            double fiefLoySkill = this.calcSkillEffect("fiefLoy");
-            // check for skills effecting fief expenses
-            double fiefExpSkill = this.calcSkillEffect("fiefExpense");
-            // combine skills into single modifier. Note: fiefExpSkill is * by -1 because 
-            // a negative effect on expenses is good, so needs to be normalised
-            double mgtSkills = (fiefLoySkill + (-1 * fiefExpSkill));
-            // calculate final fief management rating
-            fiefMgtRating = fiefMgtRating + (fiefMgtRating * mgtSkills);
+            // get fief management rating
+            double fiefMgtRating = this.calcFiefManagementRating();
 
-            // calculate combat rating
-            // baseline rating
-            double combatRating = (this.management + this.calculateStature(true) + this.combat) / 3;
-            // check for skills effecting battle
-            double battleSkills = this.calcSkillEffect("battle");
-            // check for skills effecting siege
-            double siegeSkills = this.calcSkillEffect("siege");
-            // combine skills into single modifier 
-            double combatSkills = battleSkills + siegeSkills;
-            // calculate final combat rating
-            combatRating = combatRating + (combatRating * combatSkills);
+            // get army leadership rating
+            double armyLeaderRating = this.calcArmyLeadershipRating();
 
             // determine lowest of 2 ratings
-            double minRating = Math.Min(combatRating, fiefMgtRating);
+            double minRating = Math.Min(armyLeaderRating, fiefMgtRating);
             // determine highest of 2 ratings
-            double maxRating = Math.Max(combatRating, fiefMgtRating);
+            double maxRating = Math.Max(armyLeaderRating, fiefMgtRating);
 
             // calculate potential salary, mainly based on highest rating
             // but also including 'flexibility bonus' for lowest rating
@@ -2206,7 +2236,7 @@ namespace hist_mmorpg
 
             // factor in hiring player's stature
             // (4% reduction in NPC's salary for each stature rank above 4)
-            if (this.calculateStature(true) > 4)
+            if (hiringPC.calculateStature(true) > 4)
             {
                 double statMod = 1 - ((this.calculateStature(true) - 4) * 0.04);
                 salary = salary * statMod;

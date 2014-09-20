@@ -6769,16 +6769,16 @@ namespace hist_mmorpg
         /// <summary>
         /// Calculates whether either army has retreated due to the outcome of a battle
         /// </summary>
-        /// <returns>bool[] indicating whether either army has retreated</returns>
+        /// <returns>int[] indicating the retreat distance (fiefs) of each army</returns>
         /// <param name="attacker">The attacking army</param>
         /// <param name="defender">The defending army</param>
         /// <param name="aCasualties">The attacking army casualty modifier</param>
         /// <param name="dCasualties">The defending army casualty modifier</param>
         /// <param name="attackerVictorious">bool indicating if attacking army was victorious</param>
-        public bool[] checkForRetreat(Army attacker, Army defender, double aCasualties, double dCasualties, bool attackerVictorious)
+        public int[] checkForRetreat(Army attacker, Army defender, double aCasualties, double dCasualties, bool attackerVictorious)
         {
             bool[] hasRetreated = {false, false};
-            int retreatDistance = 0;
+            int[] retreatDistance = {0, 0};
 
             // check if loser retreats due to battlefield casualties
             if (!attackerVictorious)
@@ -6789,8 +6789,8 @@ namespace hist_mmorpg
                     // indicate attacker has retreated
                     hasRetreated[0] = true;
 
-                    // generate random 1-6 to determine retreat distance
-                    retreatDistance = Globals.myRand.Next(1, 7);
+                    // generate random 1-2 to determine retreat distance
+                    retreatDistance[0] = Globals.myRand.Next(1, 3);
                 }
             }
             else
@@ -6801,8 +6801,8 @@ namespace hist_mmorpg
                     // indicate attacker has retreated
                     hasRetreated[1] = true;
 
-                    // generate random 1-6 to determine retreat distance
-                    retreatDistance = Globals.myRand.Next(1, 7);
+                    // generate random 1-2 to determine retreat distance
+                    retreatDistance[1] = Globals.myRand.Next(1, 3);
                 }
             }
 
@@ -6814,12 +6814,73 @@ namespace hist_mmorpg
                 hasRetreated[1] = true;
 
                 // generate random 1-6 to determine retreat distance
-                retreatDistance = 1;
+                retreatDistance[1] = 1;
             }
 
-            return hasRetreated;
+            return retreatDistance;
         }
-        
+
+        /// <summary>
+        /// Processes the retreat of an army
+        /// </summary>
+        /// <param name="a">The army to retreat</param>
+        /// <param name="retreatDistance">The retreat distance</param>
+        public void processRetreat(Army a, int retreatDistance)
+        {
+            // get fief to retreat from
+            Fief retreatFrom = Globals.fiefMasterList[a.location];
+
+            // get current location
+            Fief from = Globals.fiefMasterList[a.location];
+
+            // get army leader
+            Character thisLeader = a.getLeader();
+
+            // get army owner
+            PlayerCharacter thisOwner = Globals.pcMasterList[a.owner];
+
+            // get fief to retreat to
+            Fief target = this.gameMap.chooseRandomHex(from, true, thisOwner, retreatFrom);
+
+            // get travel cost
+            double travelCost = this.getTravelCost(from, target);
+
+            // ensure army has enough days (retreats immune to running out of days)
+            if (thisLeader.days < travelCost)
+            {
+                thisLeader.adjustDays(thisLeader.days - travelCost);
+            }
+
+            // perform retreat
+            bool success = thisLeader.moveCharacter(target, travelCost);
+
+        }
+
+        /// <summary>
+        /// Elects a new leader from NPCs accompanying an army (upon death of PC leader)
+        /// </summary>
+        /// <returns>The new leader</returns>
+        /// <param name="attacker">List<NonPlayerCharacter> containing candidates for the post</param>
+        public NonPlayerCharacter electNewArmyLeader(List<NonPlayerCharacter> candidates)
+        {
+            NonPlayerCharacter newLeader = null;
+
+            double highestRating = 0;
+
+            foreach (NonPlayerCharacter candidate in candidates)
+            {
+                double armyLeaderRating = candidate.calcArmyLeadershipRating();
+
+                if (armyLeaderRating > highestRating)
+                {
+                    highestRating = armyLeaderRating;
+                    newLeader = candidate;
+                }
+            }
+
+            return newLeader;
+        }
+
         /// <summary>
         /// Calculates the outcome of a battle, including troop losses and PC/NPC casualties
         /// </summary>
@@ -6850,41 +6911,76 @@ namespace hist_mmorpg
 
             if (battleHasCommenced)
             {
+                // WHO HAS WON?
                 // calculate if attacker has won
                 bool attackerVictorious = this.decideBattleVictory(battleValues[0], battleValues[1]);
 
+                // CASUALTIES
                 // calculate troop casualties for both sides
                 casualtyModifiers = this.calculateBattleCasualties(battleValues[0], battleValues[1], attackerVictorious);
 
                 // check if losing army has disbanded
+                bool attackerDisbanded = false;
+                bool defenderDisbanded = false;
+
+                // if losing side sustains >= 50% casualties, disbands
                 if (attackerVictorious)
                 {
+                    // either indicate losing army to be disbanded
                     if (casualtyModifiers[1] >= 0.5)
                     {
-                        this.disbandArmy(defender);
+                        defenderDisbanded = true;
                     }
+                    // OR apply troop casualties to losing army
+                    else
+                    {
+                        defender.applyTroopLosses(casualtyModifiers[1]);
+                    }
+
+                    // apply troop casualties to winning army
+                    attacker.applyTroopLosses(casualtyModifiers[0]);
                 }
                 else
                 {
                     if (casualtyModifiers[0] >= 0.5)
                     {
-                        this.disbandArmy(attacker);
+                        attackerDisbanded = true;
                     }
+                    else
+                    {
+                        attacker.applyTroopLosses(casualtyModifiers[0]);
+                    }
+
+                    defender.applyTroopLosses(casualtyModifiers[1]);
                 }
 
-                // apply troop casualties
-                attacker.applyTroopLosses(casualtyModifiers[0]);
-                defender.applyTroopLosses(casualtyModifiers[1]);
-
+                // DAYS
                 // adjust days
                 attackerLeader.adjustDays(1);
                 defenderLeader.adjustDays(1);
 
+                // RETREATS
+                // create array of armies (for easy processing)
+                Army[] bothSides = { attacker, defender };
+
+                // check if either army needs to retreat
+                int[] retreatDistances = this.checkForRetreat(attacker, defender, casualtyModifiers[0], casualtyModifiers[1], attackerVictorious);
+
+                // if have retreated, perform it
+                for (int i = 0; i < retreatDistances.Length; i++ )
+                {
+                    if (retreatDistances[i] > 0)
+                    {
+                        this.processRetreat(bothSides[i], retreatDistances[i]);
+                    }
+                }
+
+                // PC/NPC INJURIES/DEATHS
                 // check if any PCs/NPCs have been wounded or killed
                 bool friendlyVictory = new bool();
                 bool characterDead = false;
 
-                // 1. attacker
+                // 1. ATTACKER
                 uint friendlyBV = battleValues[0];
                 uint enemyBV = battleValues[1];
 
@@ -6897,9 +6993,6 @@ namespace hist_mmorpg
                     friendlyVictory = false;
                 }
 
-                // check army leader
-                characterDead = this.calculateCombatInjury(attackerLeader, friendlyBV, enemyBV, friendlyVictory);
-
                 // if army leader a PC, check entourage
                 if (attackerLeader is PlayerCharacter)
                 {
@@ -6909,10 +7002,39 @@ namespace hist_mmorpg
                         {
                             characterDead = this.calculateCombatInjury((attackerLeader as PlayerCharacter).myNPCs[i], friendlyBV, enemyBV, friendlyVictory);
                         }
+
+                        // process death, if applicable
+                        if (characterDead)
+                        {
+                            // do something to remove character
+                        }
                     }
                 }
 
-                // 2. defender
+                // check army leader
+                characterDead = this.calculateCombatInjury(attackerLeader, friendlyBV, enemyBV, friendlyVictory);
+
+                // process death, if applicable
+                if (characterDead)
+                {
+                    Character newLeader = null;
+
+                    // if possible, elect new leader from entourage
+                    if (attackerLeader is PlayerCharacter)
+                    {
+                        if ((attackerLeader as PlayerCharacter).myNPCs.Count > 0)
+                        {
+                            // get new leader
+                            newLeader = this.electNewArmyLeader((attackerLeader as PlayerCharacter).myNPCs);
+                        }
+                    }
+
+                    // change leader method taking newLeader (including assignment of null leader)
+
+                    // do something to remove character
+                }
+
+                // 2. DEFENDER
                 if (attackerVictorious)
                 {
                     friendlyVictory = false;
@@ -6921,9 +7043,6 @@ namespace hist_mmorpg
                 {
                     friendlyVictory = true;
                 }
-
-                // check army leader
-                characterDead = this.calculateCombatInjury(defenderLeader, friendlyBV, enemyBV, friendlyVictory);
 
                 // if army leader a PC, check entourage
                 if (attackerLeader is PlayerCharacter)
@@ -6934,10 +7053,50 @@ namespace hist_mmorpg
                         {
                             characterDead = this.calculateCombatInjury((defenderLeader as PlayerCharacter).myNPCs[i], friendlyBV, enemyBV, friendlyVictory);
                         }
+
+                        // process death, if applicable
+                        if (characterDead)
+                        {
+                            // do something to remove character
+                        }
                     }
                 }
 
-                // check if either army needs to retreat, and perform it
+                // check army leader
+                characterDead = this.calculateCombatInjury(defenderLeader, friendlyBV, enemyBV, friendlyVictory);
+
+                // process death, if applicable
+                if (characterDead)
+                {
+                    Character newLeader = null;
+
+                    // if possible, elect new leader from entourage
+                    if (defenderLeader is PlayerCharacter)
+                    {
+                        if ((defenderLeader as PlayerCharacter).myNPCs.Count > 0)
+                        {
+                            // get new leader
+                            newLeader = this.electNewArmyLeader((defenderLeader as PlayerCharacter).myNPCs);
+                        }
+                    }
+
+                    // change leader method taking newLeader (including assignment of null leader)
+
+                    // do something to remove character
+                }
+
+                // DISBANDMENT
+                // process army disbandings (after all other functions completed)
+                if (attackerDisbanded)
+                {
+                    this.disbandArmy(attacker);
+                }
+
+                if (defenderDisbanded)
+                {
+                    this.disbandArmy(defender);
+                }
+
             }
             else
             {
