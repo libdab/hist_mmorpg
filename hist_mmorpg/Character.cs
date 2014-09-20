@@ -869,56 +869,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Appoints the character as leader of the specified army
-        /// </summary>
-        /// <param name="thisArmy">The Army the character will lead</param>
-        public void appointAsLeader(Army thisArmy)
-        {
-            // Remove army from current leader
-            Character oldLeader = thisArmy.getLeader();
-            oldLeader.armyID = null;            
-
-            // add army to new leader
-            this.armyID = thisArmy.armyID;
-
-            // in army, set new leader
-            thisArmy.leader = this.charID;
-
-            // if new leader is NPC, remove from player's entourage
-            if (this is NonPlayerCharacter)
-            {
-                (this as NonPlayerCharacter).inEntourage = false;
-            }
-
-            // calculate days synchronisation
-            double minDays = Math.Min(thisArmy.days, this.days);
-            double daysToAdjust = 0;
-
-            if (this.days != minDays)
-            {
-                daysToAdjust = (this.days - minDays);
-            }
-            else
-            {
-                // check for attrition (i.e. army had to wait for leader)
-                byte attritionChecks = 0;
-                attritionChecks = Convert.ToByte((thisArmy.days - this.days) / 7);
-
-                for (int i = 0; i < attritionChecks; i++)
-                {
-                    // calculate attrition
-                    double attritionModifer = thisArmy.calcAttrition();
-                    // apply attrition
-                    thisArmy.applyTroopLosses(attritionModifer);
-                }
-
-            }
-
-            // synchronise days
-            this.adjustDays(daysToAdjust);
-        }
-
-        /// <summary>
         /// Adjusts the character's remaining days by subtracting the specified number of days
         /// </summary>
         /// <param name="daysToSubtract">Number of days to subtract</param>

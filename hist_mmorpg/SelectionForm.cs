@@ -147,7 +147,7 @@ namespace hist_mmorpg
                 myArmy = Globals.armyMasterList[armyID];
             }
 
-            ListViewItem myNPCs = null;
+            ListViewItem myNPC = null;
 
             // iterates through employees
             for (int i = 0; i < this.parent.myChar.myNPCs.Count; i++)
@@ -155,25 +155,25 @@ namespace hist_mmorpg
                 // Create an item and subitems for each character
 
                 // name
-                myNPCs = new ListViewItem(this.parent.myChar.myNPCs[i].firstName + " " + this.parent.myChar.myNPCs[i].familyName);
+                myNPC = new ListViewItem(this.parent.myChar.myNPCs[i].firstName + " " + this.parent.myChar.myNPCs[i].familyName);
 
                 // charID
-                myNPCs.SubItems.Add(this.parent.myChar.myNPCs[i].charID);
+                myNPC.SubItems.Add(this.parent.myChar.myNPCs[i].charID);
 
                 // location
-                myNPCs.SubItems.Add(this.parent.myChar.myNPCs[i].location.fiefID);
+                myNPC.SubItems.Add(this.parent.myChar.myNPCs[i].location.fiefID);
 
                 // add item to fiefsListView
                 if (myFunction.Equals("bailiff"))
                 {
-                    this.npcListView.Items.Add(myNPCs);
+                    this.npcListView.Items.Add(myNPC);
                 }
                 // if appointing leader, only add item to fiefsListView if is in same fief as army
                 else if (myFunction.Equals("leader"))
                 {
                     if (this.parent.myChar.myNPCs[i].location.fiefID == myArmy.location)
                     {
-                        this.npcListView.Items.Add(myNPCs);
+                        this.npcListView.Items.Add(myNPC);
                     }
                 }
             }
@@ -236,7 +236,17 @@ namespace hist_mmorpg
 
             // leader
             Character armyLeader = a.getLeader();
-            armyText += "Leader: " + armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")\r\n\r\n";
+            armyText += "Leader: ";
+
+            if (armyLeader == null)
+            {
+                armyText += "THIS ARMY HAS NO LEADER!\r\n\r\n";
+            }
+            else
+            {
+                armyText += armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")";
+            }
+            armyText += "\r\n\r\n";
 
             // get troop numbers
             if (isMyArmy)
@@ -398,7 +408,7 @@ namespace hist_mmorpg
                     // get army
                     Army thisArmy = Globals.armyMasterList[myButtonTag];
 
-                    selectedNPC.appointAsLeader(thisArmy);
+                    thisArmy.assignNewLeader(selectedNPC);
 
                     // refresh the army information (in the main form)
                     this.parent.refreshArmyContainer(thisArmy);
@@ -499,6 +509,9 @@ namespace hist_mmorpg
             // add necessary columns
             this.armiesListView.Columns.Add("   ID", -2, HorizontalAlignment.Left);
             this.armiesListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
+
+            // disable button
+            this.armiesAttackBtn.Enabled = false;
         }
 
         /// <summary>
@@ -959,6 +972,19 @@ namespace hist_mmorpg
                 // display details
                 this.armiesTextBox.Text = textToDisplay;
 
+                // get owner of selected army
+                PlayerCharacter otherArmyOwner = otherArmy.getOwner();
+
+                // if is not player's army & observer is an army leader, enable attack button
+                if ((otherArmyOwner != this.parent.myChar) && (this.observer.armyID != null))
+                {
+                    this.armiesAttackBtn.Enabled = true;
+                }
+                else
+                {
+                    this.armiesAttackBtn.Enabled = false;
+                }
+
             }
         }
 
@@ -971,6 +997,33 @@ namespace hist_mmorpg
         private void armiesCloseBtn_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armiesAttackBtn button,
+        /// instigating an attack on the selected army
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armiesAttackBtn_Click(object sender, EventArgs e)
+        {
+            // check has enough days to give battle (1)
+            if (this.observer.days < 1)
+            {
+                System.Windows.Forms.MessageBox.Show("Your army doesn't have enough days left to give battle.");
+            }
+            else
+            {
+                // get armies
+                Army attacker = Globals.armyMasterList[this.observer.armyID];
+                Army defender = Globals.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
+
+                // let slip the dogs of war
+                parent.giveBattle(attacker, defender);
+
+                // close form
+                this.Close();
+            }
         }
 
     }

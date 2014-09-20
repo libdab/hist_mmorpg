@@ -132,16 +132,68 @@ namespace hist_mmorpg
 		}
 		
         /// <summary>
-        /// Calculates travel modifier for army size
+        /// Assigns a new leader to the army
+        /// NOTE: you CAN assign a null character as leader (i.e. the army becomes leaderless)
         /// </summary>
-        /// <returns>double containing travel modifier</returns>
-        public double calcArmyTravMod()
+        /// <param name="newLeader">The new leader (can be null)</param>
+        public void assignNewLeader(Character newLeader)
         {
-            double travelModifier = 0;
+            // Remove army from current leader
+            Character oldLeader = this.getLeader();
+            if (oldLeader != null)
+            {
+                oldLeader.armyID = null;
+            }
 
-            travelModifier = (this.calcArmySize() / 1000) * 0.25;
+            // if no new leader (i.e. if just removing old leader)
+            if (newLeader == null)
+            {
+                // in army, set new leader
+                this.leader = null;
+            }
 
-            return travelModifier;
+            // if is new leader
+            else
+            {
+                // add army to new leader
+                newLeader.armyID = this.armyID;
+
+                // in army, set new leader
+                this.leader = newLeader.charID;
+
+                // if new leader is NPC, remove from player's entourage
+                if (newLeader is NonPlayerCharacter)
+                {
+                    (newLeader as NonPlayerCharacter).inEntourage = false;
+                }
+
+                // calculate days synchronisation
+                double minDays = Math.Min(newLeader.days, this.days);
+                double maxDays = Math.Max(newLeader.days, this.days);
+                double difference = maxDays - minDays;
+
+                if (newLeader.days != minDays)
+                {
+                    // synchronise days
+                    newLeader.adjustDays(difference);
+                }
+                else
+                {
+                    // check for attrition (i.e. army had to wait for leader)
+                    byte attritionChecks = 0;
+                    attritionChecks = Convert.ToByte(difference / 7);
+
+                    for (int i = 0; i < attritionChecks; i++)
+                    {
+                        // calculate attrition
+                        double attritionModifer = this.calcAttrition();
+                        // apply attrition
+                        this.applyTroopLosses(attritionModifer);
+                    }
+
+                }
+
+            }
         }
 
         /// <summary>

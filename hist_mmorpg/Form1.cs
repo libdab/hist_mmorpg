@@ -3008,7 +3008,17 @@ namespace hist_mmorpg
             // leader
             Character armyLeader = a.getLeader();
 
-            armyText += "Leader: " + armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")\r\n\r\n";
+            armyText += "Leader: ";
+
+            if (armyLeader == null)
+            {
+                armyText += "THIS ARMY HAS NO LEADER!  You should appoint one as soon as possible.\r\n\r\n";
+            }
+            else
+            {
+                armyText += armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")";
+            }
+            armyText += "\r\n\r\n";
 
             // labels for troop types
             string[] troopTypeLabels = new string[] { " - Knights: ", " - Men-at-Arms: ", " - Light Cavalry: ", " - Yeomen: ", " - Foot: ", " - Rabble: " };
@@ -6038,7 +6048,7 @@ namespace hist_mmorpg
             // get army
             Army thisArmy = Globals.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
 
-            this.myChar.appointAsLeader(thisArmy);
+            thisArmy.assignNewLeader(this.myChar);
 
             // refresh the army information (in the main form)
             this.refreshArmyContainer(thisArmy);
@@ -7030,6 +7040,7 @@ namespace hist_mmorpg
                     }
 
                     // change leader method taking newLeader (including assignment of null leader)
+                    attacker.assignNewLeader(newLeader);
 
                     // do something to remove character
                 }
@@ -7081,6 +7092,7 @@ namespace hist_mmorpg
                     }
 
                     // change leader method taking newLeader (including assignment of null leader)
+                    defender.assignNewLeader(newLeader);
 
                     // do something to remove character
                 }
