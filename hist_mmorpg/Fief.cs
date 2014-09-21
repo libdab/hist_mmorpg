@@ -157,9 +157,13 @@ namespace hist_mmorpg
         /// </summary>
         public List<string> armies = new List<string>();
         /// <summary>
-        /// Identifies if recruitment has occurred in the fief
+        /// Identifies if recruitment has occurred in the fief in the current season
         /// </summary>
         public bool hasRecruited { get; set; }
+        /// <summary>
+        /// Identifies if pillage has occurred in the fief in the current season
+        /// </summary>
+        public bool isPillaged { get; set; }
         /// <summary>
         /// Holds troop detachments in the fief awaiting transfer
         /// String[] contains from (charID), to (charID), troop numbers (each type), days left when detached
@@ -202,12 +206,13 @@ namespace hist_mmorpg
         /// <param name="treas">int containing fief treasury</param>
         /// <param name="tiHo">Fief title holder (charID)</param>
         /// <param name="arms">List holding IDs of armies present in fief</param>
-        /// <param name="rec">bool indicating whether recruitment has occurred in the fief</param>
+        /// <param name="rec">bool indicating whether recruitment has occurred in the fief (current season)</param>
+        /// <param name="pil">bool indicating whether pillage has occurred in the fief (current season)</param>
         /// <param name="trans">Dictionary<string, string[]> containing troop detachments in the fief awaiting transfer</param>
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
             Double kpLvl, Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
-            GameClock cl, byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, String tiHo = null, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
+            GameClock cl, byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, String tiHo = null, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -319,6 +324,7 @@ namespace hist_mmorpg
             this.armies = arms;
             this.hasRecruited = rec;
             this.troopTransfers = trans;
+            this.isPillaged = pil;
         }
 
 		/// <summary>
@@ -370,6 +376,7 @@ namespace hist_mmorpg
             this.armies = fr.armies;
             this.hasRecruited = fr.hasRecruited;
             this.troopTransfers = fr.troopTransfers;
+            this.isPillaged = fr.isPillaged;
         }
 
         /// <summary>
@@ -615,9 +622,9 @@ namespace hist_mmorpg
                 double famSkillsModifier = 0;
 
                 // get famExpense rating of whoever has highest management rating
-                if ((this.owner.isMarried) && (this.owner.management < Globals.npcMasterList[this.owner.spouse].management))
+                if ((this.owner.isMarried) && (this.owner.management < Globals_Server.npcMasterList[this.owner.spouse].management))
                 {
-                    famSkillsModifier = Globals.npcMasterList[this.owner.spouse].calcSkillEffect("famExpense");
+                    famSkillsModifier = Globals_Server.npcMasterList[this.owner.spouse].calcSkillEffect("famExpense");
                 }
                 else
                 {
@@ -1253,7 +1260,7 @@ namespace hist_mmorpg
         public void updateFief()
         {
             // update bailiffDaysInFief if appropriate
-            if (this.bailiff.days > 0)
+            if ((this.bailiff != null) && (this.bailiff.days > 0))
             {
                 this.bailiff.useUpDays();
             }
@@ -1343,7 +1350,7 @@ namespace hist_mmorpg
                 // method 1 (depends on tax rate and surplus)
                 if ((this.taxRate > 20) && (this.keyStatsCurrent[13] > (this.keyStatsCurrent[8] * 0.1)))
                 {
-                    if (Globals.GetRandomDouble(100) <= (this.taxRate - 20))
+                    if (Globals_Server.GetRandomDouble(100) <= (this.taxRate - 20))
                     {
                         stat = 'R';
                     }
@@ -1352,7 +1359,7 @@ namespace hist_mmorpg
                 // method 2 (depends on fief loyalty level)
                 if (!stat.Equals('R'))
                 {
-                    double chance = Globals.GetRandomDouble(100);
+                    double chance = Globals_Server.GetRandomDouble(100);
                     
                     // loyalty 3-4
                     if ((this.loyalty > 3) && (this.loyalty <= 4))
@@ -1513,6 +1520,39 @@ namespace hist_mmorpg
             return success;
         }
 
+        /// <summary>
+        /// Calculates the result of a call for troops
+        /// </summary>
+        /// <returns>int containing number of troops responding to call</returns>
+        /// <param name="minProportion">double specifying minimum proportion of total troop number required</param>
+        /// <param name="maxProportion">double specifying maximum proportion of total troop number required</param>
+        public int callUpTroops(double minProportion = 0, double maxProportion = 1)
+        {
+            int numberTroops = 0;
+            int maxNumber = Convert.ToInt32(this.population / 100) * 5;
+
+            // generate random double between min and max
+            double myRandomDouble = Globals_Server.GetRandomDouble(min: minProportion, max: maxProportion);
+
+            // apply random double as modifier to maxNumber
+            numberTroops = Convert.ToInt32(maxNumber * myRandomDouble);
+
+            return numberTroops;
+        }
+
+        /// <summary>
+        /// Calculates the garrison size for the fief
+        /// </summary>
+        /// <returns>int containing the garrison size</returns>
+        public int getGarrisonSize()
+        {
+            int garrisonSize = 0;
+
+            garrisonSize = Convert.ToInt32(this.keyStatsCurrent[4] / 1000);
+
+            return garrisonSize;
+        }
+
     }
 
 	/// <summary>
@@ -1671,6 +1711,10 @@ namespace hist_mmorpg
         /// </summary>
         public bool hasRecruited { get; set; }
         /// <summary>
+        /// Identifies if pillage has occurred in the fief in the current season
+        /// </summary>
+        public bool isPillaged { get; set; }
+        /// <summary>
         /// Holds troop detachments in the fief awaiting transfer
         /// String[] contains from (charID), to (charID), size, days left when detached
         /// </summary>
@@ -1727,6 +1771,7 @@ namespace hist_mmorpg
             this.armies = f.armies;
             this.hasRecruited = f.hasRecruited;
             this.troopTransfers = f.troopTransfers;
+            this.isPillaged = f.isPillaged;
 		}
 
         /// <summary>

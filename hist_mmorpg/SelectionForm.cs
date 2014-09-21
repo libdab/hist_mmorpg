@@ -144,24 +144,24 @@ namespace hist_mmorpg
             Army myArmy = null;
             if (myFunction.Equals("leader"))
             {
-                myArmy = Globals.armyMasterList[armyID];
+                myArmy = Globals_Server.armyMasterList[armyID];
             }
 
             ListViewItem myNPC = null;
 
             // iterates through employees
-            for (int i = 0; i < this.parent.myChar.myNPCs.Count; i++)
+            for (int i = 0; i < Globals_Client.myChar.myNPCs.Count; i++)
             {
                 // Create an item and subitems for each character
 
                 // name
-                myNPC = new ListViewItem(this.parent.myChar.myNPCs[i].firstName + " " + this.parent.myChar.myNPCs[i].familyName);
+                myNPC = new ListViewItem(Globals_Client.myChar.myNPCs[i].firstName + " " + Globals_Client.myChar.myNPCs[i].familyName);
 
                 // charID
-                myNPC.SubItems.Add(this.parent.myChar.myNPCs[i].charID);
+                myNPC.SubItems.Add(Globals_Client.myChar.myNPCs[i].charID);
 
                 // location
-                myNPC.SubItems.Add(this.parent.myChar.myNPCs[i].location.fiefID);
+                myNPC.SubItems.Add(Globals_Client.myChar.myNPCs[i].location.fiefID);
 
                 // add item to fiefsListView
                 if (myFunction.Equals("bailiff"))
@@ -171,7 +171,7 @@ namespace hist_mmorpg
                 // if appointing leader, only add item to fiefsListView if is in same fief as army
                 else if (myFunction.Equals("leader"))
                 {
-                    if (this.parent.myChar.myNPCs[i].location.fiefID == myArmy.location)
+                    if (Globals_Client.myChar.myNPCs[i].location.fiefID == myArmy.location)
                     {
                         this.npcListView.Items.Add(myNPC);
                     }
@@ -199,7 +199,7 @@ namespace hist_mmorpg
                 this.npcDetailsTextBox.ReadOnly = true;
 
                 // get employee
-                npcToDisplay = Globals.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+                npcToDisplay = Globals_Server.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
 
                 // get details
                 textToDisplay += this.displayNPC(npcToDisplay);
@@ -229,7 +229,7 @@ namespace hist_mmorpg
             armyText += "Owner: " + thisOwner.firstName + " " + thisOwner.familyName + " (" + thisOwner.charID + ")\r\n\r\n";
 
             // check if is your army (will effect display of troop numbers)
-            if (thisOwner == this.parent.myChar)
+            if (thisOwner == Globals_Client.myChar)
             {
                 isMyArmy = true;
             }
@@ -386,7 +386,7 @@ namespace hist_mmorpg
             if (npcListView.SelectedItems.Count > 0)
             {
                 // get selected NPC
-                NonPlayerCharacter selectedNPC = Globals.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+                NonPlayerCharacter selectedNPC = Globals_Server.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
 
                 // get chooseNpcBtn tag (determines function)
                 String myButtonTag = Convert.ToString(((Button)sender).Tag);
@@ -395,18 +395,18 @@ namespace hist_mmorpg
                 if (myButtonTag.Equals("bailiff"))
                 {
                     // set the selected NPC as bailiff
-                    this.parent.fiefToView.bailiff = selectedNPC;
-                    selectedNPC.myBoss = this.parent.myChar.charID;
+                    Globals_Client.fiefToView.bailiff = selectedNPC;
+                    selectedNPC.myBoss = Globals_Client.myChar.charID;
 
                     // refresh the fief information (in the main form)
-                    this.parent.refreshFiefContainer(this.parent.fiefToView);
+                    this.parent.refreshFiefContainer(Globals_Client.fiefToView);
                 }
 
                 // if appointing an army leader
                 else
                 {
                     // get army
-                    Army thisArmy = Globals.armyMasterList[myButtonTag];
+                    Army thisArmy = Globals_Server.armyMasterList[myButtonTag];
 
                     thisArmy.assignNewLeader(selectedNPC);
 
@@ -438,23 +438,23 @@ namespace hist_mmorpg
             // clear existing items in list
             this.barredListView.Items.Clear();
 
-            ListViewItem[] barredChars = new ListViewItem[this.parent.fiefToView.barredCharacters.Count];
+            ListViewItem[] barredChars = new ListViewItem[Globals_Client.fiefToView.barredCharacters.Count];
 
             // iterates through employees
-            for (int i = 0; i < this.parent.fiefToView.barredCharacters.Count; i++)
+            for (int i = 0; i < Globals_Client.fiefToView.barredCharacters.Count; i++)
             {
                 // retrieve character
                 //PlayerCharacter myBarredpc = null;
                 //NonPlayerCharacter myBarrednpc = null;
                 Character myBarredChar = null;
 
-                if (Globals.pcMasterList.ContainsKey(this.parent.fiefToView.barredCharacters[i]))
+                if (Globals_Server.pcMasterList.ContainsKey(Globals_Client.fiefToView.barredCharacters[i]))
                 {
-                    myBarredChar = Globals.pcMasterList[this.parent.fiefToView.barredCharacters[i]];
+                    myBarredChar = Globals_Server.pcMasterList[Globals_Client.fiefToView.barredCharacters[i]];
                 }
-                else if (Globals.npcMasterList.ContainsKey(this.parent.fiefToView.barredCharacters[i]))
+                else if (Globals_Server.npcMasterList.ContainsKey(Globals_Client.fiefToView.barredCharacters[i]))
                 {
-                    myBarredChar = Globals.npcMasterList[this.parent.fiefToView.barredCharacters[i]];
+                    myBarredChar = Globals_Server.npcMasterList[Globals_Client.fiefToView.barredCharacters[i]];
                 }
 
                 if (myBarredChar != null)
@@ -479,8 +479,8 @@ namespace hist_mmorpg
             // disable 'UnBar Character' button until a list item is selected
             this.unbarCharBtn.Enabled = false;
             // ensure the nationality bar CheckBoxes are displaying correctly
-            this.barEnglishCheckBox.Checked = this.parent.fiefToView.englishBarred;
-            this.barFrenchCheckBox.Checked = this.parent.fiefToView.frenchBarred;
+            this.barEnglishCheckBox.Checked = Globals_Client.fiefToView.englishBarred;
+            this.barFrenchCheckBox.Checked = Globals_Client.fiefToView.frenchBarred;
         }
 
         /// <summary>
@@ -523,10 +523,10 @@ namespace hist_mmorpg
             ListViewItem thisDetachment = null;
 
             // get army
-            Army thisArmy = Globals.armyMasterList[armyID];
+            Army thisArmy = Globals_Server.armyMasterList[armyID];
 
             // get fief
-            Fief thisFief = Globals.fiefMasterList[thisArmy.location];
+            Fief thisFief = Globals_Server.fiefMasterList[thisArmy.location];
 
             // add troop detachments to list
             foreach (KeyValuePair<string, string[]> troopDetachment in thisFief.troopTransfers)
@@ -581,7 +581,7 @@ namespace hist_mmorpg
             foreach (string armyID in thisFief.armies)
             {
                 // get army
-                Army thisArmy = Globals.armyMasterList[armyID];
+                Army thisArmy = Globals_Server.armyMasterList[armyID];
 
                 // ID
                 armyEntry = new ListViewItem(armyID);
@@ -603,18 +603,18 @@ namespace hist_mmorpg
         private void barThisCharBtn_Click(object sender, EventArgs e)
         {
             // if input ID is in pcMasterList
-            if (Globals.pcMasterList.ContainsKey(this.barThisCharTextBox.Text))
+            if (Globals_Server.pcMasterList.ContainsKey(this.barThisCharTextBox.Text))
             {
                 // add ID to barred characters
-                this.parent.fiefToView.barredCharacters.Add(this.barThisCharTextBox.Text);
+                Globals_Client.fiefToView.barredCharacters.Add(this.barThisCharTextBox.Text);
                 // refresh display
                 this.refreshBarredDisplay();
             }
             // if input ID is in npcMasterList
-            else if (Globals.npcMasterList.ContainsKey(this.barThisCharTextBox.Text))
+            else if (Globals_Server.npcMasterList.ContainsKey(this.barThisCharTextBox.Text))
             {
                 // add ID to barred characters
-                this.parent.fiefToView.barredCharacters.Add(this.barThisCharTextBox.Text);
+                Globals_Client.fiefToView.barredCharacters.Add(this.barThisCharTextBox.Text);
                 // refresh display
                 this.refreshBarredDisplay();
             }
@@ -637,18 +637,18 @@ namespace hist_mmorpg
             if (barredListView.SelectedItems.Count > 0)
             {
                 // if selected character is in pcMasterList
-                if (Globals.pcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
+                if (Globals_Server.pcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
                 {
                     // remove ID from barred characters
-                    this.parent.fiefToView.barredCharacters.Remove(this.barredListView.SelectedItems[0].SubItems[1].Text);
+                    Globals_Client.fiefToView.barredCharacters.Remove(this.barredListView.SelectedItems[0].SubItems[1].Text);
                     // refresh display
                     this.refreshBarredDisplay();
                 }
                 // if selected character is in pcMasterList
-                else if (Globals.npcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
+                else if (Globals_Server.npcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
                 {
                     // remove ID from barred characters
-                    this.parent.fiefToView.barredCharacters.Remove(this.barredListView.SelectedItems[0].SubItems[1].Text);
+                    Globals_Client.fiefToView.barredCharacters.Remove(this.barredListView.SelectedItems[0].SubItems[1].Text);
                     // refresh display
                     this.refreshBarredDisplay();
                 }
@@ -686,9 +686,9 @@ namespace hist_mmorpg
         private void barFrenchCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             // bar/unbar French, depending on whether CheckBox is checked
-            this.parent.fiefToView.frenchBarred = this.barFrenchCheckBox.Checked;
+            Globals_Client.fiefToView.frenchBarred = this.barFrenchCheckBox.Checked;
             // refresh the parent's fief container
-            this.parent.refreshFiefContainer(this.parent.fiefToView);
+            this.parent.refreshFiefContainer(Globals_Client.fiefToView);
         }
 
         /// <summary>
@@ -700,9 +700,9 @@ namespace hist_mmorpg
         private void barEnglishCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             // bar/unbar English, depending on whether CheckBox is checked
-            this.parent.fiefToView.englishBarred = this.barEnglishCheckBox.Checked;
+            Globals_Client.fiefToView.englishBarred = this.barEnglishCheckBox.Checked;
             // refresh the parent's fief container
-            this.parent.refreshFiefContainer(this.parent.fiefToView);
+            this.parent.refreshFiefContainer(Globals_Client.fiefToView);
         }
 
         /// <summary>
@@ -733,7 +733,7 @@ namespace hist_mmorpg
             string toDisplay = "";
 
             // get army
-            Army thisArmy = parent.armyToView;
+            Army thisArmy = Globals_Client.armyToView;
 
             // set minDays to thisArmy.days (as default value)
             minDays = thisArmy.days;
@@ -763,7 +763,7 @@ namespace hist_mmorpg
                 else
                 {
                     // calculate time taken for transfer
-                    daysTaken = Globals.myRand.Next(10, 31);
+                    daysTaken = Globals_Server.myRand.Next(10, 31);
 
                     // check if have enough days for transfer in this instance
                     if (daysTaken > thisArmy.days)
@@ -777,7 +777,7 @@ namespace hist_mmorpg
                 if (proceed)
                 {
                     // get fief
-                    Fief thisFief = Globals.fiefMasterList[thisArmy.location];
+                    Fief thisFief = Globals_Server.fiefMasterList[thisArmy.location];
 
                     // check for minimum days
                     foreach (ListViewItem item in checkedItems)
@@ -966,7 +966,7 @@ namespace hist_mmorpg
                 this.armiesTextBox.ReadOnly = true;
 
                 // get details
-                Army otherArmy = Globals.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
+                Army otherArmy = Globals_Server.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
                 textToDisplay += this.displayArmy(otherArmy);
 
                 // display details
@@ -976,7 +976,7 @@ namespace hist_mmorpg
                 PlayerCharacter otherArmyOwner = otherArmy.getOwner();
 
                 // if is not player's army & observer is an army leader, enable attack button
-                if ((otherArmyOwner != this.parent.myChar) && (this.observer.armyID != null))
+                if ((otherArmyOwner != Globals_Client.myChar) && (this.observer.armyID != null))
                 {
                     this.armiesAttackBtn.Enabled = true;
                 }
@@ -1015,8 +1015,8 @@ namespace hist_mmorpg
             else
             {
                 // get armies
-                Army attacker = Globals.armyMasterList[this.observer.armyID];
-                Army defender = Globals.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
+                Army attacker = Globals_Server.armyMasterList[this.observer.armyID];
+                Army defender = Globals_Server.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
 
                 // let slip the dogs of war
                 parent.giveBattle(attacker, defender);

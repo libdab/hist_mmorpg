@@ -6,9 +6,9 @@ using System.Text;
 namespace hist_mmorpg
 {
     /// <summary>
-    /// Class storing any required static variables
+    /// Class storing any required static variables for server-side
     /// </summary>
-    public static class Globals
+    public static class Globals_Server
     {
         /// <summary>
         /// Holds all NonPlayerCharacter objects
@@ -131,8 +131,8 @@ namespace hist_mmorpg
         /// <returns>uint containing newCharID</returns>
         public static uint getNextCharID()
         {
-            uint charID = Globals.newCharID;
-            Globals.newCharID++;
+            uint charID = Globals_Server.newCharID;
+            Globals_Server.newCharID++;
             return charID;
         }
 
@@ -142,8 +142,8 @@ namespace hist_mmorpg
         /// <returns>string containing newArmyID</returns>
         public static string getNextArmyID()
         {
-            string armyID = "Army" + Globals.newArmyID;
-            Globals.newArmyID++;
+            string armyID = "Army" + Globals_Server.newArmyID;
+            Globals_Server.newArmyID++;
             return armyID;
         }
 
@@ -153,8 +153,8 @@ namespace hist_mmorpg
         /// <returns>string containing newDetachmentID</returns>
         public static string getNextDetachmentID()
         {
-            string detachmentID = "D" + Globals.newDetachmentID;
-            Globals.newDetachmentID++;
+            string detachmentID = "D" + Globals_Server.newDetachmentID;
+            Globals_Server.newDetachmentID++;
             return detachmentID;
         }
 
@@ -164,8 +164,8 @@ namespace hist_mmorpg
         /// <returns>string containing newAilmentID</returns>
         public static string getNextAilmentID()
         {
-            string ailmentID = "A" + Globals.newAilmentID;
-            Globals.newAilmentID++;
+            string ailmentID = "A" + Globals_Server.newAilmentID;
+            Globals_Server.newAilmentID++;
             return ailmentID;
         }
 

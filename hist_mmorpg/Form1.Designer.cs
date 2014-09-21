@@ -286,29 +286,29 @@ namespace hist_mmorpg
             this.characterToolStripMenuItem1,
             this.fiefToolStripMenuItem1});
             this.testSeasonalUpdateToolStripMenuItem.Name = "testSeasonalUpdateToolStripMenuItem";
-            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.testSeasonalUpdateToolStripMenuItem.Text = "Test seasonal update";
+            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.testSeasonalUpdateToolStripMenuItem.Text = "Test";
             // 
             // fullToolStripMenuItem
             // 
             this.fullToolStripMenuItem.Name = "fullToolStripMenuItem";
-            this.fullToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.fullToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.fullToolStripMenuItem.Tag = "full";
-            this.fullToolStripMenuItem.Text = "Full";
+            this.fullToolStripMenuItem.Text = "Full seasonal update";
             this.fullToolStripMenuItem.Click += new System.EventHandler(this.testUpdateMenuItem_Click);
             // 
             // characterToolStripMenuItem1
             // 
             this.characterToolStripMenuItem1.Name = "characterToolStripMenuItem1";
-            this.characterToolStripMenuItem1.Size = new System.Drawing.Size(125, 22);
+            this.characterToolStripMenuItem1.Size = new System.Drawing.Size(191, 22);
             this.characterToolStripMenuItem1.Tag = "character";
-            this.characterToolStripMenuItem1.Text = "Character";
-            this.characterToolStripMenuItem1.Click += new System.EventHandler(this.testUpdateMenuItem_Click);
+            this.characterToolStripMenuItem1.Text = "Refresh current screen";
+            this.characterToolStripMenuItem1.Click += new System.EventHandler(this.testRefreshScreen);
             // 
             // fiefToolStripMenuItem1
             // 
             this.fiefToolStripMenuItem1.Name = "fiefToolStripMenuItem1";
-            this.fiefToolStripMenuItem1.Size = new System.Drawing.Size(125, 22);
+            this.fiefToolStripMenuItem1.Size = new System.Drawing.Size(191, 22);
             this.fiefToolStripMenuItem1.Tag = "fief";
             this.fiefToolStripMenuItem1.Text = "Fief";
             this.fiefToolStripMenuItem1.Click += new System.EventHandler(this.testUpdateMenuItem_Click);
@@ -316,7 +316,7 @@ namespace hist_mmorpg
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 

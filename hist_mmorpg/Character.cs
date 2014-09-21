@@ -349,9 +349,9 @@ namespace hist_mmorpg
 
             foreach (String fiefID in this.myTitles)
             {
-                if (Globals.fiefMasterList[fiefID].rank.stature > highRankStature)
+                if (Globals_Server.fiefMasterList[fiefID].rank.stature > highRankStature)
                 {
-                    highRankStature = Globals.fiefMasterList[fiefID].rank.stature;
+                    highRankStature = Globals_Server.fiefMasterList[fiefID].rank.stature;
                 }
             }
 
@@ -546,7 +546,7 @@ namespace hist_mmorpg
             }
 
             // generate a rndom double between 0-100 and compare to deathChance
-            if ((Globals.GetRandomDouble(100)) <= deathChance)
+            if ((Globals_Server.GetRandomDouble(100)) <= deathChance)
             {
                 return true;
             }
@@ -602,15 +602,15 @@ namespace hist_mmorpg
             // 5. if married, remove from spouse
             if (this.isMarried)
             {
-                if (Globals.npcMasterList.ContainsKey(this.spouse))
+                if (Globals_Server.npcMasterList.ContainsKey(this.spouse))
                 {
-                    Globals.npcMasterList[this.spouse].spouse = null;
-                    Globals.npcMasterList[this.spouse].isMarried = false;
+                    Globals_Server.npcMasterList[this.spouse].spouse = null;
+                    Globals_Server.npcMasterList[this.spouse].isMarried = false;
                 }
-                else if (Globals.pcMasterList.ContainsKey(this.spouse))
+                else if (Globals_Server.pcMasterList.ContainsKey(this.spouse))
                 {
-                    Globals.pcMasterList[this.spouse].spouse = null;
-                    Globals.pcMasterList[this.spouse].isMarried = false;
+                    Globals_Server.pcMasterList[this.spouse].spouse = null;
+                    Globals_Server.pcMasterList[this.spouse].isMarried = false;
                 }
                 
             }
@@ -623,7 +623,7 @@ namespace hist_mmorpg
                 if ((this as NonPlayerCharacter).myBoss != null)
                 {
                     // get boss
-                    PlayerCharacter boss = Globals.pcMasterList[(this as NonPlayerCharacter).myBoss];
+                    PlayerCharacter boss = Globals_Server.pcMasterList[(this as NonPlayerCharacter).myBoss];
 
                     // check to see if is a bailiff.  If so, remove
                     foreach (Fief thisFief in boss.ownedFiefs)
@@ -642,7 +642,7 @@ namespace hist_mmorpg
                 if ((this as NonPlayerCharacter).familyID != null)
                 {
                     // get boss
-                    PlayerCharacter familyHead = Globals.pcMasterList[(this as NonPlayerCharacter).familyID];
+                    PlayerCharacter familyHead = Globals_Server.pcMasterList[(this as NonPlayerCharacter).familyID];
 
                     // check to see if is a bailiff.  If so, remove
                     foreach (Fief thisFief in familyHead.ownedFiefs)
@@ -846,7 +846,7 @@ namespace hist_mmorpg
                 // check if has accompanying army, if so move it
                 if (this.armyID != null)
                 {
-                    Globals.armyMasterList[armyID].moveArmy();
+                    Globals_Server.armyMasterList[armyID].moveArmy();
                 }
                 success = true;
             }
@@ -887,7 +887,7 @@ namespace hist_mmorpg
             if (this.armyID != null)
             {
                 // get army
-                Army thisArmy = Globals.armyMasterList[this.armyID];
+                Army thisArmy = Globals_Server.armyMasterList[this.armyID];
 
                 // synchronise days
                 thisArmy.days = this.days;
@@ -944,7 +944,7 @@ namespace hist_mmorpg
                     }
 
                     // generate random (0 - 100) to see if pregnancy successful
-                    double randPercentage = Globals.GetRandomDouble(100);
+                    double randPercentage = Globals_Server.GetRandomDouble(100);
 
                     // holds chance of pregnancy based on age and virility
                     int chanceOfPregnancy = 0;
@@ -1152,7 +1152,7 @@ namespace hist_mmorpg
                         {
                             // get king's firstName
                             String newFirstName = "";
-                            newFirstName = Globals.fiefMasterList[Globals.pcMasterList[this.familyID].homeFief].province.kingdom.king.firstName;
+                            newFirstName = Globals_Server.fiefMasterList[Globals_Server.pcMasterList[this.familyID].homeFief].province.kingdom.king.firstName;
                             this.firstName = newFirstName;
                         }
                     }
@@ -1325,7 +1325,7 @@ namespace hist_mmorpg
             double potentialSalary = npc.calcWage(this);
 
             // generate random (0 - 100) to see if accepts offer
-            double chance = Globals.GetRandomDouble(100);
+            double chance = Globals_Server.GetRandomDouble(100);
 
             // get 'npcHire' skill effect modifier (increase/decrease chance of offer being accepted)
             double hireSkills = this.calcSkillEffect("npcHire");
@@ -1668,10 +1668,10 @@ namespace hist_mmorpg
             int daysUsed = 0;
 
             // get home fief
-            Fief homeFief = Globals.fiefMasterList[this.homeFief];
+            Fief homeFief = Globals_Server.fiefMasterList[this.homeFief];
 
             // get army
-            Army thisArmy = Globals.armyMasterList[this.armyID];
+            Army thisArmy = Globals_Server.armyMasterList[this.armyID];
 
             // calculate cost of individual soldier
             if (this.location.ancestralOwner == this)
@@ -1727,7 +1727,7 @@ namespace hist_mmorpg
                         {
                             // 5. check sufficient days remaining
                             // see how long recuitment attempt will take: generate random int (1-5)
-                            daysUsed = Globals.myRand.Next(6);
+                            daysUsed = Globals_Server.myRand.Next(6);
 
                             if (this.days < daysUsed)
                             {
@@ -1779,11 +1779,10 @@ namespace hist_mmorpg
 
             if (proceed)
             {
-                // generate random double (2-5) to see the % of population responding to call
-                double popPercent = (Globals.GetRandomDouble(5, min: 2) / 100);
+                // calculate number of troops responding to call (based on fief population)
+                troopsRecruited = this.location.callUpTroops(minProportion: 0.4);
 
-                // calculate number of troops responding to call and adjust if necessary
-                troopsRecruited = Convert.ToInt32(this.location.population * popPercent);
+                // adjust if necessary
                 if (troopsRecruited >= number)
                 {
                     troopsRecruited = Convert.ToInt32(number);
@@ -1851,7 +1850,7 @@ namespace hist_mmorpg
                             {
                                 thisNationality = "O";
                             }
-                            typesRecruited[i] = Convert.ToUInt32(troopsRecruited * Globals.recruitRatios[thisNationality][i]);
+                            typesRecruited[i] = Convert.ToUInt32(troopsRecruited * Globals_Server.recruitRatios[thisNationality][i]);
                             totalSoFar += typesRecruited[i];
                         }
                         // fill up with rabble
@@ -2057,9 +2056,9 @@ namespace hist_mmorpg
                         else
                         {
                             // check for grandkids
-                            if (Globals.npcMasterList[this.father].father != null)
+                            if (Globals_Server.npcMasterList[this.father].father != null)
                             {
-                                if (Globals.npcMasterList[this.father].father.Equals(bigCheese.charID))
+                                if (Globals_Server.npcMasterList[this.father].father.Equals(bigCheese.charID))
                                 {
                                     if (this.isMale)
                                     {

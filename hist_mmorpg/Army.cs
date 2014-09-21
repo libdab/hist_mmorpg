@@ -225,9 +225,9 @@ namespace hist_mmorpg
             Character myLeader = this.getLeader();
 
             // get old fief
-            Fief myOldFief = Globals.fiefMasterList[this.location];
+            Fief myOldFief = Globals_Server.fiefMasterList[this.location];
             // get new fief
-            Fief myNewFief = Globals.fiefMasterList[myLeader.location.fiefID];
+            Fief myNewFief = Globals_Server.fiefMasterList[myLeader.location.fiefID];
 
             // remove from old fief
             myOldFief.removeArmy(this.armyID);
@@ -267,7 +267,7 @@ namespace hist_mmorpg
             uint movementMod = 1;
 
             // generate random double (0-100)
-            Double myRandomDouble = Globals.myRand.NextDouble() * 100;
+            Double myRandomDouble = Globals_Server.myRand.NextDouble() * 100;
 
             // calculate chance of modifier based on army size
             Double modifierChance = Math.Floor(this.calcArmySize() / (Double)1000);
@@ -298,7 +298,7 @@ namespace hist_mmorpg
             }
 
             // get fief
-            Fief currentFief = Globals.fiefMasterList[this.location];
+            Fief currentFief = Globals_Server.fiefMasterList[this.location];
 
             // get leader
             Character myLeader = this.getLeader();
@@ -329,7 +329,7 @@ namespace hist_mmorpg
             }
 
             // generate random number (0-100) to check if attrition occurs
-            Double randomPercent = Globals.myRand.NextDouble() * 100;
+            Double randomPercent = Globals_Server.myRand.NextDouble() * 100;
 
             // check if attrition occurs
             if (randomPercent <= attritionChance)
@@ -398,7 +398,7 @@ namespace hist_mmorpg
             }
 
             // get combat values for that nationality
-            uint[] thisCombatValues = Globals.combatValues[troopNationality];
+            uint[] thisCombatValues = Globals_Server.combatValues[troopNationality];
 
             // get CV for each troop type
             for (int i = 0; i < this.troops.Length; i++)
@@ -431,7 +431,7 @@ namespace hist_mmorpg
             uint[] troopNumbers = new uint[6] {0, 0, 0, 0, 0, 0};
 
             // get random int (0-2) to decide whether to over- or under-estimate troop number
-            int overUnder = Globals.myRand.Next(3);
+            int overUnder = Globals_Server.myRand.Next(3);
 
             // get observer's estimate variance (based on his leadership value)
             double estimateVariance = observer.getEstimateVariance();
@@ -443,7 +443,7 @@ namespace hist_mmorpg
                 troopNumbers[i] = this.troops[i];
 
                 // generate random double between 0 and estimate variance to decide variance in this case
-                double thisVariance = Globals.GetRandomDouble(estimateVariance);
+                double thisVariance = Globals_Server.GetRandomDouble(estimateVariance);
 
                 // apply variance (negatively or positively) to troop number
                 // 0 = under-estimate, 1-2 = over-estimate
@@ -469,7 +469,7 @@ namespace hist_mmorpg
             PlayerCharacter myOwner = null;
 
             // get leader from PC master list
-            myOwner = Globals.pcMasterList[this.owner];
+            myOwner = Globals_Server.pcMasterList[this.owner];
 
             return myOwner;
         }
@@ -483,13 +483,13 @@ namespace hist_mmorpg
             Character myLeader = null;
 
             // get leader from appropriate master list
-            if (Globals.npcMasterList.ContainsKey(this.leader))
+            if (Globals_Server.npcMasterList.ContainsKey(this.leader))
             {
-                myLeader = Globals.npcMasterList[this.leader];
+                myLeader = Globals_Server.npcMasterList[this.leader];
             }
-            else if (Globals.pcMasterList.ContainsKey(this.leader))
+            else if (Globals_Server.pcMasterList.ContainsKey(this.leader))
             {
-                myLeader = Globals.pcMasterList[this.leader];
+                myLeader = Globals_Server.pcMasterList[this.leader];
             }
 
             return myLeader;
