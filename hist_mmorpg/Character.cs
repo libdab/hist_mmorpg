@@ -363,7 +363,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Double containing character's base stature</returns>
         /// <param name="type">bool indicating whether to return current stature (or just base)</param>
-        public Double calculateStature(bool currentStature)
+        public Double calculateStature(bool currentStature = true)
         {
             Double stature = 0;
 
@@ -746,7 +746,7 @@ namespace hist_mmorpg
         {
             double loyModif = 0;
             // 1.25% increase in loyalty per stature/management average above 1
-            loyModif = (((this.calculateStature(true) + this.management) / 2) - 1) * 1.25;
+            loyModif = (((this.calculateStature() + this.management) / 2) - 1) * 1.25;
             loyModif = loyModif / 100;
             return loyModif;
         }
@@ -1075,7 +1075,7 @@ namespace hist_mmorpg
             double lv = 0;
 
             // get base LV
-            lv = (this.combat + this.management + this.calculateStature(true)) / 3;
+            lv = (this.combat + this.management + this.calculateStature()) / 3;
 
             // factor in skills effect
             double combatSkillsMOd = this.calcSkillEffect("battle");
@@ -1171,7 +1171,7 @@ namespace hist_mmorpg
         public double calcFiefManagementRating()
         {
             // baseline rating
-            double fiefMgtRating = (this.management + this.calculateStature(true)) / 2;
+            double fiefMgtRating = (this.management + this.calculateStature()) / 2;
 
             // check for skills effecting fief loyalty
             double fiefLoySkill = this.calcSkillEffect("fiefLoy");
@@ -1196,7 +1196,7 @@ namespace hist_mmorpg
         public double calcArmyLeadershipRating()
         {
             // baseline rating
-            double armyLeaderRating = (this.management + this.calculateStature(true) + this.combat) / 3;
+            double armyLeaderRating = (this.management + this.calculateStature() + this.combat) / 3;
 
             // check for skills effecting battle
             double battleSkills = this.calcSkillEffect("battle");
@@ -1880,6 +1880,15 @@ namespace hist_mmorpg
             return troopsRecruited;
         }
 
+        /// <summary>
+        /// Returns the PlayerCharacter's home fief
+        /// </summary>
+        /// <returns>The home fief</returns>
+        public Fief getHomeFief()
+        {
+            return Globals_Server.fiefMasterList[this.homeFief];
+        }
+
     }
 
     /// <summary>
@@ -2185,9 +2194,9 @@ namespace hist_mmorpg
 
             // factor in hiring player's stature
             // (4% reduction in NPC's salary for each stature rank above 4)
-            if (hiringPC.calculateStature(true) > 4)
+            if (hiringPC.calculateStature() > 4)
             {
-                double statMod = 1 - ((this.calculateStature(true) - 4) * 0.04);
+                double statMod = 1 - ((this.calculateStature() - 4) * 0.04);
                 salary = salary * statMod;
             }
 

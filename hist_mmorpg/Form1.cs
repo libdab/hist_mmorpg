@@ -2734,7 +2734,7 @@ namespace hist_mmorpg
             }
 
             // stature
-            charText += "Stature: " + ch.calculateStature(true) + "\r\n";
+            charText += "Stature: " + ch.calculateStature() + "\r\n";
             charText += "  (base stature: " + ch.calculateStature(false) + " | modifier: " + ch.statureModifier + ")\r\n";
 
             // management rating
@@ -7020,7 +7020,7 @@ namespace hist_mmorpg
                     defender.applyTroopLosses(casualtyModifiers[1]);
                 }
 
-                // if is pillage, attacking army disbands after battle
+                // if is pillage, attacking (temporary) army always disbands after battle
                 if (circumstance.Equals("pillage"))
                 {
                     attackerDisbanded = true;
@@ -7122,6 +7122,17 @@ namespace hist_mmorpg
 
                     // do something to remove character
                 }
+                else
+                {
+                    // if pillage, if fief's army loses, make sure bailiff always returns to keep
+                    if (circumstance.Equals("pillage"))
+                    {
+                        if (!attackerVictorious)
+                        {
+                            attackerLeader.inKeep = true;
+                        }
+                    }
+                }
 
                 // 2. DEFENDER
                 if (attackerVictorious)
@@ -7198,6 +7209,118 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Calculates the outcome of the pillage of a fief by an army
+        /// </summary>
+        /// <param name="f">The fief being pillaged</param>
+        /// <param name="a">The pillaging army</param>
+        public void processPillage(Fief f, Army a)
+        {
+            double thisLoss = 0;
+            double moneyPillagedTotal = 0;
+            double moneyPillagedOwner = 0;
+            double pillageMultiplier = 0;
+
+            // get pillaging army owner (receives a proportion of total spoils)
+            PlayerCharacter armyOwner = a.getOwner();
+
+            // calculate pillageMultiplier (based on no. pillagers per 1000 population)
+            pillageMultiplier = a.calcArmySize() / (f.population / 1000);
+
+            // calculate days taken for pillage
+            double daysTaken = Globals_Server.myRand.Next(7, 16);
+            if (daysTaken > a.days)
+            {
+                daysTaken = a.days;
+            }
+
+            // % population loss
+            thisLoss = (0.007 * pillageMultiplier);
+            // ensure is at least 1%
+            if (thisLoss < 1)
+            {
+                thisLoss = 1;
+            }
+            // apply population loss
+            f.population -= Convert.ToUInt32((f.population * (thisLoss / 100)));
+
+            // % treasury loss
+            thisLoss = (0.2 * pillageMultiplier);
+            // ensure is at least 1%
+            if (thisLoss < 1)
+            {
+                thisLoss = 1;
+            }
+            // apply treasury loss
+            if (f.treasury > 0)
+            {
+                f.treasury -= Convert.ToInt32((f.treasury * (thisLoss / 100)));
+            }
+
+            // % loyalty loss
+            thisLoss = (0.044 * pillageMultiplier);
+            // ensure is at least 1%
+            if (thisLoss < 1)
+            {
+                thisLoss = 1;
+            }
+            // apply loyalty loss
+            f.loyalty -= (f.loyalty * (thisLoss / 100));
+
+            // % fields loss
+            thisLoss = (0.01 * pillageMultiplier);
+            // ensure is at least 1%
+            if (thisLoss < 1)
+            {
+                thisLoss = 1;
+            }
+            // apply fields loss
+            f.fields -= (f.fields * (thisLoss / 100));
+
+            // % industry loss
+            thisLoss = (0.01 * pillageMultiplier);
+            // ensure is at least 1%
+            if (thisLoss < 1)
+            {
+                thisLoss = 1;
+            }
+            // apply industry loss
+            f.industry -= (f.industry * (thisLoss / 100));
+
+            // money pillaged (based on GDP)
+            thisLoss = (0.01 * pillageMultiplier);
+            // ensure is at least 1%
+            if (thisLoss < 1)
+            {
+                thisLoss = 1;
+            }
+            // calculate base amount pillaged
+            double baseMoneyPillaged = (f.keyStatsCurrent[1] * (thisLoss / 100));
+            moneyPillagedTotal = baseMoneyPillaged;
+            // factor in no. days spent pillaging (get extra 5% per day > 7)
+            int daysOver7 = Convert.ToInt32(daysTaken) - 7;
+            for (int i = 0; i < daysOver7; i++)
+            {
+                moneyPillagedTotal += (baseMoneyPillaged * 0.05);
+            }
+
+            // check for jackpot
+            // generate randomPercentage to see if hit the jackpot
+            int myRandomPercent = Globals_Server.myRand.Next(101);
+            if (myRandomPercent <= 30)
+            {
+                // generate random int to multiply amount pillaged
+                int myRandomMultiplier = Globals_Server.myRand.Next(3, 11);
+                moneyPillagedTotal = moneyPillagedTotal * myRandomMultiplier;
+            }
+
+            // check proportion of money pillaged goes to army owner (based on stature)
+            double proportionForOwner = 0.05 * armyOwner.calculateStature();
+            moneyPillagedOwner = (moneyPillagedTotal * proportionForOwner);
+            // apply to army owner's home fief treasury
+            armyOwner.getHomeFief().treasury += Convert.ToInt32(moneyPillagedOwner);
+        }
+
+        /// <summary>
         /// Implements the processes involved in the pillage of a fief by an army
         /// </summary>
         /// <param name="f">The fief being pillaged</param>
@@ -7245,8 +7368,8 @@ namespace hist_mmorpg
                 militiaSize = Convert.ToUInt32(f.callUpTroops(minProportion: 0.33, maxProportion: 0.66));
 
                 // calculate CV of defenders based on following troop type proportions:
-                // militia = Global_Server.recruitRatios 0-4, fill with rabble
-                // garrison = (Global_Server.recruitRatios 0-3) * 2, fill with foot
+                // militia = Global_Server.recruitRatios for types 0-4, fill with rabble
+                // garrison = Global_Server.recruitRatios * 2 for types 0-3, fill with foot
 
                 // 1. militia (includes proportion of rabble)
                 for (int i = 0; i < tempTroops.Length; i++)
@@ -7302,11 +7425,19 @@ namespace hist_mmorpg
                 {
                     System.Windows.Forms.MessageBox.Show("The pillaging force has been forced to retreat by the fief's defenders!");
                 }
+
+                // check still have enough days left
+                if (a.days < 7)
+                {
+                    System.Windows.Forms.MessageBox.Show("After giving battle, the pillaging army no longer has\r\nsufficient days for this operation.  Pillage cancelled.");
+                    pillageCancelled = true;
+                }
             }
 
             if (!pillageCancelled)
             {
                 // process pillage
+                this.processPillage(f, a);
             }
 
         }

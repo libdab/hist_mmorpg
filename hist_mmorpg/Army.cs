@@ -308,8 +308,8 @@ namespace hist_mmorpg
             toDisplay += "Base chance: " + attritionChance + "\r\n";
 
             // factor in effect of leader
-            attritionChance = attritionChance - ((myLeader.calculateStature(true) + myLeader.management) / 2);
-            toDisplay += "Leader effect: " + (myLeader.calculateStature(true) + myLeader.management) / 2 + "\r\n";
+            attritionChance = attritionChance - ((myLeader.calculateStature() + myLeader.management) / 2);
+            toDisplay += "Leader effect: " + (myLeader.calculateStature() + myLeader.management) / 2 + "\r\n";
 
             // factor in effect of season (add 20 if is winter or spring)
             if ((this.clock.currentSeason == 0) || (this.clock.currentSeason == 3))

@@ -125,7 +125,7 @@ namespace hist_mmorpg
         /// </summary>
         public static Dictionary<string, double[]> recruitRatios = new Dictionary<string, double[]>();
         /// <summary>
-        /// Holds probabilities for battle occuring at certain combat odds under certain conditions
+        /// Holds probabilities for battle occurring at certain combat odds under certain conditions
         /// Key = 'odds', 'battle', 'pillage'
         /// Value = percentage likelihood of battle occurring
         /// </summary>

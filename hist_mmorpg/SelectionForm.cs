@@ -337,7 +337,7 @@ namespace hist_mmorpg
             charText += "Days remaining: " + npc.days + "\r\n";
 
             // stature
-            charText += "Stature: " + npc.calculateStature(true) + "\r\n";
+            charText += "Stature: " + npc.calculateStature() + "\r\n";
             charText += "  (base stature: " + npc.calculateStature(false) + " | modifier: " + npc.statureModifier + ")\r\n";
 
             // management rating
