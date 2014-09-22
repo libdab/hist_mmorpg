@@ -473,17 +473,25 @@ namespace hist_mmorpg
             Ailment myAilment1 = new Ailment(Globals_Server.getNextAilmentID(), "Battlefield injury", Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, 3, 1);
             myChar1.ailments.Add(myAilment1.ailmentID, myAilment1);
 
-            // populate Globals.combatValues
+            // populate Globals_Server.combatValues
             uint[] eCombatValues = new uint[] {9, 9, 1, 9, 3, 1};
             Globals_Server.combatValues.Add("E", eCombatValues);
             uint[] oCombatValues = new uint[] {7, 7, 3, 2, 2, 1};
             Globals_Server.combatValues.Add("O", oCombatValues);
 
-            // populate Globals.recruitRatios
+            // populate Globals_Server.recruitRatios
             double[] eRecruitRatios = new double[] { 0.01, 0.02, 0, 0.15, 0.33, 0.49 };
             Globals_Server.recruitRatios.Add("E", eRecruitRatios);
             double[] oRecruitRatios = new double[] { 0.01, 0.02, 0.03, 0, 0.45, 0.49 };
             Globals_Server.recruitRatios.Add("O", oRecruitRatios);
+
+            // populate Globals_Server.battleProbabilities
+            double[] odds = new double[] { 2, 3, 4, 5, 6, 99 };
+            Globals_Server.recruitRatios.Add("odds", odds);
+            double[] bChance = new double[] { 10, 30, 50, 70, 80, 90 };
+            Globals_Server.recruitRatios.Add("battle", bChance);
+            double[] pChance = new double[] { 10, 20, 30, 40, 50, 60 };
+            Globals_Server.recruitRatios.Add("pillage", pChance);
 
             // create an army and add in appropriate places
             uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 200, 400};
@@ -5779,6 +5787,35 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Performs functions associated with creating a new army
+        /// </summary>
+        /// <param name="a">The army to be added to the game</param>
+        public void addArmy(Army a)
+        {
+            // get leader
+            Character armyLeader = a.getLeader();
+
+            // get owner
+            PlayerCharacter armyOwner = a.getOwner();
+
+            // get location
+            Fief armyLocation = Globals_Server.fiefMasterList[a.location];
+
+            // add to armyMasterList
+            Globals_Server.armyMasterList.Add(a.armyID, a);
+
+            // add to owner's myArmies
+            armyOwner.myArmies.Add(a);
+
+            // add to leader
+            armyLeader.armyID = a.armyID;
+
+            // add to fief's armies
+            armyLocation.armies.Add(a.armyID);
+
+        }
+        
+        /// <summary>
         /// Responds to the click event of the armyRecruitBtn button
         /// allowing the player to create a new army or recruit additional troops
         /// </summary>
@@ -5799,10 +5836,7 @@ namespace hist_mmorpg
                 if (operation.Equals("new"))
                 {
                     Army newArmy = new Army(Globals_Server.getNextArmyID(), Globals_Client.myChar.charID, Globals_Client.myChar.charID, Globals_Client.myChar.days, Globals_Client.clock, Globals_Client.myChar.location.fiefID);
-                    Globals_Server.armyMasterList.Add(newArmy.armyID, newArmy);
-                    Globals_Client.myChar.myArmies.Add(newArmy);
-                    Globals_Client.myChar.armyID = newArmy.armyID;
-                    Globals_Client.myChar.location.armies.Add(newArmy.armyID);
+                    this.addArmy(newArmy);
                 }
 
                 // recruit troops
@@ -6630,41 +6664,36 @@ namespace hist_mmorpg
         /// <returns>bool indicating whether battle has commenced</returns>
         /// <param name="attackerValue">uint containing attacking army battle value</param>
         /// <param name="defenderValue">uint containing defending army battle value</param>
-        public bool bringToBattle(uint attackerValue, uint defenderValue)
+        /// <param name="circumstance">string indicating circumstance of battle</param>
+        public bool bringToBattle(uint attackerValue, uint defenderValue, string circumstance = "battle")
         {
             bool battleHasCommenced = false;
-            int battleChance = 0;
+            double[] combatOdds = Globals_Server.battleProbabilities["odds"];
+            double[] battleChances = Globals_Server.battleProbabilities[circumstance];
+            double thisChance = 0;
 
-            if (attackerValue / defenderValue < 2)
+            for (int i = 0; i < combatOdds.Length; i++)
             {
-                battleChance = 10;
-            }
-            else if (attackerValue / defenderValue < 3)
-            {
-                battleChance = 30;
-            }
-            else if (attackerValue / defenderValue < 4)
-            {
-                battleChance = 50;
-            }
-            else if (attackerValue / defenderValue < 5)
-            {
-                battleChance = 70;
-            }
-            else if (attackerValue / defenderValue < 6)
-            {
-                battleChance = 80;
-            }
-            else
-            {
-                battleChance = 90;
+                if (i < combatOdds.Length - 1)
+                {
+                    if (attackerValue / defenderValue < combatOdds[i])
+                    {
+                        thisChance = battleChances[i];
+                        break;
+                    }
+                }
+                else
+                {
+                    thisChance = battleChances[i];
+                    break;
+                }
             }
 
             // generate random percentage
             int randomPercentage = Globals_Server.myRand.Next(101);
 
             // compare random percentage to battleChance
-            if (randomPercentage <= battleChance)
+            if (randomPercentage <= thisChance)
             {
                 battleHasCommenced = true;
             }
@@ -6921,8 +6950,10 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="attacker">The attacking army</param>
         /// <param name="defender">The defending army</param>
-        public void giveBattle(Army attacker, Army defender)
+        /// <param name="circumstance">string indicating circumstance of battle</param>
+        public bool giveBattle(Army attacker, Army defender, string circumstance = "battle")
         {
+            bool attackerVictorious = false;
             bool battleHasCommenced = false;
             uint[] battleValues = new uint[2];
             double[] casualtyModifiers = new double[2];
@@ -6941,14 +6972,14 @@ namespace hist_mmorpg
             }
             else
             {
-                battleHasCommenced = this.bringToBattle(battleValues[0], battleValues[1]);
+                battleHasCommenced = this.bringToBattle(battleValues[0], battleValues[1], circumstance);
             }
 
             if (battleHasCommenced)
             {
                 // WHO HAS WON?
                 // calculate if attacker has won
-                bool attackerVictorious = this.decideBattleVictory(battleValues[0], battleValues[1]);
+                attackerVictorious = this.decideBattleVictory(battleValues[0], battleValues[1]);
 
                 // CASUALTIES
                 // calculate troop casualties for both sides
@@ -6989,6 +7020,12 @@ namespace hist_mmorpg
                     defender.applyTroopLosses(casualtyModifiers[1]);
                 }
 
+                // if is pillage, attacking army disbands after battle
+                if (circumstance.Equals("pillage"))
+                {
+                    attackerDisbanded = true;
+                }
+
                 // DAYS
                 // adjust days
                 attackerLeader.adjustDays(1);
@@ -7000,6 +7037,18 @@ namespace hist_mmorpg
 
                 // check if either army needs to retreat
                 int[] retreatDistances = this.checkForRetreat(attacker, defender, casualtyModifiers[0], casualtyModifiers[1], attackerVictorious);
+
+                // if is pillage, attacking army doesn't retreat
+                // and defending army (the pillagers) always retreats if has lost
+                if (circumstance.Equals("pillage"))
+                {
+                    retreatDistances[0] = 0;
+
+                    if (attackerVictorious)
+                    {
+                        retreatDistances[1] = 1;
+                    }
+                }
 
                 // if have retreated, perform it
                 for (int i = 0; i < retreatDistances.Length; i++ )
@@ -7054,18 +7103,22 @@ namespace hist_mmorpg
                 {
                     Character newLeader = null;
 
-                    // if possible, elect new leader from entourage
-                    if (attackerLeader is PlayerCharacter)
+                    // if is pillage, do NOT elect new leader for attacking army
+                    if (!circumstance.Equals("pillage"))
                     {
-                        if ((attackerLeader as PlayerCharacter).myNPCs.Count > 0)
+                        // if possible, elect new leader from entourage
+                        if (attackerLeader is PlayerCharacter)
                         {
-                            // get new leader
-                            newLeader = this.electNewArmyLeader((attackerLeader as PlayerCharacter).myNPCs);
+                            if ((attackerLeader as PlayerCharacter).myNPCs.Count > 0)
+                            {
+                                // get new leader
+                                newLeader = this.electNewArmyLeader((attackerLeader as PlayerCharacter).myNPCs);
+                            }
                         }
-                    }
 
-                    // change leader method taking newLeader (including assignment of null leader)
-                    attacker.assignNewLeader(newLeader);
+                        // assign newLeader (can assign null leader if none found)
+                        attacker.assignNewLeader(newLeader);
+                    }
 
                     // do something to remove character
                 }
@@ -7116,7 +7169,7 @@ namespace hist_mmorpg
                         }
                     }
 
-                    // change leader method taking newLeader (including assignment of null leader)
+                    // assign newLeader (can assign null leader if none found)
                     defender.assignNewLeader(newLeader);
 
                     // do something to remove character
@@ -7140,6 +7193,8 @@ namespace hist_mmorpg
                 System.Windows.Forms.MessageBox.Show(defender.armyID + " has refused battle and has retreated to an adjacent fief.");
             }
 
+            return attackerVictorious;
+
         }
 
         /// <summary>
@@ -7149,13 +7204,111 @@ namespace hist_mmorpg
         /// <param name="a">The pillaging army</param>
         public void pillageFief(Fief f, Army a)
         {
-            // get size of fief garrison
+            bool pillageCancelled = false;
+            Character armyLeader = null;
 
-            // get size of fief 'militia' responding to emergency
+            // if present in fief, get bailiff and assign as army leader
+            if (f.bailiff != null)
+            {
+                for (int i = 0; i < f.characters.Count; i++ )
+                {
+                    if (f.characters[i] == f.bailiff)
+                    {
+                        armyLeader = f.bailiff;
+                        break;
+                    }
+                }
+            }
 
-            // calculate CV of defenders based on following troop type proportions:
-            // militia = Global_Server.recruitRatios 0-4, fill with rabble
-            // garrison = (Global_Server.recruitRatios 0-3) * 2, fill with foot
+            // if an army leader exists, create an army and attempt to give battle
+            // no leader = pillage is unopposed
+            if (armyLeader != null)
+            {
+                uint garrisonSize = 0;
+                uint militiaSize = 0;
+                uint[] troopsForArmy = new uint[] { 0, 0, 0, 0, 0, 0 };
+                uint[] tempTroops = new uint[] { 0, 0, 0, 0, 0, 0 };
+                uint totalSoFar = 0;
+                Army fiefArmy = null;
+
+                // get army nationality
+                string thisNationality = f.owner.nationality.ToUpper();
+                if (!thisNationality.Equals("E"))
+                {
+                    thisNationality = "O";
+                }
+
+                // get size of fief garrison
+                garrisonSize = Convert.ToUInt32(f.getGarrisonSize());
+
+                // get size of fief 'militia' responding to emergency
+                militiaSize = Convert.ToUInt32(f.callUpTroops(minProportion: 0.33, maxProportion: 0.66));
+
+                // calculate CV of defenders based on following troop type proportions:
+                // militia = Global_Server.recruitRatios 0-4, fill with rabble
+                // garrison = (Global_Server.recruitRatios 0-3) * 2, fill with foot
+
+                // 1. militia (includes proportion of rabble)
+                for (int i = 0; i < tempTroops.Length; i++)
+                {
+                    // work out 'trained' troops numbers
+                    if (i < tempTroops.Length - 1)
+                    {
+                        tempTroops[i] = Convert.ToUInt32(militiaSize * Globals_Server.recruitRatios[thisNationality][i]);
+                    }
+                    // fill up with rabble
+                    else
+                    {
+                        tempTroops[i] = militiaSize - totalSoFar;
+                    }
+
+                    troopsForArmy[i] += tempTroops[i];
+                    totalSoFar += tempTroops[i];
+                }
+
+                // 2. garrison (all 'professional' troops)
+                totalSoFar = 0;
+
+                for (int i = 0; i < tempTroops.Length; i++)
+                {
+                    // work out 'trained' troops numbers
+                    if (i < tempTroops.Length - 2)
+                    {
+                        tempTroops[i] = Convert.ToUInt32(garrisonSize * (Globals_Server.recruitRatios[thisNationality][i] * 2));
+                    }
+                    // fill up with foot
+                    else if (i < tempTroops.Length - 1)
+                    {
+                        tempTroops[i] = garrisonSize - totalSoFar;
+                    }
+                    // no rabble in garrison
+                    else
+                    {
+                        tempTroops[i] = 0;
+                    }
+
+                    troopsForArmy[i] += tempTroops[i];
+                    totalSoFar += tempTroops[i];
+                }
+
+                // create temporary army for battle
+                fiefArmy = new Army(Globals_Server.getNextArmyID(), armyLeader.charID, f.owner.charID, armyLeader.days, Globals_Client.clock, f.fiefID, trp: troopsForArmy);
+                this.addArmy(fiefArmy);
+
+                // give battle and get result
+                pillageCancelled = this.giveBattle(fiefArmy, a, circumstance: "pillage");
+
+                if (pillageCancelled)
+                {
+                    System.Windows.Forms.MessageBox.Show("The pillaging force has been forced to retreat by the fief's defenders!");
+                }
+            }
+
+            if (!pillageCancelled)
+            {
+                // process pillage
+            }
+
         }
 
     }

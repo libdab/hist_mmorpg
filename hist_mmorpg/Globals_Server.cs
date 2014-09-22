@@ -124,6 +124,12 @@ namespace hist_mmorpg
         /// Key = nationality & Value = % ratio for knights, menAtArms, lightCavalry, yeomen, foot, rabble
         /// </summary>
         public static Dictionary<string, double[]> recruitRatios = new Dictionary<string, double[]>();
+        /// <summary>
+        /// Holds probabilities for battle occuring at certain combat odds under certain conditions
+        /// Key = 'odds', 'battle', 'pillage'
+        /// Value = percentage likelihood of battle occurring
+        /// </summary>
+        public static Dictionary<string, double[]> battleProbabilities = new Dictionary<string, double[]>();
 
         /// <summary>
         /// Gets the next available newCharID, then increments it
