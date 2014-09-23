@@ -1332,6 +1332,9 @@ namespace hist_mmorpg
 
             // reset hasRecruited
             this.hasRecruited = false;
+
+            // reset isPillaged
+            this.isPillaged = false;
         }
 
         /// <summary>

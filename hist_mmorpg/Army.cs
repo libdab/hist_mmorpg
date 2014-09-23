@@ -307,9 +307,13 @@ namespace hist_mmorpg
             attritionChance = (troopNumbers / Convert.ToDouble(currentFief.population)) * 100;
             toDisplay += "Base chance: " + attritionChance + "\r\n";
 
-            // factor in effect of leader
-            attritionChance = attritionChance - ((myLeader.calculateStature() + myLeader.management) / 2);
-            toDisplay += "Leader effect: " + (myLeader.calculateStature() + myLeader.management) / 2 + "\r\n";
+            // factor in effect of leader (need to check if army has leader)
+            if (myLeader != null)
+            {
+                // apply effect of leader
+                attritionChance = attritionChance - ((myLeader.calculateStature() + myLeader.management) / 2);
+                toDisplay += "Leader effect: " + (myLeader.calculateStature() + myLeader.management) / 2 + "\r\n";
+            }
 
             // factor in effect of season (add 20 if is winter or spring)
             if ((this.clock.currentSeason == 0) || (this.clock.currentSeason == 3))
@@ -461,6 +465,15 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Gets the army's location (fief)
+        /// </summary>
+        /// <returns>the fief</returns>
+        public Fief getLocation()
+        {
+            return Globals_Server.fiefMasterList[this.location];
+        }
+
+        /// <summary>
         /// Gets the army's owner
         /// </summary>
         /// <returns>the owner</returns>
@@ -493,6 +506,34 @@ namespace hist_mmorpg
             }
 
             return myLeader;
+        }
+
+        /// <summary>
+        /// Performs functions associated with army move for an army unaccompanied by a leader 
+        /// </summary>
+        /// <param name="target">The fief to move to</param>
+        /// <param name="travelCost">The cost of moving to target fief</param>
+        public void moveWithoutLeader(Fief target, double travelCost)
+        {
+            // get current location
+            Fief from = this.getLocation();
+
+            // remove from current fief
+            from.armies.Remove(this.armyID);
+
+            // add to target fief
+            target.armies.Add(this.armyID);
+
+            // change location
+            this.location = target.fiefID;
+
+            // change days
+            this.days = this.days - travelCost;
+
+            // calculate attrition
+            double attritionModifer = this.calcAttrition();
+            // apply attrition
+            uint troopsLost = this.applyTroopLosses(attritionModifer);
         }
         
         /// <summary>

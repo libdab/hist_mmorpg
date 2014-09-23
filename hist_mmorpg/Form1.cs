@@ -387,13 +387,15 @@ namespace hist_mmorpg
             // create some characters
             PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, true, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, cl: Globals_Client.clock, loc: myFief1);
             Globals_Server.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, cl: Globals_Client.clock, loc: myFief1);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, cl: Globals_Client.clock, loc: myFief7);
             Globals_Server.pcMasterList.Add(myChar2.charID, myChar2);
             NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "E", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, false, null, null, null, 0, false, false, myTitles003, cl: Globals_Client.clock, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC1.charID, myNPC1);
             NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "E", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, false, null, null, null, 10000, true, false, myTitles004, mb: myChar1.charID, cl: Globals_Client.clock, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("403", "Molly", "Maguire", myDob005, false, "E", true, 2.50, 9.0, myGoTo5, myLang2, 90, 0, 4.0, 6.0, generateSkillSet(), false, true, false, "101", "101", null, 30000, false, false, myTitles005, cl: Globals_Client.clock, loc: myFief1);
+            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob004, true, "F", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, false, null, null, null, 10000, true, false, myTitles004, mb: myChar2.charID, cl: Globals_Client.clock, loc: myFief6);
+            Globals_Server.npcMasterList.Add(myNPC3.charID, myNPC3);
+            NonPlayerCharacter myWife = new NonPlayerCharacter("404", "Molly", "Maguire", myDob005, false, "E", true, 2.50, 9.0, myGoTo5, myLang2, 90, 0, 4.0, 6.0, generateSkillSet(), false, true, false, "101", "101", null, 30000, false, false, myTitles005, cl: Globals_Client.clock, loc: myFief1);
             Globals_Server.npcMasterList.Add(myWife.charID, myWife);
 
 			// set fief owners
@@ -443,6 +445,7 @@ namespace hist_mmorpg
             // set fief bailiffs
             myFief1.bailiff = myChar1;
             myFief2.bailiff = myChar1;
+            myFief6.bailiff = myNPC3;
 
 			// add NPC to employees
             myChar1.hireNPC(myNPC2, 12000);
@@ -467,6 +470,7 @@ namespace hist_mmorpg
 			myFief1.addCharacter(myChar2);
 			myFief1.addCharacter(myNPC1);
 			myFief1.addCharacter(myNPC2);
+            myFief6.addCharacter(myNPC3);
             myFief1.addCharacter(myWife);
 
             // create and add ailment
@@ -507,7 +511,7 @@ namespace hist_mmorpg
 
             // create another (enemy) army and add in appropriate places
             uint[] myArmyTroops2 = new uint[] { 10, 10, 30, 0, 200, 400 };
-            Army myArmy2 = new Army(Globals_Server.getNextArmyID(), null, null, 90, Globals_Client.clock, null, trp: myArmyTroops2);
+            Army myArmy2 = new Army(Globals_Server.getNextArmyID(), null, null, 90, Globals_Client.clock, null, trp: myArmyTroops2, aggr: 2);
             Globals_Server.armyMasterList.Add(myArmy2.armyID, myArmy2);
             myArmy2.owner = myChar2.charID;
             myArmy2.leader = myChar2.charID;
@@ -3466,6 +3470,7 @@ namespace hist_mmorpg
             this.armyCampBtn.Enabled = false;
             this.armyCampTextBox.Enabled = false;
             this.armyExamineBtn.Enabled = false;
+            this.armyPillageBtn.Enabled = false;
             
             // clear existing items in armies list
             this.armyListView.Items.Clear();
@@ -6033,6 +6038,7 @@ namespace hist_mmorpg
                 this.armyCampBtn.Enabled = true;
                 this.armyCampTextBox.Enabled = true;
                 this.armyExamineBtn.Enabled = true;
+                this.armyPillageBtn.Enabled = true;
 
                 // set auto combat values
                 this.armyAggroTextBox.Text = Globals_Client.armyToView.aggression.ToString();
@@ -6307,18 +6313,21 @@ namespace hist_mmorpg
             Globals_Server.armyMasterList.Remove(a.armyID);
 
             // remove from fief
-            Fief thisFief = Globals_Server.fiefMasterList[a.location];
+            Fief thisFief = a.getLocation();
             thisFief.armies.Remove(a.armyID);
 
             // remove from owner
-            PlayerCharacter thisOwner = Globals_Server.pcMasterList[a.owner];
+            PlayerCharacter thisOwner = a.getOwner();
             thisOwner.myArmies.Remove(a);
 
             // remove from leader
             Character thisLeader = a.getLeader();
-            thisLeader.armyID = null;
+            if (thisLeader != null)
+            {
+                thisLeader.armyID = null;
+            }
 
-            // set to null
+            // set army to null
             a = null;
         }
 
@@ -6626,10 +6635,25 @@ namespace hist_mmorpg
         public uint[] calculateBattleValue(Army attacker, Army defender)
         {
             uint[] battleValues = new uint[2];
+            double attackerLV = 0;
+            double defenderLV = 0;
+
+            // get leaders
+            Character attackerLeader = attacker.getLeader();
+            Character defenderLeader = defender.getLeader();
 
             // get leadership values for each army leader
-            double attackerLV = attacker.getLeader().getLeadershipValue();
-            double defenderLV = defender.getLeader().getLeadershipValue();
+            attackerLV = attackerLeader.getLeadershipValue();
+
+            // defender may not have leader
+            if (defenderLeader != null)
+            {
+                defenderLV = defenderLeader.getLeadershipValue();
+            }
+            else
+            {
+                defenderLV = 4;
+            }
 
             // calculate battle modifier based on LVs
             // determine highest/lowest of 2 LVs
@@ -6892,31 +6916,53 @@ namespace hist_mmorpg
         public void processRetreat(Army a, int retreatDistance)
         {
             // get fief to retreat from
-            Fief retreatFrom = Globals_Server.fiefMasterList[a.location];
-
-            // get current location
-            Fief from = Globals_Server.fiefMasterList[a.location];
+            Fief retreatFrom = a.getLocation();
 
             // get army leader
             Character thisLeader = a.getLeader();
 
             // get army owner
-            PlayerCharacter thisOwner = Globals_Server.pcMasterList[a.owner];
+            PlayerCharacter thisOwner = a.getOwner();
 
-            // get fief to retreat to
-            Fief target = Globals_Client.gameMap.chooseRandomHex(from, true, thisOwner, retreatFrom);
-
-            // get travel cost
-            double travelCost = this.getTravelCost(from, target);
-
-            // ensure army has enough days (retreats immune to running out of days)
-            if (thisLeader.days < travelCost)
+            // for each hex in retreatDistance, process retreat
+            for (int i = 0; i < retreatDistance; i++ )
             {
-                thisLeader.adjustDays(thisLeader.days - travelCost);
-            }
+                // get current location
+                Fief from = a.getLocation();
 
-            // perform retreat
-            bool success = thisLeader.moveCharacter(target, travelCost);
+                // get fief to retreat to
+                Fief target = Globals_Client.gameMap.chooseRandomHex(from, true, thisOwner, retreatFrom);
+
+                // get travel cost
+                double travelCost = this.getTravelCost(from, target);
+
+                // check for army leader (defender may not have had one)
+                if (thisLeader != null)
+                {
+                    // ensure leader has enough days (retreats are immune to running out of days)
+                    if (thisLeader.days < travelCost)
+                    {
+                        thisLeader.adjustDays(thisLeader.days - travelCost);
+                    }
+
+                    // perform retreat
+                    bool success = thisLeader.moveCharacter(target, travelCost);
+                }
+
+                // if no leader
+                else
+                {
+                    // ensure army has enough days (retreats are immune to running out of days)
+                    if (a.days < travelCost)
+                    {
+                        a.days = travelCost;
+                    }
+
+                    // perform retreat
+                    a.moveWithoutLeader(target, travelCost);
+                }
+
+            }
 
         }
 
@@ -7029,7 +7075,15 @@ namespace hist_mmorpg
                 // DAYS
                 // adjust days
                 attackerLeader.adjustDays(1);
-                defenderLeader.adjustDays(1);
+                // need to check for defender having no leader
+                if (defenderLeader != null)
+                {
+                    defenderLeader.adjustDays(1);
+                }
+                else
+                {
+                    attacker.days--;
+                }
 
                 // RETREATS
                 // create array of armies (for easy processing)
@@ -7135,55 +7189,60 @@ namespace hist_mmorpg
                 }
 
                 // 2. DEFENDER
-                if (attackerVictorious)
-                {
-                    friendlyVictory = false;
-                }
-                else
-                {
-                    friendlyVictory = true;
-                }
 
-                // if army leader a PC, check entourage
-                if (attackerLeader is PlayerCharacter)
+                // need to check if defending army had a leader
+                if (defenderLeader != null)
                 {
-                    for (int i = 0; i < (defenderLeader as PlayerCharacter).myNPCs.Count; i++)
+                    if (attackerVictorious)
                     {
-                        if ((defenderLeader as PlayerCharacter).myNPCs[i].inEntourage)
-                        {
-                            characterDead = this.calculateCombatInjury((defenderLeader as PlayerCharacter).myNPCs[i], friendlyBV, enemyBV, friendlyVictory);
-                        }
-
-                        // process death, if applicable
-                        if (characterDead)
-                        {
-                            // do something to remove character
-                        }
+                        friendlyVictory = false;
                     }
-                }
+                    else
+                    {
+                        friendlyVictory = true;
+                    }
 
-                // check army leader
-                characterDead = this.calculateCombatInjury(defenderLeader, friendlyBV, enemyBV, friendlyVictory);
-
-                // process death, if applicable
-                if (characterDead)
-                {
-                    Character newLeader = null;
-
-                    // if possible, elect new leader from entourage
+                    // if army leader a PC, check entourage
                     if (defenderLeader is PlayerCharacter)
                     {
-                        if ((defenderLeader as PlayerCharacter).myNPCs.Count > 0)
+                        for (int i = 0; i < (defenderLeader as PlayerCharacter).myNPCs.Count; i++)
                         {
-                            // get new leader
-                            newLeader = this.electNewArmyLeader((defenderLeader as PlayerCharacter).myNPCs);
+                            if ((defenderLeader as PlayerCharacter).myNPCs[i].inEntourage)
+                            {
+                                characterDead = this.calculateCombatInjury((defenderLeader as PlayerCharacter).myNPCs[i], friendlyBV, enemyBV, friendlyVictory);
+                            }
+
+                            // process death, if applicable
+                            if (characterDead)
+                            {
+                                // do something to remove character
+                            }
                         }
                     }
 
-                    // assign newLeader (can assign null leader if none found)
-                    defender.assignNewLeader(newLeader);
+                    // check army leader
+                    characterDead = this.calculateCombatInjury(defenderLeader, friendlyBV, enemyBV, friendlyVictory);
 
-                    // do something to remove character
+                    // process death, if applicable
+                    if (characterDead)
+                    {
+                        Character newLeader = null;
+
+                        // if possible, elect new leader from entourage
+                        if (defenderLeader is PlayerCharacter)
+                        {
+                            if ((defenderLeader as PlayerCharacter).myNPCs.Count > 0)
+                            {
+                                // get new leader
+                                newLeader = this.electNewArmyLeader((defenderLeader as PlayerCharacter).myNPCs);
+                            }
+                        }
+
+                        // assign newLeader (can assign null leader if none found)
+                        defender.assignNewLeader(newLeader);
+
+                        // do something to remove character
+                    }
                 }
 
                 // DISBANDMENT
@@ -7215,6 +7274,7 @@ namespace hist_mmorpg
         /// <param name="a">The pillaging army</param>
         public void processPillage(Fief f, Army a)
         {
+            string toDisplay = "";
             double thisLoss = 0;
             double moneyPillagedTotal = 0;
             double moneyPillagedOwner = 0;
@@ -7232,6 +7292,7 @@ namespace hist_mmorpg
             {
                 daysTaken = a.days;
             }
+            toDisplay += "Days taken: " + daysTaken + "\r\n";
 
             // % population loss
             thisLoss = (0.007 * pillageMultiplier);
@@ -7242,6 +7303,7 @@ namespace hist_mmorpg
             }
             // apply population loss
             f.population -= Convert.ToUInt32((f.population * (thisLoss / 100)));
+            toDisplay += "Population loss: " + Convert.ToUInt32((f.population * (thisLoss / 100))) + "\r\n";
 
             // % treasury loss
             thisLoss = (0.2 * pillageMultiplier);
@@ -7255,6 +7317,7 @@ namespace hist_mmorpg
             {
                 f.treasury -= Convert.ToInt32((f.treasury * (thisLoss / 100)));
             }
+            toDisplay += "Treasury loss: " + Convert.ToInt32((f.treasury * (thisLoss / 100))) + "\r\n";
 
             // % loyalty loss
             thisLoss = (0.044 * pillageMultiplier);
@@ -7265,6 +7328,7 @@ namespace hist_mmorpg
             }
             // apply loyalty loss
             f.loyalty -= (f.loyalty * (thisLoss / 100));
+            toDisplay += "Loyalty loss: " + (f.loyalty * (thisLoss / 100)) + "\r\n";
 
             // % fields loss
             thisLoss = (0.01 * pillageMultiplier);
@@ -7275,6 +7339,7 @@ namespace hist_mmorpg
             }
             // apply fields loss
             f.fields -= (f.fields * (thisLoss / 100));
+            toDisplay += "Fields loss: " + (f.fields * (thisLoss / 100)) + "\r\n";
 
             // % industry loss
             thisLoss = (0.01 * pillageMultiplier);
@@ -7285,6 +7350,7 @@ namespace hist_mmorpg
             }
             // apply industry loss
             f.industry -= (f.industry * (thisLoss / 100));
+            toDisplay += "Industry loss: " + (f.industry * (thisLoss / 100)) + "\r\n";
 
             // money pillaged (based on GDP)
             thisLoss = (0.01 * pillageMultiplier);
@@ -7296,12 +7362,15 @@ namespace hist_mmorpg
             // calculate base amount pillaged
             double baseMoneyPillaged = (f.keyStatsCurrent[1] * (thisLoss / 100));
             moneyPillagedTotal = baseMoneyPillaged;
+            toDisplay += "baseMoneyPillaged: " + Convert.ToInt32(moneyPillagedTotal) + "\r\n";
+
             // factor in no. days spent pillaging (get extra 5% per day > 7)
             int daysOver7 = Convert.ToInt32(daysTaken) - 7;
             for (int i = 0; i < daysOver7; i++)
             {
                 moneyPillagedTotal += (baseMoneyPillaged * 0.05);
             }
+            toDisplay += "- after days > 7: " + Convert.ToInt32(moneyPillagedTotal) + "\r\n";
 
             // check for jackpot
             // generate randomPercentage to see if hit the jackpot
@@ -7311,13 +7380,21 @@ namespace hist_mmorpg
                 // generate random int to multiply amount pillaged
                 int myRandomMultiplier = Globals_Server.myRand.Next(3, 11);
                 moneyPillagedTotal = moneyPillagedTotal * myRandomMultiplier;
+                toDisplay += "- after jackpot: " + Convert.ToInt32(moneyPillagedTotal) + "\r\n";
             }
 
             // check proportion of money pillaged goes to army owner (based on stature)
             double proportionForOwner = 0.05 * armyOwner.calculateStature();
             moneyPillagedOwner = (moneyPillagedTotal * proportionForOwner);
+            toDisplay += "Money pillaged by player (with " + armyOwner.calculateStature() + " stature): " + Convert.ToInt32(moneyPillagedOwner) + "\r\n";
+
             // apply to army owner's home fief treasury
             armyOwner.getHomeFief().treasury += Convert.ToInt32(moneyPillagedOwner);
+
+            // set isPillaged for fief
+            f.isPillaged = true;
+
+            System.Windows.Forms.MessageBox.Show(toDisplay);
         }
 
         /// <summary>
@@ -7438,6 +7515,80 @@ namespace hist_mmorpg
             {
                 // process pillage
                 this.processPillage(f, a);
+            }
+
+        }
+
+        private void armyPillageBtn_Click(object sender, EventArgs e)
+        {
+            // check army selected
+            if (this.armyListView.SelectedItems.Count > 0)
+            {
+                bool proceed = true;
+
+                // get army
+                Army thisArmy = Globals_Server.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+
+                // get fief
+                Fief thisFief = thisArmy.getLocation();
+
+                // check if is your own fief
+                if (thisFief.owner == thisArmy.getOwner())
+                {
+                    proceed = false;
+                    System.Windows.Forms.MessageBox.Show("You cannot pillage your own fief!  Pillage cancelled.");
+                }
+
+                // check isPillaged = false
+                if ((thisFief.isPillaged) && (proceed))
+                {
+                    proceed = false;
+                    System.Windows.Forms.MessageBox.Show("This fief has already been pillaged during\r\nthe current season.  Pillage cancelled.");
+                }
+
+                // check if your army has a leader
+                if (thisArmy.getLeader() == null)
+                {
+                    proceed = false;
+                    System.Windows.Forms.MessageBox.Show("This army has no leader.  Pillage cancelled.");
+                }
+
+                // check days (min 7)
+                if ((thisArmy.days < 7) && (proceed))
+                {
+                    proceed = false;
+                    System.Windows.Forms.MessageBox.Show("This army has too few days remaining for\r\na pillage operation.  Pillage cancelled.");
+                }
+
+                // check for presence of army belonging to fief owner with aggression > 0
+                if (proceed)
+                {
+                    for (int i = 0; i < thisFief.armies.Count; i++)
+                    {
+                        // get army
+                        Army armyInFief = Globals_Server.armyMasterList[thisFief.armies[i]];
+
+                        if (armyInFief.owner.Equals(thisFief.owner.charID))
+                        {
+                            if (armyInFief.aggression > 1)
+                            {
+                                proceed = false;
+                                System.Windows.Forms.MessageBox.Show("There is at least one defending army (" + armyInFief.armyID + ") that must be defeated\r\nbefore you can pillage this fief.  Pillage cancelled.");
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // process pillage
+                if (proceed)
+                {
+                    this.pillageFief(thisFief, thisArmy);
+                }
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("No army selected!");
             }
 
         }

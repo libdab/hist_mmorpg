@@ -188,6 +188,7 @@ namespace hist_mmorpg
             this.armyListContainer = new System.Windows.Forms.SplitContainer();
             this.armyTextBox = new System.Windows.Forms.TextBox();
             this.armyListView = new System.Windows.Forms.ListView();
+            this.armyPillageBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -286,7 +287,7 @@ namespace hist_mmorpg
             this.characterToolStripMenuItem1,
             this.fiefToolStripMenuItem1});
             this.testSeasonalUpdateToolStripMenuItem.Name = "testSeasonalUpdateToolStripMenuItem";
-            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
             this.testSeasonalUpdateToolStripMenuItem.Text = "Test";
             // 
             // fullToolStripMenuItem
@@ -316,7 +317,7 @@ namespace hist_mmorpg
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -1561,6 +1562,7 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel1
             // 
+            this.armyContainer.Panel1.Controls.Add(this.armyPillageBtn);
             this.armyContainer.Panel1.Controls.Add(this.armyTransRabbleTextBox);
             this.armyContainer.Panel1.Controls.Add(this.armyTransFootTextBox);
             this.armyContainer.Panel1.Controls.Add(this.armyTransYeomenTextBox);
@@ -1688,7 +1690,7 @@ namespace hist_mmorpg
             this.armyExamineBtn.Name = "armyExamineBtn";
             this.armyExamineBtn.Size = new System.Drawing.Size(138, 48);
             this.armyExamineBtn.TabIndex = 42;
-            this.armyExamineBtn.Text = "Examine All Armies In This Fief";
+            this.armyExamineBtn.Text = "Examine / Attack Armies In This Fief";
             this.armyExamineBtn.UseVisualStyleBackColor = true;
             this.armyExamineBtn.Click += new System.EventHandler(this.armyExamineBtn_Click);
             // 
@@ -1927,6 +1929,16 @@ namespace hist_mmorpg
             this.armyListView.UseCompatibleStateImageBehavior = false;
             this.armyListView.View = System.Windows.Forms.View.Details;
             this.armyListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.armyListView_ItemSelectionChanged);
+            // 
+            // armyPillageBtn
+            // 
+            this.armyPillageBtn.Location = new System.Drawing.Point(156, 448);
+            this.armyPillageBtn.Name = "armyPillageBtn";
+            this.armyPillageBtn.Size = new System.Drawing.Size(114, 23);
+            this.armyPillageBtn.TabIndex = 53;
+            this.armyPillageBtn.Text = "Pillage Fief";
+            this.armyPillageBtn.UseVisualStyleBackColor = true;
+            this.armyPillageBtn.Click += new System.EventHandler(this.armyPillageBtn_Click);
             // 
             // Form1
             // 
@@ -2193,6 +2205,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.TextBox armyTransYeomenTextBox;
         private System.Windows.Forms.TextBox armyTransLCavTextBox;
         private System.Windows.Forms.TextBox armyTransMAAtextBox;
+        private System.Windows.Forms.Button armyPillageBtn;
 
     }
 }
