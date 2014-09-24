@@ -5,13 +5,11 @@ using System.IO;
 
 namespace hist_mmorpg 
 {
-
     /// <summary>
     /// Class storing data on army
     /// </summary>
     public class Army 
     {
-
 		/// <summary>
 		/// Holds army ID
 		/// </summary>
@@ -26,30 +24,6 @@ namespace hist_mmorpg
         /// 5 = rabble
         /// </summary>
         public uint[] troops = new uint[6] {0, 0, 0, 0, 0, 0};
-        /* /// <summary>
-        /// Holds no. knights in army
-        /// </summary>
-        public uint knights { get; set; }
-        /// <summary>
-        /// Holds no. men at arms in army
-        /// </summary>
-        public uint menAtArms { get; set; }
-        /// <summary>
-        /// Holds no. light cavalry in army
-        /// </summary>
-        public uint lightCavalry { get; set; }
-        /// <summary>
-        /// Holds no. yeomen in army
-        /// </summary>
-        public uint yeomen { get; set; }
-        /// <summary>
-        /// Holds no. foot soldiers in army
-        /// </summary>
-        public uint foot { get; set; }
-        /// <summary>
-        /// Holds no. rabble in army
-        /// </summary>
-        public uint rabble { get; set; } */
         /// <summary>
         /// Holds army leader (ID)
         /// </summary>

@@ -491,11 +491,11 @@ namespace hist_mmorpg
 
             // populate Globals_Server.battleProbabilities
             double[] odds = new double[] { 2, 3, 4, 5, 6, 99 };
-            Globals_Server.recruitRatios.Add("odds", odds);
+            Globals_Server.battleProbabilities.Add("odds", odds);
             double[] bChance = new double[] { 10, 30, 50, 70, 80, 90 };
-            Globals_Server.recruitRatios.Add("battle", bChance);
+            Globals_Server.battleProbabilities.Add("battle", bChance);
             double[] pChance = new double[] { 10, 20, 30, 40, 50, 60 };
-            Globals_Server.recruitRatios.Add("pillage", pChance);
+            Globals_Server.battleProbabilities.Add("pillage", pChance);
 
             // create an army and add in appropriate places
             uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 200, 400};
@@ -7012,7 +7012,8 @@ namespace hist_mmorpg
             battleValues = this.calculateBattleValue(attacker, defender);
 
             // check if attacker has managed to bring defender to battle
-            if (defender.aggression != 0)
+            // NOTE: defender aggression isn't used for pillage battles
+            if ((defender.aggression != 0) && (!circumstance.Equals("pillage")))
             {
                 battleHasCommenced = true;
             }
@@ -7583,6 +7584,12 @@ namespace hist_mmorpg
                 // process pillage
                 if (proceed)
                 {
+                    // ensure attacker's aggression > 0 (or will try to retreat from defending forces
+                    if (thisArmy.aggression == 0)
+                    {
+                        thisArmy.aggression = 1;
+                    }
+
                     this.pillageFief(thisFief, thisArmy);
                 }
             }

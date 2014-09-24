@@ -97,6 +97,7 @@
     <Compile Include="SelectionForm.Designer.cs">
       <DependentUpon>SelectionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Siege.cs" />
     <Compile Include="Skill.cs" />
     <Compile Include="Terrain.cs" />
     <EmbeddedResource Include="Form1.resx">
