@@ -1253,6 +1253,10 @@ namespace hist_mmorpg
         /// Holds character's armies (Army objects)
         /// </summary>
         public List<Army> myArmies = new List<Army>();
+        /// <summary>
+        /// Holds character's sieges (siegeIDs)
+        /// </summary>
+        public List<string> mySieges = new List<string>();
 
         /// <summary>
         /// Constructor for PlayerCharacter
@@ -1265,10 +1269,11 @@ namespace hist_mmorpg
         /// <param name="anchome">String holding character's ancestral home fief (fiefID)</param>
         /// <param name="pID">String holding ID of player who is currently playing this PlayerCharacter</param>
         /// <param name="myA">List<Army> holding character's armies</param>
+        /// <param name="myS">List<string> holding character's sieges (siegeIDs)</param>
         public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
             String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, List<Army> myA,
-            Dictionary<string, Ailment> ails = null, GameClock cl = null, Fief loc = null, String pID = null)
+            List<string> myS, Dictionary<string, Ailment> ails = null, GameClock cl = null, Fief loc = null, String pID = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, myTi, ails, cl, loc)
         {
             this.outlawed = outl;
@@ -1279,6 +1284,7 @@ namespace hist_mmorpg
             this.ancestralHomeFief = ancHome;
             this.playerID = pID;
             this.myArmies = myA;
+            this.mySieges = myS;
         }
 
         /// <summary>
@@ -1309,7 +1315,18 @@ namespace hist_mmorpg
             this.playerID = pcr.playerID;
             // create empty Army List, to be populated later
             this.myArmies = new List<Army>();
+            this.mySieges = pcr.mySieges;
 		}
+
+        /// <summary>
+        /// Returns the siege object associated with the specified siegeID
+        /// </summary>
+        /// <returns>The siege object</returns>
+        /// <param name="id">The siegeID of the siege</param>
+        public Siege getSiege(string id)
+        {
+            return Globals_Server.siegeMasterList[id];
+        }
 
         /// <summary>
         /// Processes an offer for employment
@@ -2433,6 +2450,10 @@ namespace hist_mmorpg
         /// Holds character's armies (Army objects)
         /// </summary>
         public List<String> myArmies = new List<String>();
+        /// <summary>
+        /// Holds character's sieges (Siege objects)
+        /// </summary>
+        public List<string> mySieges = new List<string>();
 
 		/// <summary>
 		/// Constructor for PlayerCharacter_Riak
@@ -2468,6 +2489,7 @@ namespace hist_mmorpg
                     this.myArmies.Add(pc.myArmies[i].armyID);
                 }
             }
+            this.mySieges = pc.mySieges;
 		}
 
         /// <summary>

@@ -91,6 +91,14 @@ namespace hist_mmorpg
         /// </summary>
         public static List<String> armyKeys = new List<String>();
         /// <summary>
+        /// Holds all siege objects
+        /// </summary>
+        public static Dictionary<string, Siege> siegeMasterList = new Dictionary<string, Siege>();
+        /// <summary>
+        /// Holds keys for siege objects (used when retrieving from database)
+        /// </summary>
+        public static List<String> siegeKeys = new List<String>();
+        /// <summary>
         /// Holds Character_Riak objects with existing goTo queues (used during initial load)
         /// </summary>
         public static List<Character_Riak> goToList = new List<Character_Riak>();
@@ -114,6 +122,10 @@ namespace hist_mmorpg
         /// Holds next value for ailment ID
         /// </summary>
         public static uint newAilmentID = 1;
+        /// <summary>
+        /// Holds next value for ailment ID
+        /// </summary>
+        public static uint newSiegeID = 1;
         /// <summary>
         /// Holds combat values for different troop types and nationalities
         /// Key = nationality & Value = combat value for knights, menAtArms, lightCavalry, yeomen, foot, rabble
@@ -148,7 +160,7 @@ namespace hist_mmorpg
         /// <returns>string containing newArmyID</returns>
         public static string getNextArmyID()
         {
-            string armyID = "Army" + Globals_Server.newArmyID;
+            string armyID = "Army_" + Globals_Server.newArmyID;
             Globals_Server.newArmyID++;
             return armyID;
         }
@@ -159,7 +171,7 @@ namespace hist_mmorpg
         /// <returns>string containing newDetachmentID</returns>
         public static string getNextDetachmentID()
         {
-            string detachmentID = "D" + Globals_Server.newDetachmentID;
+            string detachmentID = "Det_" + Globals_Server.newDetachmentID;
             Globals_Server.newDetachmentID++;
             return detachmentID;
         }
@@ -170,9 +182,20 @@ namespace hist_mmorpg
         /// <returns>string containing newAilmentID</returns>
         public static string getNextAilmentID()
         {
-            string ailmentID = "A" + Globals_Server.newAilmentID;
+            string ailmentID = "Ail_" + Globals_Server.newAilmentID;
             Globals_Server.newAilmentID++;
             return ailmentID;
+        }
+
+        /// <summary>
+        /// Gets the next available newSiegeID, then increments it
+        /// </summary>
+        /// <returns>string containing newSiegeID</returns>
+        public static string getNextSiegeID()
+        {
+            string siegeID = "Siege_" + Globals_Server.newSiegeID;
+            Globals_Server.newSiegeID++;
+            return siegeID;
         }
 
         /// <summary>

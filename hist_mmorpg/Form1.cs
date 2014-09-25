@@ -384,10 +384,14 @@ namespace hist_mmorpg
             List<Army> myArmies001 = new List<Army>();
             List<Army> myArmies002 = new List<Army>();
 
+            // create sieges list for PCs
+            List<string> mySieges001 = new List<string>();
+            List<string> mySieges002 = new List<string>();
+
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, true, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, cl: Globals_Client.clock, loc: myFief1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, true, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, cl: Globals_Client.clock, loc: myFief1);
             Globals_Server.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, cl: Globals_Client.clock, loc: myFief7);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, cl: Globals_Client.clock, loc: myFief7);
             Globals_Server.pcMasterList.Add(myChar2.charID, myChar2);
             NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "E", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, false, null, null, null, 0, false, false, myTitles003, cl: Globals_Client.clock, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC1.charID, myNPC1);
@@ -7399,19 +7403,19 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Implements the processes involved in the pillage of a fief by an army
+        /// Creates a defending army for defence of a fief during pillage or siege
         /// </summary>
+        /// <returns>The defending army</returns>
         /// <param name="f">The fief being pillaged</param>
-        /// <param name="a">The pillaging army</param>
-        public void pillageFief(Fief f, Army a)
+        public Army createDefendingArmy(Fief f)
         {
-            bool pillageCancelled = false;
+            Army defender = null;
             Character armyLeader = null;
 
             // if present in fief, get bailiff and assign as army leader
             if (f.bailiff != null)
             {
-                for (int i = 0; i < f.characters.Count; i++ )
+                for (int i = 0; i < f.characters.Count; i++)
                 {
                     if (f.characters[i] == f.bailiff)
                     {
@@ -7421,80 +7425,110 @@ namespace hist_mmorpg
                 }
             }
 
-            // if an army leader exists, create an army and attempt to give battle
-            // no leader = pillage is unopposed
-            if (armyLeader != null)
+            // gather troops to creat army
+            uint garrisonSize = 0;
+            uint militiaSize = 0;
+            uint[] troopsForArmy = new uint[] { 0, 0, 0, 0, 0, 0 };
+            uint[] tempTroops = new uint[] { 0, 0, 0, 0, 0, 0 };
+            uint totalSoFar = 0;
+
+            // get army nationality
+            string thisNationality = f.owner.nationality.ToUpper();
+            if (!thisNationality.Equals("E"))
             {
-                uint garrisonSize = 0;
-                uint militiaSize = 0;
-                uint[] troopsForArmy = new uint[] { 0, 0, 0, 0, 0, 0 };
-                uint[] tempTroops = new uint[] { 0, 0, 0, 0, 0, 0 };
-                uint totalSoFar = 0;
-                Army fiefArmy = null;
+                thisNationality = "O";
+            }
 
-                // get army nationality
-                string thisNationality = f.owner.nationality.ToUpper();
-                if (!thisNationality.Equals("E"))
+            // get size of fief garrison
+            garrisonSize = Convert.ToUInt32(f.getGarrisonSize());
+
+            // get size of fief 'militia' responding to emergency
+            militiaSize = Convert.ToUInt32(f.callUpTroops(minProportion: 0.33, maxProportion: 0.66));
+
+            // get defending troops based on following troop type proportions:
+            // militia = Global_Server.recruitRatios for types 0-4, fill with rabble
+            // garrison = Global_Server.recruitRatios * 2 for types 0-3, fill with foot
+
+            // 1. militia (includes proportion of rabble)
+            for (int i = 0; i < tempTroops.Length; i++)
+            {
+                // work out 'trained' troops numbers
+                if (i < tempTroops.Length - 1)
                 {
-                    thisNationality = "O";
+                    tempTroops[i] = Convert.ToUInt32(militiaSize * Globals_Server.recruitRatios[thisNationality][i]);
+                }
+                // fill up with rabble
+                else
+                {
+                    tempTroops[i] = militiaSize - totalSoFar;
                 }
 
-                // get size of fief garrison
-                garrisonSize = Convert.ToUInt32(f.getGarrisonSize());
+                troopsForArmy[i] += tempTroops[i];
+                totalSoFar += tempTroops[i];
+            }
 
-                // get size of fief 'militia' responding to emergency
-                militiaSize = Convert.ToUInt32(f.callUpTroops(minProportion: 0.33, maxProportion: 0.66));
+            // 2. garrison (all 'professional' troops)
+            totalSoFar = 0;
 
-                // calculate CV of defenders based on following troop type proportions:
-                // militia = Global_Server.recruitRatios for types 0-4, fill with rabble
-                // garrison = Global_Server.recruitRatios * 2 for types 0-3, fill with foot
-
-                // 1. militia (includes proportion of rabble)
-                for (int i = 0; i < tempTroops.Length; i++)
+            for (int i = 0; i < tempTroops.Length; i++)
+            {
+                // work out 'trained' troops numbers
+                if (i < tempTroops.Length - 2)
                 {
-                    // work out 'trained' troops numbers
-                    if (i < tempTroops.Length - 1)
-                    {
-                        tempTroops[i] = Convert.ToUInt32(militiaSize * Globals_Server.recruitRatios[thisNationality][i]);
-                    }
-                    // fill up with rabble
-                    else
-                    {
-                        tempTroops[i] = militiaSize - totalSoFar;
-                    }
-
-                    troopsForArmy[i] += tempTroops[i];
-                    totalSoFar += tempTroops[i];
+                    tempTroops[i] = Convert.ToUInt32(garrisonSize * (Globals_Server.recruitRatios[thisNationality][i] * 2));
+                }
+                // fill up with foot
+                else if (i < tempTroops.Length - 1)
+                {
+                    tempTroops[i] = garrisonSize - totalSoFar;
+                }
+                // no rabble in garrison
+                else
+                {
+                    tempTroops[i] = 0;
                 }
 
-                // 2. garrison (all 'professional' troops)
-                totalSoFar = 0;
+                troopsForArmy[i] += tempTroops[i];
+                totalSoFar += tempTroops[i];
+            }
 
-                for (int i = 0; i < tempTroops.Length; i++)
+            // create temporary army for battle
+            defender = new Army(Globals_Server.getNextArmyID(), armyLeader.charID, f.owner.charID, armyLeader.days, Globals_Client.clock, f.fiefID, trp: troopsForArmy);
+            this.addArmy(defender);
+
+            return defender;
+        }
+
+        /// <summary>
+        /// Implements the processes involved in the pillage of a fief by an army
+        /// </summary>
+        /// <param name="f">The fief being pillaged</param>
+        /// <param name="a">The pillaging army</param>
+        public void pillageFief(Fief f, Army a)
+        {
+            bool pillageCancelled = false;
+            bool bailiffPresent = false;
+            Army fiefArmy = null;
+
+            // check if bailiff present in fief (he'll lead the army)
+            if (f.bailiff != null)
+            {
+                for (int i = 0; i < f.characters.Count; i++ )
                 {
-                    // work out 'trained' troops numbers
-                    if (i < tempTroops.Length - 2)
+                    if (f.characters[i] == f.bailiff)
                     {
-                        tempTroops[i] = Convert.ToUInt32(garrisonSize * (Globals_Server.recruitRatios[thisNationality][i] * 2));
+                        bailiffPresent = true;
+                        break;
                     }
-                    // fill up with foot
-                    else if (i < tempTroops.Length - 1)
-                    {
-                        tempTroops[i] = garrisonSize - totalSoFar;
-                    }
-                    // no rabble in garrison
-                    else
-                    {
-                        tempTroops[i] = 0;
-                    }
-
-                    troopsForArmy[i] += tempTroops[i];
-                    totalSoFar += tempTroops[i];
                 }
+            }
 
+            // if bailiff is present, create an army and attempt to give battle
+            // no bailiff = no leader = pillage is unopposed by defending forces
+            if (bailiffPresent)
+            {
                 // create temporary army for battle
-                fiefArmy = new Army(Globals_Server.getNextArmyID(), armyLeader.charID, f.owner.charID, armyLeader.days, Globals_Client.clock, f.fiefID, trp: troopsForArmy);
-                this.addArmy(fiefArmy);
+                fiefArmy = this.createDefendingArmy(f);
 
                 // give battle and get result
                 pillageCancelled = this.giveBattle(fiefArmy, a, circumstance: "pillage");
@@ -7520,6 +7554,12 @@ namespace hist_mmorpg
 
         }
 
+        /// <summary>
+        /// Responds to the click event of the armyPillageBtn button
+        /// instigating the pillage of a fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void armyPillageBtn_Click(object sender, EventArgs e)
         {
             // check army selected
@@ -7598,6 +7638,58 @@ namespace hist_mmorpg
                 System.Windows.Forms.MessageBox.Show("No army selected!");
             }
 
+        }
+
+        /// <summary>
+        /// Allows an attacking army to lay siege to an enemy fief
+        /// </summary>
+        /// <param name="attacker">The attacking army</param>
+        /// <param name="target">The fief to be besieged</param>
+        public void laySiege(Army attacker, Fief target)
+        {
+            Army defenderGarrison = null;
+            Army additionalDefender = null;
+
+            // create defending force
+            defenderGarrison = this.createDefendingArmy(target);
+
+            // check for existence of army in keep
+            for (int i = 0; i < target.armies.Count; i++)
+            {
+                // get army
+                Army armyInFief = Globals_Server.armyMasterList[target.armies[i]];
+
+                // check is in keep
+                if (armyInFief.getOwner().inKeep)
+                {
+                    // check owner is same as that of fief (i.e. can help in siege)
+                    if (armyInFief.owner.Equals(target.owner.charID))
+                    {
+                        additionalDefender = armyInFief;
+                        break;
+                    }
+                }
+            }
+
+            // get the minumum days of all army objects involved
+            double minDays = Math.Min(attacker.days, defenderGarrison.days);
+            if (additionalDefender != null)
+            {
+                minDays = Math.Min(minDays, additionalDefender.days);
+            }
+            
+            // create siege object
+            Siege mySiege = new Siege(Globals_Server.getNextSiegeID(), Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, attacker.armyID, defenderGarrison.armyID, target.fiefID, minDays, defArm: additionalDefender.armyID);
+
+            // add to master list
+            Globals_Server.siegeMasterList.Add(mySiege.siegeID, mySiege);
+
+            // add to siege owners
+            attacker.getOwner().mySieges.Add(mySiege.siegeID);
+            target.owner.mySieges.Add(mySiege.siegeID);
+
+            // sychronise days
+            mySiege.syncDays();
         }
 
     }
