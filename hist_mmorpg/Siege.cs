@@ -79,6 +79,14 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Constructor for Siege taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public Siege()
+		{
+		}
+		
+        /// <summary>
         /// Gets the fief being besieged
         /// </summary>
         /// <returns>The besieged fief</returns>

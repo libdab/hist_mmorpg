@@ -47,7 +47,7 @@ namespace hist_mmorpg
 			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
 
 			// write game objects to Riak
-			//this.writeToDB ("testGame");
+			// this.writeToDB ("testGame");
         }
 
 		/// <summary>
@@ -771,8 +771,25 @@ namespace hist_mmorpg
                 }
             }
 
+            // write Sieges
+            // clear existing key list
+            if (Globals_Server.siegeKeys.Count > 0)
+            {
+                Globals_Server.siegeKeys.Clear();
+            }
+
+            // write each object in siegeMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<String, Siege> pair in Globals_Server.siegeMasterList)
+            {
+                bool success = this.writeSiege(gameID, pair.Value);
+                if (success)
+                {
+                    Globals_Server.siegeKeys.Add(pair.Key);
+                }
+            }
+
             // write key list to database
-            this.writeKeyList(gameID, "armyKeys", Globals_Server.armyKeys);
+            this.writeKeyList(gameID, "siegeKeys", Globals_Server.siegeKeys);
 
             // write map (edges collection)
             this.writeMapEdges(gameID, Globals_Client.gameMap);
@@ -814,6 +831,14 @@ namespace hist_mmorpg
                 Rank rank = this.initialDBload_rank(gameID, element);
                 // add Rank to rankMasterList
                 Globals_Server.rankMasterList.Add(rank.rankID, rank);
+            }
+
+            // load sieges
+            foreach (String element in Globals_Server.siegeKeys)
+            {
+                Siege s = this.initialDBload_Siege(gameID, element);
+                // add Siege to siegeMasterList
+                Globals_Server.siegeMasterList.Add(s.siegeID, s);
             }
 
             // load armies
@@ -1000,6 +1025,17 @@ namespace hist_mmorpg
             else
             {
                 System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve armyKeys from database.");
+            }
+
+            // populate siegeKeys
+            var siegeKeyResult = rClient.Get(gameID, "siegeKeys");
+            if (siegeKeyResult.IsSuccess)
+            {
+                Globals_Server.siegeKeys = siegeKeyResult.Value.GetObject<List<String>>();
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve siegeKeys from database.");
             }
 
         }
@@ -1269,10 +1305,10 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Army object</returns>
         /// <param name="gameID">Game for which Army to be retrieved</param>
-        /// <param name="ArmyID">ID of Army to be retrieved</param>
-        public Army initialDBload_Army(String gameID, String ArmyID)
+        /// <param name="armyID">ID of Army to be retrieved</param>
+        public Army initialDBload_Army(String gameID, String armyID)
         {
-            var armyResult = rClient.Get(gameID, ArmyID);
+            var armyResult = rClient.Get(gameID, armyID);
             Army myArmy = new Army();
 
             if (armyResult.IsSuccess)
@@ -1282,10 +1318,34 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Army " + ArmyID);
+                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Army " + armyID);
             }
 
             return myArmy;
+        }
+
+        /// <summary>
+        /// Loads a Siege for a particular game from database
+        /// </summary>
+        /// <returns>Siege object</returns>
+        /// <param name="gameID">Game for which Siege to be retrieved</param>
+        /// <param name="siegeID">ID of Siege to be retrieved</param>
+        public Siege initialDBload_Siege(String gameID, String siegeID)
+        {
+            var siegeResult = rClient.Get(gameID, siegeID);
+            Siege mySiege = new Siege();
+
+            if (siegeResult.IsSuccess)
+            {
+                // extract Army object
+                mySiege = siegeResult.Value.GetObject<Siege>();
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Siege " + siegeID);
+            }
+
+            return mySiege;
         }
 
         /// <summary>
@@ -1985,6 +2045,25 @@ namespace hist_mmorpg
             }
 
             return putArmyResult.IsSuccess;
+        }
+
+        /// <summary>
+        /// Writes Siege object to Riak
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
+        /// <param name="s">Siege to write</param>
+        public bool writeSiege(String gameID, Siege s)
+        {
+            var rSiege = new RiakObject(gameID, s.siegeID, s);
+            var putSiegeResult = rClient.Put(rSiege);
+
+            if (!putSiegeResult.IsSuccess)
+            {
+                System.Windows.Forms.MessageBox.Show("Write failed: Siege " + rSiege.Key + " to bucket " + rSiege.Bucket);
+            }
+
+            return putSiegeResult.IsSuccess;
         }
 
         /// <summary>
@@ -7268,6 +7347,9 @@ namespace hist_mmorpg
                 System.Windows.Forms.MessageBox.Show(defender.armyID + " has refused battle and has retreated to an adjacent fief.");
             }
 
+            // refresh screnn
+            this.refereshCurrentScreen();
+
             return attackerVictorious;
 
         }
@@ -7638,6 +7720,61 @@ namespace hist_mmorpg
                 System.Windows.Forms.MessageBox.Show("No army selected!");
             }
 
+        }
+
+        /// <summary>
+        /// Calculates rough battle odds between two armies (i.e ratio of attacking army combat
+        /// value to defending army combat value).  NOTE: does not involve leadership values
+        /// </summary>
+        /// <returns>int containing battle odds</returns>
+        /// <param name="attacker">The attacking army</param>
+        /// <param name="defender">The defending army</param>
+        public int getBattleOdds(Army attacker, Army defender)
+        {
+            double battleOdds = 0;
+
+            battleOdds = Math.Floor(attacker.calculateCombatValue() / defender.calculateCombatValue());
+
+            return Convert.ToInt32(battleOdds);
+        }
+        
+        /// <summary>
+        /// Processes a single (non-storm) round of a siege
+        /// </summary>
+        /// <param name="s">The siege</param>
+        public void processSiegeRound(Siege s)
+        {
+            Army attacker = s.getAttacker();
+            Army defenderGarrison = s.getDefenderGarrison();
+            Army defenderAdditional = null;
+
+            // check for sallying army
+            if (s.defenderArmy != null)
+            {
+                defenderAdditional = s.getDefenderArmy();
+
+                if (defenderAdditional.aggression > 1)
+                {
+                    // get odds
+                    int battleOdds = this.getBattleOdds(defenderAdditional, attacker);
+
+                    // if odds OK, give battle
+                    if (battleOdds >= defenderAdditional.combatOdds)
+                    {
+                        // give battle
+                    }
+                }
+            }
+
+            // process battle and apply results, if required
+
+            // process results of siege round
+
+            // check for death of defending leader
+
+            // update days
+
+            // refresh screen
         }
 
         /// <summary>
