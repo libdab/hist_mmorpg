@@ -7077,6 +7077,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Implements the processes involved in a battle between two armies in the field
         /// </summary>
+        /// <returns>bool indicating whether attacking army is victorious</returns>
         /// <param name="attacker">The attacking army</param>
         /// <param name="defender">The defending army</param>
         /// <param name="circumstance">string indicating circumstance of battle</param>
@@ -7095,8 +7096,9 @@ namespace hist_mmorpg
             battleValues = this.calculateBattleValue(attacker, defender);
 
             // check if attacker has managed to bring defender to battle
-            // NOTE: defender aggression isn't used for pillage battles
-            if ((defender.aggression != 0) && (!circumstance.Equals("pillage")))
+            // NOTE 1: defender aggression isn't a factor in pillage battles
+            // NOTE 2: battle always occurs if defending army sallies during siege
+            if (((defender.aggression != 0) && (!circumstance.Equals("pillage"))) || (circumstance.Equals("siege")))
             {
                 battleHasCommenced = true;
             }
@@ -7158,15 +7160,19 @@ namespace hist_mmorpg
 
                 // DAYS
                 // adjust days
-                attackerLeader.adjustDays(1);
-                // need to check for defender having no leader
-                if (defenderLeader != null)
+                // NOTE: don't adjust days if is a siege (will be deducted elsewhere)
+                if (!circumstance.Equals("siege"))
                 {
-                    defenderLeader.adjustDays(1);
-                }
-                else
-                {
-                    attacker.days--;
+                    attackerLeader.adjustDays(1);
+                    // need to check for defender having no leader
+                    if (defenderLeader != null)
+                    {
+                        defenderLeader.adjustDays(1);
+                    }
+                    else
+                    {
+                        attacker.days--;
+                    }
                 }
 
                 // RETREATS
@@ -7176,12 +7182,15 @@ namespace hist_mmorpg
                 // check if either army needs to retreat
                 int[] retreatDistances = this.checkForRetreat(attacker, defender, casualtyModifiers[0], casualtyModifiers[1], attackerVictorious);
 
-                // if is pillage, attacking army doesn't retreat
-                // and defending army (the pillagers) always retreats if has lost
-                if (circumstance.Equals("pillage"))
+                // if is pillage or siege, attacking army (the fief's army) doesn't retreat
+                // if is pillage, the defending army (the pillagers) always retreats if has lost
+                if (circumstance.Equals("pillage") || circumstance.Equals("siege"))
                 {
                     retreatDistances[0] = 0;
+                }
 
+                if (circumstance.Equals("pillage"))
+                {
                     if (attackerVictorious)
                     {
                         retreatDistances[1] = 1;
@@ -7344,7 +7353,7 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show(defender.armyID + " has refused battle and has retreated to an adjacent fief.");
+                System.Windows.Forms.MessageBox.Show(defender.armyID + " has refused battle.");
             }
 
             // refresh screnn
@@ -7737,6 +7746,32 @@ namespace hist_mmorpg
 
             return Convert.ToInt32(battleOdds);
         }
+
+        /// <summary>
+        /// Dismantles the specified siege
+        /// </summary>
+        /// <param name="s">Siege to be dismantled</param>
+        public void dismantleSiege(Siege s)
+        {
+            // get principle objects
+            Army defenderGarrison = s.getDefenderGarrison();
+            Army attacker = s.getAttacker();
+            Fief besiegedFief = s.getFief();
+            PlayerCharacter attackerOwner = attacker.getOwner();
+
+            // disband garrison
+            this.disbandArmy(defenderGarrison);
+
+            // remove from PCs
+            attackerOwner.mySieges.Remove(s.siegeID);
+            besiegedFief.owner.mySieges.Remove(s.siegeID);
+
+            // remove from master list
+            Globals_Server.siegeMasterList.Remove(s.siegeID);
+
+            // set to null
+            s = null;
+        }
         
         /// <summary>
         /// Processes a single (non-storm) round of a siege
@@ -7744,6 +7779,8 @@ namespace hist_mmorpg
         /// <param name="s">The siege</param>
         public void processSiegeRound(Siege s)
         {
+            bool siegeRaised = false;
+            Fief besiegedFief = s.getFief();
             Army attacker = s.getAttacker();
             Army defenderGarrison = s.getDefenderGarrison();
             Army defenderAdditional = null;
@@ -7761,20 +7798,58 @@ namespace hist_mmorpg
                     // if odds OK, give battle
                     if (battleOdds >= defenderAdditional.combatOdds)
                     {
-                        // give battle
+                        // process battle and apply results, if required
+                        siegeRaised = this.giveBattle(defenderAdditional, attacker, circumstance: "siege");
+
+                        // check for disbandment of defenderAdditional and remove from siege if necessary
+                        if (!siegeRaised)
+                        {
+                            if (!besiegedFief.armies.Contains(s.defenderArmy))
+                            {
+                                s.defenderArmy = null;
+                                defenderAdditional = null;
+                            }
+                        }
                     }
                 }
             }
 
-            // process battle and apply results, if required
+            if (siegeRaised)
+            {
+                System.Windows.Forms.MessageBox.Show("The defenders have successfully raised the siege!");
 
-            // process results of siege round
+                // dismantle siege
+                this.dismantleSiege(s);
+            }
 
-            // check for death of defending leader
+            else
+            {
+                // process results of siege round
+                // reduce keep level
+                besiegedFief.keepLevel--;
 
-            // update days
+                // apply casualties to defenderGarrison
+                defenderGarrison.applyTroopLosses(0.01);
+
+                // check for death of defending leader
+                double myRandomDouble = Globals_Server.GetRandomDouble(1);
+                if (myRandomDouble <= 0.01)
+                {
+                    defenderGarrison.leader = null;
+
+                    // something here to remove PC/NPC
+                }
+
+                // update days
+                s.days -= 10;
+                s.totalDays += 10;
+
+                // synchronise days
+                s.syncDays();
+            }
 
             // refresh screen
+            this.refereshCurrentScreen();
         }
 
         /// <summary>

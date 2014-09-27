@@ -50,6 +50,10 @@ namespace hist_mmorpg
         /// Holds additional defending army (armyID)
         /// </summary>
         public String defenderArmy { get; set; }
+        /// <summary>
+        /// Holds season and year the siege ended
+        /// </summary>
+        public String endDate { get; set; }
 
         /// <summary>
         /// Constructor for Siege
@@ -64,7 +68,8 @@ namespace hist_mmorpg
         /// <param name="totDef">int containing total defender casualties so far</param>
         /// <param name="totday">double containing days used by siege so far</param>
         /// <param name="defArm">String holding additional defending army (armyID)</param>
-        public Siege(String id, string start, string att, string defGarr, string fief, double day, int totAtt = 0, int totDef = 0, double totDay = 0, string defArm = null)
+        /// <param name="end">string holding season and year the siege ended</param>
+        public Siege(String id, string start, string att, string defGarr, string fief, double day, int totAtt = 0, int totDef = 0, double totDay = 0, string defArm = null, string end = null)
         {
             this.siegeID = id;
             this.startDate = start;
@@ -76,6 +81,7 @@ namespace hist_mmorpg
             this.totalCasualtiesDefender = totDef;
             this.totalDays = totDay;
             this.defenderArmy = defArm;
+            this.endDate = end;
         }
 
         /// <summary>
