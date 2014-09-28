@@ -6710,12 +6710,13 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates battle values of both armies participating in a battle
+        /// Calculates battle values of both armies participating in a battle or siege
         /// </summary>
         /// <returns>uint[] containing battle values of attacking & defending armies</returns>
         /// <param name="attacker">The attacking army</param>
         /// <param name="defender">The defending army</param>
-        public uint[] calculateBattleValue(Army attacker, Army defender)
+        /// <param name="keepLvl">Keep level (if for a keep storm)</param>
+        public uint[] calculateBattleValue(Army attacker, Army defender, int keepLvl = 0)
         {
             uint[] battleValues = new uint[2];
             double attackerLV = 0;
@@ -6746,7 +6747,7 @@ namespace hist_mmorpg
 
             // get base combat value for each army
             uint attackerCV = Convert.ToUInt32(attacker.calculateCombatValue());
-            uint defenderCV = Convert.ToUInt32(defender.calculateCombatValue());
+            uint defenderCV = Convert.ToUInt32(defender.calculateCombatValue(keepLvl));
 
             // apply battle modifer to the army CV corresponding to the highest LV
             if (attackerLV == maxLV)
@@ -6880,31 +6881,24 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating whether character has died of injuries</returns>
         /// <param name="ch">character to assess</param>
-        /// <param name="friendlyBV">uint containing friendly army battle value</param>
-        /// <param name="enemyBV">uint containing enemy army battle value</param>
-        /// <param name="friendlyVictorious">bool indicating whether friendly army was victorious</param>
-        public bool calculateCombatInjury(Character ch, uint friendlyBV, uint enemyBV, bool friendlyVictorious)
+        /// <param name="armyCasualtyLevel">double indicating friendly army casualty level</param>
+        public bool calculateCombatInjury(Character ch, double armyCasualtyLevel)
         {
             bool isDead = false;
             uint healthLoss = 0;
 
-            // calculate base chance of injury (based on combat skill)
-            double injuryChance = 5 - (ch.combat * 0.25);
+            // calculate base chance of injury (based on armyCasualtyLevel)
+            double injuryPercentChance = (armyCasualtyLevel * 100);
+           // double injuryChance = 5 - (ch.combat * 0.25);
 
-            // factor in battlefield odds
-            injuryChance += (enemyBV / friendlyBV);
-
-            // factor in whether was on losing side (high losses during withdrawal)
-            if (!friendlyVictorious)
-            {
-                injuryChance = injuryChance * 3;
-            }
+            // factor in combat skill of character
+            injuryPercentChance += 5 - ch.combat;
 
             // generate random percentage
             int randomPercent = Globals_Server.myRand.Next(101);
 
             // compare randomPercent with injuryChance to see if injury occurred
-            if (randomPercent <= injuryChance)
+            if (randomPercent <= injuryPercentChance)
             {
                 // generate random int 1-5 specifying health loss
                 healthLoss =Convert.ToUInt32(Globals_Server.myRand.Next(1, 6));
@@ -7208,21 +7202,11 @@ namespace hist_mmorpg
 
                 // PC/NPC INJURIES/DEATHS
                 // check if any PCs/NPCs have been wounded or killed
-                bool friendlyVictory = new bool();
                 bool characterDead = false;
 
                 // 1. ATTACKER
                 uint friendlyBV = battleValues[0];
                 uint enemyBV = battleValues[1];
-
-                if (attackerVictorious)
-                {
-                    friendlyVictory = true;
-                }
-                else
-                {
-                    friendlyVictory = false;
-                }
 
                 // if army leader a PC, check entourage
                 if (attackerLeader is PlayerCharacter)
@@ -7231,7 +7215,7 @@ namespace hist_mmorpg
                     {
                         if ((attackerLeader as PlayerCharacter).myNPCs[i].inEntourage)
                         {
-                            characterDead = this.calculateCombatInjury((attackerLeader as PlayerCharacter).myNPCs[i], friendlyBV, enemyBV, friendlyVictory);
+                            characterDead = this.calculateCombatInjury((attackerLeader as PlayerCharacter).myNPCs[i], casualtyModifiers[0]);
                         }
 
                         // process death, if applicable
@@ -7243,7 +7227,7 @@ namespace hist_mmorpg
                 }
 
                 // check army leader
-                characterDead = this.calculateCombatInjury(attackerLeader, friendlyBV, enemyBV, friendlyVictory);
+                characterDead = this.calculateCombatInjury(attackerLeader, casualtyModifiers[0]);
 
                 // process death, if applicable
                 if (characterDead)
@@ -7286,15 +7270,6 @@ namespace hist_mmorpg
                 // need to check if defending army had a leader
                 if (defenderLeader != null)
                 {
-                    if (attackerVictorious)
-                    {
-                        friendlyVictory = false;
-                    }
-                    else
-                    {
-                        friendlyVictory = true;
-                    }
-
                     // if army leader a PC, check entourage
                     if (defenderLeader is PlayerCharacter)
                     {
@@ -7302,7 +7277,7 @@ namespace hist_mmorpg
                         {
                             if ((defenderLeader as PlayerCharacter).myNPCs[i].inEntourage)
                             {
-                                characterDead = this.calculateCombatInjury((defenderLeader as PlayerCharacter).myNPCs[i], friendlyBV, enemyBV, friendlyVictory);
+                                characterDead = this.calculateCombatInjury((defenderLeader as PlayerCharacter).myNPCs[i], casualtyModifiers[1]);
                             }
 
                             // process death, if applicable
@@ -7314,7 +7289,7 @@ namespace hist_mmorpg
                     }
 
                     // check army leader
-                    characterDead = this.calculateCombatInjury(defenderLeader, friendlyBV, enemyBV, friendlyVictory);
+                    characterDead = this.calculateCombatInjury(defenderLeader, casualtyModifiers[1]);
 
                     // process death, if applicable
                     if (characterDead)
@@ -7826,7 +7801,7 @@ namespace hist_mmorpg
             keepLvl = besiegedFief.keepLevel;
 
             // get battle values for both armies
-            battleValues = this.calculateBattleValue(attacker, defenderGarrison);
+            battleValues = this.calculateBattleValue(attacker, defenderGarrison, Convert.ToInt32(keepLvl));
 
             // work out keepLvlModifier based on battle values
             uint maxBV = Math.Max(battleValues[0], battleValues[1]);
@@ -7860,9 +7835,12 @@ namespace hist_mmorpg
         public void stormKeep(Siege s)
         {
             bool stormSuccess = false;
+            Fief besiegedFief = s.getFief();
+            Army attacker = s.getAttacker();
+            Army defenderGarrison = s.getDefenderGarrison();
 
             // process non-storm round
-            this.processSiegeRound(s);
+            this.siegeReductionRound(s);
 
             // calculate current keep level
             double keepLvl = this.calcStormKeepLevel(s);
@@ -7878,17 +7856,61 @@ namespace hist_mmorpg
                 stormSuccess = true;
             }
 
-            // casualties
+            // KEEP DAMAGE
+            // base damage to keep level (10%)
+            double keepDamageModifier = 0.1;
 
-            // keep level
+            // calculate further damage, based on comparative battle values (up to extra 15%)
+            uint [] battleValues = this.calculateBattleValue(attacker, defenderGarrison, Convert.ToInt32(keepLvl));
+            // divide attackerBV by defenderBV to get extraDamageMultiplier
+            double extraDamageMultiplier = battleValues[0] / battleValues[1];
 
-            // PC/NPC injuries
+            // ensure extraDamageMultiplier is max 10
+            if (extraDamageMultiplier > 10)
+            {
+                extraDamageMultiplier = 10;
+            }
+
+            // generate random double 0-1 to see what proportion of extraDamageMultiplier will apply
+            myRandomDouble = Globals_Server.GetRandomDouble(1);
+            extraDamageMultiplier =  extraDamageMultiplier * myRandomDouble;
+
+            keepDamageModifier += (0.015 * extraDamageMultiplier);
+            keepDamageModifier = (1 - keepDamageModifier);
+
+            // apply keep damage
+            besiegedFief.keepLevel = besiegedFief.keepLevel * keepDamageModifier;
+
+            // CASUALTIES, based on comparative battle values and keep level
+            // 1. DEFENDER
+            // defender base casualtyModifier
+            double casualtyModifier = 0.01;
+            casualtyModifier = casualtyModifier * (battleValues[0] / battleValues[1]);
+            // apply casualties
+            defenderGarrison.applyTroopLosses(casualtyModifier);
+
+            // 2. ATTACKER
+            casualtyModifier = 0.01;
+            casualtyModifier = casualtyModifier * (battleValues[1] / battleValues[0]);
+            // for attacker, add effects of keep level, modified by on storm success
+            if (stormSuccess)
+            {
+                casualtyModifier += (0.001 * keepLvl);
+            }
+            else
+            {
+                casualtyModifier += (0.002 * keepLvl);
+            }
+            // apply casualties
+            attacker.applyTroopLosses(casualtyModifier);
+
+            // PC/NPC INJURIES
 
             if (stormSuccess)
             {
                 // change fief ownership
 
-                // get ransom for captives (based on rank)
+                // get ransom for captives (based on current GDP)
             }
 
         }
@@ -7897,7 +7919,7 @@ namespace hist_mmorpg
         /// Processes a single (non-storm) round of a siege
         /// </summary>
         /// <param name="s">The siege</param>
-        public void processSiegeRound(Siege s)
+        public void siegeReductionRound(Siege s)
         {
             bool siegeRaised = false;
             Fief besiegedFief = s.getFief();
@@ -7971,6 +7993,10 @@ namespace hist_mmorpg
                 }
 
                 defenderGarrison.applyTroopLosses(combatLosses + attritionLosses);
+
+                // apply attrition to attacker
+                attritionLosses = attacker.calcAttrition();
+                attacker.applyTroopLosses(attritionLosses);
 
                 // check for death of defending leader
                 if (defenderLeader != null)

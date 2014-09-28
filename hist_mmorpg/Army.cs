@@ -357,7 +357,8 @@ namespace hist_mmorpg
         /// Calculates the army's combat value for a combat engagement
         /// </summary>
         /// <returns>double containing combat value</returns>
-        public double calculateCombatValue()
+        /// <param name="keepLvl">Keep level (if for a keep storm)</param>
+        public double calculateCombatValue(int keepLvl = 0)
         {
             double cv = 0;
 
@@ -382,6 +383,13 @@ namespace hist_mmorpg
             for (int i = 0; i < this.troops.Length; i++)
             {
                 cv += this.troops[i] * thisCombatValues[i];
+            }
+
+            // if calculating defender during keep storm, account for keep level
+            // (1000 foot per level)
+            if (keepLvl > 0)
+            {
+                cv += (keepLvl * 1000) * thisCombatValues[4];
             }
 
             // get leader's CV
