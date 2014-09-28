@@ -7772,6 +7772,126 @@ namespace hist_mmorpg
             // set to null
             s = null;
         }
+
+        /// <summary>
+        /// Calculates the precentage chance of successfully storming a keep, based on keep level
+        /// </summary>
+        /// <returns>double containing precentage chance of success</returns>
+        /// <param name="keepLvl">The keep level</param>
+        public double calcStormSuccess(double keepLvl)
+        {
+            double stormFailurePercent = 0;
+
+            for (int i = 0; i <= keepLvl; i++ )
+            {
+                if (i == 0)
+                {
+                    stormFailurePercent = 5;
+                }
+                else if (i == 1)
+                {
+                    stormFailurePercent = 70;
+                }
+                else
+                {
+                    stormFailurePercent = stormFailurePercent + (stormFailurePercent * (0.08 * (1 / keepLvl - 1)));
+                }
+
+                // ensure is always slight chance of success
+                if (stormFailurePercent > 99)
+                {
+                    stormFailurePercent = 99;
+                }
+            }
+
+            // return success % (inverse of stormFailurePercent)
+            return 100 - stormFailurePercent;
+        }
+
+        /// <summary>
+        /// Calculates the keep level prior to a storm by attacking forces in a siege
+        /// </summary>
+        /// <returns>double containing keep level</returns>
+        /// <param name="s">The siege</param>
+        public double calcStormKeepLevel(Siege s)
+        {
+            double keepLvl = 0;
+            double keepLvlModifier = 0;
+            Fief besiegedFief = s.getFief();
+            Army attacker = s.getAttacker();
+            Army defenderGarrison = s.getDefenderGarrison();
+            uint[] battleValues = new uint[2];
+
+            // get basic keep level
+            keepLvl = besiegedFief.keepLevel;
+
+            // get battle values for both armies
+            battleValues = this.calculateBattleValue(attacker, defenderGarrison);
+
+            // work out keepLvlModifier based on battle values
+            uint maxBV = Math.Max(battleValues[0], battleValues[1]);
+            uint minBV = Math.Min(battleValues[0], battleValues[1]);
+
+            keepLvlModifier = (maxBV / minBV) - 1;
+
+            // ensure keepLvlModifier is 10 max
+            if (keepLvlModifier > 10)
+            {
+                keepLvlModifier = 10;
+            }
+
+            // apply keepLvlModifier depending on which side had highest BV
+            if (maxBV == battleValues[0])
+            {
+                keepLvl -= keepLvlModifier;
+            }
+            else
+            {
+                keepLvl += keepLvlModifier;
+            }
+
+            return keepLvl;
+        }
+        
+        /// <summary>
+        /// Processes the storming of the keep by attacking forces in a siege
+        /// </summary>
+        /// <param name="s">The siege</param>
+        public void stormKeep(Siege s)
+        {
+            bool stormSuccess = false;
+
+            // process non-storm round
+            this.processSiegeRound(s);
+
+            // calculate current keep level
+            double keepLvl = this.calcStormKeepLevel(s);
+
+            // calculate success chance based on keep level
+            double successChance = this.calcStormSuccess(keepLvl);
+
+            // generate random double 0-100 to see if storm a success
+            double myRandomDouble = Globals_Server.GetRandomDouble(100);
+
+            if (myRandomDouble <= successChance)
+            {
+                stormSuccess = true;
+            }
+
+            // casualties
+
+            // keep level
+
+            // PC/NPC injuries
+
+            if (stormSuccess)
+            {
+                // change fief ownership
+
+                // get ransom for captives (based on rank)
+            }
+
+        }
         
         /// <summary>
         /// Processes a single (non-storm) round of a siege
@@ -7784,6 +7904,7 @@ namespace hist_mmorpg
             Army attacker = s.getAttacker();
             Army defenderGarrison = s.getDefenderGarrison();
             Army defenderAdditional = null;
+            Character defenderLeader = defenderGarrison.getLeader();
 
             // check for sallying army
             if (s.defenderArmy != null)
@@ -7825,19 +7946,42 @@ namespace hist_mmorpg
             else
             {
                 // process results of siege round
-                // reduce keep level
-                besiegedFief.keepLevel--;
+                // reduce keep level by 5%
+                besiegedFief.keepLevel = (besiegedFief.keepLevel * 0.95);
 
-                // apply casualties to defenderGarrison
-                defenderGarrison.applyTroopLosses(0.01);
+                // calculate casualties to defenderGarrison
+                double combatLosses = 0.01;
+                double attritionLosses = 0;
+
+                // check to see if attrition has kicked in for defender
+                // (based on bailiff's management rating)
+                if (defenderLeader != null)
+                {
+                    if ((s.totalDays / 60) > defenderLeader.management)
+                    {
+                        attritionLosses = defenderGarrison.calcAttrition();
+                    }
+                }
+                else
+                {
+                    if ((s.totalDays / 60) > 4)
+                    {
+                        attritionLosses = defenderGarrison.calcAttrition();
+                    }
+                }
+
+                defenderGarrison.applyTroopLosses(combatLosses + attritionLosses);
 
                 // check for death of defending leader
-                double myRandomDouble = Globals_Server.GetRandomDouble(1);
-                if (myRandomDouble <= 0.01)
+                if (defenderLeader != null)
                 {
-                    defenderGarrison.leader = null;
+                    double myRandomDouble = Globals_Server.GetRandomDouble(1);
+                    if (myRandomDouble <= 0.01)
+                    {
+                        defenderGarrison.leader = null;
 
-                    // something here to remove PC/NPC
+                        // something here to remove PC/NPC
+                    }
                 }
 
                 // update days
