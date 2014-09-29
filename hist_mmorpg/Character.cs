@@ -1213,6 +1213,65 @@ namespace hist_mmorpg
             return armyLeaderRating;
         }
 
+        /// <summary>
+        /// Calculates chance and effect of character injuries resulting from a battle
+        /// </summary>
+        /// <returns>bool indicating whether character has died of injuries</returns>
+        /// <param name="armyCasualtyLevel">double indicating friendly army casualty level</param>
+        public bool calculateCombatInjury(double armyCasualtyLevel)
+        {
+            bool isDead = false;
+            uint healthLoss = 0;
+
+            // calculate base chance of injury (based on armyCasualtyLevel)
+            double injuryPercentChance = (armyCasualtyLevel * 100);
+
+            // factor in combat skill of character
+            injuryPercentChance += 5 - this.combat;
+
+            // ensure is at least 1% chance of injury
+            if (injuryPercentChance < 1)
+            {
+                injuryPercentChance = 1;
+            }
+
+            // generate random percentage
+            int randomPercent = Globals_Server.myRand.Next(101);
+
+            // compare randomPercent with injuryChance to see if injury occurred
+            if (randomPercent <= injuryPercentChance)
+            {
+                // generate random int 1-5 specifying health loss
+                healthLoss = Convert.ToUInt32(Globals_Server.myRand.Next(1, 6));
+            }
+
+            // check if should create and add an ailment
+            if (healthLoss > 0)
+            {
+                uint minEffect = 0;
+
+                // check if character has died of injuries
+                if (this.calculateHealth() < healthLoss)
+                {
+                    isDead = true;
+                }
+
+                // check if results in permanent damage
+                if (healthLoss > 4)
+                {
+                    minEffect = 1;
+                }
+
+                // create ailment
+                Ailment myAilment = new Ailment(Globals_Server.getNextAilmentID(), "Battlefield injury", Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, healthLoss, minEffect);
+
+                // add to character
+                this.ailments.Add(myAilment.ailmentID, myAilment);
+            }
+
+            return isDead;
+        }
+
     }
 
     /// <summary>
@@ -1326,6 +1385,22 @@ namespace hist_mmorpg
         public Siege getSiege(string id)
         {
             return Globals_Server.siegeMasterList[id];
+        }
+
+        /// <summary>
+        /// Returns the current total GDP for all fiefs owned by the PlayerCharacter
+        /// </summary>
+        /// <returns>The current total GDP</returns>
+        public int getTotalGDP()
+        {
+            int totalGDP = 0;
+
+            foreach (Fief thisFief in this.ownedFiefs)
+            {
+                totalGDP += Convert.ToInt32(thisFief.keyStatsCurrent[1]);
+            }
+
+            return totalGDP;
         }
 
         /// <summary>

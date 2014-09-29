@@ -1338,8 +1338,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Checks for transition from calm to unrest/rebellion;
-        /// Or from unrest to calm
+        /// Checks for transition from calm to unrest/rebellion, or from unrest to calm
         /// </summary>
         /// <returns>char indicating fief status</returns>
         public char checkFiefStatus()
@@ -1556,6 +1555,85 @@ namespace hist_mmorpg
             return garrisonSize;
         }
 
+        /// <summary>
+        /// Gets the fief's title holder
+        /// </summary>
+        /// <returns>the title holder</returns>
+        public Character getTitleHolder()
+        {
+            Character myTitleHolder = null;
+
+            // get leader from appropriate master list
+            if (Globals_Server.npcMasterList.ContainsKey(this.titleHolder))
+            {
+                myTitleHolder = Globals_Server.npcMasterList[this.titleHolder];
+            }
+            else if (Globals_Server.pcMasterList.ContainsKey(this.titleHolder))
+            {
+                myTitleHolder = Globals_Server.pcMasterList[this.titleHolder];
+            }
+
+            return myTitleHolder;
+        }
+
+        /// <summary>
+        /// Processes the functions involved in a change of fief ownership
+        /// </summary>
+        /// <param name="newOwner">The new owner</param>
+        /// <param name="circumstance">The circumstance under which the change of ownership is taking place</param>
+        public void changeOwnership(PlayerCharacter newOwner, string circumstance = "hostile")
+        {
+            // adjust loyalty
+            // lose 10% if old owner was ancestral owner
+            if (this.owner == this.ancestralOwner)
+            {
+                this.loyalty -= (this.loyalty * 0.1);
+            }
+            // gain 10% if new owner is ancestral owner
+            else if (newOwner == this.ancestralOwner)
+            {
+                this.loyalty += (this.loyalty * 0.1);
+            }
+
+            // remove title from existing holder
+            Character oldTitleHolder = this.getTitleHolder();
+            oldTitleHolder.myTitles.Remove(this.fiefID);
+            
+            // add title to new owner
+            newOwner.myTitles.Add(this.fiefID);
+            this.titleHolder = newOwner.charID;
+
+            // remove from existing owner
+            this.owner.ownedFiefs.Remove(this);
+
+            // add to new owner
+            newOwner.ownedFiefs.Add(this);
+            this.owner = newOwner;
+
+            // remove existing bailiff
+            this.bailiff = null;
+
+            // reset bailiffDaysInFief
+            this.bailiffDaysInFief = 0;
+
+            // check for status
+            this.status = this.checkFiefStatus();
+
+            // make changes to barred characters, etc. if necessary
+            // new owner
+            if (this.barredCharacters.Contains(newOwner.charID))
+            {
+                this.barredCharacters.Remove(newOwner.charID);
+            }
+            // new owner's NPCs
+            for (int i = 0; i < newOwner.myNPCs.Count; i++ )
+            {
+                if (this.barredCharacters.Contains(newOwner.myNPCs[i].charID))
+                {
+                    this.barredCharacters.Remove(newOwner.myNPCs[i].charID);
+                }
+            }
+        }
     }
 
 	/// <summary>

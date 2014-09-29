@@ -6877,61 +6877,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates chance and effect of character injuries resulting from a battle
-        /// </summary>
-        /// <returns>bool indicating whether character has died of injuries</returns>
-        /// <param name="ch">character to assess</param>
-        /// <param name="armyCasualtyLevel">double indicating friendly army casualty level</param>
-        public bool calculateCombatInjury(Character ch, double armyCasualtyLevel)
-        {
-            bool isDead = false;
-            uint healthLoss = 0;
-
-            // calculate base chance of injury (based on armyCasualtyLevel)
-            double injuryPercentChance = (armyCasualtyLevel * 100);
-           // double injuryChance = 5 - (ch.combat * 0.25);
-
-            // factor in combat skill of character
-            injuryPercentChance += 5 - ch.combat;
-
-            // generate random percentage
-            int randomPercent = Globals_Server.myRand.Next(101);
-
-            // compare randomPercent with injuryChance to see if injury occurred
-            if (randomPercent <= injuryPercentChance)
-            {
-                // generate random int 1-5 specifying health loss
-                healthLoss =Convert.ToUInt32(Globals_Server.myRand.Next(1, 6));
-            }
-
-            // check if should create and add an ailment
-            if (healthLoss > 0)
-            {
-                uint minEffect = 0;
-
-                // check if character has died of injuries
-                if (ch.calculateHealth() < healthLoss)
-                {
-                    isDead = true;
-                }
-
-                // check if results in permanent damage
-                if (healthLoss > 4)
-                {
-                    minEffect = 1;
-                }
-
-                // create ailment
-                Ailment myAilment = new Ailment(Globals_Server.getNextAilmentID(), "Battlefield injury", Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, healthLoss, minEffect);
-
-                // add to character
-                ch.ailments.Add(myAilment.ailmentID, myAilment);
-            }
-
-            return isDead;
-        }
-
-        /// <summary>
         /// Calculates whether either army has retreated due to the outcome of a battle
         /// </summary>
         /// <returns>int[] indicating the retreat distance (fiefs) of each army</returns>
@@ -7215,7 +7160,7 @@ namespace hist_mmorpg
                     {
                         if ((attackerLeader as PlayerCharacter).myNPCs[i].inEntourage)
                         {
-                            characterDead = this.calculateCombatInjury((attackerLeader as PlayerCharacter).myNPCs[i], casualtyModifiers[0]);
+                            characterDead = (attackerLeader as PlayerCharacter).myNPCs[i].calculateCombatInjury(casualtyModifiers[0]);
                         }
 
                         // process death, if applicable
@@ -7227,7 +7172,7 @@ namespace hist_mmorpg
                 }
 
                 // check army leader
-                characterDead = this.calculateCombatInjury(attackerLeader, casualtyModifiers[0]);
+                characterDead = attackerLeader.calculateCombatInjury(casualtyModifiers[0]);
 
                 // process death, if applicable
                 if (characterDead)
@@ -7277,7 +7222,7 @@ namespace hist_mmorpg
                         {
                             if ((defenderLeader as PlayerCharacter).myNPCs[i].inEntourage)
                             {
-                                characterDead = this.calculateCombatInjury((defenderLeader as PlayerCharacter).myNPCs[i], casualtyModifiers[1]);
+                                characterDead = (defenderLeader as PlayerCharacter).myNPCs[i].calculateCombatInjury(casualtyModifiers[1]);
                             }
 
                             // process death, if applicable
@@ -7289,7 +7234,7 @@ namespace hist_mmorpg
                     }
 
                     // check army leader
-                    characterDead = this.calculateCombatInjury(defenderLeader, casualtyModifiers[1]);
+                    characterDead = defenderLeader.calculateCombatInjury(casualtyModifiers[1]);
 
                     // process death, if applicable
                     if (characterDead)
@@ -7373,8 +7318,8 @@ namespace hist_mmorpg
                 thisLoss = 1;
             }
             // apply population loss
-            f.population -= Convert.ToUInt32((f.population * (thisLoss / 100)));
             toDisplay += "Population loss: " + Convert.ToUInt32((f.population * (thisLoss / 100))) + "\r\n";
+            f.population -= Convert.ToUInt32((f.population * (thisLoss / 100)));
 
             // % treasury loss
             thisLoss = (0.2 * pillageMultiplier);
@@ -7384,22 +7329,26 @@ namespace hist_mmorpg
                 thisLoss = 1;
             }
             // apply treasury loss
+            toDisplay += "Treasury loss: " + Convert.ToInt32((f.treasury * (thisLoss / 100))) + "\r\n";
             if (f.treasury > 0)
             {
                 f.treasury -= Convert.ToInt32((f.treasury * (thisLoss / 100)));
             }
-            toDisplay += "Treasury loss: " + Convert.ToInt32((f.treasury * (thisLoss / 100))) + "\r\n";
 
             // % loyalty loss
-            thisLoss = (0.044 * pillageMultiplier);
-            // ensure is at least 1%
+            thisLoss = (0.33 * pillageMultiplier);
+            // ensure is between 1%-20%
             if (thisLoss < 1)
             {
                 thisLoss = 1;
             }
+            else if (thisLoss > 20)
+            {
+                thisLoss = 20;
+            }
             // apply loyalty loss
-            f.loyalty -= (f.loyalty * (thisLoss / 100));
             toDisplay += "Loyalty loss: " + (f.loyalty * (thisLoss / 100)) + "\r\n";
+            f.loyalty -= (f.loyalty * (thisLoss / 100));
 
             // % fields loss
             thisLoss = (0.01 * pillageMultiplier);
@@ -7409,8 +7358,8 @@ namespace hist_mmorpg
                 thisLoss = 1;
             }
             // apply fields loss
-            f.fields -= (f.fields * (thisLoss / 100));
             toDisplay += "Fields loss: " + (f.fields * (thisLoss / 100)) + "\r\n";
+            f.fields -= (f.fields * (thisLoss / 100));
 
             // % industry loss
             thisLoss = (0.01 * pillageMultiplier);
@@ -7420,8 +7369,8 @@ namespace hist_mmorpg
                 thisLoss = 1;
             }
             // apply industry loss
-            f.industry -= (f.industry * (thisLoss / 100));
             toDisplay += "Industry loss: " + (f.industry * (thisLoss / 100)) + "\r\n";
+            f.industry -= (f.industry * (thisLoss / 100));
 
             // money pillaged (based on GDP)
             thisLoss = (0.01 * pillageMultiplier);
@@ -7838,6 +7787,7 @@ namespace hist_mmorpg
             Fief besiegedFief = s.getFief();
             Army attacker = s.getAttacker();
             Army defenderGarrison = s.getDefenderGarrison();
+            PlayerCharacter attackerOwner = attacker.getOwner();
 
             // process non-storm round
             this.siegeReductionRound(s);
@@ -7908,9 +7858,55 @@ namespace hist_mmorpg
 
             if (stormSuccess)
             {
-                // change fief ownership
+                // pillage fief
+                this.processPillage(besiegedFief, attacker);
 
-                // get ransom for captives (based on current GDP)
+                // CAPTIVES
+                // identify captives - fief owner, his family, and any PCs of enemy nationality
+                List<Character> captives = new List<Character>();
+                foreach (Character thisCharacter in besiegedFief.characters)
+                {
+                    if (thisCharacter.familyID == besiegedFief.owner.charID)
+                    {
+                        captives.Add(thisCharacter);
+                    }
+                    else if (thisCharacter is PlayerCharacter)
+                    {
+                        if (thisCharacter.nationality != attackerOwner.nationality)
+                        {
+                            captives.Add(thisCharacter);
+                        }
+                    }
+                }
+
+                // collect ransom
+                int thisRansom = 0;
+                foreach (Character thisCharacter in captives)
+                {
+                    // PCs
+                    if (thisCharacter is PlayerCharacter)
+                    {
+                        // calculate ransom (10% of total GDP)
+                        thisRansom = Convert.ToInt32(((thisCharacter as PlayerCharacter).getTotalGDP() * 0.1));
+                        // remove from captive's home treasury
+                        (thisCharacter as PlayerCharacter).getHomeFief().treasury -= thisRansom;
+                    }
+                    // NPCs (family of fief's old owner)
+                    else
+                    {
+                        // calculate ransom (family allowance)
+                        string thisFunction = (thisCharacter as NonPlayerCharacter).getFunction(besiegedFief.owner);
+                        thisRansom = Convert.ToInt32((thisCharacter as NonPlayerCharacter).calcFamilyAllowance(thisFunction));
+                        // remove from head of family's home treasury
+                        besiegedFief.owner.getHomeFief().treasury -= thisRansom;
+                    }
+
+                    // add to besieger's home treasury
+                    attackerOwner.getHomeFief().treasury += thisRansom;
+                }
+
+                // change fief ownership
+                besiegedFief.changeOwnership(attackerOwner);
             }
 
         }
