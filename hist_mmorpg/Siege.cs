@@ -123,16 +123,16 @@ namespace hist_mmorpg
         /// Gets the additional defending army
         /// </summary>
         /// <returns>The additional defending army</returns>
-        public Army getDefenderArmy()
+        public Army getDefenderAdditional()
         {
-            Army thisDefenderArmy = null;
+            Army thisDefenderAdditional = null;
 
             if (this.defenderArmy != null)
             {
-                thisDefenderArmy = Globals_Server.armyMasterList[this.defenderArmy];
+                thisDefenderAdditional = Globals_Server.armyMasterList[this.defenderArmy];
             }
 
-            return thisDefenderArmy;
+            return thisDefenderAdditional;
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace hist_mmorpg
             }
 
             // additional defending army
-            Character defenderLeader = this.getDefenderArmy().getLeader();
+            Character defenderLeader = this.getDefenderAdditional().getLeader();
             defenderLeader.adjustDays(defenderLeader.days - this.days);
         }
 

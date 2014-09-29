@@ -7787,7 +7787,9 @@ namespace hist_mmorpg
             Fief besiegedFief = s.getFief();
             Army attacker = s.getAttacker();
             Army defenderGarrison = s.getDefenderGarrison();
+            Army defenderAdditional = s.getDefenderAdditional();
             PlayerCharacter attackerOwner = attacker.getOwner();
+            Character defenderLeader = defenderGarrison.getLeader();
 
             // process non-storm round
             this.siegeReductionRound(s);
@@ -7834,30 +7836,71 @@ namespace hist_mmorpg
             // CASUALTIES, based on comparative battle values and keep level
             // 1. DEFENDER
             // defender base casualtyModifier
-            double casualtyModifier = 0.01;
-            casualtyModifier = casualtyModifier * (battleValues[0] / battleValues[1]);
-            // apply casualties
-            defenderGarrison.applyTroopLosses(casualtyModifier);
+            double defenderCasualtyModifier = 0.01;
+            defenderCasualtyModifier = defenderCasualtyModifier * (battleValues[0] / battleValues[1]);
+
+            // apply casualties but not if storm was successful (defending army just disbands)
+            if (!stormSuccess)
+            {
+                defenderGarrison.applyTroopLosses(defenderCasualtyModifier);
+            }
 
             // 2. ATTACKER
-            casualtyModifier = 0.01;
-            casualtyModifier = casualtyModifier * (battleValues[1] / battleValues[0]);
+            double attackerCasualtyModifier = 0.01;
+            attackerCasualtyModifier = attackerCasualtyModifier * (battleValues[1] / battleValues[0]);
             // for attacker, add effects of keep level, modified by on storm success
             if (stormSuccess)
             {
-                casualtyModifier += (0.001 * keepLvl);
+                attackerCasualtyModifier += (0.001 * keepLvl);
             }
             else
             {
-                casualtyModifier += (0.002 * keepLvl);
+                attackerCasualtyModifier += (0.002 * keepLvl);
             }
             // apply casualties
-            attacker.applyTroopLosses(casualtyModifier);
+            attacker.applyTroopLosses(attackerCasualtyModifier);
 
             // PC/NPC INJURIES
+            // NOTE: defender only (attacker leaders assumed not to have climbed the walls)
+            bool characterDead = false;
+            if (defenderLeader != null)
+            {
+                // if defenderLeader is PC, check for casualties amongst entourage
+                if (defenderLeader is PlayerCharacter)
+                {
+                    for (int i = 0; i < (defenderLeader as PlayerCharacter).myNPCs.Count; i++ )
+                    {
+                        NonPlayerCharacter thisNPC = (defenderLeader as PlayerCharacter).myNPCs[i];
+                        characterDead = thisNPC.calculateCombatInjury(defenderCasualtyModifier);
+
+                        if (characterDead)
+                        {
+                            // do something to remove character
+                        }
+                    }
+                }
+
+                // check defenderLeader
+                characterDead = defenderLeader.calculateCombatInjury(defenderCasualtyModifier);
+
+                if (characterDead)
+                {
+                    // remove as leader
+                    defenderGarrison.leader = null;
+
+                    // do something to remove character
+                }
+            }
 
             if (stormSuccess)
             {
+                // disband defending armies
+                this.disbandArmy(defenderGarrison);
+                if (defenderAdditional != null)
+                {
+                    this.disbandArmy(defenderAdditional);
+                }
+
                 // pillage fief
                 this.processPillage(besiegedFief, attacker);
 
@@ -7866,15 +7909,20 @@ namespace hist_mmorpg
                 List<Character> captives = new List<Character>();
                 foreach (Character thisCharacter in besiegedFief.characters)
                 {
-                    if (thisCharacter.familyID == besiegedFief.owner.charID)
+                    if (thisCharacter.inKeep)
                     {
-                        captives.Add(thisCharacter);
-                    }
-                    else if (thisCharacter is PlayerCharacter)
-                    {
-                        if (thisCharacter.nationality != attackerOwner.nationality)
+                        // fief owner and his family
+                        if (thisCharacter.familyID.Equals(besiegedFief.owner.charID))
                         {
                             captives.Add(thisCharacter);
+                        }
+                        // PCs of enemy nationality
+                        else if (thisCharacter is PlayerCharacter)
+                        {
+                            if (!thisCharacter.nationality.Equals(attackerOwner.nationality))
+                            {
+                                captives.Add(thisCharacter);
+                            }
                         }
                     }
                 }
@@ -7927,7 +7975,7 @@ namespace hist_mmorpg
             // check for sallying army
             if (s.defenderArmy != null)
             {
-                defenderAdditional = s.getDefenderArmy();
+                defenderAdditional = s.getDefenderAdditional();
 
                 if (defenderAdditional.aggression > 1)
                 {
@@ -7997,12 +8045,32 @@ namespace hist_mmorpg
                 // check for death of defending leader
                 if (defenderLeader != null)
                 {
-                    double myRandomDouble = Globals_Server.GetRandomDouble(1);
-                    if (myRandomDouble <= 0.01)
+                    bool characterDead = false;
+
+                    // if defenderLeader is PC, check for casualties amongst entourage
+                    if (defenderLeader is PlayerCharacter)
                     {
+                        for (int i = 0; i < (defenderLeader as PlayerCharacter).myNPCs.Count; i++)
+                        {
+                            NonPlayerCharacter thisNPC = (defenderLeader as PlayerCharacter).myNPCs[i];
+                            characterDead = thisNPC.calculateCombatInjury(combatLosses);
+
+                            if (characterDead)
+                            {
+                                // do something to remove character
+                            }
+                        }
+                    }
+
+                    // check defenderLeader
+                    characterDead = defenderLeader.calculateCombatInjury(combatLosses);
+
+                    if (characterDead)
+                    {
+                        // remove as leader
                         defenderGarrison.leader = null;
 
-                        // something here to remove PC/NPC
+                        // do something to remove character
                     }
                 }
 

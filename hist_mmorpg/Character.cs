@@ -1404,6 +1404,27 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Finds the highest ranking fief in the PlayerCharacter's owned fiefs
+        /// </summary>
+        /// <returns>The fiefID of the highest ranking fief</returns>
+        public string getHighestRankingFief()
+        {
+            string homeFief = null;
+            byte highestStature = 0;
+
+            foreach (Fief thisFief in this.ownedFiefs)
+            {
+                if (thisFief.rank.stature > highestStature)
+                {
+                    highestStature = thisFief.rank.stature;
+                    homeFief = thisFief.fiefID;
+                }
+            }
+
+            return homeFief;
+        }
+
+        /// <summary>
         /// Processes an offer for employment
         /// </summary>
         /// <returns>bool indicating acceptance of offer</returns>

@@ -1577,15 +1577,32 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Transfers the fief title to the specified character
+        /// </summary>
+        /// <param name="newTitleHolder">The new title holder</param>
+        public void transferTitle(Character newTitleHolder)
+        {
+            // remove title from existing holder
+            Character oldTitleHolder = this.getTitleHolder();
+            oldTitleHolder.myTitles.Remove(this.fiefID);
+
+            // add title to new owner
+            newTitleHolder.myTitles.Add(this.fiefID);
+            this.titleHolder = newTitleHolder.charID;
+        }
+
+        /// <summary>
         /// Processes the functions involved in a change of fief ownership
         /// </summary>
         /// <param name="newOwner">The new owner</param>
         /// <param name="circumstance">The circumstance under which the change of ownership is taking place</param>
         public void changeOwnership(PlayerCharacter newOwner, string circumstance = "hostile")
         {
+            PlayerCharacter oldOwner = this.owner;
+
             // adjust loyalty
             // lose 10% if old owner was ancestral owner
-            if (this.owner == this.ancestralOwner)
+            if (oldOwner == this.ancestralOwner)
             {
                 this.loyalty -= (this.loyalty * 0.1);
             }
@@ -1595,20 +1612,30 @@ namespace hist_mmorpg
                 this.loyalty += (this.loyalty * 0.1);
             }
 
-            // remove title from existing holder
-            Character oldTitleHolder = this.getTitleHolder();
-            oldTitleHolder.myTitles.Remove(this.fiefID);
-            
-            // add title to new owner
-            newOwner.myTitles.Add(this.fiefID);
-            this.titleHolder = newOwner.charID;
+            // remove title from existing holder and assign to new owner
+            this.transferTitle(newOwner);
 
             // remove from existing owner
-            this.owner.ownedFiefs.Remove(this);
+            oldOwner.ownedFiefs.Remove(this);
 
             // add to new owner
             newOwner.ownedFiefs.Add(this);
             this.owner = newOwner;
+
+            // check if fief was old owner's home fief
+            if (oldOwner.homeFief.Equals(this.fiefID))
+            {
+                // get highest ranking owned fief and set as new home fief
+                oldOwner.homeFief = oldOwner.getHighestRankingFief();
+
+                // if old owner isn't new home fief's title holder, transfer title
+                Fief newHomeFief = oldOwner.getHomeFief();
+                if (!newHomeFief.titleHolder.Equals(oldOwner.charID))
+                {
+                    // remove title from existing holder and assign to new owner
+                    newHomeFief.transferTitle(oldOwner);
+                }
+            }
 
             // remove existing bailiff
             this.bailiff = null;
