@@ -786,6 +786,22 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Gets the army being led by the character
+        /// </summary>
+        /// <returns>The army</returns>
+        public Army getArmy()
+        {
+            Army thisArmy = null;
+
+            if (this.armyID != null)
+            {
+                thisArmy = Globals_Server.armyMasterList[this.armyID];
+            }
+
+            return thisArmy;
+        }
+
+        /// <summary>
         /// Moves character to target fief
         /// </summary>
         /// <returns>bool indicating success</returns>

@@ -2306,6 +2306,37 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Moves character to target fief
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="ch">Character to move</param>
+        /// <param name="target">Target fief</param>
+        /// <param name="cost">Travel cost (days)</param>
+        /// <param name="isUpdate">Indicates if is update mode</param>
+        public bool moveCharacter(Character ch, Fief target, double cost, bool isUpdate = false)
+        {
+            bool success = false;
+
+            // check to see if character is leading a besieging army
+            Army myArmy = ch.getArmy();
+            if (myArmy != null)
+            {
+                string thisSiegeID = myArmy.checkIfBesieger();
+                if (thisSiegeID != null)
+                {
+                    // if so, dismantle the siege
+                    Siege thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
+                    this.dismantleSiege(thisSiege);
+                }
+            }
+
+            // move character
+            success = ch.moveCharacter(target, cost, isUpdate);
+
+            return success;
+        }
+        
+        /// <summary>
         /// Moves an NPC without a boss one hex in a random direction
         /// </summary>
         /// <returns>bool indicating success</returns>
@@ -2327,7 +2358,7 @@ namespace hist_mmorpg
                 double travelCost = this.getTravelCost(npc.location, target);
 
                 // perform move
-                success = npc.moveCharacter(target, travelCost, isUpdate);
+                success = this.moveCharacter(npc, target, travelCost, isUpdate);
             }
 
             return success;
@@ -4049,7 +4080,7 @@ namespace hist_mmorpg
                 // get travel cost
                 double travelCost = this.getTravelCost(Globals_Client.myChar.location, targetFief, Globals_Client.myChar.armyID);
                 // attempt to move player to target fief
-                success = Globals_Client.myChar.moveCharacter(targetFief, travelCost);
+                success = this.moveCharacter(Globals_Client.myChar, targetFief, travelCost);
                 // if move successfull, refresh travel display
                 if (success)
                 {
@@ -4418,7 +4449,7 @@ namespace hist_mmorpg
                 // get travel cost
                 travelCost = this.getTravelCost(ch.location, ch.goTo.Peek(), ch.armyID);
                 // attempt to move character
-                success = ch.moveCharacter(ch.goTo.Peek(), travelCost, isUpdate);
+                success = this.moveCharacter(ch, ch.goTo.Peek(), travelCost, isUpdate);
                 // if move successfull, remove fief from goTo queue
                 if (success)
                 {
@@ -6968,7 +6999,7 @@ namespace hist_mmorpg
                     }
 
                     // perform retreat
-                    bool success = thisLeader.moveCharacter(target, travelCost);
+                    bool success = this.moveCharacter(thisLeader, target, travelCost);
                 }
 
                 // if no leader
@@ -7268,6 +7299,19 @@ namespace hist_mmorpg
                 if (defenderDisbanded)
                 {
                     this.disbandArmy(defender);
+                }
+
+                // SIEGE RELIEF
+                if (attackerVictorious)
+                {
+                    // check to see if defender was besieging the fief keep
+                    string thisSiegeID = defender.checkIfBesieger();
+                    if (thisSiegeID != null)
+                    {
+                        // if so, dismantle the siege
+                        Siege thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
+                        this.dismantleSiege(thisSiege);
+                    }
                 }
 
             }
@@ -7690,6 +7734,9 @@ namespace hist_mmorpg
             attackerOwner.mySieges.Remove(s.siegeID);
             besiegedFief.owner.mySieges.Remove(s.siegeID);
 
+            // remove from fief
+            besiegedFief.siege = null;
+
             // remove from master list
             Globals_Server.siegeMasterList.Remove(s.siegeID);
 
@@ -7958,9 +8005,38 @@ namespace hist_mmorpg
             }
 
         }
+
+        /// <summary>
+        /// Processes a single negotiation round of a siege
+        /// </summary>
+        /// <returns>bool indicating whether negotiation was successful</returns>
+        /// <param name="s">The siege</param>
+        public bool siegeNegotiationRound(Siege s)
+        {
+            bool negotiateSuccess = false;
+
+            // process non-storm round
+            this.siegeReductionRound(s);
+
+            // calculate current keep level
+            double keepLvl = this.calcStormKeepLevel(s);
+
+            // calculate success chance based on keep level
+            double successChance = (this.calcStormSuccess(keepLvl) / 2);
+
+            // generate random double 0-100 to see if storm a success
+            double myRandomDouble = Globals_Server.GetRandomDouble(100);
+
+            if (myRandomDouble <= successChance)
+            {
+                negotiateSuccess = true;
+            }
+
+            return negotiateSuccess;
+        }
         
         /// <summary>
-        /// Processes a single (non-storm) round of a siege
+        /// Processes a single reduction round of a siege
         /// </summary>
         /// <param name="s">The siege</param>
         public void siegeReductionRound(Siege s)
@@ -8042,7 +8118,7 @@ namespace hist_mmorpg
                 attritionLosses = attacker.calcAttrition();
                 attacker.applyTroopLosses(attritionLosses);
 
-                // check for death of defending leader
+                // check for death of defending PCs/NPCs
                 if (defenderLeader != null)
                 {
                     bool characterDead = false;
@@ -8133,6 +8209,9 @@ namespace hist_mmorpg
             // add to siege owners
             attacker.getOwner().mySieges.Add(mySiege.siegeID);
             target.owner.mySieges.Add(mySiege.siegeID);
+
+            // add to fief
+            target.siege = mySiege.siegeID;
 
             // sychronise days
             mySiege.syncDays();

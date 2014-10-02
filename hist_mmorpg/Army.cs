@@ -517,6 +517,29 @@ namespace hist_mmorpg
             // apply attrition
             uint troopsLost = this.applyTroopLosses(attritionModifer);
         }
+
+        /// <summary>
+        /// Checks to see if army is besieging a fief
+        /// </summary>
+        /// <returns>string containing the siegeID</returns>
+        public string checkIfBesieger()
+        {
+            string thisSiegeID = null;
+
+            // get fief
+            Fief thisFief = this.getLocation();
+
+            if (thisFief.siege != null)
+            {
+                Siege thisSiege = Globals_Server.siegeMasterList[thisFief.siege];
+                if (thisSiege.attacker.Equals(this.armyID))
+                {
+                    thisSiegeID = thisFief.siege;
+                }
+            }
+
+            return thisSiegeID;
+        }
         
         /// <summary>
         /// Updates army data at the end/beginning of the season

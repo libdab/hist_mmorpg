@@ -169,6 +169,10 @@ namespace hist_mmorpg
         /// String[] contains from (charID), to (charID), troop numbers (each type), days left when detached
         /// </summary>
         public Dictionary<string, string[]> troopTransfers = new Dictionary<string, string[]>();
+        /// <summary>
+        /// Siege (siegeID) of active siege
+        /// </summary>
+        public String siege { get; set; }
 
         /// <summary>
         /// Constructor for Fief
@@ -209,10 +213,12 @@ namespace hist_mmorpg
         /// <param name="rec">bool indicating whether recruitment has occurred in the fief (current season)</param>
         /// <param name="pil">bool indicating whether pillage has occurred in the fief (current season)</param>
         /// <param name="trans">Dictionary<string, string[]> containing troop detachments in the fief awaiting transfer</param>
+        /// <param name="sge">String holding siegeID of active siege</param>
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
             Double kpLvl, Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
-            GameClock cl, byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, String tiHo = null, PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null)
+            GameClock cl, byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, String tiHo = null,
+            PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null, string sge = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -325,6 +331,7 @@ namespace hist_mmorpg
             this.hasRecruited = rec;
             this.troopTransfers = trans;
             this.isPillaged = pil;
+            this.siege = sge;
         }
 
 		/// <summary>
@@ -377,6 +384,7 @@ namespace hist_mmorpg
             this.hasRecruited = fr.hasRecruited;
             this.troopTransfers = fr.troopTransfers;
             this.isPillaged = fr.isPillaged;
+            this.siege = fr.siege;
         }
 
         /// <summary>
@@ -1827,6 +1835,10 @@ namespace hist_mmorpg
         /// String[] contains from (charID), to (charID), size, days left when detached
         /// </summary>
         public Dictionary<string, string[]> troopTransfers = new Dictionary<string, string[]>();
+        /// <summary>
+        /// Siege (siegeID) of active siege
+        /// </summary>
+        public String siege { get; set; }
 
 		/// <summary>
 		/// Constructor for Fief_Riak
@@ -1880,6 +1892,7 @@ namespace hist_mmorpg
             this.hasRecruited = f.hasRecruited;
             this.troopTransfers = f.troopTransfers;
             this.isPillaged = f.isPillaged;
+            this.siege = f.siege;
 		}
 
         /// <summary>
