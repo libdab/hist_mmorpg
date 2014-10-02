@@ -80,6 +80,7 @@ namespace hist_mmorpg
             this.setUpMeetingPLaceCharsList();
             this.setUpHouseholdCharsList();
             this.setUpArmyList();
+            this.setUpSiegeList();
 
             // initialise character display in UI
             Globals_Client.charToView = Globals_Client.myChar;
@@ -2303,6 +2304,22 @@ namespace hist_mmorpg
                     this.refreshArmyContainer();
                 }
             }
+
+            // sieges
+            else if (Globals_Client.containerToView == this.siegeContainer)
+            {
+                // check if siege being displayed (to refresh siege display)
+                if (this.siegeListView.SelectedItems.Count > 0)
+                {
+                    Siege siegeToDisplay = null;
+                    siegeToDisplay = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+                    this.refreshSiegeContainer(siegeToDisplay);
+                }
+                else
+                {
+                    this.refreshArmyContainer();
+                }
+            }
         }
 
         /// <summary>
@@ -2412,6 +2429,18 @@ namespace hist_mmorpg
             this.armyListView.Columns.Add("Leader", -2, HorizontalAlignment.Left);
             this.armyListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
             this.armyListView.Columns.Add("Size", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for list of armies owned by player
+        /// </summary>
+        public void setUpSiegeList()
+        {
+            // add necessary columns
+            this.armyListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.armyListView.Columns.Add("Fief", -2, HorizontalAlignment.Left);
+            this.armyListView.Columns.Add("Defender", -2, HorizontalAlignment.Left);
+            this.armyListView.Columns.Add("Besieger", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -3189,6 +3218,147 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Retrieves information for Siege display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="s">Siege for which information is to be displayed</param>
+        public string displaySiegeData(Siege s)
+        {
+            string siegeText = "";
+            Fief siegeLocation = s.getFief();
+            PlayerCharacter fiefOwner = siegeLocation.owner;
+            bool isDefender = (fiefOwner == Globals_Client.myChar);
+            Army besieger = s.getBesieger();
+            PlayerCharacter besiegingPlayer = besieger.getOwner();
+            Army defenderGarrison = s.getDefenderGarrison();
+            Army defenderAdditional = s.getDefenderAdditional();
+            Character besiegerLeader = besieger.getLeader();
+            Character defGarrLeader = defenderGarrison.getLeader();
+            Character defAddLeader = defenderAdditional.getLeader();
+
+            // ID
+            siegeText += "ID: " + s.siegeID + "\r\n\r\n";
+
+            // fief
+            siegeText += "Fief: " + siegeLocation.name + " (Province: " + siegeLocation.province.name + ".  Kingdom: " + siegeLocation.province.kingdom.name + ")\r\n\r\n";
+
+            // fief owner
+            siegeText += "Fief owner: " + fiefOwner.firstName + " " + fiefOwner.familyName + " (ID: " + fiefOwner.charID + ")\r\n\r\n";
+
+            // besieging player
+            siegeText += "Besieging player: " + besiegingPlayer.firstName + " " + besiegingPlayer.familyName + " (ID: " + besiegingPlayer.charID + ")\r\n\r\n";
+
+            // start date
+            siegeText += "Start date: " + s.startDate + "\r\n\r\n";
+
+            // duration so far
+            siegeText += "Days used so far: " + s.totalDays + "\r\n\r\n";
+
+            // days left in current season
+            siegeText += "Days remaining in current season: " + s.days + "\r\n\r\n";
+
+            // defending forces
+            siegeText += "Defending forces: ";
+            // only show details if player is defender
+            if (isDefender)
+            {
+                // garrison details
+                siegeText += "\r\nGarrison: " + defenderGarrison.armyID + "\r\n";
+                siegeText += "- Leader: ";
+                if (defGarrLeader != null)
+                {
+                    siegeText += defGarrLeader.firstName + " " + defGarrLeader.familyName + " (ID: " + defGarrLeader.charID + ")\r\n";
+                }
+                else
+                {
+                    siegeText += "None";
+                }
+                siegeText += "\r\n";
+                siegeText += "- [Kn: " + defenderGarrison.troops[0] + ";  MAA: " + defenderGarrison.troops[1]
+                    + ";  LCav: " + defenderGarrison.troops[2] + ";  Yeo: " + defenderGarrison.troops[3]
+                    + ";  Ft: " + defenderGarrison.troops[4] + ";  Rbl: " + defenderGarrison.troops[5] + "]";
+
+                // additional army details
+                if (defenderAdditional != null)
+                {
+                    siegeText += "\r\n\r\nField army: " + defenderGarrison.armyID + "\r\n";
+                    siegeText += "- Leader: ";
+                    if (defAddLeader != null)
+                    {
+                        siegeText += defAddLeader.firstName + " " + defAddLeader.familyName + " (ID: " + defAddLeader.charID + ")\r\n";
+                    }
+                    else
+                    {
+                        siegeText += "None";
+                    }
+                    siegeText += "\r\n";
+                    siegeText += "- [Kn: " + defenderAdditional.troops[0] + ";  MAA: " + defenderAdditional.troops[1]
+                        + ";  LCav: " + defenderAdditional.troops[2] + ";  Yeo: " + defenderAdditional.troops[3]
+                        + ";  Ft: " + defenderAdditional.troops[4] + ";  Rbl: " + defenderAdditional.troops[5] + "]";
+                }
+
+                siegeText += "\r\n\r\nTotal casualties so far: " + s.totalCasualtiesDefender;
+            }
+
+            // if player not defending, hide defending forces details
+            else
+            {
+                siegeText += "Unknown";
+            }
+            siegeText += "\r\n\r\n";
+
+            // besieging forces
+            siegeText += "Besieging forces: ";
+            // only show details if player is besieger
+            if (!isDefender)
+            {
+                // besieging forces details
+                siegeText += "\r\nField army: " + besieger.armyID + "\r\n";
+                siegeText += "- Leader: ";
+                if (besiegerLeader != null)
+                {
+                    siegeText += besiegerLeader.firstName + " " + besiegerLeader.familyName + " (ID: " + besiegerLeader.charID + ")\r\n";
+                }
+                else
+                {
+                    siegeText += "None";
+                }
+                siegeText += "\r\n";
+                siegeText += "- [Kn: " + besieger.troops[0] + ";  MAA: " + besieger.troops[1]
+                    + ";  LCav: " + besieger.troops[2] + ";  Yeo: " + besieger.troops[3]
+                    + ";  Ft: " + besieger.troops[4] + ";  Rbl: " + besieger.troops[5] + "]";
+
+                siegeText += "\r\n\r\nTotal casualties so far: " + s.totalCasualtiesAttacker;
+            }
+
+            // if player not besieger, hide besieging forces details
+            else
+            {
+                siegeText += "Unknown";
+            }
+            siegeText += "\r\n\r\n";
+
+            // keep level
+            siegeText += "Keep level:\r\n";
+            // keep level at start
+            siegeText += "- at start of siege: " + s.startKeepLevel + "\r\n";
+
+            // current keep level
+            siegeText += "- current: " + siegeLocation.keepLevel + "\r\n\r\n";
+
+            siegeText += "Chance of success in next round:\r\n";
+            // chance of storm success
+            double keepLvl = this.calcStormKeepLevel(s);
+            double successChance = this.calcStormSuccess(keepLvl) / 2;
+            siegeText += "- storm: " + successChance + "\r\n";
+
+            // chance of storm success
+            siegeText += "- negotiated: " + successChance / 2 + "\r\n\r\n";
+
+            return siegeText;
+        }
+
+        /// <summary>
         /// Retrieves general information for Fief display screen
         /// </summary>
         /// <returns>String containing information to display</returns>
@@ -3638,7 +3808,67 @@ namespace hist_mmorpg
             Globals_Client.containerToView.BringToFront();
             this.armyListView.Focus();
         }
-        
+
+        /// <summary>
+        /// Refreshes main Siege display screen
+        /// </summary>
+        /// <param name="s">Siege whose information is to be displayed</param>
+        public void refreshSiegeContainer(Siege s = null)
+        {
+
+            // clear existing information
+            //this.armyTextBox.Text = "";
+
+            // ensure textboxes aren't interactive
+            //this.armyTextBox.ReadOnly = true;
+
+            // disable controls until siege selected
+            //this.armyRecruitBtn.Enabled = false;
+
+            // clear existing items in siege list
+            this.siegeListView.Items.Clear();
+
+            // iterates through player's sieges adding information to ListView
+            for (int i = 0; i < Globals_Client.myChar.mySieges.Count; i++)
+            {
+                ListViewItem thisSiegeItem = null;
+                Siege thisSiege = Globals_Client.myChar.getSiege(Globals_Client.myChar.mySieges[i]);
+
+                // armyID
+                thisSiegeItem = new ListViewItem(thisSiege.siegeID);
+
+                // fief
+                Fief siegeLocation = thisSiege.getFief();
+                thisSiegeItem.SubItems.Add(siegeLocation.name + " (" + siegeLocation.fiefID + ")");
+
+                // defender
+                PlayerCharacter defender = siegeLocation.owner;
+                thisSiegeItem.SubItems.Add(defender.firstName + " " + defender.familyName + " (" + defender.charID + ")");
+
+                // besieger
+                Army besiegingArmy = thisSiege.getBesieger();
+                PlayerCharacter besieger = besiegingArmy.getOwner();
+                thisSiegeItem.SubItems.Add(besieger.firstName + " " + besieger.familyName + " (" + besieger.charID + ")");
+
+                if (thisSiegeItem != null)
+                {
+                    // if siege passed in as parameter, show as selected
+                    if (thisSiege == s)
+                    {
+                        thisSiegeItem.Selected = true;
+                    }
+
+                    // add item to siegeListView
+                    this.siegeListView.Items.Add(thisSiegeItem);
+                }
+
+            }
+
+            Globals_Client.containerToView = this.siegeContainer;
+            Globals_Client.containerToView.BringToFront();
+            this.siegeListView.Focus();
+        }
+
         /// <summary>
         /// Refreshes main Fief display screen
         /// </summary>
@@ -7552,7 +7782,7 @@ namespace hist_mmorpg
             }
 
             // create temporary army for battle
-            defender = new Army(Globals_Server.getNextArmyID(), armyLeader.charID, f.owner.charID, armyLeader.days, Globals_Client.clock, f.fiefID, trp: troopsForArmy);
+            defender = new Army("Garrison" + Globals_Server.getNextArmyID(), armyLeader.charID, f.owner.charID, armyLeader.days, Globals_Client.clock, f.fiefID, trp: troopsForArmy);
             this.addArmy(defender);
 
             return defender;
@@ -7723,7 +7953,7 @@ namespace hist_mmorpg
         {
             // get principle objects
             Army defenderGarrison = s.getDefenderGarrison();
-            Army attacker = s.getAttacker();
+            Army attacker = s.getBesieger();
             Fief besiegedFief = s.getFief();
             PlayerCharacter attackerOwner = attacker.getOwner();
 
@@ -7789,7 +8019,7 @@ namespace hist_mmorpg
             double keepLvl = 0;
             double keepLvlModifier = 0;
             Fief besiegedFief = s.getFief();
-            Army attacker = s.getAttacker();
+            Army attacker = s.getBesieger();
             Army defenderGarrison = s.getDefenderGarrison();
             uint[] battleValues = new uint[2];
 
@@ -7832,7 +8062,7 @@ namespace hist_mmorpg
         {
             bool stormSuccess = false;
             Fief besiegedFief = s.getFief();
-            Army attacker = s.getAttacker();
+            Army attacker = s.getBesieger();
             Army defenderGarrison = s.getDefenderGarrison();
             Army defenderAdditional = s.getDefenderAdditional();
             PlayerCharacter attackerOwner = attacker.getOwner();
@@ -8043,35 +8273,42 @@ namespace hist_mmorpg
         {
             bool siegeRaised = false;
             Fief besiegedFief = s.getFief();
-            Army attacker = s.getAttacker();
+            Army besieger = s.getBesieger();
             Army defenderGarrison = s.getDefenderGarrison();
             Army defenderAdditional = null;
             Character defenderLeader = defenderGarrison.getLeader();
 
             // check for sallying army
-            if (s.defenderArmy != null)
+            if (s.defenderAdditional != null)
             {
                 defenderAdditional = s.getDefenderAdditional();
 
                 if (defenderAdditional.aggression > 1)
                 {
                     // get odds
-                    int battleOdds = this.getBattleOdds(defenderAdditional, attacker);
+                    int battleOdds = this.getBattleOdds(defenderAdditional, besieger);
 
                     // if odds OK, give battle
                     if (battleOdds >= defenderAdditional.combatOdds)
                     {
                         // process battle and apply results, if required
-                        siegeRaised = this.giveBattle(defenderAdditional, attacker, circumstance: "siege");
+                        siegeRaised = this.giveBattle(defenderAdditional, besieger, circumstance: "siege");
 
                         // check for disbandment of defenderAdditional and remove from siege if necessary
                         if (!siegeRaised)
                         {
-                            if (!besiegedFief.armies.Contains(s.defenderArmy))
+                            if (!besiegedFief.armies.Contains(s.defenderAdditional))
                             {
-                                s.defenderArmy = null;
+                                s.defenderAdditional = null;
                                 defenderAdditional = null;
                             }
+                        }
+
+                        // check for death of besieging army leader
+                        if (besieger.leader == null)
+                        {
+                            // if no leader, dismantle the siege
+                            siegeRaised = true;
                         }
                     }
                 }
@@ -8115,8 +8352,8 @@ namespace hist_mmorpg
                 defenderGarrison.applyTroopLosses(combatLosses + attritionLosses);
 
                 // apply attrition to attacker
-                attritionLosses = attacker.calcAttrition();
-                attacker.applyTroopLosses(attritionLosses);
+                attritionLosses = besieger.calcAttrition();
+                besieger.applyTroopLosses(attritionLosses);
 
                 // check for death of defending PCs/NPCs
                 if (defenderLeader != null)
@@ -8201,7 +8438,7 @@ namespace hist_mmorpg
             }
             
             // create siege object
-            Siege mySiege = new Siege(Globals_Server.getNextSiegeID(), Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, attacker.armyID, defenderGarrison.armyID, target.fiefID, minDays, defArm: additionalDefender.armyID);
+            Siege mySiege = new Siege(Globals_Server.getNextSiegeID(), Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, attacker.armyID, defenderGarrison.armyID, target.fiefID, minDays, target.keepLevel, defAdd: additionalDefender.armyID);
 
             // add to master list
             Globals_Server.siegeMasterList.Add(mySiege.siegeID, mySiege);

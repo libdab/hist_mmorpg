@@ -189,6 +189,11 @@ namespace hist_mmorpg
             this.armyListContainer = new System.Windows.Forms.SplitContainer();
             this.armyTextBox = new System.Windows.Forms.TextBox();
             this.armyListView = new System.Windows.Forms.ListView();
+            this.siegeContainer = new System.Windows.Forms.SplitContainer();
+            this.siegeListContainer = new System.Windows.Forms.SplitContainer();
+            this.siegeListView = new System.Windows.Forms.ListView();
+            this.siegeTextBox = new System.Windows.Forms.TextBox();
+            this.viewMySiegesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -254,6 +259,13 @@ namespace hist_mmorpg
             this.armyListContainer.Panel1.SuspendLayout();
             this.armyListContainer.Panel2.SuspendLayout();
             this.armyListContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.siegeContainer)).BeginInit();
+            this.siegeContainer.Panel2.SuspendLayout();
+            this.siegeContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.siegeListContainer)).BeginInit();
+            this.siegeListContainer.Panel1.SuspendLayout();
+            this.siegeListContainer.Panel2.SuspendLayout();
+            this.siegeListContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -393,7 +405,8 @@ namespace hist_mmorpg
             // 
             this.armyToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.armyManagementToolStripMenuItem,
-            this.listMToolStripMenuItem});
+            this.listMToolStripMenuItem,
+            this.viewMySiegesToolStripMenuItem});
             this.armyToolStripMenuItem.Name = "armyToolStripMenuItem";
             this.armyToolStripMenuItem.Size = new System.Drawing.Size(122, 20);
             this.armyToolStripMenuItem.Text = "Army Management";
@@ -1940,13 +1953,70 @@ namespace hist_mmorpg
             this.armyListView.View = System.Windows.Forms.View.Details;
             this.armyListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.armyListView_ItemSelectionChanged);
             // 
+            // siegeContainer
+            // 
+            this.siegeContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.siegeContainer.Location = new System.Drawing.Point(0, 24);
+            this.siegeContainer.Name = "siegeContainer";
+            // 
+            // siegeContainer.Panel2
+            // 
+            this.siegeContainer.Panel2.Controls.Add(this.siegeListContainer);
+            this.siegeContainer.Size = new System.Drawing.Size(935, 637);
+            this.siegeContainer.SplitterDistance = 311;
+            this.siegeContainer.TabIndex = 9;
+            // 
+            // siegeListContainer
+            // 
+            this.siegeListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.siegeListContainer.Location = new System.Drawing.Point(0, 0);
+            this.siegeListContainer.Name = "siegeListContainer";
+            // 
+            // siegeListContainer.Panel1
+            // 
+            this.siegeListContainer.Panel1.Controls.Add(this.siegeTextBox);
+            // 
+            // siegeListContainer.Panel2
+            // 
+            this.siegeListContainer.Panel2.Controls.Add(this.siegeListView);
+            this.siegeListContainer.Size = new System.Drawing.Size(620, 637);
+            this.siegeListContainer.SplitterDistance = 315;
+            this.siegeListContainer.TabIndex = 0;
+            // 
+            // siegeListView
+            // 
+            this.siegeListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.siegeListView.FullRowSelect = true;
+            this.siegeListView.Location = new System.Drawing.Point(0, 0);
+            this.siegeListView.Name = "siegeListView";
+            this.siegeListView.Size = new System.Drawing.Size(301, 637);
+            this.siegeListView.TabIndex = 0;
+            this.siegeListView.UseCompatibleStateImageBehavior = false;
+            this.siegeListView.View = System.Windows.Forms.View.Details;
+            // 
+            // siegeTextBox
+            // 
+            this.siegeTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.siegeTextBox.Location = new System.Drawing.Point(0, 0);
+            this.siegeTextBox.Multiline = true;
+            this.siegeTextBox.Name = "siegeTextBox";
+            this.siegeTextBox.Size = new System.Drawing.Size(315, 637);
+            this.siegeTextBox.TabIndex = 0;
+            // 
+            // viewMySiegesToolStripMenuItem
+            // 
+            this.viewMySiegesToolStripMenuItem.Name = "viewMySiegesToolStripMenuItem";
+            this.viewMySiegesToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.viewMySiegesToolStripMenuItem.Text = "View my sieges";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
-            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.armyContainer);
+            this.Controls.Add(this.siegeContainer);
+            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.characterContainer);
@@ -2040,6 +2110,14 @@ namespace hist_mmorpg
             this.armyListContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.armyListContainer)).EndInit();
             this.armyListContainer.ResumeLayout(false);
+            this.siegeContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.siegeContainer)).EndInit();
+            this.siegeContainer.ResumeLayout(false);
+            this.siegeListContainer.Panel1.ResumeLayout(false);
+            this.siegeListContainer.Panel1.PerformLayout();
+            this.siegeListContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.siegeListContainer)).EndInit();
+            this.siegeListContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2206,6 +2284,11 @@ namespace hist_mmorpg
         private System.Windows.Forms.TextBox armyTransLCavTextBox;
         private System.Windows.Forms.TextBox armyTransMAAtextBox;
         private System.Windows.Forms.Button armyPillageBtn;
+        private System.Windows.Forms.ToolStripMenuItem viewMySiegesToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer siegeContainer;
+        private System.Windows.Forms.SplitContainer siegeListContainer;
+        private System.Windows.Forms.TextBox siegeTextBox;
+        private System.Windows.Forms.ListView siegeListView;
 
     }
 }

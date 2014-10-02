@@ -519,7 +519,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Checks to see if army is besieging a fief
+        /// Checks to see if army is besieging a fief/keep
         /// </summary>
         /// <returns>string containing the siegeID</returns>
         public string checkIfBesieger()
@@ -532,7 +532,7 @@ namespace hist_mmorpg
             if (thisFief.siege != null)
             {
                 Siege thisSiege = Globals_Server.siegeMasterList[thisFief.siege];
-                if (thisSiege.attacker.Equals(this.armyID))
+                if (thisSiege.besieger.Equals(this.armyID))
                 {
                     thisSiegeID = thisFief.siege;
                 }
@@ -540,7 +540,30 @@ namespace hist_mmorpg
 
             return thisSiegeID;
         }
-        
+
+        /// <summary>
+        /// Checks to see if army is defending a besieged keep
+        /// </summary>
+        /// <returns>string containing the siegeID</returns>
+        public string checkIfSiegeDefender()
+        {
+            string thisSiegeID = null;
+
+            // get fief
+            Fief thisFief = this.getLocation();
+
+            if (thisFief.siege != null)
+            {
+                Siege thisSiege = Globals_Server.siegeMasterList[thisFief.siege];
+                if ((thisSiege.defenderGarrison.Equals(this.armyID)) || (thisSiege.defenderAdditional.Equals(this.armyID)))
+                {
+                    thisSiegeID = thisFief.siege;
+                }
+            }
+
+            return thisSiegeID;
+        }
+
         /// <summary>
         /// Updates army data at the end/beginning of the season
         /// </summary>

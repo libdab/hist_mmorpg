@@ -19,9 +19,9 @@ namespace hist_mmorpg
         /// </summary>
         public String startDate { get; set; }
         /// <summary>
-        /// Holds attacking army (armyID)
+        /// Holds besieging army (armyID)
         /// </summary>
-        public String attacker { get; set; }
+        public String besieger { get; set; }
         /// <summary>
         /// Holds defending garrison (armyID)
         /// </summary>
@@ -34,6 +34,10 @@ namespace hist_mmorpg
         /// Holds days left in current season
         /// </summary>
         public double days { get; set; }
+        /// <summary>
+        /// Holds the keep level at the start of the siege
+        /// </summary>
+        public double startKeepLevel { get; set; }
         /// <summary>
         /// Holds total casualties suffered so far by attacker
         /// </summary>
@@ -49,7 +53,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds additional defending army (armyID)
         /// </summary>
-        public String defenderArmy { get; set; }
+        public String defenderAdditional { get; set; }
         /// <summary>
         /// Holds season and year the siege ended
         /// </summary>
@@ -60,27 +64,29 @@ namespace hist_mmorpg
         /// </summary>
 		/// <param name="id">String holding ID of siege</param>
         /// <param name="start">string holding season and year the siege started</param>
-        /// <param name="att">String holding attacking army (armyID)</param>
+        /// <param name="bsgr">String holding besieging army (armyID)</param>
         /// <param name="defGarr">String holding defending garrison (armyID)</param>
         /// <param name="fief">String holding fief being besieged (fiefID)</param>
         /// <param name="day">double containing days left in current season</param>
+        /// <param name="kpLvl">double containing the keep level at the start of the siege</param>
         /// <param name="totAtt">int containing total attacker casualties so far</param>
         /// <param name="totDef">int containing total defender casualties so far</param>
         /// <param name="totday">double containing days used by siege so far</param>
-        /// <param name="defArm">String holding additional defending army (armyID)</param>
+        /// <param name="defAdd">String holding additional defending army (armyID)</param>
         /// <param name="end">string holding season and year the siege ended</param>
-        public Siege(String id, string start, string att, string defGarr, string fief, double day, int totAtt = 0, int totDef = 0, double totDay = 0, string defArm = null, string end = null)
+        public Siege(String id, string start, string bsgr, string defGarr, string fief, double day, double kpLvl, int totAtt = 0, int totDef = 0, double totDay = 0, string defAdd = null, string end = null)
         {
             this.siegeID = id;
             this.startDate = start;
-            this.attacker = att;
+            this.besieger = bsgr;
             this.defenderGarrison = defGarr;
             this.besiegedFief = fief;
             this.days = day;
+            this.startKeepLevel = kpLvl;
             this.totalCasualtiesAttacker = totAtt;
             this.totalCasualtiesDefender = totDef;
             this.totalDays = totDay;
-            this.defenderArmy = defArm;
+            this.defenderAdditional = defAdd;
             this.endDate = end;
         }
 
@@ -102,12 +108,12 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Gets the attacking army
+        /// Gets the besieging army
         /// </summary>
-        /// <returns>The attacking army</returns>
-        public Army getAttacker()
+        /// <returns>The besieging army</returns>
+        public Army getBesieger()
         {
-            return Globals_Server.armyMasterList[this.attacker];
+            return Globals_Server.armyMasterList[this.besieger];
         }
 
         /// <summary>
@@ -127,9 +133,9 @@ namespace hist_mmorpg
         {
             Army thisDefenderAdditional = null;
 
-            if (this.defenderArmy != null)
+            if (this.defenderAdditional != null)
             {
-                thisDefenderAdditional = Globals_Server.armyMasterList[this.defenderArmy];
+                thisDefenderAdditional = Globals_Server.armyMasterList[this.defenderAdditional];
             }
 
             return thisDefenderAdditional;
@@ -141,7 +147,7 @@ namespace hist_mmorpg
         public void syncDays()
         {
             // attacking army
-            Character attackerLeader = this.getAttacker().getLeader();
+            Character attackerLeader = this.getBesieger().getLeader();
             attackerLeader.adjustDays(attackerLeader.days - this.days);
 
             // defending garrison army
