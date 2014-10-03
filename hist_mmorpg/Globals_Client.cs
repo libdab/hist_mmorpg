@@ -28,6 +28,10 @@ namespace hist_mmorpg
         /// </summary>
         public static Army armyToView;
         /// <summary>
+        /// Holds Siege to view in UI
+        /// </summary>
+        public static Siege siegeToView;
+        /// <summary>
         /// Holds UI container being currently displayed
         /// </summary>
         public static ContainerControl containerToView;

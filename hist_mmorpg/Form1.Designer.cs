@@ -49,6 +49,7 @@ namespace hist_mmorpg
             this.armyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.armyManagementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewMySiegesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterContainer = new System.Windows.Forms.SplitContainer();
             this.characterTitlesCheckBox = new System.Windows.Forms.CheckBox();
             this.characterTextBox = new System.Windows.Forms.TextBox();
@@ -191,9 +192,8 @@ namespace hist_mmorpg
             this.armyListView = new System.Windows.Forms.ListView();
             this.siegeContainer = new System.Windows.Forms.SplitContainer();
             this.siegeListContainer = new System.Windows.Forms.SplitContainer();
-            this.siegeListView = new System.Windows.Forms.ListView();
             this.siegeTextBox = new System.Windows.Forms.TextBox();
-            this.viewMySiegesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.siegeListView = new System.Windows.Forms.ListView();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -424,6 +424,12 @@ namespace hist_mmorpg
             this.listMToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.listMToolStripMenuItem.Text = "View my armies";
             this.listMToolStripMenuItem.Click += new System.EventHandler(this.listMToolStripMenuItem_Click);
+            // 
+            // viewMySiegesToolStripMenuItem
+            // 
+            this.viewMySiegesToolStripMenuItem.Name = "viewMySiegesToolStripMenuItem";
+            this.viewMySiegesToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.viewMySiegesToolStripMenuItem.Text = "View my sieges";
             // 
             // characterContainer
             // 
@@ -1983,6 +1989,15 @@ namespace hist_mmorpg
             this.siegeListContainer.SplitterDistance = 315;
             this.siegeListContainer.TabIndex = 0;
             // 
+            // siegeTextBox
+            // 
+            this.siegeTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.siegeTextBox.Location = new System.Drawing.Point(0, 0);
+            this.siegeTextBox.Multiline = true;
+            this.siegeTextBox.Name = "siegeTextBox";
+            this.siegeTextBox.Size = new System.Drawing.Size(315, 637);
+            this.siegeTextBox.TabIndex = 0;
+            // 
             // siegeListView
             // 
             this.siegeListView.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1993,21 +2008,7 @@ namespace hist_mmorpg
             this.siegeListView.TabIndex = 0;
             this.siegeListView.UseCompatibleStateImageBehavior = false;
             this.siegeListView.View = System.Windows.Forms.View.Details;
-            // 
-            // siegeTextBox
-            // 
-            this.siegeTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.siegeTextBox.Location = new System.Drawing.Point(0, 0);
-            this.siegeTextBox.Multiline = true;
-            this.siegeTextBox.Name = "siegeTextBox";
-            this.siegeTextBox.Size = new System.Drawing.Size(315, 637);
-            this.siegeTextBox.TabIndex = 0;
-            // 
-            // viewMySiegesToolStripMenuItem
-            // 
-            this.viewMySiegesToolStripMenuItem.Name = "viewMySiegesToolStripMenuItem";
-            this.viewMySiegesToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.viewMySiegesToolStripMenuItem.Text = "View my sieges";
+            this.siegeListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.siegeListView_ItemSelectionChanged);
             // 
             // Form1
             // 

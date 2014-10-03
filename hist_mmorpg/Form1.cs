@@ -8454,6 +8454,57 @@ namespace hist_mmorpg
             mySiege.syncDays();
         }
 
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of the siegeListView object,
+        /// allowing details of the selected siege to be displayed
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void siegeListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            // get siege to view
+            if (this.siegeListView.SelectedItems.Count > 0)
+            {
+                Globals_Client.siegeToView = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+            }
+
+            if (Globals_Client.siegeToView != null)
+            {
+                Army besiegingArmy = Globals_Client.siegeToView.getBesieger();
+                PlayerCharacter besieger = besiegingArmy.getOwner();
+                bool playerIsBesieger = (Globals_Client.myChar == besieger);
+
+                // display data for selected siege
+                this.siegeTextBox.Text = this.displaySiegeData(Globals_Client.siegeToView);
+
+                // if player is besieger
+                if (playerIsBesieger)
+                {
+                    // enable various controls
+
+                    // if besieging army has a leader
+                    if (besiegingArmy.leader != null)
+                    {
+                        // enable proactive controls (storm, negotiate)
+                    }
+
+                    // if besieging army has no leader
+                    else
+                    {
+                        // disable proactive controls (storm, negotiate)
+                    }
+                }
+
+                // if player is defender
+                else
+                {
+                    // disable various controls
+                }
+
+            }
+
+        }
+
     }
 
 }
