@@ -162,8 +162,18 @@ namespace hist_mmorpg
             }
 
             // additional defending army
-            Character defenderLeader = this.getDefenderAdditional().getLeader();
-            defenderLeader.adjustDays(defenderLeader.days - this.days);
+            if (this.getDefenderAdditional() != null)
+            {
+                Character defAddLeader = this.getDefenderAdditional().getLeader();
+                if (defAddLeader != null)
+                {
+                    defAddLeader.adjustDays(defAddLeader.days - this.days);
+                }
+                else
+                {
+                    this.getDefenderAdditional().days = this.days;
+                }
+            }
         }
 
 

@@ -2235,13 +2235,13 @@ namespace hist_mmorpg
             Globals_Client.clock.advanceSeason();
 
             // refresh current screen
-            this.refereshCurrentScreen();
+            this.refreshCurrentScreen();
         }
 
         /// <summary>
         /// Refreshes whichever screen is currently being displayed in the UI
         /// </summary>
-        public void refereshCurrentScreen()
+        public void refreshCurrentScreen()
         {
             // fief
             if (Globals_Client.containerToView == this.fiefContainer)
@@ -2437,10 +2437,10 @@ namespace hist_mmorpg
         public void setUpSiegeList()
         {
             // add necessary columns
-            this.armyListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.armyListView.Columns.Add("Fief", -2, HorizontalAlignment.Left);
-            this.armyListView.Columns.Add("Defender", -2, HorizontalAlignment.Left);
-            this.armyListView.Columns.Add("Besieger", -2, HorizontalAlignment.Left);
+            this.siegeListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.siegeListView.Columns.Add("Fief", -2, HorizontalAlignment.Left);
+            this.siegeListView.Columns.Add("Defender", -2, HorizontalAlignment.Left);
+            this.siegeListView.Columns.Add("Besieger", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -3234,7 +3234,11 @@ namespace hist_mmorpg
             Army defenderAdditional = s.getDefenderAdditional();
             Character besiegerLeader = besieger.getLeader();
             Character defGarrLeader = defenderGarrison.getLeader();
-            Character defAddLeader = defenderAdditional.getLeader();
+            Character defAddLeader = null;
+            if (defenderAdditional != null)
+            {
+                defAddLeader = defenderAdditional.getLeader();
+            }
 
             // ID
             siegeText += "ID: " + s.siegeID + "\r\n\r\n";
@@ -3317,7 +3321,7 @@ namespace hist_mmorpg
                 siegeText += "- Leader: ";
                 if (besiegerLeader != null)
                 {
-                    siegeText += besiegerLeader.firstName + " " + besiegerLeader.familyName + " (ID: " + besiegerLeader.charID + ")\r\n";
+                    siegeText += besiegerLeader.firstName + " " + besiegerLeader.familyName + " (ID: " + besiegerLeader.charID + ")";
                 }
                 else
                 {
@@ -3806,6 +3810,18 @@ namespace hist_mmorpg
 
             Globals_Client.containerToView = this.armyContainer;
             Globals_Client.containerToView.BringToFront();
+
+            // check which panel to display
+            string armyPanelTag = this.armyContainer.Panel1.Tag.ToString();
+            if (armyPanelTag.Equals("combat"))
+            {
+                this.armyCombatPanel.BringToFront();
+            }
+            else
+            {
+                this.armyManagementPanel.BringToFront();
+            }
+
             this.armyListView.Focus();
         }
 
@@ -3817,13 +3833,16 @@ namespace hist_mmorpg
         {
 
             // clear existing information
-            //this.armyTextBox.Text = "";
+            this.siegeTextBox.Text = "";
 
             // ensure textboxes aren't interactive
-            //this.armyTextBox.ReadOnly = true;
+            this.siegeTextBox.ReadOnly = true;
 
             // disable controls until siege selected
-            //this.armyRecruitBtn.Enabled = false;
+            this.siegeNegotiateBtn.Enabled = false;
+            this.siegeStormBtn.Enabled = false;
+            this.siegeReduceBtn.Enabled = false;
+            this.siegeEndBtn.Enabled = false;
 
             // clear existing items in siege list
             this.siegeListView.Items.Clear();
@@ -6071,7 +6090,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void testRefreshScreen(object sender, EventArgs e)
         {
-            this.refereshCurrentScreen();
+            this.refreshCurrentScreen();
         }
 
         /// <summary>
@@ -6132,6 +6151,7 @@ namespace hist_mmorpg
                 thisArmy = Globals_Server.armyMasterList[Globals_Client.myChar.armyID];
             }
 
+            this.armyContainer.Panel1.Tag = "management";
             this.refreshArmyContainer(thisArmy);
         }
 
@@ -6410,6 +6430,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void listMToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            this.armyContainer.Panel1.Tag = "management";
             this.refreshArmyContainer();
         }
 
@@ -7551,7 +7572,7 @@ namespace hist_mmorpg
             }
 
             // refresh screnn
-            this.refereshCurrentScreen();
+            this.refreshCurrentScreen();
 
             return attackerVictorious;
 
@@ -7791,9 +7812,9 @@ namespace hist_mmorpg
         /// <summary>
         /// Implements the processes involved in the pillage of a fief by an army
         /// </summary>
-        /// <param name="f">The fief being pillaged</param>
         /// <param name="a">The pillaging army</param>
-        public void pillageFief(Fief f, Army a)
+        /// <param name="f">The fief being pillaged</param>
+        public void pillageFief(Army a, Fief f)
         {
             bool pillageCancelled = false;
             bool bailiffPresent = false;
@@ -7844,6 +7865,122 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Implements conditional checks prior to the pillage or siege of a fief
+        /// </summary>
+        /// <returns>bool indicating whether pillage/siege can proceed</returns>
+        /// <param name="f">The fief being pillaged/besieged</param>
+        /// <param name="a">The pillaging/besieging army</param>
+        /// <param name="circumstance">The circumstance - pillage or siege</param>
+        public bool checksBeforePillageSiege(Army a, Fief f, string circumstance = "pillage")
+        {
+            bool proceed = true;
+
+            // check if is your own fief
+            if (f.owner == a.getOwner())
+            {
+                proceed = false;
+                if (circumstance == "pillage")
+                {
+                    System.Windows.Forms.MessageBox.Show("You cannot pillage your own fief!  Pillage cancelled.");
+                }
+                else if (circumstance == "siege")
+                {
+                    System.Windows.Forms.MessageBox.Show("You cannot besiege your own fief!  Siege cancelled.");
+                }
+            }
+
+            if (circumstance == "pillage")
+            {
+                // check isPillaged = false
+                if ((f.isPillaged) && (proceed))
+                {
+                    proceed = false;
+                    System.Windows.Forms.MessageBox.Show("This fief has already been pillaged during\r\nthe current season.  Pillage cancelled.");
+                }
+            }
+            else if (circumstance == "siege")
+            {
+                // check if already beseiged
+                if ((f.siege != null) && (proceed))
+                {
+                    proceed = false;
+                    System.Windows.Forms.MessageBox.Show("This fief is already under siege.  Siege cancelled.");
+                }
+            }
+
+            // check if your army has a leader
+            if (a.getLeader() == null)
+            {
+                proceed = false;
+                if (circumstance == "pillage")
+                {
+                    System.Windows.Forms.MessageBox.Show("This army has no leader.  Pillage cancelled.");
+                }
+                else if (circumstance == "siege")
+                {
+                    System.Windows.Forms.MessageBox.Show("This army has no leader.  Siege cancelled.");
+                }
+            }
+
+            // check has min days required
+            if (circumstance == "pillage")
+            {
+                // pillage = min 7
+                if ((a.days < 7) && (proceed))
+                {
+                    proceed = false;
+                    System.Windows.Forms.MessageBox.Show("This army has too few days remaining for\r\na pillage operation.  Pillage cancelled.");
+                }
+            }
+            else if (circumstance == "siege")
+            {
+                // siege = min 1 (to set up siege)
+                if ((a.days < 1) && (proceed))
+                {
+                    proceed = false;
+                    System.Windows.Forms.MessageBox.Show("This army has too few days remaining for\r\na siege operation.  Siege cancelled.");
+                }
+            }
+
+            // check for presence of armies belonging to fief owner
+            if (proceed)
+            {
+                // iterate through armies in fief
+                for (int i = 0; i < f.armies.Count; i++)
+                {
+                    // get army
+                    Army armyInFief = Globals_Server.armyMasterList[f.armies[i]];
+
+                    // check if owned by fief owner
+                    if (armyInFief.owner.Equals(f.owner.charID))
+                    {
+                        // army must be outside keep
+                        if (!armyInFief.getLeader().inKeep)
+                        {
+                            // army must have correct aggression settings
+                            if (armyInFief.aggression > 1)
+                            {
+                                proceed = false;
+                                if (circumstance == "pillage")
+                                {
+                                    System.Windows.Forms.MessageBox.Show("There is at least one defending army (" + armyInFief.armyID + ") that must be defeated\r\nbefore you can pillage this fief.  Pillage cancelled.");
+                                }
+                                else if (circumstance == "siege")
+                                {
+                                    System.Windows.Forms.MessageBox.Show("There is at least one defending army (" + armyInFief.armyID + ") that must be defeated\r\nbefore you can besiege this fief.  Siege cancelled.");
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            return proceed;
+        }
+
+        /// <summary>
         /// Responds to the click event of the armyPillageBtn button
         /// instigating the pillage of a fief
         /// </summary>
@@ -7862,64 +7999,13 @@ namespace hist_mmorpg
                 // get fief
                 Fief thisFief = thisArmy.getLocation();
 
-                // check if is your own fief
-                if (thisFief.owner == thisArmy.getOwner())
-                {
-                    proceed = false;
-                    System.Windows.Forms.MessageBox.Show("You cannot pillage your own fief!  Pillage cancelled.");
-                }
-
-                // check isPillaged = false
-                if ((thisFief.isPillaged) && (proceed))
-                {
-                    proceed = false;
-                    System.Windows.Forms.MessageBox.Show("This fief has already been pillaged during\r\nthe current season.  Pillage cancelled.");
-                }
-
-                // check if your army has a leader
-                if (thisArmy.getLeader() == null)
-                {
-                    proceed = false;
-                    System.Windows.Forms.MessageBox.Show("This army has no leader.  Pillage cancelled.");
-                }
-
-                // check days (min 7)
-                if ((thisArmy.days < 7) && (proceed))
-                {
-                    proceed = false;
-                    System.Windows.Forms.MessageBox.Show("This army has too few days remaining for\r\na pillage operation.  Pillage cancelled.");
-                }
-
-                // check for presence of army belonging to fief owner with aggression > 0
-                if (proceed)
-                {
-                    for (int i = 0; i < thisFief.armies.Count; i++)
-                    {
-                        // get army
-                        Army armyInFief = Globals_Server.armyMasterList[thisFief.armies[i]];
-
-                        if (armyInFief.owner.Equals(thisFief.owner.charID))
-                        {
-                            if (armyInFief.aggression > 1)
-                            {
-                                proceed = false;
-                                System.Windows.Forms.MessageBox.Show("There is at least one defending army (" + armyInFief.armyID + ") that must be defeated\r\nbefore you can pillage this fief.  Pillage cancelled.");
-                                break;
-                            }
-                        }
-                    }
-                }
+                // do various checks
+                proceed = this.checksBeforePillageSiege(thisArmy, thisFief);
 
                 // process pillage
                 if (proceed)
                 {
-                    // ensure attacker's aggression > 0 (or will try to retreat from defending forces
-                    if (thisArmy.aggression == 0)
-                    {
-                        thisArmy.aggression = 1;
-                    }
-
-                    this.pillageFief(thisFief, thisArmy);
+                    this.pillageFief(thisArmy, thisFief);
                 }
             }
             else
@@ -8058,7 +8144,7 @@ namespace hist_mmorpg
         /// Processes the storming of the keep by attacking forces in a siege
         /// </summary>
         /// <param name="s">The siege</param>
-        public void stormKeep(Siege s)
+        public void siegeStormRound(Siege s)
         {
             bool stormSuccess = false;
             Fief besiegedFief = s.getFief();
@@ -8304,12 +8390,6 @@ namespace hist_mmorpg
                             }
                         }
 
-                        // check for death of besieging army leader
-                        if (besieger.leader == null)
-                        {
-                            // if no leader, dismantle the siege
-                            siegeRaised = true;
-                        }
                     }
                 }
             }
@@ -8396,7 +8476,7 @@ namespace hist_mmorpg
             }
 
             // refresh screen
-            this.refereshCurrentScreen();
+            this.refreshCurrentScreen();
         }
 
         /// <summary>
@@ -8404,10 +8484,10 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="attacker">The attacking army</param>
         /// <param name="target">The fief to be besieged</param>
-        public void laySiege(Army attacker, Fief target)
+        public void besiegeFief(Army attacker, Fief target)
         {
             Army defenderGarrison = null;
-            Army additionalDefender = null;
+            Army defenderAdditional = null;
 
             // create defending force
             defenderGarrison = this.createDefendingArmy(target);
@@ -8424,7 +8504,7 @@ namespace hist_mmorpg
                     // check owner is same as that of fief (i.e. can help in siege)
                     if (armyInFief.owner.Equals(target.owner.charID))
                     {
-                        additionalDefender = armyInFief;
+                        defenderAdditional = armyInFief;
                         break;
                     }
                 }
@@ -8432,13 +8512,20 @@ namespace hist_mmorpg
 
             // get the minumum days of all army objects involved
             double minDays = Math.Min(attacker.days, defenderGarrison.days);
-            if (additionalDefender != null)
+            if (defenderAdditional != null)
             {
-                minDays = Math.Min(minDays, additionalDefender.days);
+                minDays = Math.Min(minDays, defenderAdditional.days);
+            }
+
+            // get defenderAdditional ID, or null if no defenderAdditional
+            string defAddID = null;
+            if (defenderAdditional != null)
+            {
+                defAddID = defenderAdditional.armyID;
             }
             
             // create siege object
-            Siege mySiege = new Siege(Globals_Server.getNextSiegeID(), Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, attacker.armyID, defenderGarrison.armyID, target.fiefID, minDays, target.keepLevel, defAdd: additionalDefender.armyID);
+            Siege mySiege = new Siege(Globals_Server.getNextSiegeID(), Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, attacker.armyID, defenderGarrison.armyID, target.fiefID, minDays, target.keepLevel, defAdd: defAddID);
 
             // add to master list
             Globals_Server.siegeMasterList.Add(mySiege.siegeID, mySiege);
@@ -8452,6 +8539,9 @@ namespace hist_mmorpg
 
             // sychronise days
             mySiege.syncDays();
+
+            // display siege in siege screen
+            this.refreshSiegeContainer(mySiege);
         }
 
         /// <summary>
@@ -8481,17 +8571,23 @@ namespace hist_mmorpg
                 if (playerIsBesieger)
                 {
                     // enable various controls
+                    this.siegeReduceBtn.Enabled = true;
+                    this.siegeEndBtn.Enabled = true;
 
                     // if besieging army has a leader
                     if (besiegingArmy.leader != null)
                     {
                         // enable proactive controls (storm, negotiate)
+                        this.siegeNegotiateBtn.Enabled = true;
+                        this.siegeStormBtn.Enabled = true;
                     }
 
                     // if besieging army has no leader
                     else
                     {
                         // disable proactive controls (storm, negotiate)
+                        this.siegeNegotiateBtn.Enabled = false;
+                        this.siegeStormBtn.Enabled = false;
                     }
                 }
 
@@ -8499,10 +8595,182 @@ namespace hist_mmorpg
                 else
                 {
                     // disable various controls
+                    this.siegeNegotiateBtn.Enabled = false;
+                    this.siegeStormBtn.Enabled = false;
+                    this.siegeReduceBtn.Enabled = false;
+                    this.siegeEndBtn.Enabled = false;
                 }
 
             }
 
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyDisplayMgtBtn button,
+        /// displaying the armyCombatPanel
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyDisplayMgtBtn_Click(object sender, EventArgs e)
+        {
+            this.armyContainer.Panel1.Tag = "management";
+            this.armyManagementPanel.BringToFront();
+            this.armyListView.Focus();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyDisplayCmbtBtn button,
+        /// displaying the armyManagementPanel
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyDisplayCmbtBtn_Click(object sender, EventArgs e)
+        {
+            this.armyContainer.Panel1.Tag = "combat";
+            this.armyCombatPanel.BringToFront();
+            this.armyListView.Focus();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armySiegeBtn button
+        /// instigating the siege of a fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armySiegeBtn_Click(object sender, EventArgs e)
+        {
+            // check army selected
+            if (this.armyListView.SelectedItems.Count > 0)
+            {
+                bool proceed = true;
+
+                // get army
+                Army thisArmy = Globals_Server.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+
+                // get fief
+                Fief thisFief = thisArmy.getLocation();
+
+                // do various checks
+                proceed = this.checksBeforePillageSiege(thisArmy, thisFief, "siege");
+
+                // process siege
+                if (proceed)
+                {
+                    this.besiegeFief(thisArmy, thisFief);
+                }
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("No army selected!");
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the viewMySiegesToolStripMenuItem
+        /// displaying the siege management screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void viewMySiegesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.refreshSiegeContainer();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the siegeNegotiateBtn button
+        /// processing a single siege negotaiation round
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void siegeNegotiateBtn_Click(object sender, EventArgs e)
+        {
+            if (this.siegeListView.SelectedItems.Count > 0)
+            {
+                // get siege
+                Siege thisSiege = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+
+                // perform conditional checks here
+
+                // process siege negotiation round
+                this.siegeNegotiationRound(thisSiege);
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("No siege selected!");
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the siegeStormBtn button
+        /// processing a single siege storm round
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void siegeStormBtn_Click(object sender, EventArgs e)
+        {
+            if (this.siegeListView.SelectedItems.Count > 0)
+            {
+                // get siege
+                Siege thisSiege = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+
+                // perform conditional checks here
+
+                // process siege storm round
+                this.siegeStormRound(thisSiege);
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("No siege selected!");
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the siegeReduceBtn button
+        /// processing a single siege reduction round
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void siegeReduceBtn_Click(object sender, EventArgs e)
+        {
+            if (this.siegeListView.SelectedItems.Count > 0)
+            {
+                // get siege
+                Siege thisSiege = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+
+                // perform conditional checks here
+
+                // process siege reduction round
+                this.siegeReductionRound(thisSiege);
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("No siege selected!");
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the siegeEndBtn button
+        /// dismantling the selected siege
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void siegeEndBtn_Click(object sender, EventArgs e)
+        {
+            if (this.siegeListView.SelectedItems.Count > 0)
+            {
+                // get siege
+                Siege thisSiege = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+
+                // perform conditional checks here
+
+                // process siege reduction round
+                this.dismantleSiege(thisSiege);
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("No siege selected!");
+            }
         }
 
     }
