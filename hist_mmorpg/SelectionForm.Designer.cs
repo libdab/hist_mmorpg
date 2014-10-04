@@ -48,11 +48,11 @@
             this.transferPickupBtn = new System.Windows.Forms.Button();
             this.transferListView = new System.Windows.Forms.ListView();
             this.armiesContainer = new System.Windows.Forms.SplitContainer();
+            this.armiesAttackBtn = new System.Windows.Forms.Button();
             this.armiesCloseBtn = new System.Windows.Forms.Button();
             this.armiesListContainer = new System.Windows.Forms.SplitContainer();
             this.armiesTextBox = new System.Windows.Forms.TextBox();
             this.armiesListView = new System.Windows.Forms.ListView();
-            this.armiesAttackBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.npcContainer)).BeginInit();
             this.npcContainer.Panel1.SuspendLayout();
             this.npcContainer.Panel2.SuspendLayout();
@@ -340,6 +340,17 @@
             this.armiesContainer.SplitterDistance = 85;
             this.armiesContainer.TabIndex = 3;
             // 
+            // armiesAttackBtn
+            // 
+            this.armiesAttackBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.armiesAttackBtn.Location = new System.Drawing.Point(95, 23);
+            this.armiesAttackBtn.Name = "armiesAttackBtn";
+            this.armiesAttackBtn.Size = new System.Drawing.Size(108, 35);
+            this.armiesAttackBtn.TabIndex = 8;
+            this.armiesAttackBtn.Text = "Attack!";
+            this.armiesAttackBtn.UseVisualStyleBackColor = true;
+            this.armiesAttackBtn.Click += new System.EventHandler(this.armiesAttackBtn_Click);
+            // 
             // armiesCloseBtn
             // 
             this.armiesCloseBtn.Location = new System.Drawing.Point(411, 23);
@@ -388,24 +399,13 @@
             this.armiesListView.View = System.Windows.Forms.View.Details;
             this.armiesListView.SelectedIndexChanged += new System.EventHandler(this.armiesListView_SelectedIndexChanged);
             // 
-            // armiesAttackBtn
-            // 
-            this.armiesAttackBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.armiesAttackBtn.Location = new System.Drawing.Point(95, 23);
-            this.armiesAttackBtn.Name = "armiesAttackBtn";
-            this.armiesAttackBtn.Size = new System.Drawing.Size(108, 35);
-            this.armiesAttackBtn.TabIndex = 8;
-            this.armiesAttackBtn.Text = "Attack!";
-            this.armiesAttackBtn.UseVisualStyleBackColor = true;
-            this.armiesAttackBtn.Click += new System.EventHandler(this.armiesAttackBtn_Click);
-            // 
             // SelectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(620, 547);
-            this.Controls.Add(this.armiesContainer);
             this.Controls.Add(this.npcContainer);
+            this.Controls.Add(this.armiesContainer);
             this.Controls.Add(this.transferContainer);
             this.Controls.Add(this.lockOutContainer);
             this.Name = "SelectionForm";

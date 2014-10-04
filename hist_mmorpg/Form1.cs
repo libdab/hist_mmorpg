@@ -2098,13 +2098,13 @@ namespace hist_mmorpg
             // used to check if character update is necessary
             bool performCharacterUpdate = true;
 
-            // fiefs
+            // FIEFS
             foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
             {
                 fiefEntry.Value.updateFief();
             }
 
-            // PlayerCharacters
+            // PLAYERCHARACTERS
             foreach (KeyValuePair<string, PlayerCharacter> pcEntry in Globals_Server.pcMasterList)
             {
                 // check if PlayerCharacter is alive
@@ -2127,7 +2127,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // NonPlayerCharacters
+            // NONPLAYERCHARACTERS
             foreach (KeyValuePair<string, NonPlayerCharacter> npcEntry in Globals_Server.npcMasterList)
             {
                 // check if NonPlayerCharacter is alive
@@ -2175,7 +2175,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // update armies
+            // ARMIES
 
             // keep track of any armies requiring removal (if hav fallen below 100 men)
             List<Army> dissolvedArmies = new List<Army>();
@@ -2196,39 +2196,51 @@ namespace hist_mmorpg
             // remove any dissolved armies
             if (dissolvedArmies.Count > 0)
             {
-                foreach (Army armyEntry in dissolvedArmies)
+                for (int i = 0; i < dissolvedArmies.Count; i++)
                 {
-                    // get fief
-                    Fief myFief = Globals_Server.fiefMasterList[armyEntry.location];
-
-                    // get owner
-                    PlayerCharacter myOwner = null;
-                    myOwner = Globals_Server.pcMasterList[armyEntry.owner];
-
-                    // get leader
-                    Character myLeader = armyEntry.getLeader();
-
-                    // remove from armyMasterList
-                    Globals_Server.armyMasterList.Remove(armyEntry.armyID);
-
-                    // remove from owner's army list
-                    myOwner.myArmies.Remove(armyEntry);
-
-                    // remove from leader
-                    myLeader.armyID = null;
-
-                    // remove from fief
-                    myFief.armies.Remove(armyEntry.armyID);
+                    // disband army
+                    this.disbandArmy(dissolvedArmies[i]);
                 }
 
                 // clear dissolvedArmies
                 dissolvedArmies.Clear();
             }
 
-            // when finished, advance season and year
+            // SIEGES
+
+            // keep track of any sieges requiring removal
+            List<Siege> dissolvedSieges = new List<Siege>();
+            bool hasEnded = false;
+
+            // iterate through sieges
+            foreach (KeyValuePair<string, Siege> siegeEntry in Globals_Server.siegeMasterList)
+            {
+                hasEnded = siegeEntry.Value.updateSiege();
+
+                // add to dissolvedSieges if appropriate
+                if (hasEnded)
+                {
+                    dissolvedSieges.Add(siegeEntry.Value);
+                }
+            }
+
+            // remove any dismantled sieges
+            if (dissolvedSieges.Count > 0)
+            {
+                for (int i = 0; i < dissolvedSieges.Count; i++ )
+                {
+                    // dismantle siege
+                    this.dismantleSiege(dissolvedSieges[i]);
+                }
+
+                // clear dissolvedSieges
+                dissolvedSieges.Clear();
+            }
+
+            // ADVANCE SEASON AND YEAR
             Globals_Client.clock.advanceSeason();
 
-            // refresh current screen
+            // REFRESH CURRENT SCREEN
             this.refreshCurrentScreen();
         }
 
@@ -8437,22 +8449,24 @@ namespace hist_mmorpg
 
                 // check to see if attrition has kicked in for defender
                 // (based on bailiff's management rating)
-                if (defenderLeader != null)
+                if (s.checkAttritionApplies())
                 {
-                    if ((s.totalDays / 60) > defenderLeader.management)
+                    // check for attrition
+                    attritionLosses = defenderGarrison.calcAttrition();
+                    // apply attrition
+                    defenderGarrison.applyTroopLosses(attritionLosses);
+
+                    if (defenderAdditional != null)
                     {
-                        attritionLosses = defenderGarrison.calcAttrition();
-                    }
-                }
-                else
-                {
-                    if ((s.totalDays / 60) > 4)
-                    {
-                        attritionLosses = defenderGarrison.calcAttrition();
+                        // check for attrition
+                        attritionLosses = defenderAdditional.calcAttrition();
+                        // apply attrition
+                        defenderAdditional.applyTroopLosses(attritionLosses);
                     }
                 }
 
-                defenderGarrison.applyTroopLosses(combatLosses + attritionLosses);
+                // apply combat losses
+                defenderGarrison.applyTroopLosses(combatLosses);
 
                 // apply attrition to attacker
                 attritionLosses = besieger.calcAttrition();

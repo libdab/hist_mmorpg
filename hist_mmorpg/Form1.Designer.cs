@@ -154,6 +154,7 @@ namespace hist_mmorpg
             this.houseCharListView = new System.Windows.Forms.ListView();
             this.armyContainer = new System.Windows.Forms.SplitContainer();
             this.armyCombatPanel = new System.Windows.Forms.Panel();
+            this.armySiegeBtn = new System.Windows.Forms.Button();
             this.armyDisplayMgtBtn = new System.Windows.Forms.Button();
             this.armyExamineBtn = new System.Windows.Forms.Button();
             this.armyPillageBtn = new System.Windows.Forms.Button();
@@ -195,14 +196,13 @@ namespace hist_mmorpg
             this.armyTextBox = new System.Windows.Forms.TextBox();
             this.armyListView = new System.Windows.Forms.ListView();
             this.siegeContainer = new System.Windows.Forms.SplitContainer();
+            this.siegeEndBtn = new System.Windows.Forms.Button();
+            this.siegeReduceBtn = new System.Windows.Forms.Button();
+            this.siegeStormBtn = new System.Windows.Forms.Button();
+            this.siegeNegotiateBtn = new System.Windows.Forms.Button();
             this.siegeListContainer = new System.Windows.Forms.SplitContainer();
             this.siegeTextBox = new System.Windows.Forms.TextBox();
             this.siegeListView = new System.Windows.Forms.ListView();
-            this.armySiegeBtn = new System.Windows.Forms.Button();
-            this.siegeNegotiateBtn = new System.Windows.Forms.Button();
-            this.siegeStormBtn = new System.Windows.Forms.Button();
-            this.siegeReduceBtn = new System.Windows.Forms.Button();
-            this.siegeEndBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -1594,8 +1594,8 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel1
             // 
-            this.armyContainer.Panel1.Controls.Add(this.armyCombatPanel);
             this.armyContainer.Panel1.Controls.Add(this.armyManagementPanel);
+            this.armyContainer.Panel1.Controls.Add(this.armyCombatPanel);
             // 
             // armyContainer.Panel2
             // 
@@ -1621,6 +1621,16 @@ namespace hist_mmorpg
             this.armyCombatPanel.Name = "armyCombatPanel";
             this.armyCombatPanel.Size = new System.Drawing.Size(282, 637);
             this.armyCombatPanel.TabIndex = 54;
+            // 
+            // armySiegeBtn
+            // 
+            this.armySiegeBtn.Location = new System.Drawing.Point(74, 136);
+            this.armySiegeBtn.Name = "armySiegeBtn";
+            this.armySiegeBtn.Size = new System.Drawing.Size(138, 23);
+            this.armySiegeBtn.TabIndex = 55;
+            this.armySiegeBtn.Text = "Besiege Fief";
+            this.armySiegeBtn.UseVisualStyleBackColor = true;
+            this.armySiegeBtn.Click += new System.EventHandler(this.armySiegeBtn_Click);
             // 
             // armyDisplayMgtBtn
             // 
@@ -2033,6 +2043,46 @@ namespace hist_mmorpg
             this.siegeContainer.SplitterDistance = 311;
             this.siegeContainer.TabIndex = 9;
             // 
+            // siegeEndBtn
+            // 
+            this.siegeEndBtn.Location = new System.Drawing.Point(76, 202);
+            this.siegeEndBtn.Name = "siegeEndBtn";
+            this.siegeEndBtn.Size = new System.Drawing.Size(138, 40);
+            this.siegeEndBtn.TabIndex = 59;
+            this.siegeEndBtn.Text = "End Siege";
+            this.siegeEndBtn.UseVisualStyleBackColor = true;
+            this.siegeEndBtn.Click += new System.EventHandler(this.siegeEndBtn_Click);
+            // 
+            // siegeReduceBtn
+            // 
+            this.siegeReduceBtn.Location = new System.Drawing.Point(76, 141);
+            this.siegeReduceBtn.Name = "siegeReduceBtn";
+            this.siegeReduceBtn.Size = new System.Drawing.Size(138, 40);
+            this.siegeReduceBtn.TabIndex = 58;
+            this.siegeReduceBtn.Text = "Conduct Reduction Round";
+            this.siegeReduceBtn.UseVisualStyleBackColor = true;
+            this.siegeReduceBtn.Click += new System.EventHandler(this.siegeReduceBtn_Click);
+            // 
+            // siegeStormBtn
+            // 
+            this.siegeStormBtn.Location = new System.Drawing.Point(76, 81);
+            this.siegeStormBtn.Name = "siegeStormBtn";
+            this.siegeStormBtn.Size = new System.Drawing.Size(138, 40);
+            this.siegeStormBtn.TabIndex = 57;
+            this.siegeStormBtn.Text = "Conduct Storm Round";
+            this.siegeStormBtn.UseVisualStyleBackColor = true;
+            this.siegeStormBtn.Click += new System.EventHandler(this.siegeStormBtn_Click);
+            // 
+            // siegeNegotiateBtn
+            // 
+            this.siegeNegotiateBtn.Location = new System.Drawing.Point(76, 21);
+            this.siegeNegotiateBtn.Name = "siegeNegotiateBtn";
+            this.siegeNegotiateBtn.Size = new System.Drawing.Size(138, 40);
+            this.siegeNegotiateBtn.TabIndex = 56;
+            this.siegeNegotiateBtn.Text = "Conduct Negotiation Round";
+            this.siegeNegotiateBtn.UseVisualStyleBackColor = true;
+            this.siegeNegotiateBtn.Click += new System.EventHandler(this.siegeNegotiateBtn_Click);
+            // 
             // siegeListContainer
             // 
             this.siegeListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -2071,63 +2121,13 @@ namespace hist_mmorpg
             this.siegeListView.View = System.Windows.Forms.View.Details;
             this.siegeListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.siegeListView_ItemSelectionChanged);
             // 
-            // armySiegeBtn
-            // 
-            this.armySiegeBtn.Location = new System.Drawing.Point(74, 136);
-            this.armySiegeBtn.Name = "armySiegeBtn";
-            this.armySiegeBtn.Size = new System.Drawing.Size(138, 23);
-            this.armySiegeBtn.TabIndex = 55;
-            this.armySiegeBtn.Text = "Besiege Fief";
-            this.armySiegeBtn.UseVisualStyleBackColor = true;
-            this.armySiegeBtn.Click += new System.EventHandler(this.armySiegeBtn_Click);
-            // 
-            // siegeNegotiateBtn
-            // 
-            this.siegeNegotiateBtn.Location = new System.Drawing.Point(76, 21);
-            this.siegeNegotiateBtn.Name = "siegeNegotiateBtn";
-            this.siegeNegotiateBtn.Size = new System.Drawing.Size(138, 40);
-            this.siegeNegotiateBtn.TabIndex = 56;
-            this.siegeNegotiateBtn.Text = "Conduct Negotiation Round";
-            this.siegeNegotiateBtn.UseVisualStyleBackColor = true;
-            this.siegeNegotiateBtn.Click += new System.EventHandler(this.siegeNegotiateBtn_Click);
-            // 
-            // siegeStormBtn
-            // 
-            this.siegeStormBtn.Location = new System.Drawing.Point(76, 81);
-            this.siegeStormBtn.Name = "siegeStormBtn";
-            this.siegeStormBtn.Size = new System.Drawing.Size(138, 40);
-            this.siegeStormBtn.TabIndex = 57;
-            this.siegeStormBtn.Text = "Conduct Storm Round";
-            this.siegeStormBtn.UseVisualStyleBackColor = true;
-            this.siegeStormBtn.Click += new System.EventHandler(this.siegeStormBtn_Click);
-            // 
-            // siegeReduceBtn
-            // 
-            this.siegeReduceBtn.Location = new System.Drawing.Point(76, 141);
-            this.siegeReduceBtn.Name = "siegeReduceBtn";
-            this.siegeReduceBtn.Size = new System.Drawing.Size(138, 40);
-            this.siegeReduceBtn.TabIndex = 58;
-            this.siegeReduceBtn.Text = "Conduct Reduction Round";
-            this.siegeReduceBtn.UseVisualStyleBackColor = true;
-            this.siegeReduceBtn.Click += new System.EventHandler(this.siegeReduceBtn_Click);
-            // 
-            // siegeEndBtn
-            // 
-            this.siegeEndBtn.Location = new System.Drawing.Point(76, 202);
-            this.siegeEndBtn.Name = "siegeEndBtn";
-            this.siegeEndBtn.Size = new System.Drawing.Size(138, 40);
-            this.siegeEndBtn.TabIndex = 59;
-            this.siegeEndBtn.Text = "End Siege";
-            this.siegeEndBtn.UseVisualStyleBackColor = true;
-            this.siegeEndBtn.Click += new System.EventHandler(this.siegeEndBtn_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
-            this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.armyContainer);
+            this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.houseContainer);

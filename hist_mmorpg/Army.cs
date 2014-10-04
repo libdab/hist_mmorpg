@@ -112,6 +112,14 @@ namespace hist_mmorpg
         /// <param name="newLeader">The new leader (can be null)</param>
         public void assignNewLeader(Character newLeader)
         {
+            // check if army is involved in a siege
+            Siege mySiege = null;
+            string siegeID = this.checkForSiegeRole();
+            if (siegeID != null)
+            {
+                mySiege = this.getSiege(siegeID);
+            }
+
             // Remove army from current leader
             Character oldLeader = this.getLeader();
             if (oldLeader != null)
@@ -153,16 +161,25 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    // check for attrition (i.e. army had to wait for leader)
-                    byte attritionChecks = 0;
-                    attritionChecks = Convert.ToByte(difference / 7);
-
-                    for (int i = 0; i < attritionChecks; i++)
+                    // if army not involved in siege, check for attrition in normal way
+                    if (mySiege == null)
                     {
-                        // calculate attrition
-                        double attritionModifer = this.calcAttrition();
-                        // apply attrition
-                        this.applyTroopLosses(attritionModifer);
+                        byte attritionChecks = 0;
+                        attritionChecks = Convert.ToByte(difference / 7);
+
+                        for (int i = 0; i < attritionChecks; i++)
+                        {
+                            // calculate attrition
+                            double attritionModifer = this.calcAttrition();
+                            // apply attrition
+                            this.applyTroopLosses(attritionModifer);
+                        }
+                    }
+
+                    // if army is involved in siege, attrition applied at siege level
+                    else
+                    {
+                        mySiege.syncDays(newLeader.days);
                     }
 
                 }
@@ -581,6 +598,32 @@ namespace hist_mmorpg
                 if (thisSiege.defenderAdditional.Equals(this.armyID))
                 {
                     thisSiegeID = thisFief.siege;
+                }
+            }
+
+            return thisSiegeID;
+        }
+
+        /// <summary>
+        /// Checks to see if army has any role (defending or besieging) in a siege
+        /// </summary>
+        /// <returns>string containing the siegeID</returns>
+        public string checkForSiegeRole()
+        {
+            string thisSiegeID = null;
+
+            // check if army is a defending garrison in a siege
+            thisSiegeID = this.checkIfSiegeDefenderGarrison();
+
+            if (thisSiegeID == null)
+            {
+                // check if army is an additional defending army in a siege
+                thisSiegeID = this.checkIfSiegeDefenderAdditional();
+
+                if (thisSiegeID == null)
+                {
+                    // check if army is besieger in a siege
+                    thisSiegeID = this.checkIfBesieger();
                 }
             }
 

@@ -144,34 +144,117 @@ namespace hist_mmorpg
         /// <summary>
         /// Synchronises days for component objects
         /// </summary>
-        public void syncDays()
+        /// <param name="newDays">double indicating new value for days</param>
+        public void syncDays(double newDays = 0)
         {
-            // attacking army
-            Character attackerLeader = this.getBesieger().getLeader();
-            attackerLeader.adjustDays(attackerLeader.days - this.days);
+            Army besieger = this.getBesieger();
+            Army defenderGarr = this.getDefenderGarrison();
+            Army defenderAdd = this.getDefenderAdditional();
+            bool defenderAttritonApplies = false;
+            byte attritionChecks = 0;
+            double difference = 0;
 
-            // defending garrison army
-            Character garrisonLeader = this.getDefenderGarrison().getLeader();
+            // check to see if attrition checks are required
+            if (newDays > 0)
+            {
+                // if the siege has had to 'wait' for some days
+                if (this.days > newDays)
+                {
+                    // get number of days difference
+                    difference = this.days - newDays;
+
+                    // work out number of attrition checks needed
+                    attritionChecks = Convert.ToByte(difference / 7);
+
+                    // check if attrition has kicked in for defending forces
+                    defenderAttritonApplies = this.checkAttritionApplies();
+                }
+
+                // adjust siege days to specified days
+                this.days = newDays;
+            }
+
+            // ATTACKING ARMY
+            Character attackerLeader = besieger.getLeader();
+            if (attackerLeader != null)
+            {
+                // check to see if attackerLeader has more than 90 days (due to skills)
+                if ((attackerLeader.days > 90) && (newDays == 0))
+                {
+                    this.days = attackerLeader.days;
+                }
+
+                attackerLeader.adjustDays(attackerLeader.days - this.days);
+            }
+            else
+            {
+                besieger.days = this.days;
+            }
+
+            // check for attrition if required
+            if (attritionChecks > 0)
+            {
+                for (int i = 0; i < attritionChecks; i++)
+                {
+                    // calculate attrition
+                    double attritionModifer = besieger.calcAttrition();
+                    // apply attrition
+                    besieger.applyTroopLosses(attritionModifer);
+                }
+            }
+
+            // DEFENDING GARRISON
+            Character garrisonLeader = defenderGarr.getLeader();
             if (garrisonLeader != null)
             {
                 garrisonLeader.adjustDays(garrisonLeader.days - this.days);
             }
             else
             {
-                this.getDefenderGarrison().days = this.days;
+                defenderGarr.days = this.days;
             }
 
-            // additional defending army
-            if (this.getDefenderAdditional() != null)
+            // check for attrition if required
+            if (defenderAttritonApplies)
             {
-                Character defAddLeader = this.getDefenderAdditional().getLeader();
+                if (attritionChecks > 0)
+                {
+                    for (int i = 0; i < attritionChecks; i++)
+                    {
+                        // calculate attrition
+                        double attritionModifer = defenderGarr.calcAttrition();
+                        // apply attrition
+                        defenderGarr.applyTroopLosses(attritionModifer);
+                    }
+                }
+            }
+
+            // ADDITIONAL DEFENDING ARMY
+            if (defenderAdd != null)
+            {
+                Character defAddLeader = defenderAdd.getLeader();
                 if (defAddLeader != null)
                 {
                     defAddLeader.adjustDays(defAddLeader.days - this.days);
                 }
                 else
                 {
-                    this.getDefenderAdditional().days = this.days;
+                    defenderAdd.days = this.days;
+                }
+
+                // check for attrition if required
+                if (defenderAttritonApplies)
+                {
+                    if (attritionChecks > 0)
+                    {
+                        for (int i = 0; i < attritionChecks; i++)
+                        {
+                            // calculate attrition
+                            double attritionModifer = defenderAdd.calcAttrition();
+                            // apply attrition
+                            defenderAdd.applyTroopLosses(attritionModifer);
+                        }
+                    }
                 }
             }
         }
