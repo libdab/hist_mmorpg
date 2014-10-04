@@ -542,10 +542,10 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Checks to see if army is defending a besieged keep
+        /// Checks to see if army is the defending garrison in a siege
         /// </summary>
         /// <returns>string containing the siegeID</returns>
-        public string checkIfSiegeDefender()
+        public string checkIfSiegeDefenderGarrison()
         {
             string thisSiegeID = null;
 
@@ -555,7 +555,7 @@ namespace hist_mmorpg
             if (thisFief.siege != null)
             {
                 Siege thisSiege = Globals_Server.siegeMasterList[thisFief.siege];
-                if ((thisSiege.defenderGarrison.Equals(this.armyID)) || (thisSiege.defenderAdditional.Equals(this.armyID)))
+                if (thisSiege.defenderGarrison.Equals(this.armyID))
                 {
                     thisSiegeID = thisFief.siege;
                 }
@@ -565,36 +565,121 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Checks to see if army is an additional defending army in a siege
+        /// </summary>
+        /// <returns>string containing the siegeID</returns>
+        public string checkIfSiegeDefenderAdditional()
+        {
+            string thisSiegeID = null;
+
+            // get fief
+            Fief thisFief = this.getLocation();
+
+            if (thisFief.siege != null)
+            {
+                Siege thisSiege = Globals_Server.siegeMasterList[thisFief.siege];
+                if (thisSiege.defenderAdditional.Equals(this.armyID))
+                {
+                    thisSiegeID = thisFief.siege;
+                }
+            }
+
+            return thisSiegeID;
+        }
+
+        /// <summary>
+        /// Gets the siege object associated with the siegeID provided
+        /// </summary>
+        /// <returns>The siege</returns>
+        /// <param name="siegeID">The siegeID</param>
+        public Siege getSiege(string siegeID)
+        {
+            Siege thisSiege = null;
+
+            if (Globals_Server.siegeMasterList.ContainsKey(siegeID))
+            {
+                thisSiege = Globals_Server.siegeMasterList[siegeID];
+            }
+
+            return thisSiege;
+        }
+        
+        /// <summary>
         /// Updates army data at the end/beginning of the season
         /// </summary>
         /// <returns>bool indicating if army has dissolved</returns>
         public bool updateArmy()
         {
             bool hasDissolved = false;
+            bool attritionApplies = true;
+            string siegeID = null;
+            bool isSiegeDefGarr = false;
+            bool isSiegeDefAdd = false;
+            Siege thisSiege = null;
+
+            // check for SIEGE INVOLVEMENT
+            // check that army is a defending garrison in a siege
+            siegeID = this.checkIfSiegeDefenderGarrison();
+            if (siegeID != null)
+            {
+                isSiegeDefGarr = true;
+                thisSiege = this.getSiege(siegeID);
+            }
+            else
+            {
+                siegeID = this.checkIfSiegeDefenderAdditional();
+                // check that army is an additional defending army in a siege
+                if (siegeID != null)
+                {
+                    isSiegeDefAdd = true;
+                    thisSiege = this.getSiege(siegeID);
+                }
+            }
+
+            // check to see if attrition applies to defending forces in siege
+            // (based on besieged fief bailiff management rating)
+            if ((isSiegeDefGarr) || (isSiegeDefAdd))
+            {
+                attritionApplies = thisSiege.checkAttritionApplies();
+            }
 
             // get leader
             Character myLeader = this.getLeader();
 
-            // check for additional attrition
-            byte attritionChecks = Convert.ToByte(this.days / 7);
-            for (int i = 0; i < attritionChecks; i++ )
+            if (attritionApplies)
             {
-                // calculate attrition
-                double attritionModifer = this.calcAttrition();
-                // apply attrition
-                this.applyTroopLosses(attritionModifer);
+                // check for attrition due to days remaining
+                byte attritionChecks = Convert.ToByte(this.days / 7);
+                for (int i = 0; i < attritionChecks; i++)
+                {
+                    // calculate attrition
+                    double attritionModifer = this.calcAttrition();
+                    // apply attrition
+                    this.applyTroopLosses(attritionModifer);
+                }
             }
 
-            // check if army dissolves (less than 100 men)
-            if (this.calcArmySize() < 100)
+            if (!isSiegeDefGarr)
             {
-                hasDissolved = true;
+                // check if army dissolves (less than 100 men)
+                // NOTE: defending garrisons do not dissolve in this way
+                if (this.calcArmySize() < 100)
+                {
+                    hasDissolved = true;
+                }
             }
 
             // update army days
             if (!hasDissolved)
             {
-                this.days = myLeader.days;
+                if (myLeader != null)
+                {
+                    this.days = myLeader.days;
+                }
+                else
+                {
+                    this.days = 90;
+                }
             }
 
             return hasDissolved;

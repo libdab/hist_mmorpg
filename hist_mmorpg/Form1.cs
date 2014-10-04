@@ -2092,91 +2092,85 @@ namespace hist_mmorpg
         /// <summary>
 		/// Updates game objects at end/start of season
 		/// </summary>
-        /// <param name="type">Specifies type of update to perform (mainly used for testing)</param>
+        /// <param name="type">Specifies type of update to perform</param>
         public void seasonUpdate(String type = "full")
 		{
             // used to check if character update is necessary
             bool performCharacterUpdate = true;
 
-            if (!type.Equals("character"))
+            // fiefs
+            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
             {
-                // fiefs
-                foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
+                fiefEntry.Value.updateFief();
+            }
+
+            // PlayerCharacters
+            foreach (KeyValuePair<string, PlayerCharacter> pcEntry in Globals_Server.pcMasterList)
+            {
+                // check if PlayerCharacter is alive
+                performCharacterUpdate = pcEntry.Value.isAlive;
+
+                if (performCharacterUpdate)
                 {
-                    fiefEntry.Value.updateFief();
+                    // updateCharacter includes checkDeath
+                    pcEntry.Value.updateCharacter();
+
+                    // check again if PlayerCharacter is alive (after checkDeath)
+                    if (pcEntry.Value.isAlive)
+                    {
+                        // finish previously started multi-hex move if necessary
+                        if (pcEntry.Value.goTo.Count > 0)
+                        {
+                            this.characterMultiMove(pcEntry.Value, true);
+                        }
+                    }
                 }
             }
 
-            if (!type.Equals("fief"))
+            // NonPlayerCharacters
+            foreach (KeyValuePair<string, NonPlayerCharacter> npcEntry in Globals_Server.npcMasterList)
             {
-                // PlayerCharacters
-                foreach (KeyValuePair<string, PlayerCharacter> pcEntry in Globals_Server.pcMasterList)
+                // check if NonPlayerCharacter is alive
+                performCharacterUpdate = npcEntry.Value.isAlive;
+
+                if (performCharacterUpdate)
                 {
-                    // check if PlayerCharacter is alive
-                    performCharacterUpdate = pcEntry.Value.isAlive;
+                    // updateCharacter includes checkDeath
+                    npcEntry.Value.updateCharacter();
 
-                    if (performCharacterUpdate)
+                    // check again if NonPlayerCharacter is alive (after checkDeath)
+                    if (npcEntry.Value.isAlive)
                     {
-                        // updateCharacter includes checkDeath
-                        pcEntry.Value.updateCharacter();
-
-                        // check again if PlayerCharacter is alive (after checkDeath)
-                        if (pcEntry.Value.isAlive)
+                        // random move if has no boss and is not family member
+                        if ((npcEntry.Value.myBoss == null) && (npcEntry.Value.familyID == null))
                         {
-                            // finish previously started multi-hex move if necessary
-                            if (pcEntry.Value.goTo.Count > 0)
-                            {
-                                this.characterMultiMove(pcEntry.Value, true);
-                            }
+                            this.randomMoveNPC(npcEntry.Value, true);
+                        }
+
+                        // finish previously started multi-hex move if necessary
+                        if (npcEntry.Value.goTo.Count > 0)
+                        {
+                            this.characterMultiMove(npcEntry.Value, true);
                         }
                     }
                 }
 
-                // NonPlayerCharacters
-                foreach (KeyValuePair<string, NonPlayerCharacter> npcEntry in Globals_Server.npcMasterList)
+            }
+
+            // iterate through clock's scheduled events
+            // check for births
+            foreach (JournalEvent jEvent in Globals_Client.clock.scheduledEvents.events)
+            {
+                if ((jEvent.year == Globals_Client.clock.currentYear) && (jEvent.season == Globals_Client.clock.currentSeason))
                 {
-                    // check if NonPlayerCharacter is alive
-                    performCharacterUpdate = npcEntry.Value.isAlive;
-
-                    if (performCharacterUpdate)
+                    if ((jEvent.type).ToLower().Equals("birth"))
                     {
-                        // updateCharacter includes checkDeath
-                        npcEntry.Value.updateCharacter();
+                        // get parents
+                        NonPlayerCharacter mummy = Globals_Server.npcMasterList[jEvent.personae];
+                        Character daddy = Globals_Server.pcMasterList[mummy.spouse];
 
-                        // check again if NonPlayerCharacter is alive (after checkDeath)
-                        if (npcEntry.Value.isAlive)
-                        {
-                            // random move if has no boss and is not family member
-                            if ((npcEntry.Value.myBoss == null) && (npcEntry.Value.familyID == null))
-                            {
-                                this.randomMoveNPC(npcEntry.Value, true);
-                            }
-
-                            // finish previously started multi-hex move if necessary
-                            if (npcEntry.Value.goTo.Count > 0)
-                            {
-                                this.characterMultiMove(npcEntry.Value, true);
-                            }
-                        }
-                    }
-
-                }
-
-                // iterate through clock's scheduled events
-                // check for births
-                foreach (JournalEvent jEvent in Globals_Client.clock.scheduledEvents.events)
-                {
-                    if ((jEvent.year == Globals_Client.clock.currentYear) && (jEvent.season == Globals_Client.clock.currentSeason))
-                    {
-                        if ((jEvent.type).ToLower().Equals("birth"))
-                        {
-                            // get parents
-                            NonPlayerCharacter mummy = Globals_Server.npcMasterList[jEvent.personae];
-                            Character daddy = Globals_Server.pcMasterList[mummy.spouse];
-
-                            // run childbirth procedure
-                            this.giveBirth(mummy, daddy);
-                        }
+                        // run childbirth procedure
+                        this.giveBirth(mummy, daddy);
                     }
                 }
             }
@@ -7934,7 +7928,7 @@ namespace hist_mmorpg
             }
             else if (circumstance == "siege")
             {
-                // siege = min 1 (to set up siege)
+                // siege = 1 (to set up siege)
                 if ((a.days < 1) && (proceed))
                 {
                     proceed = false;
@@ -7976,6 +7970,35 @@ namespace hist_mmorpg
                 }
             }
 
+            return proceed;
+        }
+
+        /// <summary>
+        /// Implements conditional checks prior to a siege operation
+        /// </summary>
+        /// <returns>bool indicating whether siege operation can proceed</returns>
+        /// <param name="s">The siege</param>
+        /// <param name="operation">The operation - round or end</param>
+        public bool checksBeforeSiegeOperation(Siege s, string operation = "round")
+        {
+            bool proceed = true;
+            int daysRequired = 0;
+
+            if (operation.Equals("round"))
+            {
+                daysRequired = 10;
+            }
+            else if (operation.Equals("end"))
+            {
+                daysRequired = 1;
+            }
+
+            // check has min days required
+            if (s.days < daysRequired)
+            {
+                proceed = false;
+                System.Windows.Forms.MessageBox.Show("There are not enough days remaining for this\r\na siege operation.  Operation cancelled.");
+            }
 
             return proceed;
         }
@@ -8537,6 +8560,10 @@ namespace hist_mmorpg
             // add to fief
             target.siege = mySiege.siegeID;
 
+            // update days
+            mySiege.days--;
+            mySiege.totalDays++;
+
             // sychronise days
             mySiege.syncDays();
 
@@ -8687,13 +8714,19 @@ namespace hist_mmorpg
         {
             if (this.siegeListView.SelectedItems.Count > 0)
             {
+                bool proceed = true;
+
                 // get siege
                 Siege thisSiege = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
 
                 // perform conditional checks here
+                proceed = this.checksBeforeSiegeOperation(thisSiege);
 
-                // process siege negotiation round
-                this.siegeNegotiationRound(thisSiege);
+                if (proceed)
+                {
+                    // process siege negotiation round
+                    this.siegeNegotiationRound(thisSiege);
+                }
             }
             else
             {
@@ -8711,13 +8744,19 @@ namespace hist_mmorpg
         {
             if (this.siegeListView.SelectedItems.Count > 0)
             {
+                bool proceed = true;
+
                 // get siege
                 Siege thisSiege = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
 
                 // perform conditional checks here
+                proceed = this.checksBeforeSiegeOperation(thisSiege);
 
-                // process siege storm round
-                this.siegeStormRound(thisSiege);
+                if (proceed)
+                {
+                    // process siege storm round
+                    this.siegeStormRound(thisSiege);
+                }
             }
             else
             {
@@ -8735,13 +8774,19 @@ namespace hist_mmorpg
         {
             if (this.siegeListView.SelectedItems.Count > 0)
             {
+                bool proceed = true;
+
                 // get siege
                 Siege thisSiege = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
 
                 // perform conditional checks here
+                proceed = this.checksBeforeSiegeOperation(thisSiege);
 
-                // process siege reduction round
-                this.siegeReductionRound(thisSiege);
+                if (proceed)
+                {
+                    // process siege reduction round
+                    this.siegeReductionRound(thisSiege);
+                }
             }
             else
             {
@@ -8759,18 +8804,25 @@ namespace hist_mmorpg
         {
             if (this.siegeListView.SelectedItems.Count > 0)
             {
+                bool proceed = true;
+
                 // get siege
                 Siege thisSiege = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
 
                 // perform conditional checks here
+                proceed = this.checksBeforeSiegeOperation(thisSiege, "end");
 
-                // process siege reduction round
-                this.dismantleSiege(thisSiege);
+                if (proceed)
+                {
+                    // process siege reduction round
+                    this.dismantleSiege(thisSiege);
+                }
             }
             else
             {
                 System.Windows.Forms.MessageBox.Show("No siege selected!");
             }
+
         }
 
     }

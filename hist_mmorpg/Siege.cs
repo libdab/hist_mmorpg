@@ -142,7 +142,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Synchronises days for relevant objects associated with the siege
+        /// Synchronises days for component objects
         /// </summary>
         public void syncDays()
         {
@@ -174,6 +174,61 @@ namespace hist_mmorpg
                     this.getDefenderAdditional().days = this.days;
                 }
             }
+        }
+
+        /// <summary>
+        /// Checks to see if attrition applies to the defending forces (based on bailiff management rating)
+        /// </summary>
+        /// <returns>bool indicating whether attrition applies</returns>
+        public bool checkAttritionApplies()
+        {
+            bool attritionApplies = false;
+            Character bailiff = this.getFief().bailiff;
+            double bailiffManagement = 0;
+
+            // get bailiff's management rating
+            if (bailiff != null)
+            {
+                bailiffManagement = bailiff.management;
+            }
+            else
+            {
+                bailiffManagement = 4;
+            }
+
+            // check to see if attrition needs to be applied
+            if ((this.totalDays / 60) > bailiffManagement)
+            {
+                attritionApplies = true;
+            }
+
+            return attritionApplies;
+        }
+
+        /// <summary>
+        /// Updates siege at the end/beginning of the season
+        /// </summary>
+        /// <returns>bool indicating whether the siege has been dismantled</returns>
+        public bool updateSiege()
+        {
+            bool siegeEnded = false;
+
+            // check if besieger still in field (i.e. has not been disbanded)
+            if (this.besieger == null)
+            {
+                siegeEnded = true;
+            }
+
+            if (!siegeEnded)
+            {
+                // update days (any remaining days = no activity)
+                this.days = 90;
+
+                // synchronise days of all component objects
+                this.syncDays();
+            }
+
+            return siegeEnded;
         }
 
 
