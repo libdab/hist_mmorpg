@@ -19,9 +19,17 @@ namespace hist_mmorpg
         /// </summary>
         public String startDate { get; set; }
         /// <summary>
+        /// Holds besieging player (charID)
+        /// </summary>
+        public String besiegingPlayer { get; set; }
+        /// <summary>
+        /// Holds defending player (charID)
+        /// </summary>
+        public String defendingPlayer { get; set; }
+        /// <summary>
         /// Holds besieging army (armyID)
         /// </summary>
-        public String besieger { get; set; }
+        public String besiegerArmy { get; set; }
         /// <summary>
         /// Holds defending garrison (armyID)
         /// </summary>
@@ -64,7 +72,9 @@ namespace hist_mmorpg
         /// </summary>
 		/// <param name="id">String holding ID of siege</param>
         /// <param name="start">string holding season and year the siege started</param>
-        /// <param name="bsgr">String holding besieging army (armyID)</param>
+        /// <param name="bsgPlayer">String holding besieging player (charID)</param>
+        /// <param name="defPlayer">String holding defending player (charID)</param>
+        /// <param name="bsgArmy">String holding besieging army (armyID)</param>
         /// <param name="defGarr">String holding defending garrison (armyID)</param>
         /// <param name="fief">String holding fief being besieged (fiefID)</param>
         /// <param name="day">double containing days left in current season</param>
@@ -74,11 +84,13 @@ namespace hist_mmorpg
         /// <param name="totday">double containing days used by siege so far</param>
         /// <param name="defAdd">String holding additional defending army (armyID)</param>
         /// <param name="end">string holding season and year the siege ended</param>
-        public Siege(String id, string start, string bsgr, string defGarr, string fief, double day, double kpLvl, int totAtt = 0, int totDef = 0, double totDay = 0, string defAdd = null, string end = null)
+        public Siege(String id, string start, string bsgPlayer, string defPlayer, string bsgArmy, string defGarr, string fief, double day, double kpLvl, int totAtt = 0, int totDef = 0, double totDay = 0, string defAdd = null, string end = null)
         {
             this.siegeID = id;
             this.startDate = start;
-            this.besieger = bsgr;
+            this.besiegingPlayer = bsgPlayer;
+            this.defendingPlayer = defPlayer;
+            this.besiegerArmy = bsgArmy;
             this.defenderGarrison = defGarr;
             this.besiegedFief = fief;
             this.days = day;
@@ -113,7 +125,14 @@ namespace hist_mmorpg
         /// <returns>The besieging army</returns>
         public Army getBesieger()
         {
-            return Globals_Server.armyMasterList[this.besieger];
+            Army besieger = null;
+
+            if (this.besiegerArmy != null)
+            {
+                besieger = Globals_Server.armyMasterList[this.besiegerArmy];
+            }
+
+            return besieger;
         }
 
         /// <summary>
@@ -122,7 +141,14 @@ namespace hist_mmorpg
         /// <returns>The defending garrison (Army)</returns>
         public Army getDefenderGarrison()
         {
-            return Globals_Server.armyMasterList[this.defenderGarrison];
+            Army defenderGarrison = null;
+
+            if (this.defenderGarrison != null)
+            {
+                defenderGarrison = Globals_Server.armyMasterList[this.defenderGarrison];
+            }
+
+            return defenderGarrison;
         }
 
         /// <summary>
@@ -142,10 +168,29 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Gets the defending player
+        /// </summary>
+        /// <returns>The defending player</returns>
+        public PlayerCharacter getDefendingPlayer()
+        {
+            return Globals_Server.pcMasterList[this.defendingPlayer];
+        }
+
+        /// <summary>
+        /// Gets the besieging player
+        /// </summary>
+        /// <returns>The besieging player</returns>
+        public PlayerCharacter getBesiegingPlayer()
+        {
+            return Globals_Server.pcMasterList[this.besiegingPlayer];
+        }
+
+        /// <summary>
         /// Synchronises days for component objects
         /// </summary>
         /// <param name="newDays">double indicating new value for days</param>
-        public void syncDays(double newDays = 0)
+        /// <param name="checkForAttrition">bool indicating whether to check for attrition</param>
+        public void syncDays(double newDays, bool checkForAttrition = true)
         {
             Army besieger = this.getBesieger();
             Army defenderGarr = this.getDefenderGarrison();
@@ -155,7 +200,8 @@ namespace hist_mmorpg
             double difference = 0;
 
             // check to see if attrition checks are required
-            if (newDays > 0)
+            // NOTE: no check required for seasonal update
+            if (checkForAttrition)
             {
                 // if the siege has had to 'wait' for some days
                 if (this.days > newDays)
@@ -170,20 +216,15 @@ namespace hist_mmorpg
                     defenderAttritonApplies = this.checkAttritionApplies();
                 }
 
-                // adjust siege days to specified days
-                this.days = newDays;
             }
+
+            // adjust siege days to specified days
+            this.days = newDays;
 
             // ATTACKING ARMY
             Character attackerLeader = besieger.getLeader();
             if (attackerLeader != null)
             {
-                // check to see if attackerLeader has more than 90 days (due to skills)
-                if ((attackerLeader.days > 90) && (newDays == 0))
-                {
-                    this.days = attackerLeader.days;
-                }
-
                 attackerLeader.adjustDays(attackerLeader.days - this.days);
             }
             else
@@ -295,20 +336,28 @@ namespace hist_mmorpg
         public bool updateSiege()
         {
             bool siegeEnded = false;
+            Character besiegerLeader = this.getBesieger().getLeader();
 
             // check if besieger still in field (i.e. has not been disbanded)
-            if (this.besieger == null)
+            if (this.besiegerArmy == null)
             {
                 siegeEnded = true;
             }
 
             if (!siegeEnded)
             {
-                // update days (any remaining days = no activity)
-                this.days = 90;
+                // DAYS
+                // base allowance
+                double newDays = 90;
+
+                if (besiegerLeader != null)
+                {
+                    // set days to besieger leader's days (may be effected by skills)
+                    newDays = besiegerLeader.days;
+                }
 
                 // synchronise days of all component objects
-                this.syncDays();
+                this.syncDays(newDays, false);
             }
 
             return siegeEnded;

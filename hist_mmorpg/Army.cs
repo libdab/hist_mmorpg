@@ -549,7 +549,7 @@ namespace hist_mmorpg
             if (thisFief.siege != null)
             {
                 Siege thisSiege = Globals_Server.siegeMasterList[thisFief.siege];
-                if (thisSiege.besieger.Equals(this.armyID))
+                if (thisSiege.besiegerArmy.Equals(this.armyID))
                 {
                     thisSiegeID = thisFief.siege;
                 }
@@ -595,9 +595,12 @@ namespace hist_mmorpg
             if (thisFief.siege != null)
             {
                 Siege thisSiege = Globals_Server.siegeMasterList[thisFief.siege];
-                if (thisSiege.defenderAdditional.Equals(this.armyID))
+                if (thisSiege.defenderAdditional != null)
                 {
-                    thisSiegeID = thisFief.siege;
+                    if (thisSiege.defenderAdditional.Equals(this.armyID))
+                    {
+                        thisSiegeID = thisFief.siege;
+                    }
                 }
             }
 

@@ -885,6 +885,26 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Gets the character's full days allowance, including adjustment for skills
+        /// </summary>
+        /// <returns>Full days allowance</returns>
+        public double getDaysAllowance()
+        {
+            // base allowance
+            double myDays = 90;
+
+            // check for time efficiency in skills
+            double timeSkillsMOd = this.calcSkillEffect("time");
+            if (timeSkillsMOd != 0)
+            {
+                // apply skill effects
+                myDays = myDays + (myDays * timeSkillsMOd);
+            }
+
+            return myDays;
+        }
+
+        /// <summary>
         /// Adjusts the character's remaining days by subtracting the specified number of days
         /// </summary>
         /// <param name="daysToSubtract">Number of days to subtract</param>
@@ -1149,7 +1169,7 @@ namespace hist_mmorpg
         /// </summary>
         public void updateCharacter()
         {
-            // check for character death
+            // check for character DEATH
             if (this.checkDeath())
             {
                 this.isAlive = false;
@@ -1174,8 +1194,9 @@ namespace hist_mmorpg
                     }
                 }
 
-                // reset days
-                this.days = 90;
+                // reset DAYS
+                this.days = this.getDaysAllowance();
+
             }
 
         }

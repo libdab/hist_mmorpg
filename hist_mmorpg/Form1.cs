@@ -2230,7 +2230,7 @@ namespace hist_mmorpg
                 for (int i = 0; i < dissolvedSieges.Count; i++ )
                 {
                     // dismantle siege
-                    this.dismantleSiege(dissolvedSieges[i]);
+                    this.siegeEnd(dissolvedSieges[i]);
                 }
 
                 // clear dissolvedSieges
@@ -2323,7 +2323,7 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    this.refreshArmyContainer();
+                    this.refreshSiegeContainer();
                 }
             }
         }
@@ -2349,7 +2349,7 @@ namespace hist_mmorpg
                 {
                     // if so, dismantle the siege
                     Siege thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
-                    this.dismantleSiege(thisSiege);
+                    this.siegeEnd(thisSiege);
                 }
             }
 
@@ -4353,6 +4353,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void myFiefsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Globals_Client.fiefToView = null;
             this.refreshMyFiefs();
             Globals_Client.containerToView = this.fiefsOwnedContainer;
             Globals_Client.containerToView.BringToFront();
@@ -5036,6 +5037,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void dealWithHouseholdAffairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Globals_Client.charToView = null;
             // refresh household affairs screen 
             this.refreshHouseholdDisplay();
             // display household affairs screen
@@ -6437,6 +6439,7 @@ namespace hist_mmorpg
         private void listMToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.armyContainer.Panel1.Tag = "management";
+            Globals_Client.armyToView = null;
             this.refreshArmyContainer();
         }
 
@@ -6680,8 +6683,34 @@ namespace hist_mmorpg
         /// <param name="a">Army to be disbanded</param>
         public void disbandArmy(Army a)
         {
-            // remove from armyMasterList
-            Globals_Server.armyMasterList.Remove(a.armyID);
+            // check for siege involvement
+            string siegeID = a.checkForSiegeRole();
+            Siege thisSiege = null;
+            if (siegeID != null)
+            {
+                thisSiege = Globals_Server.siegeMasterList[siegeID];
+            }
+
+            // remove from siege
+            if (thisSiege != null)
+            {
+                // check if are additional defending army
+                string whichRole = a.checkIfSiegeDefenderAdditional();
+                if (whichRole != null)
+                {
+                    thisSiege.defenderAdditional = null;
+                }
+
+                // check if are besieging army
+                else
+                {
+                    whichRole = a.checkIfBesieger();
+                    if (whichRole != null)
+                    {
+                        thisSiege.besiegerArmy = null;
+                    }
+                }
+            }
 
             // remove from fief
             Fief thisFief = a.getLocation();
@@ -6697,6 +6726,9 @@ namespace hist_mmorpg
             {
                 thisLeader.armyID = null;
             }
+
+            // remove from armyMasterList
+            Globals_Server.armyMasterList.Remove(a.armyID);
 
             // set army to null
             a = null;
@@ -7196,7 +7228,7 @@ namespace hist_mmorpg
                 // if have >= 20% casualties
                 if (dCasualties >= 0.2)
                 {
-                    // indicate attacker has retreated
+                    // indicate defender has retreated
                     hasRetreated[1] = true;
 
                     // generate random 1-2 to determine retreat distance
@@ -7208,10 +7240,10 @@ namespace hist_mmorpg
             // NOTE: this will only happen if attacker and defender still present in fief
             if ((defender.aggression == 0) && (!hasRetreated[0] && !hasRetreated[1]))
             {
-                // indicate attacker has retreated
+                // indicate defender has retreated
                 hasRetreated[1] = true;
 
-                // generate random 1-6 to determine retreat distance
+                // indicate retreat distance
                 retreatDistance[1] = 1;
             }
 
@@ -7546,6 +7578,20 @@ namespace hist_mmorpg
                     }
                 }
 
+                // check for SIEGE RELIEF
+                // attacker (relieving army) victory or defender (besieging army) retreat = relief
+                if ((attackerVictorious) || (retreatDistances[1] > 0))
+                {
+                    // check to see if defender was besieging the fief keep
+                    string thisSiegeID = defender.checkIfBesieger();
+                    if (thisSiegeID != null)
+                    {
+                        // if so, dismantle the siege
+                        Siege thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
+                        this.siegeEnd(thisSiege);
+                    }
+                }
+
                 // DISBANDMENT
                 // process army disbandings (after all other functions completed)
                 if (attackerDisbanded)
@@ -7558,26 +7604,13 @@ namespace hist_mmorpg
                     this.disbandArmy(defender);
                 }
 
-                // SIEGE RELIEF
-                if (attackerVictorious)
-                {
-                    // check to see if defender was besieging the fief keep
-                    string thisSiegeID = defender.checkIfBesieger();
-                    if (thisSiegeID != null)
-                    {
-                        // if so, dismantle the siege
-                        Siege thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
-                        this.dismantleSiege(thisSiege);
-                    }
-                }
-
             }
             else
             {
                 System.Windows.Forms.MessageBox.Show(defender.armyID + " has refused battle.");
             }
 
-            // refresh screnn
+            // refresh screen
             this.refreshCurrentScreen();
 
             return attackerVictorious;
@@ -8067,26 +8100,50 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Dismantles the specified siege
+        /// Ends the specified siege
         /// </summary>
-        /// <param name="s">Siege to be dismantled</param>
-        public void dismantleSiege(Siege s)
+        /// <param name="s">Siege to be ended</param>
+        public void siegeEnd(Siege s)
         {
             // get principle objects
             Army defenderGarrison = s.getDefenderGarrison();
-            Army attacker = s.getBesieger();
+            Army defenderAdditional = s.getDefenderAdditional();
             Fief besiegedFief = s.getFief();
-            PlayerCharacter attackerOwner = attacker.getOwner();
+            PlayerCharacter besiegingPlayer = s.getBesiegingPlayer();
+            PlayerCharacter defendingPlayer = s.getDefendingPlayer();
+            Character besiegingArmyLeader = s.getBesieger().getLeader();
 
             // disband garrison
             this.disbandArmy(defenderGarrison);
 
             // remove from PCs
-            attackerOwner.mySieges.Remove(s.siegeID);
-            besiegedFief.owner.mySieges.Remove(s.siegeID);
+            besiegingPlayer.mySieges.Remove(s.siegeID);
+            defendingPlayer.mySieges.Remove(s.siegeID);
 
             // remove from fief
             besiegedFief.siege = null;
+
+            // sync days of all effected objects (to remove influence of attacking leader's skills)
+            // work out proportion of seasonal allowance remaining
+            double daysProportion = 0;
+            if (besiegingArmyLeader != null)
+            {
+                daysProportion = s.days / besiegingArmyLeader.getDaysAllowance();
+            }
+            else
+            {
+                daysProportion = s.days / 90;
+            }
+
+            // iterate through characters in fief keep
+            foreach (Character thisChar in besiegedFief.characters)
+            {
+                if (thisChar.inKeep)
+                {
+                    // reset character's days to reflect days spent in siege
+                    thisChar.days = thisChar.getDaysAllowance() * daysProportion;
+                }
+            }
 
             // remove from master list
             Globals_Server.siegeMasterList.Remove(s.siegeID);
@@ -8420,7 +8477,6 @@ namespace hist_mmorpg
                         {
                             if (!besiegedFief.armies.Contains(s.defenderAdditional))
                             {
-                                s.defenderAdditional = null;
                                 defenderAdditional = null;
                             }
                         }
@@ -8431,10 +8487,8 @@ namespace hist_mmorpg
 
             if (siegeRaised)
             {
+                // NOTE: if sally was success, siege is ended in Form1.giveBattle
                 System.Windows.Forms.MessageBox.Show("The defenders have successfully raised the siege!");
-
-                // dismantle siege
-                this.dismantleSiege(s);
             }
 
             else
@@ -8443,34 +8497,11 @@ namespace hist_mmorpg
                 // reduce keep level by 5%
                 besiegedFief.keepLevel = (besiegedFief.keepLevel * 0.95);
 
-                // calculate casualties to defenderGarrison
+                // apply combat losses to defenderGarrison
+                // NOTE: attrition for both sides is calculated in siege.syncDays
+
                 double combatLosses = 0.01;
-                double attritionLosses = 0;
-
-                // check to see if attrition has kicked in for defender
-                // (based on bailiff's management rating)
-                if (s.checkAttritionApplies())
-                {
-                    // check for attrition
-                    attritionLosses = defenderGarrison.calcAttrition();
-                    // apply attrition
-                    defenderGarrison.applyTroopLosses(attritionLosses);
-
-                    if (defenderAdditional != null)
-                    {
-                        // check for attrition
-                        attritionLosses = defenderAdditional.calcAttrition();
-                        // apply attrition
-                        defenderAdditional.applyTroopLosses(attritionLosses);
-                    }
-                }
-
-                // apply combat losses
                 defenderGarrison.applyTroopLosses(combatLosses);
-
-                // apply attrition to attacker
-                attritionLosses = besieger.calcAttrition();
-                besieger.applyTroopLosses(attritionLosses);
 
                 // check for death of defending PCs/NPCs
                 if (defenderLeader != null)
@@ -8504,12 +8535,11 @@ namespace hist_mmorpg
                     }
                 }
 
-                // update days
-                s.days -= 10;
+                // update total days (NOTE: siege.days will be updated in syncDays)
                 s.totalDays += 10;
 
                 // synchronise days
-                s.syncDays();
+                s.syncDays(s.days - 10);
             }
 
             // refresh screen
@@ -8562,7 +8592,7 @@ namespace hist_mmorpg
             }
             
             // create siege object
-            Siege mySiege = new Siege(Globals_Server.getNextSiegeID(), Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, attacker.armyID, defenderGarrison.armyID, target.fiefID, minDays, target.keepLevel, defAdd: defAddID);
+            Siege mySiege = new Siege(Globals_Server.getNextSiegeID(), Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, attacker.getOwner().charID, target.owner.charID, attacker.armyID, defenderGarrison.armyID, target.fiefID, minDays, target.keepLevel, defAdd: defAddID);
 
             // add to master list
             Globals_Server.siegeMasterList.Add(mySiege.siegeID, mySiege);
@@ -8574,12 +8604,11 @@ namespace hist_mmorpg
             // add to fief
             target.siege = mySiege.siegeID;
 
-            // update days
-            mySiege.days--;
+            // update days (NOTE: siege.days will be updated in syncDays)
             mySiege.totalDays++;
 
             // sychronise days
-            mySiege.syncDays();
+            mySiege.syncDays(mySiege.days - 1);
 
             // display siege in siege screen
             this.refreshSiegeContainer(mySiege);
@@ -8715,6 +8744,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void viewMySiegesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Globals_Client.siegeToView = null;
             this.refreshSiegeContainer();
         }
 
@@ -8829,7 +8859,10 @@ namespace hist_mmorpg
                 if (proceed)
                 {
                     // process siege reduction round
-                    this.dismantleSiege(thisSiege);
+                    this.siegeEnd(thisSiege);
+
+                    //refresh screen
+                    this.refreshCurrentScreen();
                 }
             }
             else
