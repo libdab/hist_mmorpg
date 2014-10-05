@@ -1177,8 +1177,37 @@ namespace hist_mmorpg
 
             if (this.isAlive)
             {
-                // TODO: check ailments (decrement effects, remove)
+                // update AILMENTS (decrement effects, remove)
+                // keep track of any ailments that have healed
+                List<Ailment> healedAilments = new List<Ailment>();
+                bool isHealed = false;
 
+                // iterate through ailments
+                foreach (KeyValuePair<string, Ailment> ailmentEntry in this.ailments)
+                {
+                    isHealed = ailmentEntry.Value.updateAilment();
+
+                    // add to healedAilments if appropriate
+                    if (isHealed)
+                    {
+                        healedAilments.Add(ailmentEntry.Value);
+                    }
+                }
+
+                // remove any healed ailments
+                if (healedAilments.Count > 0)
+                {
+                    for (int i = 0; i < healedAilments.Count; i++)
+                    {
+                        // remove ailment
+                        this.ailments.Remove(healedAilments[i].ailmentID);
+                    }
+
+                    // clear healedAilments
+                    healedAilments.Clear();
+                }
+
+                // automatic BABY NAMING
                 if (this is NonPlayerCharacter)
                 {
                     // if (age >= 1) && (firstName.Equals("Baby")), character firstname = king's
@@ -1196,6 +1225,7 @@ namespace hist_mmorpg
 
                 // reset DAYS
                 this.days = this.getDaysAllowance();
+                this.adjustDays(0);
 
             }
 

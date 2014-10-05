@@ -403,7 +403,15 @@ namespace hist_mmorpg
             NonPlayerCharacter myWife = new NonPlayerCharacter("404", "Molly", "Maguire", myDob005, false, "E", true, 2.50, 9.0, myGoTo5, myLang2, 90, 0, 4.0, 6.0, generateSkillSet(), false, true, false, "101", "101", null, 30000, false, false, myTitles005, cl: Globals_Client.clock, loc: myFief1);
             Globals_Server.npcMasterList.Add(myWife.charID, myWife);
 
-			// set fief owners
+            // get character's correct days allowance
+            myChar1.days = myChar1.getDaysAllowance();
+            myChar2.days = myChar2.getDaysAllowance();
+            myNPC1.days = myNPC1.getDaysAllowance();
+            myNPC2.days = myNPC2.getDaysAllowance();
+            myNPC3.days = myNPC3.getDaysAllowance();
+            myWife.days = myWife.getDaysAllowance();
+
+            // set fief owners
 			myFief1.owner = myChar1;
 			myFief2.owner = myChar1;
 			myFief3.owner = myChar1;
@@ -516,7 +524,7 @@ namespace hist_mmorpg
 
             // create another (enemy) army and add in appropriate places
             uint[] myArmyTroops2 = new uint[] { 10, 10, 30, 0, 200, 400 };
-            Army myArmy2 = new Army(Globals_Server.getNextArmyID(), null, null, 90, Globals_Client.clock, null, trp: myArmyTroops2, aggr: 2);
+            Army myArmy2 = new Army(Globals_Server.getNextArmyID(), null, null, 90, Globals_Client.clock, null, trp: myArmyTroops2, aggr: 1);
             Globals_Server.armyMasterList.Add(myArmy2.armyID, myArmy2);
             myArmy2.owner = myChar2.charID;
             myArmy2.leader = myChar2.charID;
@@ -2104,29 +2112,6 @@ namespace hist_mmorpg
                 fiefEntry.Value.updateFief();
             }
 
-            // PLAYERCHARACTERS
-            foreach (KeyValuePair<string, PlayerCharacter> pcEntry in Globals_Server.pcMasterList)
-            {
-                // check if PlayerCharacter is alive
-                performCharacterUpdate = pcEntry.Value.isAlive;
-
-                if (performCharacterUpdate)
-                {
-                    // updateCharacter includes checkDeath
-                    pcEntry.Value.updateCharacter();
-
-                    // check again if PlayerCharacter is alive (after checkDeath)
-                    if (pcEntry.Value.isAlive)
-                    {
-                        // finish previously started multi-hex move if necessary
-                        if (pcEntry.Value.goTo.Count > 0)
-                        {
-                            this.characterMultiMove(pcEntry.Value, true);
-                        }
-                    }
-                }
-            }
-
             // NONPLAYERCHARACTERS
             foreach (KeyValuePair<string, NonPlayerCharacter> npcEntry in Globals_Server.npcMasterList)
             {
@@ -2175,10 +2160,33 @@ namespace hist_mmorpg
                 }
             }
 
+            // PLAYERCHARACTERS
+            foreach (KeyValuePair<string, PlayerCharacter> pcEntry in Globals_Server.pcMasterList)
+            {
+                // check if PlayerCharacter is alive
+                performCharacterUpdate = pcEntry.Value.isAlive;
+
+                if (performCharacterUpdate)
+                {
+                    // updateCharacter includes checkDeath
+                    pcEntry.Value.updateCharacter();
+
+                    // check again if PlayerCharacter is alive (after checkDeath)
+                    if (pcEntry.Value.isAlive)
+                    {
+                        // finish previously started multi-hex move if necessary
+                        if (pcEntry.Value.goTo.Count > 0)
+                        {
+                            this.characterMultiMove(pcEntry.Value, true);
+                        }
+                    }
+                }
+            }
+
             // ARMIES
 
             // keep track of any armies requiring removal (if hav fallen below 100 men)
-            List<Army> dissolvedArmies = new List<Army>();
+            List<Army> disbandedArmies = new List<Army>();
             bool hasDissolved = false;
 
             // iterate through armies
@@ -2189,21 +2197,21 @@ namespace hist_mmorpg
                 // add to dissolvedArmies if appropriate
                 if (hasDissolved)
                 {
-                    dissolvedArmies.Add(armyEntry.Value);
+                    disbandedArmies.Add(armyEntry.Value);
                 }
             }
 
             // remove any dissolved armies
-            if (dissolvedArmies.Count > 0)
+            if (disbandedArmies.Count > 0)
             {
-                for (int i = 0; i < dissolvedArmies.Count; i++)
+                for (int i = 0; i < disbandedArmies.Count; i++)
                 {
                     // disband army
-                    this.disbandArmy(dissolvedArmies[i]);
+                    this.disbandArmy(disbandedArmies[i]);
                 }
 
                 // clear dissolvedArmies
-                dissolvedArmies.Clear();
+                disbandedArmies.Clear();
             }
 
             // SIEGES
@@ -2264,17 +2272,7 @@ namespace hist_mmorpg
             // household affairs
             else if (Globals_Client.containerToView == this.houseContainer)
             {
-                // check if NPC being displayed (to refresh NPC display)
-                if (this.houseCharListView.SelectedItems.Count > 0)
-                {
-                    NonPlayerCharacter npcToDisplay = null;
-                    npcToDisplay = Globals_Server.npcMasterList[this.houseCharListView.SelectedItems[0].SubItems[1].Text];
-                    this.refreshHouseholdDisplay(npcToDisplay);
-                }
-                else
-                {
-                    this.refreshHouseholdDisplay();
-                }
+                this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
             }
 
             // meeting place
@@ -2298,33 +2296,13 @@ namespace hist_mmorpg
             // armies
             else if (Globals_Client.containerToView == this.armyContainer)
             {
-                // check if army being displayed (to refresh army display)
-                if (this.armyListView.SelectedItems.Count > 0)
-                {
-                    Army armyToDisplay = null;
-                    armyToDisplay = Globals_Server.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
-                    this.refreshArmyContainer(armyToDisplay);
-                }
-                else
-                {
-                    this.refreshArmyContainer();
-                }
+                this.refreshArmyContainer(Globals_Client.armyToView);
             }
 
             // sieges
             else if (Globals_Client.containerToView == this.siegeContainer)
             {
-                // check if siege being displayed (to refresh siege display)
-                if (this.siegeListView.SelectedItems.Count > 0)
-                {
-                    Siege siegeToDisplay = null;
-                    siegeToDisplay = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
-                    this.refreshSiegeContainer(siegeToDisplay);
-                }
-                else
-                {
-                    this.refreshSiegeContainer();
-                }
+                this.refreshSiegeContainer(Globals_Client.siegeToView);
             }
         }
 
@@ -3235,7 +3213,7 @@ namespace hist_mmorpg
             PlayerCharacter fiefOwner = siegeLocation.owner;
             bool isDefender = (fiefOwner == Globals_Client.myChar);
             Army besieger = s.getBesieger();
-            PlayerCharacter besiegingPlayer = besieger.getOwner();
+            PlayerCharacter besiegingPlayer = s.getBesiegingPlayer();
             Army defenderGarrison = s.getDefenderGarrison();
             Army defenderAdditional = s.getDefenderAdditional();
             Character besiegerLeader = besieger.getLeader();
@@ -3867,12 +3845,12 @@ namespace hist_mmorpg
                 thisSiegeItem.SubItems.Add(siegeLocation.name + " (" + siegeLocation.fiefID + ")");
 
                 // defender
-                PlayerCharacter defender = siegeLocation.owner;
-                thisSiegeItem.SubItems.Add(defender.firstName + " " + defender.familyName + " (" + defender.charID + ")");
+                PlayerCharacter defendingPlayer = s.getDefendingPlayer();
+                thisSiegeItem.SubItems.Add(defendingPlayer.firstName + " " + defendingPlayer.familyName + " (" + defendingPlayer.charID + ")");
 
                 // besieger
                 Army besiegingArmy = thisSiege.getBesieger();
-                PlayerCharacter besieger = besiegingArmy.getOwner();
+                PlayerCharacter besieger = s.getBesiegingPlayer();
                 thisSiegeItem.SubItems.Add(besieger.firstName + " " + besieger.familyName + " (" + besieger.charID + ")");
 
                 if (thisSiegeItem != null)
@@ -6185,7 +6163,10 @@ namespace hist_mmorpg
             armyOwner.myArmies.Add(a);
 
             // add to leader
-            armyLeader.armyID = a.armyID;
+            if (armyLeader != null)
+            {
+                armyLeader.armyID = a.armyID;
+            }
 
             // add to fief's armies
             armyLocation.armies.Add(a.armyID);
@@ -7760,6 +7741,8 @@ namespace hist_mmorpg
         {
             Army defender = null;
             Character armyLeader = null;
+            string armyLeaderID = null;
+            double armyLeaderDays = 90;
 
             // if present in fief, get bailiff and assign as army leader
             if (f.bailiff != null)
@@ -7769,6 +7752,8 @@ namespace hist_mmorpg
                     if (f.characters[i] == f.bailiff)
                     {
                         armyLeader = f.bailiff;
+                        armyLeaderID = armyLeader.charID;
+                        armyLeaderDays = armyLeader.days;
                         break;
                     }
                 }
@@ -7841,8 +7826,8 @@ namespace hist_mmorpg
                 totalSoFar += tempTroops[i];
             }
 
-            // create temporary army for battle
-            defender = new Army("Garrison" + Globals_Server.getNextArmyID(), armyLeader.charID, f.owner.charID, armyLeader.days, Globals_Client.clock, f.fiefID, trp: troopsForArmy);
+            // create temporary army for battle/siege
+            defender = new Army("Garrison" + Globals_Server.getNextArmyID(), armyLeaderID, f.owner.charID, armyLeaderDays, Globals_Client.clock, f.fiefID, trp: troopsForArmy);
             this.addArmy(defender);
 
             return defender;
@@ -8240,10 +8225,10 @@ namespace hist_mmorpg
         {
             bool stormSuccess = false;
             Fief besiegedFief = s.getFief();
-            Army attacker = s.getBesieger();
+            Army besiegingArmy = s.getBesieger();
             Army defenderGarrison = s.getDefenderGarrison();
             Army defenderAdditional = s.getDefenderAdditional();
-            PlayerCharacter attackerOwner = attacker.getOwner();
+            PlayerCharacter attackingPlayer = s.getBesiegingPlayer();
             Character defenderLeader = defenderGarrison.getLeader();
 
             // process non-storm round
@@ -8268,7 +8253,7 @@ namespace hist_mmorpg
             double keepDamageModifier = 0.1;
 
             // calculate further damage, based on comparative battle values (up to extra 15%)
-            uint [] battleValues = this.calculateBattleValue(attacker, defenderGarrison, Convert.ToInt32(keepLvl));
+            uint [] battleValues = this.calculateBattleValue(besiegingArmy, defenderGarrison, Convert.ToInt32(keepLvl));
             // divide attackerBV by defenderBV to get extraDamageMultiplier
             double extraDamageMultiplier = battleValues[0] / battleValues[1];
 
@@ -8313,7 +8298,7 @@ namespace hist_mmorpg
                 attackerCasualtyModifier += (0.002 * keepLvl);
             }
             // apply casualties
-            attacker.applyTroopLosses(attackerCasualtyModifier);
+            besiegingArmy.applyTroopLosses(attackerCasualtyModifier);
 
             // PC/NPC INJURIES
             // NOTE: defender only (attacker leaders assumed not to have climbed the walls)
@@ -8357,7 +8342,7 @@ namespace hist_mmorpg
                 }
 
                 // pillage fief
-                this.processPillage(besiegedFief, attacker);
+                this.processPillage(besiegedFief, besiegingArmy);
 
                 // CAPTIVES
                 // identify captives - fief owner, his family, and any PCs of enemy nationality
@@ -8367,14 +8352,14 @@ namespace hist_mmorpg
                     if (thisCharacter.inKeep)
                     {
                         // fief owner and his family
-                        if (thisCharacter.familyID.Equals(besiegedFief.owner.charID))
+                        if (thisCharacter.familyID.Equals(s.getDefendingPlayer().charID))
                         {
                             captives.Add(thisCharacter);
                         }
                         // PCs of enemy nationality
                         else if (thisCharacter is PlayerCharacter)
                         {
-                            if (!thisCharacter.nationality.Equals(attackerOwner.nationality))
+                            if (!thisCharacter.nationality.Equals(attackingPlayer.nationality))
                             {
                                 captives.Add(thisCharacter);
                             }
@@ -8398,18 +8383,18 @@ namespace hist_mmorpg
                     else
                     {
                         // calculate ransom (family allowance)
-                        string thisFunction = (thisCharacter as NonPlayerCharacter).getFunction(besiegedFief.owner);
+                        string thisFunction = (thisCharacter as NonPlayerCharacter).getFunction(s.getDefendingPlayer());
                         thisRansom = Convert.ToInt32((thisCharacter as NonPlayerCharacter).calcFamilyAllowance(thisFunction));
                         // remove from head of family's home treasury
-                        besiegedFief.owner.getHomeFief().treasury -= thisRansom;
+                        s.getDefendingPlayer().getHomeFief().treasury -= thisRansom;
                     }
 
                     // add to besieger's home treasury
-                    attackerOwner.getHomeFief().treasury += thisRansom;
+                    attackingPlayer.getHomeFief().treasury += thisRansom;
                 }
 
                 // change fief ownership
-                besiegedFief.changeOwnership(attackerOwner);
+                besiegedFief.changeOwnership(attackingPlayer);
             }
 
         }
@@ -8598,8 +8583,8 @@ namespace hist_mmorpg
             Globals_Server.siegeMasterList.Add(mySiege.siegeID, mySiege);
 
             // add to siege owners
-            attacker.getOwner().mySieges.Add(mySiege.siegeID);
-            target.owner.mySieges.Add(mySiege.siegeID);
+            mySiege.getBesiegingPlayer().mySieges.Add(mySiege.siegeID);
+            mySiege.getDefendingPlayer().mySieges.Add(mySiege.siegeID);
 
             // add to fief
             target.siege = mySiege.siegeID;
@@ -8631,8 +8616,8 @@ namespace hist_mmorpg
             if (Globals_Client.siegeToView != null)
             {
                 Army besiegingArmy = Globals_Client.siegeToView.getBesieger();
-                PlayerCharacter besieger = besiegingArmy.getOwner();
-                bool playerIsBesieger = (Globals_Client.myChar == besieger);
+                PlayerCharacter besiegingPlayer = Globals_Client.siegeToView.getBesiegingPlayer();
+                bool playerIsBesieger = (Globals_Client.myChar == besiegingPlayer);
 
                 // display data for selected siege
                 this.siegeTextBox.Text = this.displaySiegeData(Globals_Client.siegeToView);

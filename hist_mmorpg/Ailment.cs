@@ -49,10 +49,10 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Processes ailment, reducing effect where approprite
+        /// Updates the ailment, reducing effect where approprite
         /// </summary>
         /// <returns>bool indicating whether ailment should be deleted</returns>
-        public bool processAilment()
+        public bool updateAilment()
         {
             bool deleteAilment = false;
 

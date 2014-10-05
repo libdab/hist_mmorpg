@@ -379,12 +379,20 @@ namespace hist_mmorpg
         {
             double cv = 0;
 
-            // get leader
+            // get leader and owner
             Character myLeader = this.getLeader();
+            PlayerCharacter myOwner = this.getOwner();
+
+            // see where army nationality is derived
+            Character nationalitySource = myOwner;
+            if (myLeader != null)
+            {
+                nationalitySource = myLeader;
+            }
 
             // get nationality (effects combat values)
             string troopNationality = "";
-            if (myLeader.nationality.ToUpper().Equals("E"))
+            if (nationalitySource.nationality.ToUpper().Equals("E"))
             {
                 troopNationality = "E";
             }
@@ -409,15 +417,18 @@ namespace hist_mmorpg
                 cv += (keepLvl * 1000) * thisCombatValues[4];
             }
 
-            // get leader's CV
-            cv += myLeader.getCombatValue();
-
-            // if leader is PC, get CV of entourage
-            if (myLeader is PlayerCharacter)
+            // get leader's combat value
+            if (myLeader != null)
             {
-                for (int i = 0; i < (myLeader as PlayerCharacter).myNPCs.Count; i++ )
+                cv += myLeader.getCombatValue();
+
+                // if leader is PC, get CV of entourage
+                if (myLeader is PlayerCharacter)
                 {
-                    cv += (myLeader as PlayerCharacter).myNPCs[i].getCombatValue();
+                    for (int i = 0; i < (myLeader as PlayerCharacter).myNPCs.Count; i++)
+                    {
+                        cv += (myLeader as PlayerCharacter).myNPCs[i].getCombatValue();
+                    }
                 }
             }
 
@@ -494,14 +505,17 @@ namespace hist_mmorpg
         {
             Character myLeader = null;
 
-            // get leader from appropriate master list
-            if (Globals_Server.npcMasterList.ContainsKey(this.leader))
+            if (this.leader != null)
             {
-                myLeader = Globals_Server.npcMasterList[this.leader];
-            }
-            else if (Globals_Server.pcMasterList.ContainsKey(this.leader))
-            {
-                myLeader = Globals_Server.pcMasterList[this.leader];
+                // get leader from appropriate master list
+                if (Globals_Server.npcMasterList.ContainsKey(this.leader))
+                {
+                    myLeader = Globals_Server.npcMasterList[this.leader];
+                }
+                else if (Globals_Server.pcMasterList.ContainsKey(this.leader))
+                {
+                    myLeader = Globals_Server.pcMasterList[this.leader];
+                }
             }
 
             return myLeader;
