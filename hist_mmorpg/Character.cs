@@ -1165,6 +1165,22 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// gets the character's spouse
+        /// </summary>
+        /// <returns>The spouse or null</returns>
+        public NonPlayerCharacter getSpouse()
+        {
+            NonPlayerCharacter mySpouse = null;
+
+            if (this.spouse != null)
+            {
+                mySpouse = Globals_Server.npcMasterList[this.spouse];
+            }
+
+            return mySpouse;
+        }
+
+        /// <summary>
         /// Updates character data at the end/beginning of the season
         /// </summary>
         public void updateCharacter()
@@ -2066,7 +2082,17 @@ namespace hist_mmorpg
         /// <returns>The home fief</returns>
         public Fief getHomeFief()
         {
-            return Globals_Server.fiefMasterList[this.homeFief];
+            Fief homeFief = null;
+
+            if (this.homeFief != null)
+            {
+                if (Globals_Server.fiefMasterList.ContainsKey(this.homeFief))
+                {
+                    homeFief = Globals_Server.fiefMasterList[this.homeFief];
+                }
+            }
+
+            return homeFief;
         }
 
     }

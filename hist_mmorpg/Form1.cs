@@ -2692,27 +2692,30 @@ namespace hist_mmorpg
         /// <param name="npc">NonPlayerCharacter to display</param>
         public void refreshHouseholdDisplay(NonPlayerCharacter npc = null)
         {
-            // remove any previously displayed characters
+            // set main character display as read only
             this.houseCharTextBox.ReadOnly = true;
-            this.houseCharTextBox.Text = "";
 
             // ensure unable to use controls whilst no NPC selected in ListView
             this.houseCampBtn.Enabled = false;
-            this.houseCampDaysTextBox.Text = "";
             this.houseCampDaysTextBox.Enabled = false;
             this.familyNameChildButton.Enabled = false;
-            this.familyNameChildTextBox.Text = "";
             this.familyNameChildTextBox.Enabled = false;
+            this.familyNpcSpousePregBtn.Enabled = false;
             this.houseHeirBtn.Enabled = false;
             this.houseMoveToBtn.Enabled = false;
-            this.houseMoveToTextBox.Text = "";
             this.houseMoveToTextBox.Enabled = false;
             this.houseRouteBtn.Enabled = false;
-            this.houseRouteTextBox.Text = "";
             this.houseEntourageBtn.Enabled = false;
             this.houseFireBtn.Enabled = false;
             this.houseExamineArmiesBtn.Enabled = false;
 
+            // remove any previously displayed text
+            this.houseCharTextBox.Text = "";
+            this.houseCampDaysTextBox.Text = "";
+            this.familyNameChildTextBox.Text = "";
+            this.houseMoveToTextBox.Text = "";
+            this.houseRouteTextBox.Text = "";
+            
             // clear existing items in characters list
             this.houseCharListView.Items.Clear();
 
@@ -3142,6 +3145,19 @@ namespace hist_mmorpg
         {
             string armyText = "";
             uint[] troopNumbers = a.troops;
+
+            // check if is defender in a siege
+            string siegeID = a.checkIfSiegeDefenderGarrison();
+            if (siegeID == null)
+            {
+                siegeID = a.checkIfSiegeDefenderAdditional();
+            }
+
+            // if is defender in a siege, indicate
+            if (siegeID != null)
+            {
+                armyText += "NOTE: This army is CURRENTLY UNDER SIEGE\r\n\r\n";
+            }
 
             // ID
             armyText += "ID: " + a.armyID + "\r\n\r\n";
@@ -3939,11 +3955,11 @@ namespace hist_mmorpg
                 f = Globals_Client.myChar.location;
             }
 
+            Globals_Client.fiefToView = f;
+
             bool isOwner = Globals_Client.myChar.ownedFiefs.Contains(Globals_Client.fiefToView);
             bool displayWarning = false;
             String toDisplay = "";
-
-            Globals_Client.fiefToView = f;
 
             // set name label text
             this.fiefLabel.Text = Globals_Client.fiefToView.name + " (" + Globals_Client.fiefToView.fiefID + ")";
@@ -4328,10 +4344,8 @@ namespace hist_mmorpg
         /// </summary>
         private void refreshTravelContainer()
         {
-            // clear existing data in TextBoxes
-            this.travelMoveToTextBox.Text = "";
-            this.travelCampDaysTextBox.Text = "";
-            this.travelRouteTextBox.Text = "";
+            // get current fief
+            Fief thisFief = Globals_Client.myChar.location;
 
             // string[] to hold direction text
             string[] directions = new string[] { "NE", "E", "SE", "SW", "W", "NW" };
@@ -4339,19 +4353,19 @@ namespace hist_mmorpg
             Button[] travelBtns = new Button[] { travel_NE_btn, travel_E_btn, travel_SE_btn, travel_SW_btn, travel_W_btn, travel_NW_btn };
 
             // get text for home button
-            this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + Globals_Client.myChar.location.name + " (" + Globals_Client.myChar.location.fiefID + ")" + "\r\n" + Globals_Client.myChar.location.province.name + ", " + Globals_Client.myChar.location.province.kingdom.name;
+            this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + thisFief.name + " (" + Globals_Client.myChar.location.fiefID + ")" + "\r\n" + Globals_Client.myChar.location.province.name + ", " + Globals_Client.myChar.location.province.kingdom.name;
 
             for (int i = 0; i < directions.Length; i++ )
             {
                 // retrieve target fief for that direction
-                Fief target = Globals_Client.gameMap.getFief(Globals_Client.myChar.location, directions[i]);
+                Fief target = Globals_Client.gameMap.getFief(thisFief, directions[i]);
                 // display fief details and travel cost
                 if (target != null)
                 {
                     travelBtns[i].Text = directions[i] + " FIEF:\r\n\r\n";
                     travelBtns[i].Text += target.name + " (" + target.fiefID + ")\r\n";
                     travelBtns[i].Text += target.province.name + ", " + target.province.kingdom.name + "\r\n\r\n";
-                    travelBtns[i].Text += "Cost: " + this.getTravelCost(Globals_Client.myChar.location, target);
+                    travelBtns[i].Text += "Cost: " + this.getTravelCost(thisFief, target);
                 }
                 else
                 {
@@ -4360,7 +4374,7 @@ namespace hist_mmorpg
             }
 
             // set text for informational labels
-            this.travelLocationLabel.Text = "You are here: " + Globals_Client.myChar.location.name + " (" + Globals_Client.myChar.location.fiefID + ")";
+            this.travelLocationLabel.Text = "You are here: " + thisFief.name + " (" + thisFief.fiefID + ")";
             this.travelDaysLabel.Text = "Your remaining days: " + Globals_Client.myChar.days;
             
             // set text for 'enter/exit keep' button, depending on whether player in/out of keep
@@ -4371,6 +4385,65 @@ namespace hist_mmorpg
             else
             {
                 this.enterKeepBtn.Text = "Enter Keep";
+            }
+
+            // enable all controls
+            this.travel_E_btn.Enabled = true;
+            this.travel_Home_btn.Enabled = true;
+            this.travel_NE_btn.Enabled = true;
+            this.travel_NW_btn.Enabled = true;
+            this.travel_SE_btn.Enabled = true;
+            this.travel_SW_btn.Enabled = true;
+            this.travel_W_btn.Enabled = true;
+            this.travelCampBtn.Enabled = true;
+            this.travelCampDaysTextBox.Enabled = true;
+            this.travelExamineArmiesBtn.Enabled = true;
+            this.travelMoveToBtn.Enabled = true;
+            this.travelMoveToTextBox.Enabled = true;
+            this.travelRouteBtn.Enabled = true;
+            this.travelRouteTextBox.Enabled = true;
+            this.enterKeepBtn.Enabled = true;
+            this.listOutsideKeepBtn.Enabled = true;
+            this.visitCourtBtn1.Enabled = true;
+            this.visitTavernBtn.Enabled = true;
+
+            // clear existing data in TextBoxes
+            this.travelMoveToTextBox.Text = "";
+            this.travelCampDaysTextBox.Text = "";
+            this.travelRouteTextBox.Text = "";
+
+            // check to see if fief is besieged and, if so, disable various controls
+            if (thisFief.siege != null)
+            {
+                // check to see if are inside/outside keep
+                if (Globals_Client.myChar.inKeep)
+                {
+                    // if inside keep, disable all controls except tavern and court
+                    this.travel_E_btn.Enabled = false;
+                    this.travel_Home_btn.Enabled = false;
+                    this.travel_NE_btn.Enabled = false;
+                    this.travel_NW_btn.Enabled = false;
+                    this.travel_SE_btn.Enabled = false;
+                    this.travel_SW_btn.Enabled = false;
+                    this.travel_W_btn.Enabled = false;
+                    this.travelCampBtn.Enabled = false;
+                    this.travelCampDaysTextBox.Enabled = false;
+                    this.travelExamineArmiesBtn.Enabled = false;
+                    this.travelMoveToBtn.Enabled = false;
+                    this.travelMoveToTextBox.Enabled = false;
+                    this.travelRouteBtn.Enabled = false;
+                    this.travelRouteTextBox.Enabled = false;
+                    this.enterKeepBtn.Enabled = false;
+                    this.listOutsideKeepBtn.Enabled = false;
+                }
+
+                else
+                {
+                    // if outside keep, disable tavern, court and 'enter keep' but leave all others enabled
+                    this.enterKeepBtn.Enabled = false;
+                    this.visitCourtBtn1.Enabled = false;
+                    this.visitTavernBtn.Enabled = false;
+                }
             }
 
         }
@@ -5134,10 +5207,8 @@ namespace hist_mmorpg
             if (charToDisplay != null)
             {
                 Globals_Client.charToView = charToDisplay;
-                string textToDisplay = "";
-                textToDisplay += this.displayCharacter(charToDisplay);
+                this.houseCharTextBox.Text = this.displayCharacter(charToDisplay);
                 this.houseCharTextBox.ReadOnly = true;
-                this.houseCharTextBox.Text = textToDisplay;
 
                 // see if is in entourage to set text of entourage button
                 if ((charToDisplay as NonPlayerCharacter).inEntourage)
@@ -5149,26 +5220,53 @@ namespace hist_mmorpg
                     this.houseEntourageBtn.Text = "Add To Entourage";
                 }
 
-                // re-enable controls
-                this.houseCampBtn.Enabled = true;
-                this.houseCampDaysTextBox.Enabled = true;
-                this.houseMoveToBtn.Enabled = true;
-                this.houseMoveToTextBox.Enabled = true;
-                this.houseRouteBtn.Enabled = true;
-                this.houseRouteTextBox.Enabled = true;
-                this.houseEntourageBtn.Enabled = true;
-                this.houseExamineArmiesBtn.Enabled = true;
+                // check to see if is inside besieged keep
+                if ((Globals_Client.charToView.inKeep) && (Globals_Client.charToView.location.siege != null))
+                {
+                    // if is inside besieged keep, disable most of controls
+                    this.houseCampBtn.Enabled = false;
+                    this.houseCampDaysTextBox.Enabled = false;
+                    this.houseMoveToBtn.Enabled = false;
+                    this.houseMoveToTextBox.Enabled = false;
+                    this.houseRouteBtn.Enabled = false;
+                    this.houseEntourageBtn.Enabled = false;
+                    this.houseFireBtn.Enabled = false;
+                    this.houseExamineArmiesBtn.Enabled = false;
+                }
 
+                // is NOT inside besieged keep
+                else
+                {
+                    // re-enable controls
+                    this.houseCampBtn.Enabled = true;
+                    this.houseCampDaysTextBox.Enabled = true;
+                    this.houseMoveToBtn.Enabled = true;
+                    this.houseMoveToTextBox.Enabled = true;
+                    this.houseRouteBtn.Enabled = true;
+                    this.houseRouteTextBox.Enabled = true;
+                    this.houseEntourageBtn.Enabled = true;
+                    this.houseExamineArmiesBtn.Enabled = true;
+
+                }
+
+                // FAMILY MATTERS CONTROLS
                 // if family selected, enable 'choose heir' button, disbale 'fire' button
                 if ((Globals_Client.charToView.familyID != null) && (Globals_Client.charToView.familyID.Equals(Globals_Client.myChar.charID)))
                 {
                     this.houseHeirBtn.Enabled = true;
                     this.houseFireBtn.Enabled = false;
+
+                    // if is male and married, enable NPC 'get wife with child' control
+                    if ((Globals_Client.charToView.isMale) && (Globals_Client.charToView.isMarried))
+                    {
+                        this.familyNpcSpousePregBtn.Enabled = true;
+                    }
                 }
                 else
                 {
                     this.houseHeirBtn.Enabled = false;
                     this.houseFireBtn.Enabled = true;
+                    this.familyNpcSpousePregBtn.Enabled = false;
                 }
 
                 // if character aged 0 and firstname = "Baby", enable 'name child' controls
@@ -5183,6 +5281,9 @@ namespace hist_mmorpg
                     this.familyNameChildButton.Enabled = false;
                     this.familyNameChildTextBox.Enabled = false;
                 }
+
+                // 'get wife with child' button always enabled
+                this.familyGetSpousePregBtn.Enabled = true;
             }
         }
 
@@ -5603,18 +5704,25 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Responds to the click event of the familyGetSpousePregBt button
-        /// calling the Character.getSpousePregnant method,
-        /// allowing players to attempt to get their spouse pregnant
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
         private void familyGetSpousePregBtn_Click(object sender, EventArgs e)
         {
             // get spouse
-            NonPlayerCharacter mySpouse = Globals_Server.npcMasterList[Globals_Client.myChar.spouse];
-            // attempt pregnancy
-            bool pregnant = Globals_Client.myChar.getSpousePregnant(mySpouse);
+            NonPlayerCharacter mySpouse = Globals_Client.myChar.getSpouse();
 
+            // perform standard checks
+            if (this.checkBeforePregnancyAttempt(Globals_Client.myChar))
+            {
+                // ensure are both in/out of keep
+                mySpouse.inKeep = Globals_Client.myChar.inKeep;
+
+                // attempt pregnancy
+                bool pregnant = Globals_Client.myChar.getSpousePregnant(mySpouse);
+            }
+
+            /*
             // test event scheduled in clock
             List<JournalEvent> myEvents = new List<JournalEvent>();
             myEvents = Globals_Client.clock.scheduledEvents.getEventsOnDate();
@@ -5624,7 +5732,7 @@ namespace hist_mmorpg
                 {
                     System.Windows.Forms.MessageBox.Show("Year: " + jEvent.year + " | Season: " + jEvent.season + " | Who: " + jEvent.personae + " | What: " + jEvent.type);
                 }
-            }
+            } */
         }
 
         /// <summary>
@@ -6161,7 +6269,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of the fullToolStripMenuItem
+        /// Responds to the click event of the testUpdateMenuItem
         /// performing a full seasonal update
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
@@ -6175,6 +6283,32 @@ namespace hist_mmorpg
             String updateType = menuItem.Tag.ToString();
 
             this.seasonUpdate(updateType);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the switchPlayerMenuItem
+        /// allowing the switch to another player (for testing)
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void switchPlayerMenuItem_Click(object sender, EventArgs e)
+        {
+            // get new player ID
+            string playerID = this.switchPlayerMenuTextBox.Text;
+
+            if ((playerID.Trim() == "") || (playerID == null))
+            {
+                System.Windows.Forms.MessageBox.Show("No PlayerCharacter ID entered.  Operation cancelled.");
+            }
+            else if (!Globals_Server.pcMasterList.ContainsKey(playerID))
+            {
+                System.Windows.Forms.MessageBox.Show("PlayerCharacter could not be identified.  Operation cancelled.");
+            }
+            else
+            {
+                Globals_Client.myChar = Globals_Server.pcMasterList[playerID];
+                this.refreshCharacterContainer(Globals_Client.myChar);
+            }
         }
 
         private void houseHeirBtn_Click(object sender, EventArgs e)
@@ -6438,69 +6572,120 @@ namespace hist_mmorpg
                 // display data for selected army
                 this.armyTextBox.Text = this.displayArmyData(Globals_Client.armyToView);
 
-                // if player is leading an army but not the one on view, disable 'recruit' button
-                if ((!(Globals_Client.armyToView.leader == Globals_Client.myChar.charID))
-                    && (!(Globals_Client.myChar.armyID == null)))
+                // check if is defender in a siege
+                string siegeID = Globals_Client.armyToView.checkIfSiegeDefenderGarrison();
+                if (siegeID == null)
+                {
+                    siegeID = Globals_Client.armyToView.checkIfSiegeDefenderAdditional();
+                }
+
+                // if is defender in a siege, disable controls
+                if (siegeID != null)
                 {
                     this.armyRecruitBtn.Enabled = false;
                     this.armyRecruitTextBox.Enabled = false;
+                    this.armyMaintainBtn.Enabled = false;
+                    this.armyAppointLeaderBtn.Enabled = false;
+                    this.armyAppointSelfBtn.Enabled = false;
+                    this.armyTransDropBtn.Enabled = false;
+                    this.armyTransDropWhoTextBox.Enabled = false;
+                    this.armyTransKnightTextBox.Enabled = false;
+                    this.armyTransMAAtextBox.Enabled = false;
+                    this.armyTransLCavTextBox.Enabled = false;
+                    this.armyTransYeomenTextBox.Enabled = false;
+                    this.armyTransFootTextBox.Enabled = false;
+                    this.armyTransRabbleTextBox.Enabled = false;
+                    this.armyTransPickupBtn.Enabled = false;
+                    this.armyDisbandBtn.Enabled = false;
+                    this.armyAutoCombatBtn.Enabled = false;
+                    this.armyAggroTextBox.Enabled = false;
+                    this.armyOddsTextBox.Enabled = false;
+                    this.armyCampBtn.Enabled = false;
+                    this.armyCampTextBox.Enabled = false;
+                    this.armyExamineBtn.Enabled = false;
+                    this.armyPillageBtn.Enabled = false;
+
+                    // clear existing information
+                    this.armyRecruitTextBox.Text = "";
+                    this.armyTransDropWhoTextBox.Text = "";
+                    this.armyTransKnightTextBox.Text = "";
+                    this.armyTransMAAtextBox.Text = "";
+                    this.armyTransLCavTextBox.Text = "";
+                    this.armyTransYeomenTextBox.Text = "";
+                    this.armyTransFootTextBox.Text = "";
+                    this.armyTransRabbleTextBox.Text = "";
+                    this.armyAggroTextBox.Text = "";
+                    this.armyOddsTextBox.Text = "";
+                    this.armyCampTextBox.Text = "";
                 }
-                // otherwise, enable 'recruit' button
+
+                // if isn't defender in a siege, enable controls as usual
                 else
                 {
-                    this.armyRecruitBtn.Enabled = true;
-                    this.armyRecruitTextBox.Enabled = true;
+                    // if player is leading an army but not the one on view, disable 'recruit' button
+                    if ((!(Globals_Client.armyToView.leader == Globals_Client.myChar.charID))
+                        && (!(Globals_Client.myChar.armyID == null)))
+                    {
+                        this.armyRecruitBtn.Enabled = false;
+                        this.armyRecruitTextBox.Enabled = false;
+                    }
+                    // otherwise, enable 'recruit' button
+                    else
+                    {
+                        this.armyRecruitBtn.Enabled = true;
+                        this.armyRecruitTextBox.Enabled = true;
 
-                    // if army on view is led by player, set button text to 'recruit additional'
-                    if (Globals_Client.armyToView.leader == Globals_Client.myChar.charID)
-                    {
-                        this.armyRecruitBtn.Text = "Recruit Additional Troops From Current Fief";
-                        this.armyRecruitBtn.Tag = "add";
+                        // if army on view is led by player, set button text to 'recruit additional'
+                        if (Globals_Client.armyToView.leader == Globals_Client.myChar.charID)
+                        {
+                            this.armyRecruitBtn.Text = "Recruit Additional Troops From Current Fief";
+                            this.armyRecruitBtn.Tag = "add";
+                        }
+                        // if player is not leading any armies, set button text to 'recruit new'
+                        else if (Globals_Client.myChar.armyID == null)
+                        {
+                            this.armyRecruitBtn.Text = "Recruit a New Army In Current Fief";
+                            this.armyRecruitBtn.Tag = "new";
+                        }
                     }
-                    // if player is not leading any armies, set button text to 'recruit new'
-                    else if (Globals_Client.myChar.armyID == null)
-                    {
-                        this.armyRecruitBtn.Text = "Recruit a New Army In Current Fief";
-                        this.armyRecruitBtn.Tag = "new";
-                    }
+
+
+                    // re-enable controls
+                    this.armyMaintainBtn.Enabled = true;
+                    this.armyAppointLeaderBtn.Enabled = true;
+                    this.armyAppointSelfBtn.Enabled = true;
+                    this.armyTransDropBtn.Enabled = true;
+                    this.armyTransKnightTextBox.Enabled = true;
+                    this.armyTransMAAtextBox.Enabled = true;
+                    this.armyTransLCavTextBox.Enabled = true;
+                    this.armyTransYeomenTextBox.Enabled = true;
+                    this.armyTransFootTextBox.Enabled = true;
+                    this.armyTransRabbleTextBox.Enabled = true;
+                    this.armyTransDropWhoTextBox.Enabled = true;
+                    this.armyTransPickupBtn.Enabled = true;
+                    this.armyDisbandBtn.Enabled = true;
+                    this.armyAutoCombatBtn.Enabled = true;
+                    this.armyAggroTextBox.Enabled = true;
+                    this.armyOddsTextBox.Enabled = true;
+                    this.armyCampBtn.Enabled = true;
+                    this.armyCampTextBox.Enabled = true;
+                    this.armyExamineBtn.Enabled = true;
+                    this.armyPillageBtn.Enabled = true;
+
+                    // set auto combat values
+                    this.armyAggroTextBox.Text = Globals_Client.armyToView.aggression.ToString();
+                    this.armyOddsTextBox.Text = Globals_Client.armyToView.combatOdds.ToString();
+
+                    // preload own ID in 'drop off to' textbox (assumes transferring between own armies)
+                    this.armyTransDropWhoTextBox.Text = Globals_Client.myChar.charID;
+                    // and set all troop transfer numbers to 0
+                    this.armyTransKnightTextBox.Text = "0";
+                    this.armyTransMAAtextBox.Text = "0";
+                    this.armyTransLCavTextBox.Text = "0";
+                    this.armyTransYeomenTextBox.Text = "0";
+                    this.armyTransFootTextBox.Text = "0";
+                    this.armyTransRabbleTextBox.Text = "0";
                 }
-
-
-                // re-enable controls
-                this.armyMaintainBtn.Enabled = true;
-                this.armyAppointLeaderBtn.Enabled = true;
-                this.armyAppointSelfBtn.Enabled = true;
-                this.armyTransDropBtn.Enabled = true;
-                this.armyTransKnightTextBox.Enabled = true;
-                this.armyTransMAAtextBox.Enabled = true;
-                this.armyTransLCavTextBox.Enabled = true;
-                this.armyTransYeomenTextBox.Enabled = true;
-                this.armyTransFootTextBox.Enabled = true;
-                this.armyTransRabbleTextBox.Enabled = true;
-                this.armyTransDropWhoTextBox.Enabled = true;
-                this.armyTransPickupBtn.Enabled = true;
-                this.armyDisbandBtn.Enabled = true;
-                this.armyAutoCombatBtn.Enabled = true;
-                this.armyAggroTextBox.Enabled = true;
-                this.armyOddsTextBox.Enabled = true;
-                this.armyCampBtn.Enabled = true;
-                this.armyCampTextBox.Enabled = true;
-                this.armyExamineBtn.Enabled = true;
-                this.armyPillageBtn.Enabled = true;
-
-                // set auto combat values
-                this.armyAggroTextBox.Text = Globals_Client.armyToView.aggression.ToString();
-                this.armyOddsTextBox.Text = Globals_Client.armyToView.combatOdds.ToString();
-
-                // preload own ID in 'drop off to' textbox (assumes transferring between own armies)
-                this.armyTransDropWhoTextBox.Text = Globals_Client.myChar.charID;
-                // and set all troop transfer numbers to 0
-                this.armyTransKnightTextBox.Text = "0";
-                this.armyTransMAAtextBox.Text = "0";
-                this.armyTransLCavTextBox.Text = "0";
-                this.armyTransYeomenTextBox.Text = "0";
-                this.armyTransFootTextBox.Text = "0";
-                this.armyTransRabbleTextBox.Text = "0";
 
             }
 
@@ -9068,6 +9253,120 @@ namespace hist_mmorpg
                 System.Windows.Forms.MessageBox.Show("No siege selected!");
             }
 
+        }
+
+        /// <summary>
+        /// Performs standard conditional checks before a pregnancy attempt
+        /// </summary>
+        /// <returns>bool indicating whether or not to proceed with pregnancy attempt</returns>
+        /// <param name="husband">The husband</param>
+        public bool checkBeforePregnancyAttempt(Character husband)
+        {
+            bool proceed = true;
+
+            // get spouse
+            NonPlayerCharacter wife = Globals_Server.npcMasterList[husband.spouse];
+
+            // check to make sure is in same fief
+            if (!(wife.location == husband.location))
+            {
+                System.Windows.Forms.MessageBox.Show("You have to be in the same fief to do that!");
+                proceed = false;
+            }
+
+            else
+            {
+                // make sure wife not already pregnant
+                if (wife.isPregnant)
+                {
+                    System.Windows.Forms.MessageBox.Show(wife.firstName + " " + wife.familyName + " is already pregnant, milord.  Don't be so impatient!", "PREGNANCY ATTEMPT CANCELLED");
+                    proceed = false;
+                }
+
+                else
+                {
+                    // ensure player and spouse have at least 1 day remaining
+                    double minDays = Math.Min(husband.days, wife.days);
+
+                    if (minDays < 1)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Sorry, you don't have enough time left for this in the current season.", "PREGNANCY ATTEMPT CANCELLED");
+                        proceed = false;
+                    }
+                    else
+                    {
+                        // ensure days are synchronised
+                        if (husband.days != minDays)
+                        {
+                            if (husband is PlayerCharacter)
+                            {
+                                (husband as PlayerCharacter).adjustDays(husband.days - minDays);
+                            }
+                            else
+                            {
+                                husband.adjustDays(husband.days - minDays);
+                            }
+                        }
+                        else
+                        {
+                            wife.adjustDays(wife.days - minDays);
+                        }
+                    }
+                }
+            }
+
+            return proceed;
+        }
+
+        /// <summary>
+        /// Responds to the click event of the familyNpcSpousePregBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void familyNpcSpousePregBtn_Click(object sender, EventArgs e)
+        {
+            if (this.houseCharListView.SelectedItems.Count > 0)
+            {
+                // get spouse
+                NonPlayerCharacter mySpouse = Globals_Client.charToView.getSpouse();
+
+                // perform standard checks
+                if (this.checkBeforePregnancyAttempt(Globals_Client.charToView))
+                {
+                    // ensure are both in/out of keep
+                    mySpouse.inKeep = Globals_Client.charToView.inKeep;
+
+                    // attempt pregnancy
+                    bool pregnant = Globals_Client.charToView.getSpousePregnant(mySpouse);
+                }
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("No character selected!");
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the viewMyHomeFiefToolStripMenuItem
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void viewMyHomeFiefToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // get home fief
+            Fief homeFief = Globals_Client.myChar.getHomeFief();
+
+            if (homeFief != null)
+            {
+                // display home fief
+                this.refreshFiefContainer(homeFief);
+            }
+
+            // if have no home fief
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("You have no home fief!");
+            }
         }
 
     }
