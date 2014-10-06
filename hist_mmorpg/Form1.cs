@@ -3237,7 +3237,7 @@ namespace hist_mmorpg
             siegeText += "Besieging player: " + besiegingPlayer.firstName + " " + besiegingPlayer.familyName + " (ID: " + besiegingPlayer.charID + ")\r\n\r\n";
 
             // start date
-            siegeText += "Start date: " + s.startDate + "\r\n\r\n";
+            siegeText += "Start date: " + s.startYear + ", " + Globals_Client.clock.seasons[s.startSeason] + "\r\n\r\n";
 
             // duration so far
             siegeText += "Days used so far: " + s.totalDays + "\r\n\r\n";
@@ -3408,18 +3408,27 @@ namespace hist_mmorpg
 
             // fief status
             fiefText += "Status: ";
-            switch (f.status)
+            // if under siege, replace status with siege
+            if (f.siege != null)
             {
-                case 'U':
-                    fiefText += "Unrest";
-                    break;
-                case 'R':
-                    fiefText += "Rebellion!";
-                    break;
-                default:
-                    fiefText += "Calm";
-                     break;
+                fiefText += "UNDER SIEGE!";
             }
+            else
+            {
+                switch (f.status)
+                {
+                    case 'U':
+                        fiefText += "Unrest";
+                        break;
+                    case 'R':
+                        fiefText += "Rebellion!";
+                        break;
+                    default:
+                        fiefText += "Calm";
+                        break;
+                }
+            }
+
             fiefText += "\r\n";
 
             // language
@@ -3478,47 +3487,65 @@ namespace hist_mmorpg
         /// <param name="f">Fief for which information is to be displayed</param>
         public string displayFiefKeyStatsPrev(Fief f)
         {
+            bool displayData = true;
+
             string fiefText = "PREVIOUS SEASON\r\n=================\r\n\r\n";
 
-            // loyalty
-            fiefText += "Loyalty: " + f.keyStatsPrevious[0] + "\r\n\r\n";
+            // if under siege, check to see if display data (based on siege start date)
+            if (f.siege != null)
+            {
+                Siege thisSiege = Globals_Server.siegeMasterList[f.siege];
+                displayData = this.checkToShowFinancialData(-1, thisSiege);
+            }
 
-            // GDP
-            fiefText += "GDP: " + f.keyStatsPrevious[1] + "\r\n\r\n";
+            // if not OK to display data, show message
+            if (!displayData)
+            {
+                fiefText += "CURRENTLY UNAVAILABLE - due to siege\r\n";
+            }
+            // if is OK, display as normal
+            else
+            {
+                // loyalty
+                fiefText += "Loyalty: " + f.keyStatsPrevious[0] + "\r\n\r\n";
 
-            // tax rate
-            fiefText += "Tax rate: " + f.keyStatsPrevious[2] + "%\r\n\r\n";
+                // GDP
+                fiefText += "GDP: " + f.keyStatsPrevious[1] + "\r\n\r\n";
 
-            // officials spend
-            fiefText += "Officials expenditure: " + f.keyStatsPrevious[3] + "\r\n\r\n";
+                // tax rate
+                fiefText += "Tax rate: " + f.keyStatsPrevious[2] + "%\r\n\r\n";
 
-            // garrison spend
-            fiefText += "Garrison expenditure: " + f.keyStatsPrevious[4] + "\r\n\r\n";
+                // officials spend
+                fiefText += "Officials expenditure: " + f.keyStatsPrevious[3] + "\r\n\r\n";
 
-            // infrastructure spend
-            fiefText += "Infrastructure expenditure: " + f.keyStatsPrevious[5] + "\r\n\r\n";
+                // garrison spend
+                fiefText += "Garrison expenditure: " + f.keyStatsPrevious[4] + "\r\n\r\n";
 
-            // keep spend
-            fiefText += "Keep expenditure: " + f.keyStatsPrevious[6] + "\r\n";
-            // keep level
-            fiefText += "   (Keep level: " + f.keyStatsPrevious[7] + ")\r\n\r\n";
+                // infrastructure spend
+                fiefText += "Infrastructure expenditure: " + f.keyStatsPrevious[5] + "\r\n\r\n";
 
-            // income
-            fiefText += "Income: " + f.keyStatsPrevious[8] + "\r\n\r\n";
+                // keep spend
+                fiefText += "Keep expenditure: " + f.keyStatsPrevious[6] + "\r\n";
+                // keep level
+                fiefText += "   (Keep level: " + f.keyStatsPrevious[7] + ")\r\n\r\n";
 
-            // family expenses
-            fiefText += "Family expenses: " + f.keyStatsPrevious[9] + "\r\n\r\n";
+                // income
+                fiefText += "Income: " + f.keyStatsPrevious[8] + "\r\n\r\n";
 
-            // total expenses
-            fiefText += "Total fief expenses: " + f.keyStatsPrevious[10] + "\r\n\r\n";
+                // family expenses
+                fiefText += "Family expenses: " + f.keyStatsPrevious[9] + "\r\n\r\n";
 
-            // overlord taxes
-            fiefText += "Overlord taxes: " + f.keyStatsPrevious[11] + "\r\n";
-            // overlord tax rate
-            fiefText += "   (tax rate: " + f.keyStatsPrevious[12] + "%)\r\n\r\n";
+                // total expenses
+                fiefText += "Total fief expenses: " + f.keyStatsPrevious[10] + "\r\n\r\n";
 
-            // surplus
-            fiefText += "Bottom line: " + f.keyStatsPrevious[13];
+                // overlord taxes
+                fiefText += "Overlord taxes: " + f.keyStatsPrevious[11] + "\r\n";
+                // overlord tax rate
+                fiefText += "   (tax rate: " + f.keyStatsPrevious[12] + "%)\r\n\r\n";
+
+                // surplus
+                fiefText += "Bottom line: " + f.keyStatsPrevious[13];
+            }
 
             return fiefText;
         }
@@ -3530,48 +3557,66 @@ namespace hist_mmorpg
         /// <param name="f">Fief for which information is to be displayed</param>
         public string displayFiefKeyStatsCurr(Fief f)
         {
+            bool displayData = true;
+
             string fiefText = "CURRENT SEASON\r\n=================\r\n\r\n";
 
-            // loyalty
-            fiefText += "Loyalty: " + f.keyStatsCurrent[0] + "\r\n\r\n";
+            // if under siege, check to see if display data (based on siege start date)
+            if (f.siege != null)
+            {
+                Siege thisSiege = Globals_Server.siegeMasterList[f.siege];
+                displayData = this.checkToShowFinancialData(0, thisSiege);
+            }
 
-            // GDP
-            fiefText += "GDP: " + f.keyStatsCurrent[1] + "\r\n\r\n";
+            // if not OK to display data, show message
+            if (!displayData)
+            {
+                fiefText += "CURRENTLY UNAVAILABLE - due to siege\r\n";
+            }
+            // if is OK, display as normal
+            else
+            {
+                // loyalty
+                fiefText += "Loyalty: " + f.keyStatsCurrent[0] + "\r\n\r\n";
 
-            // tax rate
-            fiefText += "Tax rate: " + f.keyStatsCurrent[2] + "%\r\n\r\n";
+                // GDP
+                fiefText += "GDP: " + f.keyStatsCurrent[1] + "\r\n\r\n";
 
-            // officials spend
-            fiefText += "Officials expenditure: " + f.keyStatsCurrent[3] + "\r\n\r\n";
+                // tax rate
+                fiefText += "Tax rate: " + f.keyStatsCurrent[2] + "%\r\n\r\n";
 
-            // garrison spend
-            fiefText += "Garrison expenditure: " + f.keyStatsCurrent[4] + "\r\n\r\n";
+                // officials spend
+                fiefText += "Officials expenditure: " + f.keyStatsCurrent[3] + "\r\n\r\n";
 
-            // infrastructure spend
-            fiefText += "Infrastructure expenditure: " + f.keyStatsCurrent[5] + "\r\n\r\n";
+                // garrison spend
+                fiefText += "Garrison expenditure: " + f.keyStatsCurrent[4] + "\r\n\r\n";
 
-            // keep spend
-            fiefText += "Keep expenditure: " + f.keyStatsCurrent[6] + "\r\n";
-            // keep level
-            fiefText += "   (Keep level: " + f.keyStatsCurrent[7] + ")\r\n\r\n";
+                // infrastructure spend
+                fiefText += "Infrastructure expenditure: " + f.keyStatsCurrent[5] + "\r\n\r\n";
 
-            // income
-            fiefText += "Income: " + f.keyStatsCurrent[8] + "\r\n\r\n";
+                // keep spend
+                fiefText += "Keep expenditure: " + f.keyStatsCurrent[6] + "\r\n";
+                // keep level
+                fiefText += "   (Keep level: " + f.keyStatsCurrent[7] + ")\r\n\r\n";
 
-            // family expenses
-            fiefText += "Family expenses: " + f.keyStatsCurrent[9] + "\r\n\r\n";
+                // income
+                fiefText += "Income: " + f.keyStatsCurrent[8] + "\r\n\r\n";
 
-            // total expenses
-            fiefText += "Total fief expenses: " + f.keyStatsCurrent[10] + "\r\n\r\n";
+                // family expenses
+                fiefText += "Family expenses: " + f.keyStatsCurrent[9] + "\r\n\r\n";
 
-            // overlord taxes
-            fiefText += "Overlord taxes: " + f.keyStatsCurrent[11] + "\r\n";
-            // overlord tax rate
-            fiefText += "   (tax rate: " + f.keyStatsCurrent[12] + "%)\r\n\r\n";
+                // total expenses
+                fiefText += "Total fief expenses: " + f.keyStatsCurrent[10] + "\r\n\r\n";
 
-            // surplus
-            fiefText += "Bottom line: " + f.keyStatsCurrent[13];
+                // overlord taxes
+                fiefText += "Overlord taxes: " + f.keyStatsCurrent[11] + "\r\n";
+                // overlord tax rate
+                fiefText += "   (tax rate: " + f.keyStatsCurrent[12] + "%)\r\n\r\n";
 
+                // surplus
+                fiefText += "Bottom line: " + f.keyStatsCurrent[13];
+            }
+            
             return fiefText;
         }
 
@@ -3584,65 +3629,75 @@ namespace hist_mmorpg
         {
             string fiefText = "NEXT SEASON (ESTIMATE)\r\n========================\r\n\r\n";
 
-            // loyalty
-            fiefText += "Loyalty: " + f.calcNewLoyalty() + "\r\n";
-            // various loyalty modifiers
-            fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod() + ")\r\n";
-            fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod() + ")\r\n";
-            fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyAdjusted(f.bailiffDaysInFief >= 30) + ")\r\n";
-            fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod(f.bailiffDaysInFief >= 30) + ")\r\n\r\n";
-            
-            // GDP
-            fiefText += "GDP: " + f.calcNewGDP() + "\r\n\r\n";
-
-            // tax rate
-            fiefText += "Tax rate: " + f.taxRateNext + "%\r\n\r\n";
-
-            // officials expenditure
-            fiefText += "Officials expenditure: " + f.officialsSpendNext + "\r\n\r\n";
-
-            // Garrison expenditure
-            fiefText += "Garrison expenditure: " + f.garrisonSpendNext + "\r\n\r\n";
-
-            // Infrastructure expenditure
-            fiefText += "Infrastructure expenditure: " + f.infrastructureSpendNext + "\r\n\r\n";
-
-            // keep expenditure
-            fiefText += "Keep expenditure: " + f.keepSpendNext + "\r\n";
-            // keep level
-            fiefText += "   (keep level: " + f.calcNewKeepLevel() + ")\r\n\r\n";
-
-            // income
-            fiefText += "Income: " + f.calcNewIncome() + "\r\n";
-            // various income modifiers
-            fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod(f.bailiffDaysInFief >= 30) + ")\r\n";
-            fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod() + ")\r\n\r\n";
-            
-            // family expenses
-            fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
-            // famExpenses modifier for player/spouse
-            if ((f.owner.isMarried) && (Globals_Server.npcMasterList[f.owner.spouse].management > f.owner.management))
+            // if under siege, don't display data
+            if (f.siege != null)
             {
-                fiefText += "  (which may include a famExpense skills modifier: " + Globals_Server.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")";
+                fiefText += "CURRENTLY UNAVAILABLE - due to siege\r\n";
             }
+
+            // if NOT under siege
             else
             {
-                fiefText += "  (which may include a famExpense skills modifier: " + f.owner.calcSkillEffect("famExpense") + ")";
+                // loyalty
+                fiefText += "Loyalty: " + f.calcNewLoyalty() + "\r\n";
+                // various loyalty modifiers
+                fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod() + ")\r\n";
+                fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod() + ")\r\n";
+                fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyAdjusted(f.bailiffDaysInFief >= 30) + ")\r\n";
+                fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod(f.bailiffDaysInFief >= 30) + ")\r\n\r\n";
+
+                // GDP
+                fiefText += "GDP: " + f.calcNewGDP() + "\r\n\r\n";
+
+                // tax rate
+                fiefText += "Tax rate: " + f.taxRateNext + "%\r\n\r\n";
+
+                // officials expenditure
+                fiefText += "Officials expenditure: " + f.officialsSpendNext + "\r\n\r\n";
+
+                // Garrison expenditure
+                fiefText += "Garrison expenditure: " + f.garrisonSpendNext + "\r\n\r\n";
+
+                // Infrastructure expenditure
+                fiefText += "Infrastructure expenditure: " + f.infrastructureSpendNext + "\r\n\r\n";
+
+                // keep expenditure
+                fiefText += "Keep expenditure: " + f.keepSpendNext + "\r\n";
+                // keep level
+                fiefText += "   (keep level: " + f.calcNewKeepLevel() + ")\r\n\r\n";
+
+                // income
+                fiefText += "Income: " + f.calcNewIncome() + "\r\n";
+                // various income modifiers
+                fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod(f.bailiffDaysInFief >= 30) + ")\r\n";
+                fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod() + ")\r\n\r\n";
+
+                // family expenses
+                fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
+                // famExpenses modifier for player/spouse
+                if ((f.owner.isMarried) && (Globals_Server.npcMasterList[f.owner.spouse].management > f.owner.management))
+                {
+                    fiefText += "  (which may include a famExpense skills modifier: " + Globals_Server.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")";
+                }
+                else
+                {
+                    fiefText += "  (which may include a famExpense skills modifier: " + f.owner.calcSkillEffect("famExpense") + ")";
+                }
+                fiefText += "\r\n\r\n";
+
+                // total expenses (fief and family)
+                fiefText += "Total fief expenses: " + (f.calcNewExpenses() + f.calcFamilyExpenses()) + "\r\n";
+                // bailiff fief expenses modifier
+                fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif(f.bailiffDaysInFief >= 30) + ")\r\n\r\n";
+
+                // overlord taxes
+                fiefText += "Overlord taxes: " + f.calcNewOlordTaxes() + "\r\n";
+                // overlord tax rate
+                fiefText += "   (tax rate: " + f.province.overlordTaxRate + "%)\r\n\r\n";
+
+                // bottom line
+                fiefText += "Bottom line: " + f.calcNewBottomLine();
             }
-            fiefText += "\r\n\r\n";
-
-            // total expenses (fief and family)
-            fiefText += "Total fief expenses: " + (f.calcNewExpenses() + f.calcFamilyExpenses()) + "\r\n";
-            // bailiff fief expenses modifier
-            fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif(f.bailiffDaysInFief >= 30) + ")\r\n\r\n";
-            
-            // overlord taxes
-            fiefText += "Overlord taxes: " + f.calcNewOlordTaxes() + "\r\n";
-            // overlord tax rate
-            fiefText += "   (tax rate: " + f.province.overlordTaxRate + "%)\r\n\r\n";
-
-            // bottom line
-            fiefText += "Bottom line: " + f.calcNewBottomLine();
 
             return fiefText;
         }
@@ -3890,8 +3945,17 @@ namespace hist_mmorpg
 
             Globals_Client.fiefToView = f;
 
-            // set label text
+            // set name label text
             this.fiefLabel.Text = Globals_Client.fiefToView.name + " (" + Globals_Client.fiefToView.fiefID + ")";
+            // set siege label text
+            if (f.siege != null)
+            {
+                this.fiefSiegeLabel.Text = "Fief under siege";
+            }
+            else
+            {
+                this.fiefSiegeLabel.Text = "";
+            }
 
             // refresh main fief TextBox with updated info
             this.fiefTextBox.Text = this.displayGeneralFiefData(Globals_Client.fiefToView, isOwner);
@@ -3947,88 +4011,105 @@ namespace hist_mmorpg
                 int homeTreasury = 0;
                 int fiefTreasury = 0;
 
-                this.adjustSpendBtn.Enabled = true;
-                this.taxRateLabel.Enabled = true;
-                this.garrSpendLabel.Enabled = true;
-                this.offSpendLabel.Enabled = true;
-                this.infraSpendLabel.Enabled = true;
-                this.keepSpendLabel.Enabled = true;
-                this.adjGarrSpendTextBox.Enabled = true;
-                this.adjInfrSpendTextBox.Enabled = true;
-                this.adjOffSpendTextBox.Enabled = true;
-                this.adjustKeepSpendTextBox.Enabled = true;
-                this.adjustTaxTextBox.Enabled = true;
-                this.viewBailiffBtn.Enabled = true;
-                this.lockoutBtn.Enabled = true;
-                this.selfBailiffBtn.Enabled = true;
-                this.setBailiffBtn.Enabled = true;
-                this.removeBaliffBtn.Enabled = true;
-                this.fiefHomeTreasTextBox.Enabled = true;
-                this.fiefHomeTreasTextBox.ReadOnly = true;
-                this.FiefTreasTextBox.ReadOnly = true;
-
-                // don't enable treasury transfer controls if in Home Fief (can't transfer to self)
-                if (f == Globals_Server.fiefMasterList[Globals_Client.myChar.homeFief])
+                // if fief UNDER SIEGE, leave most controls disabled
+                if (f.siege != null)
                 {
-                    this.fiefTransferToFiefBtn.Enabled = false;
-                    this.fiefTransferToHomeBtn.Enabled = false;
-                    this.fiefTransferAmountTextBox.Enabled = false;
-                    this.FiefTreasTextBox.Enabled = false;
+                    // allow view bailiff
+                    this.viewBailiffBtn.Enabled = true;
+
+                    // allow financial data TextBoxes to show appropriate data
+                    this.fiefPrevKeyStatsTextBox.Text = this.displayFiefKeyStatsPrev(Globals_Client.fiefToView);
+                    this.fiefCurrKeyStatsTextBox.Text = this.displayFiefKeyStatsCurr(Globals_Client.fiefToView);
+                    this.fiefNextKeyStatsTextBox.Text = this.displayFiefKeyStatsNext(Globals_Client.fiefToView);
                 }
+
+                // if NOT under siege, enable usual controls
                 else
                 {
-                    this.fiefTransferToFiefBtn.Enabled = true;
-                    this.fiefTransferToHomeBtn.Enabled = true;
-                    this.fiefTransferAmountTextBox.Enabled = true;
+                    this.adjustSpendBtn.Enabled = true;
+                    this.taxRateLabel.Enabled = true;
+                    this.garrSpendLabel.Enabled = true;
+                    this.offSpendLabel.Enabled = true;
+                    this.infraSpendLabel.Enabled = true;
+                    this.keepSpendLabel.Enabled = true;
+                    this.adjGarrSpendTextBox.Enabled = true;
+                    this.adjInfrSpendTextBox.Enabled = true;
+                    this.adjOffSpendTextBox.Enabled = true;
+                    this.adjustKeepSpendTextBox.Enabled = true;
+                    this.adjustTaxTextBox.Enabled = true;
+                    this.viewBailiffBtn.Enabled = true;
+                    this.lockoutBtn.Enabled = true;
+                    this.selfBailiffBtn.Enabled = true;
+                    this.setBailiffBtn.Enabled = true;
+                    this.removeBaliffBtn.Enabled = true;
                     this.fiefHomeTreasTextBox.Enabled = true;
-                    this.FiefTreasTextBox.Enabled = true;
+                    this.fiefHomeTreasTextBox.ReadOnly = true;
+                    this.FiefTreasTextBox.ReadOnly = true;
+
+                    // don't enable treasury transfer controls if in Home Fief (can't transfer to self)
+                    if (f == Globals_Server.fiefMasterList[Globals_Client.myChar.homeFief])
+                    {
+                        this.fiefTransferToFiefBtn.Enabled = false;
+                        this.fiefTransferToHomeBtn.Enabled = false;
+                        this.fiefTransferAmountTextBox.Enabled = false;
+                        this.FiefTreasTextBox.Enabled = false;
+                    }
+                    else
+                    {
+                        this.fiefTransferToFiefBtn.Enabled = true;
+                        this.fiefTransferToHomeBtn.Enabled = true;
+                        this.fiefTransferAmountTextBox.Enabled = true;
+                        this.fiefHomeTreasTextBox.Enabled = true;
+                        this.FiefTreasTextBox.Enabled = true;
+                    }
+
+                    // set TextBoxes to show appropriate data
+                    this.adjGarrSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.garrisonSpendNext);
+                    this.adjInfrSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.infrastructureSpendNext);
+                    this.adjOffSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.officialsSpendNext);
+                    this.adjustKeepSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.keepSpendNext);
+                    this.adjustTaxTextBox.Text = Convert.ToString(Globals_Client.fiefToView.taxRateNext);
+                    this.fiefPrevKeyStatsTextBox.Text = this.displayFiefKeyStatsPrev(Globals_Client.fiefToView);
+                    this.fiefCurrKeyStatsTextBox.Text = this.displayFiefKeyStatsCurr(Globals_Client.fiefToView);
+                    this.fiefNextKeyStatsTextBox.Text = this.displayFiefKeyStatsNext(Globals_Client.fiefToView);
+
+                    // get home fief
+                    Fief home = Globals_Server.fiefMasterList[Globals_Client.myChar.homeFief];
+
+                    // check if in home fief
+                    if (f == home)
+                    {
+                        // don't show fief treasury
+                        this.FiefTreasTextBox.Text = "";
+
+                        // display home treasury
+                        this.fiefHomeTreasTextBox.Text = home.getAvailableTreasury().ToString();
+                    }
+                    else
+                    {
+                        // display fief treasury
+                        this.FiefTreasTextBox.Text = f.getAvailableTreasury().ToString();
+
+                        // display home treasury
+                        this.fiefHomeTreasTextBox.Text = home.getAvailableTreasury(true).ToString();
+                    }
+
+                    // check to see if proposed expenditure level doesn't exceed fief treasury
+                    // get fief expenses (includes bailiff modifiers)
+                    uint totalSpend = Convert.ToUInt32(Globals_Client.fiefToView.calcNewExpenses());
+
+                    // make sure expenditure can be supported by the treasury
+                    // if it can't, display a message and cancel the commit
+                    if (!Globals_Client.fiefToView.checkExpenditureOK(totalSpend))
+                    {
+                        int difference = Convert.ToInt32(totalSpend - fiefTreasury);
+                        toDisplay = "Your proposed expenditure exceeds the " + Globals_Client.fiefToView.name + " treasury by " + difference;
+                        toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
+                        toDisplay += "\r\n\r\nAny unsupportable expenditure levels will be automatically adjusted during the seasonal update.";
+                        displayWarning = true;
+                    }
                 }
 
-                // set TextBoxes to show appropriate data
-                this.adjGarrSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.garrisonSpendNext);
-                this.adjInfrSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.infrastructureSpendNext);
-                this.adjOffSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.officialsSpendNext);
-                this.adjustKeepSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.keepSpendNext);
-                this.adjustTaxTextBox.Text = Convert.ToString(Globals_Client.fiefToView.taxRateNext);
-                this.fiefPrevKeyStatsTextBox.Text = this.displayFiefKeyStatsPrev(Globals_Client.fiefToView);
-                this.fiefCurrKeyStatsTextBox.Text = this.displayFiefKeyStatsCurr(Globals_Client.fiefToView);
-                this.fiefNextKeyStatsTextBox.Text = this.displayFiefKeyStatsNext(Globals_Client.fiefToView);
-
-                // get home fief
-                Fief home = Globals_Server.fiefMasterList[Globals_Client.myChar.homeFief];
-
-                // check if in home fief
-                if (f == home)
-                {
-                    // don't show fief treasury
-                    this.FiefTreasTextBox.Text = "";
-
-                    // display home treasury
-                    this.fiefHomeTreasTextBox.Text = home.getAvailableTreasury().ToString();
-                }
-                else
-                {
-                    // display fief treasury
-                    this.FiefTreasTextBox.Text = f.getAvailableTreasury().ToString();
-
-                    // display home treasury
-                    this.fiefHomeTreasTextBox.Text = home.getAvailableTreasury(true).ToString();
-                }
-
-                // check to see if proposed expenditure level doesn't exceed fief treasury
-                // get fief expenses (includes bailiff modifiers)
-                uint totalSpend = Convert.ToUInt32(Globals_Client.fiefToView.calcNewExpenses());
-
-                // make sure expenditure can be supported by the treasury
-                // if it can't, display a message and cancel the commit
-                if (!Globals_Client.fiefToView.checkExpenditureOK(totalSpend))
-                {
-                    int difference = Convert.ToInt32(totalSpend - fiefTreasury);
-                    toDisplay = "Your proposed expenditure exceeds the " + Globals_Client.fiefToView.name + " treasury by " + difference;
-                    toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
-                    toDisplay += "\r\n\r\nAny unsupportable expenditure levels will be automatically adjusted during the seasonal update.";
-                    displayWarning = true;
-                }
             }
 
             Globals_Client.containerToView = this.fiefContainer;
@@ -6174,8 +6255,8 @@ namespace hist_mmorpg
         }
         
         /// <summary>
-        /// Responds to the click event of the armyRecruitBtn button
-        /// allowing the player to create a new army or recruit additional troops
+        /// Responds to the click event of the armyRecruitBtn button, allowing the player 
+        /// to create a new army and/or recruit additional troops in the current fief
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
@@ -6185,32 +6266,46 @@ namespace hist_mmorpg
             Button button = sender as Button;
             String operation = button.Tag.ToString();
 
-            try
-            {
-                // get number of troops specified
-                UInt32 numberWanted = Convert.ToUInt32(this.armyRecruitTextBox.Text);
+            // get fief
+            Fief thisFief = Globals_Client.myChar.location;
 
-                // if no existing army, create one
-                if (operation.Equals("new"))
+            // check for siege
+            if (thisFief.siege != null)
+            {
+                System.Windows.Forms.MessageBox.Show("You cannot recruit from a fief under siege.  Recruitment cancelled.");
+            }
+
+            // if not under siege, proceed
+            else
+            {
+                try
                 {
-                    Army newArmy = new Army(Globals_Server.getNextArmyID(), Globals_Client.myChar.charID, Globals_Client.myChar.charID, Globals_Client.myChar.days, Globals_Client.clock, Globals_Client.myChar.location.fiefID);
-                    this.addArmy(newArmy);
+                    // get number of troops specified
+                    UInt32 numberWanted = Convert.ToUInt32(this.armyRecruitTextBox.Text);
+
+                    // if no existing army, create one
+                    if (operation.Equals("new"))
+                    {
+                        Army newArmy = new Army(Globals_Server.getNextArmyID(), Globals_Client.myChar.charID, Globals_Client.myChar.charID, Globals_Client.myChar.days, Globals_Client.clock, Globals_Client.myChar.location.fiefID);
+                        this.addArmy(newArmy);
+                    }
+
+                    // recruit troops
+                    Globals_Client.myChar.recruitTroops(numberWanted);
+
+                    // refresh display
+                    this.refreshArmyContainer(Globals_Server.armyMasterList[Globals_Client.myChar.armyID]);
                 }
+                catch (System.FormatException fe)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+                catch (System.OverflowException ofe)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
 
-                // recruit troops
-                Globals_Client.myChar.recruitTroops(numberWanted);
-
-                // refresh display
-                this.refreshArmyContainer(Globals_Server.armyMasterList[Globals_Client.myChar.armyID]);
-            }
-            catch (System.FormatException fe)
-            {
-                System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
-            }
-            catch (System.OverflowException ofe)
-            {
-                System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
-            }
         }
 
         /// <summary>
@@ -7913,6 +8008,20 @@ namespace hist_mmorpg
                 }
             }
 
+            // check if fief is under siege
+            if ((f.siege != null) && (proceed))
+            {
+                proceed = false;
+                if (circumstance == "pillage")
+                {
+                    System.Windows.Forms.MessageBox.Show("You cannot pillage a fief that is under siege.  Pillage cancelled.");
+                }
+                else if (circumstance == "siege")
+                {
+                    System.Windows.Forms.MessageBox.Show("This fief is already under siege.  Siege cancelled.");
+                }
+            }
+
             if (circumstance == "pillage")
             {
                 // check isPillaged = false
@@ -7920,15 +8029,6 @@ namespace hist_mmorpg
                 {
                     proceed = false;
                     System.Windows.Forms.MessageBox.Show("This fief has already been pillaged during\r\nthe current season.  Pillage cancelled.");
-                }
-            }
-            else if (circumstance == "siege")
-            {
-                // check if already beseiged
-                if ((f.siege != null) && (proceed))
-                {
-                    proceed = false;
-                    System.Windows.Forms.MessageBox.Show("This fief is already under siege.  Siege cancelled.");
                 }
             }
 
@@ -8532,6 +8632,114 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Checks to see if display of financial data for the specified financial period
+        /// is permitted due to ongoing siege
+        /// </summary>
+        /// <returns>bool indicating whether display is permitted</returns>
+        /// <param name="target">int indicating desired financial period relative to current season</param>
+        /// <param name="s">The siege</param>
+        public bool checkToShowFinancialData(int relativeSeason, Siege s)
+        {
+            bool displayData = true;
+
+            uint financialPeriodYear = this.getFinancialYear(0);
+            if (financialPeriodYear > s.startYear)
+            {
+                displayData = false;
+            }
+            else if (financialPeriodYear == s.startYear)
+            {
+                byte financialPeriodSeason = this.getFinancialSeason(0);
+                if (financialPeriodSeason > s.startSeason)
+                {
+                    displayData = false;
+                }
+            }
+
+            return displayData;
+        }
+
+        /// <summary>
+        /// Gets the year for the specified financial period
+        /// </summary>
+        /// <returns>The year</returns>
+        /// <param name="target">int indicating desired financial period relative to current season</param>
+        public uint getFinancialYear(int relativeSeason)
+        {
+            uint financialYear = 0;
+            uint thisYear = Globals_Client.clock.currentYear;
+
+            switch (relativeSeason)
+            {
+                case (-1):
+                    if (Globals_Client.clock.currentSeason == 0)
+                    {
+                        financialYear = thisYear - 1;
+                    }
+                    else
+                    {
+                        financialYear = thisYear;
+                    }
+                    break;
+                case (1):
+                    if (Globals_Client.clock.currentSeason == 4)
+                    {
+                        financialYear = thisYear + 1;
+                    }
+                    else
+                    {
+                        financialYear = thisYear;
+                    }
+                    break;
+                default:
+                    financialYear = thisYear;
+                    break;
+            }
+
+            return financialYear;
+        }
+
+        /// <summary>
+        /// Gets the season for the specified financial period
+        /// </summary>
+        /// <returns>The season</returns>
+        /// <param name="target">int indicating desired financial period relative to current season</param>
+        public byte getFinancialSeason(int relativeSeason)
+        {
+            byte financialSeason = 0;
+            byte thisSeason = Globals_Client.clock.currentSeason;
+
+            switch (relativeSeason)
+            {
+                case (-1):
+                    if (thisSeason == 0)
+                    {
+                        financialSeason = 4;
+                    }
+                    else
+                    {
+                        financialSeason = thisSeason--;
+                    }
+                    break;
+                case (1):
+                    if (thisSeason == 4)
+                    {
+                        financialSeason = 0;
+                    }
+                    else
+                    {
+                        financialSeason = thisSeason++;
+                    }
+                    break;
+                default:
+                    financialSeason = thisSeason;
+                    break;
+            }
+
+            return financialSeason;
+        }
+
+        /// <summary>
         /// Allows an attacking army to lay siege to an enemy fief
         /// </summary>
         /// <param name="attacker">The attacking army</param>
@@ -8577,7 +8785,7 @@ namespace hist_mmorpg
             }
             
             // create siege object
-            Siege mySiege = new Siege(Globals_Server.getNextSiegeID(), Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, attacker.getOwner().charID, target.owner.charID, attacker.armyID, defenderGarrison.armyID, target.fiefID, minDays, target.keepLevel, defAdd: defAddID);
+            Siege mySiege = new Siege(Globals_Server.getNextSiegeID(), Globals_Client.clock.currentYear, Globals_Client.clock.currentSeason, attacker.getOwner().charID, target.owner.charID, attacker.armyID, defenderGarrison.armyID, target.fiefID, minDays, target.keepLevel, defAdd: defAddID);
 
             // add to master list
             Globals_Server.siegeMasterList.Add(mySiege.siegeID, mySiege);
@@ -8588,6 +8796,11 @@ namespace hist_mmorpg
 
             // add to fief
             target.siege = mySiege.siegeID;
+
+            // reduce expenditures in fief, except for garrison
+            target.infrastructureSpendNext = 0;
+            target.keepSpendNext = 0;
+            target.officialsSpendNext = 0;
 
             // update days (NOTE: siege.days will be updated in syncDays)
             mySiege.totalDays++;

@@ -438,8 +438,17 @@ namespace hist_mmorpg
             int fiefBaseIncome = 0;
             int fiefIncome = 0;
 
-            // using next season's expenditure and tax rate
-            fiefBaseIncome = Convert.ToInt32(this.calcNewGDP() * (this.taxRateNext / 100));
+            // check for siege
+            if (this.siege == null)
+            {
+                // no siege = use next season's expenditure and tax rate
+                fiefBaseIncome = Convert.ToInt32(this.calcNewGDP() * (this.taxRateNext / 100));
+            }
+            else
+            {
+                // siege = use next season's expenditure and 0% tax rate = no income
+                fiefBaseIncome = Convert.ToInt32(this.calcNewGDP() * 0);
+            }
 
             fiefIncome = fiefBaseIncome;
 
@@ -621,7 +630,17 @@ namespace hist_mmorpg
                         // add family allowance of family NPCs
                         else
                         {
-                            famExpenses += Convert.ToInt32(element.calcFamilyAllowance(element.getFunction(this.owner)));
+                            // check for siege
+                            if (this.siege == null)
+                            {
+                                // no siege = normal allowance
+                                famExpenses += Convert.ToInt32(element.calcFamilyAllowance(element.getFunction(this.owner)));
+                            }
+                            else
+                            {
+                                // siege = half allowance
+                                famExpenses += (Convert.ToInt32(element.calcFamilyAllowance(element.getFunction(this.owner))) / 2);
+                            }
                         }
                     }
                 }

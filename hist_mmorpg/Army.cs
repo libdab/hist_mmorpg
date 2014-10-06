@@ -76,13 +76,9 @@ namespace hist_mmorpg
             // TODO: validate trp = (upper limit?)
             // TODO: validate ldr ID = 1-10000?
 
-            // validate day > 90
-            if ((day > 90) || (day < 0))
-            {
-                throw new InvalidDataException("Army remaining days must be an integer between 0 and 90");
-            }
+            // TODO: validate day
 
-			this.armyID = id;
+            this.armyID = id;
             this.leader = ldr;
             this.owner = own;
             this.days = day;

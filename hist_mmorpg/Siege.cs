@@ -15,9 +15,13 @@ namespace hist_mmorpg
         /// </summary>
         public String siegeID { get; set; }
         /// <summary>
-        /// Holds season and year the siege started
+        /// Holds year the siege started
         /// </summary>
-        public String startDate { get; set; }
+        public uint startYear { get; set; }
+        /// <summary>
+        /// Holds season the siege started
+        /// </summary>
+        public byte startSeason { get; set; }
         /// <summary>
         /// Holds besieging player (charID)
         /// </summary>
@@ -71,7 +75,8 @@ namespace hist_mmorpg
         /// Constructor for Siege
         /// </summary>
 		/// <param name="id">String holding ID of siege</param>
-        /// <param name="start">string holding season and year the siege started</param>
+        /// <param name="startYr">uint holding year the siege started</param>
+        /// <param name="startSeas">byte holding season the siege started</param>
         /// <param name="bsgPlayer">String holding besieging player (charID)</param>
         /// <param name="defPlayer">String holding defending player (charID)</param>
         /// <param name="bsgArmy">String holding besieging army (armyID)</param>
@@ -84,10 +89,11 @@ namespace hist_mmorpg
         /// <param name="totday">double containing days used by siege so far</param>
         /// <param name="defAdd">String holding additional defending army (armyID)</param>
         /// <param name="end">string holding season and year the siege ended</param>
-        public Siege(String id, string start, string bsgPlayer, string defPlayer, string bsgArmy, string defGarr, string fief, double day, double kpLvl, int totAtt = 0, int totDef = 0, double totDay = 0, string defAdd = null, string end = null)
+        public Siege(String id, uint startYr, byte startSeas, string bsgPlayer, string defPlayer, string bsgArmy, string defGarr, string fief, double day, double kpLvl, int totAtt = 0, int totDef = 0, double totDay = 0, string defAdd = null, string end = null)
         {
             this.siegeID = id;
-            this.startDate = start;
+            this.startYear = startYr;
+            this.startSeason = startSeas;
             this.besiegingPlayer = bsgPlayer;
             this.defendingPlayer = defPlayer;
             this.besiegerArmy = bsgArmy;
