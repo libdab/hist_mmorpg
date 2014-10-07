@@ -1018,29 +1018,50 @@ namespace hist_mmorpg
                 Army attacker = Globals_Server.armyMasterList[this.observer.armyID];
                 Army defender = Globals_Server.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
 
-                // check if army is besieging a keep
-                string siegeID = attacker.checkIfBesieger();
+                // SIEGE INVOLVEMENT
+                // check if defending army is the garrison in a siege
+                string siegeID = defender.checkIfSiegeDefenderGarrison();
                 if (siegeID != null)
                 {
-                    // display warning and get decision
-                    DialogResult dialogResult = MessageBox.Show("This army is besieging a keep and this action would end the siege.\r\nClick 'OK' to proceed.", "Proceed with attack?", MessageBoxButtons.OKCancel);
+                    System.Windows.Forms.MessageBox.Show("The defending army is currently being besieged and\r\ncannot be attacked.  Attack cancelled.");
+                }
 
-                    // if choose to cancel
-                    if (dialogResult == DialogResult.Cancel)
+                else
+                {
+                    // check if defending army is the additional defender in a siege
+                    siegeID = defender.checkIfSiegeDefenderAdditional();
+                    if (siegeID != null)
                     {
-                        System.Windows.Forms.MessageBox.Show("Attack cancelled.");
+                        System.Windows.Forms.MessageBox.Show("The defending army is currently being besieged and\r\ncannot be attacked.  Attack cancelled.");
                     }
 
-                    // if choose to proceed
                     else
                     {
-                        Siege thisSiege = null;
-                        thisSiege = Globals_Server.siegeMasterList[siegeID];
+                        // check if attacking army is besieging a keep
+                        siegeID = attacker.checkIfBesieger();
+                        if (siegeID != null)
+                        {
+                            // display warning and get decision
+                            DialogResult dialogResult = MessageBox.Show("Your army is besieging a keep and this action would end the siege.\r\nClick 'OK' to proceed.", "Proceed with attack?", MessageBoxButtons.OKCancel);
 
-                        parent.siegeEnd(thisSiege);
+                            // if choose to cancel
+                            if (dialogResult == DialogResult.Cancel)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Attack cancelled.");
+                            }
 
-                        // let slip the dogs of war
-                        parent.giveBattle(attacker, defender);
+                            // if choose to proceed
+                            else
+                            {
+                                Siege thisSiege = null;
+                                thisSiege = Globals_Server.siegeMasterList[siegeID];
+
+                                parent.siegeEnd(thisSiege);
+
+                                // let slip the dogs of war
+                                parent.giveBattle(attacker, defender);
+                            }
+                        }
                     }
                 }
             }

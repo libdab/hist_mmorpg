@@ -36,12 +36,14 @@ namespace hist_mmorpg
             this.fullToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.switchPlayerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.switchPlayerMenuTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.personalCharacteristicsAndAffairsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fiefToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fiefManagementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.myFiefsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewMyHomeFiefToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.travelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.navigateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.householdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -131,6 +133,7 @@ namespace hist_mmorpg
             this.meetingPlaceTextBox = new System.Windows.Forms.TextBox();
             this.meetingPlaceCharsListView = new System.Windows.Forms.ListView();
             this.houseContainer = new System.Windows.Forms.SplitContainer();
+            this.familyNpcSpousePregBtn = new System.Windows.Forms.Button();
             this.houseExamineArmiesBtn = new System.Windows.Forms.Button();
             this.houseFireBtn = new System.Windows.Forms.Button();
             this.houseEntourageBtn = new System.Windows.Forms.Button();
@@ -204,9 +207,6 @@ namespace hist_mmorpg
             this.siegeListContainer = new System.Windows.Forms.SplitContainer();
             this.siegeTextBox = new System.Windows.Forms.TextBox();
             this.siegeListView = new System.Windows.Forms.ListView();
-            this.familyNpcSpousePregBtn = new System.Windows.Forms.Button();
-            this.switchPlayerMenuTextBox = new System.Windows.Forms.ToolStripTextBox();
-            this.viewMyHomeFiefToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -315,7 +315,7 @@ namespace hist_mmorpg
             this.characterToolStripMenuItem1,
             this.switchPlayerMenuItem});
             this.testSeasonalUpdateToolStripMenuItem.Name = "testSeasonalUpdateToolStripMenuItem";
-            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
             this.testSeasonalUpdateToolStripMenuItem.Text = "Test";
             // 
             // fullToolStripMenuItem
@@ -344,10 +344,15 @@ namespace hist_mmorpg
             this.switchPlayerMenuItem.Text = "Switch player to ...";
             this.switchPlayerMenuItem.Click += new System.EventHandler(this.switchPlayerMenuItem_Click);
             // 
+            // switchPlayerMenuTextBox
+            // 
+            this.switchPlayerMenuTextBox.Name = "switchPlayerMenuTextBox";
+            this.switchPlayerMenuTextBox.Size = new System.Drawing.Size(100, 23);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -379,16 +384,23 @@ namespace hist_mmorpg
             // fiefManagementToolStripMenuItem
             // 
             this.fiefManagementToolStripMenuItem.Name = "fiefManagementToolStripMenuItem";
-            this.fiefManagementToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fiefManagementToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.fiefManagementToolStripMenuItem.Text = "My current fief";
             this.fiefManagementToolStripMenuItem.Click += new System.EventHandler(this.fiefManagementToolStripMenuItem_Click);
             // 
             // myFiefsToolStripMenuItem
             // 
             this.myFiefsToolStripMenuItem.Name = "myFiefsToolStripMenuItem";
-            this.myFiefsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.myFiefsToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.myFiefsToolStripMenuItem.Text = "View my fiefs";
             this.myFiefsToolStripMenuItem.Click += new System.EventHandler(this.myFiefsToolStripMenuItem_Click);
+            // 
+            // viewMyHomeFiefToolStripMenuItem
+            // 
+            this.viewMyHomeFiefToolStripMenuItem.Name = "viewMyHomeFiefToolStripMenuItem";
+            this.viewMyHomeFiefToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.viewMyHomeFiefToolStripMenuItem.Text = "View my home fief";
+            this.viewMyHomeFiefToolStripMenuItem.Click += new System.EventHandler(this.viewMyHomeFiefToolStripMenuItem_Click);
             // 
             // travelToolStripMenuItem
             // 
@@ -1369,7 +1381,6 @@ namespace hist_mmorpg
             this.houseContainer.Panel1.Controls.Add(this.houseCampDaysTextBox);
             this.houseContainer.Panel1.Controls.Add(this.houseCampForLabel);
             this.houseContainer.Panel1.Controls.Add(this.houseCampBtn);
-            this.houseContainer.Panel1.Click += new System.EventHandler(this.hireNPC_Btn_Click);
             // 
             // houseContainer.Panel2
             // 
@@ -1377,6 +1388,16 @@ namespace hist_mmorpg
             this.houseContainer.Size = new System.Drawing.Size(935, 637);
             this.houseContainer.SplitterDistance = 259;
             this.houseContainer.TabIndex = 7;
+            // 
+            // familyNpcSpousePregBtn
+            // 
+            this.familyNpcSpousePregBtn.Location = new System.Drawing.Point(58, 382);
+            this.familyNpcSpousePregBtn.Name = "familyNpcSpousePregBtn";
+            this.familyNpcSpousePregBtn.Size = new System.Drawing.Size(139, 51);
+            this.familyNpcSpousePregBtn.TabIndex = 45;
+            this.familyNpcSpousePregBtn.Text = "Encourage This Family Member To Get His Wife With Child";
+            this.familyNpcSpousePregBtn.UseVisualStyleBackColor = true;
+            this.familyNpcSpousePregBtn.Click += new System.EventHandler(this.familyNpcSpousePregBtn_Click);
             // 
             // houseExamineArmiesBtn
             // 
@@ -2141,38 +2162,16 @@ namespace hist_mmorpg
             this.siegeListView.View = System.Windows.Forms.View.Details;
             this.siegeListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.siegeListView_ItemSelectionChanged);
             // 
-            // familyNpcSpousePregBtn
-            // 
-            this.familyNpcSpousePregBtn.Location = new System.Drawing.Point(58, 382);
-            this.familyNpcSpousePregBtn.Name = "familyNpcSpousePregBtn";
-            this.familyNpcSpousePregBtn.Size = new System.Drawing.Size(139, 51);
-            this.familyNpcSpousePregBtn.TabIndex = 45;
-            this.familyNpcSpousePregBtn.Text = "Encourage This Family Member To Get His Wife With Child";
-            this.familyNpcSpousePregBtn.UseVisualStyleBackColor = true;
-            this.familyNpcSpousePregBtn.Click += new System.EventHandler(this.familyNpcSpousePregBtn_Click);
-            // 
-            // switchPlayerMenuTextBox
-            // 
-            this.switchPlayerMenuTextBox.Name = "switchPlayerMenuTextBox";
-            this.switchPlayerMenuTextBox.Size = new System.Drawing.Size(100, 23);
-            // 
-            // viewMyHomeFiefToolStripMenuItem
-            // 
-            this.viewMyHomeFiefToolStripMenuItem.Name = "viewMyHomeFiefToolStripMenuItem";
-            this.viewMyHomeFiefToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
-            this.viewMyHomeFiefToolStripMenuItem.Text = "View my home fief";
-            this.viewMyHomeFiefToolStripMenuItem.Click += new System.EventHandler(this.viewMyHomeFiefToolStripMenuItem_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
-            this.Controls.Add(this.travelContainer);
-            this.Controls.Add(this.houseContainer);
-            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.fiefContainer);
+            this.Controls.Add(this.armyContainer);
+            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.siegeContainer);
+            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.meetingPlaceContainer);

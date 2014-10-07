@@ -97,7 +97,7 @@ namespace hist_mmorpg
             Journal myScheduledJournal = new Journal();
             Journal myPastJournal = new Journal();
             // add a scheduled birth
-            JournalEvent myEvent = new JournalEvent(1320, 1, "403", "birth");
+            JournalEvent myEvent = new JournalEvent(1320, 1, "404", "birth");
             myScheduledJournal.events.Add(myEvent);
 
             // create GameClock
@@ -398,7 +398,7 @@ namespace hist_mmorpg
             Globals_Server.npcMasterList.Add(myNPC1.charID, myNPC1);
             NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "E", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, false, null, null, null, 10000, true, false, myTitles004, mb: myChar1.charID, cl: Globals_Client.clock, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob004, true, "F", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, false, null, null, null, 10000, true, false, myTitles004, mb: myChar2.charID, cl: Globals_Client.clock, loc: myFief6);
+            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob004, true, "F", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, false, null, null, null, 10000, false, false, myTitles004, mb: myChar2.charID, cl: Globals_Client.clock, loc: myFief6);
             Globals_Server.npcMasterList.Add(myNPC3.charID, myNPC3);
             NonPlayerCharacter myWife = new NonPlayerCharacter("404", "Molly", "Maguire", myDob005, false, "E", true, 2.50, 9.0, myGoTo5, myLang2, 90, 0, 4.0, 6.0, generateSkillSet(), false, true, false, "101", "101", null, 30000, false, false, myTitles005, cl: Globals_Client.clock, loc: myFief1);
             Globals_Server.npcMasterList.Add(myWife.charID, myWife);
@@ -468,6 +468,8 @@ namespace hist_mmorpg
             myChar1.spouse = myWife.charID;
             // add wife to myNPCs
             myChar1.myNPCs.Add(myWife);
+            // add NPC to employees
+            myChar2.hireNPC(myNPC3, 10000);
 
 			// Add fiefs to list of fiefs owned 
 			myChar1.addToOwnedFiefs(myFief1);
@@ -2317,6 +2319,7 @@ namespace hist_mmorpg
         public bool moveCharacter(Character ch, Fief target, double cost, bool isUpdate = false)
         {
             bool success = false;
+            bool proceedWithMove = true;
 
             // check to see if character is leading a besieging army
             Army myArmy = ch.getArmy();
@@ -2325,14 +2328,33 @@ namespace hist_mmorpg
                 string thisSiegeID = myArmy.checkIfBesieger();
                 if (thisSiegeID != null)
                 {
-                    // if so, dismantle the siege
-                    Siege thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
-                    this.siegeEnd(thisSiege);
+                    // give player fair warning of consequences to siege
+                    DialogResult dialogResult = MessageBox.Show("Your army is currently besieging this fief.  Moving will end the siege.\r\nClick 'OK' to proceed.", "Proceed with move?", MessageBoxButtons.OKCancel);
+
+                    // if choose to cancel
+                    if (dialogResult == DialogResult.Cancel)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Move cancelled.");
+                        proceedWithMove = false;
+                    }
+
+                    // if choose to proceed
+                    else
+                    {
+                        // end the siege
+                        Siege thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
+                        System.Windows.Forms.MessageBox.Show("Siege (" + thisSiegeID + ") ended.");
+                        this.siegeEnd(thisSiege);
+                    }
+
                 }
             }
 
-            // move character
-            success = ch.moveCharacter(target, cost, isUpdate);
+            if (proceedWithMove)
+            {
+                // move character
+                success = ch.moveCharacter(target, cost, isUpdate);
+            }
 
             return success;
         }
@@ -2799,6 +2821,21 @@ namespace hist_mmorpg
                 isMyNPC = true;
             }
 
+            // check to see if is army leader
+            if (ch.armyID != null)
+            {
+                charText += "NOTE: This character is currently LEADING AN ARMY (" + ch.armyID + ")\r\n\r\n";
+            }
+
+            // check to see if is under siege
+            if (ch.location.siege != null)
+            {
+                if (ch.inKeep)
+                {
+                    charText += "NOTE: This character is located in a KEEP UNDER SIEGE\r\n\r\n";
+                }
+            }
+
             // ID
             charText += "ID: " + ch.charID + "\r\n";
 
@@ -3145,18 +3182,41 @@ namespace hist_mmorpg
         {
             string armyText = "";
             uint[] troopNumbers = a.troops;
+            Fief armyLocation = Globals_Server.fiefMasterList[a.location];
 
-            // check if is defender in a siege
+            // check if is garrison in a siege
             string siegeID = a.checkIfSiegeDefenderGarrison();
             if (siegeID == null)
             {
+                // check if is additional defender in a siege
                 siegeID = a.checkIfSiegeDefenderAdditional();
             }
 
             // if is defender in a siege, indicate
             if (siegeID != null)
             {
-                armyText += "NOTE: This army is CURRENTLY UNDER SIEGE\r\n\r\n";
+                armyText += "NOTE: This army is currently UNDER SIEGE\r\n\r\n";
+            }
+
+            else
+            {
+                // check if is besieger in a siege
+                siegeID = a.checkIfBesieger();
+
+                // if is besieger in a siege, indicate
+                if (siegeID != null)
+                {
+                    armyText += "NOTE: This army is currently BESIEGING THIS FIEF\r\n\r\n";
+                }
+
+                // check if is siege in fief (but army not involved)
+                else
+                {
+                    if (armyLocation.siege != null)
+                    {
+                        armyText += "NOTE: This fief is currently UNDER SIEGE\r\n\r\n";
+                    }
+                }
             }
 
             // ID
@@ -3166,7 +3226,6 @@ namespace hist_mmorpg
             armyText += "Days left: " + a.days + "\r\n\r\n";
 
             // location
-            Fief armyLocation = Globals_Server.fiefMasterList[a.location];
             armyText += "Location: " + armyLocation.name + " (Province: " + armyLocation.province.name + ".  Kingdom: " + armyLocation.province.kingdom.name + ")\r\n\r\n";
 
             // leader
@@ -3271,7 +3330,7 @@ namespace hist_mmorpg
                 siegeText += "- Leader: ";
                 if (defGarrLeader != null)
                 {
-                    siegeText += defGarrLeader.firstName + " " + defGarrLeader.familyName + " (ID: " + defGarrLeader.charID + ")\r\n";
+                    siegeText += defGarrLeader.firstName + " " + defGarrLeader.familyName + " (ID: " + defGarrLeader.charID + ")";
                 }
                 else
                 {
@@ -3285,11 +3344,11 @@ namespace hist_mmorpg
                 // additional army details
                 if (defenderAdditional != null)
                 {
-                    siegeText += "\r\n\r\nField army: " + defenderGarrison.armyID + "\r\n";
+                    siegeText += "\r\n\r\nField army: " + defenderAdditional.armyID + "\r\n";
                     siegeText += "- Leader: ";
                     if (defAddLeader != null)
                     {
-                        siegeText += defAddLeader.firstName + " " + defAddLeader.familyName + " (ID: " + defAddLeader.charID + ")\r\n";
+                        siegeText += defAddLeader.firstName + " " + defAddLeader.familyName + " (ID: " + defAddLeader.charID + ")";
                     }
                     else
                     {
@@ -3350,14 +3409,17 @@ namespace hist_mmorpg
             // current keep level
             siegeText += "- current: " + siegeLocation.keepLevel + "\r\n\r\n";
 
-            siegeText += "Chance of success in next round:\r\n";
-            // chance of storm success
-            double keepLvl = this.calcStormKeepLevel(s);
-            double successChance = this.calcStormSuccess(keepLvl) / 2;
-            siegeText += "- storm: " + successChance + "\r\n";
+            if (!isDefender)
+            {
+                siegeText += "Chance of success in next round:\r\n";
+                // chance of storm success
+                double keepLvl = this.calcStormKeepLevel(s);
+                double successChance = this.calcStormSuccess(keepLvl) / 2;
+                siegeText += "- storm: " + successChance + "\r\n";
 
-            // chance of storm success
-            siegeText += "- negotiated: " + successChance / 2 + "\r\n\r\n";
+                // chance of negotiated success
+                siegeText += "- negotiated: " + successChance / 2 + "\r\n\r\n";
+            }
 
             return siegeText;
         }
@@ -3730,14 +3792,9 @@ namespace hist_mmorpg
                 ch = Globals_Client.myChar;
             }
 
-            string textToDisplay = "";
-
-            // get information to display
-            textToDisplay += this.displayCharacter(ch);
-
             // refresh Character display TextBox
             this.characterTextBox.ReadOnly = true;
-            this.characterTextBox.Text = textToDisplay;
+            this.characterTextBox.Text = this.displayCharacter(ch);
 
             // clear previous entries in Camp TextBox
             this.travelCampDaysTextBox.Text = "";
@@ -3814,6 +3871,7 @@ namespace hist_mmorpg
             this.armyCampTextBox.Enabled = false;
             this.armyExamineBtn.Enabled = false;
             this.armyPillageBtn.Enabled = false;
+            this.armySiegeBtn.Enabled = false;
             
             // clear existing items in armies list
             this.armyListView.Items.Clear();
@@ -3916,12 +3974,12 @@ namespace hist_mmorpg
                 thisSiegeItem.SubItems.Add(siegeLocation.name + " (" + siegeLocation.fiefID + ")");
 
                 // defender
-                PlayerCharacter defendingPlayer = s.getDefendingPlayer();
+                PlayerCharacter defendingPlayer = thisSiege.getDefendingPlayer();
                 thisSiegeItem.SubItems.Add(defendingPlayer.firstName + " " + defendingPlayer.familyName + " (" + defendingPlayer.charID + ")");
 
                 // besieger
                 Army besiegingArmy = thisSiege.getBesieger();
-                PlayerCharacter besieger = s.getBesiegingPlayer();
+                PlayerCharacter besieger = thisSiege.getBesiegingPlayer();
                 thisSiegeItem.SubItems.Add(besieger.firstName + " " + besieger.familyName + " (" + besieger.charID + ")");
 
                 if (thisSiegeItem != null)
@@ -3982,6 +4040,29 @@ namespace hist_mmorpg
             this.fiefCurrKeyStatsTextBox.ReadOnly = true;
             this.fiefNextKeyStatsTextBox.ReadOnly = true;
             this.fiefTransferAmountTextBox.Text = "";
+
+            // disable controls by default (will be enabled further down if appropriate)
+            this.adjustSpendBtn.Enabled = false;
+            this.taxRateLabel.Enabled = false;
+            this.garrSpendLabel.Enabled = false;
+            this.offSpendLabel.Enabled = false;
+            this.infraSpendLabel.Enabled = false;
+            this.keepSpendLabel.Enabled = false;
+            this.adjGarrSpendTextBox.Enabled = false;
+            this.adjInfrSpendTextBox.Enabled = false;
+            this.adjOffSpendTextBox.Enabled = false;
+            this.adjustKeepSpendTextBox.Enabled = false;
+            this.adjustTaxTextBox.Enabled = false;
+            this.viewBailiffBtn.Enabled = false;
+            this.lockoutBtn.Enabled = false;
+            this.selfBailiffBtn.Enabled = false;
+            this.setBailiffBtn.Enabled = false;
+            this.removeBaliffBtn.Enabled = false;
+            this.fiefTransferToFiefBtn.Enabled = false;
+            this.fiefTransferToHomeBtn.Enabled = false;
+            this.fiefHomeTreasTextBox.Enabled = false;
+            this.fiefTransferAmountTextBox.Enabled = false;
+            this.FiefTreasTextBox.Enabled = false;
 
             // if fief is NOT owned by player, disable fief management buttons and TextBoxes 
             if (! isOwner)
@@ -4519,6 +4600,12 @@ namespace hist_mmorpg
                     Globals_Client.containerToView = this.houseContainer;
                     Globals_Client.containerToView.BringToFront();
                 }
+            }
+
+            // display message that is no bailiff
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("This fief currently has no bailiff.");
             }
         }
 
@@ -5220,35 +5307,6 @@ namespace hist_mmorpg
                     this.houseEntourageBtn.Text = "Add To Entourage";
                 }
 
-                // check to see if is inside besieged keep
-                if ((Globals_Client.charToView.inKeep) && (Globals_Client.charToView.location.siege != null))
-                {
-                    // if is inside besieged keep, disable most of controls
-                    this.houseCampBtn.Enabled = false;
-                    this.houseCampDaysTextBox.Enabled = false;
-                    this.houseMoveToBtn.Enabled = false;
-                    this.houseMoveToTextBox.Enabled = false;
-                    this.houseRouteBtn.Enabled = false;
-                    this.houseEntourageBtn.Enabled = false;
-                    this.houseFireBtn.Enabled = false;
-                    this.houseExamineArmiesBtn.Enabled = false;
-                }
-
-                // is NOT inside besieged keep
-                else
-                {
-                    // re-enable controls
-                    this.houseCampBtn.Enabled = true;
-                    this.houseCampDaysTextBox.Enabled = true;
-                    this.houseMoveToBtn.Enabled = true;
-                    this.houseMoveToTextBox.Enabled = true;
-                    this.houseRouteBtn.Enabled = true;
-                    this.houseRouteTextBox.Enabled = true;
-                    this.houseEntourageBtn.Enabled = true;
-                    this.houseExamineArmiesBtn.Enabled = true;
-
-                }
-
                 // FAMILY MATTERS CONTROLS
                 // if family selected, enable 'choose heir' button, disbale 'fire' button
                 if ((Globals_Client.charToView.familyID != null) && (Globals_Client.charToView.familyID.Equals(Globals_Client.myChar.charID)))
@@ -5284,6 +5342,37 @@ namespace hist_mmorpg
 
                 // 'get wife with child' button always enabled
                 this.familyGetSpousePregBtn.Enabled = true;
+
+                // SIEGE CHECKS
+                // check to see if is inside besieged keep
+                if ((Globals_Client.charToView.inKeep) && (Globals_Client.charToView.location.siege != null))
+                {
+                    // if is inside besieged keep, disable most of controls
+                    this.houseCampBtn.Enabled = false;
+                    this.houseCampDaysTextBox.Enabled = false;
+                    this.houseMoveToBtn.Enabled = false;
+                    this.houseMoveToTextBox.Enabled = false;
+                    this.houseRouteBtn.Enabled = false;
+                    this.houseEntourageBtn.Enabled = false;
+                    this.houseFireBtn.Enabled = false;
+                    this.houseExamineArmiesBtn.Enabled = false;
+                }
+
+                // is NOT inside besieged keep
+                else
+                {
+                    // re-enable controls
+                    this.houseCampBtn.Enabled = true;
+                    this.houseCampDaysTextBox.Enabled = true;
+                    this.houseMoveToBtn.Enabled = true;
+                    this.houseMoveToTextBox.Enabled = true;
+                    this.houseRouteBtn.Enabled = true;
+                    this.houseRouteTextBox.Enabled = true;
+                    this.houseEntourageBtn.Enabled = true;
+                    this.houseExamineArmiesBtn.Enabled = true;
+
+                }
+
             }
         }
 
@@ -6307,7 +6396,8 @@ namespace hist_mmorpg
             else
             {
                 Globals_Client.myChar = Globals_Server.pcMasterList[playerID];
-                this.refreshCharacterContainer(Globals_Client.myChar);
+                Globals_Client.charToView = Globals_Client.myChar;
+                this.refreshCharacterContainer(Globals_Client.charToView);
             }
         }
 
@@ -6604,6 +6694,7 @@ namespace hist_mmorpg
                     this.armyCampTextBox.Enabled = false;
                     this.armyExamineBtn.Enabled = false;
                     this.armyPillageBtn.Enabled = false;
+                    this.armySiegeBtn.Enabled = false;
 
                     // clear existing information
                     this.armyRecruitTextBox.Text = "";
@@ -6671,6 +6762,7 @@ namespace hist_mmorpg
                     this.armyCampTextBox.Enabled = true;
                     this.armyExamineBtn.Enabled = true;
                     this.armyPillageBtn.Enabled = true;
+                    this.armySiegeBtn.Enabled = true;
 
                     // set auto combat values
                     this.armyAggroTextBox.Text = Globals_Client.armyToView.aggression.ToString();
@@ -8827,14 +8919,14 @@ namespace hist_mmorpg
         {
             bool displayData = true;
 
-            uint financialPeriodYear = this.getFinancialYear(0);
+            uint financialPeriodYear = this.getFinancialYear(relativeSeason);
             if (financialPeriodYear > s.startYear)
             {
                 displayData = false;
             }
             else if (financialPeriodYear == s.startYear)
             {
-                byte financialPeriodSeason = this.getFinancialSeason(0);
+                byte financialPeriodSeason = this.getFinancialSeason(relativeSeason);
                 if (financialPeriodSeason > s.startSeason)
                 {
                     displayData = false;
@@ -8903,7 +8995,8 @@ namespace hist_mmorpg
                     }
                     else
                     {
-                        financialSeason = thisSeason--;
+                        financialSeason = thisSeason;
+                        financialSeason--;
                     }
                     break;
                 case (1):
@@ -8913,7 +9006,8 @@ namespace hist_mmorpg
                     }
                     else
                     {
-                        financialSeason = thisSeason++;
+                        financialSeason = thisSeason;
+                        financialSeason++;
                     }
                     break;
                 default:
