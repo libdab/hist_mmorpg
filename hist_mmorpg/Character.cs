@@ -1413,10 +1413,10 @@ namespace hist_mmorpg
         /// <param name="myA">List<Army> holding character's armies</param>
         /// <param name="myS">List<string> holding character's sieges (siegeIDs)</param>
         public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
-            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
+            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famID,
             String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, List<Army> myA,
             List<string> myS, Dictionary<string, Ailment> ails = null, GameClock cl = null, Fief loc = null, String pID = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, myTi, ails, cl, loc)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famID, sp, fath, myTi, ails, cl, loc)
         {
             this.outlawed = outl;
             this.purse = pur;
@@ -2132,9 +2132,9 @@ namespace hist_mmorpg
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
         /// <param name="isH">bool denoting if is player's heir</param>
         public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
-            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famHead,
+            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famID,
             String sp, String fath, uint wa, bool inEnt, bool isH, List<String> myTi, Dictionary<string, Ailment> ails = null, String mb = null, GameClock cl = null, Fief loc = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famHead, sp, fath, myTi, ails, cl, loc)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famID, sp, fath, myTi, ails, cl, loc)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -2245,7 +2245,7 @@ namespace hist_mmorpg
                     }
 
                     // check for wife
-                    if (this.spouse != null)
+                    if ((this.spouse != null) && (this.spouse.Equals(bigCheese.charID)))
                     {
                         if (this.spouse.Equals(bigCheese.charID))
                         {

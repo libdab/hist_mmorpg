@@ -63,20 +63,20 @@ namespace hist_mmorpg
         /// </summary>
         public uint keepSpendNext { get; set; }
         /// <summary>
-        /// Holds key data for current season
-        /// 0 = loyalty
-        /// 1 = GDP
-        /// 2 = tax rate
-        /// 3 = official expenditure
-        /// 4 = garrison expenditure
-        /// 5 = infrastructure expenditure
-        /// 6 = keep expenditure
-        /// 7 = keep level
-        /// 8 = income
-        /// 9 = family expenses
-        /// 10 = total expenses
-        /// 11 = overlord taxes
-        /// 12 = overlord tax rate
+        /// Holds key data for current season.
+        /// 0 = loyalty,
+        /// 1 = GDP,
+        /// 2 = tax rate,
+        /// 3 = official expenditure,
+        /// 4 = garrison expenditure,
+        /// 5 = infrastructure expenditure,
+        /// 6 = keep expenditure,
+        /// 7 = keep level,
+        /// 8 = income,
+        /// 9 = family expenses,
+        /// 10 = total expenses,
+        /// 11 = overlord taxes,
+        /// 12 = overlord tax rate,
         /// 13 = bottom line
         /// </summary>
         public double[] keyStatsCurrent = new double[14];
@@ -868,6 +868,10 @@ namespace hist_mmorpg
                 // loyalty reduced in proportion to surplus divided by income
                 newLoy = newBaseLoy - (this.calcNewBottomLine() / Convert.ToDouble(this.calcNewIncome()));
             }
+            else
+            {
+                newLoy = newBaseLoy;
+            }
 
             // calculate effect of officials spend
             newLoy = newLoy + (newBaseLoy * this.calcOffLoyMod());
@@ -1309,6 +1313,7 @@ namespace hist_mmorpg
 
             // update officials spend (updating total expenses)
             this.keyStatsCurrent[3] = this.officialsSpendNext;
+            this.keyStatsCurrent[10] = 0;
             this.keyStatsCurrent[10] += this.keyStatsCurrent[3];
 
             // update garrison spend (updating total expenses)

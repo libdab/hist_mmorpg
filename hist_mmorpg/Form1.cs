@@ -273,8 +273,8 @@ namespace hist_mmorpg
             double[] currFin004 = new double[14];
             double[] prevFin005 = new double[14];
             double[] currFin005 = new double[14];
-            double[] prevFin006 = new double[14];
-            double[] currFin006 = new double[14];
+            double[] prevFin006 = new double[] { 6.6, 4760000, 10, 12000, 42000, 2000, 2000, 5.3, 476000, 47594, 105594, 29512, 6.2, 340894 };
+            double[] currFin006 = new double[] { 5.6, 4860000, 10, 12000, 42000, 2000, 2000, 5.5, 486000, 47594, 105594, 30132, 6.2, 350274 };
             double[] prevFin007 = new double[14];
             double[] currFin007 = new double[14];
 
@@ -304,7 +304,7 @@ namespace hist_mmorpg
             Globals_Server.fiefMasterList.Add(myFief3.fiefID, myFief3);
             Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, Globals_Client.clock, 0, 100000, armies004, false, transfers004, false, ra: myRank17);
             Globals_Server.fiefMasterList.Add(myFief4.fiefID, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', myLang1, plains, fief5Chars, keep5BarChars, false, false, Globals_Client.clock, 0, 100000, armies005, false, transfers005, false, ra: myRank15);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', myLang3, plains, fief5Chars, keep5BarChars, false, false, Globals_Client.clock, 0, 100000, armies005, false, transfers005, false, ra: myRank15);
             Globals_Server.fiefMasterList.Add(myFief5.fiefID, myFief5);
             Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, Globals_Client.clock, 0, 100000, armies006, false, transfers006, false, ra: myRank17);
             Globals_Server.fiefMasterList.Add(myFief6.fiefID, myFief6);
@@ -354,6 +354,8 @@ namespace hist_mmorpg
 			Queue<Fief> myGoTo3 = new Queue<Fief>();
 			Queue<Fief> myGoTo4 = new Queue<Fief>();
 			Queue<Fief> myGoTo5 = new Queue<Fief>();
+            Queue<Fief> myGoTo6 = new Queue<Fief>();
+            Queue<Fief> myGoTo7 = new Queue<Fief>();
 
 			// add some goTo entries for myChar1
 			//myGoTo1.Enqueue (myFief2);
@@ -373,6 +375,8 @@ namespace hist_mmorpg
             Tuple<uint, byte> myDob003 = new Tuple<uint, byte>(1278, 2);
             Tuple<uint, byte> myDob004 = new Tuple<uint, byte>(1295, 3);
             Tuple<uint, byte> myDob005 = new Tuple<uint, byte>(1288, 2);
+            Tuple<uint, byte> myDob006 = new Tuple<uint, byte>(1285, 3);
+            Tuple<uint, byte> myDob007 = new Tuple<uint, byte>(1287, 2);
 
             // create titles list for characters
             List<String> myTitles001 = new List<string>();
@@ -380,6 +384,8 @@ namespace hist_mmorpg
             List<String> myTitles003 = new List<string>();
             List<String> myTitles004 = new List<string>();
             List<String> myTitles005 = new List<string>();
+            List<String> myTitles006 = new List<string>();
+            List<String> myTitles007 = new List<string>();
 
             // create armies list for PCs
             List<Army> myArmies001 = new List<Army>();
@@ -400,8 +406,12 @@ namespace hist_mmorpg
             Globals_Server.npcMasterList.Add(myNPC2.charID, myNPC2);
             NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob004, true, "F", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, false, null, null, null, 10000, false, false, myTitles004, mb: myChar2.charID, cl: Globals_Client.clock, loc: myFief6);
             Globals_Server.npcMasterList.Add(myNPC3.charID, myNPC3);
-            NonPlayerCharacter myWife = new NonPlayerCharacter("404", "Molly", "Maguire", myDob005, false, "E", true, 2.50, 9.0, myGoTo5, myLang2, 90, 0, 4.0, 6.0, generateSkillSet(), false, true, false, "101", "101", null, 30000, false, false, myTitles005, cl: Globals_Client.clock, loc: myFief1);
-            Globals_Server.npcMasterList.Add(myWife.charID, myWife);
+            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("404", "Bev", "Bond", myDob005, false, "E", true, 2.50, 9.0, myGoTo5, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, true, false, "101", "101", null, 30000, false, false, myTitles005, cl: Globals_Client.clock, loc: myFief1);
+            Globals_Server.npcMasterList.Add(myChar1Wife.charID, myChar1Wife);
+            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("405", "Horatio", "Dond", myDob006, true, "F", true, 8.50, 6.0, myGoTo6, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, false, "102", "406", "102", 10000, false, false, myTitles006, cl: Globals_Client.clock, loc: myFief6);
+            Globals_Server.npcMasterList.Add(myChar2Son.charID, myChar2Son);
+            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob007, false, "E", true, 2.50, 9.0, myGoTo7, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, true, false, "102", "405", null, 30000, false, false, myTitles007, cl: Globals_Client.clock, loc: myFief6);
+            Globals_Server.npcMasterList.Add(myChar2SonWife.charID, myChar2SonWife);
 
             // get character's correct days allowance
             myChar1.days = myChar1.getDaysAllowance();
@@ -409,7 +419,9 @@ namespace hist_mmorpg
             myNPC1.days = myNPC1.getDaysAllowance();
             myNPC2.days = myNPC2.getDaysAllowance();
             myNPC3.days = myNPC3.getDaysAllowance();
-            myWife.days = myWife.getDaysAllowance();
+            myChar1Wife.days = myChar1Wife.getDaysAllowance();
+            myChar2Son.days = myChar2Son.getDaysAllowance();
+            myChar2SonWife.days = myChar2SonWife.getDaysAllowance();
 
             // set fief owners
 			myFief1.owner = myChar1;
@@ -465,11 +477,13 @@ namespace hist_mmorpg
 			// set employee as travelling companion
 			myChar1.addToEntourage(myNPC2);
             // give player a wife
-            myChar1.spouse = myWife.charID;
+            myChar1.spouse = myChar1Wife.charID;
             // add wife to myNPCs
-            myChar1.myNPCs.Add(myWife);
-            // add NPC to employees
+            myChar1.myNPCs.Add(myChar1Wife);
+            // add NPC to employees/family
             myChar2.hireNPC(myNPC3, 10000);
+            myChar2.myNPCs.Add(myChar2Son);
+            myChar2.myNPCs.Add(myChar2SonWife);
 
 			// Add fiefs to list of fiefs owned 
 			myChar1.addToOwnedFiefs(myFief1);
@@ -486,7 +500,9 @@ namespace hist_mmorpg
 			myFief1.addCharacter(myNPC1);
 			myFief1.addCharacter(myNPC2);
             myFief6.addCharacter(myNPC3);
-            myFief1.addCharacter(myWife);
+            myFief1.addCharacter(myChar1Wife);
+            myFief6.addCharacter(myChar2Son);
+            myFief6.addCharacter(myChar2SonWife);
 
             // create and add ailment
             Ailment myAilment1 = new Ailment(Globals_Server.getNextAilmentID(), "Battlefield injury", Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, 3, 1);
@@ -539,7 +555,7 @@ namespace hist_mmorpg
             // bar a character from the myFief1 keep
 			myFief2.barCharacter(myNPC1.charID);
             myFief2.barCharacter(myChar2.charID);
-            myFief2.barCharacter(myWife.charID);
+            myFief2.barCharacter(myChar1Wife.charID);
 
 			// try retrieving fief from masterlist using fiefID
 			// Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
@@ -5315,9 +5331,13 @@ namespace hist_mmorpg
                     this.houseFireBtn.Enabled = false;
 
                     // if is male and married, enable NPC 'get wife with child' control
-                    if ((Globals_Client.charToView.isMale) && (Globals_Client.charToView.isMarried))
+                    if ((Globals_Client.charToView.isMale) && (Globals_Client.charToView.spouse != null))
                     {
                         this.familyNpcSpousePregBtn.Enabled = true;
+                    }
+                    else
+                    {
+                        this.familyNpcSpousePregBtn.Enabled = false;
                     }
                 }
                 else
@@ -9358,55 +9378,75 @@ namespace hist_mmorpg
         {
             bool proceed = true;
 
-            // get spouse
-            NonPlayerCharacter wife = Globals_Server.npcMasterList[husband.spouse];
-
-            // check to make sure is in same fief
-            if (!(wife.location == husband.location))
+            // check is married
+            if (husband.spouse != null)
             {
-                System.Windows.Forms.MessageBox.Show("You have to be in the same fief to do that!");
-                proceed = false;
-            }
+                // get spouse
+                NonPlayerCharacter wife = Globals_Server.npcMasterList[husband.spouse];
 
-            else
-            {
-                // make sure wife not already pregnant
-                if (wife.isPregnant)
+                // check to make sure is in same fief
+                if (!(wife.location == husband.location))
                 {
-                    System.Windows.Forms.MessageBox.Show(wife.firstName + " " + wife.familyName + " is already pregnant, milord.  Don't be so impatient!", "PREGNANCY ATTEMPT CANCELLED");
+                    System.Windows.Forms.MessageBox.Show("You have to be in the same fief to do that!");
                     proceed = false;
                 }
 
                 else
                 {
-                    // ensure player and spouse have at least 1 day remaining
-                    double minDays = Math.Min(husband.days, wife.days);
-
-                    if (minDays < 1)
+                    // make sure wife not already pregnant
+                    if (wife.isPregnant)
                     {
-                        System.Windows.Forms.MessageBox.Show("Sorry, you don't have enough time left for this in the current season.", "PREGNANCY ATTEMPT CANCELLED");
+                        System.Windows.Forms.MessageBox.Show(wife.firstName + " " + wife.familyName + " is already pregnant, milord.  Don't be so impatient!", "PREGNANCY ATTEMPT CANCELLED");
                         proceed = false;
                     }
+
+                    // check if are kept apart by siege
                     else
                     {
-                        // ensure days are synchronised
-                        if (husband.days != minDays)
+                        if ((husband.location.siege != null) && (husband.inKeep != wife.inKeep))
                         {
-                            if (husband is PlayerCharacter)
+                            System.Windows.Forms.MessageBox.Show("I'm afraid the husband and wife are being separated by the ongoing siege.", "PREGNANCY ATTEMPT CANCELLED");
+                            proceed = false;
+                        }
+
+                        else
+                        {
+                            // ensure player and spouse have at least 1 day remaining
+                            double minDays = Math.Min(husband.days, wife.days);
+
+                            if (minDays < 1)
                             {
-                                (husband as PlayerCharacter).adjustDays(husband.days - minDays);
+                                System.Windows.Forms.MessageBox.Show("Sorry, you don't have enough time left for this in the current season.", "PREGNANCY ATTEMPT CANCELLED");
+                                proceed = false;
                             }
                             else
                             {
-                                husband.adjustDays(husband.days - minDays);
+                                // ensure days are synchronised
+                                if (husband.days != minDays)
+                                {
+                                    if (husband is PlayerCharacter)
+                                    {
+                                        (husband as PlayerCharacter).adjustDays(husband.days - minDays);
+                                    }
+                                    else
+                                    {
+                                        husband.adjustDays(husband.days - minDays);
+                                    }
+                                }
+                                else
+                                {
+                                    wife.adjustDays(wife.days - minDays);
+                                }
                             }
-                        }
-                        else
-                        {
-                            wife.adjustDays(wife.days - minDays);
                         }
                     }
                 }
+            }
+
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("This man is not married.", "PREGNANCY ATTEMPT CANCELLED");
+                proceed = false;
             }
 
             return proceed;
