@@ -127,6 +127,14 @@ namespace hist_mmorpg
         /// </summary>
         public static uint newSiegeID = 1;
         /// <summary>
+        /// Holds HexMapGraph for this game
+        /// </summary>
+        public static HexMapGraph gameMap;
+        /// <summary>
+        /// Holds GameClock for this game
+        /// </summary>
+        public static GameClock clock { get; set; }
+        /// <summary>
         /// Holds combat values for different troop types and nationalities
         /// Key = nationality & Value = combat value for knights, menAtArms, lightCavalry, yeomen, foot, rabble
         /// </summary>

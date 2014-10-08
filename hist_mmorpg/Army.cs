@@ -37,10 +37,6 @@ namespace hist_mmorpg
         /// </summary>
         public double days { get; set; }
         /// <summary>
-        /// Holds army's GameClock (season)
-        /// </summary>
-        public GameClock clock { get; set; }
-        /// <summary>
         /// Holds army location (fiefID)
         /// </summary>
         public string location { get; set; }
@@ -64,13 +60,12 @@ namespace hist_mmorpg
         /// <param name="ldr">string holding ID of army leader</param>
         /// <param name="own">string holding ID of army owner</param>
         /// <param name="day">double holding remaining days in season for army</param>
-        /// <param name="cl">GameClock holding season</param>
         /// <param name="loc">string holding army location (fiefID)</param>
         /// <param name="maint">bool indicating whether army is being actively maintained by owner</param>
         /// <param name="aggr">byte indicating army's aggression level</param>
         /// <param name="odds">byte indicating army's combat odds value</param>
         /// <param name="trp">uint[] holding troops in army</param>
-        public Army(String id, string ldr, string own, double day, GameClock cl, string loc, bool maint = false, byte aggr = 1, byte odds = 9, uint[] trp = null)
+        public Army(String id, string ldr, string own, double day, string loc, bool maint = false, byte aggr = 1, byte odds = 9, uint[] trp = null)
         {
 
             // TODO: validate trp = (upper limit?)
@@ -82,7 +77,6 @@ namespace hist_mmorpg
             this.leader = ldr;
             this.owner = own;
             this.days = day;
-            this.clock = cl;
             this.location = loc;
             this.isMaintained = maint;
             this.aggression = aggr;
@@ -303,7 +297,7 @@ namespace hist_mmorpg
             }
 
             // factor in effect of season (add 20 if is winter or spring)
-            if ((this.clock.currentSeason == 0) || (this.clock.currentSeason == 3))
+            if ((Globals_Server.clock.currentSeason == 0) || (Globals_Server.clock.currentSeason == 3))
             {
                 attritionChance = attritionChance + 20;
                 toDisplay += "Season effect: 20\r\n";
@@ -330,7 +324,7 @@ namespace hist_mmorpg
                 toDisplay += "casualtyModifier: " + casualtyModifier + "\r\n";
 
                 // factor in effect of season on potential losses (* 3 if is winter or spring)
-                if ((this.clock.currentSeason == 0) || (this.clock.currentSeason == 3))
+                if ((Globals_Server.clock.currentSeason == 0) || (Globals_Server.clock.currentSeason == 3))
                 {
                     casualtyModifier = casualtyModifier * 3;
                     toDisplay += "casualtyModifier after seasonal effect: " + casualtyModifier + "\r\n";
@@ -558,8 +552,10 @@ namespace hist_mmorpg
 
             if (thisFief.siege != null)
             {
-                Siege thisSiege = Globals_Server.siegeMasterList[thisFief.siege];
-                if (thisSiege.besiegerArmy.Equals(this.armyID))
+                Siege thisSiege = thisFief.getSiege();
+
+                // check if this army is besieging army
+                if (thisSiege.getBesiegingArmy() == this)
                 {
                     thisSiegeID = thisFief.siege;
                 }
@@ -581,8 +577,8 @@ namespace hist_mmorpg
 
             if (thisFief.siege != null)
             {
-                Siege thisSiege = Globals_Server.siegeMasterList[thisFief.siege];
-                if (thisSiege.defenderGarrison.Equals(this.armyID))
+                Siege thisSiege = thisFief.getSiege();
+                if (thisSiege.getDefenderGarrison() == this)
                 {
                     thisSiegeID = thisFief.siege;
                 }
@@ -604,10 +600,10 @@ namespace hist_mmorpg
 
             if (thisFief.siege != null)
             {
-                Siege thisSiege = Globals_Server.siegeMasterList[thisFief.siege];
+                Siege thisSiege = thisFief.getSiege();
                 if (thisSiege.defenderAdditional != null)
                 {
-                    if (thisSiege.defenderAdditional.Equals(this.armyID))
+                    if (thisSiege.getDefenderAdditional() == this)
                     {
                         thisSiegeID = thisFief.siege;
                     }

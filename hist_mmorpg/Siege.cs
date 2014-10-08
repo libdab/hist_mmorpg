@@ -122,20 +122,33 @@ namespace hist_mmorpg
         /// <returns>The besieged fief</returns>
         public Fief getFief()
         {
-            return Globals_Server.fiefMasterList[this.besiegedFief];
+            Fief besiegedFief = null;
+
+            if (this.besiegedFief != null)
+            {
+                if (Globals_Server.fiefMasterList.ContainsKey(this.besiegedFief))
+                {
+                    besiegedFief = Globals_Server.fiefMasterList[this.besiegedFief];
+                }
+            }
+
+            return besiegedFief;
         }
 
         /// <summary>
         /// Gets the besieging army
         /// </summary>
         /// <returns>The besieging army</returns>
-        public Army getBesieger()
+        public Army getBesiegingArmy()
         {
             Army besieger = null;
 
             if (this.besiegerArmy != null)
             {
-                besieger = Globals_Server.armyMasterList[this.besiegerArmy];
+                if (Globals_Server.armyMasterList.ContainsKey(this.besiegerArmy))
+                {
+                    besieger = Globals_Server.armyMasterList[this.besiegerArmy];
+                }
             }
 
             return besieger;
@@ -151,7 +164,10 @@ namespace hist_mmorpg
 
             if (this.defenderGarrison != null)
             {
-                defenderGarrison = Globals_Server.armyMasterList[this.defenderGarrison];
+                if (Globals_Server.armyMasterList.ContainsKey(this.defenderGarrison))
+                {
+                    defenderGarrison = Globals_Server.armyMasterList[this.defenderGarrison];
+                }
             }
 
             return defenderGarrison;
@@ -167,7 +183,10 @@ namespace hist_mmorpg
 
             if (this.defenderAdditional != null)
             {
-                thisDefenderAdditional = Globals_Server.armyMasterList[this.defenderAdditional];
+                if (Globals_Server.armyMasterList.ContainsKey(this.defenderAdditional))
+                {
+                    thisDefenderAdditional = Globals_Server.armyMasterList[this.defenderAdditional];
+                }
             }
 
             return thisDefenderAdditional;
@@ -179,7 +198,17 @@ namespace hist_mmorpg
         /// <returns>The defending player</returns>
         public PlayerCharacter getDefendingPlayer()
         {
-            return Globals_Server.pcMasterList[this.defendingPlayer];
+            PlayerCharacter defendingPlyr = null;
+
+            if (this.defendingPlayer != null)
+            {
+                if (Globals_Server.pcMasterList.ContainsKey(this.defendingPlayer))
+                {
+                    defendingPlyr = Globals_Server.pcMasterList[this.defendingPlayer];
+                }
+            }
+
+            return defendingPlyr;
         }
 
         /// <summary>
@@ -188,7 +217,17 @@ namespace hist_mmorpg
         /// <returns>The besieging player</returns>
         public PlayerCharacter getBesiegingPlayer()
         {
-            return Globals_Server.pcMasterList[this.besiegingPlayer];
+            PlayerCharacter besiegingPlyr = null;
+
+            if (this.besiegingPlayer != null)
+            {
+                if (Globals_Server.pcMasterList.ContainsKey(this.besiegingPlayer))
+                {
+                    besiegingPlyr = Globals_Server.pcMasterList[this.besiegingPlayer];
+                }
+            }
+
+            return besiegingPlyr;
         }
 
         /// <summary>
@@ -198,7 +237,7 @@ namespace hist_mmorpg
         /// <param name="checkForAttrition">bool indicating whether to check for attrition</param>
         public void syncDays(double newDays, bool checkForAttrition = true)
         {
-            Army besieger = this.getBesieger();
+            Army besieger = this.getBesiegingArmy();
             Army defenderGarr = this.getDefenderGarrison();
             Army defenderAdd = this.getDefenderAdditional();
             bool defenderAttritonApplies = false;
@@ -342,7 +381,7 @@ namespace hist_mmorpg
         public bool updateSiege()
         {
             bool siegeEnded = false;
-            Character besiegerLeader = this.getBesieger().getLeader();
+            Character besiegerLeader = this.getBesiegingArmy().getLeader();
 
             // check if besieger still in field (i.e. has not been disbanded)
             if (this.besiegerArmy == null)

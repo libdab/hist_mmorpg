@@ -35,13 +35,5 @@ namespace hist_mmorpg
         /// Holds UI container being currently displayed
         /// </summary>
         public static ContainerControl containerToView;
-        /// <summary>
-        /// Holds HexMapGraph for this game
-        /// </summary>
-        public static HexMapGraph gameMap;
-        /// <summary>
-        /// Holds GameClock for this game
-        /// </summary>
-        public static GameClock clock { get; set; }
     }
 }

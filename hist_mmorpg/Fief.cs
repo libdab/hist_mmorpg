@@ -121,10 +121,6 @@ namespace hist_mmorpg
         /// </summary>
         public bool frenchBarred { get; set; }
         /// <summary>
-        /// Holds fief's GameClock (season)
-        /// </summary>
-        public GameClock clock { get; set; }
-        /// <summary>
         /// Holds fief owner (PlayerCharacter object)
         /// </summary>
 		public PlayerCharacter owner { get; set; }
@@ -201,7 +197,6 @@ namespace hist_mmorpg
         /// <param name="barChars">List holding IDs of characters barred from keep</param>
         /// <param name="engBarr">bool indicating whether English nationality barred from keep</param>
         /// <param name="frBarr">bool indicating whether French nationality barred from keep</param>
-        /// <param name="cl">GameClock holding season</param>
 		/// <param name="own">PlayerCharacter holding fief owner</param>
 		/// <param name="ancOwn">PlayerCharacter holding fief ancestral owner</param>
         /// <param name="bail">Character holding fief bailiff</param>
@@ -217,7 +212,7 @@ namespace hist_mmorpg
         public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
             Double kpLvl, Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
-            GameClock cl, byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, String tiHo = null,
+            byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, String tiHo = null,
             PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null, string sge = null)
         {
 
@@ -322,7 +317,6 @@ namespace hist_mmorpg
             this.barredCharacters = barChars;
             this.englishBarred = engBarr;
             this.frenchBarred = frBarr;
-            this.clock = cl;
             this.rank = ra;
             this.bailiffDaysInFief = bailInF;
             this.treasury = treas;
@@ -374,7 +368,6 @@ namespace hist_mmorpg
 			this.barredCharacters = fr.barredCharacters;
 			this.englishBarred = fr.englishBarred;
 			this.frenchBarred = fr.frenchBarred;
-			this.clock = null;
             // rank to be added later
             this.rank = null;
             this.bailiffDaysInFief = fr.bailiffDaysInFief;
@@ -649,9 +642,9 @@ namespace hist_mmorpg
                 double famSkillsModifier = 0;
 
                 // get famExpense rating of whoever has highest management rating
-                if ((this.owner.isMarried) && (this.owner.management < Globals_Server.npcMasterList[this.owner.spouse].management))
+                if ((this.owner.spouse != null) && (this.owner.management < this.owner.getSpouse().management))
                 {
-                    famSkillsModifier = Globals_Server.npcMasterList[this.owner.spouse].calcSkillEffect("famExpense");
+                    famSkillsModifier = this.owner.getSpouse().calcSkillEffect("famExpense");
                 }
                 else
                 {
@@ -1595,17 +1588,56 @@ namespace hist_mmorpg
         {
             Character myTitleHolder = null;
 
-            // get leader from appropriate master list
-            if (Globals_Server.npcMasterList.ContainsKey(this.titleHolder))
+            if (this.titleHolder != null)
             {
-                myTitleHolder = Globals_Server.npcMasterList[this.titleHolder];
-            }
-            else if (Globals_Server.pcMasterList.ContainsKey(this.titleHolder))
-            {
-                myTitleHolder = Globals_Server.pcMasterList[this.titleHolder];
+                // get title holder from appropriate master list
+                if (Globals_Server.npcMasterList.ContainsKey(this.titleHolder))
+                {
+                    myTitleHolder = Globals_Server.npcMasterList[this.titleHolder];
+                }
+                else if (Globals_Server.pcMasterList.ContainsKey(this.titleHolder))
+                {
+                    myTitleHolder = Globals_Server.pcMasterList[this.titleHolder];
+                }
             }
 
             return myTitleHolder;
+        }
+
+        /// <summary>
+        /// Gets fief's overlord
+        /// </summary>
+        /// <returns>The overlord</returns>
+        public PlayerCharacter getOverlord()
+        {
+            PlayerCharacter myOverlord = null;
+
+            if (this.province.overlord != null)
+            {
+                myOverlord = this.province.overlord;
+            }
+
+            return myOverlord;
+        }
+
+        /// <summary>
+        /// Gets the fief's siege object
+        /// </summary>
+        /// <returns>the siege</returns>
+        public Siege getSiege()
+        {
+            Siege mySiege = null;
+
+            if (this.siege != null)
+            {
+                // get siege
+                if (Globals_Server.siegeMasterList.ContainsKey(this.siege))
+                {
+                    mySiege = Globals_Server.siegeMasterList[this.siege];
+                }
+            }
+
+            return mySiege;
         }
 
         /// <summary>
@@ -1811,10 +1843,6 @@ namespace hist_mmorpg
 		/// </summary>
 		public bool frenchBarred { get; set; }
 		/// <summary>
-        /// Holds fief's GameClock (clockID)
-		/// </summary>
-		public String clock { get; set; }
-		/// <summary>
 		/// Holds fief owner (charID)
 		/// </summary>
 		public String owner { get; set; }
@@ -1907,7 +1935,6 @@ namespace hist_mmorpg
 			this.barredCharacters = f.barredCharacters;
 			this.englishBarred = f.englishBarred;
 			this.frenchBarred = f.frenchBarred;
-			this.clock = f.clock.clockID;
             this.rankID = f.rank.rankID;
             this.bailiffDaysInFief = f.bailiffDaysInFief;
             this.treasury = f.treasury;

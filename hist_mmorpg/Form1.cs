@@ -102,7 +102,7 @@ namespace hist_mmorpg
 
             // create GameClock
             GameClock myGameClock = new GameClock("clock001", 1320, myScheduledJournal, myPastJournal);
-            Globals_Client.clock = myGameClock;
+            Globals_Server.clock = myGameClock;
 
 			// create skills
 			// Dictionary of skill effects
@@ -296,25 +296,25 @@ namespace hist_mmorpg
             Dictionary<string, string[]> transfers006 = new Dictionary<string, string[]>();
             Dictionary<string, string[]> transfers007 = new Dictionary<string, string[]>();
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, Globals_Client.clock, 0, 2000000, armies001, false, transfers001, false, ra: myRank17);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, 0, 2000000, armies001, false, transfers001, false, ra: myRank17);
             Globals_Server.fiefMasterList.Add(myFief1.fiefID, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, Globals_Client.clock, 0, 4000, armies002, false, transfers002, false, ra: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, 0, 4000, armies002, false, transfers002, false, ra: myRank15);
             Globals_Server.fiefMasterList.Add(myFief2.fiefID, myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, Globals_Client.clock, 0, 100000, armies003, false, transfers003, false, ra: myRank17);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, 0, 100000, armies003, false, transfers003, false, ra: myRank17);
             Globals_Server.fiefMasterList.Add(myFief3.fiefID, myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, Globals_Client.clock, 0, 100000, armies004, false, transfers004, false, ra: myRank17);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, 0, 100000, armies004, false, transfers004, false, ra: myRank17);
             Globals_Server.fiefMasterList.Add(myFief4.fiefID, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', myLang3, plains, fief5Chars, keep5BarChars, false, false, Globals_Client.clock, 0, 100000, armies005, false, transfers005, false, ra: myRank15);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', myLang3, plains, fief5Chars, keep5BarChars, false, false, 0, 100000, armies005, false, transfers005, false, ra: myRank15);
             Globals_Server.fiefMasterList.Add(myFief5.fiefID, myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, Globals_Client.clock, 0, 100000, armies006, false, transfers006, false, ra: myRank17);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, 0, 100000, armies006, false, transfers006, false, ra: myRank17);
             Globals_Server.fiefMasterList.Add(myFief6.fiefID, myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, Globals_Client.clock, 0, 100000, armies007, false, transfers007, false, ra: myRank15);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, 0, 100000, armies007, false, transfers007, false, ra: myRank15);
             Globals_Server.fiefMasterList.Add(myFief7.fiefID, myFief7);
 
 			// create QuickGraph undirected graph
 			// 1. create graph
 			var myHexMap = new HexMapGraph("map001");
-            Globals_Client.gameMap = myHexMap;
+            Globals_Server.gameMap = myHexMap;
 			// 2. Add edge and auto create vertices
 			// from myFief1
 			myHexMap.addHexesAndRoute(myFief1, myFief2, "W", (myFief1.terrain.travelCost + myFief2.terrain.travelCost) / 2);
@@ -396,21 +396,21 @@ namespace hist_mmorpg
             List<string> mySieges002 = new List<string>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, true, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, cl: Globals_Client.clock, loc: myFief1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, loc: myFief1);
             Globals_Server.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, cl: Globals_Client.clock, loc: myFief7);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, loc: myFief7);
             Globals_Server.pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "E", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, false, null, null, null, 0, false, false, myTitles003, cl: Globals_Client.clock, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "E", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, 0, false, false, myTitles003, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "E", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, false, null, null, null, 10000, true, false, myTitles004, mb: myChar1.charID, cl: Globals_Client.clock, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "E", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, null, null, null, 10000, true, false, myTitles004, mb: myChar1.charID, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob004, true, "F", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, false, null, null, null, 10000, false, false, myTitles004, mb: myChar2.charID, cl: Globals_Client.clock, loc: myFief6);
+            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob004, true, "F", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, 10000, false, false, myTitles004, mb: myChar2.charID, loc: myFief6);
             Globals_Server.npcMasterList.Add(myNPC3.charID, myNPC3);
-            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("404", "Bev", "Bond", myDob005, false, "E", true, 2.50, 9.0, myGoTo5, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, true, false, "101", "101", null, 30000, false, false, myTitles005, cl: Globals_Client.clock, loc: myFief1);
+            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("404", "Bev", "Bond", myDob005, false, "E", true, 2.50, 9.0, myGoTo5, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "101", "101", null, 30000, false, false, myTitles005, loc: myFief1);
             Globals_Server.npcMasterList.Add(myChar1Wife.charID, myChar1Wife);
-            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("405", "Horatio", "Dond", myDob006, true, "F", true, 8.50, 6.0, myGoTo6, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, false, "102", "406", "102", 10000, false, false, myTitles006, cl: Globals_Client.clock, loc: myFief6);
+            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("405", "Horatio", "Dond", myDob006, true, "F", true, 8.50, 6.0, myGoTo6, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "102", "406", "102", 10000, false, false, myTitles006, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2Son.charID, myChar2Son);
-            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob007, false, "E", true, 2.50, 9.0, myGoTo7, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, true, false, "102", "405", null, 30000, false, false, myTitles007, cl: Globals_Client.clock, loc: myFief6);
+            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob007, false, "E", true, 2.50, 9.0, myGoTo7, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", "405", null, 30000, false, false, myTitles007, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2SonWife.charID, myChar2SonWife);
 
             // get character's correct days allowance
@@ -505,7 +505,7 @@ namespace hist_mmorpg
             myFief6.addCharacter(myChar2SonWife);
 
             // create and add ailment
-            Ailment myAilment1 = new Ailment(Globals_Server.getNextAilmentID(), "Battlefield injury", Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, 3, 1);
+            Ailment myAilment1 = new Ailment(Globals_Server.getNextAilmentID(), "Battlefield injury", Globals_Server.clock.seasons[Globals_Server.clock.currentSeason] + ", " + Globals_Server.clock.currentYear, 3, 1);
             myChar1.ailments.Add(myAilment1.ailmentID, myAilment1);
 
             // populate Globals_Server.combatValues
@@ -530,7 +530,7 @@ namespace hist_mmorpg
 
             // create an army and add in appropriate places
             uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 200, 400};
-            Army myArmy = new Army(Globals_Server.getNextArmyID(), null, null, 90, Globals_Client.clock, null, trp: myArmyTroops);
+            Army myArmy = new Army(Globals_Server.getNextArmyID(), null, null, 90, null, trp: myArmyTroops);
             Globals_Server.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
             myArmy.leader = myChar1.charID;
@@ -542,7 +542,7 @@ namespace hist_mmorpg
 
             // create another (enemy) army and add in appropriate places
             uint[] myArmyTroops2 = new uint[] { 10, 10, 30, 0, 200, 400 };
-            Army myArmy2 = new Army(Globals_Server.getNextArmyID(), null, null, 90, Globals_Client.clock, null, trp: myArmyTroops2, aggr: 1);
+            Army myArmy2 = new Army(Globals_Server.getNextArmyID(), null, null, 90, null, trp: myArmyTroops2, aggr: 1);
             Globals_Server.armyMasterList.Add(myArmy2.armyID, myArmy2);
             myArmy2.owner = myChar2.charID;
             myArmy2.leader = myChar2.charID;
@@ -599,7 +599,7 @@ namespace hist_mmorpg
 		public void writeToDB(String gameID)
 		{
 			// ========= write CLOCK
-            this.writeClock(gameID, Globals_Client.clock);
+            this.writeClock(gameID, Globals_Server.clock);
 
 			// ========= write GLOBALS_SERVER DICTIONARIES
 			this.writeDictionary(gameID, "combatValues", Globals_Server.combatValues);
@@ -827,7 +827,7 @@ namespace hist_mmorpg
             this.writeKeyList(gameID, "siegeKeys", Globals_Server.siegeKeys);
 
 			// ========= write MAP (edges collection)
-            this.writeMapEdges(gameID, Globals_Client.gameMap);
+            this.writeMapEdges(gameID, Globals_Server.gameMap);
 
 		}
 
@@ -842,7 +842,7 @@ namespace hist_mmorpg
 			this.initialDBload_keyLists (gameID);
 
 			// load CLOCK
-            Globals_Client.clock = this.initialDBload_clock(gameID, "gameClock");
+            Globals_Server.clock = this.initialDBload_clock(gameID, "gameClock");
 
 			// load GLOBAL_SERVER DICTIONARIES
 			Globals_Server.combatValues = this.initialDBload_dictUint(gameID, "combatValues");
@@ -948,7 +948,7 @@ namespace hist_mmorpg
 			}
 
 			// load MAP
-            Globals_Client.gameMap = this.initialDBload_map(gameID, "mapEdges");
+            Globals_Server.gameMap = this.initialDBload_map(gameID, "mapEdges");
 		}
 
 		/// <summary>
@@ -1486,9 +1486,6 @@ namespace hist_mmorpg
 			// create Fief from Fief_Riak
 			fOut = new Fief (fr);
 
-			// insert game clock
-            fOut.clock = Globals_Client.clock;
-
 			// insert province
             fOut.province = Globals_Server.provinceMasterList[fr.province];
 
@@ -1601,9 +1598,6 @@ namespace hist_mmorpg
 			// create PlayerCharacter from PlayerCharacter_Riak
 			pcOut = new PlayerCharacter (pcr);
 
-			// insert game clock
-            pcOut.clock = Globals_Client.clock;
-
             // insert language
             pcOut.language = new Tuple<Language, int>(Globals_Server.languageMasterList[pcr.language.Item1], pcr.language.Item2);
 
@@ -1647,9 +1641,6 @@ namespace hist_mmorpg
 			NonPlayerCharacter npcOut = null;
             // create NonPlayerCharacter from NonPlayerCharacter_Riak
 			npcOut = new NonPlayerCharacter (npcr);
-
-			// insert game clock
-            npcOut.clock = Globals_Client.clock;
 
             // insert language
             npcOut.language = new Tuple<Language, int>(Globals_Server.languageMasterList[npcr.language.Item1], npcr.language.Item2);
@@ -2241,9 +2232,9 @@ namespace hist_mmorpg
 
             // iterate through clock's scheduled events
             // check for births
-            foreach (JournalEvent jEvent in Globals_Client.clock.scheduledEvents.events)
+            foreach (JournalEvent jEvent in Globals_Server.clock.scheduledEvents.events)
             {
-                if ((jEvent.year == Globals_Client.clock.currentYear) && (jEvent.season == Globals_Client.clock.currentSeason))
+                if ((jEvent.year == Globals_Server.clock.currentYear) && (jEvent.season == Globals_Server.clock.currentSeason))
                 {
                     if ((jEvent.type).ToLower().Equals("birth"))
                     {
@@ -2343,7 +2334,7 @@ namespace hist_mmorpg
             }
 
             // ADVANCE SEASON AND YEAR
-            Globals_Client.clock.advanceSeason();
+            Globals_Server.clock.advanceSeason();
 
             // REFRESH CURRENT SCREEN
             this.refreshCurrentScreen();
@@ -2470,7 +2461,7 @@ namespace hist_mmorpg
             if (randomInt > 0)
             {
                 // get a destination
-                Fief target = Globals_Client.gameMap.chooseRandomHex(npc.location);
+                Fief target = Globals_Server.gameMap.chooseRandomHex(npc.location);
 
                 // get travel cost
                 double travelCost = this.getTravelCost(npc.location, target);
@@ -2621,13 +2612,13 @@ namespace hist_mmorpg
         {
             string textToDisplay = "";
             // date/season and main character's days left
-            textToDisplay += Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear + ".  Your days left: " + Globals_Client.myChar.days + "\r\n\r\n";
+            textToDisplay += Globals_Server.clock.seasons[Globals_Server.clock.currentSeason] + ", " + Globals_Server.clock.currentYear + ".  Your days left: " + Globals_Client.myChar.days + "\r\n\r\n";
             // Fief name/ID and province name
             textToDisplay += "Fief: " + Globals_Client.myChar.location.name + " (" + Globals_Client.myChar.location.fiefID + ")  in " + Globals_Client.myChar.location.province.name + ", " + Globals_Client.myChar.location.province.kingdom.name + "\r\n\r\n";
             // Fief owner
             textToDisplay += "Owner: " + Globals_Client.myChar.location.owner.firstName + " " + Globals_Client.myChar.location.owner.familyName + "\r\n";
             // Fief overlord
-            textToDisplay += "Overlord: " + Globals_Client.myChar.location.province.overlord.firstName + " " + Globals_Client.myChar.location.province.overlord.familyName + "\r\n";
+            textToDisplay += "Overlord: " + Globals_Client.myChar.location.getOverlord().firstName + " " + Globals_Client.myChar.location.getOverlord().familyName + "\r\n";
 
             this.meetingPlaceTextBox.ReadOnly = true;
             this.meetingPlaceTextBox.Text = textToDisplay;
@@ -2724,7 +2715,7 @@ namespace hist_mmorpg
             // household
             if (ch.familyID != null)
             {
-                myHousehold = Globals_Server.pcMasterList[ch.familyID].familyName + " (ID: " + ch.familyID + ")";
+                myHousehold = ch.getHeadOfFamily().familyName + " (ID: " + ch.familyID + ")";
 
                 if (ch.familyID.Equals(Globals_Client.myChar.charID))
                 {
@@ -2958,11 +2949,11 @@ namespace hist_mmorpg
             if (ch is PlayerCharacter)
             {
                 // home fief
-                Fief homeFief = Globals_Server.fiefMasterList[(ch as PlayerCharacter).homeFief];
+                Fief homeFief = (ch as PlayerCharacter).getHomeFief();
                 charText += "Home fief: " + homeFief.name + " (" + homeFief.fiefID + ")\r\n";
 
                 // ancestral home fief
-                Fief ancHomeFief = Globals_Server.fiefMasterList[(ch as PlayerCharacter).ancestralHomeFief];
+                Fief ancHomeFief = (ch as PlayerCharacter).getAncestralHome();
                 charText += "Ancestral Home fief: " + ancHomeFief.name + " (" + ancHomeFief.fiefID + ")\r\n";
             }
 
@@ -3030,21 +3021,17 @@ namespace hist_mmorpg
 
             // marital status
             charText += "You are ";
-            if (ch.isMarried)
+            if (ch.spouse != null)
             {
-                charText += "happily married";
+                charText += "happily married\r\n";
+                // spouse ID
+                charText += "Your spouse's ID is: " + ch.spouse;
             }
             else
             {
                 charText += "single and lonely";
             }
             charText += "\r\n";
-
-            // spouse ID
-            if (ch.isMarried)
-            {
-                charText += "Your spouse's ID is: " + ch.spouse + "\r\n";
-            }
 
             // if pregnant
             if (!ch.isMale)
@@ -3060,7 +3047,7 @@ namespace hist_mmorpg
             // if spouse pregnant
             else
             {
-                if (ch.isMarried)
+                if (ch.spouse != null)
                 {
                     NonPlayerCharacter thisSpouse = Globals_Server.npcMasterList[ch.spouse];
                     if (thisSpouse.isPregnant)
@@ -3382,7 +3369,7 @@ namespace hist_mmorpg
             Fief siegeLocation = s.getFief();
             PlayerCharacter fiefOwner = siegeLocation.owner;
             bool isDefender = (fiefOwner == Globals_Client.myChar);
-            Army besieger = s.getBesieger();
+            Army besieger = s.getBesiegingArmy();
             PlayerCharacter besiegingPlayer = s.getBesiegingPlayer();
             Army defenderGarrison = s.getDefenderGarrison();
             Army defenderAdditional = s.getDefenderAdditional();
@@ -3407,7 +3394,7 @@ namespace hist_mmorpg
             siegeText += "Besieging player: " + besiegingPlayer.firstName + " " + besiegingPlayer.familyName + " (ID: " + besiegingPlayer.charID + ")\r\n\r\n";
 
             // start date
-            siegeText += "Start date: " + s.startYear + ", " + Globals_Client.clock.seasons[s.startSeason] + "\r\n\r\n";
+            siegeText += "Start date: " + s.startYear + ", " + Globals_Server.clock.seasons[s.startSeason] + "\r\n\r\n";
 
             // duration so far
             siegeText += "Days used so far: " + s.totalDays + "\r\n\r\n";
@@ -3667,7 +3654,7 @@ namespace hist_mmorpg
             // if under siege, check to see if display data (based on siege start date)
             if (f.siege != null)
             {
-                Siege thisSiege = Globals_Server.siegeMasterList[f.siege];
+                Siege thisSiege = f.getSiege();
                 displayData = this.checkToShowFinancialData(-1, thisSiege);
             }
 
@@ -3737,7 +3724,7 @@ namespace hist_mmorpg
             // if under siege, check to see if display data (based on siege start date)
             if (f.siege != null)
             {
-                Siege thisSiege = Globals_Server.siegeMasterList[f.siege];
+                Siege thisSiege = f.getSiege();
                 displayData = this.checkToShowFinancialData(0, thisSiege);
             }
 
@@ -3848,7 +3835,7 @@ namespace hist_mmorpg
                 // family expenses
                 fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
                 // famExpenses modifier for player/spouse
-                if ((f.owner.isMarried) && (Globals_Server.npcMasterList[f.owner.spouse].management > f.owner.management))
+                if ((f.owner.spouse != null) && (Globals_Server.npcMasterList[f.owner.spouse].management > f.owner.management))
                 {
                     fiefText += "  (which may include a famExpense skills modifier: " + Globals_Server.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")";
                 }
@@ -4073,7 +4060,7 @@ namespace hist_mmorpg
                 thisSiegeItem.SubItems.Add(defendingPlayer.firstName + " " + defendingPlayer.familyName + " (" + defendingPlayer.charID + ")");
 
                 // besieger
-                Army besiegingArmy = thisSiege.getBesieger();
+                Army besiegingArmy = thisSiege.getBesiegingArmy();
                 PlayerCharacter besieger = thisSiege.getBesiegingPlayer();
                 thisSiegeItem.SubItems.Add(besieger.firstName + " " + besieger.familyName + " (" + besieger.charID + ")");
 
@@ -4239,7 +4226,7 @@ namespace hist_mmorpg
                     this.FiefTreasTextBox.ReadOnly = true;
 
                     // don't enable treasury transfer controls if in Home Fief (can't transfer to self)
-                    if (f == Globals_Server.fiefMasterList[Globals_Client.myChar.homeFief])
+                    if (f == Globals_Client.myChar.getHomeFief())
                     {
                         this.fiefTransferToFiefBtn.Enabled = false;
                         this.fiefTransferToHomeBtn.Enabled = false;
@@ -4266,7 +4253,7 @@ namespace hist_mmorpg
                     this.fiefNextKeyStatsTextBox.Text = this.displayFiefKeyStatsNext(Globals_Client.fiefToView);
 
                     // get home fief
-                    Fief home = Globals_Server.fiefMasterList[Globals_Client.myChar.homeFief];
+                    Fief home = Globals_Client.myChar.getHomeFief();
 
                     // check if in home fief
                     if (f == home)
@@ -4504,7 +4491,7 @@ namespace hist_mmorpg
             cost = (source.terrain.travelCost + target.terrain.travelCost) / 2;
 
             // apply season modifier
-            cost = cost * Globals_Client.clock.calcSeasonTravMod();
+            cost = cost * Globals_Server.clock.calcSeasonTravMod();
 
             // if necessary, apply army modifier
             if (armyID != null)
@@ -4534,7 +4521,7 @@ namespace hist_mmorpg
             for (int i = 0; i < directions.Length; i++ )
             {
                 // retrieve target fief for that direction
-                Fief target = Globals_Client.gameMap.getFief(thisFief, directions[i]);
+                Fief target = Globals_Server.gameMap.getFief(thisFief, directions[i]);
                 // display fief details and travel cost
                 if (target != null)
                 {
@@ -4636,7 +4623,7 @@ namespace hist_mmorpg
             // necessary in order to be able to access button tag
             Button button = sender as Button;
             // get target fief using travel button tag (contains direction string)
-            Fief targetFief = Globals_Client.gameMap.getFief(Globals_Client.myChar.location, button.Tag.ToString());
+            Fief targetFief = Globals_Server.gameMap.getFief(Globals_Client.myChar.location, button.Tag.ToString());
 
             if (targetFief != null)
             {
@@ -5081,7 +5068,7 @@ namespace hist_mmorpg
                 Fief target = Globals_Server.fiefMasterList[myTextBox.Text];
 
                 // obtains goTo queue for shortest path to target
-                Globals_Client.charToView.goTo = Globals_Client.gameMap.getShortestPath(Globals_Client.charToView.location, target);
+                Globals_Client.charToView.goTo = Globals_Server.gameMap.getShortestPath(Globals_Client.charToView.location, target);
 
                 // if retrieve valid path
                 if (Globals_Client.charToView.goTo.Count > 0)
@@ -5602,7 +5589,7 @@ namespace hist_mmorpg
                 if (ch.armyID != null)
                 {
                     // get army
-                    Army thisArmy = Globals_Server.armyMasterList[ch.armyID];
+                    Army thisArmy = ch.getArmy();
 
                     // number of attrition checks
                     byte attritionChecks = 0;
@@ -5748,7 +5735,7 @@ namespace hist_mmorpg
                 }
 
                 // get the target fief
-                target = Globals_Client.gameMap.getFief(source, directions[i].ToUpper());
+                target = Globals_Server.gameMap.getFief(source, directions[i].ToUpper());
 
                 // if target successfully acquired, add to queue
                 if (target != null)
@@ -5814,7 +5801,7 @@ namespace hist_mmorpg
         {
             try
             {
-                Fief fiefFrom = Globals_Server.fiefMasterList[Globals_Client.myChar.homeFief];
+                Fief fiefFrom = Globals_Client.myChar.getHomeFief();
                 Fief fiefTo = Globals_Client.fiefToView;
                 int amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
 
@@ -5938,7 +5925,7 @@ namespace hist_mmorpg
             // family name
             newNPC.familyName = daddy.familyName;
             // date of birth
-            newNPC.birthDate = new Tuple<uint, byte>(Globals_Client.clock.currentYear, Globals_Client.clock.currentSeason);
+            newNPC.birthDate = new Tuple<uint, byte>(Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason);
             // nationality
             newNPC.nationality = daddy.nationality;
             // whether is alive
@@ -5951,8 +5938,6 @@ namespace hist_mmorpg
             newNPC.days = 90;
             // if in keep
             newNPC.inKeep = mummy.inKeep;
-            // if married
-            newNPC.isMarried = false;
             // if pregnant
             newNPC.isPregnant = false;
             // familyID
@@ -5961,8 +5946,6 @@ namespace hist_mmorpg
             newNPC.spouse = null;
             // father
             newNPC.father = daddy.charID;
-            // gameclock
-            newNPC.clock = Globals_Client.clock;
             // location
             newNPC.location = null;
             // titles
@@ -6283,7 +6266,7 @@ namespace hist_mmorpg
             if (!isStillborn)
             {
                 Globals_Server.npcMasterList.Add(weeBairn.charID, weeBairn);
-                Globals_Client.clock.pastEvents.events.Add(new JournalEvent(Globals_Client.clock.currentYear, Globals_Client.clock.currentSeason, Globals_Client.myChar.charID, "Birth", descr: Globals_Client.myChar.firstName + " " + Globals_Client.myChar.familyName + " welcomes a new " + weeBairn.getFunction(Globals_Client.myChar) + " into his family"));
+                Globals_Server.clock.pastEvents.events.Add(new JournalEvent(Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, Globals_Client.myChar.charID, "Birth", descr: Globals_Client.myChar.firstName + " " + Globals_Client.myChar.familyName + " welcomes a new " + weeBairn.getFunction(Globals_Client.myChar) + " into his family"));
                 weeBairn.location = mummy.location;
                 weeBairn.location.characters.Add(weeBairn);
                 Globals_Client.myChar.myNPCs.Add(weeBairn);
@@ -6534,13 +6517,9 @@ namespace hist_mmorpg
         private void armyManagementToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // get player's army
-            Army thisArmy = null;
-            if ((Globals_Client.myChar.armyID != null)
-                && (Globals_Server.armyMasterList.ContainsKey(Globals_Client.myChar.armyID)))
-            {
-                thisArmy = Globals_Server.armyMasterList[Globals_Client.myChar.armyID];
-            }
+            Army thisArmy = Globals_Client.myChar.getArmy();
 
+            // display army mangement screen
             this.armyContainer.Panel1.Tag = "management";
             this.refreshArmyContainer(thisArmy);
         }
@@ -6609,15 +6588,18 @@ namespace hist_mmorpg
                     // if no existing army, create one
                     if (operation.Equals("new"))
                     {
-                        Army newArmy = new Army(Globals_Server.getNextArmyID(), Globals_Client.myChar.charID, Globals_Client.myChar.charID, Globals_Client.myChar.days, Globals_Client.clock, Globals_Client.myChar.location.fiefID);
+                        Army newArmy = new Army(Globals_Server.getNextArmyID(), Globals_Client.myChar.charID, Globals_Client.myChar.charID, Globals_Client.myChar.days, Globals_Client.myChar.location.fiefID);
                         this.addArmy(newArmy);
                     }
 
                     // recruit troops
                     Globals_Client.myChar.recruitTroops(numberWanted);
 
+                    // get army
+                    Army myArmy = Globals_Client.myChar.getArmy();
+
                     // refresh display
-                    this.refreshArmyContainer(Globals_Server.armyMasterList[Globals_Client.myChar.armyID]);
+                    this.refreshArmyContainer(myArmy);
                 }
                 catch (System.FormatException fe)
                 {
@@ -6657,7 +6639,7 @@ namespace hist_mmorpg
             uint maintCost = a.calcArmySize() * 500;
 
             // get available treasury
-            Fief homeFief = Globals_Server.fiefMasterList[Globals_Client.myChar.homeFief];
+            Fief homeFief = Globals_Client.myChar.getHomeFief();
             int availTreas = homeFief.getAvailableTreasury();
 
             // check if army is already maintained
@@ -7725,7 +7707,7 @@ namespace hist_mmorpg
                 Fief from = a.getLocation();
 
                 // get fief to retreat to
-                Fief target = Globals_Client.gameMap.chooseRandomHex(from, true, thisOwner, retreatFrom);
+                Fief target = Globals_Server.gameMap.chooseRandomHex(from, true, thisOwner, retreatFrom);
 
                 // get travel cost
                 double travelCost = this.getTravelCost(from, target);
@@ -8298,7 +8280,7 @@ namespace hist_mmorpg
             }
 
             // create temporary army for battle/siege
-            defender = new Army("Garrison" + Globals_Server.getNextArmyID(), armyLeaderID, f.owner.charID, armyLeaderDays, Globals_Client.clock, f.fiefID, trp: troopsForArmy);
+            defender = new Army("Garrison" + Globals_Server.getNextArmyID(), armyLeaderID, f.owner.charID, armyLeaderDays, f.fiefID, trp: troopsForArmy);
             this.addArmy(defender);
 
             return defender;
@@ -8572,7 +8554,7 @@ namespace hist_mmorpg
             Fief besiegedFief = s.getFief();
             PlayerCharacter besiegingPlayer = s.getBesiegingPlayer();
             PlayerCharacter defendingPlayer = s.getDefendingPlayer();
-            Character besiegingArmyLeader = s.getBesieger().getLeader();
+            Character besiegingArmyLeader = s.getBesiegingArmy().getLeader();
 
             // disband garrison
             this.disbandArmy(defenderGarrison);
@@ -8658,7 +8640,7 @@ namespace hist_mmorpg
             double keepLvl = 0;
             double keepLvlModifier = 0;
             Fief besiegedFief = s.getFief();
-            Army attacker = s.getBesieger();
+            Army attacker = s.getBesiegingArmy();
             Army defenderGarrison = s.getDefenderGarrison();
             uint[] battleValues = new uint[2];
 
@@ -8701,7 +8683,7 @@ namespace hist_mmorpg
         {
             bool stormSuccess = false;
             Fief besiegedFief = s.getFief();
-            Army besiegingArmy = s.getBesieger();
+            Army besiegingArmy = s.getBesiegingArmy();
             Army defenderGarrison = s.getDefenderGarrison();
             Army defenderAdditional = s.getDefenderAdditional();
             PlayerCharacter attackingPlayer = s.getBesiegingPlayer();
@@ -8832,6 +8814,7 @@ namespace hist_mmorpg
                         {
                             captives.Add(thisCharacter);
                         }
+
                         // PCs of enemy nationality
                         else if (thisCharacter is PlayerCharacter)
                         {
@@ -8912,7 +8895,7 @@ namespace hist_mmorpg
         {
             bool siegeRaised = false;
             Fief besiegedFief = s.getFief();
-            Army besieger = s.getBesieger();
+            Army besieger = s.getBesiegingArmy();
             Army defenderGarrison = s.getDefenderGarrison();
             Army defenderAdditional = null;
             Character defenderLeader = defenderGarrison.getLeader();
@@ -9043,12 +9026,12 @@ namespace hist_mmorpg
         public uint getFinancialYear(int relativeSeason)
         {
             uint financialYear = 0;
-            uint thisYear = Globals_Client.clock.currentYear;
+            uint thisYear = Globals_Server.clock.currentYear;
 
             switch (relativeSeason)
             {
                 case (-1):
-                    if (Globals_Client.clock.currentSeason == 0)
+                    if (Globals_Server.clock.currentSeason == 0)
                     {
                         financialYear = thisYear - 1;
                     }
@@ -9058,7 +9041,7 @@ namespace hist_mmorpg
                     }
                     break;
                 case (1):
-                    if (Globals_Client.clock.currentSeason == 4)
+                    if (Globals_Server.clock.currentSeason == 4)
                     {
                         financialYear = thisYear + 1;
                     }
@@ -9083,7 +9066,7 @@ namespace hist_mmorpg
         public byte getFinancialSeason(int relativeSeason)
         {
             byte financialSeason = 0;
-            byte thisSeason = Globals_Client.clock.currentSeason;
+            byte thisSeason = Globals_Server.clock.currentSeason;
 
             switch (relativeSeason)
             {
@@ -9163,7 +9146,7 @@ namespace hist_mmorpg
             }
             
             // create siege object
-            Siege mySiege = new Siege(Globals_Server.getNextSiegeID(), Globals_Client.clock.currentYear, Globals_Client.clock.currentSeason, attacker.getOwner().charID, target.owner.charID, attacker.armyID, defenderGarrison.armyID, target.fiefID, minDays, target.keepLevel, defAdd: defAddID);
+            Siege mySiege = new Siege(Globals_Server.getNextSiegeID(), Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, attacker.getOwner().charID, target.owner.charID, attacker.armyID, defenderGarrison.armyID, target.fiefID, minDays, target.keepLevel, defAdd: defAddID);
 
             // add to master list
             Globals_Server.siegeMasterList.Add(mySiege.siegeID, mySiege);
@@ -9206,7 +9189,7 @@ namespace hist_mmorpg
 
             if (Globals_Client.siegeToView != null)
             {
-                Army besiegingArmy = Globals_Client.siegeToView.getBesieger();
+                Army besiegingArmy = Globals_Client.siegeToView.getBesiegingArmy();
                 PlayerCharacter besiegingPlayer = Globals_Client.siegeToView.getBesiegingPlayer();
                 bool playerIsBesieger = (Globals_Client.myChar == besiegingPlayer);
 

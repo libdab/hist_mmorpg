@@ -975,7 +975,7 @@ namespace hist_mmorpg
                 // get owner of selected army
                 PlayerCharacter otherArmyOwner = otherArmy.getOwner();
 
-                // if is not player's army & observer is an army leader, enable attack button
+                // if selected army is not owned by player && observer is an army leader, enable attack button
                 if ((otherArmyOwner != Globals_Client.myChar) && (this.observer.armyID != null))
                 {
                     this.armiesAttackBtn.Enabled = true;
@@ -1015,7 +1015,7 @@ namespace hist_mmorpg
             else
             {
                 // get armies
-                Army attacker = Globals_Server.armyMasterList[this.observer.armyID];
+                Army attacker = this.observer.getArmy();
                 Army defender = Globals_Server.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
 
                 // SIEGE INVOLVEMENT

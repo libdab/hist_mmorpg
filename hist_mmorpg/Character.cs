@@ -81,10 +81,6 @@ namespace hist_mmorpg
         /// </summary>
         public bool inKeep { get; set; }
         /// <summary>
-        /// Holds character marital status
-        /// </summary>
-        public bool isMarried { get; set; }
-        /// <summary>
         /// Holds character pregnancy status
         /// </summary>
         public bool isPregnant { get; set; }
@@ -104,10 +100,6 @@ namespace hist_mmorpg
         /// Holds current location (Fief object)
         /// </summary>
         public Fief location { get; set; }
-        /// <summary>
-        /// Holds character's GameClock (season)
-        /// </summary>
-        public GameClock clock { get; set; }
         /// <summary>
         /// Holds character's titles (fiefIDs)
         /// </summary>
@@ -141,19 +133,17 @@ namespace hist_mmorpg
         /// <param name="cbt">Double holding character combat rating</param>
         /// <param name="skl">Array containing character's skills</param>
         /// <param name="inK">bool indicating if character is in the keep</param>
-        /// <param name="marr">char holding character marital status</param>
         /// <param name="preg">bool holding character pregnancy status</param>
         /// <param name="famID">String holding charID of head of family with which character associated</param>
         /// <param name="sp">String holding spouse (ID)</param>
         /// <param name="fath">String holding father</param>
-        /// <param name="cl">GameClock holding season</param>
 		/// <param name="loc">Fief holding current location</param>
         /// <param name="myTi">List holding character's titles (fiefIDs)</param>
         /// <param name="aID">String holding armyID of army character is leading</param>
         /// <param name="ails">Dictionary<string, Ailment> holding ailments effecting character's health</param>
         public Character(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
-            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg,
-            String famID, String sp, String fath, List<String> myTi, Dictionary<string, Ailment> ails = null, GameClock cl = null, Fief loc = null, String aID = null)
+            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg,
+            String famID, String sp, String fath, List<String> myTi, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null)
         {
 
             // validation
@@ -243,9 +233,7 @@ namespace hist_mmorpg
             this.combat = cbt;
             this.skills = skl;
             this.inKeep = inK;
-            this.isMarried = marr;
             this.isPregnant = preg;
-            this.clock = cl;
 			this.location = loc;
             this.spouse = sp;
             this.father = fath;
@@ -298,7 +286,6 @@ namespace hist_mmorpg
                 // create empty array, to be populated later
                 this.skills = new Tuple<Skill, int>[charToUse.skills.Length];
 				this.inKeep = charToUse.inKeep;
-				this.isMarried = charToUse.married;
 				this.isPregnant = charToUse.pregnant;
 				if ((charToUse.spouse != null) && (charToUse.spouse.Length > 0))
 				{
@@ -312,7 +299,6 @@ namespace hist_mmorpg
 				{
 					this.familyID = charToUse.familyID;
 				}
-				this.clock = null;
 				this.location = null;
                 this.myTitles = charToUse.myTitles;
                 this.armyID = charToUse.armyID;
@@ -329,9 +315,9 @@ namespace hist_mmorpg
             byte myAge = 0;
 
             // subtract year of birth from current year
-            myAge = Convert.ToByte(clock.currentYear - this.birthDate.Item1);
+            myAge = Convert.ToByte(Globals_Server.clock.currentYear - this.birthDate.Item1);
             // if current season < season of birth, subtract 1 from age (not reached birthday yet)
-            if (clock.currentSeason < this.birthDate.Item2)
+            if (Globals_Server.clock.currentSeason < this.birthDate.Item2)
             {
                 myAge--;
             }
@@ -571,7 +557,7 @@ namespace hist_mmorpg
             // to store events to remove
             List<JournalEvent> eventsToRemove = new List<JournalEvent>();
             // iterate through clock's scheduled events
-            foreach (JournalEvent jEvent in this.clock.scheduledEvents.events)
+            foreach (JournalEvent jEvent in Globals_Server.clock.scheduledEvents.events)
             {
                 // if event concerned with this character
                 if (jEvent.personae.Equals(this.charID))
@@ -586,7 +572,7 @@ namespace hist_mmorpg
             {
                 foreach (JournalEvent thisEvent in eventsToRemove)
                 {
-                    this.clock.scheduledEvents.events.Remove(thisEvent);
+                    Globals_Server.clock.scheduledEvents.events.Remove(thisEvent);
                 }
 
             }
@@ -600,17 +586,13 @@ namespace hist_mmorpg
             }
 
             // 5. if married, remove from spouse
-            if (this.isMarried)
+            if (this.spouse != null)
             {
-                if (Globals_Server.npcMasterList.ContainsKey(this.spouse))
+                Character mySpouse = this.getSpouse();
+
+                if (mySpouse != null)
                 {
-                    Globals_Server.npcMasterList[this.spouse].spouse = null;
-                    Globals_Server.npcMasterList[this.spouse].isMarried = false;
-                }
-                else if (Globals_Server.pcMasterList.ContainsKey(this.spouse))
-                {
-                    Globals_Server.pcMasterList[this.spouse].spouse = null;
-                    Globals_Server.pcMasterList[this.spouse].isMarried = false;
+                    mySpouse.spouse = null;
                 }
                 
             }
@@ -623,7 +605,7 @@ namespace hist_mmorpg
                 if ((this as NonPlayerCharacter).myBoss != null)
                 {
                     // get boss
-                    PlayerCharacter boss = Globals_Server.pcMasterList[(this as NonPlayerCharacter).myBoss];
+                    PlayerCharacter boss = (this as NonPlayerCharacter).getEmployer();
 
                     // check to see if is a bailiff.  If so, remove
                     foreach (Fief thisFief in boss.ownedFiefs)
@@ -642,19 +624,22 @@ namespace hist_mmorpg
                 if ((this as NonPlayerCharacter).familyID != null)
                 {
                     // get boss
-                    PlayerCharacter familyHead = Globals_Server.pcMasterList[(this as NonPlayerCharacter).familyID];
+                    PlayerCharacter familyHead = this.getHeadOfFamily();
 
-                    // check to see if is a bailiff.  If so, remove
-                    foreach (Fief thisFief in familyHead.ownedFiefs)
+                    if (familyHead != null)
                     {
-                        if (thisFief.bailiff == this)
+                        // check to see if is a bailiff.  If so, remove
+                        foreach (Fief thisFief in familyHead.ownedFiefs)
                         {
-                            thisFief.bailiff = null;
+                            if (thisFief.bailiff == this)
+                            {
+                                thisFief.bailiff = null;
+                            }
                         }
-                    }
 
-                    // remove from head of family's myNPCs
-                    familyHead.myNPCs.Remove((this as NonPlayerCharacter));
+                        // remove from head of family's myNPCs
+                        familyHead.myNPCs.Remove((this as NonPlayerCharacter));
+                    }
                 }
 
                 // TODO: inform PC
@@ -828,6 +813,38 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Gets character's king
+        /// </summary>
+        /// <returns>The king</returns>
+        public PlayerCharacter getKing()
+        {
+            PlayerCharacter myKing = null;
+
+            if (this.familyID != null)
+            {
+                myKing = this.getHeadOfFamily().getHomeFief().province.kingdom.king;
+            }
+
+            return myKing;
+        }
+
+        /// <summary>
+        /// Gets character's overlord
+        /// </summary>
+        /// <returns>The overlord</returns>
+        public PlayerCharacter getOverlord()
+        {
+            PlayerCharacter myOverlord = null;
+
+            if (this.familyID != null)
+            {
+                myOverlord = this.getHeadOfFamily().getHomeFief().province.overlord;
+            }
+
+            return myOverlord;
+        }
+
+        /// <summary>
         /// Gets character's head of family
         /// </summary>
         /// <returns>The head of the family</returns>
@@ -907,7 +924,7 @@ namespace hist_mmorpg
                 // check if has accompanying army, if so move it
                 if (this.armyID != null)
                 {
-                    Globals_Server.armyMasterList[armyID].moveArmy();
+                    this.getArmy().moveArmy();
                 }
                 success = true;
             }
@@ -968,10 +985,13 @@ namespace hist_mmorpg
             if (this.armyID != null)
             {
                 // get army
-                Army thisArmy = Globals_Server.armyMasterList[this.armyID];
+                Army thisArmy = this.getArmy();
 
-                // synchronise days
-                thisArmy.days = this.days;
+                if (thisArmy != null)
+                {
+                    // synchronise days
+                    thisArmy.days = this.days;
+                }
             }
         }
 
@@ -1101,9 +1121,9 @@ namespace hist_mmorpg
                             wife.isPregnant = true;
 
                             // schedule birth in clock sheduledEvents
-                            uint birthYear = this.clock.currentYear;
-                            byte birthSeason = this.clock.currentSeason;
-                            if (this.clock.currentSeason == 0)
+                            uint birthYear = Globals_Server.clock.currentYear;
+                            byte birthSeason = Globals_Server.clock.currentSeason;
+                            if (Globals_Server.clock.currentSeason == 0)
                             {
                                 birthSeason = (byte)(birthSeason + 3);
                             }
@@ -1113,7 +1133,7 @@ namespace hist_mmorpg
                                 birthYear = birthYear + 1;
                             }
                             JournalEvent birth = new JournalEvent(birthYear, birthSeason, wife.charID, "birth");
-                            this.clock.scheduledEvents.events.Add(birth);
+                            Globals_Server.clock.scheduledEvents.events.Add(birth);
 
                              // display message of celebration
                             System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + wife.firstName + " " + wife.familyName + " is pregnant!", "PREGNANCY SUCCESSFUL");
@@ -1284,9 +1304,7 @@ namespace hist_mmorpg
                         if ((this as NonPlayerCharacter).checkForName(1))
                         {
                             // get king's firstName
-                            String newFirstName = "";
-                            newFirstName = Globals_Server.fiefMasterList[Globals_Server.pcMasterList[this.familyID].homeFief].province.kingdom.king.firstName;
-                            this.firstName = newFirstName;
+                            this.firstName = this.getKing().firstName;
                         }
                     }
                 }
@@ -1398,7 +1416,7 @@ namespace hist_mmorpg
                 }
 
                 // create ailment
-                Ailment myAilment = new Ailment(Globals_Server.getNextAilmentID(), "Battlefield injury", Globals_Client.clock.seasons[Globals_Client.clock.currentSeason] + ", " + Globals_Client.clock.currentYear, healthLoss, minEffect);
+                Ailment myAilment = new Ailment(Globals_Server.getNextAilmentID(), "Battlefield injury", Globals_Server.clock.seasons[Globals_Server.clock.currentSeason] + ", " + Globals_Server.clock.currentYear, healthLoss, minEffect);
 
                 // add to character
                 this.ailments.Add(myAilment.ailmentID, myAilment);
@@ -1465,10 +1483,10 @@ namespace hist_mmorpg
         /// <param name="myA">List<Army> holding character's armies</param>
         /// <param name="myS">List<string> holding character's sieges (siegeIDs)</param>
         public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
-            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famID,
+            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
             String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, List<Army> myA,
-            List<string> myS, Dictionary<string, Ailment> ails = null, GameClock cl = null, Fief loc = null, String pID = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famID, sp, fath, myTi, ails, cl, loc)
+            List<string> myS, Dictionary<string, Ailment> ails = null, Fief loc = null, String pID = null)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, myTi, ails, loc)
         {
             this.outlawed = outl;
             this.purse = pur;
@@ -1916,10 +1934,10 @@ namespace hist_mmorpg
             int daysUsed = 0;
 
             // get home fief
-            Fief homeFief = Globals_Server.fiefMasterList[this.homeFief];
+            Fief homeFief = this.getHomeFief();
 
             // get army
-            Army thisArmy = Globals_Server.armyMasterList[this.armyID];
+            Army thisArmy = this.getArmy();
 
             // calculate cost of individual soldier
             if (this.location.ancestralOwner == this)
@@ -2203,9 +2221,9 @@ namespace hist_mmorpg
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
         /// <param name="isH">bool denoting if is player's heir</param>
         public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
-            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool marr, bool preg, String famID,
-            String sp, String fath, uint wa, bool inEnt, bool isH, List<String> myTi, Dictionary<string, Ailment> ails = null, String mb = null, GameClock cl = null, Fief loc = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, marr, preg, famID, sp, fath, myTi, ails, cl, loc)
+            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
+            String sp, String fath, uint wa, bool inEnt, bool isH, List<String> myTi, Dictionary<string, Ailment> ails = null, String mb = null, Fief loc = null)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, myTi, ails, loc)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -2326,8 +2344,11 @@ namespace hist_mmorpg
 
                     else if (this.father != null)
                     {
+                        // get father
+                        Character myFather = this.getFather();
+
                         // check for son/daughter
-                        if (this.father.Equals(bigCheese.charID))
+                        if (myFather == bigCheese)
                         {
                             if (this.isMale)
                             {
@@ -2342,9 +2363,12 @@ namespace hist_mmorpg
                         else
                         {
                             // check for grandkids
-                            if (Globals_Server.npcMasterList[this.father].father != null)
+                            if (myFather.father != null)
                             {
-                                if (Globals_Server.npcMasterList[this.father].father.Equals(bigCheese.charID))
+                                // get father
+                                Character myGrandFather = myFather.getFather();
+
+                                if (myGrandFather == bigCheese)
                                 {
                                     if (this.isMale)
                                     {
@@ -2484,9 +2508,9 @@ namespace hist_mmorpg
         /// Gets the character's employer
         /// </summary>
         /// <returns>The employer or null</returns>
-        public Character getEmployer()
+        public PlayerCharacter getEmployer()
         {
-            Character myEmployer = null;
+            PlayerCharacter myEmployer = null;
 
             if (this.myBoss != null)
             {
@@ -2576,17 +2600,9 @@ namespace hist_mmorpg
 		/// </summary>
 		public bool inKeep { get; set; }
 		/// <summary>
-		/// Holds character marital status
-		/// </summary>
-		public bool married { get; set; }
-		/// <summary>
 		/// Holds character pregnancy status
 		/// </summary>
 		public bool pregnant { get; set; }
-		/// <summary>
-		/// Holds army's GameClock (season)
-		/// </summary>
-		public GameClock clock { get; set; }
 		/// <summary>
 		/// Holds current location (Fief ID)
 		/// </summary>
@@ -2664,9 +2680,7 @@ namespace hist_mmorpg
 					this.skills [i] = new Tuple<string,int>(charToUse.skills [i].Item1.skillID, charToUse.skills [i].Item2);
 				}
 				this.inKeep = charToUse.inKeep;
-				this.married = charToUse.isMarried;
 				this.pregnant = charToUse.isPregnant;
-				this.clock = null;
 				this.location = charToUse.location.fiefID;
 				if (charToUse.spouse != null) {
 					this.spouse = charToUse.spouse;
