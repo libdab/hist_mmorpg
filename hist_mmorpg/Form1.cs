@@ -18,7 +18,7 @@ namespace hist_mmorpg
     /// <summary>
     /// Main user interface component
     /// </summary>
-    public partial class Form1 : Form
+	public partial class Form1 : Form
     {
 		/// <summary>
 		/// Holds target RiakCluster 
@@ -598,10 +598,15 @@ namespace hist_mmorpg
 		/// <param name="gameID">ID of game (used for Riak bucket)</param>
 		public void writeToDB(String gameID)
 		{
-			// write clock
+			// ========= write CLOCK
             this.writeClock(gameID, Globals_Client.clock);
 
-			// write skills
+			// ========= write GLOBALS_SERVER DICTIONARIES
+			this.writeDictionary(gameID, "combatValues", Globals_Server.combatValues);
+			this.writeDictionary(gameID, "recruitRatios", Globals_Server.recruitRatios);
+			this.writeDictionary(gameID, "battleProbabilities", Globals_Server.battleProbabilities);
+
+			// ========= write SKILLS
             // clear existing key list
             if (Globals_Server.skillKeys.Count > 0)
 			{
@@ -621,7 +626,7 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "skillKeys", Globals_Server.skillKeys);
 
-            // write Languages
+			// ========= write LANGUAGES
             // clear existing key list
             if (Globals_Server.langKeys.Count > 0)
             {
@@ -641,7 +646,7 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "langKeys", Globals_Server.langKeys);
 
-            // write Ranks
+			// ========= write RANKS
             // clear existing key list
             if (Globals_Server.rankKeys.Count > 0)
             {
@@ -661,7 +666,7 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "rankKeys", Globals_Server.rankKeys);
 
-            // write NPCs
+			// ========= write NPCs
             // clear existing key list
             if (Globals_Server.npcKeys.Count > 0)
 			{
@@ -681,7 +686,7 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "npcKeys", Globals_Server.npcKeys);
 
-			// write PCs
+			// ========= write PCs
             // clear existing key list
             if (Globals_Server.pcKeys.Count > 0)
 			{
@@ -701,7 +706,7 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "pcKeys", Globals_Server.pcKeys);
 
-            // write Kingdoms
+			// ========= write KINGDOMS
             // clear existing key list
             if (Globals_Server.kingKeys.Count > 0)
             {
@@ -721,7 +726,7 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "kingKeys", Globals_Server.kingKeys);
 
-            // write Provinces
+			// ========= write PROVINCES
             // clear existing key list
             if (Globals_Server.provKeys.Count > 0)
 			{
@@ -741,7 +746,7 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "provKeys", Globals_Server.provKeys);
 
-			// write Terrains
+			// ========= write TERRAINS
             // clear existing key list
             if (Globals_Server.terrKeys.Count > 0)
 			{
@@ -761,7 +766,7 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "terrKeys", Globals_Server.terrKeys);
 
-			// write Fiefs
+			// ========= write FIEFS
             // clear existing key list
             if (Globals_Server.fiefKeys.Count > 0)
 			{
@@ -781,7 +786,7 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "fiefKeys", Globals_Server.fiefKeys);
 
-            // write Armies
+			// ========= write ARMIES
             // clear existing key list
             if (Globals_Server.armyKeys.Count > 0)
             {
@@ -797,8 +802,11 @@ namespace hist_mmorpg
                     Globals_Server.armyKeys.Add(pair.Key);
                 }
             }
+				
+			// write key list to database
+			this.writeKeyList(gameID, "armyKeys", Globals_Server.armyKeys);
 
-            // write Sieges
+			// ========= write SIEGES
             // clear existing key list
             if (Globals_Server.siegeKeys.Count > 0)
             {
@@ -818,7 +826,7 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "siegeKeys", Globals_Server.siegeKeys);
 
-            // write map (edges collection)
+			// ========= write MAP (edges collection)
             this.writeMapEdges(gameID, Globals_Client.gameMap);
 
 		}
@@ -830,13 +838,18 @@ namespace hist_mmorpg
 		public void initialDBload(String gameID)
 		{
 
-			// load key lists (to ensure efficient retrieval of specific game objects)
+			// load KEY LISTS (to ensure efficient retrieval of specific game objects)
 			this.initialDBload_keyLists (gameID);
 
-			// load clock
+			// load CLOCK
             Globals_Client.clock = this.initialDBload_clock(gameID, "gameClock");
 
-			// load skills
+			// load GLOBAL_SERVER DICTIONARIES
+			Globals_Server.combatValues = this.initialDBload_dictUint(gameID, "combatValues");
+			Globals_Server.recruitRatios = this.initialDBload_dictDouble(gameID, "recruitRatios");
+			Globals_Server.battleProbabilities = this.initialDBload_dictDouble(gameID, "battleProbabilities");
+
+			// load SKILLS
             foreach (String element in Globals_Server.skillKeys)
 			{
 				Skill skill = this.initialDBload_skill (gameID, element);
@@ -844,7 +857,7 @@ namespace hist_mmorpg
                 Globals_Server.skillMasterList.Add(skill.skillID, skill);
 			}
 				
-            // load Languages
+			// load LANGUAGES
             foreach (String element in Globals_Server.langKeys)
             {
                 Language lang = this.initialDBload_language(gameID, element);
@@ -852,7 +865,7 @@ namespace hist_mmorpg
                 Globals_Server.languageMasterList.Add(lang.languageID, lang);
             }
 
-            // load Ranks
+			// load RANKS
             foreach (String element in Globals_Server.rankKeys)
             {
                 Rank rank = this.initialDBload_rank(gameID, element);
@@ -860,7 +873,7 @@ namespace hist_mmorpg
                 Globals_Server.rankMasterList.Add(rank.rankID, rank);
             }
 
-            // load sieges
+			// load SIEGES
             foreach (String element in Globals_Server.siegeKeys)
             {
                 Siege s = this.initialDBload_Siege(gameID, element);
@@ -868,7 +881,7 @@ namespace hist_mmorpg
                 Globals_Server.siegeMasterList.Add(s.siegeID, s);
             }
 
-            // load armies
+			// load ARMIES
             foreach (String element in Globals_Server.armyKeys)
             {
                 Army a = this.initialDBload_Army(gameID, element);
@@ -892,7 +905,7 @@ namespace hist_mmorpg
                 Globals_Server.pcMasterList.Add(pc.charID, pc);
 			}
 
-            // load kingdoms
+			// load KINGDOMS
             foreach (String element in Globals_Server.kingKeys)
             {
                 Kingdom king = this.initialDBload_Kingdom(gameID, element);
@@ -900,7 +913,7 @@ namespace hist_mmorpg
                 Globals_Server.kingdomMasterList.Add(king.kingdomID, king);
             }
 
-            // load provinces
+			// load PROVINCES
             foreach (String element in Globals_Server.provKeys)
 			{
 				Province prov = this.initialDBload_Province (gameID, element);
@@ -908,7 +921,7 @@ namespace hist_mmorpg
                 Globals_Server.provinceMasterList.Add(prov.provinceID, prov);
 			}
 
-			// load terrains
+			// load TERRAINS
             foreach (String element in Globals_Server.terrKeys)
 			{
 				Terrain terr = this.initialDBload_terrain (gameID, element);
@@ -916,7 +929,7 @@ namespace hist_mmorpg
                 Globals_Server.terrainMasterList.Add(terr.terrainCode, terr);
 			}
 
-			// load fiefs
+			// load FIEFS
             foreach (String element in Globals_Server.fiefKeys)
 			{
 				Fief f = this.initialDBload_Fief (gameID, element);
@@ -924,7 +937,7 @@ namespace hist_mmorpg
                 Globals_Server.fiefMasterList.Add(f.fiefID, f);
 			}
 
-            // process any Character goTo queues containing entries
+			// process any CHARACTER goTo QUEUES containing entries
             if (Globals_Server.goToList.Count > 0)
 			{
                 for (int i = 0; i < Globals_Server.goToList.Count; i++)
@@ -934,7 +947,7 @@ namespace hist_mmorpg
                 Globals_Server.goToList.Clear();
 			}
 
-			// load map
+			// load MAP
             Globals_Client.gameMap = this.initialDBload_map(gameID, "mapEdges");
 		}
 
@@ -1088,6 +1101,52 @@ namespace hist_mmorpg
 			}
 
 			return newClock;
+		}
+
+		/// <summary>
+		/// Loads Dictionary<string, uint[]> from database
+		/// </summary>
+		/// <returns>Dictionary<string, uint[]> object</returns>
+		/// <param name="gameID">Game for which Dictionary to be retrieved</param>
+		/// <param name="dictID">ID of Dictionary to be retrieved</param>
+		public Dictionary<string, uint[]> initialDBload_dictUint(String gameID, String dictID)
+		{
+			var dictResult = rClient.Get(gameID, dictID);
+			var newDict = new Dictionary<string, uint[]>();
+
+			if (dictResult.IsSuccess)
+			{
+				newDict = dictResult.Value.GetObject<Dictionary<string, uint[]>>();
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Dictionary " + dictID);
+			}
+
+			return newDict;
+		}
+
+		/// <summary>
+		/// Loads Dictionary<string, double[]> from database
+		/// </summary>
+		/// <returns>Dictionary<string, double[]> object</returns>
+		/// <param name="gameID">Game for which Dictionary to be retrieved</param>
+		/// <param name="dictID">ID of Dictionary to be retrieved</param>
+		public Dictionary<string, double[]> initialDBload_dictDouble(String gameID, String dictID)
+		{
+			var dictResult = rClient.Get(gameID, dictID);
+			var newDict = new Dictionary<string, double[]>();
+
+			if (dictResult.IsSuccess)
+			{
+				newDict = dictResult.Value.GetObject<Dictionary<string, double[]>>();
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Dictionary " + dictID);
+			}
+
+			return newDict;
 		}
 
 		/// <summary>
@@ -1864,6 +1923,26 @@ namespace hist_mmorpg
 			}
 
 			return putClockResult.IsSuccess;
+		}
+
+		/// <summary>
+		/// Writes Dictionary object to Riak
+		/// </summary>
+		/// <returns>bool indicating success</returns>
+		/// <param name="gameID">Game (bucket) to write to</param>
+		/// <param name="dictName">Riak key to use</param>
+		/// <param name="dictionary">Dictionary to write</param>
+		public bool writeDictionary<T>(String gameID, String key, T dictionary)
+		{
+			var rDict = new RiakObject(gameID, key, dictionary);
+			var putDictResult = rClient.Put(rDict);
+
+			if (! putDictResult.IsSuccess)
+			{
+				System.Windows.Forms.MessageBox.Show("Write failed: Dictionary " + key + " to bucket " + rDict.Bucket);
+			}
+
+			return putDictResult.IsSuccess;
 		}
 
 		/// <summary>
