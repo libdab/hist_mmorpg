@@ -795,10 +795,55 @@ namespace hist_mmorpg
 
             if (this.armyID != null)
             {
-                thisArmy = Globals_Server.armyMasterList[this.armyID];
+                if (Globals_Server.armyMasterList.ContainsKey(this.armyID))
+                {
+                    thisArmy = Globals_Server.armyMasterList[this.armyID];
+                }
             }
 
             return thisArmy;
+        }
+
+        /// <summary>
+        /// Gets character's father
+        /// </summary>
+        /// <returns>The father</returns>
+        public Character getFather()
+        {
+            Character father = null;
+
+            if (this.father != null)
+            {
+                if (Globals_Server.pcMasterList.ContainsKey(this.father))
+                {
+                    father = Globals_Server.pcMasterList[this.father];
+                }
+                else if (Globals_Server.npcMasterList.ContainsKey(this.father))
+                {
+                    father = Globals_Server.npcMasterList[this.father];
+                }
+            }
+
+            return father;
+        }
+
+        /// <summary>
+        /// Gets character's head of family
+        /// </summary>
+        /// <returns>The head of the family</returns>
+        public PlayerCharacter getHeadOfFamily()
+        {
+            PlayerCharacter headFamily = null;
+
+            if (this.familyID != null)
+            {
+                if (Globals_Server.pcMasterList.ContainsKey(this.familyID))
+                {
+                    headFamily = Globals_Server.pcMasterList[this.familyID];
+                }
+            }
+
+            return headFamily;
         }
 
         /// <summary>
@@ -949,7 +994,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="wife">Character's spouse</param>
-        public bool getSpousePregnant(NonPlayerCharacter wife)
+        public bool getSpousePregnant(Character wife)
         {
             bool success = false;
 
@@ -1168,13 +1213,20 @@ namespace hist_mmorpg
         /// gets the character's spouse
         /// </summary>
         /// <returns>The spouse or null</returns>
-        public NonPlayerCharacter getSpouse()
+        public Character getSpouse()
         {
-            NonPlayerCharacter mySpouse = null;
+            Character mySpouse = null;
 
             if (this.spouse != null)
             {
-                mySpouse = Globals_Server.npcMasterList[this.spouse];
+                if (Globals_Server.pcMasterList.ContainsKey(this.spouse))
+                {
+                    mySpouse = Globals_Server.pcMasterList[this.spouse];
+                }
+                else if (Globals_Server.npcMasterList.ContainsKey(this.spouse))
+                {
+                    mySpouse = Globals_Server.npcMasterList[this.spouse];
+                }
             }
 
             return mySpouse;
@@ -2082,17 +2134,36 @@ namespace hist_mmorpg
         /// <returns>The home fief</returns>
         public Fief getHomeFief()
         {
-            Fief homeFief = null;
+            Fief thisHomeFief = null;
 
             if (this.homeFief != null)
             {
                 if (Globals_Server.fiefMasterList.ContainsKey(this.homeFief))
                 {
-                    homeFief = Globals_Server.fiefMasterList[this.homeFief];
+                    thisHomeFief = Globals_Server.fiefMasterList[this.homeFief];
                 }
             }
 
-            return homeFief;
+            return thisHomeFief;
+        }
+
+        /// <summary>
+        /// Returns the PlayerCharacter's ancestral home fief
+        /// </summary>
+        /// <returns>The ancestral home fief</returns>
+        public Fief getAncestralHome()
+        {
+            Fief ancestralHome = null;
+
+            if (this.ancestralHomeFief != null)
+            {
+                if (Globals_Server.fiefMasterList.ContainsKey(this.ancestralHomeFief))
+                {
+                    ancestralHome = Globals_Server.fiefMasterList[this.ancestralHomeFief];
+                }
+            }
+
+            return ancestralHome;
         }
 
     }
@@ -2407,6 +2478,25 @@ namespace hist_mmorpg
             }
 
             return Convert.ToUInt32(salary);
+        }
+
+        /// <summary>
+        /// Gets the character's employer
+        /// </summary>
+        /// <returns>The employer or null</returns>
+        public Character getEmployer()
+        {
+            Character myEmployer = null;
+
+            if (this.myBoss != null)
+            {
+                if (Globals_Server.pcMasterList.ContainsKey(this.myBoss))
+                {
+                    myEmployer = Globals_Server.pcMasterList[this.myBoss];
+                }
+            }
+
+            return myEmployer;
         }
 
     }

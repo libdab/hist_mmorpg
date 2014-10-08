@@ -5898,7 +5898,7 @@ namespace hist_mmorpg
         private void familyGetSpousePregBtn_Click(object sender, EventArgs e)
         {
             // get spouse
-            NonPlayerCharacter mySpouse = Globals_Client.myChar.getSpouse();
+            Character mySpouse = Globals_Client.myChar.getSpouse();
 
             // perform standard checks
             if (this.checkBeforePregnancyAttempt(Globals_Client.myChar))
@@ -9541,7 +9541,7 @@ namespace hist_mmorpg
             if (this.houseCharListView.SelectedItems.Count > 0)
             {
                 // get spouse
-                NonPlayerCharacter mySpouse = Globals_Client.charToView.getSpouse();
+                Character mySpouse = Globals_Client.charToView.getSpouse();
 
                 // perform standard checks
                 if (this.checkBeforePregnancyAttempt(Globals_Client.charToView))
