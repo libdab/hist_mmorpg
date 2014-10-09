@@ -84,6 +84,7 @@
     <Compile Include="Globals_Client.cs" />
     <Compile Include="Globals_Server.cs" />
     <Compile Include="HexMapGraph.cs" />
+    <Compile Include="Interfaces.cs" />
     <Compile Include="Journal.cs" />
     <Compile Include="Kingdom.cs" />
     <Compile Include="Language.cs" />

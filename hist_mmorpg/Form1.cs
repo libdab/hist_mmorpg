@@ -18,7 +18,7 @@ namespace hist_mmorpg
     /// <summary>
     /// Main user interface component
     /// </summary>
-	public partial class Form1 : Form
+    public partial class Form1 : Form, Game_Observer
     {
 		/// <summary>
 		/// Holds target RiakCluster 
@@ -34,6 +34,9 @@ namespace hist_mmorpg
         /// </summary>
         public Form1()
         {
+            // register as observer
+            Globals_Server.registerObserver(this);
+
             // initialise form elements
             InitializeComponent();
 
@@ -93,15 +96,12 @@ namespace hist_mmorpg
 		/// </summary>
 		public void initialLoad()
 		{
-            // create Journals for GameClock
-            Journal myScheduledJournal = new Journal();
-            Journal myPastJournal = new Journal();
-            // add a scheduled birth
-            JournalEvent myEvent = new JournalEvent(1320, 1, "404", "birth");
-            myScheduledJournal.events.Add(myEvent);
+            // create and add a scheduled birth
+            JournalEvent myEvent = new JournalEvent(Globals_Server.getNextJournalEventID(), 1320, 1, "404", "birth");
+            Globals_Server.scheduledEvents.events.Add(myEvent.jEventID, myEvent);
 
             // create GameClock
-            GameClock myGameClock = new GameClock("clock001", 1320, myScheduledJournal, myPastJournal);
+            GameClock myGameClock = new GameClock("clock001", 1320);
             Globals_Server.clock = myGameClock;
 
 			// create skills
@@ -606,7 +606,12 @@ namespace hist_mmorpg
 			this.writeDictionary(gameID, "recruitRatios", Globals_Server.recruitRatios);
 			this.writeDictionary(gameID, "battleProbabilities", Globals_Server.battleProbabilities);
 
-			// ========= write SKILLS
+            // ========= write JOURNALS
+            this.writeJournal(gameID, "serverScheduledEvents", Globals_Server.scheduledEvents);
+            this.writeJournal(gameID, "serverPastEvents", Globals_Server.pastEvents);
+            this.writeJournal(gameID, "clientPastEvents", Globals_Client.myPastEvents);
+
+            // ========= write SKILLS
             // clear existing key list
             if (Globals_Server.skillKeys.Count > 0)
 			{
@@ -838,26 +843,31 @@ namespace hist_mmorpg
 		public void initialDBload(String gameID)
 		{
 
-			// load KEY LISTS (to ensure efficient retrieval of specific game objects)
+            // ========= load KEY LISTS (to ensure efficient retrieval of specific game objects)
 			this.initialDBload_keyLists (gameID);
 
-			// load CLOCK
+            // ========= load CLOCK
             Globals_Server.clock = this.initialDBload_clock(gameID, "gameClock");
 
-			// load GLOBAL_SERVER DICTIONARIES
+            // ========= load GLOBAL_SERVER DICTIONARIES
 			Globals_Server.combatValues = this.initialDBload_dictUint(gameID, "combatValues");
 			Globals_Server.recruitRatios = this.initialDBload_dictDouble(gameID, "recruitRatios");
 			Globals_Server.battleProbabilities = this.initialDBload_dictDouble(gameID, "battleProbabilities");
 
-			// load SKILLS
+            // ========= load JOURNALS
+            Globals_Server.scheduledEvents = this.initialDBload_journal(gameID, "serverScheduledEvents");
+            Globals_Server.pastEvents = this.initialDBload_journal(gameID, "serverPastEvents");
+            Globals_Client.myPastEvents = this.initialDBload_journal(gameID, "clientPastEvents");
+
+            // ========= load SKILLS
             foreach (String element in Globals_Server.skillKeys)
 			{
 				Skill skill = this.initialDBload_skill (gameID, element);
                 // add Skill to skillMasterList
                 Globals_Server.skillMasterList.Add(skill.skillID, skill);
 			}
-				
-			// load LANGUAGES
+
+            // ========= load LANGUAGES
             foreach (String element in Globals_Server.langKeys)
             {
                 Language lang = this.initialDBload_language(gameID, element);
@@ -865,7 +875,7 @@ namespace hist_mmorpg
                 Globals_Server.languageMasterList.Add(lang.languageID, lang);
             }
 
-			// load RANKS
+            // ========= load RANKS
             foreach (String element in Globals_Server.rankKeys)
             {
                 Rank rank = this.initialDBload_rank(gameID, element);
@@ -873,7 +883,7 @@ namespace hist_mmorpg
                 Globals_Server.rankMasterList.Add(rank.rankID, rank);
             }
 
-			// load SIEGES
+            // ========= load SIEGES
             foreach (String element in Globals_Server.siegeKeys)
             {
                 Siege s = this.initialDBload_Siege(gameID, element);
@@ -881,7 +891,7 @@ namespace hist_mmorpg
                 Globals_Server.siegeMasterList.Add(s.siegeID, s);
             }
 
-			// load ARMIES
+            // ========= load ARMIES
             foreach (String element in Globals_Server.armyKeys)
             {
                 Army a = this.initialDBload_Army(gameID, element);
@@ -889,7 +899,7 @@ namespace hist_mmorpg
                 Globals_Server.armyMasterList.Add(a.armyID, a);
             }
 
-            // load NPCs
+            // ========= load NPCs
             foreach (String element in Globals_Server.npcKeys)
 			{
 				NonPlayerCharacter npc = this.initialDBload_NPC (gameID, element);
@@ -897,7 +907,7 @@ namespace hist_mmorpg
                 Globals_Server.npcMasterList.Add(npc.charID, npc);
 			}
 
-			// load PCs
+            // ========= load PCs
             foreach (String element in Globals_Server.pcKeys)
 			{
 				PlayerCharacter pc = this.initialDBload_PC (gameID, element);
@@ -905,7 +915,7 @@ namespace hist_mmorpg
                 Globals_Server.pcMasterList.Add(pc.charID, pc);
 			}
 
-			// load KINGDOMS
+            // ========= load KINGDOMS
             foreach (String element in Globals_Server.kingKeys)
             {
                 Kingdom king = this.initialDBload_Kingdom(gameID, element);
@@ -913,7 +923,7 @@ namespace hist_mmorpg
                 Globals_Server.kingdomMasterList.Add(king.kingdomID, king);
             }
 
-			// load PROVINCES
+            // ========= load PROVINCES
             foreach (String element in Globals_Server.provKeys)
 			{
 				Province prov = this.initialDBload_Province (gameID, element);
@@ -921,7 +931,7 @@ namespace hist_mmorpg
                 Globals_Server.provinceMasterList.Add(prov.provinceID, prov);
 			}
 
-			// load TERRAINS
+            // ========= load TERRAINS
             foreach (String element in Globals_Server.terrKeys)
 			{
 				Terrain terr = this.initialDBload_terrain (gameID, element);
@@ -929,7 +939,7 @@ namespace hist_mmorpg
                 Globals_Server.terrainMasterList.Add(terr.terrainCode, terr);
 			}
 
-			// load FIEFS
+            // ========= load FIEFS
             foreach (String element in Globals_Server.fiefKeys)
 			{
 				Fief f = this.initialDBload_Fief (gameID, element);
@@ -937,7 +947,7 @@ namespace hist_mmorpg
                 Globals_Server.fiefMasterList.Add(f.fiefID, f);
 			}
 
-			// process any CHARACTER goTo QUEUES containing entries
+            // ========= process any CHARACTER goTo QUEUES containing entries
             if (Globals_Server.goToList.Count > 0)
 			{
                 for (int i = 0; i < Globals_Server.goToList.Count; i++)
@@ -947,7 +957,7 @@ namespace hist_mmorpg
                 Globals_Server.goToList.Clear();
 			}
 
-			// load MAP
+            // ========= load MAP
             Globals_Server.gameMap = this.initialDBload_map(gameID, "mapEdges");
 		}
 
@@ -1103,7 +1113,30 @@ namespace hist_mmorpg
 			return newClock;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Loads a Journal from the database
+        /// </summary>
+        /// <returns>Journal object</returns>
+        /// <param name="gameID">Game for which Journal to be retrieved</param>
+        /// <param name="journalID">ID of Journal to be retrieved</param>
+        public Journal initialDBload_journal(String gameID, String journalID)
+        {
+            var journalResult = rClient.Get(gameID, journalID);
+            var newJournal = new Journal();
+
+            if (journalResult.IsSuccess)
+            {
+                newJournal = journalResult.Value.GetObject<Journal>();
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Journal " + journalID);
+            }
+
+            return newJournal;
+        }
+
+        /// <summary>
 		/// Loads Dictionary<string, uint[]> from database
 		/// </summary>
 		/// <returns>Dictionary<string, uint[]> object</returns>
@@ -1902,7 +1935,7 @@ namespace hist_mmorpg
 		/// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
-		/// <param name="gc">GameClock to write</param>
+        /// <param name="gc">GameClock to write</param>
 		public bool writeClock(String gameID, GameClock gc)
 		{
 			var rClock = new RiakObject(gameID, "gameClock", gc);
@@ -1916,12 +1949,32 @@ namespace hist_mmorpg
 			return putClockResult.IsSuccess;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Writes Journal object to Riak
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
+        /// <param name="key">Riak key to use</param>
+        /// <param name="journal">Journal to write</param>
+        public bool writeJournal(String gameID, String key, Journal journal)
+        {
+            var rJournal = new RiakObject(gameID, key, journal);
+            var putJournalResult = rClient.Put(rJournal);
+
+            if (!putJournalResult.IsSuccess)
+            {
+                System.Windows.Forms.MessageBox.Show("Write failed: Journal " + key + " to bucket " + rJournal.Bucket);
+            }
+
+            return putJournalResult.IsSuccess;
+        }
+
+        /// <summary>
 		/// Writes Dictionary object to Riak
 		/// </summary>
 		/// <returns>bool indicating success</returns>
 		/// <param name="gameID">Game (bucket) to write to</param>
-		/// <param name="dictName">Riak key to use</param>
+		/// <param name="key">Riak key to use</param>
 		/// <param name="dictionary">Dictionary to write</param>
 		public bool writeDictionary<T>(String gameID, String key, T dictionary)
 		{
@@ -2232,14 +2285,14 @@ namespace hist_mmorpg
 
             // iterate through clock's scheduled events
             // check for births
-            foreach (JournalEvent jEvent in Globals_Server.clock.scheduledEvents.events)
+            foreach (KeyValuePair<string, JournalEvent> jEvent in Globals_Server.scheduledEvents.events)
             {
-                if ((jEvent.year == Globals_Server.clock.currentYear) && (jEvent.season == Globals_Server.clock.currentSeason))
+                if ((jEvent.Value.year == Globals_Server.clock.currentYear) && (jEvent.Value.season == Globals_Server.clock.currentSeason))
                 {
-                    if ((jEvent.type).ToLower().Equals("birth"))
+                    if ((jEvent.Value.type).ToLower().Equals("birth"))
                     {
                         // get parents
-                        NonPlayerCharacter mummy = Globals_Server.npcMasterList[jEvent.personae];
+                        NonPlayerCharacter mummy = Globals_Server.npcMasterList[jEvent.Value.personae];
                         Character daddy = Globals_Server.pcMasterList[mummy.spouse];
 
                         // run childbirth procedure
@@ -6266,7 +6319,8 @@ namespace hist_mmorpg
             if (!isStillborn)
             {
                 Globals_Server.npcMasterList.Add(weeBairn.charID, weeBairn);
-                Globals_Server.clock.pastEvents.events.Add(new JournalEvent(Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, Globals_Client.myChar.charID, "Birth", descr: Globals_Client.myChar.firstName + " " + Globals_Client.myChar.familyName + " welcomes a new " + weeBairn.getFunction(Globals_Client.myChar) + " into his family"));
+                JournalEvent childbirth = new JournalEvent(Globals_Server.getNextJournalEventID(), Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, Globals_Client.myChar.charID, "Birth", descr: Globals_Client.myChar.firstName + " " + Globals_Client.myChar.familyName + " welcomes a new " + weeBairn.getFunction(Globals_Client.myChar) + " into his family");
+                Globals_Server.pastEvents.events.Add(childbirth.jEventID, childbirth);
                 weeBairn.location = mummy.location;
                 weeBairn.location.characters.Add(weeBairn);
                 Globals_Client.myChar.myNPCs.Add(weeBairn);
@@ -9562,6 +9616,42 @@ namespace hist_mmorpg
             else
             {
                 System.Windows.Forms.MessageBox.Show("You have no home fief!");
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the addTestJournalEventToolStripMenuItem
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void addTestJournalEventToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // create and add a past event
+            JournalEvent myEvent = new JournalEvent(Globals_Server.getNextJournalEventID(), 1280, 1, "404", "birth");
+            Globals_Server.addPastEvent(myEvent);
+        }
+
+        /// <summary>
+        /// Updates appropriate components when data received from observable
+        /// </summary>
+        /// <param name="info">String containing data about component to update</param>
+        public void update(String info)
+        {
+            // get update info
+            string[] infoSplit = info.Split('|');
+            switch (infoSplit[0])
+            {
+                case "newEvent":
+                    // get jEvent ID and retrieve from Globals_Server
+                    if (infoSplit[1] != null)
+                    {
+                        JournalEvent newJevent = Globals_Server.pastEvents.events[infoSplit[1]];
+                        Globals_Client.myPastEvents.events.Add(newJevent.jEventID, newJevent);
+                        System.Windows.Forms.MessageBox.Show("There is a new event!");
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 

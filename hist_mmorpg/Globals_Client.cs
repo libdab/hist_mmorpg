@@ -35,5 +35,9 @@ namespace hist_mmorpg
         /// Holds UI container being currently displayed
         /// </summary>
         public static ContainerControl containerToView;
+        /// <summary>
+        /// Holds past events
+        /// </summary>
+        public static Journal myPastEvents = new Journal();
     }
 }

@@ -11,6 +11,10 @@ namespace hist_mmorpg
     public static class Globals_Server
     {
         /// <summary>
+        /// List of registered observers
+        /// </summary>
+        private static List<Form1> registeredObservers = new List<Form1>();
+        /// <summary>
         /// Holds all NonPlayerCharacter objects
         /// </summary>
         public static Dictionary<string, NonPlayerCharacter> npcMasterList = new Dictionary<string, NonPlayerCharacter>();
@@ -123,9 +127,13 @@ namespace hist_mmorpg
         /// </summary>
         public static uint newAilmentID = 1;
         /// <summary>
-        /// Holds next value for ailment ID
+        /// Holds next value for siege ID
         /// </summary>
         public static uint newSiegeID = 1;
+        /// <summary>
+        /// Holds next value for JournalEvent ID
+        /// </summary>
+        public static uint newJournalEventID = 1;
         /// <summary>
         /// Holds HexMapGraph for this game
         /// </summary>
@@ -134,6 +142,14 @@ namespace hist_mmorpg
         /// Holds GameClock for this game
         /// </summary>
         public static GameClock clock { get; set; }
+        /// <summary>
+        /// Holds scheduled events
+        /// </summary>
+        public static Journal scheduledEvents = new Journal();
+        /// <summary>
+        /// Holds past events
+        /// </summary>
+        public static Journal pastEvents = new Journal();
         /// <summary>
         /// Holds combat values for different troop types and nationalities
         /// Key = nationality & Value = combat value for knights, menAtArms, lightCavalry, yeomen, foot, rabble
@@ -207,6 +223,17 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Gets the next available newJournalEventID, then increments it
+        /// </summary>
+        /// <returns>string containing newJournalEventID</returns>
+        public static string getNextJournalEventID()
+        {
+            string jEventID = "jEvent_" + Globals_Server.newJournalEventID;
+            Globals_Server.newJournalEventID++;
+            return jEventID;
+        }
+
+        /// <summary>
         /// Generates a random double, specifying maximum and (optional) minimum values
         /// </summary>
         /// <returns>random double</returns>
@@ -215,6 +242,48 @@ namespace hist_mmorpg
         public static double GetRandomDouble(double max, double min = 0)
         {
             return myRand.NextDouble() * (max - min) + min;
+        }
+
+        public static void addPastEvent(JournalEvent jEvent)
+        {
+            Globals_Server.pastEvents.events.Add(jEvent.jEventID, jEvent);
+            Globals_Server.notifyObservers("newEvent|" + jEvent.jEventID);
+        }
+
+        /// <summary>
+        /// Adds an observer (Form1 object) to the list of registered observers
+        /// </summary>
+        /// <param name="obs">Observer to be added</param>
+        public static void registerObserver(Form1 obs)
+        {
+            // add new observer to list
+            registeredObservers.Add(obs);
+        }
+
+        /// <summary>
+        /// Removes an observer (Form1 object) from the list of registered observers
+        /// </summary>
+        /// <param name="obs">Observer to be removed</param>
+        public static void removeObserver(Form1 obs)
+        {
+            // remove observer from list
+            registeredObservers.Remove(obs);
+        }
+
+        /// <summary>
+        /// Notifies all observers (Form1 objects) in the list of registered observers
+        /// that a change has occured to the data
+        /// </summary>
+        /// <param name="info">String indicating the nature of the change</param>
+        public static void notifyObservers(String info)
+        {
+            // iterate through list of observers
+            foreach (Form1 obs in registeredObservers)
+            {
+                // call observer's update method to perform the required actions
+                // based on the string passed
+                obs.update(info);
+            }
         }
     }
 }

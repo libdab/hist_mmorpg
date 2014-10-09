@@ -26,14 +26,6 @@ namespace hist_mmorpg
         /// Holds current season
         /// </summary>
         public byte currentSeason { get; set; }
-        /// <summary>
-        /// Holds scheduled events
-        /// </summary>
-        public Journal scheduledEvents { get; set; }
-        /// <summary>
-        /// Holds past events
-        /// </summary>
-        public Journal pastEvents { get; set; }
 
         /// <summary>
         /// Constructor for GameClock
@@ -41,9 +33,7 @@ namespace hist_mmorpg
 		/// <param name="id">String holding clock ID</param>
         /// <param name="yr">uint holding starting year</param>
         /// <param name="s">byte holding current season (default: 0)</param>
-        /// <param name="sched">Journal holding scheduled events</param>
-        /// <param name="past">Journal holding past events</param>
-        public GameClock(String id, uint yr, Journal sched, Journal past, byte s = 0)
+        public GameClock(String id, uint yr, byte s = 0)
         {
 			this.clockID = id;
             this.currentYear = yr;
@@ -57,8 +47,6 @@ namespace hist_mmorpg
                 s = 0;
             }
             this.currentSeason = s;
-            this.scheduledEvents = sched;
-            this.pastEvents = past;
         }
 
         /// <summary>

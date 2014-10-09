@@ -207,6 +207,7 @@ namespace hist_mmorpg
             this.siegeListContainer = new System.Windows.Forms.SplitContainer();
             this.siegeTextBox = new System.Windows.Forms.TextBox();
             this.siegeListView = new System.Windows.Forms.ListView();
+            this.addTestJournalEventToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -313,9 +314,10 @@ namespace hist_mmorpg
             this.testSeasonalUpdateToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fullToolStripMenuItem,
             this.characterToolStripMenuItem1,
-            this.switchPlayerMenuItem});
+            this.switchPlayerMenuItem,
+            this.addTestJournalEventToolStripMenuItem});
             this.testSeasonalUpdateToolStripMenuItem.Name = "testSeasonalUpdateToolStripMenuItem";
-            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
+            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.testSeasonalUpdateToolStripMenuItem.Text = "Test";
             // 
             // fullToolStripMenuItem
@@ -352,7 +354,7 @@ namespace hist_mmorpg
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -2162,6 +2164,13 @@ namespace hist_mmorpg
             this.siegeListView.View = System.Windows.Forms.View.Details;
             this.siegeListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.siegeListView_ItemSelectionChanged);
             // 
+            // addTestJournalEventToolStripMenuItem
+            // 
+            this.addTestJournalEventToolStripMenuItem.Name = "addTestJournalEventToolStripMenuItem";
+            this.addTestJournalEventToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.addTestJournalEventToolStripMenuItem.Text = "Add test JournalEvent";
+            this.addTestJournalEventToolStripMenuItem.Click += new System.EventHandler(this.addTestJournalEventToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2459,6 +2468,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button familyNpcSpousePregBtn;
         private System.Windows.Forms.ToolStripTextBox switchPlayerMenuTextBox;
         private System.Windows.Forms.ToolStripMenuItem viewMyHomeFiefToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addTestJournalEventToolStripMenuItem;
 
     }
 }

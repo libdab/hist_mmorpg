@@ -557,13 +557,13 @@ namespace hist_mmorpg
             // to store events to remove
             List<JournalEvent> eventsToRemove = new List<JournalEvent>();
             // iterate through clock's scheduled events
-            foreach (JournalEvent jEvent in Globals_Server.clock.scheduledEvents.events)
+            foreach (KeyValuePair<string,JournalEvent> jEvent in Globals_Server.scheduledEvents.events)
             {
                 // if event concerned with this character
-                if (jEvent.personae.Equals(this.charID))
+                if (jEvent.Value.personae.Equals(this.charID))
                 {
                     // store event
-                    eventsToRemove.Add(jEvent);
+                    eventsToRemove.Add(jEvent.Value);
                 }
             }
 
@@ -572,7 +572,7 @@ namespace hist_mmorpg
             {
                 foreach (JournalEvent thisEvent in eventsToRemove)
                 {
-                    Globals_Server.clock.scheduledEvents.events.Remove(thisEvent);
+                    Globals_Server.scheduledEvents.events.Remove(thisEvent.jEventID);
                 }
 
             }
@@ -1132,8 +1132,8 @@ namespace hist_mmorpg
                                 birthSeason = (byte)(birthSeason - 1);
                                 birthYear = birthYear + 1;
                             }
-                            JournalEvent birth = new JournalEvent(birthYear, birthSeason, wife.charID, "birth");
-                            Globals_Server.clock.scheduledEvents.events.Add(birth);
+                            JournalEvent birth = new JournalEvent(Globals_Server.getNextJournalEventID(), birthYear, birthSeason, wife.charID, "birth");
+                            Globals_Server.scheduledEvents.events.Add(birth.jEventID, birth);
 
                              // display message of celebration
                             System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + wife.firstName + " " + wife.familyName + " is pregnant!", "PREGNANCY SUCCESSFUL");
