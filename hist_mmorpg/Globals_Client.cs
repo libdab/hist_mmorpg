@@ -39,5 +39,7 @@ namespace hist_mmorpg
         /// Holds past events
         /// </summary>
         public static Journal myPastEvents = new Journal();
+
     }
+
 }

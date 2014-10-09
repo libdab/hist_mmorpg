@@ -1132,7 +1132,8 @@ namespace hist_mmorpg
                                 birthSeason = (byte)(birthSeason - 1);
                                 birthYear = birthYear + 1;
                             }
-                            JournalEvent birth = new JournalEvent(Globals_Server.getNextJournalEventID(), birthYear, birthSeason, wife.charID, "birth");
+                            string[] birthPersonae = new string[] { wife.charID + "|mother", wife.spouse + "|father"};
+                            JournalEvent birth = new JournalEvent(Globals_Server.getNextJournalEventID(), birthYear, birthSeason, birthPersonae, "birth");
                             Globals_Server.scheduledEvents.events.Add(birth.jEventID, birth);
 
                              // display message of celebration

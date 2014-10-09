@@ -14,6 +14,10 @@ namespace hist_mmorpg
         /// Holds events
         /// </summary>
         public Dictionary<string, JournalEvent> events = new Dictionary<string, JournalEvent>();
+        /// <summary>
+        /// Indicated presence of new (unread) items
+        /// </summary>
+        public bool areNewItems = false;
 
         /// <summary>
         /// Constructor for Journal
@@ -96,6 +100,35 @@ namespace hist_mmorpg
             return matchingEvents;
         }
 
+        /// <summary>
+        /// Adds a new JournalEvent to the Journal
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="min">The JournalEvent to be added</param>
+        public bool addNewEvent(JournalEvent jEvent)
+        {
+            bool success = false;
+
+            if (jEvent.jEventID != null)
+            {
+                try
+                {
+                    // add event
+                    this.events.Add(jEvent.jEventID, jEvent);
+                    // set areNewItems to indicate unread items
+                    this.areNewItems = true;
+                    success = true;
+                }
+                catch (System.ArgumentException ae)
+                {
+                    System.Windows.Forms.MessageBox.Show(ae.Message + "\r\nPlease check for duplicate jEventID.");
+                }
+            }
+
+            return success;
+
+        }
+
     }
 
     /// <summary>
@@ -157,6 +190,66 @@ namespace hist_mmorpg
             {
                 this.description = descr;
             }
+        }
+
+        /// <summary>
+        /// Returns a string containing the details of a JournalEvent
+        /// </summary>
+        /// <returns>JournalEvent details</returns>
+        public string getJournalEventDetails()
+        {
+            string entryText = "";
+
+            // ID
+            entryText += "ID: " + this.jEventID + "\r\n\r\n";
+
+            // year and season
+            entryText += "Date: " + this.season + ", " + this.year + "\r\n\r\n";
+
+            // type
+            entryText += "Type: " + this.type + "\r\n\r\n";
+
+            // personae
+            entryText += "Personae:\r\n";
+            for (int i = 0; i < this.personae.Length; i++)
+            {
+                string thisPersonae = this.personae[i];
+                string[] thisPersonaeSplit = thisPersonae.Split('|');
+                Character thisCharacter = null;
+
+                // get character
+                if (thisPersonaeSplit[0] != null)
+                {
+                    if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                    {
+                        thisCharacter = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                    }
+                    else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                    {
+                        thisCharacter = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                    }
+                }
+
+                entryText += thisCharacter.firstName + " " + thisCharacter.familyName
+                    + " (" + thisPersonaeSplit[1] + ")\r\n";
+            }
+            entryText += "\r\n";
+
+            // location
+            if (this.location != null)
+            {
+                Fief thisFief = Globals_Server.fiefMasterList[this.location];
+                entryText += "Location: " + thisFief.name + " (" + this.location + ")\r\n\r\n";
+            }
+
+            // description
+            if (this.description != null)
+            {
+                Fief thisFief = Globals_Server.fiefMasterList[this.location];
+                entryText += "Description:\r\n" + this.description + "\r\n\r\n";
+            }
+
+            return entryText;
         }
 
     }

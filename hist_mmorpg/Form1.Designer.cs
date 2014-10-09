@@ -37,6 +37,7 @@ namespace hist_mmorpg
             this.characterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.switchPlayerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.switchPlayerMenuTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.addTestJournalEventToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.personalCharacteristicsAndAffairsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -207,7 +208,7 @@ namespace hist_mmorpg
             this.siegeListContainer = new System.Windows.Forms.SplitContainer();
             this.siegeTextBox = new System.Windows.Forms.TextBox();
             this.siegeListView = new System.Windows.Forms.ListView();
-            this.addTestJournalEventToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.journalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -293,7 +294,8 @@ namespace hist_mmorpg
             this.fiefToolStripMenuItem,
             this.travelToolStripMenuItem,
             this.householdToolStripMenuItem,
-            this.armyToolStripMenuItem});
+            this.armyToolStripMenuItem,
+            this.journalToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(935, 24);
@@ -350,6 +352,13 @@ namespace hist_mmorpg
             // 
             this.switchPlayerMenuTextBox.Name = "switchPlayerMenuTextBox";
             this.switchPlayerMenuTextBox.Size = new System.Drawing.Size(100, 23);
+            // 
+            // addTestJournalEventToolStripMenuItem
+            // 
+            this.addTestJournalEventToolStripMenuItem.Name = "addTestJournalEventToolStripMenuItem";
+            this.addTestJournalEventToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.addTestJournalEventToolStripMenuItem.Text = "Add test JournalEvent";
+            this.addTestJournalEventToolStripMenuItem.Click += new System.EventHandler(this.addTestJournalEventToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
@@ -2164,12 +2173,11 @@ namespace hist_mmorpg
             this.siegeListView.View = System.Windows.Forms.View.Details;
             this.siegeListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.siegeListView_ItemSelectionChanged);
             // 
-            // addTestJournalEventToolStripMenuItem
+            // journalToolStripMenuItem
             // 
-            this.addTestJournalEventToolStripMenuItem.Name = "addTestJournalEventToolStripMenuItem";
-            this.addTestJournalEventToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.addTestJournalEventToolStripMenuItem.Text = "Add test JournalEvent";
-            this.addTestJournalEventToolStripMenuItem.Click += new System.EventHandler(this.addTestJournalEventToolStripMenuItem_Click);
+            this.journalToolStripMenuItem.Name = "journalToolStripMenuItem";
+            this.journalToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.journalToolStripMenuItem.Text = "Journal";
             // 
             // Form1
             // 
@@ -2469,6 +2477,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.ToolStripTextBox switchPlayerMenuTextBox;
         private System.Windows.Forms.ToolStripMenuItem viewMyHomeFiefToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addTestJournalEventToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem journalToolStripMenuItem;
 
     }
 }

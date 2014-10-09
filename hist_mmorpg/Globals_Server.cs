@@ -244,10 +244,20 @@ namespace hist_mmorpg
             return myRand.NextDouble() * (max - min) + min;
         }
 
-        public static void addPastEvent(JournalEvent jEvent)
+        /// <summary>
+        /// Adds a new JournalEvent to the pastEvents Journal
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="min">The JournalEvent to be added</param>
+        public static bool addPastEvent(JournalEvent jEvent)
         {
-            Globals_Server.pastEvents.events.Add(jEvent.jEventID, jEvent);
+            bool success = false;
+
+            success = Globals_Server.pastEvents.addNewEvent(jEvent);
             Globals_Server.notifyObservers("newEvent|" + jEvent.jEventID);
+
+            return success;
+
         }
 
         /// <summary>

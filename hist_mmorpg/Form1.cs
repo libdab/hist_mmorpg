@@ -96,10 +96,6 @@ namespace hist_mmorpg
 		/// </summary>
 		public void initialLoad()
 		{
-            // create and add a scheduled birth
-            JournalEvent myEvent = new JournalEvent(Globals_Server.getNextJournalEventID(), 1320, 1, "404", "birth");
-            Globals_Server.scheduledEvents.events.Add(myEvent.jEventID, myEvent);
-
             // create GameClock
             GameClock myGameClock = new GameClock("clock001", 1320);
             Globals_Server.clock = myGameClock;
@@ -412,6 +408,11 @@ namespace hist_mmorpg
             Globals_Server.npcMasterList.Add(myChar2Son.charID, myChar2Son);
             NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob007, false, "E", true, 2.50, 9.0, myGoTo7, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", "405", null, 30000, false, false, myTitles007, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2SonWife.charID, myChar2SonWife);
+
+            // create and add a scheduled birth
+            string[] birthPersonae = new string[] { myChar1Wife.charID + "|mother", myChar1Wife.spouse + "|father" };
+            JournalEvent myEvent = new JournalEvent(Globals_Server.getNextJournalEventID(), 1320, 1, birthPersonae, "birth");
+            Globals_Server.scheduledEvents.events.Add(myEvent.jEventID, myEvent);
 
             // get character's correct days allowance
             myChar1.days = myChar1.getDaysAllowance();
@@ -2292,8 +2293,19 @@ namespace hist_mmorpg
                     if ((jEvent.Value.type).ToLower().Equals("birth"))
                     {
                         // get parents
-                        NonPlayerCharacter mummy = Globals_Server.npcMasterList[jEvent.Value.personae];
+                        NonPlayerCharacter mummy = null;
                         Character daddy = Globals_Server.pcMasterList[mummy.spouse];
+                        for (int i = 0; i < jEvent.Value.personae.Length; i++ )
+                        {
+                            string thisPersonae = jEvent.Value.personae[i];
+                            string[] thisPersonaeSplit = thisPersonae.Split('|');
+                            if (thisPersonaeSplit[1].Equals("mother"))
+                            {
+                                mummy = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                                daddy = Globals_Server.pcMasterList[mummy.spouse];
+                                break;
+                            }
+                        }
 
                         // run childbirth procedure
                         this.giveBirth(mummy, daddy);
@@ -6319,7 +6331,8 @@ namespace hist_mmorpg
             if (!isStillborn)
             {
                 Globals_Server.npcMasterList.Add(weeBairn.charID, weeBairn);
-                JournalEvent childbirth = new JournalEvent(Globals_Server.getNextJournalEventID(), Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, Globals_Client.myChar.charID, "Birth", descr: Globals_Client.myChar.firstName + " " + Globals_Client.myChar.familyName + " welcomes a new " + weeBairn.getFunction(Globals_Client.myChar) + " into his family");
+                string[] childbirthPersonae = new string[] { mummy.charID + "|mother", daddy.charID + "|father", weeBairn.charID + "|child" };
+                JournalEvent childbirth = new JournalEvent(Globals_Server.getNextJournalEventID(), Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, childbirthPersonae, "Birth", descr: Globals_Client.myChar.firstName + " " + Globals_Client.myChar.familyName + " welcomes a new " + weeBairn.getFunction(Globals_Client.myChar) + " into his family");
                 Globals_Server.pastEvents.events.Add(childbirth.jEventID, childbirth);
                 weeBairn.location = mummy.location;
                 weeBairn.location.characters.Add(weeBairn);
@@ -9620,6 +9633,50 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Check to see if a JournalEvent is of interest to the player
+        /// </summary>
+        /// <returns>bool indicating whether the JournalEvent is of interest</returns>
+        /// <param name="jEvent">The JournalEvent</param>
+        public bool checkEventForInterest(JournalEvent jEvent)
+        {
+            bool isOfInterest = false;
+
+            for (int i = 0; i < jEvent.personae.Length; i++)
+            {
+                string thisPersonae = jEvent.personae[i];
+                string[] thisPersonaeSplit = thisPersonae.Split('|');
+                if (thisPersonaeSplit[0].Equals(Globals_Client.myChar.charID))
+                {
+                    isOfInterest = true;
+                    break;
+                }
+            }
+
+            return isOfInterest;
+        }
+
+        /// <summary>
+        /// Adds a new JournalEvent to the myPastEvents Journal
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="min">The JournalEvent to be added</param>
+        public bool addMyPastEvent(JournalEvent jEvent)
+        {
+            bool success = false;
+
+            success = Globals_Client.myPastEvents.addNewEvent(jEvent);
+
+            // indicate unread items to player
+            if (Globals_Client.myPastEvents.areNewItems)
+            {
+                this.journalToolStripMenuItem.BackColor = Color.GreenYellow;
+            }
+
+            return success;
+
+        }
+
+        /// <summary>
         /// Responds to the click event of the addTestJournalEventToolStripMenuItem
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
@@ -9627,7 +9684,8 @@ namespace hist_mmorpg
         private void addTestJournalEventToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // create and add a past event
-            JournalEvent myEvent = new JournalEvent(Globals_Server.getNextJournalEventID(), 1280, 1, "404", "birth");
+            string[] myEventPersonae = new string[] { Globals_Client.myChar.charID + "|father", Globals_Client.myChar.spouse + "|mother" };
+            JournalEvent myEvent = new JournalEvent(Globals_Server.getNextJournalEventID(), 1280, 1, myEventPersonae, "birth");
             Globals_Server.addPastEvent(myEvent);
         }
 
@@ -9646,8 +9704,13 @@ namespace hist_mmorpg
                     if (infoSplit[1] != null)
                     {
                         JournalEvent newJevent = Globals_Server.pastEvents.events[infoSplit[1]];
-                        Globals_Client.myPastEvents.events.Add(newJevent.jEventID, newJevent);
-                        System.Windows.Forms.MessageBox.Show("There is a new event!");
+
+                        // check to see if is of interest to player
+                        if (this.checkEventForInterest(newJevent))
+                        {
+                            this.addMyPastEvent(newJevent);
+                            System.Windows.Forms.MessageBox.Show("There is a new event!");
+                        }
                     }
                     break;
                 default:
