@@ -131,9 +131,9 @@ namespace hist_mmorpg
         /// </summary>
         public static uint newSiegeID = 1;
         /// <summary>
-        /// Holds next value for JournalEvent ID
+        /// Holds next value for JournalEntry ID
         /// </summary>
-        public static uint newJournalEventID = 1;
+        public static uint newJournalEntryID = 1;
         /// <summary>
         /// Holds HexMapGraph for this game
         /// </summary>
@@ -223,14 +223,21 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Gets the next available newJournalEventID, then increments it
+        /// Gets the next available newJournalEntryID, then increments it
         /// </summary>
-        /// <returns>string containing newJournalEventID</returns>
-        public static string getNextJournalEventID()
+        /// <returns>double containing newJournalEntryID</returns>
+        public static double getNextJournalEntryID()
         {
-            string jEventID = "jEvent_" + Globals_Server.newJournalEventID;
-            Globals_Server.newJournalEventID++;
-            return jEventID;
+            double newID = 0;
+
+            // create ID from current year and newJournalEntryID
+            string tempString = Globals_Server.clock.currentYear + "." + Globals_Server.newJournalEntryID;
+            newID = Convert.ToDouble(tempString);
+
+            // increment newJournalEntryID
+            Globals_Server.newJournalEntryID++;
+
+            return newID;
         }
 
         /// <summary>
@@ -245,16 +252,16 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Adds a new JournalEvent to the pastEvents Journal
+        /// Adds a new JournalEntry to the pastEvents Journal
         /// </summary>
         /// <returns>bool indicating success</returns>
-        /// <param name="min">The JournalEvent to be added</param>
-        public static bool addPastEvent(JournalEvent jEvent)
+        /// <param name="min">The JournalEntry to be added</param>
+        public static bool addPastEvent(JournalEntry jEvent)
         {
             bool success = false;
 
-            success = Globals_Server.pastEvents.addNewEvent(jEvent);
-            Globals_Server.notifyObservers("newEvent|" + jEvent.jEventID);
+            success = Globals_Server.pastEvents.addNewEntry(jEvent);
+            Globals_Server.notifyObservers("newEvent|" + jEvent.jEntryID);
 
             return success;
 

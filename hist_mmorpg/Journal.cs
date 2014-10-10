@@ -11,35 +11,35 @@ namespace hist_mmorpg
     public class Journal
     {
         /// <summary>
-        /// Holds events
+        /// Holds entries
         /// </summary>
-        public Dictionary<string, JournalEvent> events = new Dictionary<string, JournalEvent>();
+        public SortedList<double, JournalEntry> entries = new SortedList<double, JournalEntry>();
         /// <summary>
-        /// Indicated presence of new (unread) items
+        /// Indicated presence of new (unread) entries
         /// </summary>
-        public bool areNewItems = false;
+        public bool areNewEntries = false;
 
         /// <summary>
         /// Constructor for Journal
         /// </summary>
-        /// <param name="evList">Dictionary<string, JournalEvent> holding events</param>
-        public Journal(Dictionary<string, JournalEvent> evList = null)
+        /// <param name="entList">SortedList<double, JournalEntry> holding entries</param>
+        public Journal(SortedList<double, JournalEntry> entList = null)
         {
-            if (evList != null)
+            if (entList != null)
             {
-                this.events = evList;
+                this.entries = entList;
             }
         }
         
         /// <summary>
-        /// Returns any events matching search criteria (year, season)
+        /// Returns any entries matching search criteria (year, season)
         /// </summary>
-        /// <returns>List of JournalEvents</returns>
+        /// <returns>SortedList of JournalEntrys</returns>
         /// <param name="yr">Year to search for</param>
         /// <param name="seas">Season to search for</param>
-        public List<JournalEvent> getEventsOnDate(uint yr = 9999, Byte seas = 99)
+        public SortedList<double, JournalEntry> getEventsOnDate(uint yr = 9999, Byte seas = 99)
         {
-            List<JournalEvent> matchingEvents = new List<JournalEvent>();
+            SortedList<double, JournalEntry> matchingEntries = new SortedList<double, JournalEntry>();
 
             // determine scope of search
             String scope = "";
@@ -66,57 +66,57 @@ namespace hist_mmorpg
             switch (scope)
             {
                 case "seas":
-                    foreach (KeyValuePair<string, JournalEvent> jEvent in this.events)
+                    foreach (KeyValuePair<double, JournalEntry> jEntry in this.entries)
                     {
                         // year and season must match
-                        if (jEvent.Value.year == yr)
+                        if (jEntry.Value.year == yr)
                         {
-                            if (jEvent.Value.season == seas)
+                            if (jEntry.Value.season == seas)
                             {
-                                matchingEvents.Add(jEvent.Value);
+                                matchingEntries.Add(jEntry.Key, jEntry.Value);
                             }
                         }
                     }
                     break;
                 case "yr":
-                    foreach (KeyValuePair<string, JournalEvent> jEvent in this.events)
+                    foreach (KeyValuePair<double, JournalEntry> jEntry in this.entries)
                     {
                         // year must match
-                        if (jEvent.Value.year == yr)
+                        if (jEntry.Value.year == yr)
                         {
-                            matchingEvents.Add(jEvent.Value);
+                            matchingEntries.Add(jEntry.Key, jEntry.Value);
                         }
                     }
                     break;
                 default:
-                    foreach (KeyValuePair<string, JournalEvent> jEvent in this.events)
+                    foreach (KeyValuePair<double, JournalEntry> jEntry in this.entries)
                     {
                         // get all events
-                        matchingEvents.Add(jEvent.Value);
+                        matchingEntries.Add(jEntry.Key, jEntry.Value);
                     }
                     break;
             }
 
-            return matchingEvents;
+            return matchingEntries;
         }
 
         /// <summary>
-        /// Adds a new JournalEvent to the Journal
+        /// Adds a new JournalEntry to the Journal
         /// </summary>
         /// <returns>bool indicating success</returns>
-        /// <param name="min">The JournalEvent to be added</param>
-        public bool addNewEvent(JournalEvent jEvent)
+        /// <param name="min">The JournalEntry to be added</param>
+        public bool addNewEntry(JournalEntry jEntry)
         {
             bool success = false;
 
-            if (jEvent.jEventID != null)
+            if (jEntry.jEntryID > 0)
             {
                 try
                 {
-                    // add event
-                    this.events.Add(jEvent.jEventID, jEvent);
-                    // set areNewItems to indicate unread items
-                    this.areNewItems = true;
+                    // add entry
+                    this.entries.Add(jEntry.jEntryID, jEntry);
+                    // set areNewEntries to indicate unread entries
+                    this.areNewEntries = true;
                     success = true;
                 }
                 catch (System.ArgumentException ae)
@@ -132,14 +132,14 @@ namespace hist_mmorpg
     }
 
     /// <summary>
-    /// Class containing details of game event
+    /// Class containing details of a Journal entry
     /// </summary>
-    public class JournalEvent
+    public class JournalEntry
     {
         /// <summary>
-        /// Holds JournalEvent ID
+        /// Holds JournalEntry ID
         /// </summary>
-        public string jEventID { get; set; }
+        public double jEntryID { get; set; }
         /// <summary>
         /// Holds event year
         /// </summary>
@@ -166,18 +166,18 @@ namespace hist_mmorpg
         public String description { get; set; }
 
         /// <summary>
-        /// Constructor for JournalEvent
+        /// Constructor for JournalEntry
         /// </summary>
-        /// <param name="id">string holding JournalEvent ID</param>
+        /// <param name="id">double holding JournalEntry ID</param>
         /// <param name="yr">uint holding event year</param>
         /// <param name="seas">byte holding event season</param>
         /// <param name="pers">String[] holding main objects (IDs) associated with event and thier role</param>
-        /// <param name="typ">String holding type of event (e.g. battle, birth)</param>
+        /// <param name="typ">String holding type of event</param>
         /// <param name="loc">String holding location of event (fiefID)</param>
         /// <param name="descr">String holding description of event</param>
-        public JournalEvent(string id, uint yr, byte seas, String[] pers, String typ, String loc = null, String descr = null)
+        public JournalEntry(double id, uint yr, byte seas, String[] pers, String typ, String loc = null, String descr = null)
         {
-            this.jEventID = id;
+            this.jEntryID = id;
             this.year = yr;
             this.season = seas;
             this.personae = pers;
@@ -193,15 +193,15 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Returns a string containing the details of a JournalEvent
+        /// Returns a string containing the details of a JournalEntry
         /// </summary>
-        /// <returns>JournalEvent details</returns>
-        public string getJournalEventDetails()
+        /// <returns>JournalEntry details</returns>
+        public string getJournalEntryDetails()
         {
             string entryText = "";
 
             // ID
-            entryText += "ID: " + this.jEventID + "\r\n\r\n";
+            entryText += "ID: " + this.jEntryID + "\r\n\r\n";
 
             // year and season
             entryText += "Date: " + this.season + ", " + this.year + "\r\n\r\n";

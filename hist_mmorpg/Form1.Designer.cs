@@ -37,7 +37,7 @@ namespace hist_mmorpg
             this.characterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.switchPlayerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.switchPlayerMenuTextBox = new System.Windows.Forms.ToolStripTextBox();
-            this.addTestJournalEventToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addTestJournalEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.personalCharacteristicsAndAffairsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,6 +53,7 @@ namespace hist_mmorpg
             this.armyManagementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewMySiegesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.journalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterContainer = new System.Windows.Forms.SplitContainer();
             this.characterTitlesCheckBox = new System.Windows.Forms.CheckBox();
             this.characterTextBox = new System.Windows.Forms.TextBox();
@@ -208,7 +209,12 @@ namespace hist_mmorpg
             this.siegeListContainer = new System.Windows.Forms.SplitContainer();
             this.siegeTextBox = new System.Windows.Forms.TextBox();
             this.siegeListView = new System.Windows.Forms.ListView();
-            this.journalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.journalContainer = new System.Windows.Forms.SplitContainer();
+            this.journalListContainer = new System.Windows.Forms.SplitContainer();
+            this.viewEntriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.journalTextContainer = new System.Windows.Forms.SplitContainer();
+            this.journalTextBox = new System.Windows.Forms.TextBox();
+            this.journalListView = new System.Windows.Forms.ListView();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -284,6 +290,16 @@ namespace hist_mmorpg
             this.siegeListContainer.Panel1.SuspendLayout();
             this.siegeListContainer.Panel2.SuspendLayout();
             this.siegeListContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.journalContainer)).BeginInit();
+            this.journalContainer.Panel2.SuspendLayout();
+            this.journalContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.journalListContainer)).BeginInit();
+            this.journalListContainer.Panel1.SuspendLayout();
+            this.journalListContainer.Panel2.SuspendLayout();
+            this.journalListContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.journalTextContainer)).BeginInit();
+            this.journalTextContainer.Panel2.SuspendLayout();
+            this.journalTextContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -317,9 +333,9 @@ namespace hist_mmorpg
             this.fullToolStripMenuItem,
             this.characterToolStripMenuItem1,
             this.switchPlayerMenuItem,
-            this.addTestJournalEventToolStripMenuItem});
+            this.addTestJournalEntryToolStripMenuItem});
             this.testSeasonalUpdateToolStripMenuItem.Name = "testSeasonalUpdateToolStripMenuItem";
-            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
             this.testSeasonalUpdateToolStripMenuItem.Text = "Test";
             // 
             // fullToolStripMenuItem
@@ -353,17 +369,17 @@ namespace hist_mmorpg
             this.switchPlayerMenuTextBox.Name = "switchPlayerMenuTextBox";
             this.switchPlayerMenuTextBox.Size = new System.Drawing.Size(100, 23);
             // 
-            // addTestJournalEventToolStripMenuItem
+            // addTestJournalEntryToolStripMenuItem
             // 
-            this.addTestJournalEventToolStripMenuItem.Name = "addTestJournalEventToolStripMenuItem";
-            this.addTestJournalEventToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.addTestJournalEventToolStripMenuItem.Text = "Add test JournalEvent";
-            this.addTestJournalEventToolStripMenuItem.Click += new System.EventHandler(this.addTestJournalEventToolStripMenuItem_Click);
+            this.addTestJournalEntryToolStripMenuItem.Name = "addTestJournalEntryToolStripMenuItem";
+            this.addTestJournalEntryToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.addTestJournalEntryToolStripMenuItem.Text = "Add test JournalEntry";
+            this.addTestJournalEntryToolStripMenuItem.Click += new System.EventHandler(this.addTestJournalEntryToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -473,6 +489,14 @@ namespace hist_mmorpg
             this.viewMySiegesToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.viewMySiegesToolStripMenuItem.Text = "View my sieges";
             this.viewMySiegesToolStripMenuItem.Click += new System.EventHandler(this.viewMySiegesToolStripMenuItem_Click);
+            // 
+            // journalToolStripMenuItem
+            // 
+            this.journalToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.viewEntriesToolStripMenuItem});
+            this.journalToolStripMenuItem.Name = "journalToolStripMenuItem";
+            this.journalToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.journalToolStripMenuItem.Text = "Journal";
             // 
             // characterContainer
             // 
@@ -1646,8 +1670,8 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel1
             // 
-            this.armyContainer.Panel1.Controls.Add(this.armyManagementPanel);
             this.armyContainer.Panel1.Controls.Add(this.armyCombatPanel);
+            this.armyContainer.Panel1.Controls.Add(this.armyManagementPanel);
             // 
             // armyContainer.Panel2
             // 
@@ -2173,20 +2197,86 @@ namespace hist_mmorpg
             this.siegeListView.View = System.Windows.Forms.View.Details;
             this.siegeListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.siegeListView_ItemSelectionChanged);
             // 
-            // journalToolStripMenuItem
+            // journalContainer
             // 
-            this.journalToolStripMenuItem.Name = "journalToolStripMenuItem";
-            this.journalToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.journalToolStripMenuItem.Text = "Journal";
+            this.journalContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.journalContainer.Location = new System.Drawing.Point(0, 24);
+            this.journalContainer.Name = "journalContainer";
+            // 
+            // journalContainer.Panel2
+            // 
+            this.journalContainer.Panel2.Controls.Add(this.journalListContainer);
+            this.journalContainer.Size = new System.Drawing.Size(935, 637);
+            this.journalContainer.SplitterDistance = 208;
+            this.journalContainer.TabIndex = 10;
+            // 
+            // journalListContainer
+            // 
+            this.journalListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.journalListContainer.Location = new System.Drawing.Point(0, 0);
+            this.journalListContainer.Name = "journalListContainer";
+            // 
+            // journalListContainer.Panel1
+            // 
+            this.journalListContainer.Panel1.Controls.Add(this.journalTextContainer);
+            // 
+            // journalListContainer.Panel2
+            // 
+            this.journalListContainer.Panel2.Controls.Add(this.journalListView);
+            this.journalListContainer.Size = new System.Drawing.Size(723, 637);
+            this.journalListContainer.SplitterDistance = 405;
+            this.journalListContainer.TabIndex = 0;
+            // 
+            // viewEntriesToolStripMenuItem
+            // 
+            this.viewEntriesToolStripMenuItem.Name = "viewEntriesToolStripMenuItem";
+            this.viewEntriesToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.viewEntriesToolStripMenuItem.Text = "View my entries";
+            this.viewEntriesToolStripMenuItem.Click += new System.EventHandler(this.viewEntriesToolStripMenuItem_Click);
+            // 
+            // journalTextContainer
+            // 
+            this.journalTextContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.journalTextContainer.Location = new System.Drawing.Point(0, 0);
+            this.journalTextContainer.Name = "journalTextContainer";
+            this.journalTextContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // journalTextContainer.Panel2
+            // 
+            this.journalTextContainer.Panel2.Controls.Add(this.journalTextBox);
+            this.journalTextContainer.Size = new System.Drawing.Size(405, 637);
+            this.journalTextContainer.SplitterDistance = 65;
+            this.journalTextContainer.TabIndex = 0;
+            // 
+            // journalTextBox
+            // 
+            this.journalTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.journalTextBox.Location = new System.Drawing.Point(0, 0);
+            this.journalTextBox.Multiline = true;
+            this.journalTextBox.Name = "journalTextBox";
+            this.journalTextBox.Size = new System.Drawing.Size(405, 568);
+            this.journalTextBox.TabIndex = 0;
+            // 
+            // journalListView
+            // 
+            this.journalListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.journalListView.FullRowSelect = true;
+            this.journalListView.Location = new System.Drawing.Point(0, 0);
+            this.journalListView.Name = "journalListView";
+            this.journalListView.Size = new System.Drawing.Size(314, 637);
+            this.journalListView.TabIndex = 0;
+            this.journalListView.UseCompatibleStateImageBehavior = false;
+            this.journalListView.View = System.Windows.Forms.View.Details;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
+            this.Controls.Add(this.journalContainer);
+            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.fiefContainer);
-            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.characterContainer);
@@ -2292,6 +2382,17 @@ namespace hist_mmorpg
             this.siegeListContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.siegeListContainer)).EndInit();
             this.siegeListContainer.ResumeLayout(false);
+            this.journalContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.journalContainer)).EndInit();
+            this.journalContainer.ResumeLayout(false);
+            this.journalListContainer.Panel1.ResumeLayout(false);
+            this.journalListContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.journalListContainer)).EndInit();
+            this.journalListContainer.ResumeLayout(false);
+            this.journalTextContainer.Panel2.ResumeLayout(false);
+            this.journalTextContainer.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.journalTextContainer)).EndInit();
+            this.journalTextContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2476,8 +2577,14 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button familyNpcSpousePregBtn;
         private System.Windows.Forms.ToolStripTextBox switchPlayerMenuTextBox;
         private System.Windows.Forms.ToolStripMenuItem viewMyHomeFiefToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem addTestJournalEventToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addTestJournalEntryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem journalToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer journalContainer;
+        private System.Windows.Forms.SplitContainer journalListContainer;
+        private System.Windows.Forms.ToolStripMenuItem viewEntriesToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer journalTextContainer;
+        private System.Windows.Forms.TextBox journalTextBox;
+        private System.Windows.Forms.ListView journalListView;
 
     }
 }

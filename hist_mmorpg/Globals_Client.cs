@@ -39,6 +39,14 @@ namespace hist_mmorpg
         /// Holds past events
         /// </summary>
         public static Journal myPastEvents = new Journal();
+        /// <summary>
+        /// Holds current set of events being displayed in UI
+        /// </summary>
+        public static SortedList<double, JournalEntry> eventSetToView = new SortedList<double, JournalEntry>();
+        /// <summary>
+        /// Holds index position of currently displayed entry in eventSetToView
+        /// </summary>
+        public static uint jEntryToView;
 
     }
 

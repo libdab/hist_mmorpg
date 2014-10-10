@@ -555,9 +555,9 @@ namespace hist_mmorpg
 
             // 3. check if involved with any scheduled events and remove
             // to store events to remove
-            List<JournalEvent> eventsToRemove = new List<JournalEvent>();
+            List<JournalEntry> eventsToRemove = new List<JournalEntry>();
             // iterate through clock's scheduled events
-            foreach (KeyValuePair<string,JournalEvent> jEvent in Globals_Server.scheduledEvents.events)
+            foreach (KeyValuePair<double, JournalEntry> jEvent in Globals_Server.scheduledEvents.entries)
             {
                 // if event concerned with this character
                 if (jEvent.Value.personae.Equals(this.charID))
@@ -570,9 +570,9 @@ namespace hist_mmorpg
             // if events found, remove them
             if (eventsToRemove.Count > 0)
             {
-                foreach (JournalEvent thisEvent in eventsToRemove)
+                foreach (JournalEntry thisEvent in eventsToRemove)
                 {
-                    Globals_Server.scheduledEvents.events.Remove(thisEvent.jEventID);
+                    Globals_Server.scheduledEvents.entries.Remove(thisEvent.jEntryID);
                 }
 
             }
@@ -1133,8 +1133,8 @@ namespace hist_mmorpg
                                 birthYear = birthYear + 1;
                             }
                             string[] birthPersonae = new string[] { wife.charID + "|mother", wife.spouse + "|father"};
-                            JournalEvent birth = new JournalEvent(Globals_Server.getNextJournalEventID(), birthYear, birthSeason, birthPersonae, "birth");
-                            Globals_Server.scheduledEvents.events.Add(birth.jEventID, birth);
+                            JournalEntry birth = new JournalEntry(Globals_Server.getNextJournalEntryID(), birthYear, birthSeason, birthPersonae, "birth");
+                            Globals_Server.scheduledEvents.entries.Add(birth.jEntryID, birth);
 
                              // display message of celebration
                             System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + wife.firstName + " " + wife.familyName + " is pregnant!", "PREGNANCY SUCCESSFUL");

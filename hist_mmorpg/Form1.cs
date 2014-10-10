@@ -84,6 +84,7 @@ namespace hist_mmorpg
             this.setUpHouseholdCharsList();
             this.setUpArmyList();
             this.setUpSiegeList();
+            this.setUpJournalList();
 
             // initialise character display in UI
             Globals_Client.charToView = Globals_Client.myChar;
@@ -411,8 +412,8 @@ namespace hist_mmorpg
 
             // create and add a scheduled birth
             string[] birthPersonae = new string[] { myChar1Wife.charID + "|mother", myChar1Wife.spouse + "|father" };
-            JournalEvent myEvent = new JournalEvent(Globals_Server.getNextJournalEventID(), 1320, 1, birthPersonae, "birth");
-            Globals_Server.scheduledEvents.events.Add(myEvent.jEventID, myEvent);
+            JournalEntry myEntry = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 1, birthPersonae, "birth");
+            Globals_Server.scheduledEvents.entries.Add(myEntry.jEntryID, myEntry);
 
             // get character's correct days allowance
             myChar1.days = myChar1.getDaysAllowance();
@@ -2286,18 +2287,18 @@ namespace hist_mmorpg
 
             // iterate through clock's scheduled events
             // check for births
-            foreach (KeyValuePair<string, JournalEvent> jEvent in Globals_Server.scheduledEvents.events)
+            foreach (KeyValuePair<double, JournalEntry> jEntry in Globals_Server.scheduledEvents.entries)
             {
-                if ((jEvent.Value.year == Globals_Server.clock.currentYear) && (jEvent.Value.season == Globals_Server.clock.currentSeason))
+                if ((jEntry.Value.year == Globals_Server.clock.currentYear) && (jEntry.Value.season == Globals_Server.clock.currentSeason))
                 {
-                    if ((jEvent.Value.type).ToLower().Equals("birth"))
+                    if ((jEntry.Value.type).ToLower().Equals("birth"))
                     {
                         // get parents
                         NonPlayerCharacter mummy = null;
                         Character daddy = Globals_Server.pcMasterList[mummy.spouse];
-                        for (int i = 0; i < jEvent.Value.personae.Length; i++ )
+                        for (int i = 0; i < jEntry.Value.personae.Length; i++ )
                         {
-                            string thisPersonae = jEvent.Value.personae[i];
+                            string thisPersonae = jEntry.Value.personae[i];
                             string[] thisPersonaeSplit = thisPersonae.Split('|');
                             if (thisPersonaeSplit[1].Equals("mother"))
                             {
@@ -2598,6 +2599,17 @@ namespace hist_mmorpg
             this.siegeListView.Columns.Add("Fief", -2, HorizontalAlignment.Left);
             this.siegeListView.Columns.Add("Defender", -2, HorizontalAlignment.Left);
             this.siegeListView.Columns.Add("Besieger", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for list of journal entries
+        /// </summary>
+        public void setUpJournalList()
+        {
+            // add necessary columns
+            this.journalListView.Columns.Add("Entry ID", -2, HorizontalAlignment.Left);
+            this.journalListView.Columns.Add("Date", -2, HorizontalAlignment.Left);
+            this.journalListView.Columns.Add("Type", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -4083,6 +4095,58 @@ namespace hist_mmorpg
             }
 
             this.armyListView.Focus();
+        }
+
+        /// <summary>
+        /// Refreshes main journal display screen
+        /// </summary>
+        /// <param name="a">JournalEntry to be displayed</param>
+        public void refreshJournalContainer(JournalEntry jEntry = null)
+        {
+
+            // clear existing information
+            this.journalTextBox.Text = "";
+
+            // ensure textboxes aren't interactive
+            this.journalTextBox.ReadOnly = true;
+
+            // disable controls until JournalEntry selected
+
+            // clear existing items in journal list
+            this.journalListView.Items.Clear();
+
+            // iterates through journal entries adding information to ListView
+            for (int i = 0; i < Globals_Client.eventSetToView.Count; i++)
+            {
+                ListViewItem thisEntry = null;
+
+                // jEntryID
+                thisEntry = new ListViewItem(Convert.ToString(Globals_Client.eventSetToView[i].jEntryID));
+
+                // date
+                string entrySeason = Globals_Server.clock.seasons[Globals_Client.eventSetToView[i].season];
+                thisEntry.SubItems.Add(entrySeason + ", " + Globals_Client.eventSetToView[i].year);
+
+                // type
+                thisEntry.SubItems.Add(Globals_Client.eventSetToView[i].type);
+
+                if (thisEntry != null)
+                {
+                    // if journal entry passed in as parameter, show as selected
+                    if (Globals_Client.eventSetToView[i] == jEntry)
+                    {
+                        thisEntry.Selected = true;
+                    }
+
+                    // add item to journalListView
+                    this.journalListView.Items.Add(thisEntry);
+                }
+
+            }
+
+            Globals_Client.containerToView = this.journalContainer;
+            Globals_Client.containerToView.BringToFront();
+            this.journalListView.Focus();
         }
 
         /// <summary>
@@ -5964,11 +6028,11 @@ namespace hist_mmorpg
 
             /*
             // test event scheduled in clock
-            List<JournalEvent> myEvents = new List<JournalEvent>();
+            List<JournalEntry> myEvents = new List<JournalEntry>();
             myEvents = Globals_Client.clock.scheduledEvents.getEventsOnDate();
             if (myEvents.Count > 0)
             {
-                foreach (JournalEvent jEvent in myEvents)
+                foreach (JournalEntry jEvent in myEvents)
                 {
                     System.Windows.Forms.MessageBox.Show("Year: " + jEvent.year + " | Season: " + jEvent.season + " | Who: " + jEvent.personae + " | What: " + jEvent.type);
                 }
@@ -6332,8 +6396,8 @@ namespace hist_mmorpg
             {
                 Globals_Server.npcMasterList.Add(weeBairn.charID, weeBairn);
                 string[] childbirthPersonae = new string[] { mummy.charID + "|mother", daddy.charID + "|father", weeBairn.charID + "|child" };
-                JournalEvent childbirth = new JournalEvent(Globals_Server.getNextJournalEventID(), Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, childbirthPersonae, "Birth", descr: Globals_Client.myChar.firstName + " " + Globals_Client.myChar.familyName + " welcomes a new " + weeBairn.getFunction(Globals_Client.myChar) + " into his family");
-                Globals_Server.pastEvents.events.Add(childbirth.jEventID, childbirth);
+                JournalEntry childbirth = new JournalEntry(Globals_Server.getNextJournalEntryID(), Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, childbirthPersonae, "Birth", descr: Globals_Client.myChar.firstName + " " + Globals_Client.myChar.familyName + " welcomes a new " + weeBairn.getFunction(Globals_Client.myChar) + " into his family");
+                Globals_Server.pastEvents.entries.Add(childbirth.jEntryID, childbirth);
                 weeBairn.location = mummy.location;
                 weeBairn.location.characters.Add(weeBairn);
                 Globals_Client.myChar.myNPCs.Add(weeBairn);
@@ -9633,17 +9697,17 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Check to see if a JournalEvent is of interest to the player
+        /// Check to see if a JournalEntry is of interest to the player
         /// </summary>
-        /// <returns>bool indicating whether the JournalEvent is of interest</returns>
-        /// <param name="jEvent">The JournalEvent</param>
-        public bool checkEventForInterest(JournalEvent jEvent)
+        /// <returns>bool indicating whether the JournalEntry is of interest</returns>
+        /// <param name="jEntry">The JournalEntry</param>
+        public bool checkEventForInterest(JournalEntry jEntry)
         {
             bool isOfInterest = false;
 
-            for (int i = 0; i < jEvent.personae.Length; i++)
+            for (int i = 0; i < jEntry.personae.Length; i++)
             {
-                string thisPersonae = jEvent.personae[i];
+                string thisPersonae = jEntry.personae[i];
                 string[] thisPersonaeSplit = thisPersonae.Split('|');
                 if (thisPersonaeSplit[0].Equals(Globals_Client.myChar.charID))
                 {
@@ -9656,18 +9720,18 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Adds a new JournalEvent to the myPastEvents Journal
+        /// Adds a new JournalEntry to the myPastEvents Journal
         /// </summary>
         /// <returns>bool indicating success</returns>
-        /// <param name="min">The JournalEvent to be added</param>
-        public bool addMyPastEvent(JournalEvent jEvent)
+        /// <param name="min">The JournalEntry to be added</param>
+        public bool addMyPastEvent(JournalEntry jEntry)
         {
             bool success = false;
 
-            success = Globals_Client.myPastEvents.addNewEvent(jEvent);
+            success = Globals_Client.myPastEvents.addNewEntry(jEntry);
 
             // indicate unread items to player
-            if (Globals_Client.myPastEvents.areNewItems)
+            if (Globals_Client.myPastEvents.areNewEntries)
             {
                 this.journalToolStripMenuItem.BackColor = Color.GreenYellow;
             }
@@ -9677,16 +9741,16 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of the addTestJournalEventToolStripMenuItem
+        /// Responds to the click event of the addTestJournalEntryToolStripMenuItem
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
-        private void addTestJournalEventToolStripMenuItem_Click(object sender, EventArgs e)
+        private void addTestJournalEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // create and add a past event
             string[] myEventPersonae = new string[] { Globals_Client.myChar.charID + "|father", Globals_Client.myChar.spouse + "|mother" };
-            JournalEvent myEvent = new JournalEvent(Globals_Server.getNextJournalEventID(), 1280, 1, myEventPersonae, "birth");
-            Globals_Server.addPastEvent(myEvent);
+            JournalEntry myEntry = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 0, myEventPersonae, "birth");
+            Globals_Server.addPastEvent(myEntry);
         }
 
         /// <summary>
@@ -9700,22 +9764,39 @@ namespace hist_mmorpg
             switch (infoSplit[0])
             {
                 case "newEvent":
-                    // get jEvent ID and retrieve from Globals_Server
+                    // get jEntry ID and retrieve from Globals_Server
                     if (infoSplit[1] != null)
                     {
-                        JournalEvent newJevent = Globals_Server.pastEvents.events[infoSplit[1]];
+                        double newJentryID = Convert.ToDouble(infoSplit[1]);
+                        JournalEntry newJentry = Globals_Server.pastEvents.entries[newJentryID];
 
                         // check to see if is of interest to player
-                        if (this.checkEventForInterest(newJevent))
+                        if (this.checkEventForInterest(newJentry))
                         {
-                            this.addMyPastEvent(newJevent);
-                            System.Windows.Forms.MessageBox.Show("There is a new event!");
+                            this.addMyPastEvent(newJentry);
                         }
                     }
                     break;
                 default:
                     break;
             }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the viewEntriesToolStripMenuItem
+        /// displaying the journal screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void viewEntriesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // get entries for current season by default
+            uint thisYear = Globals_Server.clock.currentYear;
+            byte thisSeason = Globals_Server.clock.currentSeason;
+            Globals_Client.eventSetToView = Globals_Client.myPastEvents.getEventsOnDate(yr: thisYear, seas: thisSeason);
+
+            Globals_Client.jEntryToView = 0;
+            this.refreshJournalContainer();
         }
 
     }
