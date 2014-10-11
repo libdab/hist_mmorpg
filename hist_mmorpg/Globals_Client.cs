@@ -46,7 +46,11 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds index position of currently displayed entry in eventSetToView
         /// </summary>
-        public static uint jEntryToView;
+        public static int jEntryToView;
+        /// <summary>
+        /// Holds highest index position in eventSetToView
+        /// </summary>
+        public static int jEntryMax;
 
     }
 

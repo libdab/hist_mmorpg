@@ -2458,6 +2458,12 @@ namespace hist_mmorpg
             {
                 this.refreshSiegeContainer(Globals_Client.siegeToView);
             }
+
+            // journal
+            else if (Globals_Client.containerToView == this.journalContainer)
+            {
+                this.refreshJournalContainer(Globals_Client.jEntryToView);
+            }
         }
 
         /// <summary>
@@ -2966,6 +2972,24 @@ namespace hist_mmorpg
                 nameWarning += "\r\nAny children who are not named by the age of one will be named after his highness the king.";
                 System.Windows.Forms.MessageBox.Show(nameWarning);
             }
+        }
+
+        /// <summary>
+        /// Retrieves information for journal display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="indexPosition">The index position of the journal entry to be displayed</param>
+        public string displayJournalEntry(int indexPosition)
+        {
+            string jentryText = "";
+
+            // get journal entry
+            JournalEntry thisJentry = Globals_Client.eventSetToView.ElementAt(indexPosition).Value;
+
+            // get text
+            jentryText = thisJentry.getJournalEntryDetails();
+
+            return jentryText;
         }
 
         /// <summary>
@@ -4101,8 +4125,14 @@ namespace hist_mmorpg
         /// Refreshes main journal display screen
         /// </summary>
         /// <param name="a">JournalEntry to be displayed</param>
-        public void refreshJournalContainer(JournalEntry jEntry = null)
+        public void refreshJournalContainer(int jEntryIndex = -1)
         {
+            // get JournalEntry
+            JournalEntry jEntryPassedIn = null;
+            if ((jEntryIndex >= 0) && (!(jEntryIndex > Globals_Client.jEntryMax)))
+            {
+                jEntryPassedIn = Globals_Client.eventSetToView.ElementAt(jEntryIndex).Value;
+            }
 
             // clear existing information
             this.journalTextBox.Text = "";
@@ -4116,24 +4146,24 @@ namespace hist_mmorpg
             this.journalListView.Items.Clear();
 
             // iterates through journal entries adding information to ListView
-            for (int i = 0; i < Globals_Client.eventSetToView.Count; i++)
+            foreach (KeyValuePair<double, JournalEntry> thisJentry in Globals_Client.eventSetToView)
             {
                 ListViewItem thisEntry = null;
 
                 // jEntryID
-                thisEntry = new ListViewItem(Convert.ToString(Globals_Client.eventSetToView[i].jEntryID));
+                thisEntry = new ListViewItem(Convert.ToString(thisJentry.Value.jEntryID));
 
                 // date
-                string entrySeason = Globals_Server.clock.seasons[Globals_Client.eventSetToView[i].season];
-                thisEntry.SubItems.Add(entrySeason + ", " + Globals_Client.eventSetToView[i].year);
+                string entrySeason = Globals_Server.clock.seasons[thisJentry.Value.season];
+                thisEntry.SubItems.Add(entrySeason + ", " + thisJentry.Value.year);
 
                 // type
-                thisEntry.SubItems.Add(Globals_Client.eventSetToView[i].type);
+                thisEntry.SubItems.Add(thisJentry.Value.type);
 
                 if (thisEntry != null)
                 {
                     // if journal entry passed in as parameter, show as selected
-                    if (Globals_Client.eventSetToView[i] == jEntry)
+                    if (thisJentry.Value == jEntryPassedIn)
                     {
                         thisEntry.Selected = true;
                     }
@@ -4143,6 +4173,9 @@ namespace hist_mmorpg
                 }
 
             }
+
+            // switch off 'unread entries' alert
+            this.setJournalAlert(false);
 
             Globals_Client.containerToView = this.journalContainer;
             Globals_Client.containerToView.BringToFront();
@@ -9730,13 +9763,36 @@ namespace hist_mmorpg
 
             success = Globals_Client.myPastEvents.addNewEntry(jEntry);
 
-            // indicate unread items to player
-            if (Globals_Client.myPastEvents.areNewEntries)
+            // set alert
+            if (success)
             {
-                this.journalToolStripMenuItem.BackColor = Color.GreenYellow;
+                this.setJournalAlert(true);
             }
 
             return success;
+
+        }
+
+        /// <summary>
+        /// Sets the myPastEvents Journal's areNewEntries setting to the appropriate value
+        /// </summary>
+        /// <param name="setAlertTo">The desired bool value</param>
+        public void setJournalAlert(bool setAlertTo)
+        {
+            // set value
+            Globals_Client.myPastEvents.areNewEntries = setAlertTo;
+
+            // set Journal menu BackColor as appropriate
+            if (Globals_Client.myPastEvents.areNewEntries)
+            {
+                // set to alert colour
+                this.journalToolStripMenuItem.BackColor = Color.GreenYellow;
+            }
+            else
+            {
+                // set to default colour
+                this.journalToolStripMenuItem.BackColor = Control.DefaultBackColor;
+            }
 
         }
 
@@ -9751,6 +9807,16 @@ namespace hist_mmorpg
             string[] myEventPersonae = new string[] { Globals_Client.myChar.charID + "|father", Globals_Client.myChar.spouse + "|mother" };
             JournalEntry myEntry = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 0, myEventPersonae, "birth");
             Globals_Server.addPastEvent(myEntry);
+
+            // and another
+            string[] myEventPersonae002 = new string[] { Globals_Client.myChar.charID + "|attackerOwner", "102|defenderOwner", "402|attackerLeader", "403|defenderLeader", Globals_Client.myChar.charID + "|fiefOwner" };
+            JournalEntry myEntry002 = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 0, myEventPersonae002, "battle", "ESX02", "On this day there was a battle between the forces of blah and blah.");
+            Globals_Server.addPastEvent(myEntry002);
+
+            // and another
+            string[] myEventPersonae003 = new string[] { Globals_Client.myChar.charID + "|uncle", "405|father", "406|mother" };
+            JournalEntry myEntry003 = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 0, myEventPersonae003, "birth");
+            Globals_Server.addPastEvent(myEntry003);
         }
 
         /// <summary>
@@ -9795,8 +9861,83 @@ namespace hist_mmorpg
             byte thisSeason = Globals_Server.clock.currentSeason;
             Globals_Client.eventSetToView = Globals_Client.myPastEvents.getEventsOnDate(yr: thisYear, seas: thisSeason);
 
-            Globals_Client.jEntryToView = 0;
+            // get max index position
+            Globals_Client.jEntryMax = Globals_Client.eventSetToView.Count - 1;
+            // set default index position
+            Globals_Client.jEntryToView = -1;
+
+            // display journal screen
             this.refreshJournalContainer();
+        }
+
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of the journalListView
+        /// displaying the selected journal entry
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void journalListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            
+            // get entry
+            if (this.journalListView.SelectedItems.Count > 0)
+            {
+                double jEntryID = Convert.ToDouble(this.journalListView.SelectedItems[0].SubItems[0].Text);
+                Globals_Client.jEntryToView = Globals_Client.eventSetToView.IndexOfKey(jEntryID);
+            }
+
+            // retrieve and display character information
+            this.journalTextBox.Text = this.displayJournalEntry(Globals_Client.jEntryToView);            
+
+            // enable/disable various controls
+        }
+
+        /// <summary>
+        /// Responds to the click event of the journalPrevBtn button
+        /// selecting and displaying the previous journal entry
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void journalPrevBtn_Click(object sender, EventArgs e)
+        {
+            // check if at beginning of index
+            if (Globals_Client.jEntryToView == 0)
+            {
+                System.Windows.Forms.MessageBox.Show("There are no entries prior to this one.");
+            }
+
+            else
+            {
+                // amend index position
+                Globals_Client.jEntryToView--;
+            }
+
+            // refresh journal screen
+            this.refreshJournalContainer(Globals_Client.jEntryToView);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the journalPrevBtn button
+        /// selecting and displaying the next journal entry
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void journalNextBtn_Click(object sender, EventArgs e)
+        {
+            // check if at beginning of index
+            if (Globals_Client.jEntryToView == Globals_Client.jEntryMax)
+            {
+                System.Windows.Forms.MessageBox.Show("There are no entries after this one.");
+            }
+
+            else
+            {
+                // amend index position
+                Globals_Client.jEntryToView++;
+            }
+
+            // refresh journal screen
+            this.refreshJournalContainer(Globals_Client.jEntryToView);
         }
 
     }

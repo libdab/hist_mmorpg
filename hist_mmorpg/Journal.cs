@@ -115,8 +115,6 @@ namespace hist_mmorpg
                 {
                     // add entry
                     this.entries.Add(jEntry.jEntryID, jEntry);
-                    // set areNewEntries to indicate unread entries
-                    this.areNewEntries = true;
                     success = true;
                 }
                 catch (System.ArgumentException ae)
@@ -204,7 +202,7 @@ namespace hist_mmorpg
             entryText += "ID: " + this.jEntryID + "\r\n\r\n";
 
             // year and season
-            entryText += "Date: " + this.season + ", " + this.year + "\r\n\r\n";
+            entryText += "Date: " + Globals_Server.clock.seasons[this.season] + ", " + this.year + "\r\n\r\n";
 
             // type
             entryText += "Type: " + this.type + "\r\n\r\n";
