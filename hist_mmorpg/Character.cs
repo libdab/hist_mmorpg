@@ -97,6 +97,10 @@ namespace hist_mmorpg
         /// </summary>
         public String father { get; set; }
         /// <summary>
+        /// Hold fiance (charID)
+        /// </summary>
+        public string fiance { get; set; }
+        /// <summary>
         /// Holds current location (Fief object)
         /// </summary>
         public Fief location { get; set; }
@@ -137,13 +141,14 @@ namespace hist_mmorpg
         /// <param name="famID">String holding charID of head of family with which character associated</param>
         /// <param name="sp">String holding spouse (ID)</param>
         /// <param name="fath">String holding father</param>
-		/// <param name="loc">Fief holding current location</param>
+        /// <param name="fia">Holds fiance (charID)</param>
+        /// <param name="loc">Fief holding current location</param>
         /// <param name="myTi">List holding character's titles (fiefIDs)</param>
         /// <param name="aID">String holding armyID of army character is leading</param>
         /// <param name="ails">Dictionary<string, Ailment> holding ailments effecting character's health</param>
         public Character(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg,
-            String famID, String sp, String fath, List<String> myTi, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null)
+            String famID, String sp, String fath, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null)
         {
 
             // validation
@@ -244,6 +249,7 @@ namespace hist_mmorpg
             {
                 this.ailments = ails;
             }
+            this.fiance = fia;
         }
 
 		/// <summary>
@@ -303,6 +309,7 @@ namespace hist_mmorpg
                 this.myTitles = charToUse.myTitles;
                 this.armyID = charToUse.armyID;
                 this.ailments = charToUse.ailments;
+                this.fiance = charToUse.fiance;
 			}
 		}
 
@@ -1486,8 +1493,8 @@ namespace hist_mmorpg
         public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
             String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, List<Army> myA,
-            List<string> myS, Dictionary<string, Ailment> ails = null, Fief loc = null, String pID = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, myTi, ails, loc)
+            List<string> myS, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String pID = null)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, myTi, fia, ails, loc)
         {
             this.outlawed = outl;
             this.purse = pur;
@@ -2223,8 +2230,8 @@ namespace hist_mmorpg
         /// <param name="isH">bool denoting if is player's heir</param>
         public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
-            String sp, String fath, uint wa, bool inEnt, bool isH, List<String> myTi, Dictionary<string, Ailment> ails = null, String mb = null, Fief loc = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, myTi, ails, loc)
+            String sp, String fath, uint wa, bool inEnt, bool isH, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, String mb = null, Fief loc = null)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, myTi, fia, ails, loc)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -2621,6 +2628,10 @@ namespace hist_mmorpg
 		/// </summary>
 		public String familyID { get; set; }
         /// <summary>
+        /// Holds chaacter's fiance (charID)
+        /// </summary>
+        public string fiance { get; set; }
+        /// <summary>
         /// Holds character's titles (fiefIDs)
         /// </summary>
         public List<String> myTitles { get; set; }
@@ -2701,6 +2712,7 @@ namespace hist_mmorpg
                 this.myTitles = charToUse.myTitles;
                 this.armyID = charToUse.armyID;
                 this.ailments = charToUse.ailments;
+                this.fiance = charToUse.fiance;
             }
 		}
 

@@ -393,21 +393,21 @@ namespace hist_mmorpg
             List<string> mySieges002 = new List<string>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, loc: myFief1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1);
             Globals_Server.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, loc: myFief7);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7);
             Globals_Server.pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "E", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, 0, false, false, myTitles003, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "E", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "E", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, null, null, null, 10000, true, false, myTitles004, mb: myChar1.charID, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "E", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, null, null, null, 10000, true, false, myTitles004, null, mb: myChar1.charID, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob004, true, "F", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, 10000, false, false, myTitles004, mb: myChar2.charID, loc: myFief6);
+            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob004, true, "F", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, 10000, false, false, myTitles004, null, mb: myChar2.charID, loc: myFief6);
             Globals_Server.npcMasterList.Add(myNPC3.charID, myNPC3);
-            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("404", "Bev", "Bond", myDob005, false, "E", true, 2.50, 9.0, myGoTo5, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "101", "101", null, 30000, false, false, myTitles005, loc: myFief1);
+            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("404", "Bev", "Bond", myDob005, false, "E", true, 2.50, 9.0, myGoTo5, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "101", "101", null, 30000, false, false, myTitles005, null, loc: myFief1);
             Globals_Server.npcMasterList.Add(myChar1Wife.charID, myChar1Wife);
-            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("405", "Horatio", "Dond", myDob006, true, "F", true, 8.50, 6.0, myGoTo6, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "102", "406", "102", 10000, false, false, myTitles006, loc: myFief6);
+            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("405", "Horatio", "Dond", myDob006, true, "F", true, 8.50, 6.0, myGoTo6, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "102", "406", "102", 10000, false, false, myTitles006, null, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2Son.charID, myChar2Son);
-            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob007, false, "E", true, 2.50, 9.0, myGoTo7, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", "405", null, 30000, false, false, myTitles007, loc: myFief6);
+            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob007, false, "E", true, 2.50, 9.0, myGoTo7, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", "405", null, 30000, false, false, myTitles007, null, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2SonWife.charID, myChar2SonWife);
 
             // create and add a scheduled birth
@@ -2661,12 +2661,15 @@ namespace hist_mmorpg
             this.hireNPC_TextBox.Text = "";
             this.hireNPC_TextBox.Enabled = false;
             this.meetingPlaceMoveToBtn.Enabled = false;
-            this.meetingPlaceMoveToTextBox.Enabled = false;
             this.meetingPlaceMoveToTextBox.Text = "";
+            this.meetingPlaceMoveToTextBox.Enabled = false;
             this.meetingPlaceRouteBtn.Enabled = false;
-            this.meetingPlaceRouteTextBox.Enabled = false;
             this.meetingPlaceRouteTextBox.Text = "";
+            this.meetingPlaceRouteTextBox.Enabled = false;
             this.meetingPlaceEntourageBtn.Enabled = false;
+            this.meetingPlaceProposeBtn.Enabled = false;
+            this.meetingPlaceProposeTextBox.Text = "";
+            this.meetingPlaceProposeTextBox.Enabled = false;
 
             // set label
             switch (place)
@@ -2886,7 +2889,7 @@ namespace hist_mmorpg
             // set main character display as read only
             this.houseCharTextBox.ReadOnly = true;
 
-            // ensure unable to use controls whilst no NPC selected in ListView
+            // disable controls until NPC selected in ListView
             this.houseCampBtn.Enabled = false;
             this.houseCampDaysTextBox.Enabled = false;
             this.familyNameChildButton.Enabled = false;
@@ -2906,6 +2909,7 @@ namespace hist_mmorpg
             this.familyNameChildTextBox.Text = "";
             this.houseMoveToTextBox.Text = "";
             this.houseRouteTextBox.Text = "";
+            this.houseProposeBrideTextBox.Text = "";
             
             // clear existing items in characters list
             this.houseCharListView.Items.Clear();
@@ -2963,6 +2967,12 @@ namespace hist_mmorpg
                 }
 
             }
+
+            // always enable marriage proposal controls
+            this.houseProposeBtn.Enabled = true;
+            this.houseProposeBrideTextBox.Enabled = true;
+            this.houseProposeGroomTextBox.Enabled = true;
+            this.houseProposeGroomTextBox.Text = Globals_Client.myChar.charID;
 
             this.houseCharListView.HideSelection = false;
             this.houseCharListView.Focus();
@@ -5027,6 +5037,11 @@ namespace hist_mmorpg
                             this.meetingPlaceRouteTextBox.Enabled = true;
                             this.meetingPlaceEntourageBtn.Enabled = true;
 
+                            // disable marriage proposals
+                            this.meetingPlaceProposeBtn.Enabled = false;
+                            this.meetingPlaceProposeTextBox.Text = "";
+                            this.meetingPlaceProposeTextBox.Enabled = false;
+
                             // if is employee
                             if (((Globals_Client.fiefToView.characters[i] as NonPlayerCharacter).myBoss != null)
                                 && ((Globals_Client.fiefToView.characters[i] as NonPlayerCharacter).myBoss.Equals(Globals_Client.myChar.charID)))
@@ -5059,6 +5074,22 @@ namespace hist_mmorpg
                             this.meetingPlaceRouteBtn.Enabled = false;
                             this.meetingPlaceRouteTextBox.Enabled = false;
                             this.meetingPlaceEntourageBtn.Enabled = false;
+
+                            // checks for enabling marriage proposals
+                            if (((charToDisplay.spouse != null) || (charToDisplay.isMale)) || (charToDisplay.fiance != null))
+                            {
+                                // disable marriage proposals
+                                this.meetingPlaceProposeBtn.Enabled = false;
+                                this.meetingPlaceProposeTextBox.Text = "";
+                                this.meetingPlaceProposeTextBox.Enabled = false;
+                            }
+                            else
+                            {
+                                // enable marriage proposals
+                                this.meetingPlaceProposeBtn.Enabled = true;
+                                this.meetingPlaceProposeTextBox.Text = Globals_Client.myChar.charID;
+                                this.meetingPlaceProposeTextBox.Enabled = true;
+                            }
                         }
                     }
 
@@ -9804,17 +9835,17 @@ namespace hist_mmorpg
         private void addTestJournalEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // create and add a past event
-            string[] myEventPersonae = new string[] { Globals_Client.myChar.charID + "|father", Globals_Client.myChar.spouse + "|mother" };
+            string[] myEventPersonae = new string[] { "101|father", "404|mother" };
             JournalEntry myEntry = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 0, myEventPersonae, "birth");
             Globals_Server.addPastEvent(myEntry);
 
             // and another
-            string[] myEventPersonae002 = new string[] { Globals_Client.myChar.charID + "|attackerOwner", "102|defenderOwner", "402|attackerLeader", "403|defenderLeader", Globals_Client.myChar.charID + "|fiefOwner" };
+            string[] myEventPersonae002 = new string[] { "101|attackerOwner", "102|defenderOwner", "402|attackerLeader", "403|defenderLeader", "101|fiefOwner" };
             JournalEntry myEntry002 = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 0, myEventPersonae002, "battle", "ESX02", "On this day there was a battle between the forces of blah and blah.");
             Globals_Server.addPastEvent(myEntry002);
 
             // and another
-            string[] myEventPersonae003 = new string[] { Globals_Client.myChar.charID + "|uncle", "405|father", "406|mother" };
+            string[] myEventPersonae003 = new string[] { "405|father", "406|mother", "102|familyHead", "101|uncle"};
             JournalEntry myEntry003 = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 0, myEventPersonae003, "birth");
             Globals_Server.addPastEvent(myEntry003);
         }
