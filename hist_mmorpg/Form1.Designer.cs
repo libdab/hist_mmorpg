@@ -121,6 +121,9 @@ namespace hist_mmorpg
             this.fiefsOwnedContainer = new System.Windows.Forms.SplitContainer();
             this.fiefsListView = new System.Windows.Forms.ListView();
             this.meetingPlaceContainer = new System.Windows.Forms.SplitContainer();
+            this.label16 = new System.Windows.Forms.Label();
+            this.meetingPlaceProposeTextBox = new System.Windows.Forms.TextBox();
+            this.meetingPlaceProposeBtn = new System.Windows.Forms.Button();
             this.meetingPlaceEntourageBtn = new System.Windows.Forms.Button();
             this.meetingPlaceRouteTextBox = new System.Windows.Forms.TextBox();
             this.meetingPlaceRouteBtn = new System.Windows.Forms.Button();
@@ -136,6 +139,11 @@ namespace hist_mmorpg
             this.meetingPlaceTextBox = new System.Windows.Forms.TextBox();
             this.meetingPlaceCharsListView = new System.Windows.Forms.ListView();
             this.houseContainer = new System.Windows.Forms.SplitContainer();
+            this.label18 = new System.Windows.Forms.Label();
+            this.houseProposeBrideTextBox = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.houseProposeGroomTextBox = new System.Windows.Forms.TextBox();
+            this.houseProposeBtn = new System.Windows.Forms.Button();
             this.familyNpcSpousePregBtn = new System.Windows.Forms.Button();
             this.houseExamineArmiesBtn = new System.Windows.Forms.Button();
             this.houseFireBtn = new System.Windows.Forms.Button();
@@ -217,14 +225,6 @@ namespace hist_mmorpg
             this.journalPrevBtn = new System.Windows.Forms.Button();
             this.journalTextBox = new System.Windows.Forms.TextBox();
             this.journalListView = new System.Windows.Forms.ListView();
-            this.meetingPlaceProposeBtn = new System.Windows.Forms.Button();
-            this.meetingPlaceProposeTextBox = new System.Windows.Forms.TextBox();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.houseProposeGroomTextBox = new System.Windows.Forms.TextBox();
-            this.houseProposeBtn = new System.Windows.Forms.Button();
-            this.label18 = new System.Windows.Forms.Label();
-            this.houseProposeBrideTextBox = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -1253,6 +1253,32 @@ namespace hist_mmorpg
             this.meetingPlaceContainer.SplitterDistance = 249;
             this.meetingPlaceContainer.TabIndex = 6;
             // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(132, 183);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(104, 13);
+            this.label16.TabIndex = 46;
+            this.label16.Text = "... this family member";
+            // 
+            // meetingPlaceProposeTextBox
+            // 
+            this.meetingPlaceProposeTextBox.Location = new System.Drawing.Point(132, 203);
+            this.meetingPlaceProposeTextBox.Name = "meetingPlaceProposeTextBox";
+            this.meetingPlaceProposeTextBox.Size = new System.Drawing.Size(100, 20);
+            this.meetingPlaceProposeTextBox.TabIndex = 45;
+            // 
+            // meetingPlaceProposeBtn
+            // 
+            this.meetingPlaceProposeBtn.Location = new System.Drawing.Point(15, 176);
+            this.meetingPlaceProposeBtn.Name = "meetingPlaceProposeBtn";
+            this.meetingPlaceProposeBtn.Size = new System.Drawing.Size(111, 53);
+            this.meetingPlaceProposeBtn.TabIndex = 44;
+            this.meetingPlaceProposeBtn.Tag = "court";
+            this.meetingPlaceProposeBtn.Text = "Propose Marriage Between Selected Person And ...";
+            this.meetingPlaceProposeBtn.UseVisualStyleBackColor = true;
+            // 
             // meetingPlaceEntourageBtn
             // 
             this.meetingPlaceEntourageBtn.Location = new System.Drawing.Point(15, 120);
@@ -1449,6 +1475,49 @@ namespace hist_mmorpg
             this.houseContainer.Size = new System.Drawing.Size(935, 637);
             this.houseContainer.SplitterDistance = 259;
             this.houseContainer.TabIndex = 7;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(129, 340);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(91, 13);
+            this.label18.TabIndex = 51;
+            this.label18.Text = "... and this person";
+            // 
+            // houseProposeBrideTextBox
+            // 
+            this.houseProposeBrideTextBox.Location = new System.Drawing.Point(129, 360);
+            this.houseProposeBrideTextBox.Name = "houseProposeBrideTextBox";
+            this.houseProposeBrideTextBox.Size = new System.Drawing.Size(100, 20);
+            this.houseProposeBrideTextBox.TabIndex = 50;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(131, 291);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(104, 13);
+            this.label17.TabIndex = 49;
+            this.label17.Text = "... this family member";
+            // 
+            // houseProposeGroomTextBox
+            // 
+            this.houseProposeGroomTextBox.Location = new System.Drawing.Point(131, 311);
+            this.houseProposeGroomTextBox.Name = "houseProposeGroomTextBox";
+            this.houseProposeGroomTextBox.Size = new System.Drawing.Size(100, 20);
+            this.houseProposeGroomTextBox.TabIndex = 48;
+            // 
+            // houseProposeBtn
+            // 
+            this.houseProposeBtn.Location = new System.Drawing.Point(10, 288);
+            this.houseProposeBtn.Name = "houseProposeBtn";
+            this.houseProposeBtn.Size = new System.Drawing.Size(111, 92);
+            this.houseProposeBtn.TabIndex = 47;
+            this.houseProposeBtn.Tag = "court";
+            this.houseProposeBtn.Text = "Propose Marriage Between ...";
+            this.houseProposeBtn.UseVisualStyleBackColor = true;
+            this.houseProposeBtn.Click += new System.EventHandler(this.houseProposeBtn_Click);
             // 
             // familyNpcSpousePregBtn
             // 
@@ -2312,74 +2381,6 @@ namespace hist_mmorpg
             this.journalListView.UseCompatibleStateImageBehavior = false;
             this.journalListView.View = System.Windows.Forms.View.Details;
             this.journalListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.journalListView_ItemSelectionChanged);
-            // 
-            // meetingPlaceProposeBtn
-            // 
-            this.meetingPlaceProposeBtn.Location = new System.Drawing.Point(15, 176);
-            this.meetingPlaceProposeBtn.Name = "meetingPlaceProposeBtn";
-            this.meetingPlaceProposeBtn.Size = new System.Drawing.Size(111, 53);
-            this.meetingPlaceProposeBtn.TabIndex = 44;
-            this.meetingPlaceProposeBtn.Tag = "court";
-            this.meetingPlaceProposeBtn.Text = "Propose Marriage Between Selected Person And ...";
-            this.meetingPlaceProposeBtn.UseVisualStyleBackColor = true;
-            // 
-            // meetingPlaceProposeTextBox
-            // 
-            this.meetingPlaceProposeTextBox.Location = new System.Drawing.Point(132, 203);
-            this.meetingPlaceProposeTextBox.Name = "meetingPlaceProposeTextBox";
-            this.meetingPlaceProposeTextBox.Size = new System.Drawing.Size(100, 20);
-            this.meetingPlaceProposeTextBox.TabIndex = 45;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(132, 183);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(104, 13);
-            this.label16.TabIndex = 46;
-            this.label16.Text = "... this family member";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(131, 291);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(104, 13);
-            this.label17.TabIndex = 49;
-            this.label17.Text = "... this family member";
-            // 
-            // houseProposeGroomTextBox
-            // 
-            this.houseProposeGroomTextBox.Location = new System.Drawing.Point(131, 311);
-            this.houseProposeGroomTextBox.Name = "houseProposeGroomTextBox";
-            this.houseProposeGroomTextBox.Size = new System.Drawing.Size(100, 20);
-            this.houseProposeGroomTextBox.TabIndex = 48;
-            // 
-            // houseProposeBtn
-            // 
-            this.houseProposeBtn.Location = new System.Drawing.Point(10, 288);
-            this.houseProposeBtn.Name = "houseProposeBtn";
-            this.houseProposeBtn.Size = new System.Drawing.Size(111, 92);
-            this.houseProposeBtn.TabIndex = 47;
-            this.houseProposeBtn.Tag = "court";
-            this.houseProposeBtn.Text = "Propose Marriage Between ...";
-            this.houseProposeBtn.UseVisualStyleBackColor = true;
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(129, 340);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(91, 13);
-            this.label18.TabIndex = 51;
-            this.label18.Text = "... and this person";
-            // 
-            // houseProposeBrideTextBox
-            // 
-            this.houseProposeBrideTextBox.Location = new System.Drawing.Point(129, 360);
-            this.houseProposeBrideTextBox.Name = "houseProposeBrideTextBox";
-            this.houseProposeBrideTextBox.Size = new System.Drawing.Size(100, 20);
-            this.houseProposeBrideTextBox.TabIndex = 50;
             // 
             // Form1
             // 

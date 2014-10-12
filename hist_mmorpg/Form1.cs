@@ -353,6 +353,11 @@ namespace hist_mmorpg
 			Queue<Fief> myGoTo5 = new Queue<Fief>();
             Queue<Fief> myGoTo6 = new Queue<Fief>();
             Queue<Fief> myGoTo7 = new Queue<Fief>();
+            Queue<Fief> myGoTo8 = new Queue<Fief>();
+            Queue<Fief> myGoTo9 = new Queue<Fief>();
+            Queue<Fief> myGoTo10 = new Queue<Fief>();
+            Queue<Fief> myGoTo11 = new Queue<Fief>();
+            Queue<Fief> myGoTo12 = new Queue<Fief>();
 
 			// add some goTo entries for myChar1
 			//myGoTo1.Enqueue (myFief2);
@@ -367,13 +372,18 @@ namespace hist_mmorpg
 			List<Fief> myFiefsOwned2 = new List<Fief>();
 
             // create DOBs for characters
-            Tuple<uint, byte> myDob001 = new Tuple<uint, byte>(1290, 1);
+            Tuple<uint, byte> myDob001 = new Tuple<uint, byte>(1287, 1);
             Tuple<uint, byte> myDob002 = new Tuple<uint, byte>(1260, 0);
             Tuple<uint, byte> myDob003 = new Tuple<uint, byte>(1278, 2);
             Tuple<uint, byte> myDob004 = new Tuple<uint, byte>(1295, 3);
-            Tuple<uint, byte> myDob005 = new Tuple<uint, byte>(1288, 2);
-            Tuple<uint, byte> myDob006 = new Tuple<uint, byte>(1285, 3);
-            Tuple<uint, byte> myDob007 = new Tuple<uint, byte>(1287, 2);
+            Tuple<uint, byte> myDob005 = new Tuple<uint, byte>(1293, 2);
+            Tuple<uint, byte> myDob006 = new Tuple<uint, byte>(1285, 2);
+            Tuple<uint, byte> myDob007 = new Tuple<uint, byte>(1285, 3);
+            Tuple<uint, byte> myDob008 = new Tuple<uint, byte>(1307, 2);
+            Tuple<uint, byte> myDob009 = new Tuple<uint, byte>(1305, 0);
+            Tuple<uint, byte> myDob010 = new Tuple<uint, byte>(1305, 0);
+            Tuple<uint, byte> myDob011 = new Tuple<uint, byte>(1302, 1);
+            Tuple<uint, byte> myDob012 = new Tuple<uint, byte>(1303, 3);
 
             // create titles list for characters
             List<String> myTitles001 = new List<string>();
@@ -383,6 +393,11 @@ namespace hist_mmorpg
             List<String> myTitles005 = new List<string>();
             List<String> myTitles006 = new List<string>();
             List<String> myTitles007 = new List<string>();
+            List<String> myTitles008 = new List<string>();
+            List<String> myTitles009 = new List<string>();
+            List<String> myTitles010 = new List<string>();
+            List<String> myTitles011 = new List<string>();
+            List<String> myTitles012 = new List<string>();
 
             // create armies list for PCs
             List<Army> myArmies001 = new List<Army>();
@@ -401,14 +416,22 @@ namespace hist_mmorpg
             Globals_Server.npcMasterList.Add(myNPC1.charID, myNPC1);
             NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "E", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, null, null, null, 10000, true, false, myTitles004, null, mb: myChar1.charID, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob004, true, "F", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, 10000, false, false, myTitles004, null, mb: myChar2.charID, loc: myFief6);
+            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob005, true, "F", true, 8.50, 6.0, myGoTo5, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, 10000, false, false, myTitles005, null, mb: myChar2.charID, loc: myFief6);
             Globals_Server.npcMasterList.Add(myNPC3.charID, myNPC3);
-            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("404", "Bev", "Bond", myDob005, false, "E", true, 2.50, 9.0, myGoTo5, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "101", "101", null, 30000, false, false, myTitles005, null, loc: myFief1);
+            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("404", "Bev", "Bond", myDob006, false, "E", true, 2.50, 9.0, myGoTo6, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "101", "101", null, 30000, false, false, myTitles006, null, loc: myFief1);
             Globals_Server.npcMasterList.Add(myChar1Wife.charID, myChar1Wife);
-            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("405", "Horatio", "Dond", myDob006, true, "F", true, 8.50, 6.0, myGoTo6, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "102", "406", "102", 10000, false, false, myTitles006, null, loc: myFief6);
+            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("405", "Horatio", "Dond", myDob007, true, "F", true, 8.50, 6.0, myGoTo7, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "102", "406", "102", 10000, false, true, myTitles007, null, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2Son.charID, myChar2Son);
-            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob007, false, "E", true, 2.50, 9.0, myGoTo7, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", "405", null, 30000, false, false, myTitles007, null, loc: myFief6);
+            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob008, false, "E", true, 2.50, 9.0, myGoTo8, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", "405", null, 30000, false, false, myTitles008, null, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2SonWife.charID, myChar2SonWife);
+            NonPlayerCharacter myChar1Son = new NonPlayerCharacter("407", "Rickie", "Bond", myDob009, true, "E", true, 2.50, 9.0, myGoTo9, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", 30000, false, true, myTitles009, null, loc: myFief1);
+            Globals_Server.npcMasterList.Add(myChar1Son.charID, myChar1Son);
+            NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("408", "Elsie", "Bond", myDob010, false, "E", true, 2.50, 9.0, myGoTo10, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", 30000, false, false, myTitles010, null, loc: myFief1);
+            Globals_Server.npcMasterList.Add(myChar1Daughter.charID, myChar1Daughter);
+            NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("409", "Wayne", "Dond", myDob011, true, "F", true, 2.50, 9.0, myGoTo11, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", 30000, false, false, myTitles011, null, loc: myFief6);
+            Globals_Server.npcMasterList.Add(myChar2Son2.charID, myChar2Son2);
+            NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("410", "Esmerelda", "Dond", myDob012, false, "F", true, 2.50, 9.0, myGoTo12, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", 30000, false, false, myTitles012, null, loc: myFief6);
+            Globals_Server.npcMasterList.Add(myChar2Daughter.charID, myChar2Daughter);
 
             // create and add a scheduled birth
             string[] birthPersonae = new string[] { myChar1Wife.charID + "|mother", myChar1Wife.spouse + "|father" };
@@ -424,6 +447,10 @@ namespace hist_mmorpg
             myChar1Wife.days = myChar1Wife.getDaysAllowance();
             myChar2Son.days = myChar2Son.getDaysAllowance();
             myChar2SonWife.days = myChar2SonWife.getDaysAllowance();
+            myChar1Son.days = myChar1Son.getDaysAllowance();
+            myChar1Daughter.days = myChar1Daughter.getDaysAllowance();
+            myChar2Son2.days = myChar2Son2.getDaysAllowance();
+            myChar2Daughter.days = myChar2Daughter.getDaysAllowance();
 
             // set fief owners
 			myFief1.owner = myChar1;
@@ -480,12 +507,15 @@ namespace hist_mmorpg
 			myChar1.addToEntourage(myNPC2);
             // give player a wife
             myChar1.spouse = myChar1Wife.charID;
-            // add wife to myNPCs
-            myChar1.myNPCs.Add(myChar1Wife);
             // add NPC to employees/family
+            myChar1.myNPCs.Add(myChar1Wife);
+            myChar1.myNPCs.Add(myChar1Son);
+            myChar1.myNPCs.Add(myChar1Daughter);
             myChar2.hireNPC(myNPC3, 10000);
             myChar2.myNPCs.Add(myChar2Son);
             myChar2.myNPCs.Add(myChar2SonWife);
+            myChar2.myNPCs.Add(myChar2Son2);
+            myChar2.myNPCs.Add(myChar2Daughter);
 
 			// Add fiefs to list of fiefs owned 
 			myChar1.addToOwnedFiefs(myFief1);
@@ -500,11 +530,15 @@ namespace hist_mmorpg
 			myFief1.addCharacter(myChar1);
 			myFief1.addCharacter(myChar2);
 			myFief1.addCharacter(myNPC1);
-			myFief1.addCharacter(myNPC2);
+            myFief1.addCharacter(myNPC2);
+            myFief1.addCharacter(myChar1Son);
+            myFief1.addCharacter(myChar1Daughter);
             myFief6.addCharacter(myNPC3);
             myFief1.addCharacter(myChar1Wife);
             myFief6.addCharacter(myChar2Son);
             myFief6.addCharacter(myChar2SonWife);
+            myFief6.addCharacter(myChar2Son2);
+            myFief6.addCharacter(myChar2Daughter);
 
             // create and add ailment
             Ailment myAilment1 = new Ailment(Globals_Server.getNextAilmentID(), "Battlefield injury", Globals_Server.clock.seasons[Globals_Server.clock.currentSeason] + ", " + Globals_Server.clock.currentYear, 3, 1);
@@ -529,6 +563,10 @@ namespace hist_mmorpg
             Globals_Server.battleProbabilities.Add("battle", bChance);
             double[] pChance = new double[] { 10, 20, 30, 40, 50, 60 };
             Globals_Server.battleProbabilities.Add("pillage", pChance);
+
+            // populate Globals_Server.jEntryPriorities
+            string[] thisKey = {"proposalMade", "playerTo"};
+            Globals_Server.jEntryPriorities.Add(thisKey, 2);
 
             // create an army and add in appropriate places
             uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 200, 400};
@@ -607,6 +645,7 @@ namespace hist_mmorpg
 			this.writeDictionary(gameID, "combatValues", Globals_Server.combatValues);
 			this.writeDictionary(gameID, "recruitRatios", Globals_Server.recruitRatios);
 			this.writeDictionary(gameID, "battleProbabilities", Globals_Server.battleProbabilities);
+            this.writeDictionary(gameID, "jEntryPriorities", Globals_Server.jEntryPriorities);
 
             // ========= write JOURNALS
             this.writeJournal(gameID, "serverScheduledEvents", Globals_Server.scheduledEvents);
@@ -855,7 +894,8 @@ namespace hist_mmorpg
 			Globals_Server.combatValues = this.initialDBload_dictUint(gameID, "combatValues");
 			Globals_Server.recruitRatios = this.initialDBload_dictDouble(gameID, "recruitRatios");
 			Globals_Server.battleProbabilities = this.initialDBload_dictDouble(gameID, "battleProbabilities");
-
+            Globals_Server.jEntryPriorities = this.initialDBload_dictString(gameID, "jEntryPriorities");
+            
             // ========= load JOURNALS
             Globals_Server.scheduledEvents = this.initialDBload_journal(gameID, "serverScheduledEvents");
             Globals_Server.pastEvents = this.initialDBload_journal(gameID, "serverPastEvents");
@@ -1161,7 +1201,30 @@ namespace hist_mmorpg
 			return newDict;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Loads Dictionary<string, byte> from database
+        /// </summary>
+        /// <returns>Dictionary<string, byte> object</returns>
+        /// <param name="gameID">Game for which Dictionary to be retrieved</param>
+        /// <param name="dictID">ID of Dictionary to be retrieved</param>
+        public Dictionary<string[], byte> initialDBload_dictString(String gameID, String dictID)
+        {
+            var dictResult = rClient.Get(gameID, dictID);
+            var newDict = new Dictionary<string[], byte>();
+
+            if (dictResult.IsSuccess)
+            {
+                newDict = dictResult.Value.GetObject<Dictionary<string[], byte>>();
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Dictionary " + dictID);
+            }
+
+            return newDict;
+        }
+
+        /// <summary>
 		/// Loads Dictionary<string, double[]> from database
 		/// </summary>
 		/// <returns>Dictionary<string, double[]> object</returns>
@@ -9761,29 +9824,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Check to see if a JournalEntry is of interest to the player
-        /// </summary>
-        /// <returns>bool indicating whether the JournalEntry is of interest</returns>
-        /// <param name="jEntry">The JournalEntry</param>
-        public bool checkEventForInterest(JournalEntry jEntry)
-        {
-            bool isOfInterest = false;
-
-            for (int i = 0; i < jEntry.personae.Length; i++)
-            {
-                string thisPersonae = jEntry.personae[i];
-                string[] thisPersonaeSplit = thisPersonae.Split('|');
-                if (thisPersonaeSplit[0].Equals(Globals_Client.myChar.charID))
-                {
-                    isOfInterest = true;
-                    break;
-                }
-            }
-
-            return isOfInterest;
-        }
-
-        /// <summary>
         /// Adds a new JournalEntry to the myPastEvents Journal
         /// </summary>
         /// <returns>bool indicating success</returns>
@@ -9791,13 +9831,17 @@ namespace hist_mmorpg
         public bool addMyPastEvent(JournalEntry jEntry)
         {
             bool success = false;
+            byte priority = 0;
 
             success = Globals_Client.myPastEvents.addNewEntry(jEntry);
 
-            // set alert
             if (success)
             {
-                this.setJournalAlert(true);
+                // check for entry priority
+                priority = jEntry.checkEventForPriority();
+
+                // set alert
+                this.setJournalAlert(true, priority);
             }
 
             return success;
@@ -9806,23 +9850,48 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Sets the myPastEvents Journal's areNewEntries setting to the appropriate value
+        /// and sets the journal menu alert to the desired priority
         /// </summary>
-        /// <param name="setAlertTo">The desired bool value</param>
-        public void setJournalAlert(bool setAlertTo)
+        /// <param name="setAlert">The desired bool value</param>
+        /// <param name="newPriority">The desired priority</param>
+        public void setJournalAlert(bool setAlert, byte newPriority = 0)
         {
-            // set value
-            Globals_Client.myPastEvents.areNewEntries = setAlertTo;
-
-            // set Journal menu BackColor as appropriate
-            if (Globals_Client.myPastEvents.areNewEntries)
+            // set Journal menu alert (BackColor) and priority as appropriate
+            if (!setAlert)
             {
-                // set to alert colour
-                this.journalToolStripMenuItem.BackColor = Color.GreenYellow;
+                // if no new entries, set to default colour
+                this.journalToolStripMenuItem.BackColor = Control.DefaultBackColor;
+                // set journal priority
+                Globals_Client.myPastEvents.priority = 0;
             }
             else
             {
-                // set to default colour
-                this.journalToolStripMenuItem.BackColor = Control.DefaultBackColor;
+                // only change alert colour if new priority higher than current
+                if (Globals_Client.myPastEvents.priority < newPriority)
+                {
+                    // set journal priority
+                    Globals_Client.myPastEvents.priority = newPriority;
+
+                    // set to appropriate alert colour
+                    switch (newPriority)
+                    {
+                        case 1:
+                            this.journalToolStripMenuItem.BackColor = Color.Orange;
+                            break;
+                        case 2:
+                            this.journalToolStripMenuItem.BackColor = Color.Red;
+                            break;
+                        default:
+                            this.journalToolStripMenuItem.BackColor = Color.GreenYellow;
+                            break;
+                    }
+                }
+            }
+
+            // set areNewEntries value
+            if (Globals_Client.myPastEvents.areNewEntries != setAlert)
+            {
+                Globals_Client.myPastEvents.areNewEntries = setAlert;
             }
 
         }
@@ -9868,7 +9937,7 @@ namespace hist_mmorpg
                         JournalEntry newJentry = Globals_Server.pastEvents.entries[newJentryID];
 
                         // check to see if is of interest to player
-                        if (this.checkEventForInterest(newJentry))
+                        if (newJentry.checkEventForInterest())
                         {
                             this.addMyPastEvent(newJentry);
                         }
@@ -9969,6 +10038,242 @@ namespace hist_mmorpg
 
             // refresh journal screen
             this.refreshJournalContainer(Globals_Client.jEntryToView);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the houseProposeBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void houseProposeBtn_Click(object sender, EventArgs e)
+        {
+            bool proceed = true;
+
+            // get bride and groom IDs
+            Character bride = null;
+            Character groom = null;
+            string brideID = this.houseProposeBrideTextBox.Text;
+            string groomID = this.houseProposeGroomTextBox.Text;
+
+            // get bride
+            if (Globals_Server.npcMasterList.ContainsKey(brideID))
+            {
+                bride = Globals_Server.npcMasterList[brideID];
+            }
+
+            if (bride == null)
+            {
+                System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
+            }
+            else
+            {
+                // get groom
+                if (Globals_Server.npcMasterList.ContainsKey(groomID))
+                {
+                    groom = Globals_Server.npcMasterList[groomID];
+                }
+                else if (Globals_Server.pcMasterList.ContainsKey(groomID))
+                {
+                    groom = Globals_Server.pcMasterList[groomID];
+                }
+
+                if (groom == null)
+                {
+                    System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                }
+                else
+                {
+                    // carry out conditional checks
+                    proceed = this.checksBeforeProposal(bride, groom);
+
+                    // if checks OK, process proposal
+                    if (proceed)
+                    {
+                        this.proposeMarriage(bride, groom);
+                    }
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Allows a character to propose marriage between himself, or a male family member,
+        /// and a female family member of another player
+        /// </summary>
+        /// <returns>bool indicating whether proposal was processed successfully</returns>
+        /// <param name="bride">The prospective bride</param>
+        /// <param name="groom">The prospective groom</param>
+        public bool proposeMarriage(Character bride, Character groom)
+        {
+            bool success = true;
+
+            // ID
+            double proposalID = Globals_Server.getNextJournalEntryID();
+
+            // date
+            uint year = Globals_Server.clock.currentYear;
+            byte season = Globals_Server.clock.currentSeason;
+
+            // personae
+            string playerFromID = Globals_Client.myChar.charID + "|playerFrom";
+            string playerToID = bride.familyID + "|playerTo";
+            string thisBrideID = bride.charID + "|bride";
+            string thisGroomID = groom.charID + "|groom";
+            string[] myProposalPersonae = new string[] { playerFromID, playerToID, thisBrideID, thisGroomID };
+
+
+            // get interested parties
+            PlayerCharacter playerFrom = Globals_Server.pcMasterList[playerFromID];
+            PlayerCharacter playerTo = Globals_Server.pcMasterList[playerToID];
+
+            // description
+            string description = "On this day of Our Lord a proposal has been made by ";
+            description += playerFrom.firstName + " " + playerFrom.familyName + " to ";
+            description += playerTo.firstName + " " + playerTo.familyName + " that ";
+            if (playerFromID.Equals(thisGroomID))
+            {
+                description += "he";
+            }
+            else
+            {
+                description += groom.firstName + " " + groom.familyName;
+            }
+            description += " be betrothed to " + bride.firstName + " " + bride.familyName;
+
+            // create and send a marriage proposal (journal entry)
+            JournalEntry myProposal = new JournalEntry(proposalID, year, season, myProposalPersonae, "proposalMade", descr: description);
+            success = Globals_Server.addPastEvent(myProposal);
+
+            return success;
+        }
+
+        /// <summary>
+        /// Implements conditional checks prior to a marriage proposal
+        /// </summary>
+        /// <returns>bool indicating whether proposal can proceed</returns>
+        /// <param name="bride">The prospective bride</param>
+        /// <param name="groom">The prospective groom</param>
+        public bool checksBeforeProposal(Character bride, Character groom)
+        {
+            bool proceed = true;
+            string message = "";
+
+            // ============= BRIDE
+            // check is female
+            if (bride.isMale)
+            {
+                message = "You cannot propose to a man!";
+                proceed = false;
+            }
+
+            // check is of age
+            else
+            {
+                if (bride.calcCharAge() < 14)
+                {
+                    message = "The prospective bride has yet to come of age.";
+                    proceed = false;
+                }
+
+                else
+                {
+                    // check isn't engaged
+                    if (bride.fiance != null)
+                    {
+                        message = "The prospective bride is already engaged.";
+                        proceed = false;
+                    }
+
+                    else
+                    {
+                        // check isn't married
+                        if (bride.spouse != null)
+                        {
+                            message = "The prospective bride is already married.";
+                            proceed = false;
+                        }
+                        else
+                        {
+                            // check is family member of player
+                            if (bride.familyID == null)
+                            {
+                                message = "The prospective bride is not of a suitable family.";
+                                proceed = false;
+                            }
+                            else
+                            {
+                                // ============= GROOM
+                                // check is male
+                                if (!groom.isMale)
+                                {
+                                    message = "The proposer must be a man.";
+                                    proceed = false;
+                                }
+                                else
+                                {
+                                    // check is of age
+                                    if (groom.calcCharAge() < 14)
+                                    {
+                                        message = "The prospective groom has yet to come of age.";
+                                        proceed = false;
+                                    }
+                                    else
+                                    {
+                                        // check is unmarried
+                                        if (groom.spouse != null)
+                                        {
+                                            message = "The prospective groom is already married.";
+                                            proceed = false;
+                                        }
+                                        else
+                                        {
+                                            // check isn't engaged
+                                            if (groom.fiance != null)
+                                            {
+                                                message = "The prospective groom is already engaged.";
+                                                proceed = false;
+                                            }
+                                            else
+                                            {
+                                                // check is family member of player OR is player themself
+                                                if (groom.familyID == null)
+                                                {
+                                                    message = "The prospective groom is not of a suitable family.";
+                                                    proceed = false;
+                                                }
+                                                else
+                                                {
+                                                    // check isn't in family same family as bride
+                                                    if (groom.familyID == bride.familyID)
+                                                    {
+                                                        message = "The prospective bride and groom are in the same family!";
+                                                        proceed = false;
+                                                    }
+                                                }
+
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+
+            if (!proceed)
+            {
+                System.Windows.Forms.MessageBox.Show(message);
+            }
+
+            return proceed;
         }
 
     }

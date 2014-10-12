@@ -316,10 +316,10 @@ namespace hist_mmorpg
         /// <summary>
         /// Calculates character's age
         /// </summary>
-        /// <returns>byte containing character's age</returns>
-        public byte calcCharAge()
+        /// <returns>int containing character's age</returns>
+        public int calcCharAge()
         {
-            byte myAge = 0;
+            int myAge = 0;
 
             // subtract year of birth from current year
             myAge = Convert.ToByte(Globals_Server.clock.currentYear - this.birthDate.Item1);
@@ -1061,7 +1061,7 @@ namespace hist_mmorpg
                     double pregModifier = 0;
 
                     // spouse's age
-                    byte spouseAge = wife.calcCharAge();
+                    int spouseAge = wife.calcCharAge();
 
                     // calculate base chance of pregnancy, based on age of spouse
                     if ((!(spouseAge < 14)) && (!(spouseAge > 55)))

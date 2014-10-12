@@ -166,6 +166,12 @@ namespace hist_mmorpg
         /// Value = percentage likelihood of battle occurring
         /// </summary>
         public static Dictionary<string, double[]> battleProbabilities = new Dictionary<string, double[]>();
+        /// <summary>
+        /// Holds priorities for types of JournalEntry
+        /// Key = JournalEntry type
+        /// Value = 0-2 byte indicating priority level
+        /// </summary>
+        public static Dictionary<string[], byte> jEntryPriorities = new Dictionary<string[], byte>();
 
         /// <summary>
         /// Gets the next available newCharID, then increments it

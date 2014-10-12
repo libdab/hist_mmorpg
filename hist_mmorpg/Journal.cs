@@ -15,9 +15,13 @@ namespace hist_mmorpg
         /// </summary>
         public SortedList<double, JournalEntry> entries = new SortedList<double, JournalEntry>();
         /// <summary>
-        /// Indicated presence of new (unread) entries
+        /// Indicates presence of new (unread) entries
         /// </summary>
         public bool areNewEntries = false;
+        /// <summary>
+        /// Priority level of new (unread) entries
+        /// </summary>
+        public byte priority = 0;
 
         /// <summary>
         /// Constructor for Journal
@@ -248,6 +252,65 @@ namespace hist_mmorpg
             }
 
             return entryText;
+        }
+
+        /// <summary>
+        /// Check the level of priority for the JournalEntry
+        /// </summary>
+        /// <returns>byte indicating the level of priority</returns>
+        /// <param name="jEntry">The JournalEntry</param>
+        public byte checkEventForPriority()
+        {
+            byte priority = 0;
+
+            // get player's role
+            string thisRole = "";
+            for (int i = 0; i < this.personae.Length; i++)
+            {
+                string[] personaeSplit = this.personae[i].Split('|');
+                if (personaeSplit[0].Equals(Globals_Client.myChar.charID))
+                {
+                    // if player made proposal, reduce priority
+                    thisRole = personaeSplit[1];
+                }
+            }
+
+            // get priority
+            foreach (KeyValuePair <string[], byte> priorityEntry in Globals_Server.jEntryPriorities)
+            {
+                if (priorityEntry.Key[0] == this.type)
+                {
+                    // if player made proposal, reduce priority
+                    if (thisRole.Equals(priorityEntry.Key[1]))
+                    {
+                        priority = priorityEntry.Value;
+                    }
+                }
+            }
+
+            return priority;
+        }
+
+        /// <summary>
+        /// Check to see if the JournalEntry is of interest to the player
+        /// </summary>
+        /// <returns>bool indicating whether the JournalEntry is of interest</returns>
+        public bool checkEventForInterest()
+        {
+            bool isOfInterest = false;
+
+            for (int i = 0; i < this.personae.Length; i++)
+            {
+                string thisPersonae = this.personae[i];
+                string[] thisPersonaeSplit = thisPersonae.Split('|');
+                if (thisPersonaeSplit[0].Equals(Globals_Client.myChar.charID))
+                {
+                    isOfInterest = true;
+                    break;
+                }
+            }
+
+            return isOfInterest;
         }
 
     }
