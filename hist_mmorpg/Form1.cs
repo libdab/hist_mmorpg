@@ -2897,17 +2897,21 @@ namespace hist_mmorpg
                 }
 
                 // allocate NPC type
+                if ((isFamily) || (isEmployee))
+                {
+                    myType = "My ";
+                }
                 if ((isFamily) && (isEmployee))
                 {
-                    myType = "Family & Employee";
+                    myType += "Family & Employee";
                 }
                 else if (isFamily)
                 {
-                    myType = "Family";
+                    myType += "Family";
                 }
                 else if (isEmployee)
                 {
-                    myType = "Employee";
+                    myType += "Employee";
                 }
                 else
                 {
@@ -9867,7 +9871,7 @@ namespace hist_mmorpg
             else
             {
                 // only change alert colour if new priority higher than current
-                if (Globals_Client.myPastEvents.priority < newPriority)
+                if (newPriority >= Globals_Client.myPastEvents.priority)
                 {
                     // set journal priority
                     Globals_Client.myPastEvents.priority = newPriority;
@@ -9989,7 +9993,11 @@ namespace hist_mmorpg
             // retrieve and display character information
             this.journalTextBox.Text = this.displayJournalEntry(Globals_Client.jEntryToView);            
 
-            // enable/disable various controls
+            // check if marriage proposal controls should be enabled
+            JournalEntry thisJentry = Globals_Client.eventSetToView.ElementAt(Globals_Client.jEntryToView).Value;
+            bool enableProposalControls = thisJentry.checkForProposalControlsEnabled();
+            this.journalProposalAcceptBtn.Enabled = enableProposalControls;
+            this.journalProposalRejectBtn.Enabled = enableProposalControls;
         }
 
         /// <summary>
@@ -10049,51 +10057,69 @@ namespace hist_mmorpg
         {
             bool proceed = true;
 
-            // get bride and groom IDs
             Character bride = null;
             Character groom = null;
-            string brideID = this.houseProposeBrideTextBox.Text;
-            string groomID = this.houseProposeGroomTextBox.Text;
+            string brideID = "";
+            string groomID = "";
 
-            // get bride
-            if (Globals_Server.npcMasterList.ContainsKey(brideID))
-            {
-                bride = Globals_Server.npcMasterList[brideID];
-            }
-
-            if (bride == null)
+            if (this.houseProposeBrideTextBox.Text.Trim() == "")
             {
                 System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
             }
+            else if (this.houseProposeGroomTextBox.Text.Trim() == "")
+            {
+                System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+            }
             else
             {
-                // get groom
-                if (Globals_Server.npcMasterList.ContainsKey(groomID))
+                // get bride and groom IDs
+                brideID = this.houseProposeBrideTextBox.Text;
+                groomID = this.houseProposeGroomTextBox.Text;
+
+                // get bride
+                if (Globals_Server.npcMasterList.ContainsKey(brideID))
                 {
-                    groom = Globals_Server.npcMasterList[groomID];
-                }
-                else if (Globals_Server.pcMasterList.ContainsKey(groomID))
-                {
-                    groom = Globals_Server.pcMasterList[groomID];
+                    bride = Globals_Server.npcMasterList[brideID];
                 }
 
-                if (groom == null)
+                if (bride == null)
                 {
-                    System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                    System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
                 }
                 else
                 {
-                    // carry out conditional checks
-                    proceed = this.checksBeforeProposal(bride, groom);
-
-                    // if checks OK, process proposal
-                    if (proceed)
+                    // get groom
+                    if (Globals_Server.npcMasterList.ContainsKey(groomID))
                     {
-                        this.proposeMarriage(bride, groom);
+                        groom = Globals_Server.npcMasterList[groomID];
                     }
-                }
+                    else if (Globals_Server.pcMasterList.ContainsKey(groomID))
+                    {
+                        groom = Globals_Server.pcMasterList[groomID];
+                    }
 
+                    if (groom == null)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                    }
+                    else
+                    {
+                        // carry out conditional checks
+                        proceed = this.checksBeforeProposal(bride, groom);
+
+                        // if checks OK, process proposal
+                        if (proceed)
+                        {
+                            this.proposeMarriage(bride, groom);
+
+                            // refresh screen
+                            this.refreshCurrentScreen();
+                        }
+                    }
+
+                }
             }
+
         }
 
         /// <summary>
@@ -10107,6 +10133,10 @@ namespace hist_mmorpg
         {
             bool success = true;
 
+            // get interested parties
+            PlayerCharacter playerFrom = Globals_Server.pcMasterList[Globals_Client.myChar.charID];
+            PlayerCharacter playerTo = Globals_Server.pcMasterList[bride.familyID];
+
             // ID
             double proposalID = Globals_Server.getNextJournalEntryID();
 
@@ -10115,16 +10145,12 @@ namespace hist_mmorpg
             byte season = Globals_Server.clock.currentSeason;
 
             // personae
-            string playerFromID = Globals_Client.myChar.charID + "|playerFrom";
-            string playerToID = bride.familyID + "|playerTo";
+            string playerFromID = playerFrom.charID + "|playerFrom";
+            string playerToID = playerTo.familyID + "|playerTo";
             string thisBrideID = bride.charID + "|bride";
             string thisGroomID = groom.charID + "|groom";
             string[] myProposalPersonae = new string[] { playerFromID, playerToID, thisBrideID, thisGroomID };
 
-
-            // get interested parties
-            PlayerCharacter playerFrom = Globals_Server.pcMasterList[playerFromID];
-            PlayerCharacter playerTo = Globals_Server.pcMasterList[playerToID];
 
             // description
             string description = "On this day of Our Lord a proposal has been made by ";
@@ -10143,6 +10169,107 @@ namespace hist_mmorpg
             // create and send a marriage proposal (journal entry)
             JournalEntry myProposal = new JournalEntry(proposalID, year, season, myProposalPersonae, "proposalMade", descr: description);
             success = Globals_Server.addPastEvent(myProposal);
+
+            return success;
+        }
+
+        /// <summary>
+        /// Allows a character to reply to a marriage proposal
+        /// </summary>
+        /// <returns>bool indicating whether reply was processed successfully</returns>
+        /// <param name="jEntry">The proposal</param>
+        /// <param name="proposalAccepted">bool indicating whether proposal accepted</param>
+        public bool replyToProposal(JournalEntry jEntry, bool proposalAccepted)
+        {
+            bool success = true;
+
+            // get interested parties
+            PlayerCharacter playerFrom = Globals_Client.myChar;
+            PlayerCharacter playerTo = null;
+            Character bride = null;
+            Character groom = null;
+
+            for (int i = 0; i < jEntry.personae.Length; i++ )
+            {
+                string thisPersonae = jEntry.personae[i];
+                string[] thisPersonaeSplit = thisPersonae.Split('|');
+
+                switch (thisPersonaeSplit[1])
+                {
+                    case "playerFrom":
+                        playerTo = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        break;
+                    case "bride":
+                        bride = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                        break;
+                    case "groom":
+                        if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        {
+                            groom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        }
+                        else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        {
+                            groom = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // ID
+            double replyID = Globals_Server.getNextJournalEntryID();
+
+            // date
+            uint year = Globals_Server.clock.currentYear;
+            byte season = Globals_Server.clock.currentSeason;
+
+            // personae
+            string playerFromEntry = playerFrom.charID + "|playerFrom";
+            string playerToEntry = bride.familyID + "|playerTo";
+            string thisBrideEntry = bride.charID + "|bride";
+            string thisGroomEntry = groom.charID + "|groom";
+            string[] myReplyPersonae = new string[] { playerFromEntry, playerToEntry, thisBrideEntry, thisGroomEntry };
+
+            // type
+            string type = "";
+            if (proposalAccepted)
+            {
+                type = "proposalAccepted";
+            }
+            else
+            {
+                type = "proposalRejected";
+            }
+
+            // description
+            string description = "On this day of Our Lord the proposed marriage between ";
+            description += groom.firstName + " " + groom.familyName + " and ";
+            description += bride.firstName + " " + bride.familyName + " has been ";
+            if (proposalAccepted)
+            {
+                description += "ACCEPTED";
+            }
+            else
+            {
+                description += "REJECTED";
+            }
+            description += " by " + playerFrom.firstName + " " + playerFrom.familyName + ".";
+            if (proposalAccepted)
+            {
+                description += " Let the bells ring out in celebration!";
+            }
+
+            // create and send a marriage proposal (journal entry)
+            JournalEntry myProposal = new JournalEntry(replyID, year, season, myReplyPersonae, type, descr: description);
+            success = Globals_Server.addPastEvent(myProposal);
+
+            // if accepted, change settings to show that bride and groom are engaged
+            if (proposalAccepted)
+            {
+                bride.fiance = groom.charID;
+                groom.fiance = bride.charID;
+            }
 
             return success;
         }
@@ -10274,6 +10401,116 @@ namespace hist_mmorpg
             }
 
             return proceed;
+        }
+
+        /// <summary>
+        /// Responds to the click event of the meetingPlaceProposeBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void meetingPlaceProposeBtn_Click(object sender, EventArgs e)
+        {
+            // get entry
+            if (this.meetingPlaceCharsListView.SelectedItems.Count > 0)
+            {
+                bool proceed = true;
+
+                Character bride = null;
+                Character groom = null;
+                string brideID = "";
+                string groomID = "";
+
+                if (this.meetingPlaceProposeTextBox.Text.Trim() == "")
+                {
+                    System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                }
+                else
+                {
+                    // get bride and groom IDs
+                    brideID = this.meetingPlaceCharsListView.SelectedItems[0].SubItems[1].Text;
+                    groomID = this.houseProposeGroomTextBox.Text;
+
+                    // get bride
+                    if (Globals_Server.npcMasterList.ContainsKey(brideID))
+                    {
+                        bride = Globals_Server.npcMasterList[brideID];
+                    }
+
+                    if (bride == null)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
+                    }
+                    else
+                    {
+                        // get groom
+                        if (Globals_Server.npcMasterList.ContainsKey(groomID))
+                        {
+                            groom = Globals_Server.npcMasterList[groomID];
+                        }
+                        else if (Globals_Server.pcMasterList.ContainsKey(groomID))
+                        {
+                            groom = Globals_Server.pcMasterList[groomID];
+                        }
+
+                        if (groom == null)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                        }
+                        else
+                        {
+                            // carry out conditional checks
+                            proceed = this.checksBeforeProposal(bride, groom);
+
+                            // if checks OK, process proposal
+                            if (proceed)
+                            {
+                                this.proposeMarriage(bride, groom);
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("Please select a prospective bride.");
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of either of the proposal reply buttons,
+        /// sending the appropriate reply
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void journalProposalReplyButton_Click(object sender, EventArgs e)
+        {
+            if (this.journalListView.SelectedItems.Count > 0)
+            {
+                bool proposalAccepted = false;
+
+                // get tag from button
+                Button button = sender as Button;
+                String reply = button.Tag.ToString();
+
+                // set appropriate response
+                if (reply.Equals("accept"))
+                {
+                    proposalAccepted = true;
+                }
+
+                // get JournalEntry
+                JournalEntry thisJentry = Globals_Client.eventSetToView.ElementAt(Globals_Client.jEntryToView).Value;
+
+                // send reply
+                this.replyToProposal(thisJentry, proposalAccepted);
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("No journal entry selected.");
+            }
         }
 
     }

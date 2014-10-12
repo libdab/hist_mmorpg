@@ -247,7 +247,6 @@ namespace hist_mmorpg
             // description
             if (this.description != null)
             {
-                Fief thisFief = Globals_Server.fiefMasterList[this.location];
                 entryText += "Description:\r\n" + this.description + "\r\n\r\n";
             }
 
@@ -272,6 +271,7 @@ namespace hist_mmorpg
                 {
                     // if player made proposal, reduce priority
                     thisRole = personaeSplit[1];
+                    break;
                 }
             }
 
@@ -284,6 +284,7 @@ namespace hist_mmorpg
                     if (thisRole.Equals(priorityEntry.Key[1]))
                     {
                         priority = priorityEntry.Value;
+                        break;
                     }
                 }
             }
@@ -311,6 +312,36 @@ namespace hist_mmorpg
             }
 
             return isOfInterest;
+        }
+
+        /// <summary>
+        /// Check to see if the JournalEntry requires that the proposal reply controls be enabled
+        /// </summary>
+        /// <returns>bool indicating whether the controls be enabled</returns>
+        public bool checkForProposalControlsEnabled()
+        {
+            bool controlsEnabled = false;
+
+            // check if is a marriage proposal
+            if (this.type.Equals("proposalMade"))
+            {
+                // check if player received proposal
+                for (int i = 0; i < this.personae.Length; i++)
+                {
+                    string thisPersonae = this.personae[i];
+                    string[] thisPersonaeSplit = thisPersonae.Split('|');
+                    if (thisPersonaeSplit[0].Equals(Globals_Client.myChar.charID))
+                    {
+                        if (thisPersonaeSplit[1].Equals("playerTo"))
+                        {
+                            controlsEnabled = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return controlsEnabled;
         }
 
     }

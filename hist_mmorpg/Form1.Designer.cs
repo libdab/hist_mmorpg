@@ -219,6 +219,9 @@ namespace hist_mmorpg
             this.siegeTextBox = new System.Windows.Forms.TextBox();
             this.siegeListView = new System.Windows.Forms.ListView();
             this.journalContainer = new System.Windows.Forms.SplitContainer();
+            this.journalProposalRejectBtn = new System.Windows.Forms.Button();
+            this.journalProposalAcceptBtn = new System.Windows.Forms.Button();
+            this.label19 = new System.Windows.Forms.Label();
             this.journalListContainer = new System.Windows.Forms.SplitContainer();
             this.journalTextContainer = new System.Windows.Forms.SplitContainer();
             this.journalNextBtn = new System.Windows.Forms.Button();
@@ -301,6 +304,7 @@ namespace hist_mmorpg
             this.siegeListContainer.Panel2.SuspendLayout();
             this.siegeListContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.journalContainer)).BeginInit();
+            this.journalContainer.Panel1.SuspendLayout();
             this.journalContainer.Panel2.SuspendLayout();
             this.journalContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.journalListContainer)).BeginInit();
@@ -1278,6 +1282,7 @@ namespace hist_mmorpg
             this.meetingPlaceProposeBtn.Tag = "court";
             this.meetingPlaceProposeBtn.Text = "Propose Marriage Between Selected Person And ...";
             this.meetingPlaceProposeBtn.UseVisualStyleBackColor = true;
+            this.meetingPlaceProposeBtn.Click += new System.EventHandler(this.meetingPlaceProposeBtn_Click);
             // 
             // meetingPlaceEntourageBtn
             // 
@@ -2298,12 +2303,50 @@ namespace hist_mmorpg
             this.journalContainer.Location = new System.Drawing.Point(0, 24);
             this.journalContainer.Name = "journalContainer";
             // 
+            // journalContainer.Panel1
+            // 
+            this.journalContainer.Panel1.Controls.Add(this.journalProposalRejectBtn);
+            this.journalContainer.Panel1.Controls.Add(this.journalProposalAcceptBtn);
+            this.journalContainer.Panel1.Controls.Add(this.label19);
+            // 
             // journalContainer.Panel2
             // 
             this.journalContainer.Panel2.Controls.Add(this.journalListContainer);
             this.journalContainer.Size = new System.Drawing.Size(935, 637);
             this.journalContainer.SplitterDistance = 208;
             this.journalContainer.TabIndex = 10;
+            // 
+            // journalProposalRejectBtn
+            // 
+            this.journalProposalRejectBtn.Location = new System.Drawing.Point(45, 522);
+            this.journalProposalRejectBtn.Name = "journalProposalRejectBtn";
+            this.journalProposalRejectBtn.Size = new System.Drawing.Size(111, 27);
+            this.journalProposalRejectBtn.TabIndex = 35;
+            this.journalProposalRejectBtn.Tag = "reject";
+            this.journalProposalRejectBtn.Text = "Reject Proposal";
+            this.journalProposalRejectBtn.UseVisualStyleBackColor = true;
+            this.journalProposalRejectBtn.Click += new System.EventHandler(this.journalProposalReplyButton_Click);
+            // 
+            // journalProposalAcceptBtn
+            // 
+            this.journalProposalAcceptBtn.Location = new System.Drawing.Point(45, 486);
+            this.journalProposalAcceptBtn.Name = "journalProposalAcceptBtn";
+            this.journalProposalAcceptBtn.Size = new System.Drawing.Size(111, 27);
+            this.journalProposalAcceptBtn.TabIndex = 34;
+            this.journalProposalAcceptBtn.Tag = "accept";
+            this.journalProposalAcceptBtn.Text = "Accept Proposal";
+            this.journalProposalAcceptBtn.UseVisualStyleBackColor = true;
+            this.journalProposalAcceptBtn.Click += new System.EventHandler(this.journalProposalReplyButton_Click);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label19.Location = new System.Drawing.Point(11, 458);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(181, 13);
+            this.label19.TabIndex = 33;
+            this.label19.Text = "-------- Marriage Proposal --------";
             // 
             // journalListContainer
             // 
@@ -2388,12 +2431,12 @@ namespace hist_mmorpg
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
             this.Controls.Add(this.houseContainer);
-            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.journalContainer);
+            this.Controls.Add(this.meetingPlaceContainer);
+            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.siegeContainer);
-            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.fiefsOwnedContainer);
@@ -2496,6 +2539,8 @@ namespace hist_mmorpg
             this.siegeListContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.siegeListContainer)).EndInit();
             this.siegeListContainer.ResumeLayout(false);
+            this.journalContainer.Panel1.ResumeLayout(false);
+            this.journalContainer.Panel1.PerformLayout();
             this.journalContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.journalContainer)).EndInit();
             this.journalContainer.ResumeLayout(false);
@@ -2710,6 +2755,9 @@ namespace hist_mmorpg
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.TextBox houseProposeGroomTextBox;
         private System.Windows.Forms.Button houseProposeBtn;
+        private System.Windows.Forms.Button journalProposalRejectBtn;
+        private System.Windows.Forms.Button journalProposalAcceptBtn;
+        private System.Windows.Forms.Label label19;
 
     }
 }
