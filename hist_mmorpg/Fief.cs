@@ -609,7 +609,7 @@ namespace hist_mmorpg
 
             // if home fief, also get all non-bailiff expenses
             // (i.e. family allowances, other employees' wages)
-            if (this.fiefID.Equals(this.owner.homeFief))
+            if (this == this.owner.getHomeFief())
             {
                 foreach (NonPlayerCharacter element in this.owner.myNPCs)
                 {
@@ -1033,7 +1033,14 @@ namespace hist_mmorpg
                 {
                     // update difference
                     difference = differenceNew;
-                    // populate spends list with appropriate codes
+
+                    // clear current spends list
+                    if (spends.Count > 0)
+                    {
+                        spends.Clear();
+                    }
+
+                    // re-populate spends list with appropriate codes
                     // but only spends > 0
                     if (this.officialsSpendNext > 0)
                     {
@@ -1050,6 +1057,12 @@ namespace hist_mmorpg
                     if (this.keepSpendNext > 0)
                     {
                         spends.Add("keep");
+                    }
+
+                    // if no remaining spends, finish
+                    if (spends.Count == 0)
+                    {
+                        finished = true;
                     }
 
                     // iterate through each entry in spends list

@@ -434,7 +434,7 @@ namespace hist_mmorpg
             Globals_Server.npcMasterList.Add(myChar2Daughter.charID, myChar2Daughter);
 
             // create and add a scheduled birth
-            string[] birthPersonae = new string[] { myChar1Wife.charID + "|mother", myChar1Wife.spouse + "|father" };
+            string[] birthPersonae = new string[] { myChar1Wife.familyID + "|headOfFamily", myChar1Wife.charID + "|mother", myChar1Wife.spouse + "|father" };
             JournalEntry myEntry = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 1, birthPersonae, "birth");
             Globals_Server.scheduledEvents.entries.Add(myEntry.jEntryID, myEntry);
 
@@ -572,9 +572,11 @@ namespace hist_mmorpg
             string[] thisPriorityKey003 = { "proposalAccepted", "headOfFamilyGroom" };
             Globals_Server.jEntryPriorities.Add(thisPriorityKey003, 2);
             string[] thisPriorityKey004 = { "marriage", "headOfFamilyBride" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey004, 2);
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey004, 1);
             string[] thisPriorityKey005 = { "marriage", "headOfFamilyGroom" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey005, 2);
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey005, 1);
+            string[] thisPriorityKey006 = { "birth", "headOfFamily" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey006, 2);
 
             // create an army and add in appropriate places
             uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 200, 400};
@@ -2558,7 +2560,7 @@ namespace hist_mmorpg
                         {
                             // if are in different fiefs OR in same fief but not both in keep
                             if ((bride.location != groom.location)
-                                || ((bride.location == groom.location) & (bride.inKeep != groom.inKeep)))
+                                || ((bride.location == groom.location) && (bride.inKeep != groom.inKeep)))
                             {
                                 // if there's a siege in the fief where the character is in the keep
                                 if (((bride.location.siege != null) && (bride.inKeep))
@@ -3539,23 +3541,26 @@ namespace hist_mmorpg
                 npcText += "Hired by (ID): " + npc.myBoss + "\r\n";
             }
 
-            // estimated salary level
-            npcText += "Potential salary: " + npc.calcWage(Globals_Client.myChar) + "\r\n";
-
-            // most recent salary offer from player (if any)
-            npcText += "Last offer from this PC: ";
-            if (npc.lastOffer.ContainsKey(Globals_Client.myChar.charID))
+            // estimated salary level (if character is male)
+            if (npc.isMale)
             {
-                npcText += npc.lastOffer[Globals_Client.myChar.charID];
-            }
-            else
-            {
-                npcText += "N/A";
-            }
-            npcText += "\r\n";
+                npcText += "Potential salary: " + npc.calcWage(Globals_Client.myChar) + "\r\n";
 
-            // current salary
-            npcText += "Current salary: " + npc.wage + "\r\n";
+                // most recent salary offer from player (if any)
+                npcText += "Last offer from this PC: ";
+                if (npc.lastOffer.ContainsKey(Globals_Client.myChar.charID))
+                {
+                    npcText += npc.lastOffer[Globals_Client.myChar.charID];
+                }
+                else
+                {
+                    npcText += "N/A";
+                }
+                npcText += "\r\n";
+
+                // current salary
+                npcText += "Current salary: " + npc.wage + "\r\n";
+            }
 
             /*
             // function
@@ -5271,9 +5276,19 @@ namespace hist_mmorpg
                         {
                             // set appropriate text for hire/fire controls, and enable them
                             this.hireNPC_Btn.Text = "Hire NPC";
-                            this.hireNPC_Btn.Enabled = true;
                             this.hireNPC_TextBox.Visible = true;
-                            this.hireNPC_TextBox.Enabled = true;
+
+                            // can only employ men
+                            if (charToDisplay.isMale)
+                            {
+                                this.hireNPC_Btn.Enabled = true;
+                                this.hireNPC_TextBox.Enabled = true;
+                            }
+                            else
+                            {
+                                this.hireNPC_Btn.Enabled = false;
+                                this.hireNPC_TextBox.Enabled = false;
+                            }
 
                             // disable 'move to' and entourage controls
                             this.meetingPlaceMoveToBtn.Enabled = false;
@@ -10586,7 +10601,7 @@ namespace hist_mmorpg
             // description
             string description = "On this day of Our Lord there took place a marriage between ";
             description += groom.firstName + " " + groom.familyName + " and ";
-            description += bride.firstName + " " + bride.familyName + ".";
+            description += bride.firstName + " " + groom.familyName + " (nee " + bride.familyName + ").";
             description += " Let the bells ring out in celebration!";
 
             // create and add a marriage entry to the pastEvents journal
@@ -10603,6 +10618,10 @@ namespace hist_mmorpg
                 groom.spouse = bride.charID;
                 // change wife's family
                 bride.familyID = groom.familyID;
+                bride.familyName = groom.familyName;
+                // switch myNPCs
+                headOfFamilyBride.myNPCs.Remove(bride as NonPlayerCharacter);
+                headOfFamilyGroom.myNPCs.Add(bride as NonPlayerCharacter);
                 // move wife to groom's location
                 bride.location = groom.location;
             }

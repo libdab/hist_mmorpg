@@ -364,7 +364,11 @@ namespace hist_mmorpg
             stature = this.getHighRankStature();
 
             // factor in age
-            if ((this.calcCharAge() > 10) && (this.calcCharAge() < 21))
+            if (this.calcCharAge() <= 10)
+            {
+                stature += 0;
+            }
+            else if ((this.calcCharAge() > 10) && (this.calcCharAge() < 21))
             {
                 stature += 0.5;
             }
@@ -2393,6 +2397,18 @@ namespace hist_mmorpg
 
                         else
                         {
+                            // check for in-laws
+                            // get spouse
+                            Character mySpouse = this.getSpouse();
+                            if (mySpouse.father.Equals(bigCheese.charID))
+                            {
+                                myFunction += "Daughter-in-Law";
+                            }
+                            else if (mySpouse.getFather().father.Equals(bigCheese.charID))
+                            {
+                                myFunction += "Granddaughter-in-Law";
+                            }
+
                             // check for grandkids
                             if (myFather.father != null)
                             {
@@ -2411,15 +2427,6 @@ namespace hist_mmorpg
                                     }
                                 }
                             }
-                        }
-                    }
-
-                    // if none of above, must be daughter-in-law
-                    else
-                    {
-                        if (!this.isMale)
-                        {
-                            myFunction += "Daughter-in-Law";
                         }
                     }
 
@@ -2503,8 +2510,8 @@ namespace hist_mmorpg
         /// taking into account the stature of the hiring PlayerCharacter
         /// </summary>
         /// <returns>uint containing salary</returns>
-        /// <param name="hiringPC">Hiring PC</param>
-        public uint calcWage(PlayerCharacter hiringPC)
+        /// <param name="hiringPlayer">Hiring player</param>
+        public uint calcWage(PlayerCharacter hiringPlayer)
         {
             double salary = 0;
             double basicSalary = 1500;
@@ -2519,16 +2526,24 @@ namespace hist_mmorpg
             double minRating = Math.Min(armyLeaderRating, fiefMgtRating);
             // determine highest of 2 ratings
             double maxRating = Math.Max(armyLeaderRating, fiefMgtRating);
+            if (maxRating < 0)
+            {
+                maxRating = 0;
+            }
 
-            // calculate potential salary, mainly based on highest rating
-            // but also including 'flexibility bonus' for lowest rating
-            salary = (basicSalary * maxRating) + (basicSalary * (minRating / 2));
+            // calculate potential salary, based on highest rating
+            salary = basicSalary * maxRating;
+            // if appropriate, also including 'flexibility bonus' for lowest rating
+            if (minRating > 0)
+            {
+                salary += (basicSalary * (minRating / 2));
+            }
 
             // factor in hiring player's stature
             // (4% reduction in NPC's salary for each stature rank above 4)
-            if (hiringPC.calculateStature() > 4)
+            if (hiringPlayer.calculateStature() > 4)
             {
-                double statMod = 1 - ((this.calculateStature() - 4) * 0.04);
+                double statMod = 1 - ((hiringPlayer.calculateStature() - 4) * 0.04);
                 salary = salary * statMod;
             }
 
