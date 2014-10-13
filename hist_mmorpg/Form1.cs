@@ -565,8 +565,16 @@ namespace hist_mmorpg
             Globals_Server.battleProbabilities.Add("pillage", pChance);
 
             // populate Globals_Server.jEntryPriorities
-            string[] thisKey = {"proposalMade", "playerTo"};
-            Globals_Server.jEntryPriorities.Add(thisKey, 2);
+            string[] thisPriorityKey001 = {"proposalMade", "headOfFamilyBride"};
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey001, 2);
+            string[] thisPriorityKey002 = { "proposalRejected", "headOfFamilyGroom" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey002, 2);
+            string[] thisPriorityKey003 = { "proposalAccepted", "headOfFamilyGroom" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey003, 2);
+            string[] thisPriorityKey004 = { "marriage", "headOfFamilyBride" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey004, 2);
+            string[] thisPriorityKey005 = { "marriage", "headOfFamilyGroom" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey005, 2);
 
             // create an army and add in appropriate places
             uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 200, 400};
@@ -2348,35 +2356,6 @@ namespace hist_mmorpg
 
             }
 
-            // iterate through clock's scheduled events
-            // check for births
-            foreach (KeyValuePair<double, JournalEntry> jEntry in Globals_Server.scheduledEvents.entries)
-            {
-                if ((jEntry.Value.year == Globals_Server.clock.currentYear) && (jEntry.Value.season == Globals_Server.clock.currentSeason))
-                {
-                    if ((jEntry.Value.type).ToLower().Equals("birth"))
-                    {
-                        // get parents
-                        NonPlayerCharacter mummy = null;
-                        Character daddy = Globals_Server.pcMasterList[mummy.spouse];
-                        for (int i = 0; i < jEntry.Value.personae.Length; i++ )
-                        {
-                            string thisPersonae = jEntry.Value.personae[i];
-                            string[] thisPersonaeSplit = thisPersonae.Split('|');
-                            if (thisPersonaeSplit[1].Equals("mother"))
-                            {
-                                mummy = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
-                                daddy = Globals_Server.pcMasterList[mummy.spouse];
-                                break;
-                            }
-                        }
-
-                        // run childbirth procedure
-                        this.giveBirth(mummy, daddy);
-                    }
-                }
-            }
-
             // PLAYERCHARACTERS
             foreach (KeyValuePair<string, PlayerCharacter> pcEntry in Globals_Server.pcMasterList)
             {
@@ -2465,8 +2444,157 @@ namespace hist_mmorpg
             // ADVANCE SEASON AND YEAR
             Globals_Server.clock.advanceSeason();
 
+            // CHECK SCHEDULED EVENTS
+            List<JournalEntry> entriesForRemoval = this.processScheduledEvents();
+            // remove processed events from Globals_Server.scheduledEvents
+
             // REFRESH CURRENT SCREEN
             this.refreshCurrentScreen();
+        }
+
+        /// <summary>
+        /// Iterates through the scheduledEvents journal, implementing the appropriate actions
+        /// </summary>
+        /// <returns>List<JournalEntry> containing journal entries to be removed</returns>
+        public List<JournalEntry> processScheduledEvents()
+        {
+            List<JournalEntry> forRemoval = new List<JournalEntry>();
+            bool proceed = true;
+
+            // iterate through clock's scheduled events
+            foreach (KeyValuePair<double, JournalEntry> jEntry in Globals_Server.scheduledEvents.entries)
+            {
+                proceed = true;
+
+                if ((jEntry.Value.year == Globals_Server.clock.currentYear) && (jEntry.Value.season == Globals_Server.clock.currentSeason))
+                {
+                    //BIRTH
+                    if ((jEntry.Value.type).ToLower().Equals("birth"))
+                    {
+                        // get parents
+                        NonPlayerCharacter mummy = null;
+                        Character daddy = null;
+                        for (int i = 0; i < jEntry.Value.personae.Length; i++)
+                        {
+                            string thisPersonae = jEntry.Value.personae[i];
+                            string[] thisPersonaeSplit = thisPersonae.Split('|');
+
+                            switch (thisPersonaeSplit[1])
+                            {
+                                case "mother":
+                                    mummy = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                                    break;
+                                case "father":
+                                    if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                    {
+                                        daddy = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                                    }
+                                    else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                    {
+                                        daddy = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        // do conditional checks
+
+                        if (proceed)
+                        {
+                            // run childbirth procedure
+                            this.giveBirth(mummy, daddy);
+
+                            // add entry to list for removal
+                            forRemoval.Add(jEntry.Value);
+                        }
+                    }
+
+                    // MARRIAGE
+                    else if ((jEntry.Value.type).ToLower().Equals("marriage"))
+                    {
+                        // get bride and groom
+                        Character bride = null;
+                        Character groom = null;
+
+                        for (int i = 0; i < jEntry.Value.personae.Length; i++)
+                        {
+                            string thisPersonae = jEntry.Value.personae[i];
+                            string[] thisPersonaeSplit = thisPersonae.Split('|');
+
+                            switch (thisPersonaeSplit[1])
+                            {
+                                case "bride":
+                                    bride = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                                    break;
+                                case "groom":
+                                    if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                    {
+                                        groom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                                    }
+                                    else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                    {
+                                        groom = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        // CONDITIONAL CHECKS
+                        // death of bride or groom
+                        if ((!bride.isAlive) || (!groom.isAlive))
+                        {
+                            proceed = false;
+
+                            // add entry to list for removal
+                            forRemoval.Add(jEntry.Value);
+                        }
+
+                        // separated by siege
+                        else
+                        {
+                            // if are in different fiefs OR in same fief but not both in keep
+                            if ((bride.location != groom.location)
+                                || ((bride.location == groom.location) & (bride.inKeep != groom.inKeep)))
+                            {
+                                // if there's a siege in the fief where the character is in the keep
+                                if (((bride.location.siege != null) && (bride.inKeep))
+                                    || ((groom.location.siege != null) && (groom.inKeep)))
+                                {
+                                    proceed = false;
+
+                                    // postpone marriage until next season
+                                    if (jEntry.Value.season == 3)
+                                    {
+                                        jEntry.Value.season = 0;
+                                        jEntry.Value.year++;
+                                    }
+                                    else
+                                    {
+                                        jEntry.Value.season++;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (proceed)
+                        {
+                            // process marriage
+                            this.processMarriage(jEntry.Value);
+
+                            // add entry to list for removal
+                            forRemoval.Add(jEntry.Value);
+                        }
+
+                    }
+                }
+            }
+
+            return forRemoval;
+
         }
 
         /// <summary>
@@ -3207,7 +3335,7 @@ namespace hist_mmorpg
             }
             else
             {
-                charText += "single and lonely";
+                charText += "not married.";
             }
             charText += "\r\n";
 
@@ -3234,10 +3362,22 @@ namespace hist_mmorpg
                     }
                     else
                     {
-                        charText += "Your spouse is not pregnant (try harder!)\r\n";
+                        charText += "Your spouse is not pregnant\r\n";
                     }
                 }
             }
+
+            // engaged
+            charText += "You are ";
+            if (ch.fiancee != null)
+            {
+                charText += "engaged to be married to ID " + ch.fiancee;
+            }
+            else
+            {
+                charText += "not engaged to be married";
+            }
+            charText += "\r\n";
 
             // father
             charText += "Father's ID: ";
@@ -5143,7 +5283,7 @@ namespace hist_mmorpg
                             this.meetingPlaceEntourageBtn.Enabled = false;
 
                             // checks for enabling marriage proposals
-                            if (((charToDisplay.spouse != null) || (charToDisplay.isMale)) || (charToDisplay.fiance != null))
+                            if (((charToDisplay.spouse != null) || (charToDisplay.isMale)) || (charToDisplay.fiancee != null))
                             {
                                 // disable marriage proposals
                                 this.meetingPlaceProposeBtn.Enabled = false;
@@ -10134,8 +10274,8 @@ namespace hist_mmorpg
             bool success = true;
 
             // get interested parties
-            PlayerCharacter playerFrom = Globals_Server.pcMasterList[Globals_Client.myChar.charID];
-            PlayerCharacter playerTo = Globals_Server.pcMasterList[bride.familyID];
+            PlayerCharacter headOfFamilyGroom = Globals_Server.pcMasterList[groom.familyID];
+            PlayerCharacter headOfFamilyBride = Globals_Server.pcMasterList[bride.familyID];
 
             // ID
             double proposalID = Globals_Server.getNextJournalEntryID();
@@ -10145,18 +10285,18 @@ namespace hist_mmorpg
             byte season = Globals_Server.clock.currentSeason;
 
             // personae
-            string playerFromID = playerFrom.charID + "|playerFrom";
-            string playerToID = playerTo.familyID + "|playerTo";
-            string thisBrideID = bride.charID + "|bride";
-            string thisGroomID = groom.charID + "|groom";
-            string[] myProposalPersonae = new string[] { playerFromID, playerToID, thisBrideID, thisGroomID };
+            string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
+            string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
+            string brideEntry = bride.charID + "|bride";
+            string groomEntry = groom.charID + "|groom";
+            string[] myProposalPersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, brideEntry, groomEntry };
 
 
             // description
             string description = "On this day of Our Lord a proposal has been made by ";
-            description += playerFrom.firstName + " " + playerFrom.familyName + " to ";
-            description += playerTo.firstName + " " + playerTo.familyName + " that ";
-            if (playerFromID.Equals(thisGroomID))
+            description += headOfFamilyGroom.firstName + " " + headOfFamilyGroom.familyName + " to ";
+            description += headOfFamilyBride.firstName + " " + headOfFamilyBride.familyName + " that ";
+            if (headOfFamilyGroomEntry.Equals(groomEntry))
             {
                 description += "he";
             }
@@ -10166,7 +10306,7 @@ namespace hist_mmorpg
             }
             description += " be betrothed to " + bride.firstName + " " + bride.familyName;
 
-            // create and send a marriage proposal (journal entry)
+            // create and send a proposal (journal entry)
             JournalEntry myProposal = new JournalEntry(proposalID, year, season, myProposalPersonae, "proposalMade", descr: description);
             success = Globals_Server.addPastEvent(myProposal);
 
@@ -10184,8 +10324,8 @@ namespace hist_mmorpg
             bool success = true;
 
             // get interested parties
-            PlayerCharacter playerFrom = Globals_Client.myChar;
-            PlayerCharacter playerTo = null;
+            PlayerCharacter headOfFamilyBride = null;
+            PlayerCharacter headOfFamilyGroom = null;
             Character bride = null;
             Character groom = null;
 
@@ -10196,8 +10336,11 @@ namespace hist_mmorpg
 
                 switch (thisPersonaeSplit[1])
                 {
-                    case "playerFrom":
-                        playerTo = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                    case "headOfFamilyBride":
+                        headOfFamilyBride = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        break;
+                    case "headOfFamilyGroom":
+                        headOfFamilyGroom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
                         break;
                     case "bride":
                         bride = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
@@ -10225,11 +10368,11 @@ namespace hist_mmorpg
             byte season = Globals_Server.clock.currentSeason;
 
             // personae
-            string playerFromEntry = playerFrom.charID + "|playerFrom";
-            string playerToEntry = bride.familyID + "|playerTo";
+            string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
+            string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
             string thisBrideEntry = bride.charID + "|bride";
             string thisGroomEntry = groom.charID + "|groom";
-            string[] myReplyPersonae = new string[] { playerFromEntry, playerToEntry, thisBrideEntry, thisGroomEntry };
+            string[] myReplyPersonae = new string[] { headOfFamilyBrideEntry, headOfFamilyGroomEntry, thisBrideEntry, thisGroomEntry };
 
             // type
             string type = "";
@@ -10254,21 +10397,214 @@ namespace hist_mmorpg
             {
                 description += "REJECTED";
             }
-            description += " by " + playerFrom.firstName + " " + playerFrom.familyName + ".";
+            description += " by " + headOfFamilyBride.firstName + " " + headOfFamilyBride.familyName + ".";
             if (proposalAccepted)
             {
                 description += " Let the bells ring out in celebration!";
             }
 
-            // create and send a marriage proposal (journal entry)
-            JournalEntry myProposal = new JournalEntry(replyID, year, season, myReplyPersonae, type, descr: description);
-            success = Globals_Server.addPastEvent(myProposal);
+            // create and send a proposal reply (journal entry)
+            JournalEntry myProposalReply = new JournalEntry(replyID, year, season, myReplyPersonae, type, descr: description);
+            success = Globals_Server.addPastEvent(myProposalReply);
 
-            // if accepted, change settings to show that bride and groom are engaged
-            if (proposalAccepted)
+            if (success)
             {
-                bride.fiance = groom.charID;
-                groom.fiance = bride.charID;
+                // mark proposal as replied
+                jEntry.description += "\r\n\r\n** You ";
+                if (proposalAccepted)
+                {
+                    jEntry.description += "ACCEPTED ";
+                }
+                else
+                {
+                    jEntry.description += "REJECTED ";
+                }
+                jEntry.description += "this proposal in " + Globals_Server.clock.seasons[season] + ", " + year;
+
+                // if accepted, process engagement
+                if (proposalAccepted)
+                {
+                    this.processEngagement(myProposalReply);
+                }
+            }
+
+            // refresh screen
+            this.refreshCurrentScreen();
+
+            return success;
+        }
+
+        /// <summary>
+        /// Processes the actions involved with an engagement
+        /// </summary>
+        /// <returns>bool indicating whether engagement was processed successfully</returns>
+        /// <param name="jEntry">The marriage proposal acceptance</param>
+        public bool processEngagement(JournalEntry jEntry)
+        {
+            bool success = false;
+
+            // get interested parties
+            PlayerCharacter headOfFamilyBride = null;
+            PlayerCharacter headOfFamilyGroom = null;
+            Character bride = null;
+            Character groom = null;
+
+            for (int i = 0; i < jEntry.personae.Length; i++)
+            {
+                string thisPersonae = jEntry.personae[i];
+                string[] thisPersonaeSplit = thisPersonae.Split('|');
+
+                switch (thisPersonaeSplit[1])
+                {
+                    case "headOfFamilyBride":
+                        headOfFamilyBride = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        break;
+                    case "headOfFamilyGroom":
+                        headOfFamilyGroom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        break;
+                    case "bride":
+                        bride = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                        break;
+                    case "groom":
+                        if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        {
+                            groom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        }
+                        else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        {
+                            groom = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // ID
+            double replyID = Globals_Server.getNextJournalEntryID();
+
+            // date
+            uint year = Globals_Server.clock.currentYear;
+            byte season = Globals_Server.clock.currentSeason;
+            if (season == 3)
+            {
+                season = 0;
+                year++;
+            }
+            else
+            {
+                season++;
+            }
+
+            // personae
+            string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
+            string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
+            string thisBrideEntry = bride.charID + "|bride";
+            string thisGroomEntry = groom.charID + "|groom";
+            string[] marriagePersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, thisBrideEntry, thisGroomEntry };
+
+            // type
+            string type = "marriage";
+
+            // create and add a marriage entry to the scheduledEvents journal
+            JournalEntry marriageEntry = new JournalEntry(replyID, year, season, marriagePersonae, type);
+            success = Globals_Server.addScheduledEvent(marriageEntry);
+
+            // show bride and groom as engaged
+            if (success)
+            {
+                bride.fiancee = groom.charID;
+                groom.fiancee = bride.charID;
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Processes the actions involved with a marriage
+        /// </summary>
+        /// <returns>bool indicating whether engagement was processed successfully</returns>
+        /// <param name="jEntry">The marriage proposal acceptance</param>
+        public bool processMarriage(JournalEntry jEntry)
+        {
+            bool success = false;
+
+            // get interested parties
+            PlayerCharacter headOfFamilyBride = null;
+            PlayerCharacter headOfFamilyGroom = null;
+            Character bride = null;
+            Character groom = null;
+
+            for (int i = 0; i < jEntry.personae.Length; i++)
+            {
+                string thisPersonae = jEntry.personae[i];
+                string[] thisPersonaeSplit = thisPersonae.Split('|');
+
+                switch (thisPersonaeSplit[1])
+                {
+                    case "headOfFamilyGroom":
+                        headOfFamilyGroom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        break;
+                    case "headOfFamilyBride":
+                        headOfFamilyBride = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        break;
+                    case "bride":
+                        bride = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                        break;
+                    case "groom":
+                        if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        {
+                            groom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        }
+                        else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        {
+                            groom = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // ID
+            double marriageID = Globals_Server.getNextJournalEntryID();
+
+            // date
+            uint year = Globals_Server.clock.currentYear;
+            byte season = Globals_Server.clock.currentSeason;
+
+            // personae
+            string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
+            string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
+            string thisBrideEntry = bride.charID + "|bride";
+            string thisGroomEntry = groom.charID + "|groom";
+            string[] marriagePersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, thisBrideEntry, thisGroomEntry };
+
+            // type
+            string type = "marriage";
+
+            // description
+            string description = "On this day of Our Lord there took place a marriage between ";
+            description += groom.firstName + " " + groom.familyName + " and ";
+            description += bride.firstName + " " + bride.familyName + ".";
+            description += " Let the bells ring out in celebration!";
+
+            // create and add a marriage entry to the pastEvents journal
+            JournalEntry marriageEntry = new JournalEntry(marriageID, year, season, marriagePersonae, type, descr: description);
+            success = Globals_Server.addPastEvent(marriageEntry);
+
+            if (success)
+            {
+                // remove fiancees
+                bride.fiancee = null;
+                groom.fiancee = null;
+                // add spouses
+                bride.spouse = groom.charID;
+                groom.spouse = bride.charID;
+                // change wife's family
+                bride.familyID = groom.familyID;
+                // move wife to groom's location
+                bride.location = groom.location;
             }
 
             return success;
@@ -10305,7 +10641,7 @@ namespace hist_mmorpg
                 else
                 {
                     // check isn't engaged
-                    if (bride.fiance != null)
+                    if (bride.fiancee != null)
                     {
                         message = "The prospective bride is already engaged.";
                         proceed = false;
@@ -10355,7 +10691,7 @@ namespace hist_mmorpg
                                         else
                                         {
                                             // check isn't engaged
-                                            if (groom.fiance != null)
+                                            if (groom.fiancee != null)
                                             {
                                                 message = "The prospective groom is already engaged.";
                                                 proceed = false;

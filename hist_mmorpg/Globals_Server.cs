@@ -258,6 +258,21 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Adds a new JournalEntry to the scheduledEvents Journal
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="min">The JournalEntry to be added</param>
+        public static bool addScheduledEvent(JournalEntry jEvent)
+        {
+            bool success = false;
+
+            success = Globals_Server.scheduledEvents.addNewEntry(jEvent);
+
+            return success;
+
+        }
+
+        /// <summary>
         /// Adds a new JournalEntry to the pastEvents Journal
         /// </summary>
         /// <returns>bool indicating success</returns>

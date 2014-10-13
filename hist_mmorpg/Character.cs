@@ -97,9 +97,9 @@ namespace hist_mmorpg
         /// </summary>
         public String father { get; set; }
         /// <summary>
-        /// Hold fiance (charID)
+        /// Hold fiancee (charID)
         /// </summary>
-        public string fiance { get; set; }
+        public string fiancee { get; set; }
         /// <summary>
         /// Holds current location (Fief object)
         /// </summary>
@@ -141,7 +141,7 @@ namespace hist_mmorpg
         /// <param name="famID">String holding charID of head of family with which character associated</param>
         /// <param name="sp">String holding spouse (ID)</param>
         /// <param name="fath">String holding father</param>
-        /// <param name="fia">Holds fiance (charID)</param>
+        /// <param name="fia">Holds fiancee (charID)</param>
         /// <param name="loc">Fief holding current location</param>
         /// <param name="myTi">List holding character's titles (fiefIDs)</param>
         /// <param name="aID">String holding armyID of army character is leading</param>
@@ -249,7 +249,7 @@ namespace hist_mmorpg
             {
                 this.ailments = ails;
             }
-            this.fiance = fia;
+            this.fiancee = fia;
         }
 
 		/// <summary>
@@ -309,7 +309,7 @@ namespace hist_mmorpg
                 this.myTitles = charToUse.myTitles;
                 this.armyID = charToUse.armyID;
                 this.ailments = charToUse.ailments;
-                this.fiance = charToUse.fiance;
+                this.fiancee = charToUse.fiancee;
 			}
 		}
 
@@ -1258,6 +1258,29 @@ namespace hist_mmorpg
             }
 
             return mySpouse;
+        }
+
+        /// <summary>
+        /// gets the character's fiancee
+        /// </summary>
+        /// <returns>The spouse or null</returns>
+        public Character getFiancee()
+        {
+            Character myFiancee = null;
+
+            if (this.fiancee != null)
+            {
+                if (Globals_Server.pcMasterList.ContainsKey(this.fiancee))
+                {
+                    myFiancee = Globals_Server.pcMasterList[this.fiancee];
+                }
+                else if (Globals_Server.npcMasterList.ContainsKey(this.fiancee))
+                {
+                    myFiancee = Globals_Server.npcMasterList[this.fiancee];
+                }
+            }
+
+            return myFiancee;
         }
 
         /// <summary>
@@ -2628,9 +2651,9 @@ namespace hist_mmorpg
 		/// </summary>
 		public String familyID { get; set; }
         /// <summary>
-        /// Holds chaacter's fiance (charID)
+        /// Holds chaacter's fiancee (charID)
         /// </summary>
-        public string fiance { get; set; }
+        public string fiancee { get; set; }
         /// <summary>
         /// Holds character's titles (fiefIDs)
         /// </summary>
@@ -2712,7 +2735,7 @@ namespace hist_mmorpg
                 this.myTitles = charToUse.myTitles;
                 this.armyID = charToUse.armyID;
                 this.ailments = charToUse.ailments;
-                this.fiance = charToUse.fiance;
+                this.fiancee = charToUse.fiancee;
             }
 		}
 

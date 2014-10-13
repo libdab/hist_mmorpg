@@ -325,17 +325,21 @@ namespace hist_mmorpg
             // check if is a marriage proposal
             if (this.type.Equals("proposalMade"))
             {
-                // check if player received proposal
-                for (int i = 0; i < this.personae.Length; i++)
+                // check if have already replied
+                if (!this.description.Contains("**"))
                 {
-                    string thisPersonae = this.personae[i];
-                    string[] thisPersonaeSplit = thisPersonae.Split('|');
-                    if (thisPersonaeSplit[0].Equals(Globals_Client.myChar.charID))
+                    // check if player received proposal
+                    for (int i = 0; i < this.personae.Length; i++)
                     {
-                        if (thisPersonaeSplit[1].Equals("playerTo"))
+                        string thisPersonae = this.personae[i];
+                        string[] thisPersonaeSplit = thisPersonae.Split('|');
+                        if (thisPersonaeSplit[0].Equals(Globals_Client.myChar.charID))
                         {
-                            controlsEnabled = true;
-                            break;
+                            if (thisPersonaeSplit[1].Equals("headOfFamilyBride"))
+                            {
+                                controlsEnabled = true;
+                                break;
+                            }
                         }
                     }
                 }
