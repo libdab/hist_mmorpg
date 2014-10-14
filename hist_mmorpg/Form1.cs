@@ -1027,7 +1027,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve skillKeys from database.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve skillKeys from database.");
+                }
 			}
 
 			// populate langKeys
@@ -1038,7 +1041,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve langKeys from database.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve langKeys from database.");
+                }
 			}
 
             // populate rankKeys
@@ -1049,7 +1055,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve rankKeys from database.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve rankKeys from database.");
+                }
             }
 
             // populate npcKeys
@@ -1060,7 +1069,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve npcKeys from database.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve npcKeys from database.");
+                }
 			}
 
             // populate pcKeys
@@ -1071,7 +1083,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve pcKeys from database.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve pcKeys from database.");
+                }
 			}
 
             // populate kingKeys
@@ -1082,7 +1097,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve kingKeys from database.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve kingKeys from database.");
+                }
             }
 
             // populate provKeys
@@ -1093,7 +1111,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve provKeys from database.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve provKeys from database.");
+                }
 			}
 
             // populate terrKeys
@@ -1104,7 +1125,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve terrKeys from database.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve terrKeys from database.");
+                }
 			}
 
             // populate fiefKeys
@@ -1115,7 +1139,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve fiefKeys from database.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve fiefKeys from database.");
+                }
 			}
 
             // populate armyKeys
@@ -1126,7 +1153,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve armyKeys from database.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve armyKeys from database.");
+                }
             }
 
             // populate siegeKeys
@@ -1137,7 +1167,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve siegeKeys from database.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve siegeKeys from database.");
+                }
             }
 
         }
@@ -1159,7 +1192,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve GameClock " + clockID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve GameClock " + clockID);
+                }
 			}
 
 			return newClock;
@@ -1182,7 +1218,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Journal " + journalID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Journal " + journalID);
+                }
             }
 
             return newJournal;
@@ -1205,7 +1244,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Dictionary " + dictID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Dictionary " + dictID);
+                }
 			}
 
 			return newDict;
@@ -1228,7 +1270,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Dictionary " + dictID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Dictionary " + dictID);
+                }
             }
 
             return newDict;
@@ -1251,7 +1296,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Dictionary " + dictID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Dictionary " + dictID);
+                }
 			}
 
 			return newDict;
@@ -1274,7 +1322,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve skill " + skillID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve skill " + skillID);
+                }
 			}
 
 			return newSkill;
@@ -1306,7 +1357,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show ("InitialDBload: Unable to retrieve NonPlayerCharacter " + npcID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve NonPlayerCharacter " + npcID);
+                }
 			}
 
 			return myNPC;
@@ -1338,7 +1392,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show ("InitialDBload: Unable to retrieve PlayerCharacter " + pcID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve PlayerCharacter " + pcID);
+                }
 			}
 
 			return myPC;
@@ -1365,7 +1422,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Province " + kingID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Province " + kingID);
+                }
             }
 
             return myKing;
@@ -1392,7 +1452,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show ("InitialDBload: Unable to retrieve Province " + provID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Province " + provID);
+                }
 			}
 
 			return myProv;
@@ -1415,7 +1478,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Terrain " + terrID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Terrain " + terrID);
+                }
 			}
 
 			return newTerrain;
@@ -1438,7 +1504,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Language " + langID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Language " + langID);
+                }
             }
 
             return newLanguage;
@@ -1461,7 +1530,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Rank " + rankID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Rank " + rankID);
+                }
             }
 
             return newRank;
@@ -1488,7 +1560,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show ("InitialDBload: Unable to retrieve Fief " + fiefID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Fief " + fiefID);
+                }
 			}
 
 			return myFief;
@@ -1512,7 +1587,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Army " + armyID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Army " + armyID);
+                }
             }
 
             return myArmy;
@@ -1536,7 +1614,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Siege " + siegeID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Siege " + siegeID);
+                }
             }
 
             return mySiege;
@@ -1564,7 +1645,10 @@ namespace hist_mmorpg
 			}
 			else
 			{
-				System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve map edges " + mapEdgesID);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve map edges " + mapEdgesID);
+                }
 			}
 
 			return newMap;
@@ -1623,9 +1707,14 @@ namespace hist_mmorpg
                 else if (Globals_Server.pcMasterList.ContainsKey(fr.bailiff))
                 {
                     fOut.bailiff = Globals_Server.pcMasterList[fr.bailiff];
-				} else {
+				}
+                else
+                {
 					fOut.bailiff = null;
-					System.Windows.Forms.MessageBox.Show ("Unable to identify bailiff (" + fr.bailiff + ") for Fief " + fOut.fiefID);
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Unable to identify bailiff (" + fr.bailiff + ") for Fief " + fOut.fiefID);
+                    }
 				}
 			}
 				
@@ -1649,7 +1738,10 @@ namespace hist_mmorpg
                     }
                     else
                     {
-                        System.Windows.Forms.MessageBox.Show("Unable to identify character (" + fr.characters[i] + ") for Fief " + fOut.fiefID);
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Unable to identify character (" + fr.characters[i] + ") for Fief " + fOut.fiefID);
+                        }
                     }
 
 				}
@@ -1664,7 +1756,10 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show("Fief " + fr.fiefID + ": Rank not found (" + fr.rankID + ")");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Fief " + fr.fiefID + ": Rank not found (" + fr.rankID + ")");
+                    }
                 }
             }
 
@@ -1855,7 +1950,10 @@ namespace hist_mmorpg
 			}
             else
             {
-                System.Windows.Forms.MessageBox.Show("goTo queue processing: Character not found (" + cr.charID + ")");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("goTo queue processing: Character not found (" + cr.charID + ")");
+                }
             }
 
             if (success)
@@ -1912,7 +2010,10 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show("Kingdom " + kr.kingdomID + ": King not found (" + kr.kingID + ")");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Kingdom " + kr.kingdomID + ": King not found (" + kr.kingID + ")");
+                    }
                 }
             }
 
@@ -1925,7 +2026,10 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show("Kingdom " + kr.kingdomID + ": Rank not found (" + kr.rankID + ")");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Kingdom " + kr.kingdomID + ": Rank not found (" + kr.rankID + ")");
+                    }
                 }
             }
 
@@ -1951,7 +2055,10 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show("Province " + pr.provinceID + ": Overlord not found (" + pr.overlordID + ")");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Province " + pr.provinceID + ": Overlord not found (" + pr.overlordID + ")");
+                    }
                 }
             }
 
@@ -1964,7 +2071,10 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show("Province " + pr.provinceID + ": Kingdom not found (" + pr.kingdomID + ")");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Province " + pr.provinceID + ": Kingdom not found (" + pr.kingdomID + ")");
+                    }
                 }
             }
 
@@ -1977,7 +2087,10 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show("Province " + pr.provinceID + ": Rank not found (" + pr.rankID + ")");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Province " + pr.provinceID + ": Rank not found (" + pr.rankID + ")");
+                    }
                 }
             }
 
@@ -1999,7 +2112,10 @@ namespace hist_mmorpg
 
 			if (! putListResult.IsSuccess)
 			{
-				System.Windows.Forms.MessageBox.Show("Write failed: Key list " + rList.Key + " to bucket " + rList.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Key list " + rList.Key + " to bucket " + rList.Bucket);
+                }
 			}
 
 			return putListResult.IsSuccess;
@@ -2018,7 +2134,10 @@ namespace hist_mmorpg
 
 			if (! putClockResult.IsSuccess)
 			{
-				System.Windows.Forms.MessageBox.Show("Write failed: GameClock to bucket " + rClock.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: GameClock to bucket " + rClock.Bucket);
+                }
 			}
 
 			return putClockResult.IsSuccess;
@@ -2038,7 +2157,10 @@ namespace hist_mmorpg
 
             if (!putJournalResult.IsSuccess)
             {
-                System.Windows.Forms.MessageBox.Show("Write failed: Journal " + key + " to bucket " + rJournal.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Journal " + key + " to bucket " + rJournal.Bucket);
+                }
             }
 
             return putJournalResult.IsSuccess;
@@ -2058,7 +2180,10 @@ namespace hist_mmorpg
 
 			if (! putDictResult.IsSuccess)
 			{
-				System.Windows.Forms.MessageBox.Show("Write failed: Dictionary " + key + " to bucket " + rDict.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Dictionary " + key + " to bucket " + rDict.Bucket);
+                }
 			}
 
 			return putDictResult.IsSuccess;
@@ -2077,7 +2202,10 @@ namespace hist_mmorpg
 
 			if (! putSkillResult.IsSuccess)
 			{
-				System.Windows.Forms.MessageBox.Show("Write failed: Skill " + rSkill.Key + " to bucket " + rSkill.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Skill " + rSkill.Key + " to bucket " + rSkill.Bucket);
+                }
 			}
 
 			return putSkillResult.IsSuccess;
@@ -2099,7 +2227,10 @@ namespace hist_mmorpg
 
 			if (! putNPCresult.IsSuccess)
 			{
-				System.Windows.Forms.MessageBox.Show("Write failed: NPC " + rNPC.Key + " to bucket " + rNPC.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: NPC " + rNPC.Key + " to bucket " + rNPC.Bucket);
+                }
 			}
 
 			return putNPCresult.IsSuccess;
@@ -2121,7 +2252,10 @@ namespace hist_mmorpg
 
 			if (! putPCresult.IsSuccess)
 			{
-				System.Windows.Forms.MessageBox.Show("Write failed: PC " + rPC.Key + " to bucket " + rPC.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: PC " + rPC.Key + " to bucket " + rPC.Bucket);
+                }
 			}
 
 			return putPCresult.IsSuccess;
@@ -2143,7 +2277,10 @@ namespace hist_mmorpg
 
 			if (! putKingResult.IsSuccess)
 			{
-                System.Windows.Forms.MessageBox.Show("Write failed: Kingdom " + rKing.Key + " to bucket " + rKing.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Kingdom " + rKing.Key + " to bucket " + rKing.Bucket);
+                }
 			}
 
 			return putKingResult.IsSuccess;
@@ -2165,7 +2302,10 @@ namespace hist_mmorpg
 
             if (!putProvResult.IsSuccess)
             {
-                System.Windows.Forms.MessageBox.Show("Write failed: Province " + rProv.Key + " to bucket " + rProv.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Province " + rProv.Key + " to bucket " + rProv.Bucket);
+                }
             }
 
             return putProvResult.IsSuccess;
@@ -2185,7 +2325,10 @@ namespace hist_mmorpg
 
 			if (! putLanguageResult.IsSuccess)
 			{
-                System.Windows.Forms.MessageBox.Show("Write failed: Language " + rLanguage.Key + " to bucket " + rLanguage.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Language " + rLanguage.Key + " to bucket " + rLanguage.Bucket);
+                }
 			}
 
 			return putLanguageResult.IsSuccess;
@@ -2205,7 +2348,10 @@ namespace hist_mmorpg
 
             if (!putRankResult.IsSuccess)
             {
-                System.Windows.Forms.MessageBox.Show("Write failed: Rank " + rRank.Key + " to bucket " + rRank.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Rank " + rRank.Key + " to bucket " + rRank.Bucket);
+                }
             }
 
             return putRankResult.IsSuccess;
@@ -2225,7 +2371,10 @@ namespace hist_mmorpg
 
             if (!putTerrainResult.IsSuccess)
             {
-                System.Windows.Forms.MessageBox.Show("Write failed: Terrain " + rTerrain.Key + " to bucket " + rTerrain.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Terrain " + rTerrain.Key + " to bucket " + rTerrain.Bucket);
+                }
             }
 
             return putTerrainResult.IsSuccess;
@@ -2247,7 +2396,10 @@ namespace hist_mmorpg
 
 			if (! putFiefResult.IsSuccess)
 			{
-				System.Windows.Forms.MessageBox.Show("Write failed: Fief " + rFief.Key + " to bucket " + rFief.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Fief " + rFief.Key + " to bucket " + rFief.Bucket);
+                }
 			}
 
 			return putFiefResult.IsSuccess;
@@ -2266,7 +2418,10 @@ namespace hist_mmorpg
 
             if (!putArmyResult.IsSuccess)
             {
-                System.Windows.Forms.MessageBox.Show("Write failed: Army " + rArmy.Key + " to bucket " + rArmy.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Army " + rArmy.Key + " to bucket " + rArmy.Bucket);
+                }
             }
 
             return putArmyResult.IsSuccess;
@@ -2285,7 +2440,10 @@ namespace hist_mmorpg
 
             if (!putSiegeResult.IsSuccess)
             {
-                System.Windows.Forms.MessageBox.Show("Write failed: Siege " + rSiege.Key + " to bucket " + rSiege.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Siege " + rSiege.Key + " to bucket " + rSiege.Bucket);
+                }
             }
 
             return putSiegeResult.IsSuccess;
@@ -2307,7 +2465,10 @@ namespace hist_mmorpg
 
 			if (! putMapResultE.IsSuccess)
 			{
-				System.Windows.Forms.MessageBox.Show("Write failed: Map edges collection " + rMapE.Key + " to bucket " + rMapE.Bucket);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Map edges collection " + rMapE.Key + " to bucket " + rMapE.Bucket);
+                }
 			}
 
 			return putMapResultE.IsSuccess;
@@ -2321,6 +2482,9 @@ namespace hist_mmorpg
 		{
             // used to check if character update is necessary
             bool performCharacterUpdate = true;
+
+            // switch off messages
+            Globals_Client.showMessages = false;
 
             // FIEFS
             foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
@@ -2449,6 +2613,9 @@ namespace hist_mmorpg
             // CHECK SCHEDULED EVENTS
             List<JournalEntry> entriesForRemoval = this.processScheduledEvents();
             // remove processed events from Globals_Server.scheduledEvents
+
+            // switch on messages
+            Globals_Client.showMessages = true;
 
             // REFRESH CURRENT SCREEN
             this.refreshCurrentScreen();
@@ -2685,7 +2852,10 @@ namespace hist_mmorpg
                     // if choose to cancel
                     if (dialogResult == DialogResult.Cancel)
                     {
-                        System.Windows.Forms.MessageBox.Show("Move cancelled.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Move cancelled.");
+                        }
                         proceedWithMove = false;
                     }
 
@@ -2694,7 +2864,10 @@ namespace hist_mmorpg
                     {
                         // end the siege
                         Siege thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
-                        System.Windows.Forms.MessageBox.Show("Siege (" + thisSiegeID + ") ended.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Siege (" + thisSiegeID + ") ended.");
+                        }
                         this.siegeEnd(thisSiege);
                     }
 
@@ -3177,7 +3350,10 @@ namespace hist_mmorpg
             if (showNameWarning)
             {
                 nameWarning += "\r\nAny children who are not named by the age of one will be named after his highness the king.";
-                System.Windows.Forms.MessageBox.Show(nameWarning);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(nameWarning);
+                }
             }
         }
 
@@ -4680,7 +4856,10 @@ namespace hist_mmorpg
 
             if (displayWarning)
             {
-                System.Windows.Forms.MessageBox.Show(toDisplay, "WARNING: EXPENDITURE TOO HIGH");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(toDisplay, "WARNING: EXPENDITURE TOO HIGH");
+                }
             }
         }
 
@@ -4747,7 +4926,10 @@ namespace hist_mmorpg
                     int difference = Convert.ToInt32(totalSpend - Globals_Client.fiefToView.getAvailableTreasury());
                     String toDisplay = "Your spending exceeds the " + Globals_Client.fiefToView.name + " treasury by " + difference;
                     toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
-                    System.Windows.Forms.MessageBox.Show(toDisplay, "TRANSACTION CANCELLED");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay, "TRANSACTION CANCELLED");
+                    }
                 }
                 // if treasury funds are sufficient to cover expenditure, do the commit
                 else
@@ -4808,16 +4990,25 @@ namespace hist_mmorpg
                         toDisplay += "Expenditure unchanged";
                     }
 
-                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                    }
                 }
             }
             catch (System.FormatException fe)
             {
-                System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
             }
             catch (System.OverflowException ofe)
             {
-                System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
             }
             finally
             {
@@ -5071,7 +5262,10 @@ namespace hist_mmorpg
             // display message that is no bailiff
             else
             {
-                System.Windows.Forms.MessageBox.Show("This fief currently has no bailiff.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("This fief currently has no bailiff.");
+                }
             }
         }
 
@@ -5359,11 +5553,17 @@ namespace hist_mmorpg
                 }
                 catch (System.FormatException fe)
                 {
-                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    }
                 }
                 catch (System.OverflowException ofe)
                 {
-                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    }
                 }
 
             }
@@ -5518,7 +5718,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("Target fief ID not found.  Please ensure fiefID is valid.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Target fief ID not found.  Please ensure fiefID is valid.");
+                }
             }
 
         }
@@ -5684,7 +5887,10 @@ namespace hist_mmorpg
             // if choose to cancel
             if (dialogResult == DialogResult.Cancel)
             {
-                System.Windows.Forms.MessageBox.Show("Appointment cancelled.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Appointment cancelled.");
+                }
             }
 
             // if choose to proceed
@@ -5895,11 +6101,17 @@ namespace hist_mmorpg
             }
             catch (System.FormatException fe)
             {
-                System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
             }
             catch (System.OverflowException ofe)
             {
-                System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
             }
             finally
             {
@@ -5927,11 +6139,17 @@ namespace hist_mmorpg
             }
             catch (System.FormatException fe)
             {
-                System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
             }
             catch (System.OverflowException ofe)
             {
-                System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
             }
             finally
             {
@@ -5961,7 +6179,10 @@ namespace hist_mmorpg
                 if (dialogResult == DialogResult.Cancel)
                 {
                     proceed = false;
-                    System.Windows.Forms.MessageBox.Show("You decide not to camp after all.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You decide not to camp after all.");
+                    }
                 }
             }
 
@@ -5982,7 +6203,10 @@ namespace hist_mmorpg
                     // if is in entourage, give player chance to remove prior to camping
                     if ((ch as NonPlayerCharacter).inEntourage)
                     {
-                        System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " has been removed from your entourage.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " has been removed from your entourage.");
+                        }
                         Globals_Client.myChar.removeFromEntourage((ch as NonPlayerCharacter));
                     }
                 }
@@ -5998,7 +6222,10 @@ namespace hist_mmorpg
                 }
 
                 // inform player
-                System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " remains in " + ch.location.name + " for " + campDays + " days.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " remains in " + ch.location.name + " for " + campDays + " days.");
+                }
 
                 // check if character is army leader, if so check for army attrition
                 if (ch.armyID != null)
@@ -6023,7 +6250,10 @@ namespace hist_mmorpg
                     // inform player
                     if (totalAttrition > 0)
                     {
-                        System.Windows.Forms.MessageBox.Show("Army (" + thisArmy.armyID + ") lost " + totalAttrition + " troops due to attrition.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Army (" + thisArmy.armyID + ") lost " + totalAttrition + " troops due to attrition.");
+                        }
                     }
                 }
 
@@ -6078,7 +6308,10 @@ namespace hist_mmorpg
                         // don't display this message if min bailiffDaysInFief was already achieved
                         if (!(bailiffDaysBefore >= 30))
                         {
-                            System.Windows.Forms.MessageBox.Show(myBailiff.firstName + " " + myBailiff.familyName + " has fulfilled his bailiff duties in " + ch.location.name + ".");
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show(myBailiff.firstName + " " + myBailiff.familyName + " has fulfilled his bailiff duties in " + ch.location.name + ".");
+                            }
                         }
                     }
                 }
@@ -6160,7 +6393,10 @@ namespace hist_mmorpg
                 // if no target acquired, display message and break
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show("Invalid direction code encountered.  Route halted at " + source.name + " (" + source.fiefID + ")");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Invalid direction code encountered.  Route halted at " + source.name + " (" + source.fiefID + ")");
+                    }
                     break;
                 }
 
@@ -6224,7 +6460,10 @@ namespace hist_mmorpg
                 if (amount > fiefFrom.getAvailableTreasury(true))
                 {
                     // if not, inform player and adjust amount downwards
-                    System.Windows.Forms.MessageBox.Show("Too few funds available in Home Treasury; amount adjusted.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Too few funds available in Home Treasury; amount adjusted.");
+                    }
                     amount = fiefFrom.getAvailableTreasury(true);
                 }
 

@@ -51,6 +51,10 @@ namespace hist_mmorpg
         /// Holds highest index position in eventSetToView
         /// </summary>
         public static int jEntryMax;
+        /// <summary>
+        /// Holds bool indicating whether or not to display popup messages
+        /// </summary>
+        public static bool showMessages = true;
 
     }
 
