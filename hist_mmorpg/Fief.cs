@@ -671,12 +671,18 @@ namespace hist_mmorpg
             if (tx > 100)
             {
                 tx = 100;
-                System.Windows.Forms.MessageBox.Show("The maximum tax rate is 100%.  Rate adjusted.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The maximum tax rate is 100%.  Rate adjusted.");
+                }
             }
             else if (tx < 0)
             {
                 tx = 0;
-                System.Windows.Forms.MessageBox.Show("The minimum tax rate is 0%.  Rate adjusted.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The minimum tax rate is 0%.  Rate adjusted.");
+                }
             }
 
             this.taxRateNext = tx;
@@ -692,7 +698,10 @@ namespace hist_mmorpg
             if (os < 0)
             {
                 os = 0;
-                System.Windows.Forms.MessageBox.Show("The minimum officials expenditure is 0.  Amount adjusted.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The minimum officials expenditure is 0.  Amount adjusted.");
+                }
             }
 
             // ensure doesn't exceed max permitted (4 per head of population)
@@ -700,7 +709,10 @@ namespace hist_mmorpg
             if (os > maxSpend)
             {
                 os = maxSpend;
-                System.Windows.Forms.MessageBox.Show("The maximum officials expenditure for this fief is " + maxSpend + ".\r\nAmount adjusted.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The maximum officials expenditure for this fief is " + maxSpend + ".\r\nAmount adjusted.");
+                }
             }
 
             this.officialsSpendNext = os;
@@ -716,7 +728,10 @@ namespace hist_mmorpg
             if (infs < 0)
             {
                 infs = 0;
-                System.Windows.Forms.MessageBox.Show("The minimum infrastructure expenditure is 0.  Amount adjusted.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The minimum infrastructure expenditure is 0.  Amount adjusted.");
+                }
             }
 
             // ensure doesn't exceed max permitted (6 per head of population)
@@ -724,7 +739,10 @@ namespace hist_mmorpg
             if (infs > maxSpend)
             {
                 infs = maxSpend;
-                System.Windows.Forms.MessageBox.Show("The maximum infrastructure expenditure for this fief is " + maxSpend + ".\r\nAmount adjusted.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The maximum infrastructure expenditure for this fief is " + maxSpend + ".\r\nAmount adjusted.");
+                }
             }
 
             this.infrastructureSpendNext = infs;
@@ -740,7 +758,10 @@ namespace hist_mmorpg
             if (gs < 0)
             {
                 gs = 0;
-                System.Windows.Forms.MessageBox.Show("The minimum garrison expenditure is 0.  Amount adjusted.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The minimum garrison expenditure is 0.  Amount adjusted.");
+                }
             }
 
             // ensure doesn't exceed max permitted (14 per head of population)
@@ -748,7 +769,10 @@ namespace hist_mmorpg
             if (gs > maxSpend)
             {
                 gs = maxSpend;
-                System.Windows.Forms.MessageBox.Show("The maximum garrison expenditure for this fief is " + maxSpend + ".\r\nAmount adjusted.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The maximum garrison expenditure for this fief is " + maxSpend + ".\r\nAmount adjusted.");
+                }
             }
 
             this.garrisonSpendNext = gs;
@@ -764,7 +788,10 @@ namespace hist_mmorpg
             if (ks < 0)
             {
                 ks = 0;
-                System.Windows.Forms.MessageBox.Show("The minimum keep expenditure is 0.  Amount adjusted.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The minimum keep expenditure is 0.  Amount adjusted.");
+                }
             }
 
             // ensure doesn't exceed max permitted (13 per head of population)
@@ -772,7 +799,10 @@ namespace hist_mmorpg
             if (ks > maxSpend)
             {
                 ks = maxSpend;
-                System.Windows.Forms.MessageBox.Show("The maximum keep expenditure for this fief is " + maxSpend + ".\r\nAmount adjusted.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The maximum keep expenditure for this fief is " + maxSpend + ".\r\nAmount adjusted.");
+                }
             }
 
             this.keepSpendNext = ks;
@@ -1087,7 +1117,10 @@ namespace hist_mmorpg
                                     {
                                         takeOff = Convert.ToUInt32(Math.Truncate(reduceBy));
                                     }
-                                    System.Windows.Forms.MessageBox.Show("difference: " + difference + "\r\noffSpend: " + this.officialsSpendNext + "\r\ntotSpend: " + totalSpend + "\r\nreduceByModifierOff: " + reduceByModifierOff + "\r\nreduceBy: " + reduceBy + "\r\ntakeOff: " + takeOff);
+                                    if (Globals_Client.showDebugMessages)
+                                    {
+                                        System.Windows.Forms.MessageBox.Show("difference: " + difference + "\r\noffSpend: " + this.officialsSpendNext + "\r\ntotSpend: " + totalSpend + "\r\nreduceByModifierOff: " + reduceByModifierOff + "\r\nreduceBy: " + reduceBy + "\r\ntakeOff: " + takeOff);
+                                    }
 
                                     if (!(differenceNew < takeOff))
                                     {
@@ -1131,7 +1164,10 @@ namespace hist_mmorpg
                                     {
                                         takeOff = Convert.ToUInt32(Math.Truncate(reduceBy));
                                     }
-                                    System.Windows.Forms.MessageBox.Show("difference: " + difference + "\r\ngarrSpend: " + this.garrisonSpendNext + "\r\ntotSpend: " + totalSpend + "\r\nreduceByModifierGarr: " + reduceByModifierGarr + "\r\nreduceBy: " + reduceBy + "\r\ntakeOff: " + takeOff);
+                                    if (Globals_Client.showDebugMessages)
+                                    {
+                                        System.Windows.Forms.MessageBox.Show("difference: " + difference + "\r\ngarrSpend: " + this.garrisonSpendNext + "\r\ntotSpend: " + totalSpend + "\r\nreduceByModifierGarr: " + reduceByModifierGarr + "\r\nreduceBy: " + reduceBy + "\r\ntakeOff: " + takeOff);
+                                    }
 
                                     if (!(differenceNew < takeOff))
                                     {
@@ -1167,7 +1203,10 @@ namespace hist_mmorpg
                                     {
                                         takeOff = Convert.ToUInt32(Math.Truncate(reduceBy));
                                     }
-                                    System.Windows.Forms.MessageBox.Show("difference: " + difference + "\r\ninfSpend: " + this.infrastructureSpendNext + "\r\ntotSpend: " + totalSpend + "\r\nreduceByModifierInf: " + reduceByModifierInf + "\r\nreduceBy: " + reduceBy + "\r\ntakeOff: " + takeOff);
+                                    if (Globals_Client.showDebugMessages)
+                                    {
+                                        System.Windows.Forms.MessageBox.Show("difference: " + difference + "\r\ninfSpend: " + this.infrastructureSpendNext + "\r\ntotSpend: " + totalSpend + "\r\nreduceByModifierInf: " + reduceByModifierInf + "\r\nreduceBy: " + reduceBy + "\r\ntakeOff: " + takeOff);
+                                    }
 
                                     if (!(differenceNew < takeOff))
                                     {
@@ -1203,7 +1242,10 @@ namespace hist_mmorpg
                                     {
                                         takeOff = Convert.ToUInt32(Math.Truncate(reduceBy));
                                     }
-                                    System.Windows.Forms.MessageBox.Show("difference: " + difference + "\r\nkeepSpend: " + this.keepSpendNext + "\r\ntotSpend: " + totalSpend + "\r\nreduceByModifierKeep: " + reduceByModifierKeep + "\r\nreduceBy: " + reduceBy + "\r\ntakeOff: " + takeOff);
+                                    if (Globals_Client.showDebugMessages)
+                                    {
+                                        System.Windows.Forms.MessageBox.Show("difference: " + difference + "\r\nkeepSpend: " + this.keepSpendNext + "\r\ntotSpend: " + totalSpend + "\r\nreduceByModifierKeep: " + reduceByModifierKeep + "\r\nreduceBy: " + reduceBy + "\r\ntakeOff: " + takeOff);
+                                    }
 
                                     if (!(differenceNew < takeOff))
                                     {

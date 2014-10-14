@@ -55,6 +55,10 @@ namespace hist_mmorpg
         /// Holds bool indicating whether or not to display popup messages
         /// </summary>
         public static bool showMessages = true;
+        /// <summary>
+        /// Holds bool indicating whether or not to display popup debug messages
+        /// </summary>
+        public static bool showDebugMessages = false;
 
     }
 

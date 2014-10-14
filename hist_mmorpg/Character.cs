@@ -683,7 +683,10 @@ namespace hist_mmorpg
                 if (this.nationality.Equals("E"))                    
                 {                       
                     success = false;
-                    System.Windows.Forms.MessageBox.Show("Bailiff: The duplicitous English are barred from entering this keep, Good Sir!");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Bailiff: The duplicitous English are barred from entering this keep, Good Sir!");
+                    }
                 }               
             }
 
@@ -693,7 +696,10 @@ namespace hist_mmorpg
                 if (this.nationality.Equals("F"))
                 {
                     success = false;
-                    System.Windows.Forms.MessageBox.Show("Bailiff: The perfidious French are barred from entering this keep, Mon Seigneur!");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Bailiff: The perfidious French are barred from entering this keep, Mon Seigneur!");
+                    }
                 }
             }
 
@@ -703,7 +709,10 @@ namespace hist_mmorpg
                 if (location.barredCharacters.Contains(this.charID))
                 {
                     success = false;
-                    System.Windows.Forms.MessageBox.Show("Bailiff: Your person is barred from entering this keep, Good Sir!");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Bailiff: Your person is barred from entering this keep, Good Sir!");
+                    }
                 }
 
             }
@@ -900,7 +909,10 @@ namespace hist_mmorpg
                         // if choose to cancel, return
                         if (dialogResult == DialogResult.Cancel)
                         {
-                            System.Windows.Forms.MessageBox.Show("Move cancelled.");
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Move cancelled.");
+                            }
                             return success;
                         }
                         // if choose to proceed, clear entries from goTo
@@ -950,7 +962,10 @@ namespace hist_mmorpg
 
                 if (!isUpdate)
                 {
-                    System.Windows.Forms.MessageBox.Show("I'm afraid you've run out of days.\r\nYour journey will continue next season.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("I'm afraid you've run out of days.\r\nYour journey will continue next season.");
+                    }
                 }
             }
 
@@ -1032,7 +1047,10 @@ namespace hist_mmorpg
             // make sure not already pregnant
             if (wife.isPregnant)
             {
-                System.Windows.Forms.MessageBox.Show(wife.firstName + " " + wife.familyName + " is already pregnant, milord.  Don't be so impatient!", "PREGNANCY ATTEMPT CANCELLED");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(wife.firstName + " " + wife.familyName + " is already pregnant, milord.  Don't be so impatient!", "PREGNANCY ATTEMPT CANCELLED");
+                }
             }
             else
             {
@@ -1041,7 +1059,10 @@ namespace hist_mmorpg
 
                 if (minDays < 1)
                 {
-                    System.Windows.Forms.MessageBox.Show("Sorry, you don't have enough time left for this in the current season.", "PREGNANCY ATTEMPT CANCELLED");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Sorry, you don't have enough time left for this in the current season.", "PREGNANCY ATTEMPT CANCELLED");
+                    }
                 }
                 else
                 {
@@ -1143,19 +1164,25 @@ namespace hist_mmorpg
                                 birthSeason = (byte)(birthSeason - 1);
                                 birthYear = birthYear + 1;
                             }
-                            string[] birthPersonae = new string[] { wife.charID + "|mother", wife.spouse + "|father"};
+                            string[] birthPersonae = new string[] { wife.familyID + "|headOfFamily", wife.charID + "|mother", wife.spouse + "|father" };
                             JournalEntry birth = new JournalEntry(Globals_Server.getNextJournalEntryID(), birthYear, birthSeason, birthPersonae, "birth");
                             Globals_Server.scheduledEvents.entries.Add(birth.jEntryID, birth);
 
                              // display message of celebration
-                            System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + wife.firstName + " " + wife.familyName + " is pregnant!", "PREGNANCY SUCCESSFUL");
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + wife.firstName + " " + wife.familyName + " is pregnant!", "PREGNANCY SUCCESSFUL");
+                            }
                             success = true;
                         }
                         // if attempt not successful
                         else
                         {
                             // display encouraging message
-                            System.Windows.Forms.MessageBox.Show("I'm afraid " + wife.firstName + " " + wife.familyName + " is not pregnant.  Better luck next time, milord!", "PREGNANCY UNSUCCESSFUL");
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("I'm afraid " + wife.firstName + " " + wife.familyName + " is not pregnant.  Better luck next time, milord!", "PREGNANCY UNSUCCESSFUL");
+                            }
                         }
 
                         // succeed or fail, deduct a day
@@ -1171,7 +1198,10 @@ namespace hist_mmorpg
                     else
                     {
                         // give the player the bad news
-                        System.Windows.Forms.MessageBox.Show("Ahem ...\r\n\r\nUnfortunately, the fief physician advises that " + wife.firstName + " " + wife.familyName + " will never get pregnant with her current partner", "PREGNANCY UNSUCCESSFUL");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Ahem ...\r\n\r\nUnfortunately, the fief physician advises that " + wife.firstName + " " + wife.familyName + " will never get pregnant with her current partner", "PREGNANCY UNSUCCESSFUL");
+                        }
                     }
                 }
             }
@@ -1677,21 +1707,30 @@ namespace hist_mmorpg
             if (offer > maxAcceptable)
             {
                 accepted = true;
-                System.Windows.Forms.MessageBox.Show(npc.firstName + " " + npc.familyName + ": You've made me an offer I can't refuse, Milord!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(npc.firstName + " " + npc.familyName + ": You've made me an offer I can't refuse, Milord!");
+                }
             }
 
             // automatically reject if offer < 10% below potential salary
             else if (offer < minAcceptable)
             {
                 accepted = false;
-                System.Windows.Forms.MessageBox.Show(npc.firstName + " " + npc.familyName + ": Don't insult me, Sirrah!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(npc.firstName + " " + npc.familyName + ": Don't insult me, Sirrah!");
+                }
             }
 
             // automatically reject if offer !> previous offer
             else if (offerLess)
             {
                 accepted = false;
-                System.Windows.Forms.MessageBox.Show("You must improve on your previous offer (£" + npc.lastOffer[this.charID] + ")");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("You must improve on your previous offer (£" + npc.lastOffer[this.charID] + ")");
+                }
             }
 
             else
@@ -1702,11 +1741,17 @@ namespace hist_mmorpg
                 if (chance <= offerPercentage)
                 {
                     accepted = true;
-                    System.Windows.Forms.MessageBox.Show(npc.firstName + " " + npc.familyName + ": It's a deal, Milord!");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(npc.firstName + " " + npc.familyName + ": It's a deal, Milord!");
+                    }
                 }
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show(npc.firstName + " " + npc.familyName + ": You'll have to do better than that, Good Sir!");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(npc.firstName + " " + npc.familyName + ": You'll have to do better than that, Good Sir!");
+                    }
                 }
             }
 
@@ -1845,7 +1890,10 @@ namespace hist_mmorpg
                             String toDisplay = "";
                             toDisplay += "Bailiff: One or more of your entourage is barred from entering this keep!";
                             toDisplay += "\r\nThey will rejoin you after your visit.";
-                            System.Windows.Forms.MessageBox.Show(toDisplay);
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show(toDisplay);
+                            }
                         }
                         else
                         {
@@ -1993,7 +2041,10 @@ namespace hist_mmorpg
             {
                 proceed = false;
                 toDisplay = "You cannot recruit in this fief, my lord, as you don't actually own it.";
-                System.Windows.Forms.MessageBox.Show(toDisplay);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                }
             }
             else
             {
@@ -2002,7 +2053,10 @@ namespace hist_mmorpg
                 {
                     proceed = false;
                     toDisplay = "I'm afraid you have already recruited here in this season, my lord.";
-                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                    }
                 }
                 else
                 {
@@ -2013,7 +2067,10 @@ namespace hist_mmorpg
                         proceed = false;
                         toDisplay = "I'm sorry, my lord, you do not speak the same language as the people in this fief,\r\n";
                         toDisplay += "and thier loyalty is not sufficiently high to allow recruitment.";
-                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show(toDisplay);
+                        }
                     }
                     else
                     {
@@ -2022,7 +2079,10 @@ namespace hist_mmorpg
                         {
                             proceed = false;
                             toDisplay = "I'm sorry, my Lord; you have insufficient funds for recruitment.";
-                            System.Windows.Forms.MessageBox.Show(toDisplay);
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show(toDisplay);
+                            }
                         }
                         else
                         {
@@ -2034,7 +2094,10 @@ namespace hist_mmorpg
                             {
                                 proceed = false;
                                 toDisplay = "I'm afraid you have run out of days, my lord.";
-                                System.Windows.Forms.MessageBox.Show(toDisplay);
+                                if (Globals_Client.showMessages)
+                                {
+                                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                                }
                             }
                         }
                     }
@@ -2068,7 +2131,10 @@ namespace hist_mmorpg
                 if (dialogResult == DialogResult.Cancel)
                 {
                     proceed = false;
-                    System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
+                    }
                 }
                 // chooses to proceed
                 else
@@ -2100,7 +2166,10 @@ namespace hist_mmorpg
                     if (dialogResult == DialogResult.Cancel)
                     {
                         confirmPurchase = false;
-                        System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
+                        }
                     }
                     // chooses to proceed
                     else
@@ -2123,7 +2192,10 @@ namespace hist_mmorpg
                     if (dialogResult == DialogResult.Cancel)
                     {
                         confirmPurchase = false;
-                        System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
+                        }
                     }
                     // chooses to proceed
                     else

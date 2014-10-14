@@ -123,7 +123,10 @@ namespace hist_mmorpg
                 }
                 catch (System.ArgumentException ae)
                 {
-                    System.Windows.Forms.MessageBox.Show(ae.Message + "\r\nPlease check for duplicate jEventID.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(ae.Message + "\r\nPlease check for duplicate jEventID.");
+                    }
                 }
             }
 
@@ -269,7 +272,6 @@ namespace hist_mmorpg
                 string[] personaeSplit = this.personae[i].Split('|');
                 if (personaeSplit[0].Equals(Globals_Client.myChar.charID))
                 {
-                    // if player made proposal, reduce priority
                     thisRole = personaeSplit[1];
                     break;
                 }
@@ -280,7 +282,6 @@ namespace hist_mmorpg
             {
                 if (priorityEntry.Key[0] == this.type)
                 {
-                    // if player made proposal, reduce priority
                     if (thisRole.Equals(priorityEntry.Key[1]))
                     {
                         priority = priorityEntry.Value;

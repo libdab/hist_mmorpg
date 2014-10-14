@@ -577,6 +577,8 @@ namespace hist_mmorpg
             Globals_Server.jEntryPriorities.Add(thisPriorityKey005, 1);
             string[] thisPriorityKey006 = { "birth", "headOfFamily" };
             Globals_Server.jEntryPriorities.Add(thisPriorityKey006, 2);
+            string[] thisPriorityKey007 = { "birth", "father" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey007, 2);
 
             // create an army and add in appropriate places
             uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 200, 400};
@@ -6472,11 +6474,17 @@ namespace hist_mmorpg
             }
             catch (System.FormatException fe)
             {
-                System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
             }
             catch (System.OverflowException ofe)
             {
-                System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
             }
         }
 
@@ -6498,7 +6506,10 @@ namespace hist_mmorpg
                 if (amount > fiefFrom.getAvailableTreasury())
                 {
                     // if not, inform player and adjust amount downwards
-                    System.Windows.Forms.MessageBox.Show("Too few funds available in " + fiefFrom.name + " Treasury; amount adjusted.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Too few funds available in " + fiefFrom.name + " Treasury; amount adjusted.");
+                    }
                     amount = fiefFrom.getAvailableTreasury();
                 }
 
@@ -6507,11 +6518,17 @@ namespace hist_mmorpg
             }
             catch (System.FormatException fe)
             {
-                System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
             }
             catch (System.OverflowException ofe)
             {
-                System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
             }
         }
 
@@ -6919,12 +6936,36 @@ namespace hist_mmorpg
 
             if (!isStillborn)
             {
+                // add baby to npcMasterList
                 Globals_Server.npcMasterList.Add(weeBairn.charID, weeBairn);
-                string[] childbirthPersonae = new string[] { mummy.charID + "|mother", daddy.charID + "|father", weeBairn.charID + "|child" };
-                JournalEntry childbirth = new JournalEntry(Globals_Server.getNextJournalEntryID(), Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, childbirthPersonae, "Birth", descr: Globals_Client.myChar.firstName + " " + Globals_Client.myChar.familyName + " welcomes a new " + weeBairn.getFunction(Globals_Client.myChar) + " into his family");
-                Globals_Server.pastEvents.entries.Add(childbirth.jEntryID, childbirth);
+
+                // get head of family
+                PlayerCharacter thisHeadOfFamily = null;
+                if (Globals_Server.pcMasterList.ContainsKey(mummy.familyID))
+                {
+                    thisHeadOfFamily = Globals_Server.pcMasterList[mummy.familyID];
+                }
+
+                // create journal entry
+                // personae
+                string[] childbirthPersonae = new string[] { mummy.familyID + "|headOfFamily", mummy.charID + "|mother", daddy.charID + "|father", weeBairn.charID + "|child" };
+                
+                // description
+                string description = "On this day of Our Lord " + thisHeadOfFamily.firstName + " "
+                    + thisHeadOfFamily.familyName + " celebrates the addition of a baby "
+                    + weeBairn.getFunction(Globals_Client.myChar).ToLower() + " into his family.";
+                
+                // put together new journal entry
+                JournalEntry childbirth = new JournalEntry(Globals_Server.getNextJournalEntryID(), Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, childbirthPersonae, "birth", descr: description);
+                
+                // add new journal entry to pastEvents
+                Globals_Server.addPastEvent(childbirth);
+
+                // set baby's location
                 weeBairn.location = mummy.location;
                 weeBairn.location.characters.Add(weeBairn);
+
+                // add baby to family
                 Globals_Client.myChar.myNPCs.Add(weeBairn);
             }
             else
@@ -6983,7 +7024,10 @@ namespace hist_mmorpg
                 toDisplay += ".  I'm glad to say that your wife is recovering well.";
                 toDisplay += "\r\n\r\nMy congratulations, milord.";
             }
-            System.Windows.Forms.MessageBox.Show(toDisplay);
+            if (Globals_Client.showMessages)
+            {
+                System.Windows.Forms.MessageBox.Show(toDisplay);
+            }
 
             this.refreshHouseholdDisplay();
         }
@@ -7030,17 +7074,26 @@ namespace hist_mmorpg
                     }
                     else
                     {
-                        System.Windows.Forms.MessageBox.Show("'" + this.familyNameChildTextBox.Text + "' is an unsuitable name, milord.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("'" + this.familyNameChildTextBox.Text + "' is an unsuitable name, milord.");
+                        }
                     }
                 }
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show("Could not retrieve details of NonPlayerCharacter.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Could not retrieve details of NonPlayerCharacter.");
+                    }
                 }
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("Please select a character from the list.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Please select a character from the list.");
+                }
             }
 
         }
@@ -7125,11 +7178,17 @@ namespace hist_mmorpg
 
             if ((playerID.Trim() == "") || (playerID == null))
             {
-                System.Windows.Forms.MessageBox.Show("No PlayerCharacter ID entered.  Operation cancelled.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No PlayerCharacter ID entered.  Operation cancelled.");
+                }
             }
             else if (!Globals_Server.pcMasterList.ContainsKey(playerID))
             {
-                System.Windows.Forms.MessageBox.Show("PlayerCharacter could not be identified.  Operation cancelled.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("PlayerCharacter could not be identified.  Operation cancelled.");
+                }
             }
             else
             {
@@ -7230,7 +7289,10 @@ namespace hist_mmorpg
             // check for siege
             if (thisFief.siege != null)
             {
-                System.Windows.Forms.MessageBox.Show("You cannot recruit from a fief under siege.  Recruitment cancelled.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("You cannot recruit from a fief under siege.  Recruitment cancelled.");
+                }
             }
 
             // if not under siege, proceed
@@ -7259,11 +7321,17 @@ namespace hist_mmorpg
                 }
                 catch (System.FormatException fe)
                 {
-                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    }
                 }
                 catch (System.OverflowException ofe)
                 {
-                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    }
                 }
             }
 
@@ -7307,7 +7375,10 @@ namespace hist_mmorpg
                     // display 'no' message
                     toDisplay += "Sorry, milord, to maintain this army would cost £" + maintCost + "\r\n";
                     toDisplay += "and you only have £" + availTreas + " available in the home treasury.";
-                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                    }
                 }
                 else
                 {
@@ -7319,7 +7390,10 @@ namespace hist_mmorpg
 
                     // display confirmation message
                     toDisplay += "Army maintained at a cost of £" + maintCost + ".";
-                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                    }
                 }
             }
         }
@@ -7365,7 +7439,10 @@ namespace hist_mmorpg
                 {
                     toDisplay += "Sorry, milord, this person is an army leader\r\n";
                     toDisplay += "and, therefore, cannot be added to your entourage.";
-                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                    }
                 }
             }
 
@@ -7561,7 +7638,10 @@ namespace hist_mmorpg
             // if no army selected
             else
             {
-                System.Windows.Forms.MessageBox.Show("No army selected!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No army selected!");
+                }
             }
 
         }
@@ -7618,7 +7698,10 @@ namespace hist_mmorpg
                     {
                         if (troopsToTransfer[i] > Globals_Client.armyToView.troops[i])
                         {
-                            System.Windows.Forms.MessageBox.Show("You don't have enough "+ troopTypeLabels[i] + " in your army for that transfer.  Transfer cancelled.");
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("You don't have enough " + troopTypeLabels[i] + " in your army for that transfer.  Transfer cancelled.");
+                            }
                             proceed = false;
                             adjustDays = false;
                         }
@@ -7631,7 +7714,10 @@ namespace hist_mmorpg
                     // if no troops selected for transfer, cancel
                     if ((totalTroopsToTransfer == 0) && (proceed))
                     {
-                        System.Windows.Forms.MessageBox.Show("You haven't selected any troops for transfer.  Transfer cancelled.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("You haven't selected any troops for transfer.  Transfer cancelled.");
+                        }
                         proceed = false;
                         adjustDays = false;
                     }
@@ -7644,7 +7730,10 @@ namespace hist_mmorpg
                         // if choose to cancel
                         if (dialogResult == DialogResult.Cancel)
                         {
-                            System.Windows.Forms.MessageBox.Show("Transfer cancelled.");
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Transfer cancelled.");
+                            }
                             proceed = false;
                             adjustDays = false;
                         }
@@ -7653,7 +7742,10 @@ namespace hist_mmorpg
                     // check have minimum days necessary for transfer
                     if (Globals_Client.armyToView.days < 10)
                     {
-                        System.Windows.Forms.MessageBox.Show("You don't have enough days left for this transfer.  Transfer cancelled.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("You don't have enough days left for this transfer.  Transfer cancelled.");
+                        }
                         proceed = false;
                         adjustDays = false;
                     }
@@ -7665,7 +7757,10 @@ namespace hist_mmorpg
                         // check if have enough days for transfer in this instance
                         if (daysTaken > Globals_Client.armyToView.days)
                         {
-                            System.Windows.Forms.MessageBox.Show("Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.");
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.");
+                            }
                             proceed = false;
                         }
                     }
@@ -7673,7 +7768,10 @@ namespace hist_mmorpg
                     // check transfer recipient exists
                     if (!Globals_Server.pcMasterList.ContainsKey(this.armyTransDropWhoTextBox.Text))
                     {
-                        System.Windows.Forms.MessageBox.Show("Cannot identify transfer recipient.  Transfer cancelled.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Cannot identify transfer recipient.  Transfer cancelled.");
+                        }
                         proceed = false;
                     }
 
@@ -7720,11 +7818,17 @@ namespace hist_mmorpg
                 }
                 catch (System.FormatException fe)
                 {
-                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    }
                 }
                 catch (System.OverflowException ofe)
                 {
-                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    }
                 }
                 finally
                 {
@@ -7763,7 +7867,10 @@ namespace hist_mmorpg
             // if no army selected
             else
             {
-                System.Windows.Forms.MessageBox.Show("No army selected!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No army selected!");
+                }
             }
         }
 
@@ -7883,11 +7990,17 @@ namespace hist_mmorpg
                 }
                 catch (System.FormatException fe)
                 {
-                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    }
                 }
                 catch (System.OverflowException ofe)
                 {
-                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    }
                 }
                 finally
                 {
@@ -7922,11 +8035,17 @@ namespace hist_mmorpg
                 }
                 catch (System.FormatException fe)
                 {
-                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    }
                 }
                 catch (System.OverflowException ofe)
                 {
-                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    }
                 }
                 finally
                 {
@@ -7958,7 +8077,10 @@ namespace hist_mmorpg
             // if no army selected
             if (this.armyListView.SelectedItems.Count < 1)
             {
-                System.Windows.Forms.MessageBox.Show("No army selected!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No army selected!");
+                }
             }
 
             // if army selected
@@ -7967,7 +8089,10 @@ namespace hist_mmorpg
                 // check if has minimum days
                 if (Globals_Client.armyToView.days < 1)
                 {
-                    System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
+                    }
                 }
 
                 // has minimum days
@@ -7982,7 +8107,10 @@ namespace hist_mmorpg
                         // set days to 0
                         thisLeader.adjustDays(Globals_Client.armyToView.days);
                         this.refreshArmyContainer(Globals_Client.armyToView);
-                        System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
+                        }
                     }
 
                     // doesn't run out of time
@@ -8023,7 +8151,10 @@ namespace hist_mmorpg
             // if no NPC selected
             if (this.houseCharListView.SelectedItems.Count < 1)
             {
-                System.Windows.Forms.MessageBox.Show("No NPC selected!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No NPC selected!");
+                }
             }
 
             // if NPC selected
@@ -8032,7 +8163,10 @@ namespace hist_mmorpg
                 // check if has minimum days
                 if (Globals_Client.charToView.days < 1)
                 {
-                    System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
+                    }
                 }
 
                 // has minimum days
@@ -8047,7 +8181,10 @@ namespace hist_mmorpg
                         // set days to 0
                         Globals_Client.charToView.adjustDays(Globals_Client.armyToView.days);
                         this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
-                        System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
+                        }
                     }
 
                     // doesn't run out of time
@@ -8085,7 +8222,10 @@ namespace hist_mmorpg
             // check if has minimum days
             if (Globals_Client.myChar.days < 1)
             {
-                System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
+                }
             }
 
             // has minimum days
@@ -8100,7 +8240,10 @@ namespace hist_mmorpg
                     // set days to 0
                     Globals_Client.myChar.adjustDays(Globals_Client.myChar.days);
                     this.refreshTravelContainer();
-                    System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
+                    }
                 }
 
                 // doesn't run out of time
@@ -8218,7 +8361,10 @@ namespace hist_mmorpg
 
             if (battleHasCommenced)
             {
-                System.Windows.Forms.MessageBox.Show("The attacker has successfully brought the defender to battle");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The attacker has successfully brought the defender to battle");
+                }
             }
 
             return battleHasCommenced;
@@ -8697,7 +8843,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show(defender.armyID + " has refused battle.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(defender.armyID + " has refused battle.");
+                }
             }
 
             // refresh screen
@@ -8838,7 +8987,10 @@ namespace hist_mmorpg
             // set isPillaged for fief
             f.isPillaged = true;
 
-            System.Windows.Forms.MessageBox.Show(toDisplay);
+            if (Globals_Client.showMessages)
+            {
+                System.Windows.Forms.MessageBox.Show(toDisplay);
+            }
         }
 
         /// <summary>
@@ -8978,13 +9130,19 @@ namespace hist_mmorpg
 
                 if (pillageCancelled)
                 {
-                    System.Windows.Forms.MessageBox.Show("The pillaging force has been forced to retreat by the fief's defenders!");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("The pillaging force has been forced to retreat by the fief's defenders!");
+                    }
                 }
 
                 // check still have enough days left
                 if (a.days < 7)
                 {
-                    System.Windows.Forms.MessageBox.Show("After giving battle, the pillaging army no longer has\r\nsufficient days for this operation.  Pillage cancelled.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("After giving battle, the pillaging army no longer has\r\nsufficient days for this operation.  Pillage cancelled.");
+                    }
                     pillageCancelled = true;
                 }
             }
@@ -9014,11 +9172,17 @@ namespace hist_mmorpg
                 proceed = false;
                 if (circumstance == "pillage")
                 {
-                    System.Windows.Forms.MessageBox.Show("You cannot pillage your own fief!  Pillage cancelled.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You cannot pillage your own fief!  Pillage cancelled.");
+                    }
                 }
                 else if (circumstance == "siege")
                 {
-                    System.Windows.Forms.MessageBox.Show("You cannot besiege your own fief!  Siege cancelled.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You cannot besiege your own fief!  Siege cancelled.");
+                    }
                 }
             }
 
@@ -9028,11 +9192,17 @@ namespace hist_mmorpg
                 proceed = false;
                 if (circumstance == "pillage")
                 {
-                    System.Windows.Forms.MessageBox.Show("You cannot pillage a fief that is under siege.  Pillage cancelled.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You cannot pillage a fief that is under siege.  Pillage cancelled.");
+                    }
                 }
                 else if (circumstance == "siege")
                 {
-                    System.Windows.Forms.MessageBox.Show("This fief is already under siege.  Siege cancelled.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("This fief is already under siege.  Siege cancelled.");
+                    }
                 }
             }
 
@@ -9042,7 +9212,10 @@ namespace hist_mmorpg
                 if ((f.isPillaged) && (proceed))
                 {
                     proceed = false;
-                    System.Windows.Forms.MessageBox.Show("This fief has already been pillaged during\r\nthe current season.  Pillage cancelled.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("This fief has already been pillaged during\r\nthe current season.  Pillage cancelled.");
+                    }
                 }
             }
 
@@ -9052,11 +9225,17 @@ namespace hist_mmorpg
                 proceed = false;
                 if (circumstance == "pillage")
                 {
-                    System.Windows.Forms.MessageBox.Show("This army has no leader.  Pillage cancelled.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("This army has no leader.  Pillage cancelled.");
+                    }
                 }
                 else if (circumstance == "siege")
                 {
-                    System.Windows.Forms.MessageBox.Show("This army has no leader.  Siege cancelled.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("This army has no leader.  Siege cancelled.");
+                    }
                 }
             }
 
@@ -9067,7 +9246,10 @@ namespace hist_mmorpg
                 if ((a.days < 7) && (proceed))
                 {
                     proceed = false;
-                    System.Windows.Forms.MessageBox.Show("This army has too few days remaining for\r\na pillage operation.  Pillage cancelled.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("This army has too few days remaining for\r\na pillage operation.  Pillage cancelled.");
+                    }
                 }
             }
             else if (circumstance == "siege")
@@ -9076,7 +9258,10 @@ namespace hist_mmorpg
                 if ((a.days < 1) && (proceed))
                 {
                     proceed = false;
-                    System.Windows.Forms.MessageBox.Show("This army has too few days remaining for\r\na siege operation.  Siege cancelled.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("This army has too few days remaining for\r\na siege operation.  Siege cancelled.");
+                    }
                 }
             }
 
@@ -9101,11 +9286,17 @@ namespace hist_mmorpg
                                 proceed = false;
                                 if (circumstance == "pillage")
                                 {
-                                    System.Windows.Forms.MessageBox.Show("There is at least one defending army (" + armyInFief.armyID + ") that must be defeated\r\nbefore you can pillage this fief.  Pillage cancelled.");
+                                    if (Globals_Client.showMessages)
+                                    {
+                                        System.Windows.Forms.MessageBox.Show("There is at least one defending army (" + armyInFief.armyID + ") that must be defeated\r\nbefore you can pillage this fief.  Pillage cancelled.");
+                                    }
                                 }
                                 else if (circumstance == "siege")
                                 {
-                                    System.Windows.Forms.MessageBox.Show("There is at least one defending army (" + armyInFief.armyID + ") that must be defeated\r\nbefore you can besiege this fief.  Siege cancelled.");
+                                    if (Globals_Client.showMessages)
+                                    {
+                                        System.Windows.Forms.MessageBox.Show("There is at least one defending army (" + armyInFief.armyID + ") that must be defeated\r\nbefore you can besiege this fief.  Siege cancelled.");
+                                    }
                                 }
                                 break;
                             }
@@ -9141,7 +9332,10 @@ namespace hist_mmorpg
             if (s.days < daysRequired)
             {
                 proceed = false;
-                System.Windows.Forms.MessageBox.Show("There are not enough days remaining for this\r\na siege operation.  Operation cancelled.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("There are not enough days remaining for this\r\na siege operation.  Operation cancelled.");
+                }
             }
 
             return proceed;
@@ -9177,7 +9371,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("No army selected!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No army selected!");
+                }
             }
 
         }
@@ -9588,7 +9785,10 @@ namespace hist_mmorpg
             if (siegeRaised)
             {
                 // NOTE: if sally was success, siege is ended in Form1.giveBattle
-                System.Windows.Forms.MessageBox.Show("The defenders have successfully raised the siege!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The defenders have successfully raised the siege!");
+                }
             }
 
             else
@@ -9946,7 +10146,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("No army selected!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No army selected!");
+                }
             }
 
         }
@@ -9989,7 +10192,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("No siege selected!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No siege selected!");
+                }
             }
         }
 
@@ -10019,7 +10225,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("No siege selected!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No siege selected!");
+                }
             }
         }
 
@@ -10049,7 +10258,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("No siege selected!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No siege selected!");
+                }
             }
         }
 
@@ -10082,7 +10294,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("No siege selected!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No siege selected!");
+                }
             }
 
         }
@@ -10105,7 +10320,10 @@ namespace hist_mmorpg
                 // check to make sure is in same fief
                 if (!(wife.location == husband.location))
                 {
-                    System.Windows.Forms.MessageBox.Show("You have to be in the same fief to do that!");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You have to be in the same fief to do that!");
+                    }
                     proceed = false;
                 }
 
@@ -10114,7 +10332,10 @@ namespace hist_mmorpg
                     // make sure wife not already pregnant
                     if (wife.isPregnant)
                     {
-                        System.Windows.Forms.MessageBox.Show(wife.firstName + " " + wife.familyName + " is already pregnant, milord.  Don't be so impatient!", "PREGNANCY ATTEMPT CANCELLED");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show(wife.firstName + " " + wife.familyName + " is already pregnant, milord.  Don't be so impatient!", "PREGNANCY ATTEMPT CANCELLED");
+                        }
                         proceed = false;
                     }
 
@@ -10123,7 +10344,10 @@ namespace hist_mmorpg
                     {
                         if ((husband.location.siege != null) && (husband.inKeep != wife.inKeep))
                         {
-                            System.Windows.Forms.MessageBox.Show("I'm afraid the husband and wife are being separated by the ongoing siege.", "PREGNANCY ATTEMPT CANCELLED");
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("I'm afraid the husband and wife are being separated by the ongoing siege.", "PREGNANCY ATTEMPT CANCELLED");
+                            }
                             proceed = false;
                         }
 
@@ -10134,7 +10358,10 @@ namespace hist_mmorpg
 
                             if (minDays < 1)
                             {
-                                System.Windows.Forms.MessageBox.Show("Sorry, you don't have enough time left for this in the current season.", "PREGNANCY ATTEMPT CANCELLED");
+                                if (Globals_Client.showMessages)
+                                {
+                                    System.Windows.Forms.MessageBox.Show("Sorry, you don't have enough time left for this in the current season.", "PREGNANCY ATTEMPT CANCELLED");
+                                }
                                 proceed = false;
                             }
                             else
@@ -10163,7 +10390,10 @@ namespace hist_mmorpg
 
             else
             {
-                System.Windows.Forms.MessageBox.Show("This man is not married.", "PREGNANCY ATTEMPT CANCELLED");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("This man is not married.", "PREGNANCY ATTEMPT CANCELLED");
+                }
                 proceed = false;
             }
 
@@ -10194,7 +10424,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("No character selected!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No character selected!");
+                }
             }
         }
 
@@ -10217,7 +10450,10 @@ namespace hist_mmorpg
             // if have no home fief
             else
             {
-                System.Windows.Forms.MessageBox.Show("You have no home fief!");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("You have no home fief!");
+                }
             }
         }
 
@@ -10405,7 +10641,10 @@ namespace hist_mmorpg
             // check if at beginning of index
             if (Globals_Client.jEntryToView == 0)
             {
-                System.Windows.Forms.MessageBox.Show("There are no entries prior to this one.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("There are no entries prior to this one.");
+                }
             }
 
             else
@@ -10429,7 +10668,10 @@ namespace hist_mmorpg
             // check if at beginning of index
             if (Globals_Client.jEntryToView == Globals_Client.jEntryMax)
             {
-                System.Windows.Forms.MessageBox.Show("There are no entries after this one.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("There are no entries after this one.");
+                }
             }
 
             else
@@ -10458,11 +10700,17 @@ namespace hist_mmorpg
 
             if (this.houseProposeBrideTextBox.Text.Trim() == "")
             {
-                System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
+                }
             }
             else if (this.houseProposeGroomTextBox.Text.Trim() == "")
             {
-                System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                }
             }
             else
             {
@@ -10478,7 +10726,10 @@ namespace hist_mmorpg
 
                 if (bride == null)
                 {
-                    System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
+                    }
                 }
                 else
                 {
@@ -10494,7 +10745,10 @@ namespace hist_mmorpg
 
                     if (groom == null)
                     {
-                        System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                        }
                     }
                     else
                     {
@@ -10991,7 +11245,10 @@ namespace hist_mmorpg
 
             if (!proceed)
             {
-                System.Windows.Forms.MessageBox.Show(message);
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(message);
+                }
             }
 
             return proceed;
@@ -11016,7 +11273,10 @@ namespace hist_mmorpg
 
                 if (this.meetingPlaceProposeTextBox.Text.Trim() == "")
                 {
-                    System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                    }
                 }
                 else
                 {
@@ -11032,7 +11292,10 @@ namespace hist_mmorpg
 
                     if (bride == null)
                     {
-                        System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
+                        }
                     }
                     else
                     {
@@ -11048,7 +11311,10 @@ namespace hist_mmorpg
 
                         if (groom == null)
                         {
-                            System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                            }
                         }
                         else
                         {
@@ -11068,7 +11334,10 @@ namespace hist_mmorpg
 
             else
             {
-                System.Windows.Forms.MessageBox.Show("Please select a prospective bride.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Please select a prospective bride.");
+                }
             }
 
         }
@@ -11103,7 +11372,10 @@ namespace hist_mmorpg
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("No journal entry selected.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No journal entry selected.");
+                }
             }
         }
 

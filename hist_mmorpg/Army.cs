@@ -232,7 +232,10 @@ namespace hist_mmorpg
             {
                 if (troopsLost > 0)
                 {
-                    System.Windows.Forms.MessageBox.Show("Your army (" + this.armyID + ") has lost " + troopsLost + " from attrition in " + myNewFief.name);
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Your army (" + this.armyID + ") has lost " + troopsLost + " from attrition in " + myNewFief.name);
+                    }
                 }
             }
 
@@ -334,7 +337,10 @@ namespace hist_mmorpg
 
             if (casualtyModifier > 0)
             {
-                System.Windows.Forms.MessageBox.Show(toDisplay);
+                if (Globals_Client.showDebugMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                }
             }
 
             return casualtyModifier;

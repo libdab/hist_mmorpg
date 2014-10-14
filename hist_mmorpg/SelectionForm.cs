@@ -622,7 +622,13 @@ namespace hist_mmorpg
             else
             {
                 // ask player to check entry
-                System.Windows.Forms.MessageBox.Show("Character could not be identified.  Please ensure charID is valid.");
+                if (Globals_Client.showMessages)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Character could not be identified.  Please ensure charID is valid.");
+                    }
+                }
             }
         }
 
@@ -656,7 +662,10 @@ namespace hist_mmorpg
                 else
                 {
                     // display error message
-                    System.Windows.Forms.MessageBox.Show("Selected character could not be identified.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Selected character could not be identified.");
+                    }
                 }
 
             }
@@ -747,7 +756,10 @@ namespace hist_mmorpg
             // if no detachment selected, do nothing except display message
             if (checkedItems.Count < 1)
             {
-                System.Windows.Forms.MessageBox.Show("No detachments have been selected.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No detachments have been selected.");
+                }
             }
 
             // if any detachments selected, proceed
@@ -756,7 +768,10 @@ namespace hist_mmorpg
                 // check have minimum days necessary for transfer
                 if (thisArmy.days < 10)
                 {
-                    System.Windows.Forms.MessageBox.Show("You don't have enough days left for this transfer.  Transfer cancelled.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You don't have enough days left for this transfer.  Transfer cancelled.");
+                    }
                     proceed = false;
                     adjustDays = false;
                 }
@@ -769,7 +784,10 @@ namespace hist_mmorpg
                     if (daysTaken > thisArmy.days)
                     {
                         daysTaken = thisArmy.days;
-                        System.Windows.Forms.MessageBox.Show("Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.");
+                        }
                         proceed = false;
                     }
                 }
@@ -928,7 +946,10 @@ namespace hist_mmorpg
                     // if not all selected detachments could be picked up (not enough days), show message
                     if (displayNotAllMsg)
                     {
-                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show(toDisplay);
+                        }
                     }
                 }
 
@@ -1010,7 +1031,10 @@ namespace hist_mmorpg
             // check has enough days to give battle (1)
             if (this.observer.days < 1)
             {
-                System.Windows.Forms.MessageBox.Show("Your army doesn't have enough days left to give battle.");
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Your army doesn't have enough days left to give battle.");
+                }
             }
             else
             {
@@ -1023,7 +1047,10 @@ namespace hist_mmorpg
                 string siegeID = defender.checkIfSiegeDefenderGarrison();
                 if (siegeID != null)
                 {
-                    System.Windows.Forms.MessageBox.Show("The defending army is currently being besieged and\r\ncannot be attacked.  Attack cancelled.");
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("The defending army is currently being besieged and\r\ncannot be attacked.  Attack cancelled.");
+                    }
                 }
 
                 else
@@ -1032,7 +1059,10 @@ namespace hist_mmorpg
                     siegeID = defender.checkIfSiegeDefenderAdditional();
                     if (siegeID != null)
                     {
-                        System.Windows.Forms.MessageBox.Show("The defending army is currently being besieged and\r\ncannot be attacked.  Attack cancelled.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("The defending army is currently being besieged and\r\ncannot be attacked.  Attack cancelled.");
+                        }
                     }
 
                     else
@@ -1047,7 +1077,10 @@ namespace hist_mmorpg
                             // if choose to cancel
                             if (dialogResult == DialogResult.Cancel)
                             {
-                                System.Windows.Forms.MessageBox.Show("Attack cancelled.");
+                                if (Globals_Client.showMessages)
+                                {
+                                    System.Windows.Forms.MessageBox.Show("Attack cancelled.");
+                                }
                             }
 
                             // if choose to proceed
