@@ -1028,20 +1028,23 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void armiesAttackBtn_Click(object sender, EventArgs e)
         {
+            bool proceed = true;
+
+            // get armies
+            Army attacker = this.observer.getArmy();
+            Army defender = Globals_Server.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
+
             // check has enough days to give battle (1)
             if (this.observer.days < 1)
             {
                 if (Globals_Client.showMessages)
                 {
                     System.Windows.Forms.MessageBox.Show("Your army doesn't have enough days left to give battle.");
+                    proceed = false;
                 }
             }
             else
             {
-                // get armies
-                Army attacker = this.observer.getArmy();
-                Army defender = Globals_Server.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
-
                 // SIEGE INVOLVEMENT
                 // check if defending army is the garrison in a siege
                 string siegeID = defender.checkIfSiegeDefenderGarrison();
@@ -1050,6 +1053,7 @@ namespace hist_mmorpg
                     if (Globals_Client.showMessages)
                     {
                         System.Windows.Forms.MessageBox.Show("The defending army is currently being besieged and\r\ncannot be attacked.  Attack cancelled.");
+                        proceed = false;
                     }
                 }
 
@@ -1062,6 +1066,7 @@ namespace hist_mmorpg
                         if (Globals_Client.showMessages)
                         {
                             System.Windows.Forms.MessageBox.Show("The defending army is currently being besieged and\r\ncannot be attacked.  Attack cancelled.");
+                            proceed = false;
                         }
                     }
 
@@ -1080,6 +1085,7 @@ namespace hist_mmorpg
                                 if (Globals_Client.showMessages)
                                 {
                                     System.Windows.Forms.MessageBox.Show("Attack cancelled.");
+                                    proceed = false;
                                 }
                             }
 
@@ -1090,13 +1096,16 @@ namespace hist_mmorpg
                                 thisSiege = Globals_Server.siegeMasterList[siegeID];
 
                                 parent.siegeEnd(thisSiege);
-
-                                // let slip the dogs of war
-                                parent.giveBattle(attacker, defender);
                             }
                         }
                     }
                 }
+            }
+
+            if (proceed)
+            {
+                // let slip the dogs of war
+                parent.giveBattle(attacker, defender);
             }
 
             // close form

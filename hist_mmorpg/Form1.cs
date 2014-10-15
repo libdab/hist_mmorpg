@@ -58,7 +58,7 @@ namespace hist_mmorpg
 		/// </summary>
 		/// <param name="source">Where to get object data (database or hard-coded)</param>
         /// <param name="pc">ID of PlayerCharacter to set as myChar</param>
-        public void initGameObjects(String source, string pc)
+        public void initGameObjects(string source, string pc)
         {
 
 			if (source == "db")
@@ -212,35 +212,35 @@ namespace hist_mmorpg
 			List<Character> fief7Chars = new List<Character>();
 
             // create ranks for kingdoms, provinces, fiefs
-            Tuple<String, String>[] myTitle03 = new Tuple<string, string>[3];
+            Tuple<string, string>[] myTitle03 = new Tuple<string, string>[3];
             myTitle03[0] = new Tuple<string, string>("langC", "King");
             myTitle03[1] = new Tuple<string, string>("E", "King");
             myTitle03[2] = new Tuple<string, string>("langF", "Roi");
             Rank myRank03 = new Rank("03", myTitle03, 6);
             Globals_Server.rankMasterList.Add(myRank03.rankID, myRank03);
 
-            Tuple<String, String>[] myTitle09 = new Tuple<string, string>[3];
+            Tuple<string, string>[] myTitle09 = new Tuple<string, string>[3];
             myTitle09[0] = new Tuple<string, string>("langC", "Prince");
             myTitle09[1] = new Tuple<string, string>("E", "Prince");
             myTitle09[2] = new Tuple<string, string>("langF", "Prince");
             Rank myRank09 = new Rank("09", myTitle09, 4);
             Globals_Server.rankMasterList.Add(myRank09.rankID, myRank09);
 
-            Tuple<String, String>[] myTitle11 = new Tuple<string, string>[3];
+            Tuple<string, string>[] myTitle11 = new Tuple<string, string>[3];
             myTitle11[0] = new Tuple<string, string>("langC", "Earl");
             myTitle11[1] = new Tuple<string, string>("E", "Earl");
             myTitle11[2] = new Tuple<string, string>("langF", "Comte");
             Rank myRank11 = new Rank("11", myTitle11, 4);
             Globals_Server.rankMasterList.Add(myRank11.rankID, myRank11);
 
-            Tuple<String, String>[] myTitle15 = new Tuple<string, string>[3];
+            Tuple<string, string>[] myTitle15 = new Tuple<string, string>[3];
             myTitle15[0] = new Tuple<string, string>("langC", "Baron");
             myTitle15[1] = new Tuple<string, string>("E", "Baron");
             myTitle15[2] = new Tuple<string, string>("langF", "Baron");
             Rank myRank15 = new Rank("15", myTitle15, 2);
             Globals_Server.rankMasterList.Add(myRank15.rankID, myRank15);
 
-            Tuple<String, String>[] myTitle17 = new Tuple<string, string>[3];
+            Tuple<string, string>[] myTitle17 = new Tuple<string, string>[3];
             myTitle17[0] = new Tuple<string, string>("langC", "Lord");
             myTitle17[1] = new Tuple<string, string>("E", "Lord");
             myTitle17[2] = new Tuple<string, string>("langF", "Sire");
@@ -276,13 +276,13 @@ namespace hist_mmorpg
             double[] currFin007 = new double[14];
 
             // create armies lists for fiefs
-            List<String> armies001 = new List<string>();
-            List<String> armies002 = new List<string>();
-            List<String> armies003 = new List<string>();
-            List<String> armies004 = new List<string>();
-            List<String> armies005 = new List<string>();
-            List<String> armies006 = new List<string>();
-            List<String> armies007 = new List<string>();
+            List<string> armies001 = new List<string>();
+            List<string> armies002 = new List<string>();
+            List<string> armies003 = new List<string>();
+            List<string> armies004 = new List<string>();
+            List<string> armies005 = new List<string>();
+            List<string> armies006 = new List<string>();
+            List<string> armies007 = new List<string>();
 
             // create troop transfer lists for fiefs
             Dictionary<string, string[]> transfers001 = new Dictionary<string, string[]>();
@@ -386,18 +386,18 @@ namespace hist_mmorpg
             Tuple<uint, byte> myDob012 = new Tuple<uint, byte>(1303, 3);
 
             // create titles list for characters
-            List<String> myTitles001 = new List<string>();
-            List<String> myTitles002 = new List<string>();
-            List<String> myTitles003 = new List<string>();
-            List<String> myTitles004 = new List<string>();
-            List<String> myTitles005 = new List<string>();
-            List<String> myTitles006 = new List<string>();
-            List<String> myTitles007 = new List<string>();
-            List<String> myTitles008 = new List<string>();
-            List<String> myTitles009 = new List<string>();
-            List<String> myTitles010 = new List<string>();
-            List<String> myTitles011 = new List<string>();
-            List<String> myTitles012 = new List<string>();
+            List<string> myTitles001 = new List<string>();
+            List<string> myTitles002 = new List<string>();
+            List<string> myTitles003 = new List<string>();
+            List<string> myTitles004 = new List<string>();
+            List<string> myTitles005 = new List<string>();
+            List<string> myTitles006 = new List<string>();
+            List<string> myTitles007 = new List<string>();
+            List<string> myTitles008 = new List<string>();
+            List<string> myTitles009 = new List<string>();
+            List<string> myTitles010 = new List<string>();
+            List<string> myTitles011 = new List<string>();
+            List<string> myTitles012 = new List<string>();
 
             // create armies list for PCs
             List<Army> myArmies001 = new List<Army>();
@@ -648,7 +648,7 @@ namespace hist_mmorpg
 		/// Writes all objects for a particular game to database
 		/// </summary>
 		/// <param name="gameID">ID of game (used for Riak bucket)</param>
-		public void writeToDB(String gameID)
+        public void writeToDB(string gameID)
 		{
 			// ========= write CLOCK
             this.writeClock(gameID, Globals_Server.clock);
@@ -672,7 +672,7 @@ namespace hist_mmorpg
 			}
 
             // write each object in skillMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<String, Skill> pair in Globals_Server.skillMasterList)
+            foreach (KeyValuePair<string, Skill> pair in Globals_Server.skillMasterList)
 			{
 				bool success = this.writeSkill (gameID, pair.Value);
 				if (success)
@@ -692,7 +692,7 @@ namespace hist_mmorpg
             }
 
             // write each object in languageMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<String, Language> pair in Globals_Server.languageMasterList)
+            foreach (KeyValuePair<string, Language> pair in Globals_Server.languageMasterList)
             {
                 bool success = this.writeLanguage(gameID, pair.Value);
                 if (success)
@@ -712,7 +712,7 @@ namespace hist_mmorpg
             }
 
             // write each object in rankMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<String, Rank> pair in Globals_Server.rankMasterList)
+            foreach (KeyValuePair<string, Rank> pair in Globals_Server.rankMasterList)
             {
                 bool success = this.writeRank(gameID, pair.Value);
                 if (success)
@@ -732,7 +732,7 @@ namespace hist_mmorpg
 			}
 
             // write each object in npcMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<String, NonPlayerCharacter> pair in Globals_Server.npcMasterList)
+            foreach (KeyValuePair<string, NonPlayerCharacter> pair in Globals_Server.npcMasterList)
 			{
 				bool success = this.writeNPC (gameID, pair.Value);
 				if (success)
@@ -752,7 +752,7 @@ namespace hist_mmorpg
 			}
 
             // write each object in pcMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<String, PlayerCharacter> pair in Globals_Server.pcMasterList)
+            foreach (KeyValuePair<string, PlayerCharacter> pair in Globals_Server.pcMasterList)
 			{
 				bool success = this.writePC (gameID, pair.Value);
 				if (success)
@@ -772,7 +772,7 @@ namespace hist_mmorpg
             }
 
             // write each object in kingdomMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<String, Kingdom> pair in Globals_Server.kingdomMasterList)
+            foreach (KeyValuePair<string, Kingdom> pair in Globals_Server.kingdomMasterList)
             {
                 bool success = this.writeKingdom(gameID, pair.Value);
                 if (success)
@@ -792,7 +792,7 @@ namespace hist_mmorpg
 			}
 
             // write each object in provinceMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<String, Province> pair in Globals_Server.provinceMasterList)
+            foreach (KeyValuePair<string, Province> pair in Globals_Server.provinceMasterList)
 			{
 				bool success = this.writeProvince (gameID, pair.Value);
 				if (success)
@@ -812,7 +812,7 @@ namespace hist_mmorpg
 			}
 
             // write each object in terrainMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<String, Terrain> pair in Globals_Server.terrainMasterList)
+            foreach (KeyValuePair<string, Terrain> pair in Globals_Server.terrainMasterList)
 			{
 				bool success = this.writeTerrain (gameID, pair.Value);
 				if (success)
@@ -832,7 +832,7 @@ namespace hist_mmorpg
 			}
 
             // write each object in fiefMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<String, Fief> pair in Globals_Server.fiefMasterList)
+            foreach (KeyValuePair<string, Fief> pair in Globals_Server.fiefMasterList)
 			{
 				bool success = this.writeFief (gameID, pair.Value);
 				if (success)
@@ -852,7 +852,7 @@ namespace hist_mmorpg
             }
 
             // write each object in armyMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<String, Army> pair in Globals_Server.armyMasterList)
+            foreach (KeyValuePair<string, Army> pair in Globals_Server.armyMasterList)
             {
                 bool success = this.writeArmy(gameID, pair.Value);
                 if (success)
@@ -872,7 +872,7 @@ namespace hist_mmorpg
             }
 
             // write each object in siegeMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<String, Siege> pair in Globals_Server.siegeMasterList)
+            foreach (KeyValuePair<string, Siege> pair in Globals_Server.siegeMasterList)
             {
                 bool success = this.writeSiege(gameID, pair.Value);
                 if (success)
@@ -893,7 +893,7 @@ namespace hist_mmorpg
 		/// Loads all objects for a particular game from database
 		/// </summary>
         /// <param name="gameID">ID of game (Riak bucket)</param>
-		public void initialDBload(String gameID)
+        public void initialDBload(string gameID)
 		{
 
             // ========= load KEY LISTS (to ensure efficient retrieval of specific game objects)
@@ -914,7 +914,7 @@ namespace hist_mmorpg
             Globals_Client.myPastEvents = this.initialDBload_journal(gameID, "clientPastEvents");
 
             // ========= load SKILLS
-            foreach (String element in Globals_Server.skillKeys)
+            foreach (string element in Globals_Server.skillKeys)
 			{
 				Skill skill = this.initialDBload_skill (gameID, element);
                 // add Skill to skillMasterList
@@ -922,7 +922,7 @@ namespace hist_mmorpg
 			}
 
             // ========= load LANGUAGES
-            foreach (String element in Globals_Server.langKeys)
+            foreach (string element in Globals_Server.langKeys)
             {
                 Language lang = this.initialDBload_language(gameID, element);
                 // add Language to languageMasterList
@@ -930,7 +930,7 @@ namespace hist_mmorpg
             }
 
             // ========= load RANKS
-            foreach (String element in Globals_Server.rankKeys)
+            foreach (string element in Globals_Server.rankKeys)
             {
                 Rank rank = this.initialDBload_rank(gameID, element);
                 // add Rank to rankMasterList
@@ -938,7 +938,7 @@ namespace hist_mmorpg
             }
 
             // ========= load SIEGES
-            foreach (String element in Globals_Server.siegeKeys)
+            foreach (string element in Globals_Server.siegeKeys)
             {
                 Siege s = this.initialDBload_Siege(gameID, element);
                 // add Siege to siegeMasterList
@@ -946,7 +946,7 @@ namespace hist_mmorpg
             }
 
             // ========= load ARMIES
-            foreach (String element in Globals_Server.armyKeys)
+            foreach (string element in Globals_Server.armyKeys)
             {
                 Army a = this.initialDBload_Army(gameID, element);
                 // add Army to armyMasterList
@@ -954,7 +954,7 @@ namespace hist_mmorpg
             }
 
             // ========= load NPCs
-            foreach (String element in Globals_Server.npcKeys)
+            foreach (string element in Globals_Server.npcKeys)
 			{
 				NonPlayerCharacter npc = this.initialDBload_NPC (gameID, element);
                 // add NPC to npcMasterList
@@ -962,7 +962,7 @@ namespace hist_mmorpg
 			}
 
             // ========= load PCs
-            foreach (String element in Globals_Server.pcKeys)
+            foreach (string element in Globals_Server.pcKeys)
 			{
 				PlayerCharacter pc = this.initialDBload_PC (gameID, element);
                 // add PC to pcMasterList
@@ -970,7 +970,7 @@ namespace hist_mmorpg
 			}
 
             // ========= load KINGDOMS
-            foreach (String element in Globals_Server.kingKeys)
+            foreach (string element in Globals_Server.kingKeys)
             {
                 Kingdom king = this.initialDBload_Kingdom(gameID, element);
                 // add Kingdom to kingdomMasterList
@@ -978,7 +978,7 @@ namespace hist_mmorpg
             }
 
             // ========= load PROVINCES
-            foreach (String element in Globals_Server.provKeys)
+            foreach (string element in Globals_Server.provKeys)
 			{
 				Province prov = this.initialDBload_Province (gameID, element);
                 // add Province to provinceMasterList
@@ -986,7 +986,7 @@ namespace hist_mmorpg
 			}
 
             // ========= load TERRAINS
-            foreach (String element in Globals_Server.terrKeys)
+            foreach (string element in Globals_Server.terrKeys)
 			{
 				Terrain terr = this.initialDBload_terrain (gameID, element);
                 // add Terrain to terrainMasterList
@@ -994,7 +994,7 @@ namespace hist_mmorpg
 			}
 
             // ========= load FIEFS
-            foreach (String element in Globals_Server.fiefKeys)
+            foreach (string element in Globals_Server.fiefKeys)
 			{
 				Fief f = this.initialDBload_Fief (gameID, element);
                 // add Fief to fiefMasterList
@@ -1019,13 +1019,13 @@ namespace hist_mmorpg
 		/// Loads all Riak key lists for a particular game from database
 		/// </summary>
 		/// <param name="gameID">Game for which key lists to be retrieved</param>
-		public void initialDBload_keyLists(String gameID)
+        public void initialDBload_keyLists(string gameID)
 		{
             // populate skillKeys
 			var skillKeyResult = rClient.Get(gameID, "skillKeys");
 			if (skillKeyResult.IsSuccess)
 			{
-                Globals_Server.skillKeys = skillKeyResult.Value.GetObject<List<String>>();
+                Globals_Server.skillKeys = skillKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1039,7 +1039,7 @@ namespace hist_mmorpg
 			var langKeyResult = rClient.Get(gameID, "langKeys");
 			if (langKeyResult.IsSuccess)
 			{
-                Globals_Server.langKeys = langKeyResult.Value.GetObject<List<String>>();
+                Globals_Server.langKeys = langKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1053,7 +1053,7 @@ namespace hist_mmorpg
             var rankKeyResult = rClient.Get(gameID, "rankKeys");
             if (rankKeyResult.IsSuccess)
             {
-                Globals_Server.rankKeys = rankKeyResult.Value.GetObject<List<String>>();
+                Globals_Server.rankKeys = rankKeyResult.Value.GetObject<List<string>>();
             }
             else
             {
@@ -1067,7 +1067,7 @@ namespace hist_mmorpg
             var npcKeyResult = rClient.Get(gameID, "npcKeys");
 			if (npcKeyResult.IsSuccess)
 			{
-                Globals_Server.npcKeys = npcKeyResult.Value.GetObject<List<String>>();
+                Globals_Server.npcKeys = npcKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1081,7 +1081,7 @@ namespace hist_mmorpg
             var pcKeyResult = rClient.Get(gameID, "pcKeys");
 			if (pcKeyResult.IsSuccess)
 			{
-                Globals_Server.pcKeys = pcKeyResult.Value.GetObject<List<String>>();
+                Globals_Server.pcKeys = pcKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1095,7 +1095,7 @@ namespace hist_mmorpg
             var kingKeyResult = rClient.Get(gameID, "kingKeys");
             if (kingKeyResult.IsSuccess)
             {
-                Globals_Server.kingKeys = kingKeyResult.Value.GetObject<List<String>>();
+                Globals_Server.kingKeys = kingKeyResult.Value.GetObject<List<string>>();
             }
             else
             {
@@ -1109,7 +1109,7 @@ namespace hist_mmorpg
             var provKeyResult = rClient.Get(gameID, "provKeys");
 			if (provKeyResult.IsSuccess)
 			{
-                Globals_Server.provKeys = provKeyResult.Value.GetObject<List<String>>();
+                Globals_Server.provKeys = provKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1123,7 +1123,7 @@ namespace hist_mmorpg
             var terrKeyResult = rClient.Get(gameID, "terrKeys");
 			if (terrKeyResult.IsSuccess)
 			{
-                Globals_Server.terrKeys = terrKeyResult.Value.GetObject<List<String>>();
+                Globals_Server.terrKeys = terrKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1137,7 +1137,7 @@ namespace hist_mmorpg
             var fiefKeyResult = rClient.Get(gameID, "fiefKeys");
 			if (fiefKeyResult.IsSuccess)
 			{
-                Globals_Server.fiefKeys = fiefKeyResult.Value.GetObject<List<String>>();
+                Globals_Server.fiefKeys = fiefKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1151,7 +1151,7 @@ namespace hist_mmorpg
             var armyKeyResult = rClient.Get(gameID, "armyKeys");
             if (armyKeyResult.IsSuccess)
             {
-                Globals_Server.armyKeys = armyKeyResult.Value.GetObject<List<String>>();
+                Globals_Server.armyKeys = armyKeyResult.Value.GetObject<List<string>>();
             }
             else
             {
@@ -1165,7 +1165,7 @@ namespace hist_mmorpg
             var siegeKeyResult = rClient.Get(gameID, "siegeKeys");
             if (siegeKeyResult.IsSuccess)
             {
-                Globals_Server.siegeKeys = siegeKeyResult.Value.GetObject<List<String>>();
+                Globals_Server.siegeKeys = siegeKeyResult.Value.GetObject<List<string>>();
             }
             else
             {
@@ -1183,7 +1183,7 @@ namespace hist_mmorpg
         /// <returns>GameClock object</returns>
         /// <param name="gameID">Game for which clock to be retrieved</param>
 		/// <param name="clockID">ID of clock to be retrieved</param>
-		public GameClock initialDBload_clock(String gameID, String clockID)
+        public GameClock initialDBload_clock(string gameID, string clockID)
 		{
 			var clockResult = rClient.Get(gameID, clockID);
 			var newClock = new GameClock();
@@ -1209,7 +1209,7 @@ namespace hist_mmorpg
         /// <returns>Journal object</returns>
         /// <param name="gameID">Game for which Journal to be retrieved</param>
         /// <param name="journalID">ID of Journal to be retrieved</param>
-        public Journal initialDBload_journal(String gameID, String journalID)
+        public Journal initialDBload_journal(string gameID, string journalID)
         {
             var journalResult = rClient.Get(gameID, journalID);
             var newJournal = new Journal();
@@ -1235,7 +1235,7 @@ namespace hist_mmorpg
 		/// <returns>Dictionary<string, uint[]> object</returns>
 		/// <param name="gameID">Game for which Dictionary to be retrieved</param>
 		/// <param name="dictID">ID of Dictionary to be retrieved</param>
-		public Dictionary<string, uint[]> initialDBload_dictUint(String gameID, String dictID)
+        public Dictionary<string, uint[]> initialDBload_dictUint(string gameID, string dictID)
 		{
 			var dictResult = rClient.Get(gameID, dictID);
 			var newDict = new Dictionary<string, uint[]>();
@@ -1261,7 +1261,7 @@ namespace hist_mmorpg
         /// <returns>Dictionary<string, byte> object</returns>
         /// <param name="gameID">Game for which Dictionary to be retrieved</param>
         /// <param name="dictID">ID of Dictionary to be retrieved</param>
-        public Dictionary<string[], byte> initialDBload_dictString(String gameID, String dictID)
+        public Dictionary<string[], byte> initialDBload_dictString(string gameID, string dictID)
         {
             var dictResult = rClient.Get(gameID, dictID);
             var newDict = new Dictionary<string[], byte>();
@@ -1287,7 +1287,7 @@ namespace hist_mmorpg
 		/// <returns>Dictionary<string, double[]> object</returns>
 		/// <param name="gameID">Game for which Dictionary to be retrieved</param>
 		/// <param name="dictID">ID of Dictionary to be retrieved</param>
-		public Dictionary<string, double[]> initialDBload_dictDouble(String gameID, String dictID)
+        public Dictionary<string, double[]> initialDBload_dictDouble(string gameID, string dictID)
 		{
 			var dictResult = rClient.Get(gameID, dictID);
 			var newDict = new Dictionary<string, double[]>();
@@ -1313,7 +1313,7 @@ namespace hist_mmorpg
         /// <returns>Skill object</returns>
         /// <param name="gameID">Game for which skill to be retrieved</param>
 		/// <param name="skillID">ID of skill to be retrieved</param>
-		public Skill initialDBload_skill(String gameID, String skillID)
+        public Skill initialDBload_skill(string gameID, string skillID)
 		{
 			var skillResult = rClient.Get(gameID, skillID);
 			var newSkill = new Skill();
@@ -1339,7 +1339,7 @@ namespace hist_mmorpg
         /// <returns>NonPlayerCharacter object</returns>
         /// <param name="gameID">Game for which NPC to be retrieved</param>
 		/// <param name="npcID">ID of NPC to be retrieved</param>
-		public NonPlayerCharacter initialDBload_NPC(String gameID, String npcID)
+        public NonPlayerCharacter initialDBload_NPC(string gameID, string npcID)
 		{
 			var npcResult = rClient.Get(gameID, npcID);
 			var npcRiak = new NonPlayerCharacter_Riak();
@@ -1374,7 +1374,7 @@ namespace hist_mmorpg
         /// <returns>PlayerCharacter object</returns>
         /// <param name="gameID">Game for which PC to be retrieved</param>
 		/// <param name="pcID">ID of PC to be retrieved</param>
-		public PlayerCharacter initialDBload_PC(String gameID, String pcID)
+        public PlayerCharacter initialDBload_PC(string gameID, string pcID)
 		{
 			var pcResult = rClient.Get(gameID, pcID);
 			var pcRiak = new PlayerCharacter_Riak();
@@ -1409,7 +1409,7 @@ namespace hist_mmorpg
         /// <returns>Kingdom object</returns>
         /// <param name="gameID">Game for which Kingdom to be retrieved</param>
         /// <param name="kingID">ID of Kingdom to be retrieved</param>
-        public Kingdom initialDBload_Kingdom(String gameID, String kingID)
+        public Kingdom initialDBload_Kingdom(string gameID, string kingID)
         {
             var kingResult = rClient.Get(gameID, kingID);
             var kingRiak = new Kingdom_Riak();
@@ -1439,7 +1439,7 @@ namespace hist_mmorpg
         /// <returns>Province object</returns>
         /// <param name="gameID">Game for which Province to be retrieved</param>
 		/// <param name="provID">ID of Province to be retrieved</param>
-		public Province initialDBload_Province(String gameID, String provID)
+        public Province initialDBload_Province(string gameID, string provID)
 		{
 			var provResult = rClient.Get(gameID, provID);
 			var provRiak = new Province_Riak();
@@ -1469,7 +1469,7 @@ namespace hist_mmorpg
         /// <returns>Terrain object</returns>
         /// <param name="gameID">Game for which Terrain to be retrieved</param>
 		/// <param name="terrID">ID of Terrain to be retrieved</param>
-		public Terrain initialDBload_terrain(String gameID, String terrID)
+        public Terrain initialDBload_terrain(string gameID, string terrID)
 		{
 			var terrainResult = rClient.Get(gameID, terrID);
 			var newTerrain = new Terrain();
@@ -1495,7 +1495,7 @@ namespace hist_mmorpg
         /// <returns>Language object</returns>
         /// <param name="gameID">Game for which Language to be retrieved</param>
         /// <param name="rankID">ID of Language to be retrieved</param>
-        public Language initialDBload_language(String gameID, String langID)
+        public Language initialDBload_language(string gameID, string langID)
         {
             var languageResult = rClient.Get(gameID, langID);
             var newLanguage = new Language();
@@ -1521,7 +1521,7 @@ namespace hist_mmorpg
         /// <returns>Rank object</returns>
         /// <param name="gameID">Game for which Rank to be retrieved</param>
         /// <param name="rankID">ID of Rank to be retrieved</param>
-        public Rank initialDBload_rank(String gameID, String rankID)
+        public Rank initialDBload_rank(string gameID, string rankID)
         {
             var rankResult = rClient.Get(gameID, rankID);
             var newRank = new Rank();
@@ -1547,7 +1547,7 @@ namespace hist_mmorpg
         /// <returns>Fief object</returns>
         /// <param name="gameID">Game for which Fief to be retrieved</param>
 		/// <param name="fiefID">ID of Fief to be retrieved</param>
-		public Fief initialDBload_Fief(String gameID, String fiefID)
+        public Fief initialDBload_Fief(string gameID, string fiefID)
 		{
 			var fiefResult = rClient.Get(gameID, fiefID);
 			var fiefRiak = new Fief_Riak();
@@ -1577,7 +1577,7 @@ namespace hist_mmorpg
         /// <returns>Army object</returns>
         /// <param name="gameID">Game for which Army to be retrieved</param>
         /// <param name="armyID">ID of Army to be retrieved</param>
-        public Army initialDBload_Army(String gameID, String armyID)
+        public Army initialDBload_Army(string gameID, string armyID)
         {
             var armyResult = rClient.Get(gameID, armyID);
             Army myArmy = new Army();
@@ -1604,7 +1604,7 @@ namespace hist_mmorpg
         /// <returns>Siege object</returns>
         /// <param name="gameID">Game for which Siege to be retrieved</param>
         /// <param name="siegeID">ID of Siege to be retrieved</param>
-        public Siege initialDBload_Siege(String gameID, String siegeID)
+        public Siege initialDBload_Siege(string gameID, string siegeID)
         {
             var siegeResult = rClient.Get(gameID, siegeID);
             Siege mySiege = new Siege();
@@ -1632,15 +1632,15 @@ namespace hist_mmorpg
         /// <returns>HexMapGraph object</returns>
         /// <param name="gameID">Game for which map to be created</param>
 		/// <param name="mapEdgesID">ID of map edges collection to be retrieved</param>
-		public HexMapGraph initialDBload_map(String gameID, String mapEdgesID)
+        public HexMapGraph initialDBload_map(string gameID, string mapEdgesID)
 		{
 			var mapResult = rClient.Get(gameID, mapEdgesID);
-			List<TaggedEdge<String, string>> edgesList = new List<TaggedEdge<string, string>>();
+            List<TaggedEdge<string, string>> edgesList = new List<TaggedEdge<string, string>>();
 			var newMap = new HexMapGraph();
 
 			if (mapResult.IsSuccess)
 			{
-				edgesList = mapResult.Value.GetObject<List<TaggedEdge<String, string>>>();
+                edgesList = mapResult.Value.GetObject<List<TaggedEdge<string, string>>>();
 				TaggedEdge<Fief, string>[] edgesArray = this.EdgeCollection_from_Riak (edgesList);
                 // create map from edges collection
 				newMap = new HexMapGraph ("map001", edgesArray);
@@ -1867,9 +1867,9 @@ namespace hist_mmorpg
 		/// </summary>
         /// <returns>'String-ified' edges collection</returns>
         /// <param name="edgesIn">Edges collection to be converted</param>
-		public List<TaggedEdge<String, string>> EdgeCollection_to_Riak(List<TaggedEdge<Fief, string>> edgesIn)
+        public List<TaggedEdge<string, string>> EdgeCollection_to_Riak(List<TaggedEdge<Fief, string>> edgesIn)
 		{
-			List<TaggedEdge<String, string>> edgesOut = new List<TaggedEdge<string, string>> ();
+            List<TaggedEdge<string, string>> edgesOut = new List<TaggedEdge<string, string>>();
 
 			foreach (TaggedEdge<Fief, string> element in edgesIn)
 			{
@@ -1885,12 +1885,12 @@ namespace hist_mmorpg
 		/// </summary>
         /// <returns>HexMapGraph edges collection</returns>
         /// <param name="edgesIn">'String-ified' edges collection to be converted</param>
-		public TaggedEdge<Fief, string>[] EdgeCollection_from_Riak(List<TaggedEdge<String, string>> edgesIn)
+        public TaggedEdge<Fief, string>[] EdgeCollection_from_Riak(List<TaggedEdge<string, string>> edgesIn)
 		{
 			TaggedEdge<Fief, string>[] edgesOut = new TaggedEdge<Fief, string>[edgesIn.Count];
 
 			int i = 0;
-			foreach (TaggedEdge<String, string> element in edgesIn)
+            foreach (TaggedEdge<string, string> element in edgesIn)
 			{
                 // convert to HexMapGraph edge
                 edgesOut[i] = this.EdgeString_to_EdgeFief(element);
@@ -1906,9 +1906,9 @@ namespace hist_mmorpg
 		/// </summary>
         /// <returns>'String-ified' edge</returns>
         /// <param name="te">HexMapGraph edge to be converted</param>
-		public TaggedEdge<String, string> EdgeFief_to_EdgeString(TaggedEdge<Fief, string> te)
+        public TaggedEdge<string, string> EdgeFief_to_EdgeString(TaggedEdge<Fief, string> te)
 		{
-			TaggedEdge<String, string> edgeOut = new TaggedEdge<String, string>(te.Source.fiefID, te.Target.fiefID, te.Tag);
+            TaggedEdge<string, string> edgeOut = new TaggedEdge<string, string>(te.Source.fiefID, te.Target.fiefID, te.Tag);
 			return edgeOut;
 		}
 
@@ -1917,7 +1917,7 @@ namespace hist_mmorpg
 		/// </summary>
         /// <returns>HexMapGraph edge</returns>
         /// <param name="te">'String-ified' edge to be converted</param>
-		public TaggedEdge<Fief, string> EdgeString_to_EdgeFief(TaggedEdge<String, string> te)
+        public TaggedEdge<Fief, string> EdgeString_to_EdgeFief(TaggedEdge<string, string> te)
 		{
             TaggedEdge<Fief, string> edgeOut = new TaggedEdge<Fief, string>(Globals_Server.fiefMasterList[te.Source], Globals_Server.fiefMasterList[te.Target], te.Tag);
 			return edgeOut;
@@ -1960,7 +1960,7 @@ namespace hist_mmorpg
 
             if (success)
             {
-                foreach (String value in cr.goTo)
+                foreach (string value in cr.goTo)
                 {
                     myCh.goTo.Enqueue(Globals_Server.fiefMasterList[value]);
                 }
@@ -2106,7 +2106,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="k">key of key list</param>
 		/// <param name="kl">key list to write</param>
-		public bool writeKeyList(String gameID, String k, List<String> kl)
+        public bool writeKeyList(string gameID, string k, List<string> kl)
 		{
 
 			var rList = new RiakObject(gameID, k, kl);
@@ -2129,7 +2129,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="gc">GameClock to write</param>
-		public bool writeClock(String gameID, GameClock gc)
+        public bool writeClock(string gameID, GameClock gc)
 		{
 			var rClock = new RiakObject(gameID, "gameClock", gc);
 			var putClockResult = rClient.Put(rClock);
@@ -2152,7 +2152,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="key">Riak key to use</param>
         /// <param name="journal">Journal to write</param>
-        public bool writeJournal(String gameID, String key, Journal journal)
+        public bool writeJournal(string gameID, string key, Journal journal)
         {
             var rJournal = new RiakObject(gameID, key, journal);
             var putJournalResult = rClient.Put(rJournal);
@@ -2175,7 +2175,7 @@ namespace hist_mmorpg
 		/// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="key">Riak key to use</param>
 		/// <param name="dictionary">Dictionary to write</param>
-		public bool writeDictionary<T>(String gameID, String key, T dictionary)
+        public bool writeDictionary<T>(string gameID, string key, T dictionary)
 		{
 			var rDict = new RiakObject(gameID, key, dictionary);
 			var putDictResult = rClient.Put(rDict);
@@ -2197,7 +2197,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="s">Skill to write</param>
-		public bool writeSkill(String gameID, Skill s)
+        public bool writeSkill(string gameID, Skill s)
 		{
 			var rSkill = new RiakObject(gameID, s.skillID, s);
 			var putSkillResult = rClient.Put(rSkill);
@@ -2219,7 +2219,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="npc">NonPlayerCharacter to write</param>
-		public bool writeNPC(String gameID, NonPlayerCharacter npc)
+        public bool writeNPC(string gameID, NonPlayerCharacter npc)
 		{
             // convert NonPlayerCharacter into NonPlayerCharacter_Riak
 			NonPlayerCharacter_Riak riakNPC = this.NPCtoRiak (npc);
@@ -2244,7 +2244,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="pc">PlayerCharacter to write</param>
-		public bool writePC(String gameID, PlayerCharacter pc)
+        public bool writePC(string gameID, PlayerCharacter pc)
 		{
             // convert PlayerCharacter into PlayerCharacter_Riak
             PlayerCharacter_Riak riakPC = this.PCtoRiak(pc);
@@ -2269,7 +2269,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="k">Kingdom to write</param>
-        public bool writeKingdom(String gameID, Kingdom k)
+        public bool writeKingdom(string gameID, Kingdom k)
 		{
             // convert Kingdom into Kingdom_Riak
             Kingdom_Riak riakKing = this.KingdomToRiak(k);
@@ -2294,7 +2294,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="p">Province to write</param>
-        public bool writeProvince(String gameID, Province p)
+        public bool writeProvince(string gameID, Province p)
         {
             // convert Province into Province_Riak
             Province_Riak riakProv = this.ProvinceToRiak(p);
@@ -2319,7 +2319,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="l">Language to write</param>
-        public bool writeLanguage(String gameID, Language l)
+        public bool writeLanguage(string gameID, Language l)
 		{
 
 			var rLanguage = new RiakObject(gameID, l.languageID, l);
@@ -2342,7 +2342,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="r">Rank to write</param>
-        public bool writeRank(String gameID, Rank r)
+        public bool writeRank(string gameID, Rank r)
         {
 
             var rRank = new RiakObject(gameID, r.rankID, r);
@@ -2365,7 +2365,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="t">Terrain to write</param>
-        public bool writeTerrain(String gameID, Terrain t)
+        public bool writeTerrain(string gameID, Terrain t)
         {
 
             var rTerrain = new RiakObject(gameID, t.terrainCode, t);
@@ -2388,7 +2388,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="f">Fief to write</param>
-		public bool writeFief(String gameID, Fief f)
+        public bool writeFief(string gameID, Fief f)
 		{
             // convert Fief into Fief_Riak
             Fief_Riak riakFief = this.FieftoRiak(f);
@@ -2413,7 +2413,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="a">Army to write</param>
-        public bool writeArmy(String gameID, Army a)
+        public bool writeArmy(string gameID, Army a)
         {
             var rArmy = new RiakObject(gameID, a.armyID, a);
             var putArmyResult = rClient.Put(rArmy);
@@ -2435,7 +2435,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="s">Siege to write</param>
-        public bool writeSiege(String gameID, Siege s)
+        public bool writeSiege(string gameID, Siege s)
         {
             var rSiege = new RiakObject(gameID, s.siegeID, s);
             var putSiegeResult = rClient.Put(rSiege);
@@ -2457,10 +2457,10 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="map">HexMapGraph containing edges collection</param>
-		public bool writeMapEdges(String gameID, HexMapGraph map)
+        public bool writeMapEdges(string gameID, HexMapGraph map)
 		{
             // extract edges collection from HexMapGraph
-			List<TaggedEdge<String, string>> riakMapEdges = this.EdgeCollection_to_Riak (map.myMap.Edges.ToList());
+            List<TaggedEdge<string, string>> riakMapEdges = this.EdgeCollection_to_Riak(map.myMap.Edges.ToList());
 
 			var rMapE = new RiakObject(gameID, "mapEdges", riakMapEdges);
 			var putMapResultE = rClient.Put(rMapE);
@@ -2480,7 +2480,7 @@ namespace hist_mmorpg
 		/// Updates game objects at end/start of season
 		/// </summary>
         /// <param name="type">Specifies type of update to perform</param>
-        public void seasonUpdate(String type = "full")
+        public void seasonUpdate(string type = "full")
 		{
             // used to check if character update is necessary
             bool performCharacterUpdate = true;
@@ -2615,6 +2615,10 @@ namespace hist_mmorpg
             // CHECK SCHEDULED EVENTS
             List<JournalEntry> entriesForRemoval = this.processScheduledEvents();
             // remove processed events from Globals_Server.scheduledEvents
+            for (int i = 0; i < entriesForRemoval.Count; i++ )
+            {
+                Globals_Server.scheduledEvents.entries.Remove(entriesForRemoval[i].jEntryID);
+            }
 
             // switch on messages
             Globals_Client.showMessages = true;
@@ -3014,7 +3018,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes UI Court, Tavern, outside keep display
         /// </summary>
-        /// <param name="place">String specifying whether court, tavern, outside keep</param>
+        /// <param name="place">string specifying whether court, tavern, outside keep</param>
         public void refreshMeetingPlaceDisplay(string place)
         {
             // refresh general information
@@ -3287,7 +3291,7 @@ namespace hist_mmorpg
             this.houseCharListView.Items.Clear();
 
             // variables needed for name check (to see if NPC needs naming)
-            String nameWarning = "The following offspring need to be named:\r\n\r\n";
+            string nameWarning = "The following offspring need to be named:\r\n\r\n";
             bool showNameWarning = false;
 
             // iterates through household characters adding information to ListView
@@ -4661,7 +4665,7 @@ namespace hist_mmorpg
 
             bool isOwner = Globals_Client.myChar.ownedFiefs.Contains(Globals_Client.fiefToView);
             bool displayWarning = false;
-            String toDisplay = "";
+            string toDisplay = "";
 
             // set name label text
             this.fiefLabel.Text = Globals_Client.fiefToView.name + " (" + Globals_Client.fiefToView.fiefID + ")";
@@ -4926,7 +4930,7 @@ namespace hist_mmorpg
                 if (!Globals_Client.fiefToView.checkExpenditureOK(totalSpend))
                 {
                     int difference = Convert.ToInt32(totalSpend - Globals_Client.fiefToView.getAvailableTreasury());
-                    String toDisplay = "Your spending exceeds the " + Globals_Client.fiefToView.name + " treasury by " + difference;
+                    string toDisplay = "Your spending exceeds the " + Globals_Client.fiefToView.name + " treasury by " + difference;
                     toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
                     if (Globals_Client.showMessages)
                     {
@@ -4982,7 +4986,7 @@ namespace hist_mmorpg
                     }
 
                     // display appropriate message
-                    String toDisplay = "";
+                    string toDisplay = "";
                     if (spendChanged)
                     {
                         toDisplay += "Expenditure adjusted";
@@ -5061,7 +5065,7 @@ namespace hist_mmorpg
         /// <returns>double containing travel cost</returns>
         /// <param name="source">Source fief</param>
         /// <param name="target">Target fief</param>
-        private double getTravelCost(Fief source, Fief target, String armyID = null)
+        private double getTravelCost(Fief source, Fief target, string armyID = null)
         {
             double cost = 0;
             // calculate base travel cost based on terrain for both fiefs
@@ -5345,7 +5349,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void visitCourtBtn1_Click(object sender, EventArgs e)
         {
-            String place = "court";
+            string place = "court";
 
             bool enteredKeep = false;
 
@@ -5386,7 +5390,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void visitTavernBtn_Click_1(object sender, EventArgs e)
         {
-            String place = "tavern";
+            string place = "tavern";
 
             // exit keep if required
             if (Globals_Client.myChar.inKeep)
@@ -5538,7 +5542,7 @@ namespace hist_mmorpg
             bool isHired = false;
 
             // get hireNPC_Btn tag (shows which meeting place are in)
-            String place = Convert.ToString(((Button)sender).Tag);
+            string place = Convert.ToString(((Button)sender).Tag);
 
             // if selected NPC is not a current employee
             if (!Globals_Client.myChar.myNPCs.Contains(Globals_Client.charToView))
@@ -5653,7 +5657,7 @@ namespace hist_mmorpg
         /// Moves a character to a specified fief using the shortest path
         /// </summary>
         /// <param name="whichScreen">String indicating on which screen the movement command occurred</param>
-        public void moveTo(String whichScreen)
+        public void moveTo(string whichScreen)
         {
             // get appropriate TextBox and remove from entourage, if necessary
             TextBox myTextBox = null;
@@ -5739,7 +5743,7 @@ namespace hist_mmorpg
             Button button = sender as Button;
 
             // check button tag to see on which screen the movement command occurred
-            String whichScreen = button.Tag.ToString();
+            string whichScreen = button.Tag.ToString();
 
             // perform move
             this.moveTo(whichScreen);
@@ -5792,7 +5796,7 @@ namespace hist_mmorpg
         }
 
         // temporary method to write object data to database
-        public String[][] ArrayFromCSV(String csvFilename, bool writeToDB, String bucket = "", String key = "")
+        public string[][] ArrayFromCSV(string csvFilename, bool writeToDB, string bucket = "", string key = "")
         {
             var linesIn = new List<string[]>();
 
@@ -5933,7 +5937,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void listOutsideKeepBtn_Click(object sender, EventArgs e)
         {
-            String place = "outsideKeep";
+            string place = "outsideKeep";
 
             // exit keep if required
             if (Globals_Client.myChar.inKeep)
@@ -6338,7 +6342,7 @@ namespace hist_mmorpg
         /// Allows a character to be moved along a specific route by using direction codes
         /// </summary>
         /// <param name="whichScreen">String indicating on which screen the movement command occurred</param>
-        public void takeThisRoute(String whichScreen)
+        public void takeThisRoute(string whichScreen)
         {
             Fief source = null;
             Fief target = null;
@@ -6368,7 +6372,7 @@ namespace hist_mmorpg
             }
 
             // get list of directions
-            String[] directions = myTextBox.Text.Split(',').ToArray<String>();
+            string[] directions = myTextBox.Text.Split(',').ToArray<string>();
 
             // convert to Queue of fiefs
             for (int i = 0; i < directions.Length; i++)
@@ -6438,7 +6442,7 @@ namespace hist_mmorpg
             Button button = sender as Button;
 
             // check button tag to see on which screen the movement command occurred
-            String whichScreen = button.Tag.ToString();
+            string whichScreen = button.Tag.ToString();
 
             // perform move
             this.takeThisRoute(whichScreen);
@@ -6977,7 +6981,7 @@ namespace hist_mmorpg
             bool mummyDied = mummy.checkDeath(true, true, isStillborn);
 
             // inform father of outcome
-            String toDisplay = "";
+            string toDisplay = "";
             // both mother and baby died
             if ((isStillborn) && (mummyDied))
             {
@@ -7160,7 +7164,7 @@ namespace hist_mmorpg
             ToolStripItem menuItem = sender as ToolStripItem;
 
             // get type of update from button tag
-            String updateType = menuItem.Tag.ToString();
+            string updateType = menuItem.Tag.ToString();
 
             this.seasonUpdate(updateType);
         }
@@ -7281,7 +7285,7 @@ namespace hist_mmorpg
         {
             // get tag from button
             Button button = sender as Button;
-            String operation = button.Tag.ToString();
+            string operation = button.Tag.ToString();
 
             // get fief
             Fief thisFief = Globals_Client.myChar.location;
@@ -7357,7 +7361,7 @@ namespace hist_mmorpg
 
         public void mantainArmy(Army a)
         {
-            String toDisplay = "";
+            string toDisplay = "";
 
             // get cost
             uint maintCost = a.calcArmySize() * 500;
@@ -7407,13 +7411,13 @@ namespace hist_mmorpg
         private void entourageBtn_Click(object sender, EventArgs e)
         {
             // for messages
-            String toDisplay = "";
+            string toDisplay = "";
 
             // get button
             Button button = sender as Button;
 
             // check button tag to see on which screen the command occurred
-            String whichScreen = button.Tag.ToString();
+            string whichScreen = button.Tag.ToString();
 
             // check which action to perform
             // if is in entourage, remove
@@ -7624,7 +7628,7 @@ namespace hist_mmorpg
                 Application.OpenForms.OfType<SelectionForm>().First().Close();
             }
 
-            String thisArmyID = null;
+            string thisArmyID = null;
             if (this.armyListView.SelectedItems.Count > 0)
             {
                 // get armyID and army
@@ -7853,7 +7857,7 @@ namespace hist_mmorpg
                 Application.OpenForms.OfType<SelectionForm>().First().Close();
             }
 
-            String thisArmyID = null;
+            string thisArmyID = null;
             if (this.armyListView.SelectedItems.Count > 0)
             {
                 // get armyID and army
@@ -8578,14 +8582,59 @@ namespace hist_mmorpg
         /// <param name="circumstance">string indicating circumstance of battle</param>
         public bool giveBattle(Army attacker, Army defender, string circumstance = "battle")
         {
+            string toDisplay = "";
             bool attackerVictorious = false;
             bool battleHasCommenced = false;
             uint[] battleValues = new uint[2];
             double[] casualtyModifiers = new double[2];
 
+            // get starting troop numbers
+            uint attackerStartTroops = attacker.calcArmySize();
+            uint defenderStartTroops = defender.calcArmySize();
+            uint attackerCasualties = 0;
+            uint defenderCasualties = 0;
+
             // get leaders
             Character attackerLeader = attacker.getLeader();
             Character defenderLeader = defender.getLeader();
+
+            // introductory text for message
+            switch (circumstance)
+            {
+                case"pillage":
+                    toDisplay += "The fief garrison and militia, led by " + attackerLeader.firstName
+                        + " " + attackerLeader.familyName + ", sallied forth to bring the pillaging "
+                        + defender.armyID + ", led by " + defenderLeader.firstName + " "
+                        + defenderLeader.familyName + " and owned by " + defender.getOwner().firstName
+                        + " " + defender.getOwner().familyName + " to battle."
+                        + "\r\n\r\nOutcome: ";
+                    break;
+                case "siege":
+                    toDisplay += "The fief garrison and militia, led by " + attackerLeader.firstName
+                        + " " + attackerLeader.familyName + ", sallied forth to bring the besieging "
+                        + defender.armyID + ", led by " + defenderLeader.firstName + " "
+                        + defenderLeader.familyName + " and owned by " + defender.getOwner().firstName
+                        + " " + defender.getOwner().familyName + " to battle."
+                        + "\r\n\r\nOutcome: ";
+                    break;
+                default:
+                    toDisplay += "On this day of our lord " + attacker.armyID + ",";
+                    if (attackerLeader != null)
+                    {
+                        toDisplay += " led by " + attackerLeader.firstName + " " + attackerLeader.familyName + " and";
+                    }
+                    toDisplay += " owned by "
+                        + attacker.getOwner().firstName + " " + attacker.getOwner().familyName
+                        + ", moved to attack " + defender.armyID + ",";
+                    if (defenderLeader != null)
+                    {
+                        toDisplay += " led by " + defenderLeader.firstName + " " + defenderLeader.familyName + " and";
+                    }
+                    toDisplay += " owned by " + defender.getOwner().firstName
+                        + " " + defender.getOwner().familyName + ", in the fief of " + attacker.getLocation().name
+                        + "\r\n\r\nOutcome: ";
+                    break;
+            }
 
             // get battle values for both armies
             battleValues = this.calculateBattleValue(attacker, defender);
@@ -8647,10 +8696,16 @@ namespace hist_mmorpg
                     defender.applyTroopLosses(casualtyModifiers[1]);
                 }
 
-                // if is pillage, attacking (temporary) army always disbands after battle
-                if (circumstance.Equals("pillage"))
+                // get casualty figures (for message)
+                if (!attackerDisbanded)
                 {
-                    attackerDisbanded = true;
+                    // get attacker casualties
+                    attackerCasualties = attackerStartTroops - attacker.calcArmySize();
+                }
+                if (!defenderDisbanded)
+                {
+                    // get defender casualties
+                    defenderCasualties = defenderStartTroops - defender.calcArmySize();
                 }
 
                 // DAYS
@@ -8706,6 +8761,7 @@ namespace hist_mmorpg
                 bool characterDead = false;
 
                 // 1. ATTACKER
+                bool attackerLeaderDead = false;
                 uint friendlyBV = battleValues[0];
                 uint enemyBV = battleValues[1];
 
@@ -8728,10 +8784,10 @@ namespace hist_mmorpg
                 }
 
                 // check army leader
-                characterDead = attackerLeader.calculateCombatInjury(casualtyModifiers[0]);
+                attackerLeaderDead = attackerLeader.calculateCombatInjury(casualtyModifiers[0]);
 
                 // process death, if applicable
-                if (characterDead)
+                if (attackerLeaderDead)
                 {
                     Character newLeader = null;
 
@@ -8767,6 +8823,7 @@ namespace hist_mmorpg
                 }
 
                 // 2. DEFENDER
+                bool defenderLeaderDead = false;
 
                 // need to check if defending army had a leader
                 if (defenderLeader != null)
@@ -8790,10 +8847,10 @@ namespace hist_mmorpg
                     }
 
                     // check army leader
-                    characterDead = defenderLeader.calculateCombatInjury(casualtyModifiers[1]);
+                    defenderLeaderDead = defenderLeader.calculateCombatInjury(casualtyModifiers[1]);
 
                     // process death, if applicable
-                    if (characterDead)
+                    if (defenderLeaderDead)
                     {
                         Character newLeader = null;
 
@@ -8814,6 +8871,66 @@ namespace hist_mmorpg
                     }
                 }
 
+                // UPDATE MESSAGE
+                // who won
+                if (attackerVictorious)
+                {
+                    toDisplay += attacker.armyID;
+                }
+                else
+                {
+                    toDisplay += defender.armyID;
+                }
+                toDisplay += " was victorious.\r\n\r\n";
+
+                // casualties & retreats - attacker
+                if (attackerDisbanded)
+                {
+                    toDisplay += attacker.armyID + " disbanded due to heavy casualties";
+                }
+                else
+                {
+                    toDisplay += attacker.armyID + " suffered a total of " + attackerCasualties + " casualties";
+                    if (retreatDistances[0] > 0)
+                    {
+                        toDisplay += " and retreated from the fief";
+                    }
+                }
+                toDisplay += ".";
+                if (attackerLeaderDead)
+                {
+                    toDisplay += " " + attackerLeader.firstName + " " + attackerLeader.familyName + " died due to injuries received.";
+                }
+                toDisplay += "\r\n\r\n";
+
+                // casualties & retreats - defender
+                if (defenderDisbanded)
+                {
+                    toDisplay += defender.armyID + " disbanded due to heavy casualties";
+                }
+                else
+                {
+                    toDisplay += defender.armyID + " suffered a total of " + defenderCasualties + " casualties";
+                    if (retreatDistances[1] > 0)
+                    {
+                        toDisplay += " and retreated from the fief";
+                    }
+                }
+                toDisplay += ".";
+                if (defenderLeaderDead)
+                {
+                    toDisplay += " " + defenderLeader.firstName + " " + defenderLeader.familyName + " died due to injuries received.";
+                }
+                toDisplay += "\r\n\r\n";
+
+                if (circumstance.Equals("pillage"))
+                {
+                    if (attackerVictorious)
+                    {
+                        toDisplay += "The pillage in " + attacker.getLocation().name + " has been prevented.";
+                    }
+                }
+
                 // check for SIEGE RELIEF
                 // attacker (relieving army) victory or defender (besieging army) retreat = relief
                 if ((attackerVictorious) || (retreatDistances[1] > 0))
@@ -8825,10 +8942,21 @@ namespace hist_mmorpg
                         // if so, dismantle the siege
                         Siege thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
                         this.siegeEnd(thisSiege);
+
+                        // add to message
+                        toDisplay += "The siege in " + thisSiege.getFief().name + " has been raised.";
+
                     }
                 }
 
                 // DISBANDMENT
+
+                // if is pillage, attacking (temporary) army always disbands after battle
+                if (circumstance.Equals("pillage"))
+                {
+                    attackerDisbanded = true;
+                }
+
                 // process army disbandings (after all other functions completed)
                 if (attackerDisbanded)
                 {
@@ -8843,10 +8971,20 @@ namespace hist_mmorpg
             }
             else
             {
-                if (Globals_Client.showMessages)
+                if ((circumstance.Equals("pillage")) || circumstance.Equals("siege"))
                 {
-                    System.Windows.Forms.MessageBox.Show(defender.armyID + " has refused battle.");
+                    toDisplay += attacker.armyID + " was unsuccessfull in bringing " + defender.armyID + " to battle.";
                 }
+                else
+                {
+                    toDisplay += defender.armyID + " successfully refused battle and retreated from the fief.";
+                }
+            }
+
+            // display informational message
+            if (Globals_Client.showMessages)
+            {
+                System.Windows.Forms.MessageBox.Show(toDisplay, "BATTLE RESULTS");
             }
 
             // refresh screen
@@ -8869,6 +9007,9 @@ namespace hist_mmorpg
             double moneyPillagedOwner = 0;
             double pillageMultiplier = 0;
 
+            // get army leader
+            Character armyLeader = a.getLeader();
+
             // get pillaging army owner (receives a proportion of total spoils)
             PlayerCharacter armyOwner = a.getOwner();
 
@@ -8881,6 +9022,10 @@ namespace hist_mmorpg
             {
                 daysTaken = a.days;
             }
+
+            // update army days
+            armyLeader.adjustDays(daysTaken);
+
             toDisplay += "Days taken: " + daysTaken + "\r\n";
 
             // % population loss
@@ -8989,7 +9134,7 @@ namespace hist_mmorpg
 
             if (Globals_Client.showMessages)
             {
-                System.Windows.Forms.MessageBox.Show(toDisplay);
+                System.Windows.Forms.MessageBox.Show(toDisplay, "PILLAGE RESULTS");
             }
         }
 
@@ -10557,7 +10702,7 @@ namespace hist_mmorpg
         /// Updates appropriate components when data received from observable
         /// </summary>
         /// <param name="info">String containing data about component to update</param>
-        public void update(String info)
+        public void update(string info)
         {
             // get update info
             string[] infoSplit = info.Split('|');
@@ -11356,7 +11501,7 @@ namespace hist_mmorpg
 
                 // get tag from button
                 Button button = sender as Button;
-                String reply = button.Tag.ToString();
+                string reply = button.Tag.ToString();
 
                 // set appropriate response
                 if (reply.Equals("accept"))
