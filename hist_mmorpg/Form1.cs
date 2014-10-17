@@ -433,10 +433,11 @@ namespace hist_mmorpg
             NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("410", "Esmerelda", "Dond", myDob012, false, "F", true, 2.50, 9.0, myGoTo12, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", 30000, false, false, myTitles012, null, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2Daughter.charID, myChar2Daughter);
 
+            /*
             // create and add a scheduled birth
             string[] birthPersonae = new string[] { myChar1Wife.familyID + "|headOfFamily", myChar1Wife.charID + "|mother", myChar1Wife.spouse + "|father" };
             JournalEntry myEntry = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 1, birthPersonae, "birth");
-            Globals_Server.scheduledEvents.entries.Add(myEntry.jEntryID, myEntry);
+            Globals_Server.scheduledEvents.entries.Add(myEntry.jEntryID, myEntry); */
 
             // get character's correct days allowance
             myChar1.days = myChar1.getDaysAllowance();
@@ -593,7 +594,7 @@ namespace hist_mmorpg
             myChar1.location.armies.Add(myArmy.armyID);
 
             // create another (enemy) army and add in appropriate places
-            uint[] myArmyTroops2 = new uint[] { 10, 10, 30, 0, 200, 400 };
+            uint[] myArmyTroops2 = new uint[] { 10, 10, 30, 0, 200, 0 };
             Army myArmy2 = new Army(Globals_Server.getNextArmyID(), null, null, 90, null, trp: myArmyTroops2, aggr: 1);
             Globals_Server.armyMasterList.Add(myArmy2.armyID, myArmy2);
             myArmy2.owner = myChar2.charID;
@@ -2511,13 +2512,13 @@ namespace hist_mmorpg
                         // random move if has no boss and is not family member
                         if ((npcEntry.Value.myBoss == null) && (npcEntry.Value.familyID == null))
                         {
-                            this.randomMoveNPC(npcEntry.Value, true);
+                            this.randomMoveNPC(npcEntry.Value);
                         }
 
                         // finish previously started multi-hex move if necessary
                         if (npcEntry.Value.goTo.Count > 0)
                         {
-                            this.characterMultiMove(npcEntry.Value, true);
+                            this.characterMultiMove(npcEntry.Value);
                         }
                     }
                 }
@@ -2541,7 +2542,7 @@ namespace hist_mmorpg
                         // finish previously started multi-hex move if necessary
                         if (pcEntry.Value.goTo.Count > 0)
                         {
-                            this.characterMultiMove(pcEntry.Value, true);
+                            this.characterMultiMove(pcEntry.Value);
                         }
                     }
                 }
@@ -2795,6 +2796,12 @@ namespace hist_mmorpg
                 this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
             }
 
+            // travel
+            else if (Globals_Client.containerToView == this.travelContainer)
+            {
+                this.refreshTravelContainer();
+            }
+
             // meeting place
             else if (Globals_Client.containerToView == this.meetingPlaceContainer)
             {
@@ -2802,9 +2809,9 @@ namespace hist_mmorpg
                 {
                     this.refreshMeetingPlaceDisplay("tavern");
                 }
-                else if ((this.meetingPlaceLabel.Text).ToLower().Contains("outside"))
+                else if ((this.meetingPlaceLabel.Text).ToLower().Contains("outwith"))
                 {
-                    this.refreshMeetingPlaceDisplay("outsidekeep");
+                    this.refreshMeetingPlaceDisplay("outside");
                 }
                 else if ((this.meetingPlaceLabel.Text).ToLower().Contains("court"))
                 {
@@ -2839,8 +2846,7 @@ namespace hist_mmorpg
         /// <param name="ch">Character to move</param>
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
-        /// <param name="isUpdate">Indicates if is update mode</param>
-        public bool moveCharacter(Character ch, Fief target, double cost, bool isUpdate = false)
+        public bool moveCharacter(Character ch, Fief target, double cost)
         {
             bool success = false;
             bool proceedWithMove = true;
@@ -2883,7 +2889,7 @@ namespace hist_mmorpg
             if (proceedWithMove)
             {
                 // move character
-                success = ch.moveCharacter(target, cost, isUpdate);
+                success = ch.moveCharacter(target, cost);
             }
 
             return success;
@@ -2894,8 +2900,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="npc">NPC to move</param>
-        /// <param name="isUpdate">Indicates if is update mode</param>
-        public bool randomMoveNPC(NonPlayerCharacter npc, bool isUpdate = false)
+        public bool randomMoveNPC(NonPlayerCharacter npc)
         {
             bool success = false;
 
@@ -2911,7 +2916,7 @@ namespace hist_mmorpg
                 double travelCost = this.getTravelCost(npc.location, target);
 
                 // perform move
-                success = this.moveCharacter(npc, target, travelCost, isUpdate);
+                success = this.moveCharacter(npc, target, travelCost);
             }
 
             return success;
@@ -3355,7 +3360,7 @@ namespace hist_mmorpg
 
             if (showNameWarning)
             {
-                nameWarning += "\r\nAny children who are not named by the age of one will be named after his highness the king.";
+                nameWarning += "\r\nAny children who are not named by the age of one will,\r\nwhere possible, be named after their royal highnesses the king and queen.";
                 if (Globals_Client.showMessages)
                 {
                     System.Windows.Forms.MessageBox.Show(nameWarning);
@@ -3809,6 +3814,19 @@ namespace hist_mmorpg
             // ID
             armyText += "ID: " + a.armyID + "\r\n\r\n";
 
+            // nationality
+            string thisNationality = a.getOwner().nationality;
+            armyText += "Nationality: ";
+            if (thisNationality.Equals("E"))
+            {
+                armyText += "English";
+            }
+            else if (thisNationality.Equals("F"))
+            {
+                armyText += "French";
+            }
+            armyText += "\r\n\r\n";
+
             // days left
             armyText += "Days left: " + a.days + "\r\n\r\n";
 
@@ -3822,7 +3840,7 @@ namespace hist_mmorpg
 
             if (armyLeader == null)
             {
-                armyText += "THIS ARMY HAS NO LEADER!  You should appoint one as soon as possible.\r\n\r\n";
+                armyText += "THIS ARMY HAS NO LEADER!  You should appoint one as soon as possible.";
             }
             else
             {
@@ -4473,7 +4491,14 @@ namespace hist_mmorpg
 
                 // leader
                 Character armyLeader = Globals_Client.myChar.myArmies[i].getLeader();
-                thisArmy.SubItems.Add(armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")");
+                if (armyLeader != null)
+                {
+                    thisArmy.SubItems.Add(armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")");
+                }
+                else
+                {
+                    thisArmy.SubItems.Add("No leader");
+                }
 
                 // location
                 Fief armyLocation = Globals_Server.fiefMasterList[Globals_Client.myChar.myArmies[i].location];
@@ -4753,8 +4778,22 @@ namespace hist_mmorpg
             // if fief IS owned by player, enable fief management buttons and TextBoxes 
             else
             {
+                // get home fief
+                Fief home = Globals_Client.myChar.getHomeFief();
+
+                // get home treasury
                 int homeTreasury = 0;
-                int fiefTreasury = 0;
+                if (f == home)
+                {
+                    homeTreasury = home.getAvailableTreasury();
+                }
+                else
+                {
+                    homeTreasury = home.getAvailableTreasury(true);
+                }
+
+                // get this fief's treasury
+                int fiefTreasury = f.getAvailableTreasury(); ;
 
                 // if fief UNDER SIEGE, leave most controls disabled
                 if (f.siege != null)
@@ -4784,12 +4823,21 @@ namespace hist_mmorpg
                     this.adjustTaxTextBox.Enabled = true;
                     this.viewBailiffBtn.Enabled = true;
                     this.lockoutBtn.Enabled = true;
-                    this.selfBailiffBtn.Enabled = true;
                     this.setBailiffBtn.Enabled = true;
                     this.removeBaliffBtn.Enabled = true;
                     this.fiefHomeTreasTextBox.Enabled = true;
                     this.fiefHomeTreasTextBox.ReadOnly = true;
                     this.FiefTreasTextBox.ReadOnly = true;
+
+                    // don't enable 'appoint self' button if you're already the bailiff
+                    if (f.bailiff == Globals_Client.myChar)
+                    {
+                        this.selfBailiffBtn.Enabled = false;
+                    }
+                    else
+                    {
+                        this.selfBailiffBtn.Enabled = true;
+                    }
 
                     // don't enable treasury transfer controls if in Home Fief (can't transfer to self)
                     if (f == Globals_Client.myChar.getHomeFief())
@@ -4818,26 +4866,20 @@ namespace hist_mmorpg
                     this.fiefCurrKeyStatsTextBox.Text = this.displayFiefKeyStatsCurr(Globals_Client.fiefToView);
                     this.fiefNextKeyStatsTextBox.Text = this.displayFiefKeyStatsNext(Globals_Client.fiefToView);
 
-                    // get home fief
-                    Fief home = Globals_Client.myChar.getHomeFief();
-
                     // check if in home fief
                     if (f == home)
                     {
                         // don't show fief treasury
                         this.FiefTreasTextBox.Text = "";
-
-                        // display home treasury
-                        this.fiefHomeTreasTextBox.Text = home.getAvailableTreasury().ToString();
                     }
                     else
                     {
                         // display fief treasury
-                        this.FiefTreasTextBox.Text = f.getAvailableTreasury().ToString();
-
-                        // display home treasury
-                        this.fiefHomeTreasTextBox.Text = home.getAvailableTreasury(true).ToString();
+                        this.FiefTreasTextBox.Text = fiefTreasury.ToString();
                     }
+
+                    // display home treasury
+                    this.fiefHomeTreasTextBox.Text = homeTreasury.ToString();
 
                     // check to see if proposed expenditure level doesn't exceed fief treasury
                     // get fief expenses (includes bailiff modifiers)
@@ -5615,8 +5657,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="ch">Character to be moved</param>
-        /// <param name="isUpdate">Indicates if is update mode</param>
-        private bool characterMultiMove(Character ch, bool isUpdate = false)
+        private bool characterMultiMove(Character ch)
         {
             bool success = false;
             double travelCost = 0;
@@ -5627,7 +5668,7 @@ namespace hist_mmorpg
                 // get travel cost
                 travelCost = this.getTravelCost(ch.location, ch.goTo.Peek(), ch.armyID);
                 // attempt to move character
-                success = this.moveCharacter(ch, ch.goTo.Peek(), travelCost, isUpdate);
+                success = this.moveCharacter(ch, ch.goTo.Peek(), travelCost);
                 // if move successfull, remove fief from goTo queue
                 if (success)
                 {
@@ -5683,10 +5724,10 @@ namespace hist_mmorpg
             }
 
             // check for existence of fief
-            if (Globals_Server.fiefMasterList.ContainsKey(myTextBox.Text))
+            if (Globals_Server.fiefMasterList.ContainsKey(myTextBox.Text.ToUpper()))
             {
                 // retrieves target fief
-                Fief target = Globals_Server.fiefMasterList[myTextBox.Text];
+                Fief target = Globals_Server.fiefMasterList[myTextBox.Text.ToUpper()];
 
                 // obtains goTo queue for shortest path to target
                 Globals_Client.charToView.goTo = Globals_Server.gameMap.getShortestPath(Globals_Client.charToView.location, target);
@@ -6040,8 +6081,8 @@ namespace hist_mmorpg
                     this.familyNpcSpousePregBtn.Enabled = false;
                 }
 
-                // if character aged 0 and firstname = "Baby", enable 'name child' controls
-                if ((charToDisplay as NonPlayerCharacter).checkForName(0))
+                // if character firstname = "Baby", enable 'name child' controls
+                if ((charToDisplay as NonPlayerCharacter).firstName.Equals("Baby"))
                 {
                     this.familyNameChildButton.Enabled = true;
                     this.familyNameChildTextBox.Enabled = true;
@@ -6344,6 +6385,7 @@ namespace hist_mmorpg
         /// <param name="whichScreen">String indicating on which screen the movement command occurred</param>
         public void takeThisRoute(string whichScreen)
         {
+            bool proceed;
             Fief source = null;
             Fief target = null;
             Queue<Fief> route = new Queue<Fief>();
@@ -6411,12 +6453,17 @@ namespace hist_mmorpg
                 if (route.Count > 0)
                 {
                     Globals_Client.charToView.goTo = route;
-                    this.characterMultiMove(Globals_Client.charToView);
+                    proceed = this.characterMultiMove(Globals_Client.charToView);
+                    if (!proceed)
+                    {
+                        break;
+                    }
                 }
             }
 
             // refresh appropriate screen
-            if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
+            this.refreshCurrentScreen();
+            /*if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
             {
                 this.refreshMeetingPlaceDisplay(whichScreen); ;
             }
@@ -6427,7 +6474,7 @@ namespace hist_mmorpg
             else if (whichScreen.Equals("travel"))
             {
                 this.refreshTravelContainer();
-            }
+            }*/
 
         }
 
@@ -6571,6 +6618,9 @@ namespace hist_mmorpg
                 // attempt pregnancy
                 bool pregnant = Globals_Client.myChar.getSpousePregnant(mySpouse);
             }
+
+            // refresh screen
+            this.refreshCurrentScreen();
 
             /*
             // test event scheduled in clock
@@ -8385,7 +8435,7 @@ namespace hist_mmorpg
             bool attackerVictorious = false;
 
             // calculate chance of victory
-            double attackerVictoryChance = (attackerValue / (attackerValue + defenderValue)) * 100;
+            double attackerVictoryChance = (attackerValue / (Convert.ToDouble(attackerValue + defenderValue))) * 100;
 
             // generate random percentage
             int randomPercentage = Globals_Server.myRand.Next(101);
@@ -8411,8 +8461,8 @@ namespace hist_mmorpg
             double[] battleCasualties = new double[2];
 
             // generate casualty increments
-            double winnerIncrement = Globals_Server.GetRandomDouble(min: 0.02, max: 0.04);
-            double loserIncrement = Globals_Server.GetRandomDouble(min: 0.05, max: 0.1);
+            double winnerIncrement = Globals_Server.GetRandomDouble(min: 0.01, max: 0.02);
+            double loserIncrement = Globals_Server.GetRandomDouble(min: 0.04, max: 0.08);
 
             // determine highest/lowest battle value
             double maxBV = Math.Max(attackerValue, defenderValue);
@@ -11487,6 +11537,8 @@ namespace hist_mmorpg
 
         }
 
+
+
         /// <summary>
         /// Responds to the click event of either of the proposal reply buttons,
         /// sending the appropriate reply
@@ -11522,6 +11574,46 @@ namespace hist_mmorpg
                     System.Windows.Forms.MessageBox.Show("No journal entry selected.");
                 }
             }
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the 'Max' buttons inn the fief management screen,
+        /// filling in the maximum expenditure for the selected field
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void maxSpendButton_Click(object sender, EventArgs e)
+        {
+            uint maxSpend = 0;
+
+            // get tag from button
+            Button button = sender as Button;
+            string expType = button.Tag.ToString();
+
+            // get max spend of specified type
+            maxSpend = Globals_Client.fiefToView.getMaxSpend(expType);
+
+            if (maxSpend != 0)
+            {
+                switch (expType)
+                {
+                    case "garrison":
+                        this.adjGarrSpendTextBox.Text = maxSpend.ToString();
+                        break;
+                    case "infrastructure":
+                        this.adjInfrSpendTextBox.Text = maxSpend.ToString();
+                        break;
+                    case "keep":
+                        this.adjustKeepSpendTextBox.Text = maxSpend.ToString();
+                        break;
+                    case "officials":
+                        this.adjOffSpendTextBox.Text = maxSpend.ToString();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
         }
 
     }

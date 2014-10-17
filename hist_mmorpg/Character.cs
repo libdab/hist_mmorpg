@@ -849,6 +849,33 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Gets character's queen
+        /// </summary>
+        /// <returns>The queen</returns>
+        public NonPlayerCharacter getQueen()
+        {
+            PlayerCharacter myKing = null;
+            NonPlayerCharacter myQueen = null;
+
+            if (this.familyID != null)
+            {
+                // get king
+                myKing = this.getHeadOfFamily().getHomeFief().province.kingdom.king;
+                
+                // get queen
+                if (myKing.spouse != null)
+                {
+                    if (Globals_Server.npcMasterList.ContainsKey(myKing.spouse))
+                    {
+                        myQueen = Globals_Server.npcMasterList[myKing.spouse];
+                    }
+                }
+            }
+
+            return myQueen;
+        }
+
+        /// <summary>
         /// Gets character's overlord
         /// </summary>
         /// <returns>The overlord</returns>
@@ -889,12 +916,11 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
-        /// <param name="isUpdate">Indicates if is update mode</param>
-        public virtual bool moveCharacter(Fief target, double cost, bool isUpdate = false)
+        public virtual bool moveCharacter(Fief target, double cost)
         {
             bool success = false;
 
-            if (!isUpdate)
+            if (Globals_Client.showMessages)
             {
                 // check to see if character has fiefs in their goTo queue
                 // (i.e. they have a pre-planned move)
@@ -960,12 +986,9 @@ namespace hist_mmorpg
                     this.goTo.Enqueue(target);
                 }
 
-                if (!isUpdate)
+                if (Globals_Client.showMessages)
                 {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("I'm afraid you've run out of days.\r\nYour journey will continue next season.");
-                    }
+                    System.Windows.Forms.MessageBox.Show("I'm afraid you've run out of days.\r\nYour journey will continue next season.");
                 }
             }
 
@@ -1368,8 +1391,22 @@ namespace hist_mmorpg
                     {
                         if ((this as NonPlayerCharacter).checkForName(1))
                         {
-                            // get king's firstName
-                            this.firstName = this.getKing().firstName;
+                            // boys = try to get king's firstName 
+                            if (this.isMale)
+                            {
+                                if (this.getKing() != null)
+                                {
+                                    this.firstName = this.getKing().firstName;
+                                }
+                            }
+                            else
+                            {
+                                // girls = try to get queen's firstName 
+                                if (this.getQueen() != null)
+                                {
+                                    this.firstName = this.getQueen().firstName;
+                                }
+                            }
                         }
                     }
                 }
@@ -1488,6 +1525,46 @@ namespace hist_mmorpg
             }
 
             return isDead;
+        }
+
+        /// <summary>
+        /// Gets the fiefs in which the character is the bailiff
+        /// </summary>
+        /// <returns>List<Fief> containing the fiefs</returns>
+        public List<Fief> getFiefsBailiff()
+        {
+            List<Fief> myFiefs = new List<Fief>();
+
+            // iterate through owned fiefs, searching for character as bailiff
+            foreach (Fief thisFief in Globals_Client.myChar.ownedFiefs)
+            {
+                if (thisFief.bailiff == this)
+                {
+                    myFiefs.Add(thisFief);
+                }
+            }
+
+            return myFiefs;
+        }
+
+        /// <summary>
+        /// Gets the armies of which the character is the leader
+        /// </summary>
+        /// <returns>List<Army> containing the armies</returns>
+        public List<Army> getArmiesLeader()
+        {
+            List<Army> myArmies = new List<Army>();
+
+            // iterate through armies, searching for character as leader
+            foreach (Army thisArmy in Globals_Client.myChar.myArmies)
+            {
+                if (thisArmy.getLeader() == this)
+                {
+                    myArmies.Add(thisArmy);
+                }
+            }
+
+            return myArmies;
         }
 
     }
@@ -1787,16 +1864,41 @@ namespace hist_mmorpg
         /// <param name="npc">NPC to fire</param>
         public void fireNPC(NonPlayerCharacter npc)
         {
+            // remove from bailiff duties
+            List<Fief> fiefsBailiff = npc.getFiefsBailiff();
+            if (fiefsBailiff.Count > 0)
+            {
+                for (int i = 0; i < fiefsBailiff.Count; i++ )
+                {
+                    fiefsBailiff[i].bailiff = null;
+                }
+            }
+
+            // remove from army duties
+            List<Army> armiesLeader = npc.getArmiesLeader();
+            if (armiesLeader.Count > 0)
+            {
+                for (int i = 0; i < armiesLeader.Count; i++ )
+                {
+                    armiesLeader[i].leader = null;
+                }
+            }
+
             // remove from employee list
             this.myNPCs.Remove(npc);
+
             // set NPC wage to 0
             npc.wage = 0;
+
             // remove this PC as NPC's boss
             npc.myBoss = null;
+
             // remove NPC from entourage
             npc.inEntourage = false;
+
             // eject from keep
             npc.inKeep = false;
+
             // if NPC has entries in goTo, clear
             if (npc.goTo.Count > 0)
             {
@@ -1955,12 +2057,11 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
-        /// <param name="isUpdate">Indicates if is update mode</param>
-        public override bool moveCharacter(Fief target, double cost, bool isUpdate = false)
+        public override bool moveCharacter(Fief target, double cost)
         {
 
             // use base method to move PlayerCharacter
-            bool success = base.moveCharacter(target, cost, isUpdate);
+            bool success = base.moveCharacter(target, cost);
 
             // if PlayerCharacter move successfull
             if (success)

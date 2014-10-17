@@ -689,6 +689,41 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Gtes the maximum permitted expenditure for the fief of the specified type
+        /// </summary>
+        /// <returns>uint containing maximum permitted expenditure</returns>
+        /// <param name="type">string containing type of expenditure</param>
+        public uint getMaxSpend(string type)
+        {
+            uint maxSpend = 0;
+
+            uint[] spendMultiplier = {14, 6, 13, 4 };
+            uint thisMultiplier = 0;
+
+            switch (type)
+            {
+                case "garrison":
+                    thisMultiplier = spendMultiplier[0];
+                    break;
+                case "infrastructure":
+                    thisMultiplier = spendMultiplier[1];
+                    break;
+                case "keep":
+                    thisMultiplier = spendMultiplier[2];
+                    break;
+                case "officials":
+                    thisMultiplier = spendMultiplier[3];
+                    break;
+                default:
+                    break;
+            }
+
+            maxSpend = this.population * thisMultiplier;
+
+            return maxSpend;
+        }
+
+        /// <summary>
         /// Adjusts fief officials expenditure
         /// </summary>
         /// <param name="os">uint containing new officials expenditure</param>
@@ -705,7 +740,7 @@ namespace hist_mmorpg
             }
 
             // ensure doesn't exceed max permitted (4 per head of population)
-            uint maxSpend = this.population * 4;
+            uint maxSpend = this.getMaxSpend("officials");
             if (os > maxSpend)
             {
                 os = maxSpend;
@@ -735,7 +770,7 @@ namespace hist_mmorpg
             }
 
             // ensure doesn't exceed max permitted (6 per head of population)
-            uint maxSpend = this.population * 6;
+            uint maxSpend = this.getMaxSpend("infrastructure");
             if (infs > maxSpend)
             {
                 infs = maxSpend;
@@ -765,7 +800,7 @@ namespace hist_mmorpg
             }
 
             // ensure doesn't exceed max permitted (14 per head of population)
-            uint maxSpend = this.population * 14;
+            uint maxSpend = this.getMaxSpend("garrison");
             if (gs > maxSpend)
             {
                 gs = maxSpend;
@@ -795,7 +830,7 @@ namespace hist_mmorpg
             }
 
             // ensure doesn't exceed max permitted (13 per head of population)
-            uint maxSpend = this.population * 13;
+            uint maxSpend = this.getMaxSpend("keep");
             if (ks > maxSpend)
             {
                 ks = maxSpend;

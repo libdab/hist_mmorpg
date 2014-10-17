@@ -59,6 +59,10 @@ namespace hist_mmorpg
             this.characterTitlesCheckBox = new System.Windows.Forms.CheckBox();
             this.characterTextBox = new System.Windows.Forms.TextBox();
             this.fiefContainer = new System.Windows.Forms.SplitContainer();
+            this.fiefInfraExpMaxBtn = new System.Windows.Forms.Button();
+            this.fiefKeepExpMaxBtn = new System.Windows.Forms.Button();
+            this.fiefGarrExpMaxBtn = new System.Windows.Forms.Button();
+            this.fiefOffExpMaxBtn = new System.Windows.Forms.Button();
             this.fiefSiegeLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -566,6 +570,10 @@ namespace hist_mmorpg
             // 
             // fiefContainer.Panel1
             // 
+            this.fiefContainer.Panel1.Controls.Add(this.fiefInfraExpMaxBtn);
+            this.fiefContainer.Panel1.Controls.Add(this.fiefKeepExpMaxBtn);
+            this.fiefContainer.Panel1.Controls.Add(this.fiefGarrExpMaxBtn);
+            this.fiefContainer.Panel1.Controls.Add(this.fiefOffExpMaxBtn);
             this.fiefContainer.Panel1.Controls.Add(this.fiefSiegeLabel);
             this.fiefContainer.Panel1.Controls.Add(this.label2);
             this.fiefContainer.Panel1.Controls.Add(this.label1);
@@ -601,6 +609,50 @@ namespace hist_mmorpg
             this.fiefContainer.Size = new System.Drawing.Size(935, 637);
             this.fiefContainer.SplitterDistance = 370;
             this.fiefContainer.TabIndex = 3;
+            // 
+            // fiefInfraExpMaxBtn
+            // 
+            this.fiefInfraExpMaxBtn.Location = new System.Drawing.Point(248, 374);
+            this.fiefInfraExpMaxBtn.Name = "fiefInfraExpMaxBtn";
+            this.fiefInfraExpMaxBtn.Size = new System.Drawing.Size(49, 23);
+            this.fiefInfraExpMaxBtn.TabIndex = 36;
+            this.fiefInfraExpMaxBtn.Tag = "infrastructure";
+            this.fiefInfraExpMaxBtn.Text = "Max";
+            this.fiefInfraExpMaxBtn.UseVisualStyleBackColor = true;
+            this.fiefInfraExpMaxBtn.Click += new System.EventHandler(this.maxSpendButton_Click);
+            // 
+            // fiefKeepExpMaxBtn
+            // 
+            this.fiefKeepExpMaxBtn.Location = new System.Drawing.Point(248, 406);
+            this.fiefKeepExpMaxBtn.Name = "fiefKeepExpMaxBtn";
+            this.fiefKeepExpMaxBtn.Size = new System.Drawing.Size(49, 23);
+            this.fiefKeepExpMaxBtn.TabIndex = 35;
+            this.fiefKeepExpMaxBtn.Tag = "keep";
+            this.fiefKeepExpMaxBtn.Text = "Max";
+            this.fiefKeepExpMaxBtn.UseVisualStyleBackColor = true;
+            this.fiefKeepExpMaxBtn.Click += new System.EventHandler(this.maxSpendButton_Click);
+            // 
+            // fiefGarrExpMaxBtn
+            // 
+            this.fiefGarrExpMaxBtn.Location = new System.Drawing.Point(248, 344);
+            this.fiefGarrExpMaxBtn.Name = "fiefGarrExpMaxBtn";
+            this.fiefGarrExpMaxBtn.Size = new System.Drawing.Size(49, 23);
+            this.fiefGarrExpMaxBtn.TabIndex = 34;
+            this.fiefGarrExpMaxBtn.Tag = "garrison";
+            this.fiefGarrExpMaxBtn.Text = "Max";
+            this.fiefGarrExpMaxBtn.UseVisualStyleBackColor = true;
+            this.fiefGarrExpMaxBtn.Click += new System.EventHandler(this.maxSpendButton_Click);
+            // 
+            // fiefOffExpMaxBtn
+            // 
+            this.fiefOffExpMaxBtn.Location = new System.Drawing.Point(248, 315);
+            this.fiefOffExpMaxBtn.Name = "fiefOffExpMaxBtn";
+            this.fiefOffExpMaxBtn.Size = new System.Drawing.Size(49, 23);
+            this.fiefOffExpMaxBtn.TabIndex = 33;
+            this.fiefOffExpMaxBtn.Tag = "officials";
+            this.fiefOffExpMaxBtn.Text = "Max";
+            this.fiefOffExpMaxBtn.UseVisualStyleBackColor = true;
+            this.fiefOffExpMaxBtn.Click += new System.EventHandler(this.maxSpendButton_Click);
             // 
             // fiefSiegeLabel
             // 
@@ -2430,12 +2482,12 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
-            this.Controls.Add(this.meetingPlaceContainer);
-            this.Controls.Add(this.journalContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.travelContainer);
-            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.fiefContainer);
+            this.Controls.Add(this.meetingPlaceContainer);
+            this.Controls.Add(this.journalContainer);
+            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
@@ -2758,6 +2810,10 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button journalProposalRejectBtn;
         private System.Windows.Forms.Button journalProposalAcceptBtn;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Button fiefInfraExpMaxBtn;
+        private System.Windows.Forms.Button fiefKeepExpMaxBtn;
+        private System.Windows.Forms.Button fiefGarrExpMaxBtn;
+        private System.Windows.Forms.Button fiefOffExpMaxBtn;
 
     }
 }

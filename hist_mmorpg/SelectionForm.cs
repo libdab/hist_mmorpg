@@ -193,13 +193,21 @@ namespace hist_mmorpg
 
             if (npcListView.SelectedItems.Count > 0)
             {
-                // enable 'appoint this NPC' button
-                this.chooseNpcBtn.Enabled = true;
                 // set textbox to read only
                 this.npcDetailsTextBox.ReadOnly = true;
 
                 // get employee
                 npcToDisplay = Globals_Server.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+
+                // enable 'appoint this NPC' button, but not if NPC is female
+                if (npcToDisplay.isMale)
+                {
+                    this.chooseNpcBtn.Enabled = true;
+                }
+                else
+                {
+                    this.chooseNpcBtn.Enabled = false;
+                }
 
                 // get details
                 textToDisplay += this.displayNPC(npcToDisplay);
@@ -221,11 +229,26 @@ namespace hist_mmorpg
             uint totalTroops = 0;
             string armyText = "";
 
+            // get owner
+            PlayerCharacter thisOwner = a.getOwner();
+
             // ID
             armyText += "ID: " + a.armyID + "\r\n\r\n";
 
+            // nationality
+            string thisNationality = thisOwner.nationality;
+            armyText += "Nationality: ";
+            if (thisNationality.Equals("E"))
+            {
+                armyText += "English";
+            }
+            else if (thisNationality.Equals("F"))
+            {
+                armyText += "French";
+            }
+            armyText += "\r\n\r\n";
+
             // owner
-            PlayerCharacter thisOwner = a.getOwner();
             armyText += "Owner: " + thisOwner.firstName + " " + thisOwner.familyName + " (" + thisOwner.charID + ")\r\n\r\n";
 
             // check if is your army (will effect display of troop numbers)
@@ -602,33 +625,43 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void barThisCharBtn_Click(object sender, EventArgs e)
         {
-            // if input ID is in pcMasterList
+            // get character
+            Character thisCharacter = null;
+
             if (Globals_Server.pcMasterList.ContainsKey(this.barThisCharTextBox.Text))
             {
-                // add ID to barred characters
-                Globals_Client.fiefToView.barredCharacters.Add(this.barThisCharTextBox.Text);
-                // refresh display
-                this.refreshBarredDisplay();
+                thisCharacter = Globals_Server.pcMasterList[this.barThisCharTextBox.Text];
             }
-            // if input ID is in npcMasterList
             else if (Globals_Server.npcMasterList.ContainsKey(this.barThisCharTextBox.Text))
             {
-                // add ID to barred characters
-                Globals_Client.fiefToView.barredCharacters.Add(this.barThisCharTextBox.Text);
-                // refresh display
-                this.refreshBarredDisplay();
+                thisCharacter = Globals_Server.npcMasterList[this.barThisCharTextBox.Text];
             }
-            // if input ID not found
             else
             {
-                // ask player to check entry
                 if (Globals_Client.showMessages)
                 {
+                    System.Windows.Forms.MessageBox.Show("Character could not be identified.  Please ensure charID is valid.");
+                }
+            }
+
+            if (thisCharacter != null)
+            {
+                // add ID to barred characters
+                Globals_Client.fiefToView.barredCharacters.Add(thisCharacter.charID);
+
+                // check if is currently in keep, and remove if necessary
+                if (thisCharacter.inKeep)
+                {
+                    thisCharacter.inKeep = false;
                     if (Globals_Client.showMessages)
                     {
-                        System.Windows.Forms.MessageBox.Show("Character could not be identified.  Please ensure charID is valid.");
+                        System.Windows.Forms.MessageBox.Show(thisCharacter.firstName + " " + thisCharacter.familyName + " has been ejected from the keep.");
                     }
+
                 }
+
+                // refresh display
+                this.refreshBarredDisplay();
             }
         }
 
