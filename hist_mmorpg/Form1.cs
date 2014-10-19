@@ -2617,8 +2617,15 @@ namespace hist_mmorpg
             {
                 for (int i = 0; i < dissolvedSieges.Count; i++ )
                 {
+                    // construct event description to be passed into siegeEnd
+                    string siegeDescription = "On this day of Our Lord the forces of ";
+                    siegeDescription += dissolvedSieges[i].getBesiegingPlayer().firstName + " " + dissolvedSieges[i].getBesiegingPlayer().familyName;
+                    siegeDescription += " have been forced to abandon the siege of " + dissolvedSieges[i].getFief().name;
+                    siegeDescription += " due to the poor condition of their troops. The ownership of this fief is retained by ";
+                    siegeDescription += dissolvedSieges[i].getDefendingPlayer().firstName + " " + dissolvedSieges[i].getDefendingPlayer().familyName + ".";
+
                     // dismantle siege
-                    this.siegeEnd(dissolvedSieges[i]);
+                    this.siegeEnd(dissolvedSieges[i], siegeDescription);
                 }
 
                 // clear dissolvedSieges
@@ -2895,7 +2902,15 @@ namespace hist_mmorpg
                         {
                             System.Windows.Forms.MessageBox.Show("Siege (" + thisSiegeID + ") ended.");
                         }
-                        this.siegeEnd(thisSiege);
+
+                        // construct event description to be passed into siegeEnd
+                        string siegeDescription = "On this day of Our Lord the forces of ";
+                        siegeDescription += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
+                        siegeDescription += " have chosen to abandon the siege of " + thisSiege.getFief().name;
+                        siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
+                        siegeDescription += " retains ownership of the fief.";
+
+                        this.siegeEnd(thisSiege, siegeDescription);
                     }
 
                 }
@@ -4034,7 +4049,7 @@ namespace hist_mmorpg
                 siegeText += "Chance of success in next round:\r\n";
                 // chance of storm success
                 double keepLvl = this.calcStormKeepLevel(s);
-                double successChance = this.calcStormSuccess(keepLvl) / 2;
+                double successChance = this.calcStormSuccess(keepLvl);
                 siegeText += "- storm: " + successChance + "\r\n";
 
                 // chance of negotiated success
@@ -9004,9 +9019,19 @@ namespace hist_mmorpg
                     string thisSiegeID = defender.checkIfBesieger();
                     if (thisSiegeID != null)
                     {
-                        // if so, dismantle the siege
+                        // get siege
                         Siege thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
-                        this.siegeEnd(thisSiege);
+
+                        // construct event description to be passed into siegeEnd
+                        string siegeDescription = "On this day of Our Lord the forces of ";
+                        siegeDescription += attacker.getOwner().firstName + " " + attacker.getOwner().familyName;
+                        siegeDescription += " have defeated the forces of " + thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
+                        siegeDescription += ", relieving the siege of " + thisSiege.getFief().name + ".";
+                        siegeDescription += " " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
+                        siegeDescription += " retains ownership of the fief.";
+
+                        // end the siege
+                        this.siegeEnd(thisSiege, siegeDescription);
 
                         // add to message
                         toDisplay += "The siege in " + thisSiege.getFief().name + " has been raised.";
@@ -9649,18 +9674,76 @@ namespace hist_mmorpg
         /// Ends the specified siege
         /// </summary>
         /// <param name="s">Siege to be ended</param>
-        public void siegeEnd(Siege s)
+        /// <param name="s">String containing circumstances under which the siege ended</param>
+        public void siegeEnd(Siege s, string circumstance)
         {
             // get principle objects
-            Army defenderGarrison = s.getDefenderGarrison();
-            Army defenderAdditional = s.getDefenderAdditional();
-            Fief besiegedFief = s.getFief();
-            PlayerCharacter besiegingPlayer = s.getBesiegingPlayer();
             PlayerCharacter defendingPlayer = s.getDefendingPlayer();
+            Army defenderGarrison = s.getDefenderGarrison();
+            Character defenderLeader = defenderGarrison.getLeader();
+            PlayerCharacter besiegingPlayer = s.getBesiegingPlayer();
+            Army defenderAdditional = s.getDefenderAdditional();
+            Character addDefendLeader = null;
+            if (defenderAdditional != null)
+            {
+                addDefendLeader = defenderAdditional.getLeader();
+            }
+            Fief besiegedFief = s.getFief();
             Character besiegingArmyLeader = s.getBesiegingArmy().getLeader();
+
+            // =================== construct and send JOURNAL ENTRY
+            // ID
+            double entryID = Globals_Server.getNextJournalEntryID();
+
+            // personae
+            List<string> tempPersonae = new List<string>();
+            tempPersonae.Add(defendingPlayer.charID + "|fiefOwner");
+            tempPersonae.Add(besiegingPlayer.charID + "|attackerOwner");
+            tempPersonae.Add(besiegingArmyLeader.charID + "|attackerLeader");
+            // get defenderLeader
+            if (defenderLeader != null)
+            {
+                tempPersonae.Add(defenderLeader.charID + "|defenderGarrisonLeader");
+            }
+            // get additional defending leader
+            if (addDefendLeader != null)
+            {
+                tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
+            }
+            string[] siegePersonae = tempPersonae.ToArray();
+
+            // location
+            string siegeLocation = besiegedFief.fiefID;
+
+            // description
+            string siegeDescription = "";
+            if (circumstance == null)
+            {
+                siegeDescription = "On this day of Our Lord the forces of ";
+                siegeDescription += besiegingPlayer.firstName + " " + besiegingPlayer.familyName;
+                siegeDescription += " abandoned the siege of " + besiegedFief.name;
+                siegeDescription += ". The ownership of this fief is retained by ";
+                siegeDescription += defendingPlayer.firstName + " " + defendingPlayer.familyName + ".";
+            }
+            else
+            {
+                siegeDescription = circumstance;
+            }
+
+            // put together new journal entry
+            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, siegePersonae, "siegeEnd", loc: siegeLocation, descr: siegeDescription);
+
+            // add new journal entry to pastEvents
+            Globals_Server.addPastEvent(siegeResult);
 
             // disband garrison
             this.disbandArmy(defenderGarrison);
+
+            // disband additional defending army
+            if (defenderAdditional != null)
+            {
+                this.disbandArmy(defenderAdditional);
+            }
 
             // remove from PCs
             besiegingPlayer.mySieges.Remove(s.siegeID);
@@ -9696,6 +9779,9 @@ namespace hist_mmorpg
 
             // set to null
             s = null;
+
+            // refresh screen
+            this.refreshCurrentScreen();
         }
 
         /// <summary>
@@ -9719,7 +9805,7 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    stormFailurePercent = stormFailurePercent + (stormFailurePercent * (0.08 * (1 / keepLvl - 1)));
+                    stormFailurePercent = stormFailurePercent + (stormFailurePercent * (0.08 * (1 / (keepLvl - 1))));
                 }
 
                 // ensure is always slight chance of success
@@ -9791,6 +9877,7 @@ namespace hist_mmorpg
             Army defenderAdditional = s.getDefenderAdditional();
             PlayerCharacter attackingPlayer = s.getBesiegingPlayer();
             Character defenderLeader = defenderGarrison.getLeader();
+            double statureIncrease = 0;
 
             // process non-storm round
             this.siegeReductionRound(s);
@@ -9931,6 +10018,7 @@ namespace hist_mmorpg
 
                 // collect ransom
                 int thisRansom = 0;
+                int totalRansom = 0;
                 foreach (Character thisCharacter in captives)
                 {
                     // PCs
@@ -9953,12 +10041,55 @@ namespace hist_mmorpg
 
                     // add to besieger's home treasury
                     attackingPlayer.getHomeFief().treasury += thisRansom;
+                    totalRansom += thisRansom;
                 }
+
+                // calculate change to besieging player's stature
+                statureIncrease = 0.1 * (s.getFief().population / 10000);
+
+                // construct event description to be passed into siegeEnd
+                string siegeDescription = "On this day of Our Lord the forces of ";
+                siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                siegeDescription += " successfully stormed the keep of " + s.getFief().name;
+                siegeDescription += ". The ownership of this fief has now passed from ";
+                siegeDescription += s.getDefendingPlayer().firstName + " " + s.getDefendingPlayer().familyName;
+                siegeDescription += " to " + s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                siegeDescription += " who has also earned an increase of " + statureIncrease + " stature.";
+                // details of ransoms
+                if (totalRansom > 0)
+                {
+                    siegeDescription += " A number of persons (";
+                    Character lastCaptive = captives.Last();
+                    foreach (Character thisCharacter in captives)
+                    {
+                        siegeDescription += thisCharacter.firstName + " " + thisCharacter.familyName;
+                        if (thisCharacter != lastCaptive)
+                        {
+                            siegeDescription += ", ";
+                        }
+                    }
+                    siegeDescription += ") were ransomed for a total of £" + totalRansom + ".";
+                }
+
+                // end the siege
+                this.siegeEnd(s, siegeDescription);
 
                 // change fief ownership
                 besiegedFief.changeOwnership(attackingPlayer);
             }
 
+            // storm unsuccessful
+            else
+            {
+                // calculate change to besieging player's stature
+                statureIncrease = -0.2 * (s.getFief().population / 10000);
+            }
+
+            // apply change to besieging player's stature
+            s.getBesiegingPlayer().statureModifier += statureIncrease;
+
+            // refresh screen
+            this.refreshCurrentScreen();
         }
 
         /// <summary>
@@ -9986,6 +10117,33 @@ namespace hist_mmorpg
             {
                 negotiateSuccess = true;
             }
+
+            // negotiation successful
+            if (negotiateSuccess)
+            {
+                // add to winning player's stature
+                double statureIncrease = 0.2 * (s.getFief().population / 10000);
+                s.getBesiegingPlayer().statureModifier += statureIncrease;
+
+                // construct event description to be passed into siegeEnd
+                string siegeDescription = "On this day of Our Lord the forces of ";
+                siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                siegeDescription += " negotiated a successful end to the siege of " + s.getFief().name;
+                siegeDescription += ". The ownership of this fief has now passed from ";
+                siegeDescription += s.getDefendingPlayer().firstName + " " + s.getDefendingPlayer().familyName;
+                siegeDescription += " to " + s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                siegeDescription += " who has also earned an increase of " + statureIncrease + " stature.";
+
+                // end the siege
+                this.siegeEnd(s, siegeDescription);
+
+                // change fief ownership
+                s.getFief().changeOwnership(s.getBesiegingPlayer());
+
+            }
+
+            // refresh screen
+            this.refreshCurrentScreen();
 
             return negotiateSuccess;
         }
@@ -10258,7 +10416,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="attacker">The attacking army</param>
         /// <param name="target">The fief to be besieged</param>
-        public void besiegeFief(Army attacker, Fief target)
+        public void siegeStart(Army attacker, Fief target)
         {
             Army defenderGarrison = null;
             Army defenderAdditional = null;
@@ -10352,7 +10510,7 @@ namespace hist_mmorpg
             // location
             string siegeLocation = mySiege.getFief().fiefID;
 
-            // use popup text as description
+            // description
             string siegeDescription = "On this day of Our Lord the forces of ";
             siegeDescription += mySiege.getBesiegingPlayer().firstName + " " + mySiege.getBesiegingPlayer().familyName;
             siegeDescription += ", led by " + attacker.getLeader().firstName + " " + attacker.getLeader().familyName;
@@ -10490,7 +10648,7 @@ namespace hist_mmorpg
                 // process siege
                 if (proceed)
                 {
-                    this.besiegeFief(thisArmy, thisFief);
+                    this.siegeStart(thisArmy, thisFief);
                 }
             }
             else
@@ -10634,8 +10792,15 @@ namespace hist_mmorpg
 
                 if (proceed)
                 {
+                    // construct event description to be passed into siegeEnd
+                    string siegeDescription = "On this day of Our Lord the forces of ";
+                    siegeDescription += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
+                    siegeDescription += " have chosen to abandon the siege of " + thisSiege.getFief().name;
+                    siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
+                    siegeDescription += " retains ownership of the fief.";
+
                     // process siege reduction round
-                    this.siegeEnd(thisSiege);
+                    this.siegeEnd(thisSiege, siegeDescription);
 
                     //refresh screen
                     this.refreshCurrentScreen();

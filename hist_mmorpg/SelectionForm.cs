@@ -1128,7 +1128,14 @@ namespace hist_mmorpg
                                 Siege thisSiege = null;
                                 thisSiege = Globals_Server.siegeMasterList[siegeID];
 
-                                parent.siegeEnd(thisSiege);
+                                // construct event description to be passed into siegeEnd
+                                string siegeDescription = "On this day of Our Lord the forces of ";
+                                siegeDescription += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
+                                siegeDescription += " have chosen to abandon the siege of " + thisSiege.getFief().name;
+                                siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
+                                siegeDescription += " retains ownership of the fief.";
+
+                                parent.siegeEnd(thisSiege, siegeDescription);
                             }
                         }
                     }

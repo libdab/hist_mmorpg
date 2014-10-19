@@ -389,7 +389,7 @@ namespace hist_mmorpg
                 siegeEnded = true;
             }
 
-            if (!siegeEnded)
+            else
             {
                 // DAYS
                 // base allowance
