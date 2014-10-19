@@ -566,6 +566,7 @@ namespace hist_mmorpg
             Globals_Server.battleProbabilities.Add("pillage", pChance);
 
             // populate Globals_Server.jEntryPriorities
+            // proposal/marriage
             string[] thisPriorityKey001 = {"proposalMade", "headOfFamilyBride"};
             Globals_Server.jEntryPriorities.Add(thisPriorityKey001, 2);
             string[] thisPriorityKey002 = { "proposalRejected", "headOfFamilyGroom" };
@@ -576,10 +577,24 @@ namespace hist_mmorpg
             Globals_Server.jEntryPriorities.Add(thisPriorityKey004, 1);
             string[] thisPriorityKey005 = { "marriage", "headOfFamilyGroom" };
             Globals_Server.jEntryPriorities.Add(thisPriorityKey005, 1);
+            // birth
             string[] thisPriorityKey006 = { "birth", "headOfFamily" };
             Globals_Server.jEntryPriorities.Add(thisPriorityKey006, 2);
             string[] thisPriorityKey007 = { "birth", "father" };
             Globals_Server.jEntryPriorities.Add(thisPriorityKey007, 2);
+            // battle
+            string[] thisPriorityKey008 = { "battle", "defenderOwner" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey008, 2);
+            string[] thisPriorityKey009 = { "battle", "sallyOwner" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey009, 2);
+            string[] thisPriorityKey010 = { "battle", "fiefOwner" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey010, 1);
+            // siege
+            string[] thisPriorityKey011 = { "siege", "fiefOwner" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey011, 2);
+            string[] thisPriorityKey012 = { "siegeRound", "fiefOwner" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey012, 1);
+
 
             // create an army and add in appropriate places
             uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 200, 400};
@@ -9031,7 +9046,47 @@ namespace hist_mmorpg
                 }
             }
 
-            // display informational message
+            // =================== construct and send JOURNAL ENTRY
+            // ID
+            double entryID = Globals_Server.getNextJournalEntryID();
+
+            // personae
+            // personae tags vary depending on circumstance
+            string attackOwnTag = "|attackerOwner";
+            string attackLeadTag = "|attackerLeader";
+            string defendOwnTag = "|defenderOwner";
+            string defendLeadTag = "|defenderLeader";
+            if ((circumstance.Equals("pillage")) || (circumstance.Equals("siege")))
+            {
+                attackOwnTag = "|sallyOwner";
+                attackLeadTag = "|sallyLeader";
+                defendOwnTag = "|defenderAgainstSallyOwner";
+                defendLeadTag = "|defenderAgainstSallyLeader";
+            }
+            List<string> tempPersonae = new List<string>();
+            tempPersonae.Add(defender.getOwner().charID + defendOwnTag);
+            tempPersonae.Add(attackerLeader.charID + attackLeadTag);
+            if (defenderLeader != null)
+            {
+                tempPersonae.Add(defenderLeader.charID + defendLeadTag);
+            }
+            tempPersonae.Add(attacker.getOwner().charID + attackOwnTag);
+            tempPersonae.Add(attacker.getLocation().owner.charID + "|fiefOwner");
+            string[] battlePersonae = tempPersonae.ToArray();
+            
+            // location
+            string battleLocation = attacker.getLocation().fiefID;
+ 
+            // use popup text as description
+            string battleDescription = toDisplay;
+
+            // put together new journal entry
+            JournalEntry battleResult = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, battlePersonae, "battle", loc: battleLocation, descr: battleDescription);
+
+            // add new journal entry to pastEvents
+            Globals_Server.addPastEvent(battleResult);
+
+            // display pop-up informational message
             if (Globals_Client.showMessages)
             {
                 System.Windows.Forms.MessageBox.Show(toDisplay, "BATTLE RESULTS");
@@ -9947,6 +10002,7 @@ namespace hist_mmorpg
             Army defenderGarrison = s.getDefenderGarrison();
             Army defenderAdditional = null;
             Character defenderLeader = defenderGarrison.getLeader();
+            Character attackerLeader = besieger.getLeader();
 
             // check for sallying army
             if (s.defenderAdditional != null)
@@ -9990,13 +10046,14 @@ namespace hist_mmorpg
             {
                 // process results of siege round
                 // reduce keep level by 5%
+                double originalKeepLevel = besiegedFief.keepLevel;
                 besiegedFief.keepLevel = (besiegedFief.keepLevel * 0.95);
 
                 // apply combat losses to defenderGarrison
                 // NOTE: attrition for both sides is calculated in siege.syncDays
 
                 double combatLosses = 0.01;
-                defenderGarrison.applyTroopLosses(combatLosses);
+                uint troopsLost = defenderGarrison.applyTroopLosses(combatLosses);
 
                 // check for death of defending PCs/NPCs
                 if (defenderLeader != null)
@@ -10035,6 +10092,51 @@ namespace hist_mmorpg
 
                 // synchronise days
                 s.syncDays(s.days - 10);
+
+                // =================== construct and send JOURNAL ENTRY
+                // ID
+                double entryID = Globals_Server.getNextJournalEntryID();
+
+                // personae
+                List<string> tempPersonae = new List<string>();
+                tempPersonae.Add(s.getDefendingPlayer().charID + "|fiefOwner");
+                tempPersonae.Add(s.getBesiegingPlayer().charID + "|attackerOwner");
+                if (attackerLeader != null)
+                {
+                    tempPersonae.Add(attackerLeader.charID + "|attackerLeader");
+                }
+                if (defenderLeader != null)
+                {
+                    tempPersonae.Add(defenderLeader.charID + "|defenderGarrisonLeader");
+                }
+                // get additional defending leader
+                Character addDefendLeader = null;
+                if (defenderAdditional != null)
+                {
+                    addDefendLeader = defenderAdditional.getLeader();
+                    if (addDefendLeader != null)
+                    {
+                        tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
+                    }
+                }
+                string[] siegePersonae = tempPersonae.ToArray();
+
+                // location
+                string siegeLocation = s.getFief().fiefID;
+
+                // use popup text as description
+                string siegeDescription = "On this day of Our Lord the siege of " + s.getFief().name + " by ";
+                siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                siegeDescription += " continued.  The besieged garrison lost a total of " + troopsLost + " troops, ";
+                siegeDescription += " and the keep level was reduced from " + originalKeepLevel + " to ";
+                siegeDescription += besiegedFief.keepLevel + ".";
+
+                // put together new journal entry
+                JournalEntry siegeResult = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, siegePersonae, "siegeRound", loc: siegeLocation, descr: siegeDescription);
+
+                // add new journal entry to pastEvents
+                Globals_Server.addPastEvent(siegeResult);
+
             }
 
             // refresh screen
@@ -10219,6 +10321,58 @@ namespace hist_mmorpg
 
             // sychronise days
             mySiege.syncDays(mySiege.days - 1);
+
+            // =================== construct and send JOURNAL ENTRY
+            // ID
+            double entryID = Globals_Server.getNextJournalEntryID();
+
+            // personae
+            List<string> tempPersonae = new List<string>();
+            tempPersonae.Add(mySiege.getDefendingPlayer().charID + "|fiefOwner");
+            tempPersonae.Add(mySiege.getBesiegingPlayer().charID + "|attackerOwner");
+            tempPersonae.Add(attacker.getLeader().charID + "|attackerLeader");
+            // get defenderLeader
+            Character defenderLeader = defenderGarrison.getLeader();
+            if (defenderLeader != null)
+            {
+                tempPersonae.Add(defenderLeader.charID + "|defenderGarrisonLeader");
+            }
+            // get additional defending leader
+            Character addDefendLeader = null;
+            if (defenderAdditional != null)
+            {
+                addDefendLeader = defenderAdditional.getLeader();
+                if (addDefendLeader != null)
+                {
+                    tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
+                }
+            }
+            string[] siegePersonae = tempPersonae.ToArray();
+
+            // location
+            string siegeLocation = mySiege.getFief().fiefID;
+
+            // use popup text as description
+            string siegeDescription = "On this day of Our Lord the forces of ";
+            siegeDescription += mySiege.getBesiegingPlayer().firstName + " " + mySiege.getBesiegingPlayer().familyName;
+            siegeDescription += ", led by " + attacker.getLeader().firstName + " " + attacker.getLeader().familyName;
+            siegeDescription += " laid siege to the keep of " + mySiege.getFief().name;
+            siegeDescription += ", owned by " + mySiege.getDefendingPlayer().firstName + " " + mySiege.getDefendingPlayer().familyName;
+            if (defenderLeader != null)
+            {
+                siegeDescription += ". The defending garrison is led by " + defenderLeader.firstName + " " + defenderLeader.familyName;
+            }
+            if (addDefendLeader != null)
+            {
+                siegeDescription += ". Additional defending forces are led by " + addDefendLeader.firstName + " " + addDefendLeader.familyName;
+            }
+            siegeDescription += ".";
+
+            // put together new journal entry
+            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, siegePersonae, "siege", loc: siegeLocation, descr: siegeDescription);
+
+            // add new journal entry to pastEvents
+            Globals_Server.addPastEvent(siegeResult);
 
             // display siege in siege screen
             this.refreshSiegeContainer(mySiege);
