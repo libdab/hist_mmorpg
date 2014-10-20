@@ -379,16 +379,9 @@ namespace hist_mmorpg
             Character myLeader = this.getLeader();
             PlayerCharacter myOwner = this.getOwner();
 
-            // see where army nationality is derived
-            Character nationalitySource = myOwner;
-            if (myLeader != null)
-            {
-                nationalitySource = myLeader;
-            }
-
             // get nationality (effects combat values)
             string troopNationality = "";
-            if (nationalitySource.nationality.ToUpper().Equals("E"))
+            if (myOwner.nationality.ToUpper().Equals("E"))
             {
                 troopNationality = "E";
             }
@@ -418,12 +411,18 @@ namespace hist_mmorpg
             {
                 cv += myLeader.getCombatValue();
 
-                // if leader is PC, get CV of entourage
+                // if leader is PC, get CV of entourage (male characters only)
                 if (myLeader is PlayerCharacter)
                 {
                     for (int i = 0; i < (myLeader as PlayerCharacter).myNPCs.Count; i++)
                     {
-                        cv += (myLeader as PlayerCharacter).myNPCs[i].getCombatValue();
+                        if ((myLeader as PlayerCharacter).myNPCs[i].inEntourage)
+                        {
+                            if ((myLeader as PlayerCharacter).myNPCs[i].isMale)
+                            {
+                                cv += (myLeader as PlayerCharacter).myNPCs[i].getCombatValue();
+                            }
+                        }
                     }
                 }
             }

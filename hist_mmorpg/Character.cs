@@ -564,31 +564,22 @@ namespace hist_mmorpg
             // 2. remove from fief
             this.location.characters.Remove(this);
 
-            // 3. check if involved with any scheduled events and remove
-            // to store events to remove
-            List<JournalEntry> eventsToRemove = new List<JournalEntry>();
-            // iterate through clock's scheduled events
-            foreach (KeyValuePair<double, JournalEntry> jEvent in Globals_Server.scheduledEvents.entries)
+            // 3 remove from army leadership
+            if (this.armyID != null)
             {
-                // if event concerned with this character
-                if (jEvent.Value.personae.Equals(this.charID))
+                // get army
+                Army thisArmy = null;
+                if (Globals_Server.armyMasterList.ContainsKey(this.armyID))
                 {
-                    // store event
-                    eventsToRemove.Add(jEvent.Value);
-                }
-            }
-
-            // if events found, remove them
-            if (eventsToRemove.Count > 0)
-            {
-                foreach (JournalEntry thisEvent in eventsToRemove)
-                {
-                    Globals_Server.scheduledEvents.entries.Remove(thisEvent.jEntryID);
+                    thisArmy = Globals_Server.armyMasterList[this.armyID];
                 }
 
+                // set army leader to null
+                if (thisArmy != null)
+                {
+                    thisArmy.leader = null;
+                }
             }
-            // tidy up
-            eventsToRemove.Clear();
 
             // 4. remove from fief barred lists
             if (this.location.barredCharacters.Contains(this.charID))
@@ -657,8 +648,6 @@ namespace hist_mmorpg
             }
 
             // TODO: (PC) check and remove from bailiff positions
-
-            // TODO: check and remove from army leadership
 
             // TODO: clear titles and assign to heir (for PC) or owner (for NPC)
 

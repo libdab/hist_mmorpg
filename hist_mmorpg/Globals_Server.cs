@@ -239,9 +239,16 @@ namespace hist_mmorpg
             // create ID from current year and newJournalEntryID
             string tempString = Globals_Server.clock.currentYear + "." + Globals_Server.newJournalEntryID;
             newID = Convert.ToDouble(tempString);
+            // System.Windows.Forms.MessageBox.Show("jEntryID: " + newID.ToString());
 
             // increment newJournalEntryID
             Globals_Server.newJournalEntryID++;
+
+            // ensure new newJournalEntryID not divisible by 10 (will result in duplicate ID)
+            if (newJournalEntryID % 10 == 0)
+            {
+                newJournalEntryID++;
+            }
 
             return newID;
         }
@@ -282,7 +289,10 @@ namespace hist_mmorpg
             bool success = false;
 
             success = Globals_Server.pastEvents.addNewEntry(jEvent);
-            Globals_Server.notifyObservers("newEvent|" + jEvent.jEntryID);
+            if (success)
+            {
+                Globals_Server.notifyObservers("newEvent|" + jEvent.jEntryID);
+            }
 
             return success;
 
