@@ -280,13 +280,16 @@ namespace hist_mmorpg
             // check for attrition if required
             if (attritionChecks > 0)
             {
+                uint totalAttackTroopsLost = 0;
                 for (int i = 0; i < attritionChecks; i++)
                 {
                     // calculate attrition
                     double attritionModifer = besieger.calcAttrition();
                     // apply attrition
-                    besieger.applyTroopLosses(attritionModifer);
+                    totalAttackTroopsLost += besieger.applyTroopLosses(attritionModifer);
                 }
+                // update total attacker siege losses
+                this.totalCasualtiesAttacker += Convert.ToInt32(totalAttackTroopsLost);
             }
 
             // DEFENDING GARRISON
@@ -305,13 +308,16 @@ namespace hist_mmorpg
             {
                 if (attritionChecks > 0)
                 {
+                    uint totalDefendTroopsLost = 0;
                     for (int i = 0; i < attritionChecks; i++)
                     {
                         // calculate attrition
                         double attritionModifer = defenderGarr.calcAttrition();
                         // apply attrition
-                        defenderGarr.applyTroopLosses(attritionModifer);
+                        totalDefendTroopsLost += defenderGarr.applyTroopLosses(attritionModifer);
                     }
+                    // update total defender siege losses
+                    this.totalCasualtiesDefender += Convert.ToInt32(totalDefendTroopsLost);
                 }
             }
 
@@ -333,13 +339,16 @@ namespace hist_mmorpg
                 {
                     if (attritionChecks > 0)
                     {
+                        uint totalDefendTroopsLost = 0;
                         for (int i = 0; i < attritionChecks; i++)
                         {
                             // calculate attrition
                             double attritionModifer = defenderAdd.calcAttrition();
                             // apply attrition
-                            defenderAdd.applyTroopLosses(attritionModifer);
+                            totalDefendTroopsLost += defenderAdd.applyTroopLosses(attritionModifer);
                         }
+                        // update total defender siege losses
+                        this.totalCasualtiesDefender += Convert.ToInt32(totalDefendTroopsLost);
                     }
                 }
             }

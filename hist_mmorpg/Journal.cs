@@ -13,7 +13,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds entries
         /// </summary>
-        public SortedList<double, JournalEntry> entries = new SortedList<double, JournalEntry>();
+        public SortedList<uint, JournalEntry> entries = new SortedList<uint, JournalEntry>();
         /// <summary>
         /// Indicates presence of new (unread) entries
         /// </summary>
@@ -27,7 +27,7 @@ namespace hist_mmorpg
         /// Constructor for Journal
         /// </summary>
         /// <param name="entList">SortedList<double, JournalEntry> holding entries</param>
-        public Journal(SortedList<double, JournalEntry> entList = null)
+        public Journal(SortedList<uint, JournalEntry> entList = null)
         {
             if (entList != null)
             {
@@ -41,9 +41,9 @@ namespace hist_mmorpg
         /// <returns>SortedList of JournalEntrys</returns>
         /// <param name="yr">Year to search for</param>
         /// <param name="seas">Season to search for</param>
-        public SortedList<double, JournalEntry> getEventsOnDate(uint yr = 9999, Byte seas = 99)
+        public SortedList<uint, JournalEntry> getEventsOnDate(uint yr = 9999, Byte seas = 99)
         {
-            SortedList<double, JournalEntry> matchingEntries = new SortedList<double, JournalEntry>();
+            SortedList<uint, JournalEntry> matchingEntries = new SortedList<uint, JournalEntry>();
 
             // determine scope of search
             String scope = "";
@@ -70,7 +70,7 @@ namespace hist_mmorpg
             switch (scope)
             {
                 case "seas":
-                    foreach (KeyValuePair<double, JournalEntry> jEntry in this.entries)
+                    foreach (KeyValuePair<uint, JournalEntry> jEntry in this.entries)
                     {
                         // year and season must match
                         if (jEntry.Value.year == yr)
@@ -83,7 +83,7 @@ namespace hist_mmorpg
                     }
                     break;
                 case "yr":
-                    foreach (KeyValuePair<double, JournalEntry> jEntry in this.entries)
+                    foreach (KeyValuePair<uint, JournalEntry> jEntry in this.entries)
                     {
                         // year must match
                         if (jEntry.Value.year == yr)
@@ -93,7 +93,7 @@ namespace hist_mmorpg
                     }
                     break;
                 default:
-                    foreach (KeyValuePair<double, JournalEntry> jEntry in this.entries)
+                    foreach (KeyValuePair<uint, JournalEntry> jEntry in this.entries)
                     {
                         // get all events
                         matchingEntries.Add(jEntry.Key, jEntry.Value);
@@ -144,7 +144,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds JournalEntry ID
         /// </summary>
-        public double jEntryID { get; set; }
+        public uint jEntryID { get; set; }
         /// <summary>
         /// Holds event year
         /// </summary>
@@ -173,14 +173,14 @@ namespace hist_mmorpg
         /// <summary>
         /// Constructor for JournalEntry
         /// </summary>
-        /// <param name="id">double holding JournalEntry ID</param>
+        /// <param name="id">uint holding JournalEntry ID</param>
         /// <param name="yr">uint holding event year</param>
         /// <param name="seas">byte holding event season</param>
         /// <param name="pers">String[] holding main objects (IDs) associated with event and thier role</param>
         /// <param name="typ">String holding type of event</param>
         /// <param name="loc">String holding location of event (fiefID)</param>
         /// <param name="descr">String holding description of event</param>
-        public JournalEntry(double id, uint yr, byte seas, String[] pers, String typ, String loc = null, String descr = null)
+        public JournalEntry(uint id, uint yr, byte seas, String[] pers, String typ, String loc = null, String descr = null)
         {
             this.jEntryID = id;
             this.year = yr;

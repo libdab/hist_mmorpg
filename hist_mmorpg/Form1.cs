@@ -2660,7 +2660,7 @@ namespace hist_mmorpg
             bool proceed = true;
 
             // iterate through clock's scheduled events
-            foreach (KeyValuePair<double, JournalEntry> jEntry in Globals_Server.scheduledEvents.entries)
+            foreach (KeyValuePair<uint, JournalEntry> jEntry in Globals_Server.scheduledEvents.entries)
             {
                 proceed = true;
 
@@ -4001,7 +4001,7 @@ namespace hist_mmorpg
                         + ";  Ft: " + defenderAdditional.troops[4] + ";  Rbl: " + defenderAdditional.troops[5] + "]";
                 }
 
-                siegeText += "\r\n\r\nTotal casualties so far: " + s.totalCasualtiesDefender;
+                siegeText += "\r\n\r\nTotal defender casualties so far (including attrition): " + s.totalCasualtiesDefender;
             }
 
             // if player not defending, hide defending forces details
@@ -4032,7 +4032,7 @@ namespace hist_mmorpg
                     + ";  LCav: " + besieger.troops[2] + ";  Yeo: " + besieger.troops[3]
                     + ";  Ft: " + besieger.troops[4] + ";  Rbl: " + besieger.troops[5] + "]";
 
-                siegeText += "\r\n\r\nTotal casualties so far: " + s.totalCasualtiesAttacker;
+                siegeText += "\r\n\r\nTotal attacker casualties so far (including attrition): " + s.totalCasualtiesAttacker;
             }
 
             // if player not besieger, hide besieging forces details
@@ -4614,7 +4614,7 @@ namespace hist_mmorpg
             this.journalListView.Items.Clear();
 
             // iterates through journal entries adding information to ListView
-            foreach (KeyValuePair<double, JournalEntry> thisJentry in Globals_Client.eventSetToView)
+            foreach (KeyValuePair<uint, JournalEntry> thisJentry in Globals_Client.eventSetToView)
             {
                 ListViewItem thisEntry = null;
 
@@ -8688,6 +8688,15 @@ namespace hist_mmorpg
             uint[] battleValues = new uint[2];
             double[] casualtyModifiers = new double[2];
 
+            // if applicable, get siege
+            Siege thisSiege = null;
+            string thisSiegeID = defender.checkIfBesieger();
+            if (thisSiegeID != null)
+            {
+                // get siege
+                thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
+            }            
+            
             // get starting troop numbers
             uint attackerStartTroops = attacker.calcArmySize();
             uint defenderStartTroops = defender.calcArmySize();
@@ -8764,6 +8773,8 @@ namespace hist_mmorpg
                 // check if losing army has disbanded
                 bool attackerDisbanded = false;
                 bool defenderDisbanded = false;
+                uint totalAttackTroopsLost = 0;
+                uint totalDefendTroopsLost = 0;
 
                 // if losing side sustains >= 50% casualties, disbands
                 if (attackerVictorious)
@@ -8772,40 +8783,52 @@ namespace hist_mmorpg
                     if (casualtyModifiers[1] >= 0.5)
                     {
                         defenderDisbanded = true;
+                        totalDefendTroopsLost = defender.calcArmySize();
                     }
                     // OR apply troop casualties to losing army
                     else
                     {
-                        defender.applyTroopLosses(casualtyModifiers[1]);
+                        totalDefendTroopsLost = defender.applyTroopLosses(casualtyModifiers[1]);
                     }
 
                     // apply troop casualties to winning army
-                    attacker.applyTroopLosses(casualtyModifiers[0]);
+                    totalAttackTroopsLost = attacker.applyTroopLosses(casualtyModifiers[0]);
                 }
                 else
                 {
                     if (casualtyModifiers[0] >= 0.5)
                     {
                         attackerDisbanded = true;
+                        totalAttackTroopsLost = attacker.calcArmySize();
                     }
                     else
                     {
-                        attacker.applyTroopLosses(casualtyModifiers[0]);
+                        totalAttackTroopsLost = attacker.applyTroopLosses(casualtyModifiers[0]);
                     }
 
-                    defender.applyTroopLosses(casualtyModifiers[1]);
+                    totalDefendTroopsLost = defender.applyTroopLosses(casualtyModifiers[1]);
+                }
+
+                // UPDATE TOTAL SIEGE LOSSES, if appropriate
+                // NOTE: the defender in this battle is the attacker in the siege and v.v.
+                if (thisSiege != null)
+                {
+                    // update total defender siege losses
+                    thisSiege.totalCasualtiesDefender += Convert.ToInt32(totalAttackTroopsLost);
+                    // update total attacker siege losses
+                    thisSiege.totalCasualtiesAttacker += Convert.ToInt32(totalDefendTroopsLost);
                 }
 
                 // get casualty figures (for message)
                 if (!attackerDisbanded)
                 {
                     // get attacker casualties
-                    attackerCasualties = attackerStartTroops - attacker.calcArmySize();
+                    attackerCasualties = totalAttackTroopsLost;
                 }
                 if (!defenderDisbanded)
                 {
                     // get defender casualties
-                    defenderCasualties = defenderStartTroops - defender.calcArmySize();
+                    defenderCasualties = totalDefendTroopsLost;
                 }
 
                 // DAYS
@@ -9036,12 +9059,8 @@ namespace hist_mmorpg
                 if ((attackerVictorious) || (retreatDistances[1] > 0))
                 {
                     // check to see if defender was besieging the fief keep
-                    string thisSiegeID = defender.checkIfBesieger();
-                    if (thisSiegeID != null)
+                    if (thisSiege != null)
                     {
-                        // get siege
-                        Siege thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
-
                         // construct event description to be passed into siegeEnd
                         string siegeDescription = "On this day of Our Lord the forces of ";
                         siegeDescription += attacker.getOwner().firstName + " " + attacker.getOwner().familyName;
@@ -9093,7 +9112,7 @@ namespace hist_mmorpg
 
             // =================== construct and send JOURNAL ENTRY
             // ID
-            double entryID = Globals_Server.getNextJournalEntryID();
+            uint entryID = Globals_Server.getNextJournalEntryID();
 
             // personae
             // personae tags vary depending on circumstance
@@ -9713,7 +9732,7 @@ namespace hist_mmorpg
 
             // =================== construct and send JOURNAL ENTRY
             // ID
-            double entryID = Globals_Server.getNextJournalEntryID();
+            uint entryID = Globals_Server.getNextJournalEntryID();
 
             // personae
             List<string> tempPersonae = new List<string>();
@@ -9888,7 +9907,9 @@ namespace hist_mmorpg
         /// Processes the storming of the keep by attacking forces in a siege
         /// </summary>
         /// <param name="s">The siege</param>
-        public void siegeStormRound(Siege s)
+        /// <param name="defenderCasualties">Defender casualties sustained during the reduction phase</param>
+        /// <param name="originalKeepLvl">Keep level prior to the reduction phase</param>
+        public void siegeStormRound(Siege s, uint defenderCasualties, double originalKeepLvl)
         {
             bool stormSuccess = false;
             Fief besiegedFief = s.getFief();
@@ -9899,11 +9920,10 @@ namespace hist_mmorpg
             Character defenderLeader = defenderGarrison.getLeader();
             Character attackerLeader = besiegingArmy.getLeader();
             double statureIncrease = 0;
-            double originalKeepLevel = besiegedFief.keepLevel;
 
             // =================== start construction of JOURNAL ENTRY
             // ID
-            double entryID = Globals_Server.getNextJournalEntryID();
+            uint entryID = Globals_Server.getNextJournalEntryID();
 
             // personae
             List<string> tempPersonae = new List<string>();
@@ -9935,9 +9955,7 @@ namespace hist_mmorpg
             // description
             string siegeDescription = "";
                 
-            // PROCESS NORMAL REDUCTION ROUND
-            this.siegeReductionRound(s);
-
+            // get STORM RESULT
             uint[] battleValues = this.calculateBattleValue(besiegingArmy, defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel));
             stormSuccess = this.decideBattleVictory(battleValues[0], battleValues[1]);
 
@@ -9986,14 +10004,16 @@ namespace hist_mmorpg
             // 1. DEFENDER
             // defender base casualtyModifier
             double defenderCasualtyModifier = 0.01;
-            defenderCasualtyModifier = defenderCasualtyModifier * (battleValues[0] / battleValues[1]);
+            defenderCasualtyModifier = defenderCasualtyModifier * (Convert.ToDouble(battleValues[0]) / battleValues[1]);
 
             // apply casualties
-            uint defenderCasualties = defenderGarrison.applyTroopLosses(defenderCasualtyModifier);
+            defenderCasualties += defenderGarrison.applyTroopLosses(defenderCasualtyModifier);
+            // update total defender siege losses
+            s.totalCasualtiesDefender += Convert.ToInt32(defenderCasualties);
 
             // 2. ATTACKER
             double attackerCasualtyModifier = 0.01;
-            attackerCasualtyModifier = attackerCasualtyModifier * (battleValues[1] / battleValues[0]);
+            attackerCasualtyModifier = attackerCasualtyModifier * (Convert.ToDouble(battleValues[1]) / battleValues[0]);
             // for attacker, add effects of keep level, modified by on storm success
             if (stormSuccess)
             {
@@ -10005,6 +10025,8 @@ namespace hist_mmorpg
             }
             // apply casualties
             uint attackerCasualties = besiegingArmy.applyTroopLosses(attackerCasualtyModifier);
+            // update total attacker siege losses
+            s.totalCasualtiesAttacker += Convert.ToInt32(attackerCasualties);
 
             // PC/NPC INJURIES
             // NOTE: defender only (attacker leaders assumed not to have climbed the walls)
@@ -10101,34 +10123,37 @@ namespace hist_mmorpg
                 // calculate change to besieging player's stature
                 statureIncrease = 0.1 * (Convert.ToDouble(s.getFief().population) / 10000);
 
-                // construct event description to be passed into siegeEnd
+                // construct event description
                 siegeDescription = "On this day of Our Lord the forces of ";
                 siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
-                siegeDescription += " successfully stormed the keep of " + s.getFief().name;
-                siegeDescription += ". Total casualties numbered " + attackerCasualties + " for the attacking forces ";
-                siegeDescription += "and " + defenderCasualties + " for the defending forces";
-                siegeDescription += ". The ownership of this fief has now passed from ";
-                siegeDescription += s.getDefendingPlayer().firstName + " " + s.getDefendingPlayer().familyName;
-                siegeDescription += " to " + s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
-                siegeDescription += " who has also earned an increase of " + statureIncrease + " stature.";
+                siegeDescription += " successfully stormed the keep of " + s.getFief().name + ".";
+
+                // create more detailed description for siegeEnd
+                string siegeDescriptionFull = siegeDescription;
+                siegeDescriptionFull += "\r\n\r\nTotal casualties numbered " + attackerCasualties + " for the attacking forces ";
+                siegeDescriptionFull += "and " + defenderCasualties + " for the defending forces";
+                siegeDescriptionFull += ".\r\n\r\nThe ownership of this fief has now passed from ";
+                siegeDescriptionFull += s.getDefendingPlayer().firstName + " " + s.getDefendingPlayer().familyName;
+                siegeDescriptionFull += " to " + s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                siegeDescriptionFull += " who has also earned an increase of " + statureIncrease + " stature.";
                 // details of ransoms
                 if (totalRansom > 0)
                 {
-                    siegeDescription += " A number of persons (";
+                    siegeDescriptionFull += "\r\n\r\nA number of persons (";
                     Character lastCaptive = captives.Last();
                     foreach (Character thisCharacter in captives)
                     {
-                        siegeDescription += thisCharacter.firstName + " " + thisCharacter.familyName;
+                        siegeDescriptionFull += thisCharacter.firstName + " " + thisCharacter.familyName;
                         if (thisCharacter != lastCaptive)
                         {
-                            siegeDescription += ", ";
+                            siegeDescriptionFull += ", ";
                         }
                     }
-                    siegeDescription += ") were ransomed for a total of £" + totalRansom + ".";
+                    siegeDescriptionFull += ") were ransomed for a total of £" + totalRansom + ".";
                 }
 
                 // end the siege
-                this.siegeEnd(s, siegeDescription);
+                this.siegeEnd(s, siegeDescriptionFull);
 
                 // change fief ownership
                 besiegedFief.changeOwnership(attackingPlayer);
@@ -10140,14 +10165,14 @@ namespace hist_mmorpg
                 // calculate change to besieging player's stature
                 statureIncrease = -0.2 * (Convert.ToDouble(s.getFief().population) / 10000);
 
-                // use popup text as description
+                // description
                 siegeDescription = "On this day of Our Lord the forces of ";
                 siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
                 siegeDescription += " were unsuccessfull in their attempt to storm the keep of " + s.getFief().name;
-                siegeDescription += ". Total casualties numbered " + attackerCasualties + " for the attacking forces ";
+                siegeDescription += ".\r\n\r\nTotal casualties numbered " + attackerCasualties + " for the attacking forces ";
                 siegeDescription += "and " + defenderCasualties + " for the defending forces";
-                siegeDescription += ". In addition the keep level was reduced from " + originalKeepLevel + " to ";
-                siegeDescription += besiegedFief.keepLevel + ". This failure has resulted in a loss of ";
+                siegeDescription += ". In addition the keep level was reduced from " + originalKeepLvl + " to ";
+                siegeDescription += besiegedFief.keepLevel + ".\r\n\r\nThis failure has resulted in a loss of ";
                 siegeDescription += statureIncrease + " for " + s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
             }
 
@@ -10172,7 +10197,9 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating whether negotiation was successful</returns>
         /// <param name="s">The siege</param>
-        public bool siegeNegotiationRound(Siege s)
+        /// <param name="defenderCasualties">Defender casualties sustained during the reduction phase</param>
+        /// <param name="originalKeepLvl">Keep level prior to the reduction phase</param>
+        public bool siegeNegotiationRound(Siege s, uint defenderCasualties, double originalKeepLvl)
         {
             bool negotiateSuccess = false;
 
@@ -10180,10 +10207,45 @@ namespace hist_mmorpg
             Fief besiegedFief = s.getFief();
             Army besieger = s.getBesiegingArmy();
             Army defenderGarrison = s.getDefenderGarrison();
+            Character defenderLeader = defenderGarrison.getLeader();
+            Character attackerLeader = besieger.getLeader();
+            Army defenderAdditional = s.getDefenderAdditional();
 
-            // process non-storm round
-            this.siegeReductionRound(s);
+            // =================== start construction of JOURNAL ENTRY
+            // ID
+            uint entryID = Globals_Server.getNextJournalEntryID();
 
+            // personae
+            List<string> tempPersonae = new List<string>();
+            tempPersonae.Add(s.getDefendingPlayer().charID + "|fiefOwner");
+            tempPersonae.Add(s.getBesiegingPlayer().charID + "|attackerOwner");
+            if (attackerLeader != null)
+            {
+                tempPersonae.Add(attackerLeader.charID + "|attackerLeader");
+            }
+            if (defenderLeader != null)
+            {
+                tempPersonae.Add(defenderLeader.charID + "|defenderGarrisonLeader");
+            }
+            // get additional defending leader
+            Character addDefendLeader = null;
+            if (defenderAdditional != null)
+            {
+                addDefendLeader = defenderAdditional.getLeader();
+                if (addDefendLeader != null)
+                {
+                    tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
+                }
+            }
+            string[] siegePersonae = tempPersonae.ToArray();
+
+            // location
+            string siegeLocation = s.getFief().fiefID;
+
+            // description
+            string siegeDescription = "";
+
+            // calculate success chance
             uint[] battleValues = this.calculateBattleValue(besieger, defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel));
             double successChance = this.calcVictoryChance(battleValues[0], battleValues[1]) / 2;
 
@@ -10211,24 +10273,51 @@ namespace hist_mmorpg
                 s.getBesiegingPlayer().statureModifier += statureIncrease;
 
                 // construct event description to be passed into siegeEnd
-                string siegeDescription = "On this day of Our Lord the forces of ";
+                siegeDescription = "On this day of Our Lord the forces of ";
                 siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
-                siegeDescription += " negotiated a successful end to the siege of " + s.getFief().name;
-                siegeDescription += ". The ownership of this fief has now passed from ";
-                siegeDescription += s.getDefendingPlayer().firstName + " " + s.getDefendingPlayer().familyName;
-                siegeDescription += " to " + s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
-                siegeDescription += " who has also earned an increase of " + statureIncrease + " stature.";
+                siegeDescription += " SUCCESSFULLY negotiated an end to the siege of " + s.getFief().name +".";
 
-                // inform player of success
-                System.Windows.Forms.MessageBox.Show(siegeDescription);
+                // create more detailed description for siegeEnd
+                string siegeDescriptionFull = siegeDescription;
+                siegeDescriptionFull += "\r\n\r\nThe ownership of this fief has now passed from ";
+                siegeDescriptionFull += s.getDefendingPlayer().firstName + " " + s.getDefendingPlayer().familyName;
+                siegeDescriptionFull += " to " + s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                siegeDescriptionFull += " who has also earned an increase of " + statureIncrease + " stature.";
+                siegeDescriptionFull += "\r\n\r\nTotal casualties during this round numbered " + defenderCasualties + " for the defending forces";
+                siegeDescriptionFull += ". In addition the keep level was reduced from " + originalKeepLvl + " to ";
+                siegeDescriptionFull += besiegedFief.keepLevel + ".";
 
                 // end the siege
-                this.siegeEnd(s, siegeDescription);
+                this.siegeEnd(s, siegeDescriptionFull);
 
                 // change fief ownership
                 s.getFief().changeOwnership(s.getBesiegingPlayer());
 
             }
+
+            // negotiation unsuccessful
+            else
+            {
+                // construct event description to be passed into siegeEnd
+                siegeDescription = "On this day of Our Lord the forces of ";
+                siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                siegeDescription += " FAILED to negotiate an end to the siege of " + s.getFief().name + ".";
+                siegeDescription += "\r\n\r\nTotal casualties during this round numbered " + defenderCasualties + " for the defending forces";
+                siegeDescription += ". In addition the keep level was reduced from " + originalKeepLvl + " to ";
+                siegeDescription += besiegedFief.keepLevel + ".";
+            }
+
+            // create and send JOURNAL ENTRY
+            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, siegePersonae, "siegeStorm", loc: siegeLocation, descr: siegeDescription);
+
+            // add new journal entry to pastEvents
+            Globals_Server.addPastEvent(siegeResult);
+
+            // update total defender siege losses
+            s.totalCasualtiesDefender += Convert.ToInt32(defenderCasualties);
+
+            // inform player of success
+            System.Windows.Forms.MessageBox.Show(siegeDescription);
 
             // refresh screen
             this.refreshCurrentScreen();
@@ -10240,7 +10329,8 @@ namespace hist_mmorpg
         /// Processes a single reduction round of a siege
         /// </summary>
         /// <param name="s">The siege</param>
-        public void siegeReductionRound(Siege s)
+        /// <param name="type">The type of round - storm, negotiate, reduction (default)</param>
+        public void siegeReductionRound(Siege s, string type = "reduction")
         {
             bool siegeRaised = false;
             Fief besiegedFief = s.getFief();
@@ -10292,7 +10382,7 @@ namespace hist_mmorpg
             {
                 // process results of siege round
                 // reduce keep level by 5%
-                double originalKeepLevel = besiegedFief.keepLevel;
+                double originalKeepLvl = besiegedFief.keepLevel;
                 besiegedFief.keepLevel = (besiegedFief.keepLevel * 0.92);
 
                 // apply combat losses to defenderGarrison
@@ -10339,54 +10429,72 @@ namespace hist_mmorpg
                 // synchronise days
                 s.syncDays(s.days - 10);
 
-                // =================== construct and send JOURNAL ENTRY
-                // ID
-                double entryID = Globals_Server.getNextJournalEntryID();
+                if (type.Equals("reduction"))
+                {
+                    // UPDATE SIEGE LOSSES
+                    s.totalCasualtiesDefender += Convert.ToInt32(troopsLost);
 
-                // personae
-                List<string> tempPersonae = new List<string>();
-                tempPersonae.Add(s.getDefendingPlayer().charID + "|fiefOwner");
-                tempPersonae.Add(s.getBesiegingPlayer().charID + "|attackerOwner");
-                if (attackerLeader != null)
-                {
-                    tempPersonae.Add(attackerLeader.charID + "|attackerLeader");
-                }
-                if (defenderLeader != null)
-                {
-                    tempPersonae.Add(defenderLeader.charID + "|defenderGarrisonLeader");
-                }
-                // get additional defending leader
-                Character addDefendLeader = null;
-                if (defenderAdditional != null)
-                {
-                    addDefendLeader = defenderAdditional.getLeader();
-                    if (addDefendLeader != null)
+                    // =================== construct and send JOURNAL ENTRY
+                    // ID
+                    uint entryID = Globals_Server.getNextJournalEntryID();
+
+                    // personae
+                    List<string> tempPersonae = new List<string>();
+                    tempPersonae.Add(s.getDefendingPlayer().charID + "|fiefOwner");
+                    tempPersonae.Add(s.getBesiegingPlayer().charID + "|attackerOwner");
+                    if (attackerLeader != null)
                     {
-                        tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
+                        tempPersonae.Add(attackerLeader.charID + "|attackerLeader");
                     }
+                    if (defenderLeader != null)
+                    {
+                        tempPersonae.Add(defenderLeader.charID + "|defenderGarrisonLeader");
+                    }
+                    // get additional defending leader
+                    Character addDefendLeader = null;
+                    if (defenderAdditional != null)
+                    {
+                        addDefendLeader = defenderAdditional.getLeader();
+                        if (addDefendLeader != null)
+                        {
+                            tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
+                        }
+                    }
+                    string[] siegePersonae = tempPersonae.ToArray();
+
+                    // location
+                    string siegeLocation = s.getFief().fiefID;
+
+                    // use popup text as description
+                    string siegeDescription = "On this day of Our Lord the siege of " + s.getFief().name + " by ";
+                    siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                    siegeDescription += " continued.  The besieged garrison lost a total of " + troopsLost + " troops, ";
+                    siegeDescription += " and the keep level was reduced from " + originalKeepLvl + " to ";
+                    siegeDescription += besiegedFief.keepLevel + ".";
+
+                    // put together new journal entry
+                    JournalEntry siegeResult = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, siegePersonae, "siegeReduction", loc: siegeLocation, descr: siegeDescription);
+
+                    // add new journal entry to pastEvents
+                    Globals_Server.addPastEvent(siegeResult);
                 }
-                string[] siegePersonae = tempPersonae.ToArray();
 
-                // location
-                string siegeLocation = s.getFief().fiefID;
-
-                // use popup text as description
-                string siegeDescription = "On this day of Our Lord the siege of " + s.getFief().name + " by ";
-                siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
-                siegeDescription += " continued.  The besieged garrison lost a total of " + troopsLost + " troops, ";
-                siegeDescription += " and the keep level was reduced from " + originalKeepLevel + " to ";
-                siegeDescription += besiegedFief.keepLevel + ".";
-
-                // put together new journal entry
-                JournalEntry siegeResult = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, siegePersonae, "siegeReduction", loc: siegeLocation, descr: siegeDescription);
-
-                // add new journal entry to pastEvents
-                Globals_Server.addPastEvent(siegeResult);
-
+                if (type.Equals("storm"))
+                {
+                    this.siegeStormRound(s, troopsLost, originalKeepLvl);
+                }
+                else if (type.Equals("negotiation"))
+                {
+                    this.siegeNegotiationRound(s, troopsLost, originalKeepLvl);
+                }
             }
 
-            // refresh screen
-            this.refreshCurrentScreen();
+            if (type.Equals("reduction"))
+            {
+                // refresh screen
+                this.refreshCurrentScreen();
+            }
+
         }
 
         /// <summary>
@@ -10570,7 +10678,7 @@ namespace hist_mmorpg
 
             // =================== construct and send JOURNAL ENTRY
             // ID
-            double entryID = Globals_Server.getNextJournalEntryID();
+            uint entryID = Globals_Server.getNextJournalEntryID();
 
             // personae
             List<string> tempPersonae = new List<string>();
@@ -10761,6 +10869,7 @@ namespace hist_mmorpg
             this.refreshSiegeContainer();
         }
 
+        /*
         /// <summary>
         /// Responds to the click event of the siegeNegotiateBtn button
         /// processing a single siege negotaiation round
@@ -10826,18 +10935,23 @@ namespace hist_mmorpg
                 }
             }
         }
+        */
 
         /// <summary>
-        /// Responds to the click event of the siegeReduceBtn button
-        /// processing a single siege reduction round
+        /// Responds to any of the click events of the siegeRound buttons
+        /// processing a single siege round of specified type
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
-        private void siegeReduceBtn_Click(object sender, EventArgs e)
+        private void siegeRoundBtn_Click(object sender, EventArgs e)
         {
             if (this.siegeListView.SelectedItems.Count > 0)
             {
                 bool proceed = true;
+
+                // get tag from button
+                Button button = sender as Button;
+                string roundType = button.Tag.ToString();
 
                 // get siege
                 Siege thisSiege = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
@@ -10847,8 +10961,8 @@ namespace hist_mmorpg
 
                 if (proceed)
                 {
-                    // process siege reduction round
-                    this.siegeReductionRound(thisSiege);
+                    // process siege round of specified type
+                    this.siegeReductionRound(thisSiege, roundType);
                 }
             }
             else
@@ -11169,7 +11283,7 @@ namespace hist_mmorpg
                     // get jEntry ID and retrieve from Globals_Server
                     if (infoSplit[1] != null)
                     {
-                        double newJentryID = Convert.ToDouble(infoSplit[1]);
+                        uint newJentryID = Convert.ToUInt32(infoSplit[1]);
                         JournalEntry newJentry = Globals_Server.pastEvents.entries[newJentryID];
 
                         // check to see if is of interest to player
@@ -11218,7 +11332,7 @@ namespace hist_mmorpg
             // get entry
             if (this.journalListView.SelectedItems.Count > 0)
             {
-                double jEntryID = Convert.ToDouble(this.journalListView.SelectedItems[0].SubItems[0].Text);
+                uint jEntryID = Convert.ToUInt32(this.journalListView.SelectedItems[0].SubItems[0].Text);
                 Globals_Client.jEntryToView = Globals_Client.eventSetToView.IndexOfKey(jEntryID);
             }
 
@@ -11388,7 +11502,7 @@ namespace hist_mmorpg
             PlayerCharacter headOfFamilyBride = Globals_Server.pcMasterList[bride.familyID];
 
             // ID
-            double proposalID = Globals_Server.getNextJournalEntryID();
+            uint proposalID = Globals_Server.getNextJournalEntryID();
 
             // date
             uint year = Globals_Server.clock.currentYear;
@@ -11471,7 +11585,7 @@ namespace hist_mmorpg
             }
 
             // ID
-            double replyID = Globals_Server.getNextJournalEntryID();
+            uint replyID = Globals_Server.getNextJournalEntryID();
 
             // date
             uint year = Globals_Server.clock.currentYear;
@@ -11591,7 +11705,7 @@ namespace hist_mmorpg
             }
 
             // ID
-            double replyID = Globals_Server.getNextJournalEntryID();
+            uint replyID = Globals_Server.getNextJournalEntryID();
 
             // date
             uint year = Globals_Server.clock.currentYear;
@@ -11677,7 +11791,7 @@ namespace hist_mmorpg
             }
 
             // ID
-            double marriageID = Globals_Server.getNextJournalEntryID();
+            uint marriageID = Globals_Server.getNextJournalEntryID();
 
             // date
             uint year = Globals_Server.clock.currentYear;

@@ -231,24 +231,17 @@ namespace hist_mmorpg
         /// <summary>
         /// Gets the next available newJournalEntryID, then increments it
         /// </summary>
-        /// <returns>double containing newJournalEntryID</returns>
-        public static double getNextJournalEntryID()
+        /// <returns>uint containing newJournalEntryID</returns>
+        public static uint getNextJournalEntryID()
         {
-            double newID = 0;
+            uint newID = 0;
 
-            // create ID from current year and newJournalEntryID
-            string tempString = Globals_Server.clock.currentYear + "." + Globals_Server.newJournalEntryID;
-            newID = Convert.ToDouble(tempString);
+            // get newJournalEntryID
+            newID = Globals_Server.newJournalEntryID;
             // System.Windows.Forms.MessageBox.Show("jEntryID: " + newID.ToString());
 
             // increment newJournalEntryID
             Globals_Server.newJournalEntryID++;
-
-            // ensure new newJournalEntryID not divisible by 10 (will result in duplicate ID)
-            if (newJournalEntryID % 10 == 0)
-            {
-                newJournalEntryID++;
-            }
 
             return newID;
         }

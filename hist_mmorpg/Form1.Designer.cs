@@ -2287,9 +2287,10 @@ namespace hist_mmorpg
             this.siegeReduceBtn.Name = "siegeReduceBtn";
             this.siegeReduceBtn.Size = new System.Drawing.Size(138, 40);
             this.siegeReduceBtn.TabIndex = 58;
+            this.siegeReduceBtn.Tag = "reduction";
             this.siegeReduceBtn.Text = "Conduct Reduction Round";
             this.siegeReduceBtn.UseVisualStyleBackColor = true;
-            this.siegeReduceBtn.Click += new System.EventHandler(this.siegeReduceBtn_Click);
+            this.siegeReduceBtn.Click += new System.EventHandler(this.siegeRoundBtn_Click);
             // 
             // siegeStormBtn
             // 
@@ -2297,9 +2298,10 @@ namespace hist_mmorpg
             this.siegeStormBtn.Name = "siegeStormBtn";
             this.siegeStormBtn.Size = new System.Drawing.Size(138, 40);
             this.siegeStormBtn.TabIndex = 57;
+            this.siegeStormBtn.Tag = "storm";
             this.siegeStormBtn.Text = "Conduct Storm Round";
             this.siegeStormBtn.UseVisualStyleBackColor = true;
-            this.siegeStormBtn.Click += new System.EventHandler(this.siegeStormBtn_Click);
+            this.siegeStormBtn.Click += new System.EventHandler(this.siegeRoundBtn_Click);
             // 
             // siegeNegotiateBtn
             // 
@@ -2307,9 +2309,10 @@ namespace hist_mmorpg
             this.siegeNegotiateBtn.Name = "siegeNegotiateBtn";
             this.siegeNegotiateBtn.Size = new System.Drawing.Size(138, 40);
             this.siegeNegotiateBtn.TabIndex = 56;
+            this.siegeNegotiateBtn.Tag = "negotiation";
             this.siegeNegotiateBtn.Text = "Conduct Negotiation Round";
             this.siegeNegotiateBtn.UseVisualStyleBackColor = true;
-            this.siegeNegotiateBtn.Click += new System.EventHandler(this.siegeNegotiateBtn_Click);
+            this.siegeNegotiateBtn.Click += new System.EventHandler(this.siegeRoundBtn_Click);
             // 
             // siegeListContainer
             // 
