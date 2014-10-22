@@ -556,8 +556,48 @@ namespace hist_mmorpg
         /// <summary>
         /// Performs necessary actions upon the death of a character
         /// </summary>
-        public void processDeath()
+        /// <param name="circumstance">string containing the circumstance of the death</param>
+        public void processDeath(string circumstance = "natural")
         {
+            // get role of character
+            string role = "";
+            // PCs
+            if (this is PlayerCharacter)
+            {
+                if ((this as PlayerCharacter).playerID != null)
+                {
+                    role = "player";
+                }
+                else
+                {
+                    role = "PC";
+                }
+            }
+
+            // NPCs
+            else
+            {
+                if ((this as NonPlayerCharacter).familyID != null)
+                {
+                    if ((this as NonPlayerCharacter).isHeir)
+                    {
+                        role = "familyHeir";
+                    }
+                    else
+                    {
+                        role = "family";
+                    }
+                }
+                else if ((this as NonPlayerCharacter).myBoss != null)
+                {
+                    role = "employee";
+                }
+                else
+                {
+                    role = "NPC";
+                }
+            }
+
             // 1. set isAlive = false
             this.isAlive = false;
 
@@ -572,22 +612,17 @@ namespace hist_mmorpg
                 if (Globals_Server.armyMasterList.ContainsKey(this.armyID))
                 {
                     thisArmy = Globals_Server.armyMasterList[this.armyID];
+
+                    // set army leader to null
+                    if (thisArmy != null)
+                    {
+                        thisArmy.leader = null;
+                    }
                 }
 
-                // set army leader to null
-                if (thisArmy != null)
-                {
-                    thisArmy.leader = null;
-                }
             }
 
-            // 4. remove from fief barred lists
-            if (this.location.barredCharacters.Contains(this.charID))
-            {
-                this.location.barredCharacters.Remove(this.charID);
-            }
-
-            // 5. if married, remove from spouse
+            // 4. if married, remove from spouse
             if (this.spouse != null)
             {
                 Character mySpouse = this.getSpouse();
@@ -599,57 +634,244 @@ namespace hist_mmorpg
                 
             }
 
-            // 6. (NPC) check and remove from PC myNPCs list
-            // 7. (NPC) check and remove from bailiff positions
-            if (this is NonPlayerCharacter)
+            // 5. if engaged, remove from fiancee and cancel marriage
+            if (this.fiancee != null)
+            {
+                Character myFiancee = this.getFiancee();
+
+                if (myFiancee != null)
+                {
+                    myFiancee.fiancee = null;
+
+                    // get marriage entry in Globals_Server.scheduledEvents
+                    JournalEntry jEntry = Globals_Server.scheduledEvents.getMarriageEntry(this);
+
+                    // generate marriageCancelled entry
+                    bool success = false;
+
+                    // get interested parties
+                    PlayerCharacter headOfFamilyBride = null;
+                    PlayerCharacter headOfFamilyGroom = null;
+                    Character bride = null;
+                    Character groom = null;
+
+                    for (int i = 0; i < jEntry.personae.Length; i++)
+                    {
+                        string thisPersonae = jEntry.personae[i];
+                        string[] thisPersonaeSplit = thisPersonae.Split('|');
+
+                        switch (thisPersonaeSplit[1])
+                        {
+                            case "headOfFamilyBride":
+                                headOfFamilyBride = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                                break;
+                            case "headOfFamilyGroom":
+                                headOfFamilyGroom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                                break;
+                            case "bride":
+                                bride = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                                break;
+                            case "groom":
+                                if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                {
+                                    groom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                                }
+                                else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                {
+                                    groom = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    // ID
+                    uint newEntryID = Globals_Server.getNextJournalEntryID();
+
+                    // date
+                    uint year = Globals_Server.clock.currentYear;
+                    byte season = Globals_Server.clock.currentSeason;
+
+                    // personae
+                    string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
+                    string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
+                    string thisBrideEntry = bride.charID + "|bride";
+                    string thisGroomEntry = groom.charID + "|groom";
+                    string[] newEntryPersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, thisBrideEntry, thisGroomEntry };
+
+                    // type
+                    string type = "marriageCancelled";
+
+                    // description
+                    string description = "On this day of Our Lord the imminent marriage between ";
+                    description += groom.firstName + " " + groom.familyName + " and ";
+                    description += bride.firstName + " " + bride.familyName;
+                    description += " has been CANCELLED due to the sad and untimely death of ";
+                    description += this.firstName + " " + this.familyName;
+                    description += ". Let the bells fall silent.";
+
+                    // create and add a marriageCancelled entry to Globals_Server.pastEvents
+                    JournalEntry newEntry = new JournalEntry(newEntryID, year, season, newEntryPersonae, type, descr: description);
+                    success = Globals_Server.addPastEvent(newEntry);
+
+                    // delete marriage entry in Globals_Server.scheduledEvents
+                    Globals_Server.scheduledEvents.entries.Remove(jEntry.jEntryID);
+                }
+
+            }
+
+            // 6. check and remove from bailiff positions
+            PlayerCharacter employer = null;
+            if (this is PlayerCharacter)
+            {
+                employer = (this as PlayerCharacter);
+            }
+            else
             {
                 // if is an employee
                 if ((this as NonPlayerCharacter).myBoss != null)
                 {
                     // get boss
-                    PlayerCharacter boss = (this as NonPlayerCharacter).getEmployer();
-
-                    // check to see if is a bailiff.  If so, remove
-                    foreach (Fief thisFief in boss.ownedFiefs)
-                    {
-                        if (thisFief.bailiff == this)
-                        {
-                            thisFief.bailiff = null;
-                        }
-                    }
-
-                    // remove from boss's myNPCs
-                    boss.myNPCs.Remove((this as NonPlayerCharacter));
+                    employer = (this as NonPlayerCharacter).getEmployer();
                 }
 
-                // if is a family member
-                if ((this as NonPlayerCharacter).familyID != null)
-                {
-                    // get boss
-                    PlayerCharacter familyHead = this.getHeadOfFamily();
-
-                    if (familyHead != null)
-                    {
-                        // check to see if is a bailiff.  If so, remove
-                        foreach (Fief thisFief in familyHead.ownedFiefs)
-                        {
-                            if (thisFief.bailiff == this)
-                            {
-                                thisFief.bailiff = null;
-                            }
-                        }
-
-                        // remove from head of family's myNPCs
-                        familyHead.myNPCs.Remove((this as NonPlayerCharacter));
-                    }
-                }
-
-                // TODO: inform PC
             }
 
-            // TODO: (PC) check and remove from bailiff positions
+            // check to see if is a bailiff.  If so, remove
+            if (employer != null)
+            {
+                foreach (Fief thisFief in employer.ownedFiefs)
+                {
+                    if (thisFief.bailiff == this)
+                    {
+                        thisFief.bailiff = null;
+                    }
+                }
+            }
 
-            // TODO: clear titles and assign to heir (for PC) or owner (for NPC)
+            // 7. (NPC) check and remove from PC myNPCs list
+            PlayerCharacter headOfFamily = null;
+            if (this is NonPlayerCharacter)
+            {
+                // 7.1 employees
+                if (role.Equals("employee"))
+                {
+                    // remove from boss's myNPCs
+                    employer.myNPCs.Remove((this as NonPlayerCharacter));
+                }
+
+                // 7.2 family members
+                else if (role.Contains("family"))
+                {
+                    // get head of family
+                    headOfFamily = this.getHeadOfFamily();
+
+                    if (headOfFamily != null)
+                    {
+                        // remove from head of family's myNPCs
+                        headOfFamily.myNPCs.Remove((this as NonPlayerCharacter));
+                    }
+                }
+
+            }
+
+            // 8. (NPC) re-assign titles to fief owner
+            if (this is NonPlayerCharacter)
+            {
+                foreach (string fiefID in (this as NonPlayerCharacter).myTitles)
+                {
+                    // get fief
+                    Fief thisFief = Globals_Server.fiefMasterList[fiefID];
+
+                    // re-assign title to fief owner
+                    thisFief.owner.myTitles.Add(fiefID);
+                    thisFief.titleHolder = thisFief.owner.charID;
+                }
+            }
+
+            // 9. create and send journal entry (unless is a player or a nobody)
+            if ((!role.Equals("player")) && (!role.Equals("character")))
+            {
+                bool success = false;
+
+                // ID
+                uint deathEntryID = Globals_Server.getNextJournalEntryID();
+
+                // date
+                uint year = Globals_Server.clock.currentYear;
+                byte season = Globals_Server.clock.currentSeason;
+
+                // personae, type, description
+                string interestedPlayerEntry = "";
+                string deceasedCharacterEntry = "";
+                string type = "";
+                string description = "On this day of Our Lord ";
+                description += this.firstName + " " + this.familyName;
+
+                // family member/heir
+                if (role.Contains("family"))
+                {
+                    // personae
+                    interestedPlayerEntry = headOfFamily.charID + "|headOfFamily";
+                    deceasedCharacterEntry = this.charID;
+
+                    if (role.Equals("heir"))
+                    {
+                        deceasedCharacterEntry += "|deceasedHeir";
+
+                        // type
+                        type = "deathOfHeir";
+                    }
+                    else
+                    {
+                        deceasedCharacterEntry += "|deceasedFamilyMember";
+
+                        // type
+                        type = "deathOfFamilyMember";
+                    }
+
+                    // description
+                    description += ", " + (this as NonPlayerCharacter).getFunction(headOfFamily) + " of ";
+                    description += headOfFamily.firstName + " " + headOfFamily.familyName;
+                }
+
+                // employee
+                else if (role.Equals("employee"))
+                {
+                    // personae
+                    interestedPlayerEntry = employer.charID + "|employer";
+                    deceasedCharacterEntry += "|deceasedEmployee";
+
+                    // type
+                    type = "deathOfEmployee";
+
+                    // description
+                    description += ", employee of ";
+                    description += employer.firstName + " " + employer.familyName;
+                }
+
+                // personae
+                string[] deathPersonae = new string[] { interestedPlayerEntry, deceasedCharacterEntry };
+
+                // description
+                description += ", passed away due to ";
+                switch (circumstance)
+                {
+                    case "injury":
+                        description += "injuries sustained on the field of battle.";
+                        break;
+                    default:
+                        description += "natural causes.";
+                        break;
+                }
+                description += " Sympathies are extended to family and friends of the deceased.";
+
+
+                // create and add a death entry to Globals_Server.pastEvents
+                JournalEntry deathEntry = new JournalEntry(deathEntryID, year, season, deathPersonae, type, descr: description);
+                success = Globals_Server.addPastEvent(deathEntry);
+            }
 
             // TODO: (Player) transfer dead player PC to chosen heir = create new PC from NPC
             // transfer fiefs, titles, ancestral ownership, employees, change family functions

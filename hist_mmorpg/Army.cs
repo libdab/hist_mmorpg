@@ -712,7 +712,23 @@ namespace hist_mmorpg
                     // calculate attrition
                     double attritionModifer = this.calcAttrition();
                     // apply attrition
-                    this.applyTroopLosses(attritionModifer);
+                    uint troopsLost = this.applyTroopLosses(attritionModifer);
+
+                    // update siege losses, if applicable
+                    if (thisSiege != null)
+                    {
+                        // siege defenders
+                        if ((isSiegeDefGarr) || (isSiegeDefAdd))
+                        {
+                            thisSiege.totalCasualtiesDefender += Convert.ToInt32(troopsLost);
+                        }
+
+                        // siege attackers
+                        else
+                        {
+                            thisSiege.totalCasualtiesAttacker += Convert.ToInt32(troopsLost);
+                        }
+                    }
                 }
             }
 

@@ -566,7 +566,7 @@ namespace hist_mmorpg
             Globals_Server.battleProbabilities.Add("pillage", pChance);
 
             // populate Globals_Server.jEntryPriorities
-            // proposal/marriage
+            // marriage
             string[] thisPriorityKey001 = {"proposalMade", "headOfFamilyBride"};
             Globals_Server.jEntryPriorities.Add(thisPriorityKey001, 2);
             string[] thisPriorityKey002 = { "proposalRejected", "headOfFamilyGroom" };
@@ -577,6 +577,10 @@ namespace hist_mmorpg
             Globals_Server.jEntryPriorities.Add(thisPriorityKey004, 1);
             string[] thisPriorityKey005 = { "marriage", "headOfFamilyGroom" };
             Globals_Server.jEntryPriorities.Add(thisPriorityKey005, 1);
+            string[] thisPriorityKey016 = { "marriageCancelled", "headOfFamilyGroom" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey016, 2);
+            string[] thisPriorityKey017 = { "marriageCancelled", "headOfFamilyBride" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey017, 1);
             // birth
             string[] thisPriorityKey006 = { "birth", "headOfFamily" };
             Globals_Server.jEntryPriorities.Add(thisPriorityKey006, 2);
@@ -592,8 +596,15 @@ namespace hist_mmorpg
             // siege
             string[] thisPriorityKey011 = { "siege", "fiefOwner" };
             Globals_Server.jEntryPriorities.Add(thisPriorityKey011, 2);
-            string[] thisPriorityKey012 = { "siegeRound", "fiefOwner" };
+            string[] thisPriorityKey012 = { "siegeReduction", "fiefOwner" };
             Globals_Server.jEntryPriorities.Add(thisPriorityKey012, 1);
+            string[] thisPriorityKey013 = { "siegeStorm", "fiefOwner" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey013, 1);
+            string[] thisPriorityKey014 = { "siegeNegotiation", "fiefOwner" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey014, 1);
+            string[] thisPriorityKey015 = { "siegeEnd", "fiefOwner" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey015, 2);
+            // next un-used key = thisPriorityKey018
 
 
             // create an army and add in appropriate places
@@ -10126,7 +10137,7 @@ namespace hist_mmorpg
                 // construct event description
                 siegeDescription = "On this day of Our Lord the forces of ";
                 siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
-                siegeDescription += " successfully stormed the keep of " + s.getFief().name + ".";
+                siegeDescription += " SUCCESSFULLY stormed the keep of " + s.getFief().name + ".";
 
                 // create more detailed description for siegeEnd
                 string siegeDescriptionFull = siegeDescription;
@@ -10168,7 +10179,7 @@ namespace hist_mmorpg
                 // description
                 siegeDescription = "On this day of Our Lord the forces of ";
                 siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
-                siegeDescription += " were unsuccessfull in their attempt to storm the keep of " + s.getFief().name;
+                siegeDescription += " were UNSUCCESSFULL in their attempt to storm the keep of " + s.getFief().name;
                 siegeDescription += ".\r\n\r\nTotal casualties numbered " + attackerCasualties + " for the attacking forces ";
                 siegeDescription += "and " + defenderCasualties + " for the defending forces";
                 siegeDescription += ". In addition the keep level was reduced from " + originalKeepLvl + " to ";

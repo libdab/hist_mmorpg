@@ -105,6 +105,55 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Retrieves the marriage JournalEntry associated with the specified character (bride or groom)
+        /// </summary>
+        /// <returns>JournalEntry associated with the marriage</returns>
+        /// <param name="oneOfCouple">The bride or groom</param>
+        public JournalEntry getMarriageEntry(Character oneOfCouple)
+        {
+            JournalEntry marriageEntry = null;
+            bool entryFound = false;
+
+            foreach (KeyValuePair<uint, JournalEntry> jEntry in this.entries)
+            {
+                // get marriage entries
+                if (jEntry.Value.type.Equals("marriage"))
+                {
+                    // iterate through personae
+                    for (int i = 0; i < jEntry.Value.personae.Length; i++)
+                    {
+                        // get and split personae
+                        string thisPersonae = jEntry.Value.personae[i];
+                        string[] thisPersonaeSplit = thisPersonae.Split('|');
+
+                        if (thisPersonaeSplit[0] != null)
+                        {
+                            // look for bride or groom
+                            if ((thisPersonaeSplit[1].Equals("bride")) || (thisPersonaeSplit[1].Equals("groom")))
+                            {
+                                // look for matching charID
+                                if (thisPersonaeSplit[0].Equals(oneOfCouple.charID))
+                                {
+                                    marriageEntry = jEntry.Value;
+                                    entryFound = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                if (entryFound)
+                {
+                    break;
+                }
+            }
+
+            return marriageEntry;
+        }
+
+        /// <summary>
         /// Adds a new JournalEntry to the Journal
         /// </summary>
         /// <returns>bool indicating success</returns>
