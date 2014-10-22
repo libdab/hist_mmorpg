@@ -314,6 +314,46 @@ namespace hist_mmorpg
 		}
 
         /// <summary>
+        /// Constructor for Character using NonPlayerCharacter object,
+        /// for use when respawning deceased NPCs or promoting NPC to PC (after PC death)
+        /// </summary>
+        /// <param name="npc">NonPlayerCharacter object to use as source</param>
+        /// <param name="circumstance">The circumstance - respawn or promotion</param>
+        public Character(NonPlayerCharacter npc, string circumstance)
+        {
+            this.charID = Convert.ToString(Globals_Server.getNextCharID());
+            this.firstName = npc.firstName;
+            this.familyName = npc.familyName;
+            this.birthDate = new Tuple<uint, byte>(Globals_Server.clock.currentYear - 20, Globals_Server.clock.currentSeason);
+            this.isMale = npc.isMale;
+            this.nationality = npc.nationality;
+            this.isAlive = true;
+            this.maxHealth = Globals_Server.myRand.Next(1,10);
+            this.virility = npc.virility;
+            this.goTo = new Queue<Fief>();
+            this.language = npc.language;
+            this.days = 90;
+            this.statureModifier = 0;
+            this.management = npc.management;
+            this.combat = npc.combat;
+            this.skills = new Tuple<Skill, int>[npc.skills.Length];
+            for (int i = 0; i < npc.skills.Length; i++)
+            {
+                this.skills[i] = npc.skills[i];
+            }
+            this.inKeep = false;
+            this.isPregnant = false;
+            this.spouse = null;
+            this.father = null;
+            this.familyID = null;
+            this.location = npc.location;
+            this.myTitles = new List<string>();
+            this.armyID = null;
+            this.ailments = new Dictionary<string, Ailment>();
+            this.fiancee = null;
+        }
+
+        /// <summary>
         /// Calculates character's age
         /// </summary>
         /// <returns>int containing character's age</returns>
@@ -641,87 +681,114 @@ namespace hist_mmorpg
 
                 if (myFiancee != null)
                 {
+                    // remove from fiancee
                     myFiancee.fiancee = null;
 
                     // get marriage entry in Globals_Server.scheduledEvents
-                    JournalEntry jEntry = Globals_Server.scheduledEvents.getMarriageEntry(this);
-
-                    // generate marriageCancelled entry
-                    bool success = false;
-
-                    // get interested parties
-                    PlayerCharacter headOfFamilyBride = null;
-                    PlayerCharacter headOfFamilyGroom = null;
-                    Character bride = null;
-                    Character groom = null;
-
-                    for (int i = 0; i < jEntry.personae.Length; i++)
+                    // get role
+                    if (this.isMale)
                     {
-                        string thisPersonae = jEntry.personae[i];
-                        string[] thisPersonaeSplit = thisPersonae.Split('|');
-
-                        switch (thisPersonaeSplit[1])
-                        {
-                            case "headOfFamilyBride":
-                                headOfFamilyBride = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
-                                break;
-                            case "headOfFamilyGroom":
-                                headOfFamilyGroom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
-                                break;
-                            case "bride":
-                                bride = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
-                                break;
-                            case "groom":
-                                if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
-                                {
-                                    groom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
-                                }
-                                else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
-                                {
-                                    groom = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
-                                }
-                                break;
-                            default:
-                                break;
-                        }
+                        role = "groom";
+                    }
+                    else
+                    {
+                        role = "bride";
                     }
 
-                    // ID
-                    uint newEntryID = Globals_Server.getNextJournalEntryID();
+                    List<JournalEntry> marriages = Globals_Server.scheduledEvents.getSpecificEntries(this.charID, role, "marriage");
 
-                    // date
-                    uint year = Globals_Server.clock.currentYear;
-                    byte season = Globals_Server.clock.currentSeason;
+                    foreach (JournalEntry jEntry in marriages)
+                    {
+                        // generate marriageCancelled entry
+                        bool success = false;
 
-                    // personae
-                    string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
-                    string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
-                    string thisBrideEntry = bride.charID + "|bride";
-                    string thisGroomEntry = groom.charID + "|groom";
-                    string[] newEntryPersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, thisBrideEntry, thisGroomEntry };
+                        // get interested parties
+                        PlayerCharacter headOfFamilyBride = null;
+                        PlayerCharacter headOfFamilyGroom = null;
+                        Character bride = null;
+                        Character groom = null;
 
-                    // type
-                    string type = "marriageCancelled";
+                        for (int i = 0; i < jEntry.personae.Length; i++)
+                        {
+                            string thisPersonae = jEntry.personae[i];
+                            string[] thisPersonaeSplit = thisPersonae.Split('|');
 
-                    // description
-                    string description = "On this day of Our Lord the imminent marriage between ";
-                    description += groom.firstName + " " + groom.familyName + " and ";
-                    description += bride.firstName + " " + bride.familyName;
-                    description += " has been CANCELLED due to the sad and untimely death of ";
-                    description += this.firstName + " " + this.familyName;
-                    description += ". Let the bells fall silent.";
+                            switch (thisPersonaeSplit[1])
+                            {
+                                case "headOfFamilyBride":
+                                    headOfFamilyBride = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                                    break;
+                                case "headOfFamilyGroom":
+                                    headOfFamilyGroom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                                    break;
+                                case "bride":
+                                    bride = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                                    break;
+                                case "groom":
+                                    if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                    {
+                                        groom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                                    }
+                                    else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                    {
+                                        groom = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
 
-                    // create and add a marriageCancelled entry to Globals_Server.pastEvents
-                    JournalEntry newEntry = new JournalEntry(newEntryID, year, season, newEntryPersonae, type, descr: description);
-                    success = Globals_Server.addPastEvent(newEntry);
+                        // ID
+                        uint newEntryID = Globals_Server.getNextJournalEntryID();
 
-                    // delete marriage entry in Globals_Server.scheduledEvents
-                    Globals_Server.scheduledEvents.entries.Remove(jEntry.jEntryID);
+                        // date
+                        uint year = Globals_Server.clock.currentYear;
+                        byte season = Globals_Server.clock.currentSeason;
+
+                        // personae
+                        string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
+                        string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
+                        string thisBrideEntry = bride.charID + "|bride";
+                        string thisGroomEntry = groom.charID + "|groom";
+                        string[] newEntryPersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, thisBrideEntry, thisGroomEntry };
+
+                        // type
+                        string type = "marriageCancelled";
+
+                        // description
+                        string description = "On this day of Our Lord the imminent marriage between ";
+                        description += groom.firstName + " " + groom.familyName + " and ";
+                        description += bride.firstName + " " + bride.familyName;
+                        description += " has been CANCELLED due to the sad and untimely death of ";
+                        description += this.firstName + " " + this.familyName;
+                        description += ". Let the bells fall silent.";
+
+                        // create and add a marriageCancelled entry to Globals_Server.pastEvents
+                        JournalEntry newEntry = new JournalEntry(newEntryID, year, season, newEntryPersonae, type, descr: description);
+                        success = Globals_Server.addPastEvent(newEntry);
+
+                        // delete marriage entry in Globals_Server.scheduledEvents
+                        Globals_Server.scheduledEvents.entries.Remove(jEntry.jEntryID);
+                    }
                 }
 
             }
 
-            // 6. check and remove from bailiff positions
+            // 6. check if pregnant, if so remove birth events from Globals_Server.scheduledEvents
+            if (this.isPregnant)
+            {
+                // get birth entry in Globals_Server.scheduledEvents
+
+                List<JournalEntry> births = Globals_Server.scheduledEvents.getSpecificEntries(this.charID, "mother", "birth");
+
+                foreach (JournalEntry jEntry in births)
+                {
+                    Globals_Server.scheduledEvents.entries.Remove(jEntry.jEntryID);
+                }
+            }
+
+            // 7. check and remove from bailiff positions
             PlayerCharacter employer = null;
             if (this is PlayerCharacter)
             {
@@ -750,18 +817,18 @@ namespace hist_mmorpg
                 }
             }
 
-            // 7. (NPC) check and remove from PC myNPCs list
+            // 8. (NPC) check and remove from PC myNPCs list
             PlayerCharacter headOfFamily = null;
             if (this is NonPlayerCharacter)
             {
-                // 7.1 employees
+                // 8.1 employees
                 if (role.Equals("employee"))
                 {
                     // remove from boss's myNPCs
                     employer.myNPCs.Remove((this as NonPlayerCharacter));
                 }
 
-                // 7.2 family members
+                // 8.2 family members
                 else if (role.Contains("family"))
                 {
                     // get head of family
@@ -776,7 +843,7 @@ namespace hist_mmorpg
 
             }
 
-            // 8. (NPC) re-assign titles to fief owner
+            // 9. (NPC) re-assign titles to fief owner
             if (this is NonPlayerCharacter)
             {
                 foreach (string fiefID in (this as NonPlayerCharacter).myTitles)
@@ -790,7 +857,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // 9. create and send journal entry (unless is a player or a nobody)
+            // 10. create and send journal entry (unless is a player or a nobody)
             if ((!role.Equals("player")) && (!role.Equals("character")))
             {
                 bool success = false;
@@ -873,10 +940,43 @@ namespace hist_mmorpg
                 success = Globals_Server.addPastEvent(deathEntry);
             }
 
+            // TODO: respawn dead non-family NPCs
+
             // TODO: (Player) transfer dead player PC to chosen heir = create new PC from NPC
             // transfer fiefs, titles, ancestral ownership, employees, change family functions
             // change familyID of all family members
             // IF NO HEIR?
+
+        }
+
+        /// <summary>
+        /// Creates new NonPlayerCharacter, based on supplied NonPlayerCharacter
+        /// </summary>
+        /// <param name="oldNPC">Old NonPlayerCharacter</param>
+        public void respawnNPC(NonPlayerCharacter oldNPC)
+        {
+            // create basic NPC
+            NonPlayerCharacter newNPC = new NonPlayerCharacter(oldNPC);
+
+            // LOCATION
+            List<string> fiefIDs = new List<string>();
+
+            // get all fief where language same as newNPC's
+            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
+            {
+                if (fiefEntry.Value.language == newNPC.language)
+                {
+                    fiefIDs.Add(fiefEntry.Key);
+                }
+            }
+
+            // generate random int to choose new location
+            string newLocationID = fiefIDs[Globals_Server.myRand.Next(0, fiefIDs.Count)];
+
+            // assign location
+            newNPC.location = Globals_Server.fiefMasterList[newLocationID];
+
+            // FIRSTNAME
 
         }
         
@@ -2680,6 +2780,21 @@ namespace hist_mmorpg
 			this.lastOffer = npcr.lastOffer;
             this.isHeir = npcr.isHeir;
 		}
+
+        /// <summary>
+        /// Constructor for NonPlayerCharacter using NonPlayerCharacter object,
+        /// for use when respawning deceased NPCs
+        /// </summary>
+        /// <param name="npc">NonPlayerCharacter object to use as source</param>
+        public NonPlayerCharacter(NonPlayerCharacter npc)
+            : base(npc, "respawn")
+        {
+            this.myBoss =null;
+            this.wage = 0;
+            this.inEntourage = false;
+            this.lastOffer = new Dictionary<string,uint>();
+            this.isHeir = false;
+        }
 
         /// <summary>
         /// Calculates the family allowance of a family NPC, based on age and function

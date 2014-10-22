@@ -105,19 +105,21 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Retrieves the marriage JournalEntry associated with the specified character (bride or groom)
+        /// Retrieves JournalEntrys associated with the specified character, role, and JournalEntry type
         /// </summary>
-        /// <returns>JournalEntry associated with the marriage</returns>
-        /// <param name="oneOfCouple">The bride or groom</param>
-        public JournalEntry getMarriageEntry(Character oneOfCouple)
+        /// <returns>List<JournalEntry> containing relevant entries</returns>
+        /// <param name="thisPerson">The ID of the person of interest</param>
+        /// <param name="role">The person's role (in personae)</param>
+        /// <param name="entryType">The JournalEntry type</param>
+        public List<JournalEntry> getSpecificEntries(string thisPersonID, string role, string entryType)
         {
-            JournalEntry marriageEntry = null;
+            List<JournalEntry> foundEntries = null;
             bool entryFound = false;
 
             foreach (KeyValuePair<uint, JournalEntry> jEntry in this.entries)
             {
-                // get marriage entries
-                if (jEntry.Value.type.Equals("marriage"))
+                // get entries of specified type
+                if (jEntry.Value.type.Equals(entryType))
                 {
                     // iterate through personae
                     for (int i = 0; i < jEntry.Value.personae.Length; i++)
@@ -128,13 +130,13 @@ namespace hist_mmorpg
 
                         if (thisPersonaeSplit[0] != null)
                         {
-                            // look for bride or groom
-                            if ((thisPersonaeSplit[1].Equals("bride")) || (thisPersonaeSplit[1].Equals("groom")))
+                            // look for specified role
+                            if (thisPersonaeSplit[1].Equals(role))
                             {
                                 // look for matching charID
-                                if (thisPersonaeSplit[0].Equals(oneOfCouple.charID))
+                                if (thisPersonaeSplit[0].Equals(thisPersonID))
                                 {
-                                    marriageEntry = jEntry.Value;
+                                    foundEntries.Add(jEntry.Value);
                                     entryFound = true;
                                     break;
                                 }
@@ -150,7 +152,7 @@ namespace hist_mmorpg
                 }
             }
 
-            return marriageEntry;
+            return foundEntries;
         }
 
         /// <summary>
