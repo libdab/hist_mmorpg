@@ -408,29 +408,29 @@ namespace hist_mmorpg
             List<string> mySieges002 = new List<string>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "101", "403", null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "101", "403", null, null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1);
             Globals_Server.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "102", null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "102", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7);
             Globals_Server.pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "E", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "E", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "E", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, null, null, null, 10000, true, false, myTitles004, null, mb: myChar1.charID, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "E", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, mb: myChar1.charID, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob005, true, "F", true, 8.50, 6.0, myGoTo5, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, 10000, false, false, myTitles005, null, mb: myChar2.charID, loc: myFief6);
+            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob005, true, "F", true, 8.50, 6.0, myGoTo5, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, mb: myChar2.charID, loc: myFief6);
             Globals_Server.npcMasterList.Add(myNPC3.charID, myNPC3);
-            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("404", "Bev", "Bond", myDob006, false, "E", true, 2.50, 9.0, myGoTo6, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "101", "101", null, 30000, false, false, myTitles006, null, loc: myFief1);
+            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("404", "Bev", "Bond", myDob006, false, "E", true, 2.50, 9.0, myGoTo6, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "101", "101", null, null, 30000, false, false, myTitles006, null, loc: myFief1);
             Globals_Server.npcMasterList.Add(myChar1Wife.charID, myChar1Wife);
-            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("405", "Horatio", "Dond", myDob007, true, "F", true, 8.50, 6.0, myGoTo7, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "102", "406", "102", 10000, false, true, myTitles007, null, loc: myFief6);
+            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("405", "Horatio", "Dond", myDob007, true, "F", true, 8.50, 6.0, myGoTo7, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "102", "406", "102", null, 10000, false, true, myTitles007, null, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2Son.charID, myChar2Son);
-            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob008, false, "E", true, 2.50, 9.0, myGoTo8, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", "405", null, 30000, false, false, myTitles008, null, loc: myFief6);
+            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob008, false, "E", true, 2.50, 9.0, myGoTo8, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", "405", null, null, 30000, false, false, myTitles008, null, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2SonWife.charID, myChar2SonWife);
-            NonPlayerCharacter myChar1Son = new NonPlayerCharacter("407", "Rickie", "Bond", myDob009, true, "E", true, 2.50, 9.0, myGoTo9, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", 30000, false, true, myTitles009, null, loc: myFief1);
+            NonPlayerCharacter myChar1Son = new NonPlayerCharacter("407", "Rickie", "Bond", myDob009, true, "E", true, 2.50, 9.0, myGoTo9, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", "404", 30000, false, true, myTitles009, null, loc: myFief1);
             Globals_Server.npcMasterList.Add(myChar1Son.charID, myChar1Son);
-            NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("408", "Elsie", "Bond", myDob010, false, "E", true, 2.50, 9.0, myGoTo10, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", 30000, false, false, myTitles010, null, loc: myFief1);
+            NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("408", "Elsie", "Bond", myDob010, false, "E", true, 2.50, 9.0, myGoTo10, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", "404", 30000, false, false, myTitles010, null, loc: myFief1);
             Globals_Server.npcMasterList.Add(myChar1Daughter.charID, myChar1Daughter);
-            NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("409", "Wayne", "Dond", myDob011, true, "F", true, 2.50, 9.0, myGoTo11, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", 30000, false, false, myTitles011, null, loc: myFief6);
+            NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("409", "Wayne", "Dond", myDob011, true, "F", true, 2.50, 9.0, myGoTo11, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", null, 30000, false, false, myTitles011, null, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2Son2.charID, myChar2Son2);
-            NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("410", "Esmerelda", "Dond", myDob012, false, "F", true, 2.50, 9.0, myGoTo12, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", 30000, false, false, myTitles012, null, loc: myFief6);
+            NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("410", "Esmerelda", "Dond", myDob012, false, "F", true, 2.50, 9.0, myGoTo12, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", null, 30000, false, false, myTitles012, null, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2Daughter.charID, myChar2Daughter);
 
             /*
@@ -1757,12 +1757,12 @@ namespace hist_mmorpg
 				{
                     if (Globals_Server.npcMasterList.ContainsKey(fr.characters[i]))
 					{
-                        fOut.characters.Add(Globals_Server.npcMasterList[fr.characters[i]]);
+                        fOut.charactersInFief.Add(Globals_Server.npcMasterList[fr.characters[i]]);
                         Globals_Server.npcMasterList[fr.characters[i]].location = fOut;
 					}
                     else if (Globals_Server.pcMasterList.ContainsKey(fr.characters[i]))
                     {
-                        fOut.characters.Add(Globals_Server.pcMasterList[fr.characters[i]]);
+                        fOut.charactersInFief.Add(Globals_Server.pcMasterList[fr.characters[i]]);
                         Globals_Server.pcMasterList[fr.characters[i]].location = fOut;
                     }
                     else
@@ -3151,34 +3151,34 @@ namespace hist_mmorpg
             }
 
             // iterates through characters
-            for (int i = 0; i < Globals_Client.myChar.location.characters.Count; i++)
+            for (int i = 0; i < Globals_Client.myChar.location.charactersInFief.Count; i++)
             {
                 ListViewItem charsInCourt = null;
 
                 // only display characters in relevant location (in keep, or not)
-                if (Globals_Client.myChar.location.characters[i].inKeep == ifInKeep)
+                if (Globals_Client.myChar.location.charactersInFief[i].inKeep == ifInKeep)
                 {
                     // don't show the player
-                    if (Globals_Client.myChar.location.characters[i] != Globals_Client.myChar)
+                    if (Globals_Client.myChar.location.charactersInFief[i] != Globals_Client.myChar)
                     {
 
                         switch (place)
                         {
                             case "tavern":
                                 // only show NPCs
-                                if (Globals_Client.myChar.location.characters[i] is NonPlayerCharacter)
+                                if (Globals_Client.myChar.location.charactersInFief[i] is NonPlayerCharacter)
                                 {
                                     // only show unemployed
-                                    if ((Globals_Client.myChar.location.characters[i] as NonPlayerCharacter).wage == 0)
+                                    if ((Globals_Client.myChar.location.charactersInFief[i] as NonPlayerCharacter).wage == 0)
                                     {
                                         // Create an item and subitems for character
-                                        charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myChar.location.characters[i]);
+                                        charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myChar.location.charactersInFief[i]);
                                     }
                                 }
                                 break;
                             default:
                                 // Create an item and subitems for character
-                                charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myChar.location.characters[i]);
+                                charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myChar.location.charactersInFief[i]);
                                 break;
                         }
 
@@ -3620,6 +3620,18 @@ namespace hist_mmorpg
             if (ch.father != null)
             {
                 charText += ch.father;
+            }
+            else
+            {
+                charText += "N/A";
+            }
+            charText += "\r\n";
+
+            // mother
+            charText += "Mother's ID: ";
+            if (ch.mother != null)
+            {
+                charText += ch.mother;
             }
             else
             {
@@ -5512,20 +5524,20 @@ namespace hist_mmorpg
             Character charToDisplay = null;
 
             // loop through the characters in the fief
-            for (int i = 0; i < Globals_Client.fiefToView.characters.Count; i++)
+            for (int i = 0; i < Globals_Client.fiefToView.charactersInFief.Count; i++)
             {
                 if (meetingPlaceCharsListView.SelectedItems.Count > 0)
                 {
                     // find matching character
-                    if (Globals_Client.fiefToView.characters[i].charID.Equals(this.meetingPlaceCharsListView.SelectedItems[0].SubItems[1].Text))
+                    if (Globals_Client.fiefToView.charactersInFief[i].charID.Equals(this.meetingPlaceCharsListView.SelectedItems[0].SubItems[1].Text))
                     {
-                        charToDisplay = Globals_Client.fiefToView.characters[i];
+                        charToDisplay = Globals_Client.fiefToView.charactersInFief[i];
 
                         // check whether is employee or family
-                        if (Globals_Client.myChar.myNPCs.Contains(Globals_Client.fiefToView.characters[i]))
+                        if (Globals_Client.myChar.myNPCs.Contains(Globals_Client.fiefToView.charactersInFief[i]))
                         {
                             // see if is in entourage to set text of entourage button
-                            if ((Globals_Client.fiefToView.characters[i] as NonPlayerCharacter).inEntourage)
+                            if ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).inEntourage)
                             {
                                 this.meetingPlaceEntourageBtn.Text = "Remove From Entourage";
                             }
@@ -5547,8 +5559,8 @@ namespace hist_mmorpg
                             this.meetingPlaceProposeTextBox.Enabled = false;
 
                             // if is employee
-                            if (((Globals_Client.fiefToView.characters[i] as NonPlayerCharacter).myBoss != null)
-                                && ((Globals_Client.fiefToView.characters[i] as NonPlayerCharacter).myBoss.Equals(Globals_Client.myChar.charID)))
+                            if (((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).myBoss != null)
+                                && ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).myBoss.Equals(Globals_Client.myChar.charID)))
                             {
                                 // set appropriate text for hire/fire button, and enable it
                                 this.hireNPC_Btn.Text = "Fire NPC";
@@ -7067,7 +7079,7 @@ namespace hist_mmorpg
 
                 // set baby's location
                 weeBairn.location = mummy.location;
-                weeBairn.location.characters.Add(weeBairn);
+                weeBairn.location.charactersInFief.Add(weeBairn);
 
                 // add baby to family
                 Globals_Client.myChar.myNPCs.Add(weeBairn);
@@ -9333,9 +9345,9 @@ namespace hist_mmorpg
             // if present in fief, get bailiff and assign as army leader
             if (f.bailiff != null)
             {
-                for (int i = 0; i < f.characters.Count; i++)
+                for (int i = 0; i < f.charactersInFief.Count; i++)
                 {
-                    if (f.characters[i] == f.bailiff)
+                    if (f.charactersInFief[i] == f.bailiff)
                     {
                         armyLeader = f.bailiff;
                         armyLeaderID = armyLeader.charID;
@@ -9433,9 +9445,9 @@ namespace hist_mmorpg
             // check if bailiff present in fief (he'll lead the army)
             if (f.bailiff != null)
             {
-                for (int i = 0; i < f.characters.Count; i++ )
+                for (int i = 0; i < f.charactersInFief.Count; i++ )
                 {
-                    if (f.characters[i] == f.bailiff)
+                    if (f.charactersInFief[i] == f.bailiff)
                     {
                         bailiffPresent = true;
                         break;
@@ -9815,7 +9827,7 @@ namespace hist_mmorpg
             }
 
             // iterate through characters in fief keep
-            foreach (Character thisChar in besiegedFief.characters)
+            foreach (Character thisChar in besiegedFief.charactersInFief)
             {
                 if (thisChar.inKeep)
                 {
@@ -10079,7 +10091,7 @@ namespace hist_mmorpg
                 // CAPTIVES
                 // identify captives - fief owner, his family, and any PCs of enemy nationality
                 List<Character> captives = new List<Character>();
-                foreach (Character thisCharacter in besiegedFief.characters)
+                foreach (Character thisCharacter in besiegedFief.charactersInFief)
                 {
                     if (thisCharacter.inKeep)
                     {

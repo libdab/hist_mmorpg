@@ -152,28 +152,32 @@ namespace hist_mmorpg
             // iterates through employees
             for (int i = 0; i < Globals_Client.myChar.myNPCs.Count; i++)
             {
-                // Create an item and subitems for each character
-
-                // name
-                myNPC = new ListViewItem(Globals_Client.myChar.myNPCs[i].firstName + " " + Globals_Client.myChar.myNPCs[i].familyName);
-
-                // charID
-                myNPC.SubItems.Add(Globals_Client.myChar.myNPCs[i].charID);
-
-                // location
-                myNPC.SubItems.Add(Globals_Client.myChar.myNPCs[i].location.fiefID);
-
-                // add item to fiefsListView
-                if (myFunction.Equals("bailiff"))
+                // can only appoint males
+                if (Globals_Client.myChar.myNPCs[i].isMale)
                 {
-                    this.npcListView.Items.Add(myNPC);
-                }
-                // if appointing leader, only add item to fiefsListView if is in same fief as army
-                else if (myFunction.Equals("leader"))
-                {
-                    if (Globals_Client.myChar.myNPCs[i].location.fiefID == myArmy.location)
+                    // Create an item and subitems for each character
+
+                    // name
+                    myNPC = new ListViewItem(Globals_Client.myChar.myNPCs[i].firstName + " " + Globals_Client.myChar.myNPCs[i].familyName);
+
+                    // charID
+                    myNPC.SubItems.Add(Globals_Client.myChar.myNPCs[i].charID);
+
+                    // location
+                    myNPC.SubItems.Add(Globals_Client.myChar.myNPCs[i].location.fiefID);
+
+                    // add item to npcListView
+                    if (myFunction.Equals("bailiff"))
                     {
                         this.npcListView.Items.Add(myNPC);
+                    }
+                    // if appointing leader, only add item to fiefsListView if is in same fief as army
+                    else if (myFunction.Equals("leader"))
+                    {
+                        if (Globals_Client.myChar.myNPCs[i].location.fiefID == myArmy.location)
+                        {
+                            this.npcListView.Items.Add(myNPC);
+                        }
                     }
                 }
             }
@@ -199,15 +203,8 @@ namespace hist_mmorpg
                 // get employee
                 npcToDisplay = Globals_Server.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
 
-                // enable 'appoint this NPC' button, but not if NPC is female
-                if (npcToDisplay.isMale)
-                {
-                    this.chooseNpcBtn.Enabled = true;
-                }
-                else
-                {
-                    this.chooseNpcBtn.Enabled = false;
-                }
+                // enable 'appoint this NPC' button
+                this.chooseNpcBtn.Enabled = true;
 
                 // get details
                 textToDisplay += this.displayNPC(npcToDisplay);
@@ -419,7 +416,6 @@ namespace hist_mmorpg
                 {
                     // set the selected NPC as bailiff
                     Globals_Client.fiefToView.bailiff = selectedNPC;
-                    selectedNPC.myBoss = Globals_Client.myChar.charID;
 
                     // refresh the fief information (in the main form)
                     this.parent.refreshFiefContainer(Globals_Client.fiefToView);

@@ -97,6 +97,10 @@ namespace hist_mmorpg
         /// </summary>
         public String father { get; set; }
         /// <summary>
+        /// Holds mother (CharID)
+        /// </summary>
+        public String mother { get; set; }
+        /// <summary>
         /// Hold fiancee (charID)
         /// </summary>
         public string fiancee { get; set; }
@@ -139,8 +143,9 @@ namespace hist_mmorpg
         /// <param name="inK">bool indicating if character is in the keep</param>
         /// <param name="preg">bool holding character pregnancy status</param>
         /// <param name="famID">String holding charID of head of family with which character associated</param>
-        /// <param name="sp">String holding spouse (ID)</param>
-        /// <param name="fath">String holding father</param>
+        /// <param name="sp">String holding spouse (charID)</param>
+        /// <param name="fath">String holding father (charID)</param>
+        /// <param name="moth">String holding mother (charID)</param>
         /// <param name="fia">Holds fiancee (charID)</param>
         /// <param name="loc">Fief holding current location</param>
         /// <param name="myTi">List holding character's titles (fiefIDs)</param>
@@ -148,7 +153,7 @@ namespace hist_mmorpg
         /// <param name="ails">Dictionary<string, Ailment> holding ailments effecting character's health</param>
         public Character(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg,
-            String famID, String sp, String fath, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null)
+            String famID, String sp, String fath, String moth, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null)
         {
 
             // validation
@@ -242,6 +247,7 @@ namespace hist_mmorpg
 			this.location = loc;
             this.spouse = sp;
             this.father = fath;
+            this.mother = moth;
             this.familyID = famID;
             this.myTitles = myTi;
             this.armyID = aID;
@@ -293,19 +299,11 @@ namespace hist_mmorpg
                 this.skills = new Tuple<Skill, int>[charToUse.skills.Length];
 				this.inKeep = charToUse.inKeep;
 				this.isPregnant = charToUse.pregnant;
-				if ((charToUse.spouse != null) && (charToUse.spouse.Length > 0))
-				{
-					this.spouse = charToUse.spouse;
-				}
-				if ((charToUse.father != null) && (charToUse.father.Length > 0))
-				{
-					this.father = charToUse.father;
-				}
-				if ((charToUse.familyID != null) && (charToUse.familyID.Length > 0))
-				{
-					this.familyID = charToUse.familyID;
-				}
-				this.location = null;
+                this.spouse = charToUse.spouse;
+                this.father = charToUse.father;
+                this.mother = charToUse.mother;
+                this.familyID = charToUse.familyID;
+                this.location = null;
                 this.myTitles = charToUse.myTitles;
                 this.armyID = charToUse.armyID;
                 this.ailments = charToUse.ailments;
@@ -642,7 +640,7 @@ namespace hist_mmorpg
             this.isAlive = false;
 
             // 2. remove from fief
-            this.location.characters.Remove(this);
+            this.location.charactersInFief.Remove(this);
 
             // 3 remove from army leadership
             if (this.armyID != null)
@@ -940,7 +938,11 @@ namespace hist_mmorpg
                 success = Globals_Server.addPastEvent(deathEntry);
             }
 
-            // TODO: respawn dead non-family NPCs
+            // respawn dead non-family NPCs
+            if ((role.Equals("employee")) || (role.Equals("character")))
+            {
+                this.respawnNPC(this as NonPlayerCharacter);
+            }
 
             // TODO: (Player) transfer dead player PC to chosen heir = create new PC from NPC
             // transfer fiefs, titles, ancestral ownership, employees, change family functions
@@ -975,8 +977,9 @@ namespace hist_mmorpg
 
             // assign location
             newNPC.location = Globals_Server.fiefMasterList[newLocationID];
+            newNPC.location.charactersInFief.Add(newNPC);
 
-            // FIRSTNAME
+            // TODO: FIRSTNAME
 
         }
         
@@ -1141,6 +1144,29 @@ namespace hist_mmorpg
             }
 
             return father;
+        }
+
+        /// <summary>
+        /// Gets character's mother
+        /// </summary>
+        /// <returns>The mother</returns>
+        public Character getMother()
+        {
+            Character mother = null;
+
+            if (this.mother != null)
+            {
+                if (Globals_Server.pcMasterList.ContainsKey(this.mother))
+                {
+                    mother = Globals_Server.pcMasterList[this.mother];
+                }
+                else if (Globals_Server.npcMasterList.ContainsKey(this.mother))
+                {
+                    mother = Globals_Server.npcMasterList[this.mother];
+                }
+            }
+
+            return mother;
         }
 
         /// <summary>
@@ -1937,9 +1963,9 @@ namespace hist_mmorpg
         /// <param name="myS">List<string> holding character's sieges (siegeIDs)</param>
         public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
-            String sp, String fath, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, List<Army> myA,
+            String sp, String fath, String moth, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, List<Army> myA,
             List<string> myS, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String pID = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, myTi, fia, ails, loc)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc)
         {
             this.outlawed = outl;
             this.purse = pur;
@@ -2741,8 +2767,8 @@ namespace hist_mmorpg
         /// <param name="isH">bool denoting if is player's heir</param>
         public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
-            String sp, String fath, uint wa, bool inEnt, bool isH, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, String mb = null, Fief loc = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, myTi, fia, ails, loc)
+            String sp, String fath, String moth, uint wa, bool inEnt, bool isH, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, String mb = null, Fief loc = null)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc)
         {
             // TODO: validate hb = 1-10000
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -2804,6 +2830,7 @@ namespace hist_mmorpg
         public uint calcFamilyAllowance(String func)
         {
             uint famAllowance = 0;
+            double ageModifier = 1;
 
             // factor in family function
             if (func.ToLower().Equals("wife"))
@@ -2812,32 +2839,39 @@ namespace hist_mmorpg
             }
             else
             {
-                if (func.ToLower().Equals("heir"))
+                if (func.ToLower().Contains("heir"))
+                {
+                    famAllowance = 40000;
+                }
+                else if (func.ToLower().Equals("son"))
                 {
                     famAllowance = 20000;
                 }
-                else if ((func.ToLower().Equals("son")) || (func.ToLower().Equals("son-in-law")))
+                else if (func.ToLower().Equals("daughter"))
                 {
                     famAllowance = 15000;
                 }
-                else if ((func.ToLower().Equals("daughter")) || (func.ToLower().Equals("daughter-in-law")))
-                {
-                    famAllowance = 10000;
-                }
-                else if (func.ToLower().Contains("grand"))
+                else
                 {
                     famAllowance = 10000;
                 }
 
-                // factor in age
-                if ((this.calcCharAge() > 14) && (this.calcCharAge() < 21))
+                // calculate age modifier
+                if ((this.calcCharAge() <= 7))
                 {
-                    famAllowance = Convert.ToUInt32(famAllowance * 1.5);
+                    ageModifier = 0.25;
                 }
-                else if (this.calcCharAge() > 20)
+                else if ((this.calcCharAge() > 7) && (this.calcCharAge() <= 14))
                 {
-                    famAllowance = famAllowance * 2;
+                    ageModifier = 0.5;
                 }
+                else if ((this.calcCharAge() > 14) && (this.calcCharAge() <= 21))
+                {
+                    ageModifier = 0.75;
+                }
+
+                // apply age modifier
+                famAllowance = Convert.ToUInt32(famAllowance * ageModifier);
             }
 
             return famAllowance;
@@ -2847,143 +2881,180 @@ namespace hist_mmorpg
         /// Derives NPC function
         /// </summary>
         /// <returns>String containing NPC function</returns>
-        /// <param name="bigCheese">PlayerCharacter with whom NPC has relationship</param>
-        public String getFunction(PlayerCharacter bigCheese)
+        /// <param name="pc">PlayerCharacter with whom NPC has relationship</param>
+        public String getFunction(PlayerCharacter pc)
         {
             String myFunction = "";
-            bool isFirstEntry = true;
+
+            // check for employees
+            if ((this.myBoss != null) && (this.myBoss == pc.charID))
+            {
+                myFunction = "Employee";
+            }
 
             // check for family function
-            if (this.familyID != null)
+            else if ((this.familyID != null) && (this.familyID != pc.familyID))
             {
-                if (this.familyID.Equals(bigCheese.charID))
-                {
-                    if (!isFirstEntry)
-                    {
-                        myFunction += " & ";
-                    }
-                    else
-                    {
-                        isFirstEntry = false;
-                    }
+                // default value
+                myFunction = "Family Member";
 
-                    // check for wife
-                    if ((this.spouse != null) && (this.spouse.Equals(bigCheese.charID)))
+                // get character's father
+                Character thisFather = this.getFather();
+                // get PC's father
+                Character pcFather = pc.getFather();
+
+                if (this.father != null)
+                {
+                    // sons & daughters
+                    if (this.father == pc.charID)
                     {
-                        if (this.spouse.Equals(bigCheese.charID))
+                        if (this.isMale)
                         {
-                            myFunction += "Wife";
+                            myFunction = "Son";
+                        }
+                        else
+                        {
+                            myFunction = "Daughter";
                         }
                     }
 
-                    else if (this.father != null)
+                    // brothers and sisters
+                    if (this.father == pc.father)
                     {
-                        // get father
-                        Character myFather = this.getFather();
+                        if (this.isMale)
+                        {
+                            myFunction = "Brother";
+                        }
+                        else
+                        {
+                            myFunction = "Sister";
+                        }
+                    }
 
-                        // check for son/daughter
-                        if (myFather == bigCheese)
+                    // uncles and aunts
+                    if (this.father == pcFather.father)
+                    {
+                        if (this.isMale)
+                        {
+                            myFunction = "Uncle";
+                        }
+                        else
+                        {
+                            myFunction = "Aunt";
+                        }
+                    }
+
+                    if (thisFather.father != null)
+                    {
+                        // grandsons & granddaughters
+                        if (thisFather.father == pc.charID)
                         {
                             if (this.isMale)
                             {
-                                myFunction += "Son";
+                                myFunction = "Grandson";
                             }
                             else
                             {
-                                myFunction += "Daughter";
-                            }
-                        }
-
-                        else
-                        {
-                            // check for in-laws
-                            // get spouse
-                            Character mySpouse = this.getSpouse();
-                            if (mySpouse.father.Equals(bigCheese.charID))
-                            {
-                                myFunction += "Daughter-in-Law";
-                            }
-                            else if (mySpouse.getFather().father.Equals(bigCheese.charID))
-                            {
-                                myFunction += "Granddaughter-in-Law";
-                            }
-
-                            // check for grandkids
-                            if (myFather.father != null)
-                            {
-                                // get father
-                                Character myGrandFather = myFather.getFather();
-
-                                if (myGrandFather == bigCheese)
-                                {
-                                    if (this.isMale)
-                                    {
-                                        myFunction += "Grandson";
-                                    }
-                                    else
-                                    {
-                                        myFunction += "Granddaughter";
-                                    }
-                                }
+                                myFunction = "Granddaughter";
                             }
                         }
                     }
-
-                    // check for heir
-                    if (this.isHeir)
-                    {
-                        myFunction += " & Heir";
-                    }
-
                 }
-            }
 
-            // check for employment function
-            if (this.myBoss != null)
-            {
-                if (this.myBoss.Equals(bigCheese.charID))
+                // grandmother
+                if ((pcFather.mother != null) && (pcFather.mother == this.charID))
                 {
-                    // check if is bailiff of any fiefs
-                    for (int i = 0; i < bigCheese.ownedFiefs.Count; i++ )
+                    myFunction = "Grandmother";
+                }
+
+                if ((pc.mother != null) && (pc.mother == this.charID))
+                {
+                    // mother
+                    myFunction = "Mother";
+                }
+
+                // wife
+                if ((this.spouse != null) && (this.spouse == pc.charID))
+                {
+                    if (this.isMale)
                     {
-                        if (bigCheese.ownedFiefs[i].bailiff == this)
-                        {
-                            if (! isFirstEntry)
-                            {
-                                myFunction += " & ";
-                            }
-                            else
-                            {
-                                isFirstEntry = false;
-                            }
-
-                            myFunction += "Bailiff of " + bigCheese.ownedFiefs[i].name + " (" + bigCheese.ownedFiefs[i].fiefID + ")";
-                        }
+                        myFunction = "Husband";
                     }
-
-                    // check if is army leader
-                    if (this.armyID != null)
+                    else
                     {
-                        if (!isFirstEntry)
-                        {
-                            myFunction += " & ";
-                        }
-                        else
-                        {
-                            isFirstEntry = false;
-                        }
-
-                        myFunction += "Leader of " + this.armyID;
+                        myFunction = "Wife";
                     }
+                }
 
-                    if (myFunction.Equals(""))
-                    {
-                        myFunction += "Unspecified";
-                    }
+                // check for heir
+                if (this.isHeir)
+                {
+                    myFunction += " & Heir";
                 }
             }
 
             return myFunction;
+        }
+
+        /// <summary>
+        /// Gets an NPC's employment responsibilities
+        /// </summary>
+        /// <returns>String containing NPC responsibilities</returns>
+        /// <param name="pc">PlayerCharacter by whom NPC is employed</param>
+        public String getResponsibilities(PlayerCharacter pc)
+        {
+            String myResponsibilities = "";
+            List<Fief> bailiffDuties = new List<Fief>();
+
+            // check for employment function
+            if (((this.myBoss != null) && (this.myBoss.Equals(pc.charID)))
+                || ((this.familyID != null) && (this.familyID.Equals(pc.charID))))
+            {
+                // check PC's fiefs for bailiff
+                foreach (Fief thisFief in pc.ownedFiefs)
+                {
+                    if (thisFief.bailiff == this)
+                    {
+                        bailiffDuties.Add(thisFief);
+                    }
+                }
+
+                // create entry for bailiff duties
+                if (bailiffDuties.Count > 0)
+                {
+                    myResponsibilities += "Bailiff (";
+                    for (int i = 0; i < bailiffDuties.Count; i++ )
+                    {
+                        myResponsibilities += bailiffDuties[i].fiefID;
+                        if (i < (bailiffDuties.Count - 1))
+                        {
+                            myResponsibilities += ", ";
+                        }
+                    }
+                    myResponsibilities += ")";
+                }
+
+                // check for army leadership
+                if (this.armyID != null)
+                {
+                    if (!myResponsibilities.Equals(""))
+                    {
+                        myResponsibilities += ". ";
+                    }
+                    myResponsibilities += "Army leader (" + this.armyID + ").";
+                }
+
+                // if employee who isn't bailiff or army leader = 'Unspecified'
+                if (myResponsibilities.Equals(""))
+                {
+                    if ((this.myBoss != null) && (this.myBoss.Equals(pc.charID)))
+                    {
+                        myResponsibilities = "Unspecified";
+                    }
+                }
+            }
+
+            return myResponsibilities;
         }
 
         /// <summary>
@@ -3160,7 +3231,11 @@ namespace hist_mmorpg
 		/// Holds father (Character ID)
 		/// </summary>
 		public String father { get; set; }
-		/// <summary>
+        /// <summary>
+        /// Holds mother (Character ID)
+        /// </summary>
+        public String mother { get; set; }
+        /// <summary>
         /// Holds charID of head of family with which character associated
 		/// </summary>
 		public String familyID { get; set; }
@@ -3231,21 +3306,10 @@ namespace hist_mmorpg
 				this.inKeep = charToUse.inKeep;
 				this.pregnant = charToUse.isPregnant;
 				this.location = charToUse.location.fiefID;
-				if (charToUse.spouse != null) {
-					this.spouse = charToUse.spouse;
-				} else {
-					this.spouse = null;
-				}
-				if (charToUse.father != null) {
-					this.father = charToUse.father;
-				} else {
-					this.father = null;
-				}
-				if (charToUse.familyID != null) {
-					this.familyID = charToUse.familyID;
-				} else {
-					this.familyID = null;
-				}
+                this.spouse = charToUse.spouse;
+                this.father = charToUse.father;
+                this.mother = charToUse.mother;
+                this.familyID = charToUse.familyID;
                 this.myTitles = charToUse.myTitles;
                 this.armyID = charToUse.armyID;
                 this.ailments = charToUse.ailments;

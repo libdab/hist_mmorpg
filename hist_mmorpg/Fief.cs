@@ -107,7 +107,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds characters present in fief
         /// </summary>
-        public List<Character> characters = new List<Character>();
+        public List<Character> charactersInFief = new List<Character>();
         /// <summary>
 		/// Holds characters banned from keep (charIDs)
         /// </summary>
@@ -313,7 +313,7 @@ namespace hist_mmorpg
             this.status = stat;
             this.language = lang;
             this.terrain = terr;
-            this.characters = chars;
+            this.charactersInFief = chars;
             this.barredCharacters = barChars;
             this.englishBarred = engBarr;
             this.frenchBarred = frBarr;
@@ -364,7 +364,7 @@ namespace hist_mmorpg
             this.language = null;
 			this.terrain = null;
             // create empty list to be populated later
-			this.characters = new List<Character>();
+			this.charactersInFief = new List<Character>();
 			this.barredCharacters = fr.barredCharacters;
 			this.englishBarred = fr.englishBarred;
 			this.frenchBarred = fr.frenchBarred;
@@ -1575,7 +1575,7 @@ namespace hist_mmorpg
         internal void addCharacter(Character ch)
         {
             // add character
-            this.characters.Add(ch);
+            this.charactersInFief.Add(ch);
         }
 
         /// <summary>
@@ -1586,7 +1586,7 @@ namespace hist_mmorpg
         internal bool removeCharacter(Character ch)
         {
             // remove character
-            bool success = this.characters.Remove(ch);
+            bool success = this.charactersInFief.Remove(ch);
 
             return success;
         }
@@ -2015,11 +2015,11 @@ namespace hist_mmorpg
 			this.status = f.status;
             this.language = new Tuple<string,int>(f.language.Item1.languageID, f.language.Item2);
 			this.terrain = f.terrain.terrainCode;
-			if (f.characters.Count > 0)
+			if (f.charactersInFief.Count > 0)
 			{
-				for (int i = 0; i < f.characters.Count; i++)
+				for (int i = 0; i < f.charactersInFief.Count; i++)
 				{
-					this.characters.Add (f.characters[i].charID);
+					this.characters.Add (f.charactersInFief[i].charID);
 				}
 			}
 			this.barredCharacters = f.barredCharacters;
