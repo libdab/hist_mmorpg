@@ -3003,6 +3003,7 @@ namespace hist_mmorpg
             this.houseCharListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
             this.houseCharListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
             this.houseCharListView.Columns.Add("Function", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("Responsibilities", -2, HorizontalAlignment.Left);
             this.houseCharListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
             this.houseCharListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
         }
@@ -3232,6 +3233,10 @@ namespace hist_mmorpg
                     isFamily = true;
                 }
             }
+            else if ((ch as NonPlayerCharacter).myBoss != null)
+            {
+                myHousehold = (ch as NonPlayerCharacter).getEmployer().familyName + " (ID: " + (ch as NonPlayerCharacter).myBoss + ")";
+            }
 
             myItem.SubItems.Add(myHousehold);
 
@@ -3262,11 +3267,7 @@ namespace hist_mmorpg
                 {
                     myType = "My ";
                 }
-                if ((isFamily) && (isEmployee))
-                {
-                    myType += "Family & Employee";
-                }
-                else if (isFamily)
+                if (isFamily)
                 {
                     myType += "Family";
                 }
@@ -3358,8 +3359,11 @@ namespace hist_mmorpg
                 // charID
                 houseChar.SubItems.Add(Globals_Client.myChar.myNPCs[i].charID);
 
-                // Function (i.e. employee's job, family member's role)
+                // function (e.g. employee, son, wife, etc.)
                 houseChar.SubItems.Add(Globals_Client.myChar.myNPCs[i].getFunction(Globals_Client.myChar));
+
+                // responsibilities (i.e. jobs)
+                houseChar.SubItems.Add(Globals_Client.myChar.myNPCs[i].getResponsibilities(Globals_Client.myChar));
 
                 // location
                 houseChar.SubItems.Add(Globals_Client.myChar.myNPCs[i].location.fiefID + " (" + Globals_Client.myChar.myNPCs[i].location.name + ")");

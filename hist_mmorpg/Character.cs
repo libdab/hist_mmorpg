@@ -317,21 +317,64 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="npc">NonPlayerCharacter object to use as source</param>
         /// <param name="circumstance">The circumstance - respawn or promotion</param>
-        public Character(NonPlayerCharacter npc, string circumstance)
+        public Character(NonPlayerCharacter npc, string circumstance, List<string> pcTitles = null)
         {
-            this.charID = Convert.ToString(Globals_Server.getNextCharID());
+            switch (circumstance)
+            {
+                case "respawn":
+                    this.charID = Convert.ToString(Globals_Server.getNextCharID());
+                    this.birthDate = new Tuple<uint, byte>(Globals_Server.clock.currentYear - 20, Globals_Server.clock.currentSeason);
+                    this.maxHealth = Globals_Server.myRand.Next(1, 10);
+                    this.goTo = new Queue<Fief>();
+                    this.days = 90;
+                    this.statureModifier = 0;
+                    this.inKeep = false;
+                    this.isPregnant = false;
+                    this.spouse = null;
+                    this.father = null;
+                    this.mother = null;
+                    this.familyID = null;
+                    this.myTitles = new List<string>();
+                    this.armyID = null;
+                    this.ailments = new Dictionary<string, Ailment>();
+                    this.fiancee = null;
+                    break;
+                case "promote":
+                    this.charID = npc.charID;
+                    this.birthDate = npc.birthDate;
+                    this.maxHealth = npc.maxHealth;
+                    this.goTo = npc.goTo;
+                    this.days = npc.days;
+                    this.statureModifier = npc.statureModifier;
+                    this.inKeep = npc.inKeep;
+                    this.isPregnant = npc.isPregnant;
+                    this.spouse = npc.spouse;
+                    this.father = npc.father;
+                    this.mother = npc.mother;
+                    this.familyID = npc.charID;
+                    this.myTitles = npc.myTitles;
+                    if (pcTitles != null)
+                    {
+                        foreach (string thisTitle in pcTitles)
+                        {
+                            this.myTitles.Add(thisTitle);
+                        }
+                    }
+                    this.armyID = npc.armyID;
+                    this.ailments = npc.ailments;
+                    this.fiancee = npc.fiancee;
+                    break;
+                default:
+                    break;
+            }
+
             this.firstName = npc.firstName;
             this.familyName = npc.familyName;
-            this.birthDate = new Tuple<uint, byte>(Globals_Server.clock.currentYear - 20, Globals_Server.clock.currentSeason);
             this.isMale = npc.isMale;
             this.nationality = npc.nationality;
             this.isAlive = true;
-            this.maxHealth = Globals_Server.myRand.Next(1,10);
             this.virility = npc.virility;
-            this.goTo = new Queue<Fief>();
             this.language = npc.language;
-            this.days = 90;
-            this.statureModifier = 0;
             this.management = npc.management;
             this.combat = npc.combat;
             this.skills = new Tuple<Skill, int>[npc.skills.Length];
@@ -339,16 +382,7 @@ namespace hist_mmorpg
             {
                 this.skills[i] = npc.skills[i];
             }
-            this.inKeep = false;
-            this.isPregnant = false;
-            this.spouse = null;
-            this.father = null;
-            this.familyID = null;
             this.location = npc.location;
-            this.myTitles = new List<string>();
-            this.armyID = null;
-            this.ailments = new Dictionary<string, Ailment>();
-            this.fiancee = null;
         }
 
         /// <summary>
@@ -636,13 +670,13 @@ namespace hist_mmorpg
                 }
             }
 
-            // 1. set isAlive = false
+            // ============== 1. set isAlive = false
             this.isAlive = false;
 
-            // 2. remove from fief
+            // ============== 2. remove from FIEF
             this.location.charactersInFief.Remove(this);
 
-            // 3 remove from army leadership
+            // ============== 3. remove from ARMY LEADERSHIP
             if (this.armyID != null)
             {
                 // get army
@@ -660,7 +694,7 @@ namespace hist_mmorpg
 
             }
 
-            // 4. if married, remove from spouse
+            // ============== 4. if married, remove from SPOUSE
             if (this.spouse != null)
             {
                 Character mySpouse = this.getSpouse();
@@ -672,7 +706,7 @@ namespace hist_mmorpg
                 
             }
 
-            // 5. if engaged, remove from fiancee and cancel marriage
+            // ============== 5. if engaged, remove from FIANCEE and CANCEL MARRIAGE
             if (this.fiancee != null)
             {
                 Character myFiancee = this.getFiancee();
@@ -773,7 +807,7 @@ namespace hist_mmorpg
 
             }
 
-            // 6. check if pregnant, if so remove birth events from Globals_Server.scheduledEvents
+            // ============== 6. check if PREGNANT, if so remove birth events from Globals_Server.scheduledEvents
             if (this.isPregnant)
             {
                 // get birth entry in Globals_Server.scheduledEvents
@@ -786,7 +820,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // 7. check and remove from bailiff positions
+            // ============== 7. check and remove from BAILIFF positions
             PlayerCharacter employer = null;
             if (this is PlayerCharacter)
             {
@@ -815,7 +849,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // 8. (NPC) check and remove from PC myNPCs list
+            // ============== 8. (NPC) check and remove from PC MYNPCS list
             PlayerCharacter headOfFamily = null;
             if (this is NonPlayerCharacter)
             {
@@ -841,7 +875,7 @@ namespace hist_mmorpg
 
             }
 
-            // 9. (NPC) re-assign titles to fief owner
+            // ============== 9. (NPC) re-assign TITLES to fief owner
             if (this is NonPlayerCharacter)
             {
                 foreach (string fiefID in (this as NonPlayerCharacter).myTitles)
@@ -855,7 +889,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // 10. create and send journal entry (unless is a player or a nobody)
+            // ============== 10. create and send DEATH JOURNAL ENTRY (unless is a player or a nobody)
             if ((!role.Equals("player")) && (!role.Equals("character")))
             {
                 bool success = false;
@@ -938,16 +972,109 @@ namespace hist_mmorpg
                 success = Globals_Server.addPastEvent(deathEntry);
             }
 
-            // respawn dead non-family NPCs
+            // ============== 12. RESPAWN dead non-family NPCs
             if ((role.Equals("employee")) || (role.Equals("character")))
             {
                 this.respawnNPC(this as NonPlayerCharacter);
             }
 
-            // TODO: (Player) transfer dead player PC to chosen heir = create new PC from NPC
-            // transfer fiefs, titles, ancestral ownership, employees, change family functions
-            // change familyID of all family members
-            // IF NO HEIR?
+            // ============== 13. (Player) PROMOTE HEIR
+            if (role.Equals("player"))
+            {
+                // get heir
+                NonPlayerCharacter thisHeir = null;
+                foreach (NonPlayerCharacter npc in (this as PlayerCharacter).myNPCs)
+                {
+                    if (npc.isHeir)
+                    {
+                        thisHeir = npc;
+                    }
+                }
+
+                if (thisHeir != null)
+                {
+                    this.promoteNPC(thisHeir, (this as PlayerCharacter));
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Promotes a NonPlayerCharacter to a PlayerCharacter
+        /// </summary>
+        /// <param name="npc">NonPlayerCharacter to be promoted</param>
+        /// <param name="pc">Deceased PlayerCharacter</param>
+        public void promoteNPC(NonPlayerCharacter npc, PlayerCharacter pc)
+        {
+            // ============== 1. CREATE NEW PC from NPC (heir)
+            PlayerCharacter promotedNPC = new PlayerCharacter(npc, pc);
+
+            // remove from npcMasterList and add to pcMasterList
+            Globals_Server.npcMasterList.Remove(npc.charID);
+            Globals_Server.pcMasterList.Add(promotedNPC.charID, promotedNPC);
+
+            // ============== 2. change all FAMILYID & MYBOSS of MYNPCS to promotedNPC's
+            for (int i = 0; i < promotedNPC.myNPCs.Count; i++ )
+            {
+                if (promotedNPC.myNPCs[i].familyID.Equals(pc.charID))
+                {
+                    promotedNPC.myNPCs[i].familyID = promotedNPC.charID;
+                }
+
+                if (promotedNPC.myNPCs[i].myBoss.Equals(pc.charID))
+                {
+                    promotedNPC.myNPCs[i].myBoss = promotedNPC.charID;
+                }
+            }
+
+            // ============== 3. change OWNER & ANCESTRALOWNER for FIEFS
+            List<string> ancestOwnerChanges = new List<string>();
+            List<string> ownerChanges = new List<string>();
+            foreach (KeyValuePair<string, Fief> thisFiefEntry in Globals_Server.fiefMasterList)
+            {
+                // get fiefs requiring change to ancestralOwner
+                if (thisFiefEntry.Value.ancestralOwner == pc)
+                {
+                    ancestOwnerChanges.Add(thisFiefEntry.Key);
+                }
+
+                // get fiefs requiring change to owner
+                if (thisFiefEntry.Value.owner == pc)
+                {
+                    ownerChanges.Add(thisFiefEntry.Key);
+                }
+            }
+
+            // make necessary changes
+            if (ancestOwnerChanges.Count > 0)
+            {
+                foreach (string thisFiefID in ancestOwnerChanges)
+                {
+                    Globals_Server.fiefMasterList[thisFiefID].ancestralOwner = promotedNPC;
+                }
+
+                foreach (string thisFiefID in ownerChanges)
+                {
+                    Globals_Server.fiefMasterList[thisFiefID].owner = promotedNPC;
+                }
+            }
+
+            // ============== 4. change OWNER for ARMIES
+            for (int i = 0; i < promotedNPC.myArmies.Count; i++ )
+            {
+                promotedNPC.myArmies[i].owner = promotedNPC.charID;
+            }
+
+            // ============== 5. change BESIEGINGPLAYER for SIEGES
+            for (int i = 0; i < promotedNPC.mySieges.Count; i++)
+            {
+                // get siege
+                Siege thisSiege = Globals_Server.siegeMasterList[promotedNPC.mySieges[i]];
+                thisSiege.besiegingPlayer = promotedNPC.charID;
+            }
+
+            // ============== 6. change GLOBALS_CLIENT.MYCHAR
+            Globals_Client.myChar = promotedNPC;
 
         }
 
@@ -2010,6 +2137,25 @@ namespace hist_mmorpg
 		}
 
         /// <summary>
+        /// Constructor for PlayerCharacter using NonPlayerCharacter object and a PlayerCharacter object,
+        /// for use when promoting a deceased PC's heir
+        /// </summary>
+        /// <param name="npc">NonPlayerCharacter object to use as source</param>
+        public PlayerCharacter(NonPlayerCharacter npc, PlayerCharacter pc)
+            : base(npc, "promote", pc.myTitles)
+        {
+            this.outlawed = false;
+            this.purse = 0;
+            this.myNPCs = pc.myNPCs;
+            this.ownedFiefs = pc.ownedFiefs;
+            this.homeFief = pc.homeFief;
+            this.ancestralHomeFief = pc.ancestralHomeFief;
+            this.playerID = pc.playerID;
+            this.myArmies = pc.myArmies;
+            this.mySieges = pc.mySieges;
+        }
+
+        /// <summary>
         /// Returns the siege object associated with the specified siegeID
         /// </summary>
         /// <returns>The siege object</returns>
@@ -2887,13 +3033,13 @@ namespace hist_mmorpg
             String myFunction = "";
 
             // check for employees
-            if ((this.myBoss != null) && (this.myBoss == pc.charID))
+            if ((this.myBoss != null) && (this.myBoss.Equals(pc.charID)))
             {
                 myFunction = "Employee";
             }
 
             // check for family function
-            else if ((this.familyID != null) && (this.familyID != pc.familyID))
+            else if ((this.familyID != null) && (this.familyID.Equals(pc.familyID)))
             {
                 // default value
                 myFunction = "Family Member";
@@ -2932,15 +3078,18 @@ namespace hist_mmorpg
                     }
 
                     // uncles and aunts
-                    if (this.father == pcFather.father)
+                    if ((pcFather != null) && (pcFather.father != null))
                     {
-                        if (this.isMale)
+                        if (this.father == pcFather.father)
                         {
-                            myFunction = "Uncle";
-                        }
-                        else
-                        {
-                            myFunction = "Aunt";
+                            if (this.isMale)
+                            {
+                                myFunction = "Uncle";
+                            }
+                            else
+                            {
+                                myFunction = "Aunt";
+                            }
                         }
                     }
 
@@ -2962,9 +3111,12 @@ namespace hist_mmorpg
                 }
 
                 // grandmother
-                if ((pcFather.mother != null) && (pcFather.mother == this.charID))
+                if (pcFather != null)
                 {
-                    myFunction = "Grandmother";
+                    if ((pcFather.mother != null) && (pcFather.mother.Equals(this.charID)))
+                    {
+                        myFunction = "Grandmother";
+                    }
                 }
 
                 if ((pc.mother != null) && (pc.mother == this.charID))
