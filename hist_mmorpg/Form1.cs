@@ -604,7 +604,25 @@ namespace hist_mmorpg
             Globals_Server.jEntryPriorities.Add(thisPriorityKey014, 1);
             string[] thisPriorityKey015 = { "siegeEnd", "fiefOwner" };
             Globals_Server.jEntryPriorities.Add(thisPriorityKey015, 2);
-            // next un-used key = thisPriorityKey018
+            // death
+            string[] thisPriorityKey018 = { "deathOfHeir", "headOfFamily" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey018, 2);
+            string[] thisPriorityKey019 = { "deathOfFamilyMember", "headOfFamily" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey019, 1);
+            string[] thisPriorityKey020 = { "deathOfEmployee", "employer" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey020, 1);
+            string[] thisPriorityKey021 = { "deathOfPlayer", "newHeadOfFamily" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey021, 2);
+            string[] thisPriorityKey022 = { "deathOfPlayer", "deceasedHeadOfFamily" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey022, 2);
+            // injury
+            string[] thisPriorityKey023 = { "injury", "employer" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey023, 1);
+            string[] thisPriorityKey024 = { "injury", "headOfFamily" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey024, 1);
+            string[] thisPriorityKey025 = { "injury", "injuredCharacter" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey025, 2);
+            // next un-used key = thisPriorityKey026
 
 
             // create an army and add in appropriate places
@@ -7048,6 +7066,11 @@ namespace hist_mmorpg
         /// <param name="daddy">The new NPC's father</param>
         public void giveBirth(NonPlayerCharacter mummy, Character daddy)
         {
+            string description = "";
+
+            // get head of family
+            PlayerCharacter thisHeadOfFamily = daddy.getHeadOfFamily();
+
             // generate new NPC (baby)
             NonPlayerCharacter weeBairn = this.generateNewNPC(mummy, daddy);
 
@@ -7058,28 +7081,6 @@ namespace hist_mmorpg
             {
                 // add baby to npcMasterList
                 Globals_Server.npcMasterList.Add(weeBairn.charID, weeBairn);
-
-                // get head of family
-                PlayerCharacter thisHeadOfFamily = null;
-                if (Globals_Server.pcMasterList.ContainsKey(mummy.familyID))
-                {
-                    thisHeadOfFamily = Globals_Server.pcMasterList[mummy.familyID];
-                }
-
-                // create journal entry
-                // personae
-                string[] childbirthPersonae = new string[] { mummy.familyID + "|headOfFamily", mummy.charID + "|mother", daddy.charID + "|father", weeBairn.charID + "|child" };
-                
-                // description
-                string description = "On this day of Our Lord " + thisHeadOfFamily.firstName + " "
-                    + thisHeadOfFamily.familyName + " celebrates the addition of a baby "
-                    + weeBairn.getFunction(Globals_Client.myChar).ToLower() + " into his family.";
-                
-                // put together new journal entry
-                JournalEntry childbirth = new JournalEntry(Globals_Server.getNextJournalEntryID(), Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, childbirthPersonae, "birth", descr: description);
-                
-                // add new journal entry to pastEvents
-                Globals_Server.addPastEvent(childbirth);
 
                 // set baby's location
                 weeBairn.location = mummy.location;
@@ -7096,57 +7097,95 @@ namespace hist_mmorpg
             // check for mother dying during childbirth
             bool mummyDied = mummy.checkDeath(true, true, isStillborn);
 
-            // inform father of outcome
-            string toDisplay = "";
+            // construct and send JOURNAL ENTRY
+
+            // personae
+            string[] childbirthPersonae = new string[] { thisHeadOfFamily.charID + "|headOfFamily", mummy.charID + "|mother", daddy.charID + "|father", weeBairn.charID + "|child" };
+
+            // description
+            description += "On this day of Our Lord " + mummy.firstName + " " + mummy.familyName;
+            description += ", wife of " + daddy.firstName + " " + daddy.familyName + ", went into labour.";
+
+            // mother and baby alive
+            if ((!isStillborn) && (!mummyDied))
+            {
+                description += " Both the mother and her newborn ";
+                if (weeBairn.isMale)
+                {
+                    description += "son";
+                }
+                else
+                {
+                    description += "daughter";
+                }
+                description += " are doing well and " + thisHeadOfFamily.firstName + " " + thisHeadOfFamily.familyName;
+                description += " is delighted to welcome a new member into his family.";
+            }
+
+            // baby OK, mother dead
+            if ((!isStillborn) && (mummyDied))
+            {
+                description += " The baby ";
+                if (weeBairn.isMale)
+                {
+                    description += "boy";
+                }
+                else
+                {
+                    description += "girl";
+                }
+                description += " is doing well but sadly the mother died during childbirth. ";
+                description += thisHeadOfFamily.firstName + " " + thisHeadOfFamily.familyName;
+                description += " welcomes the new member into his family.";
+            }
+
+            // mother OK, baby dead
+            if ((isStillborn) && (!mummyDied))
+            {
+                description += " The mother is doing well but sadly her newborn ";
+                if (weeBairn.isMale)
+                {
+                    description += "son";
+                }
+                else
+                {
+                    description += "daughter";
+                }
+                description += " died during childbirth.";
+            }
+
             // both mother and baby died
             if ((isStillborn) && (mummyDied))
             {
-                toDisplay += "Brace yourself, milord.\r\n\r\nYour wife went into labour";
-                toDisplay += " but I'm afraid the child was stillborn and your wife died of complications.";
-                toDisplay += "\r\n\r\nMy condolences, milord.";
-            }
-            // baby died but mother OK
-            else if (isStillborn)
-            {
-                toDisplay += "I have news, milord.\r\n\r\nYour wife went into labour";
-                toDisplay += " but I'm afraid the child was stillborn.  I'm glad to say that your wife is recovering well.";
-                toDisplay += "\r\n\r\nMy condolences, milord.";
-            }
-            // baby OK but mother died
-            else if (mummyDied)
-            {
-                toDisplay += "I have news, milord.\r\n\r\nYour wife went into labour";
-                toDisplay += " and has given birth to a healthy baby ";
+                description += " Tragically, both the mother and her newborn ";
                 if (weeBairn.isMale)
                 {
-                    toDisplay += "boy";
+                    description += "son";
                 }
                 else
                 {
-                    toDisplay += "girl";
+                    description += "daughter";
                 }
-                toDisplay += ".  I'm sorry to report that your wife died of complications.";
-                toDisplay += "\r\n\r\nMy condolences and congratulations, milord.";
+                description += " died of complications during the childbirth.";
             }
-            // both mother and baby doing well
-            else
+
+            // put together new journal entry
+            JournalEntry childbirth = new JournalEntry(Globals_Server.getNextJournalEntryID(), Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, childbirthPersonae, "birth", descr: description);
+
+            // add new journal entry to pastEvents
+            Globals_Server.addPastEvent(childbirth);
+
+            // if appropriate, process mother's death
+            if (mummyDied)
             {
-                toDisplay += "Wonderful news, milord.\r\n\r\nYour wife went into labour";
-                toDisplay += " and has given birth to a healthy baby ";
-                if (weeBairn.isMale)
-                {
-                    toDisplay += "boy";
-                }
-                else
-                {
-                    toDisplay += "girl";
-                }
-                toDisplay += ".  I'm glad to say that your wife is recovering well.";
-                toDisplay += "\r\n\r\nMy congratulations, milord.";
+                mummy.processDeath("childbirth");
             }
+
+            
+            // display message
             if (Globals_Client.showMessages)
             {
-                System.Windows.Forms.MessageBox.Show(toDisplay);
+                System.Windows.Forms.MessageBox.Show(description);
             }
 
             this.refreshHouseholdDisplay();
@@ -8928,7 +8967,7 @@ namespace hist_mmorpg
                         // process death, if applicable
                         if (characterDead)
                         {
-                            // do something to remove character
+                            (attackerLeader as PlayerCharacter).myNPCs[i].processDeath("injury");
                         }
                     }
                 }
@@ -8958,7 +8997,8 @@ namespace hist_mmorpg
                         attacker.assignNewLeader(newLeader);
                     }
 
-                    // do something to remove character
+                    // process death
+                    attackerLeader.processDeath("injury");
                 }
                 else
                 {
@@ -8991,7 +9031,7 @@ namespace hist_mmorpg
                             // process death, if applicable
                             if (characterDead)
                             {
-                                // do something to remove character
+                                (defenderLeader as PlayerCharacter).myNPCs[i].processDeath("injury");
                             }
                         }
                     }
@@ -9017,7 +9057,8 @@ namespace hist_mmorpg
                         // assign newLeader (can assign null leader if none found)
                         defender.assignNewLeader(newLeader);
 
-                        // do something to remove character
+                        // process death
+                        defenderLeader.processDeath("injury");
                     }
                 }
 
@@ -10070,7 +10111,8 @@ namespace hist_mmorpg
 
                         if (characterDead)
                         {
-                            // do something to remove character
+                            // process death
+                            (defenderLeader as PlayerCharacter).myNPCs[i].processDeath("injury");
                         }
                     }
                 }
@@ -10083,7 +10125,8 @@ namespace hist_mmorpg
                     // remove as leader
                     defenderGarrison.leader = null;
 
-                    // do something to remove character
+                    // process death
+                    defenderLeader.processDeath("injury");
                 }
             }
 
@@ -10433,7 +10476,8 @@ namespace hist_mmorpg
 
                             if (characterDead)
                             {
-                                // do something to remove character
+                                // process death
+                                (defenderLeader as PlayerCharacter).myNPCs[i].processDeath("injury");
                             }
                         }
                     }
@@ -10446,7 +10490,8 @@ namespace hist_mmorpg
                         // remove as leader
                         defenderGarrison.leader = null;
 
-                        // do something to remove character
+                        // process death
+                        defenderLeader.processDeath("injury");
                     }
                 }
 

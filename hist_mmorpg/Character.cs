@@ -569,7 +569,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Checks for character death
         /// </summary>
-        /// <returns>Boolean indicating character death occurrence</returns>
+        /// <returns>Boolean indicating whether character dead</returns>
         /// <param name="isBirth">bool indicating whether check is due to birth</param>
         /// <param name="isMother">bool indicating whether (if check is due to birth) character is mother</param>
         /// <param name="isStillborn">bool indicating whether (if check is due to birth) baby was stillborn</param>
@@ -631,6 +631,8 @@ namespace hist_mmorpg
         /// <param name="circumstance">string containing the circumstance of the death</param>
         public void processDeath(string circumstance = "natural")
         {
+            NonPlayerCharacter thisHeir = null;
+
             // get role of character
             string role = "";
             // PCs
@@ -889,8 +891,33 @@ namespace hist_mmorpg
                 }
             }
 
-            // ============== 10. create and send DEATH JOURNAL ENTRY (unless is a player or a nobody)
-            if ((!role.Equals("player")) && (!role.Equals("character")))
+
+            // ============== 10. RESPAWN dead non-family NPCs
+            if ((role.Equals("employee")) || (role.Equals("character")))
+            {
+                this.respawnNPC(this as NonPlayerCharacter);
+            }
+
+            // ============== 11. (Player) PROMOTE HEIR
+            else if (role.Equals("player"))
+            {
+                // get heir
+                foreach (NonPlayerCharacter npc in (this as PlayerCharacter).myNPCs)
+                {
+                    if (npc.isHeir)
+                    {
+                        thisHeir = npc;
+                    }
+                }
+
+                if (thisHeir != null)
+                {
+                    this.promoteNPC(thisHeir, (this as PlayerCharacter));
+                }
+            }
+
+            // ============== 12. create and send DEATH JOURNAL ENTRY (unless is a player or a nobody)
+            if (!role.Equals("character"))
             {
                 bool success = false;
 
@@ -950,6 +977,20 @@ namespace hist_mmorpg
                     description += employer.firstName + " " + employer.familyName;
                 }
 
+                // player
+                else if (role.Equals("player"))
+                {
+                    // personae
+                    interestedPlayerEntry = thisHeir.charID + "|newHeadOfFamily";
+                    deceasedCharacterEntry += this.charID + "|deceasedHeadOfFamily";
+
+                    // type
+                    type = "deathOfPlayer";
+
+                    // description
+                    description += ", head of the " + this.familyName + " family";
+                }
+
                 // personae
                 string[] deathPersonae = new string[] { interestedPlayerEntry, deceasedCharacterEntry };
 
@@ -960,9 +1001,24 @@ namespace hist_mmorpg
                     case "injury":
                         description += "injuries sustained on the field of battle.";
                         break;
+                    case "childbirth":
+                        description += "complications arising from childbirth.";
+                        break;
                     default:
                         description += "natural causes.";
                         break;
+                }
+
+                // player death additional description
+                if ((role.Equals("player")) && (thisHeir != null))
+                {
+                    description += " He is succeeded by his " + thisHeir.getFunction(this as PlayerCharacter);
+                    description += " " + thisHeir.firstName + " " + thisHeir.familyName + ".";
+                }
+                // no heir
+                else
+                {
+                    description += " As he left no heirs, this once great family is no more.";
                 }
                 description += " Sympathies are extended to family and friends of the deceased.";
 
@@ -970,31 +1026,6 @@ namespace hist_mmorpg
                 // create and add a death entry to Globals_Server.pastEvents
                 JournalEntry deathEntry = new JournalEntry(deathEntryID, year, season, deathPersonae, type, descr: description);
                 success = Globals_Server.addPastEvent(deathEntry);
-            }
-
-            // ============== 12. RESPAWN dead non-family NPCs
-            if ((role.Equals("employee")) || (role.Equals("character")))
-            {
-                this.respawnNPC(this as NonPlayerCharacter);
-            }
-
-            // ============== 13. (Player) PROMOTE HEIR
-            if (role.Equals("player"))
-            {
-                // get heir
-                NonPlayerCharacter thisHeir = null;
-                foreach (NonPlayerCharacter npc in (this as PlayerCharacter).myNPCs)
-                {
-                    if (npc.isHeir)
-                    {
-                        thisHeir = npc;
-                    }
-                }
-
-                if (thisHeir != null)
-                {
-                    this.promoteNPC(thisHeir, (this as PlayerCharacter));
-                }
             }
 
         }
@@ -1074,7 +1105,10 @@ namespace hist_mmorpg
             }
 
             // ============== 6. change GLOBALS_CLIENT.MYCHAR
-            Globals_Client.myChar = promotedNPC;
+            if (Globals_Client.myChar == pc)
+            {
+                Globals_Client.myChar = promotedNPC;
+            }
 
         }
 
@@ -1810,12 +1844,15 @@ namespace hist_mmorpg
         public void updateCharacter()
         {
             // check for character DEATH
-            if (this.checkDeath())
+            bool characterDead = this.checkDeath();
+
+            // if character dead, process death
+            if (characterDead)
             {
-                this.isAlive = false;
+                this.processDeath();
             }
 
-            if (this.isAlive)
+            else
             {
                 // update AILMENTS (decrement effects, remove)
                 // keep track of any ailments that have healed
@@ -1986,6 +2023,61 @@ namespace hist_mmorpg
 
                 // add to character
                 this.ailments.Add(myAilment.ailmentID, myAilment);
+            }
+
+            // =================== if is injured but not dead, create and send JOURNAL ENTRY
+            if ((!isDead) && (healthLoss > 0))
+            {
+                // ID
+                uint entryID = Globals_Server.getNextJournalEntryID();
+
+                // personae
+                PlayerCharacter concernedPlayer = null;
+                List<string> tempPersonae = new List<string>();
+
+                // add injured character
+                tempPersonae.Add(this.charID + "|injuredCharacter");
+                if (this is NonPlayerCharacter)
+                {
+                    if (this.familyID != null)
+                    {
+                        concernedPlayer = (this as NonPlayerCharacter).getHeadOfFamily();
+                        if (concernedPlayer != null)
+                        {
+                            tempPersonae.Add(concernedPlayer.charID + "|headOfFamily");
+                        }
+                    }
+
+                    else if ((this as NonPlayerCharacter).myBoss != null)
+                    {
+                        concernedPlayer = (this as NonPlayerCharacter).getEmployer();
+                        if (concernedPlayer != null)
+                        {
+                            tempPersonae.Add(concernedPlayer.charID + "|employer");
+                        }
+                    }
+                }
+                string[] injuryPersonae = tempPersonae.ToArray();
+
+                // location
+                string injuryLocation = this.location.fiefID;
+
+                // description
+                string injuryDescription = "On this day of our lord ";
+                injuryDescription += this.firstName + " " + this.familyName;
+                if (concernedPlayer != null)
+                {
+                    injuryDescription += ", " + (this as NonPlayerCharacter).getFunction(concernedPlayer) + " of ";
+                    injuryDescription += concernedPlayer.firstName + " " + concernedPlayer.familyName + ",";
+                }
+                injuryDescription += " was injured on the field of battle in the fief of ";
+                injuryDescription += this.location.name + ".";
+
+                // create and send JOURNAL ENTRY
+                JournalEntry injuryEntry = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, injuryPersonae, "injury", loc: injuryLocation, descr: injuryDescription);
+
+                // add new journal entry to pastEvents
+                Globals_Server.addPastEvent(injuryEntry);
             }
 
             return isDead;
@@ -3270,6 +3362,25 @@ namespace hist_mmorpg
             }
 
             return Convert.ToUInt32(salary);
+        }
+
+        /// <summary>
+        /// Gets the character's head of family
+        /// </summary>
+        /// <returns>The head of family or null</returns>
+        public PlayerCharacter getHeadOfFamily()
+        {
+            PlayerCharacter myHeadOfFamily = null;
+
+            if (this.familyID != null)
+            {
+                if (Globals_Server.pcMasterList.ContainsKey(this.familyID))
+                {
+                    myHeadOfFamily = Globals_Server.pcMasterList[this.familyID];
+                }
+            }
+
+            return myHeadOfFamily;
         }
 
         /// <summary>
