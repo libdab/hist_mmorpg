@@ -622,7 +622,10 @@ namespace hist_mmorpg
             Globals_Server.jEntryPriorities.Add(thisPriorityKey024, 1);
             string[] thisPriorityKey025 = { "injury", "injuredCharacter" };
             Globals_Server.jEntryPriorities.Add(thisPriorityKey025, 2);
-            // next un-used key = thisPriorityKey026
+            // pillage
+            string[] thisPriorityKey026 = { "pillage", "fiefOwner" };
+            Globals_Server.jEntryPriorities.Add(thisPriorityKey026, 2);
+            // next un-used key = thisPriorityKey027
 
 
             // create an army and add in appropriate places
@@ -9238,7 +9241,7 @@ namespace hist_mmorpg
         /// <param name="a">The pillaging army</param>
         public void processPillage(Fief f, Army a)
         {
-            string toDisplay = "";
+            string pillageResults = "";
             double thisLoss = 0;
             double moneyPillagedTotal = 0;
             double moneyPillagedOwner = 0;
@@ -9249,6 +9252,9 @@ namespace hist_mmorpg
 
             // get pillaging army owner (receives a proportion of total spoils)
             PlayerCharacter armyOwner = a.getOwner();
+
+            // get garrison leader (to add to journal entry)
+            Character defenderLeader = f.bailiff;
 
             // calculate pillageMultiplier (based on no. pillagers per 1000 population)
             pillageMultiplier = a.calcArmySize() / (f.population / 1000);
@@ -9263,7 +9269,7 @@ namespace hist_mmorpg
             // update army days
             armyLeader.adjustDays(daysTaken);
 
-            toDisplay += "Days taken: " + daysTaken + "\r\n";
+            pillageResults += "- Days taken: " + daysTaken + "\r\n";
 
             // % population loss
             thisLoss = (0.007 * pillageMultiplier);
@@ -9273,7 +9279,7 @@ namespace hist_mmorpg
                 thisLoss = 1;
             }
             // apply population loss
-            toDisplay += "Population loss: " + Convert.ToUInt32((f.population * (thisLoss / 100))) + "\r\n";
+            pillageResults += "- Population loss: " + Convert.ToUInt32((f.population * (thisLoss / 100))) + "\r\n";
             f.population -= Convert.ToUInt32((f.population * (thisLoss / 100)));
 
             // % treasury loss
@@ -9284,7 +9290,7 @@ namespace hist_mmorpg
                 thisLoss = 1;
             }
             // apply treasury loss
-            toDisplay += "Treasury loss: " + Convert.ToInt32((f.treasury * (thisLoss / 100))) + "\r\n";
+            pillageResults += "- Treasury loss: " + Convert.ToInt32((f.treasury * (thisLoss / 100))) + "\r\n";
             if (f.treasury > 0)
             {
                 f.treasury -= Convert.ToInt32((f.treasury * (thisLoss / 100)));
@@ -9302,7 +9308,7 @@ namespace hist_mmorpg
                 thisLoss = 20;
             }
             // apply loyalty loss
-            toDisplay += "Loyalty loss: " + (f.loyalty * (thisLoss / 100)) + "\r\n";
+            pillageResults += "- Loyalty loss: " + (f.loyalty * (thisLoss / 100)) + "\r\n";
             f.loyalty -= (f.loyalty * (thisLoss / 100));
 
             // % fields loss
@@ -9313,7 +9319,7 @@ namespace hist_mmorpg
                 thisLoss = 1;
             }
             // apply fields loss
-            toDisplay += "Fields loss: " + (f.fields * (thisLoss / 100)) + "\r\n";
+            pillageResults += "- Fields loss: " + (f.fields * (thisLoss / 100)) + "\r\n";
             f.fields -= (f.fields * (thisLoss / 100));
 
             // % industry loss
@@ -9324,7 +9330,7 @@ namespace hist_mmorpg
                 thisLoss = 1;
             }
             // apply industry loss
-            toDisplay += "Industry loss: " + (f.industry * (thisLoss / 100)) + "\r\n";
+            pillageResults += "- Industry loss: " + (f.industry * (thisLoss / 100)) + "\r\n";
             f.industry -= (f.industry * (thisLoss / 100));
 
             // money pillaged (based on GDP)
@@ -9337,15 +9343,18 @@ namespace hist_mmorpg
             // calculate base amount pillaged
             double baseMoneyPillaged = (f.keyStatsCurrent[1] * (thisLoss / 100));
             moneyPillagedTotal = baseMoneyPillaged;
-            toDisplay += "baseMoneyPillaged: " + Convert.ToInt32(moneyPillagedTotal) + "\r\n";
+            pillageResults += "- Base Money Pillaged: " + Convert.ToInt32(moneyPillagedTotal) + "\r\n";
 
             // factor in no. days spent pillaging (get extra 5% per day > 7)
             int daysOver7 = Convert.ToInt32(daysTaken) - 7;
-            for (int i = 0; i < daysOver7; i++)
+            if (daysOver7 > 0)
             {
-                moneyPillagedTotal += (baseMoneyPillaged * 0.05);
+                for (int i = 0; i < daysOver7; i++)
+                {
+                    moneyPillagedTotal += (baseMoneyPillaged * 0.05);
+                }
+                pillageResults += "  - with bonus for extra " + daysOver7 + " days taken: " + Convert.ToInt32(moneyPillagedTotal) + "\r\n";
             }
-            toDisplay += "- after days > 7: " + Convert.ToInt32(moneyPillagedTotal) + "\r\n";
 
             // check for jackpot
             // generate randomPercentage to see if hit the jackpot
@@ -9355,13 +9364,13 @@ namespace hist_mmorpg
                 // generate random int to multiply amount pillaged
                 int myRandomMultiplier = Globals_Server.myRand.Next(3, 11);
                 moneyPillagedTotal = moneyPillagedTotal * myRandomMultiplier;
-                toDisplay += "- after jackpot: " + Convert.ToInt32(moneyPillagedTotal) + "\r\n";
+                pillageResults += "  - with bonus for jackpot: " + Convert.ToInt32(moneyPillagedTotal) + "\r\n";
             }
 
             // check proportion of money pillaged goes to army owner (based on stature)
             double proportionForOwner = 0.05 * armyOwner.calculateStature();
             moneyPillagedOwner = (moneyPillagedTotal * proportionForOwner);
-            toDisplay += "Money pillaged by player (with " + armyOwner.calculateStature() + " stature): " + Convert.ToInt32(moneyPillagedOwner) + "\r\n";
+            pillageResults += "- Money pillaged by attacking player: " + Convert.ToInt32(moneyPillagedOwner) + "\r\n";
 
             // apply to army owner's home fief treasury
             armyOwner.getHomeFief().treasury += Convert.ToInt32(moneyPillagedOwner);
@@ -9369,9 +9378,59 @@ namespace hist_mmorpg
             // set isPillaged for fief
             f.isPillaged = true;
 
+            // =================== construct and send JOURNAL ENTRY
+            // ID
+            uint entryID = Globals_Server.getNextJournalEntryID();
+
+            // personae
+            List<string> tempPersonae = new List<string>();
+            tempPersonae.Add(f.owner.charID + "|fiefOwner");
+            tempPersonae.Add(armyOwner.charID + "|attackerOwner");
+            if (armyLeader != null)
+            {
+                tempPersonae.Add(armyLeader.charID + "|attackerLeader");
+            }
+            if (defenderLeader != null)
+            {
+                tempPersonae.Add(defenderLeader.charID + "|defenderLeader");
+            }
+            string[] pillagePersonae = tempPersonae.ToArray();
+
+            // location
+            string pillageLocation = f.fiefID;
+
+            // use popup text as description
+            string pillageDescription = "On this day of Our Lord the fief of " + f.name + " owned by ";
+            pillageDescription += f.owner.firstName + " " + f.owner.familyName;
+            if (defenderLeader != null)
+            {
+                if (f.owner != defenderLeader)
+                {
+                    pillageDescription += " and defended by " + defenderLeader.firstName + " " + defenderLeader.familyName + ",";
+                }
+            }
+            pillageDescription += " was pillaged by the forces of ";
+            pillageDescription += armyOwner.firstName + " " + armyOwner.familyName;
+            if (armyLeader != null)
+            {
+                if (armyOwner != armyLeader)
+                {
+                    pillageDescription += ", led by " + armyLeader.firstName + " " + armyLeader.familyName;
+                }
+            }
+            pillageDescription += ".\r\n\r\nPillage results:\r\n";
+            pillageDescription += pillageResults;
+
+            // put together new journal entry
+            JournalEntry pillageEntry = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, pillagePersonae, "pillage", loc: pillageLocation, descr: pillageDescription);
+
+            // add new journal entry to pastEvents
+            Globals_Server.addPastEvent(pillageEntry);
+
+            // show message
             if (Globals_Client.showMessages)
             {
-                System.Windows.Forms.MessageBox.Show(toDisplay, "PILLAGE RESULTS");
+                System.Windows.Forms.MessageBox.Show(pillageDescription, "PILLAGE RESULTS");
             }
         }
 
@@ -9518,15 +9577,19 @@ namespace hist_mmorpg
                     }
                 }
 
-                // check still have enough days left
-                if (a.days < 7)
+                else
                 {
-                    if (Globals_Client.showMessages)
+                    // check still have enough days left
+                    if (a.days < 7)
                     {
-                        System.Windows.Forms.MessageBox.Show("After giving battle, the pillaging army no longer has\r\nsufficient days for this operation.  Pillage cancelled.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("After giving battle, the pillaging army no longer has\r\nsufficient days for this operation.  Pillage cancelled.");
+                        }
+                        pillageCancelled = true;
                     }
-                    pillageCancelled = true;
                 }
+
             }
 
             if (!pillageCancelled)
