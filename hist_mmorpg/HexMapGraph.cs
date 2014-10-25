@@ -368,7 +368,7 @@ namespace hist_mmorpg
             }
             else
             {
-                output = "No path found from " + @from.fiefID + " to " + to.fiefID;
+                output = "No path found from " + @from.id + " to " + to.id;
             }
             return output;
         }
@@ -384,10 +384,10 @@ namespace hist_mmorpg
         private static string PrintPath(Fief @from, Fief to, IEnumerable<TaggedEdge<Fief, string>> path)
         {
             string output = "";
-            output += "Path found from " + @from.fiefID + " to " + to.fiefID + "is\r\n";
+            output += "Path found from " + @from.id + " to " + to.id + "is\r\n";
             foreach (var e in path)
             {
-                output += e.Tag + " to (" + e.Target.fiefID + ") ";
+                output += e.Tag + " to (" + e.Target.id + ") ";
             }
             return output;
         }

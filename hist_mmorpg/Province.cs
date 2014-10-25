@@ -8,12 +8,13 @@ namespace hist_mmorpg
     /// <summary>
     /// Class storing data on province
     /// </summary>
-    public class Province
+    public class Province : Place
     {
+        /*
         /// <summary>
         /// Holds province ID
         /// </summary>
-        public String provinceID { get; set; }
+        public String id { get; set; }
         /// <summary>
         /// Holds province name
         /// </summary>
@@ -21,19 +22,23 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds province overlord (PlayerCharacter object)
         /// </summary>
-        public PlayerCharacter overlord { get; set; }
+        public PlayerCharacter owner { get; set; }
         /// <summary>
-        /// Holds province overlord tax rate
+        /// Holds place title holder (charID)
         /// </summary>
-        public Double overlordTaxRate { get; set; }
+        public String titleHolder { get; set; }
+        /// <summary>
+        /// Holds province Rank object
+        /// </summary>
+        public Rank rank { get; set; } */
+        /// <summary>
+        /// Holds province tax rate
+        /// </summary>
+        public Double taxRate { get; set; }
         /// <summary>
         /// Holds province kingdom object
         /// </summary>
         public Kingdom kingdom { get; set; }
-        /// <summary>
-        /// Holds province Rank object
-        /// </summary>
-        public Rank rank { get; set; }
 
         /// <summary>
         /// Constructor for Province
@@ -41,12 +46,13 @@ namespace hist_mmorpg
         /// <param name="id">String holding province ID</param>
         /// <param name="nam">String holding province name</param>
         /// <param name="olord">Province overlord (PlayerCharacter)</param>
-        /// <param name="otax">Double holding province overlord tax rate</param>
-        /// <param name="king">Province's Kingdom object</param>
         /// <param name="ra">Province's Rank object</param>
-        public Province(String id, String nam, Double otax, PlayerCharacter olord = null, Kingdom king = null, Rank ra = null)
+        /// <param name="otax">Double holding province tax rate</param>
+        /// <param name="king">Province's Kingdom object</param>
+        public Province(String id, String nam, Double otax, String tiHo = null, PlayerCharacter own = null, Kingdom king = null, Rank r = null)
+            : base(id, nam, tiHo, own, r)
         {
-
+            /*
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
             // SX,SY,WK,YS/00
 
@@ -68,12 +74,12 @@ namespace hist_mmorpg
 
             // TODO: validate lang = string B,C,D,E,F,G,H,I,L/1-3
 
-            this.provinceID = id;
+            this.id = id;
             this.name = nam;
-            this.overlord = olord;
-            this.overlordTaxRate = otax;
-            this.kingdom = king;
             this.rank = ra;
+            this.owner = olord; */
+            this.taxRate = otax;
+            this.kingdom = king;
 
         }
 
@@ -92,11 +98,11 @@ namespace hist_mmorpg
 		/// <param name="pr">Province_Riak object to use as source</param>
 		public Province(Province_Riak pr)
 		{
-			this.provinceID = pr.provinceID;
+			this.id = pr.id;
 			this.name = pr.name;
             // overlord to be inserted later
-			this.overlord = null;
-			this.overlordTaxRate = pr.overlordTaxRate;
+			this.owner = null;
+			this.taxRate = pr.taxRate;
             // kingdom to be inserted later
             this.kingdom = null;
             // rank to be inserted later
@@ -107,32 +113,33 @@ namespace hist_mmorpg
 	/// <summary>
 	/// Class converting province data into format suitable for Riak (JSON) storage
 	/// </summary>
-	public class Province_Riak
+	public class Province_Riak : Place_Riak
 	{
+        /*
 		/// <summary>
 		/// Holds province ID
 		/// </summary>
-		public String provinceID { get; set; }
+		public String id { get; set; }
 		/// <summary>
 		/// Holds province name
 		/// </summary>
 		public String name { get; set; }
-		/// <summary>
-		/// Holds province overlord (ID)
-		/// </summary>
-		public String overlordID { get; set; }
-		/// <summary>
-		/// Holds province overlord tax rate
-		/// </summary>
-		public Double overlordTaxRate { get; set; }
-        /// <summary>
-        /// Holds province kingdom (ID)
-        /// </summary>
-        public String kingdomID { get; set; }
         /// <summary>
         /// Holds province Rank (ID)
         /// </summary>
-        public String rankID { get; set; }
+        public String rank { get; set; }
+		/// <summary>
+		/// Holds province overlord (ID)
+		/// </summary>
+		public String owner { get; set; } */
+        /// <summary>
+		/// Holds province tax rate
+		/// </summary>
+		public Double taxRate { get; set; }
+        /// <summary>
+        /// Holds province kingdom (ID)
+        /// </summary>
+        public String kingdom { get; set; }
 
 		/// <summary>
 		/// Constructor for Province_Riak.
@@ -140,13 +147,15 @@ namespace hist_mmorpg
         /// </summary>
 		/// <param name="prov">Province object to be used as source</param>
 		public Province_Riak(Province prov)
+            : base(p: prov)
 		{
-			this.provinceID = prov.provinceID;
+            /*
+			this.id = prov.id;
 			this.name = prov.name;
-			this.overlordID = prov.overlord.charID;
-			this.overlordTaxRate = prov.overlordTaxRate;
-            this.kingdomID = prov.kingdom.kingdomID;
-            this.rankID = prov.rank.rankID;
+            this.rank = prov.rank.rankID;
+			this.owner = prov.owner.charID; */
+            this.taxRate = prov.taxRate;
+            this.kingdom = prov.kingdom.id;
 		}
 
         /// <summary>

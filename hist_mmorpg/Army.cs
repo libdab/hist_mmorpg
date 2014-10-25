@@ -208,7 +208,7 @@ namespace hist_mmorpg
             // get old fief
             Fief myOldFief = Globals_Server.fiefMasterList[this.location];
             // get new fief
-            Fief myNewFief = Globals_Server.fiefMasterList[myLeader.location.fiefID];
+            Fief myNewFief = Globals_Server.fiefMasterList[myLeader.location.id];
 
             // remove from old fief
             myOldFief.removeArmy(this.armyID);
@@ -217,7 +217,7 @@ namespace hist_mmorpg
             myNewFief.addArmy(this.armyID);
 
             // change location
-            this.location = myLeader.location.fiefID;
+            this.location = myLeader.location.id;
 
             // update days
             this.days = myLeader.days;
@@ -533,7 +533,7 @@ namespace hist_mmorpg
             target.armies.Add(this.armyID);
 
             // change location
-            this.location = target.fiefID;
+            this.location = target.id;
 
             // change days
             this.days = this.days - travelCost;

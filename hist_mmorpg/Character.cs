@@ -1340,7 +1340,7 @@ namespace hist_mmorpg
 
             if (this.familyID != null)
             {
-                myKing = this.getHeadOfFamily().getHomeFief().province.kingdom.king;
+                myKing = this.getHeadOfFamily().getHomeFief().province.kingdom.owner;
             }
 
             return myKing;
@@ -1358,7 +1358,7 @@ namespace hist_mmorpg
             if (this.familyID != null)
             {
                 // get king
-                myKing = this.getHeadOfFamily().getHomeFief().province.kingdom.king;
+                myKing = this.getHeadOfFamily().getHomeFief().province.kingdom.owner;
                 
                 // get queen
                 if (myKing.spouse != null)
@@ -1383,7 +1383,7 @@ namespace hist_mmorpg
 
             if (this.familyID != null)
             {
-                myOverlord = this.getHeadOfFamily().getHomeFief().province.overlord;
+                myOverlord = this.getHeadOfFamily().getHomeFief().province.owner;
             }
 
             return myOverlord;
@@ -2060,7 +2060,7 @@ namespace hist_mmorpg
                 string[] injuryPersonae = tempPersonae.ToArray();
 
                 // location
-                string injuryLocation = this.location.fiefID;
+                string injuryLocation = this.location.id;
 
                 // description
                 string injuryDescription = "On this day of our lord ";
@@ -2287,7 +2287,7 @@ namespace hist_mmorpg
                 if (thisFief.rank.stature > highestStature)
                 {
                     highestStature = thisFief.rank.stature;
-                    homeFief = thisFief.fiefID;
+                    homeFief = thisFief.id;
                 }
             }
 
@@ -2967,6 +2967,59 @@ namespace hist_mmorpg
             return ancestralHome;
         }
 
+        /*
+        /// <summary>
+        /// Transfers the fief title to the specified character
+        /// </summary>
+        /// <param name="newTitleHolder">The new title holder</param>
+        public void transferTitle(Character newTitleHolder)
+        {
+            // remove title from existing holder
+            Character oldTitleHolder = this.getTitleHolder();
+            oldTitleHolder.myTitles.Remove(this.fiefID);
+
+            // add title to new owner
+            newTitleHolder.myTitles.Add(this.fiefID);
+            this.titleHolder = newTitleHolder.charID;
+        } */
+
+        /// <summary>
+        /// Transfers the title of a fief or province to another character
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="newHolder">The character receiving the title</param>
+        /// <param name="placeID">The ID of the fief or province</param>
+        /// <param name="titleType">The type of title - fief or province</param>
+        public bool grantTitle(Character newHolder, string placeID, string titleType)
+        {
+            bool success = true;
+            Fief thisFief = null;
+            Province thisProvince = null;
+
+            // checks
+            switch (titleType)
+            {
+                case "fief":
+                    if (Globals_Server.fiefMasterList.ContainsKey(placeID))
+                    {
+                        thisFief = Globals_Server.fiefMasterList[placeID];
+                    }
+
+                    // ownership
+                    if (!(this == thisFief.owner))
+                    {
+                        success = false;
+                    }
+                    break;
+                case "province":
+                    break;
+                default:
+                    break;
+            }
+
+            return success;
+        }
+
     }
 
     /// <summary>
@@ -3269,7 +3322,7 @@ namespace hist_mmorpg
                     myResponsibilities += "Bailiff (";
                     for (int i = 0; i < bailiffDuties.Count; i++ )
                     {
-                        myResponsibilities += bailiffDuties[i].fiefID;
+                        myResponsibilities += bailiffDuties[i].id;
                         if (i < (bailiffDuties.Count - 1))
                         {
                             myResponsibilities += ", ";
@@ -3407,7 +3460,7 @@ namespace hist_mmorpg
 	/// <summary>
 	/// Class used to convert Character to/from format suitable for Riak (JSON)
 	/// </summary>
-	public class Character_Riak
+	public abstract class Character_Riak
 	{
 
 		/// <summary>
@@ -3553,7 +3606,7 @@ namespace hist_mmorpg
 				{
 					foreach (Fief value in charToUse.goTo)
 					{
-						this.goTo.Add (value.fiefID);
+						this.goTo.Add (value.id);
 					}
 				}
 				this.language = new Tuple<string,int>(charToUse.language.Item1.languageID, charToUse.language.Item2);
@@ -3568,7 +3621,7 @@ namespace hist_mmorpg
 				}
 				this.inKeep = charToUse.inKeep;
 				this.pregnant = charToUse.isPregnant;
-				this.location = charToUse.location.fiefID;
+				this.location = charToUse.location.id;
                 this.spouse = charToUse.spouse;
                 this.father = charToUse.father;
                 this.mother = charToUse.mother;
@@ -3646,7 +3699,7 @@ namespace hist_mmorpg
 			{
 				for (int i = 0; i < pc.ownedFiefs.Count; i++)
 				{
-					this.ownedFiefs.Add (pc.ownedFiefs[i].fiefID);
+					this.ownedFiefs.Add (pc.ownedFiefs[i].id);
 				}
 			}
             this.homeFief = pc.homeFief;

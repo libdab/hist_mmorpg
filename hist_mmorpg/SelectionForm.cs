@@ -164,7 +164,7 @@ namespace hist_mmorpg
                     myNPC.SubItems.Add(Globals_Client.myChar.myNPCs[i].charID);
 
                     // location
-                    myNPC.SubItems.Add(Globals_Client.myChar.myNPCs[i].location.fiefID);
+                    myNPC.SubItems.Add(Globals_Client.myChar.myNPCs[i].location.id);
 
                     // add item to npcListView
                     if (myFunction.Equals("bailiff"))
@@ -174,7 +174,7 @@ namespace hist_mmorpg
                     // if appointing leader, only add item to fiefsListView if is in same fief as army
                     else if (myFunction.Equals("leader"))
                     {
-                        if (Globals_Client.myChar.myNPCs[i].location.fiefID == myArmy.location)
+                        if (Globals_Client.myChar.myNPCs[i].location.id == myArmy.location)
                         {
                             this.npcListView.Items.Add(myNPC);
                         }
@@ -347,7 +347,7 @@ namespace hist_mmorpg
             // if in process of auto-moving, display next hex
             if (npc.goTo.Count != 0)
             {
-                charText += "Next Fief (if auto-moving): " + npc.goTo.Peek().fiefID + "\r\n";
+                charText += "Next Fief (if auto-moving): " + npc.goTo.Peek().id + "\r\n";
             }
 
             // language

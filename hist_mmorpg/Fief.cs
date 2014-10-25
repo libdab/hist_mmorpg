@@ -8,16 +8,29 @@ namespace hist_mmorpg
     /// <summary>
     /// Class storing data on fief
     /// </summary>
-    public class Fief
+    public class Fief : Place
     {
+        /*
         /// <summary>
         /// Holds fief ID
         /// </summary>
-        public String fiefID { get; set; }
+        public String id { get; set; }
         /// <summary>
         /// Holds fief name
         /// </summary>
         public String name { get; set; }
+        /// <summary>
+        /// Holds fief owner (PlayerCharacter object)
+        /// </summary>
+        public PlayerCharacter owner { get; set; }
+        /// <summary>
+        /// Holds fief Rank object
+        /// </summary>
+        public Rank rank { get; set; }
+        /// <summary>
+        /// Fief title holder (charID)
+        /// </summary>
+        public String titleHolder { get; set; } */
         /// <summary>
         /// Holds fief's Province object
         /// </summary>
@@ -121,10 +134,6 @@ namespace hist_mmorpg
         /// </summary>
         public bool frenchBarred { get; set; }
         /// <summary>
-        /// Holds fief owner (PlayerCharacter object)
-        /// </summary>
-		public PlayerCharacter owner { get; set; }
-        /// <summary>
         /// Holds fief ancestral owner (PlayerCharacter object)
         /// </summary>
 		public PlayerCharacter ancestralOwner { get; set; }
@@ -137,17 +146,9 @@ namespace hist_mmorpg
         /// </summary>
         public Double bailiffDaysInFief { get; set; }
         /// <summary>
-        /// Holds fief Rank object
-        /// </summary>
-        public Rank rank { get; set; }
-        /// <summary>
         /// Holds fief treasury
         /// </summary>
         public int treasury { get; set; }
-        /// <summary>
-        /// Fief title holder (charID)
-        /// </summary>
-        public String titleHolder { get; set; }
         /// <summary>
         /// Holds armies present in the fief (armyIDs)
         /// </summary>
@@ -175,6 +176,9 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="id">String holding fief ID</param>
         /// <param name="nam">String holding fief name</param>
+        /// <param name="own">PlayerCharacter holding fief owner</param>
+        /// <param name="r">Fief's rank object</param>
+        /// <param name="tiHo">Fief title holder (charID)</param>
         /// <param name="prov">Fief's Province object</param>
         /// <param name="pop">uint holding fief population</param>
         /// <param name="fld">Double holding fief field level</param>
@@ -197,13 +201,10 @@ namespace hist_mmorpg
         /// <param name="barChars">List holding IDs of characters barred from keep</param>
         /// <param name="engBarr">bool indicating whether English nationality barred from keep</param>
         /// <param name="frBarr">bool indicating whether French nationality barred from keep</param>
-		/// <param name="own">PlayerCharacter holding fief owner</param>
 		/// <param name="ancOwn">PlayerCharacter holding fief ancestral owner</param>
         /// <param name="bail">Character holding fief bailiff</param>
         /// <param name="bailInF">byte holding days bailiff in fief</param>
-        /// <param name="ra">Fief's rank object</param>
         /// <param name="treas">int containing fief treasury</param>
-        /// <param name="tiHo">Fief title holder (charID)</param>
         /// <param name="arms">List holding IDs of armies present in fief</param>
         /// <param name="rec">bool indicating whether recruitment has occurred in the fief (current season)</param>
         /// <param name="pil">bool indicating whether pillage has occurred in the fief (current season)</param>
@@ -213,7 +214,8 @@ namespace hist_mmorpg
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
             Double kpLvl, Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
             byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, String tiHo = null,
-            PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank ra = null, string sge = null)
+            PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank r = null, string sge = null)
+            : base(id, nam, own: own, r: r, tiHo: tiHo)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
@@ -290,11 +292,14 @@ namespace hist_mmorpg
                 throw new InvalidDataException("Fief status must be 'C', 'U' or 'R'");
             }
 
-            this.fiefID = id;
+            /*
+            this.id = id;
             this.name = nam;
+            this.owner = own;
+            this.rank = r;
+            this.titleHolder = tiHo; */
             this.province = prov;
             this.population = pop;
-            this.owner = own;
             this.ancestralOwner = ancOwn;
             this.bailiff = bail;
             this.fields = fld;
@@ -317,10 +322,8 @@ namespace hist_mmorpg
             this.barredCharacters = barChars;
             this.englishBarred = engBarr;
             this.frenchBarred = frBarr;
-            this.rank = ra;
             this.bailiffDaysInFief = bailInF;
             this.treasury = treas;
-            this.titleHolder = tiHo;
             this.armies = arms;
             this.hasRecruited = rec;
             this.troopTransfers = trans;
@@ -336,7 +339,7 @@ namespace hist_mmorpg
 		public Fief(Fief_Riak fr)
 		{
 		
-			this.fiefID = fr.fiefID;
+			this.id = fr.id;
 			this.name = fr.name;
             // province to be added later
 			this.province = null;
@@ -526,7 +529,7 @@ namespace hist_mmorpg
         public uint calcNewOlordTaxes()
         {
             // calculate tax, based on income of specified season
-            uint oTaxes = Convert.ToUInt32(this.calcNewIncome() * (this.province.overlordTaxRate / 100));
+            uint oTaxes = Convert.ToUInt32(this.calcNewIncome() * (this.province.taxRate / 100));
             return oTaxes;
         }
 
@@ -1425,7 +1428,7 @@ namespace hist_mmorpg
             this.keyStatsCurrent[11] = this.calcNewOlordTaxes();
 
             // update overord tax rate
-            this.keyStatsCurrent[12] = this.province.overlordTaxRate;
+            this.keyStatsCurrent[12] = this.province.taxRate;
 
             // update bottom line
             this.keyStatsCurrent[13] = this.calcNewBottomLine();
@@ -1702,9 +1705,9 @@ namespace hist_mmorpg
         {
             PlayerCharacter myOverlord = null;
 
-            if (this.province.overlord != null)
+            if (this.province.owner != null)
             {
-                myOverlord = this.province.overlord;
+                myOverlord = this.province.owner;
             }
 
             return myOverlord;
@@ -1738,10 +1741,10 @@ namespace hist_mmorpg
         {
             // remove title from existing holder
             Character oldTitleHolder = this.getTitleHolder();
-            oldTitleHolder.myTitles.Remove(this.fiefID);
+            oldTitleHolder.myTitles.Remove(this.id);
 
             // add title to new owner
-            newTitleHolder.myTitles.Add(this.fiefID);
+            newTitleHolder.myTitles.Add(this.id);
             this.titleHolder = newTitleHolder.charID;
         }
 
@@ -1777,7 +1780,7 @@ namespace hist_mmorpg
             this.owner = newOwner;
 
             // check if fief was old owner's home fief
-            if (oldOwner.homeFief.Equals(this.fiefID))
+            if (oldOwner.homeFief.Equals(this.id))
             {
                 // get highest ranking owned fief and set as new home fief
                 oldOwner.homeFief = oldOwner.getHighestRankingFief();
@@ -1820,17 +1823,30 @@ namespace hist_mmorpg
 	/// <summary>
 	/// Class used to convert Fief to/from format suitable for Riak (JSON)
 	/// </summary>
-	public class Fief_Riak
+	public class Fief_Riak : Place_Riak
 	{
+        /*
 		/// <summary>
 		/// Holds fief ID
 		/// </summary>
-		public String fiefID { get; set; }
+		public String id { get; set; }
 		/// <summary>
 		/// Holds fief name
 		/// </summary>
 		public String name { get; set; }
-		/// <summary>
+        /// <summary>
+        /// Holds fief owner (charID)
+        /// </summary>
+        public String owner { get; set; }
+        /// <summary>
+        /// Holds fief Rank (ID)
+        /// </summary>
+        public String rankID { get; set; }
+        /// <summary>
+        /// Fief title holder (charID)
+        /// </summary>
+        public String titleHolder { get; set; } */
+        /// <summary>
 		/// Holds fief's Province object (provinceID)
 		/// </summary>
 		public String province { get; set; }
@@ -1933,10 +1949,6 @@ namespace hist_mmorpg
 		/// </summary>
 		public bool frenchBarred { get; set; }
 		/// <summary>
-		/// Holds fief owner (charID)
-		/// </summary>
-		public String owner { get; set; }
-		/// <summary>
 		/// Holds fief ancestral owner (charID)
 		/// </summary>
 		public String ancestralOwner { get; set; }
@@ -1949,17 +1961,9 @@ namespace hist_mmorpg
         /// </summary>
         public Double bailiffDaysInFief { get; set; }
         /// <summary>
-        /// Holds fief Rank (ID)
-        /// </summary>
-        public String rankID { get; set; }
-        /// <summary>
         /// Holds fief treasury
         /// </summary>
         public int treasury { get; set; }
-        /// <summary>
-        /// Fief title holder (charID)
-        /// </summary>
-        public String titleHolder { get; set; }
         /// <summary>
         /// Holds armies present in the fief (armyIDs)
         /// </summary>
@@ -1987,12 +1991,16 @@ namespace hist_mmorpg
 		/// </summary>
 		/// <param name="f">Fief object to use as source</param>
 		public Fief_Riak(Fief f)
+            : base(f: f)
 		{
-			this.fiefID = f.fiefID;
+            /*
+			this.id = f.id;
 			this.name = f.name;
-			this.province = f.province.provinceID;
+            this.owner = f.owner.charID;
+            this.rankID = f.rank.rankID;
+            this.titleHolder = f.titleHolder; */
+            this.province = f.province.id;
 			this.population = f.population;
-			this.owner = f.owner.charID;
 			this.ancestralOwner = f.ancestralOwner.charID;
 			if (f.bailiff != null) {
 				this.bailiff = f.bailiff.charID;
@@ -2025,10 +2033,8 @@ namespace hist_mmorpg
 			this.barredCharacters = f.barredCharacters;
 			this.englishBarred = f.englishBarred;
 			this.frenchBarred = f.frenchBarred;
-            this.rankID = f.rank.rankID;
             this.bailiffDaysInFief = f.bailiffDaysInFief;
             this.treasury = f.treasury;
-            this.titleHolder = f.titleHolder;
             this.armies = f.armies;
             this.hasRecruited = f.hasRecruited;
             this.troopTransfers = f.troopTransfers;
