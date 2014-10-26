@@ -45,7 +45,7 @@ namespace hist_mmorpg
 			rClient = (RiakClient)rCluster.CreateClient();
 
             // initialise game objects
-			this.initGameObjects("NOTdb", "101");
+			this.initGameObjects("db", "101");
 
 			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
 
@@ -705,7 +705,9 @@ namespace hist_mmorpg
 			this.writeDictionary(gameID, "combatValues", Globals_Server.combatValues);
 			this.writeDictionary(gameID, "recruitRatios", Globals_Server.recruitRatios);
 			this.writeDictionary(gameID, "battleProbabilities", Globals_Server.battleProbabilities);
-            this.writeDictionary(gameID, "jEntryPriorities", Globals_Server.jEntryPriorities);
+			// convert jEntryPriorities prior to writing
+			Dictionary<string, byte> jEntryPrioritiesRiak = this.jEntryPrioritiesToRiak (Globals_Server.jEntryPriorities);
+			this.writeDictionary(gameID, "jEntryPriorities", jEntryPrioritiesRiak);
 
             // ========= write JOURNALS
             this.writeJournal(gameID, "serverScheduledEvents", Globals_Server.scheduledEvents);
@@ -1311,12 +1313,14 @@ namespace hist_mmorpg
         /// <param name="dictID">ID of Dictionary to be retrieved</param>
         public Dictionary<string[], byte> initialDBload_dictString(string gameID, string dictID)
         {
+			Dictionary<string[], byte> dictOut = new Dictionary<string[], byte>();
             var dictResult = rClient.Get(gameID, dictID);
-            var newDict = new Dictionary<string[], byte>();
+			var tempDict = new Dictionary<string, byte>();
 
             if (dictResult.IsSuccess)
             {
-                newDict = dictResult.Value.GetObject<Dictionary<string[], byte>>();
+				tempDict = dictResult.Value.GetObject<Dictionary<string, byte>>();
+				dictOut = this.jEntryPrioritiesFromRiak (tempDict);
             }
             else
             {
@@ -1326,10 +1330,31 @@ namespace hist_mmorpg
                 }
             }
 
-            return newDict;
+            return dictOut;
         }
+			
+		/// <summary>
+		/// Converts jEntryPriorities Dictionary from Riak format into game format
+		/// </summary>
+		/// <returns>Dictionary<string[], byte> for game use</returns>
+		/// <param name="dictToConvert">The Dictionary to convert</param>
+		public Dictionary<string[], byte> jEntryPrioritiesFromRiak(Dictionary<string, byte> dictToConvert)
+		{
+			Dictionary<string[], byte> dictOut = new Dictionary<string[], byte> ();
 
-        /// <summary>
+			if (dictToConvert.Count > 0)
+			{
+				foreach (KeyValuePair<string, byte> thisEntry in dictToConvert)
+				{
+					string[] thisKey = thisEntry.Key.Split ('|');
+					dictOut.Add (thisKey, thisEntry.Value);
+				}
+			}
+
+			return dictOut;
+		}
+
+		/// <summary>
 		/// Loads Dictionary<string, double[]> from database
 		/// </summary>
 		/// <returns>Dictionary<string, double[]> object</returns>
@@ -2237,6 +2262,26 @@ namespace hist_mmorpg
 			}
 
 			return putDictResult.IsSuccess;
+		}
+
+		/// <summary>
+		/// Converts jEntryPriorities Dictionary into a format suitable for Riak
+		/// </summary>
+		/// <returns>Dictionary<string, byte> for Riak storage</returns>
+		/// <param name="dictToConvert">The Dictionary to convert</param>
+		public Dictionary<string, byte> jEntryPrioritiesToRiak(Dictionary<string[], byte> dictToConvert)
+		{
+			Dictionary<string, byte> dictOut = new Dictionary<string, byte> ();
+
+			if (dictToConvert.Count > 0)
+			{
+				foreach (KeyValuePair<string[], byte> thisEntry in dictToConvert)
+				{
+					dictOut.Add (thisEntry.Key[0] + "|" + thisEntry.Key[1], thisEntry.Value);
+				}
+			}
+
+			return dictOut;
 		}
 
 		/// <summary>
