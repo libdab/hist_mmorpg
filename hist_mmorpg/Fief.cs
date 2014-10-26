@@ -1673,6 +1673,7 @@ namespace hist_mmorpg
             return garrisonSize;
         }
 
+        /*
         /// <summary>
         /// Gets the fief's title holder
         /// </summary>
@@ -1695,7 +1696,7 @@ namespace hist_mmorpg
             }
 
             return myTitleHolder;
-        }
+        } */
 
         /// <summary>
         /// Gets fief's overlord
@@ -1733,6 +1734,7 @@ namespace hist_mmorpg
             return mySiege;
         }
 
+        /*
         /// <summary>
         /// Transfers the fief title to the specified character
         /// </summary>
@@ -1746,6 +1748,22 @@ namespace hist_mmorpg
             // add title to new owner
             newTitleHolder.myTitles.Add(this.id);
             this.titleHolder = newTitleHolder.charID;
+        } */
+
+        /// <summary>
+        /// Gets fief's king
+        /// </summary>
+        /// <returns>The king</returns>
+        public PlayerCharacter getKing()
+        {
+            PlayerCharacter thisKing = null;
+
+            if (this.province.kingdom.owner != null)
+            {
+                thisKing = this.province.kingdom.owner;
+            }
+
+            return thisKing;
         }
 
         /// <summary>
@@ -1770,7 +1788,7 @@ namespace hist_mmorpg
             }
 
             // remove title from existing holder and assign to new owner
-            this.transferTitle(newOwner);
+            oldOwner.transferTitle(newOwner, this);
 
             // remove from existing owner
             oldOwner.ownedFiefs.Remove(this);
@@ -1789,8 +1807,8 @@ namespace hist_mmorpg
                 Fief newHomeFief = oldOwner.getHomeFief();
                 if (!newHomeFief.titleHolder.Equals(oldOwner.charID))
                 {
-                    // remove title from existing holder and assign to new owner
-                    newHomeFief.transferTitle(oldOwner);
+                    // remove title from existing holder and assign to old owner
+                    oldOwner.transferTitle(oldOwner, newHomeFief);
                 }
             }
 

@@ -45,7 +45,7 @@ namespace hist_mmorpg
 			rClient = (RiakClient)rCluster.CreateClient();
 
             // initialise game objects
-			this.initGameObjects("db", "101");
+			this.initGameObjects("NOTdb", "101");
 
 			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
 
@@ -12315,6 +12315,23 @@ namespace hist_mmorpg
                 }
             }
 
+        }
+
+        /// <summary>
+        /// Responds to the click event of the fiefGrantTitleBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefGrantTitleBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            SelectionForm chooseTitleHolder = new SelectionForm(this, "titleHolder");
+            chooseTitleHolder.Show();
         }
 
     }

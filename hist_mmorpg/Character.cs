@@ -412,11 +412,11 @@ namespace hist_mmorpg
         {
             byte highRankStature = 0;
 
-            foreach (String fiefID in this.myTitles)
+            foreach (String placeID in this.myTitles)
             {
-                if (Globals_Server.fiefMasterList[fiefID].rank.stature > highRankStature)
+                if (Globals_Server.fiefMasterList[placeID].rank.stature > highRankStature)
                 {
-                    highRankStature = Globals_Server.fiefMasterList[fiefID].rank.stature;
+                    highRankStature = Globals_Server.fiefMasterList[placeID].rank.stature;
                 }
             }
 
@@ -2967,57 +2967,86 @@ namespace hist_mmorpg
             return ancestralHome;
         }
 
-        /*
+        
         /// <summary>
-        /// Transfers the fief title to the specified character
+        /// Transfers the specified title to the specified character
         /// </summary>
         /// <param name="newTitleHolder">The new title holder</param>
-        public void transferTitle(Character newTitleHolder)
+        /// <param name="titlePlace">The place to which the title refers</param>
+        public void transferTitle(Character newTitleHolder, Place titlePlace)
         {
+            Character currentTitleHolder = titlePlace.getTitleHolder();
+
             // remove title from existing holder
-            Character oldTitleHolder = this.getTitleHolder();
-            oldTitleHolder.myTitles.Remove(this.fiefID);
+            if (currentTitleHolder != null)
+            {
+                currentTitleHolder.myTitles.Remove(titlePlace.id);
+            }
 
             // add title to new owner
-            newTitleHolder.myTitles.Add(this.fiefID);
-            this.titleHolder = newTitleHolder.charID;
-        } */
+            newTitleHolder.myTitles.Add(titlePlace.id);
+            titlePlace.titleHolder = newTitleHolder.charID;
+        }
 
         /// <summary>
         /// Transfers the title of a fief or province to another character
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="newHolder">The character receiving the title</param>
-        /// <param name="placeID">The ID of the fief or province</param>
-        /// <param name="titleType">The type of title - fief or province</param>
-        public bool grantTitle(Character newHolder, string placeID, string titleType)
+        /// <param name="titlePlace">The place to which the title refers</param>
+        public bool grantTitle(Character newHolder, Place titlePlace)
         {
-            bool success = true;
-            Fief thisFief = null;
-            Province thisProvince = null;
+            bool proceed = true;
+            string toDisplay = "";
 
-            // checks
-            switch (titleType)
+            // only fiefs or provinces
+            if ((titlePlace is Fief) || (titlePlace is Province))
             {
-                case "fief":
-                    if (Globals_Server.fiefMasterList.ContainsKey(placeID))
+                // CHECKS
+                // ownership (must be owner)
+                if (!(this == titlePlace.owner))
+                {
+                    toDisplay = "Only the owner can grant a title to another character.";
+                    proceed = false;
+                }
+
+                else
+                {
+                    // fief ancestral ownership (can't give away ancestral titles)
+                    if (titlePlace is Fief)
                     {
-                        thisFief = Globals_Server.fiefMasterList[placeID];
+                        if (titlePlace.owner.charID.Equals((titlePlace as Fief).ancestralOwner.charID))
+                        {
+                            toDisplay = "You cannot grant an ancestral title to another character.";
+                            proceed = false;
+                        }
                     }
 
-                    // ownership
-                    if (!(this == thisFief.owner))
+                    // provinces can only be given by king
+                    else if (titlePlace is Province)
                     {
-                        success = false;
+                        if ((titlePlace as Province).owner != (titlePlace as Province).kingdom.owner)
+                        {
+                            toDisplay = "Only the king can grant a provincial title to another character.";
+                            proceed = false;
+                        }
                     }
-                    break;
-                case "province":
-                    break;
-                default:
-                    break;
+                }
+
+                if (proceed)
+                {
+                    this.transferTitle(newHolder, titlePlace);
+                }
+                else
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                    }
+                }
             }
 
-            return success;
+            return proceed;
         }
 
     }

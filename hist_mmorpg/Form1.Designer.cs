@@ -232,6 +232,7 @@ namespace hist_mmorpg
             this.journalPrevBtn = new System.Windows.Forms.Button();
             this.journalTextBox = new System.Windows.Forms.TextBox();
             this.journalListView = new System.Windows.Forms.ListView();
+            this.fiefGrantTitleBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -570,6 +571,7 @@ namespace hist_mmorpg
             // 
             // fiefContainer.Panel1
             // 
+            this.fiefContainer.Panel1.Controls.Add(this.fiefGrantTitleBtn);
             this.fiefContainer.Panel1.Controls.Add(this.fiefInfraExpMaxBtn);
             this.fiefContainer.Panel1.Controls.Add(this.fiefKeepExpMaxBtn);
             this.fiefContainer.Panel1.Controls.Add(this.fiefGarrExpMaxBtn);
@@ -612,7 +614,7 @@ namespace hist_mmorpg
             // 
             // fiefInfraExpMaxBtn
             // 
-            this.fiefInfraExpMaxBtn.Location = new System.Drawing.Point(248, 374);
+            this.fiefInfraExpMaxBtn.Location = new System.Drawing.Point(248, 395);
             this.fiefInfraExpMaxBtn.Name = "fiefInfraExpMaxBtn";
             this.fiefInfraExpMaxBtn.Size = new System.Drawing.Size(49, 23);
             this.fiefInfraExpMaxBtn.TabIndex = 36;
@@ -623,7 +625,7 @@ namespace hist_mmorpg
             // 
             // fiefKeepExpMaxBtn
             // 
-            this.fiefKeepExpMaxBtn.Location = new System.Drawing.Point(248, 406);
+            this.fiefKeepExpMaxBtn.Location = new System.Drawing.Point(248, 427);
             this.fiefKeepExpMaxBtn.Name = "fiefKeepExpMaxBtn";
             this.fiefKeepExpMaxBtn.Size = new System.Drawing.Size(49, 23);
             this.fiefKeepExpMaxBtn.TabIndex = 35;
@@ -634,7 +636,7 @@ namespace hist_mmorpg
             // 
             // fiefGarrExpMaxBtn
             // 
-            this.fiefGarrExpMaxBtn.Location = new System.Drawing.Point(248, 344);
+            this.fiefGarrExpMaxBtn.Location = new System.Drawing.Point(248, 365);
             this.fiefGarrExpMaxBtn.Name = "fiefGarrExpMaxBtn";
             this.fiefGarrExpMaxBtn.Size = new System.Drawing.Size(49, 23);
             this.fiefGarrExpMaxBtn.TabIndex = 34;
@@ -645,7 +647,7 @@ namespace hist_mmorpg
             // 
             // fiefOffExpMaxBtn
             // 
-            this.fiefOffExpMaxBtn.Location = new System.Drawing.Point(248, 315);
+            this.fiefOffExpMaxBtn.Location = new System.Drawing.Point(248, 336);
             this.fiefOffExpMaxBtn.Name = "fiefOffExpMaxBtn";
             this.fiefOffExpMaxBtn.Size = new System.Drawing.Size(49, 23);
             this.fiefOffExpMaxBtn.TabIndex = 33;
@@ -669,7 +671,7 @@ namespace hist_mmorpg
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(55, 262);
+            this.label2.Location = new System.Drawing.Point(76, 282);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(198, 13);
             this.label2.TabIndex = 31;
@@ -765,9 +767,9 @@ namespace hist_mmorpg
             // 
             // lockoutBtn
             // 
-            this.lockoutBtn.Location = new System.Drawing.Point(90, 209);
+            this.lockoutBtn.Location = new System.Drawing.Point(90, 189);
             this.lockoutBtn.Name = "lockoutBtn";
-            this.lockoutBtn.Size = new System.Drawing.Size(122, 23);
+            this.lockoutBtn.Size = new System.Drawing.Size(173, 20);
             this.lockoutBtn.TabIndex = 20;
             this.lockoutBtn.Text = "Lock Out Options";
             this.lockoutBtn.UseVisualStyleBackColor = true;
@@ -775,9 +777,9 @@ namespace hist_mmorpg
             // 
             // selfBailiffBtn
             // 
-            this.selfBailiffBtn.Location = new System.Drawing.Point(90, 168);
+            this.selfBailiffBtn.Location = new System.Drawing.Point(90, 161);
             this.selfBailiffBtn.Name = "selfBailiffBtn";
-            this.selfBailiffBtn.Size = new System.Drawing.Size(122, 35);
+            this.selfBailiffBtn.Size = new System.Drawing.Size(173, 22);
             this.selfBailiffBtn.TabIndex = 19;
             this.selfBailiffBtn.Text = "Appoint Myself as Bailiff";
             this.selfBailiffBtn.UseVisualStyleBackColor = true;
@@ -785,9 +787,9 @@ namespace hist_mmorpg
             // 
             // removeBaliffBtn
             // 
-            this.removeBaliffBtn.Location = new System.Drawing.Point(90, 139);
+            this.removeBaliffBtn.Location = new System.Drawing.Point(90, 132);
             this.removeBaliffBtn.Name = "removeBaliffBtn";
-            this.removeBaliffBtn.Size = new System.Drawing.Size(122, 23);
+            this.removeBaliffBtn.Size = new System.Drawing.Size(173, 23);
             this.removeBaliffBtn.TabIndex = 18;
             this.removeBaliffBtn.Text = "Remove the Bailiff";
             this.removeBaliffBtn.UseVisualStyleBackColor = true;
@@ -795,9 +797,9 @@ namespace hist_mmorpg
             // 
             // setBailiffBtn
             // 
-            this.setBailiffBtn.Location = new System.Drawing.Point(90, 110);
+            this.setBailiffBtn.Location = new System.Drawing.Point(90, 103);
             this.setBailiffBtn.Name = "setBailiffBtn";
-            this.setBailiffBtn.Size = new System.Drawing.Size(122, 23);
+            this.setBailiffBtn.Size = new System.Drawing.Size(173, 23);
             this.setBailiffBtn.TabIndex = 17;
             this.setBailiffBtn.Text = "Appoint a Bailiff";
             this.setBailiffBtn.UseVisualStyleBackColor = true;
@@ -806,7 +808,7 @@ namespace hist_mmorpg
             // keepSpendLabel
             // 
             this.keepSpendLabel.AutoSize = true;
-            this.keepSpendLabel.Location = new System.Drawing.Point(76, 411);
+            this.keepSpendLabel.Location = new System.Drawing.Point(76, 432);
             this.keepSpendLabel.Name = "keepSpendLabel";
             this.keepSpendLabel.Size = new System.Drawing.Size(100, 13);
             this.keepSpendLabel.TabIndex = 16;
@@ -815,7 +817,7 @@ namespace hist_mmorpg
             // infraSpendLabel
             // 
             this.infraSpendLabel.AutoSize = true;
-            this.infraSpendLabel.Location = new System.Drawing.Point(39, 379);
+            this.infraSpendLabel.Location = new System.Drawing.Point(39, 400);
             this.infraSpendLabel.Name = "infraSpendLabel";
             this.infraSpendLabel.Size = new System.Drawing.Size(137, 13);
             this.infraSpendLabel.TabIndex = 15;
@@ -824,7 +826,7 @@ namespace hist_mmorpg
             // garrSpendLabel
             // 
             this.garrSpendLabel.AutoSize = true;
-            this.garrSpendLabel.Location = new System.Drawing.Point(62, 349);
+            this.garrSpendLabel.Location = new System.Drawing.Point(62, 370);
             this.garrSpendLabel.Name = "garrSpendLabel";
             this.garrSpendLabel.Size = new System.Drawing.Size(114, 13);
             this.garrSpendLabel.TabIndex = 14;
@@ -833,7 +835,7 @@ namespace hist_mmorpg
             // offSpendLabel
             // 
             this.offSpendLabel.AutoSize = true;
-            this.offSpendLabel.Location = new System.Drawing.Point(64, 320);
+            this.offSpendLabel.Location = new System.Drawing.Point(64, 341);
             this.offSpendLabel.Name = "offSpendLabel";
             this.offSpendLabel.Size = new System.Drawing.Size(112, 13);
             this.offSpendLabel.TabIndex = 13;
@@ -842,7 +844,7 @@ namespace hist_mmorpg
             // taxRateLabel
             // 
             this.taxRateLabel.AutoSize = true;
-            this.taxRateLabel.Location = new System.Drawing.Point(115, 295);
+            this.taxRateLabel.Location = new System.Drawing.Point(115, 316);
             this.taxRateLabel.Name = "taxRateLabel";
             this.taxRateLabel.Size = new System.Drawing.Size(60, 13);
             this.taxRateLabel.TabIndex = 12;
@@ -850,9 +852,9 @@ namespace hist_mmorpg
             // 
             // viewBailiffBtn
             // 
-            this.viewBailiffBtn.Location = new System.Drawing.Point(90, 81);
+            this.viewBailiffBtn.Location = new System.Drawing.Point(90, 74);
             this.viewBailiffBtn.Name = "viewBailiffBtn";
-            this.viewBailiffBtn.Size = new System.Drawing.Size(122, 23);
+            this.viewBailiffBtn.Size = new System.Drawing.Size(173, 23);
             this.viewBailiffBtn.TabIndex = 11;
             this.viewBailiffBtn.Text = "View Bailiff";
             this.viewBailiffBtn.UseVisualStyleBackColor = true;
@@ -860,44 +862,44 @@ namespace hist_mmorpg
             // 
             // adjustKeepSpendTextBox
             // 
-            this.adjustKeepSpendTextBox.Location = new System.Drawing.Point(186, 408);
+            this.adjustKeepSpendTextBox.Location = new System.Drawing.Point(186, 429);
             this.adjustKeepSpendTextBox.Name = "adjustKeepSpendTextBox";
             this.adjustKeepSpendTextBox.Size = new System.Drawing.Size(56, 20);
             this.adjustKeepSpendTextBox.TabIndex = 9;
             // 
             // adjInfrSpendTextBox
             // 
-            this.adjInfrSpendTextBox.Location = new System.Drawing.Point(185, 376);
+            this.adjInfrSpendTextBox.Location = new System.Drawing.Point(185, 397);
             this.adjInfrSpendTextBox.Name = "adjInfrSpendTextBox";
             this.adjInfrSpendTextBox.Size = new System.Drawing.Size(57, 20);
             this.adjInfrSpendTextBox.TabIndex = 7;
             // 
             // adjGarrSpendTextBox
             // 
-            this.adjGarrSpendTextBox.Location = new System.Drawing.Point(186, 346);
+            this.adjGarrSpendTextBox.Location = new System.Drawing.Point(186, 367);
             this.adjGarrSpendTextBox.Name = "adjGarrSpendTextBox";
             this.adjGarrSpendTextBox.Size = new System.Drawing.Size(56, 20);
             this.adjGarrSpendTextBox.TabIndex = 5;
             // 
             // adjOffSpendTextBox
             // 
-            this.adjOffSpendTextBox.Location = new System.Drawing.Point(186, 316);
+            this.adjOffSpendTextBox.Location = new System.Drawing.Point(186, 337);
             this.adjOffSpendTextBox.Name = "adjOffSpendTextBox";
             this.adjOffSpendTextBox.Size = new System.Drawing.Size(56, 20);
             this.adjOffSpendTextBox.TabIndex = 3;
             // 
             // adjustTaxTextBox
             // 
-            this.adjustTaxTextBox.Location = new System.Drawing.Point(185, 290);
+            this.adjustTaxTextBox.Location = new System.Drawing.Point(185, 311);
             this.adjustTaxTextBox.Name = "adjustTaxTextBox";
             this.adjustTaxTextBox.Size = new System.Drawing.Size(57, 20);
             this.adjustTaxTextBox.TabIndex = 2;
             // 
             // adjustSpendBtn
             // 
-            this.adjustSpendBtn.Location = new System.Drawing.Point(90, 444);
+            this.adjustSpendBtn.Location = new System.Drawing.Point(90, 465);
             this.adjustSpendBtn.Name = "adjustSpendBtn";
-            this.adjustSpendBtn.Size = new System.Drawing.Size(122, 36);
+            this.adjustSpendBtn.Size = new System.Drawing.Size(173, 23);
             this.adjustSpendBtn.TabIndex = 0;
             this.adjustSpendBtn.Text = "Commit amounts above";
             this.adjustSpendBtn.UseVisualStyleBackColor = true;
@@ -2480,16 +2482,26 @@ namespace hist_mmorpg
             this.journalListView.View = System.Windows.Forms.View.Details;
             this.journalListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.journalListView_ItemSelectionChanged);
             // 
+            // fiefGrantTitleBtn
+            // 
+            this.fiefGrantTitleBtn.Location = new System.Drawing.Point(90, 215);
+            this.fiefGrantTitleBtn.Name = "fiefGrantTitleBtn";
+            this.fiefGrantTitleBtn.Size = new System.Drawing.Size(173, 41);
+            this.fiefGrantTitleBtn.TabIndex = 37;
+            this.fiefGrantTitleBtn.Text = "GrantFief Title to Another Character";
+            this.fiefGrantTitleBtn.UseVisualStyleBackColor = true;
+            this.fiefGrantTitleBtn.Click += new System.EventHandler(this.fiefGrantTitleBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 661);
+            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.travelContainer);
-            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.journalContainer);
             this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.characterContainer);
@@ -2817,6 +2829,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button fiefKeepExpMaxBtn;
         private System.Windows.Forms.Button fiefGarrExpMaxBtn;
         private System.Windows.Forms.Button fiefOffExpMaxBtn;
+        private System.Windows.Forms.Button fiefGrantTitleBtn;
 
     }
 }

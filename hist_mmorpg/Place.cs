@@ -63,6 +63,31 @@ namespace hist_mmorpg
         public Place()
         {
         }
+
+        /// <summary>
+        /// Gets the place's title holder
+        /// </summary>
+        /// <returns>The title holder</returns>
+        public Character getTitleHolder()
+        {
+            Character myTitleHolder = null;
+
+            if (this.titleHolder != null)
+            {
+                // get title holder from appropriate master list
+                if (Globals_Server.npcMasterList.ContainsKey(this.titleHolder))
+                {
+                    myTitleHolder = Globals_Server.npcMasterList[this.titleHolder];
+                }
+                else if (Globals_Server.pcMasterList.ContainsKey(this.titleHolder))
+                {
+                    myTitleHolder = Globals_Server.pcMasterList[this.titleHolder];
+                }
+            }
+
+            return myTitleHolder;
+        }
+
     }
 
     /// <summary>

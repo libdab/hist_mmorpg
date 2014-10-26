@@ -49,7 +49,7 @@ namespace hist_mmorpg
         /// <param name="armyID">String indicating ID of army (if choosing leader)</param>
         private void initDisplay(String myFunction, String armyID = null)
         {
-            if ((myFunction.Equals("bailiff")) || (myFunction.Equals("leader")))
+            if (((myFunction.Equals("bailiff")) || (myFunction.Equals("leader"))) || (myFunction.Equals("titleHolder")))
             {
                 // format list display
                 this.setUpNpcList(myFunction, armyID);
@@ -111,15 +111,22 @@ namespace hist_mmorpg
             this.npcListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
 
             // set appropriate button text and tag
-            if (myFunction.Equals("bailiff"))
+            switch (myFunction)
             {
-                this.chooseNpcBtn.Text = "Appoint This Person As Bailiff";
-                this.chooseNpcBtn.Tag = myFunction;
-            }
-            else if (myFunction.Equals("leader"))
-            {
-                this.chooseNpcBtn.Text = "Appoint This Person As Leader";
-                this.chooseNpcBtn.Tag = armyID;
+                case "bailiff":
+                    this.chooseNpcBtn.Text = "Appoint This Person As Bailiff";
+                    this.chooseNpcBtn.Tag = myFunction;
+                    break;
+                case "leader":
+                    this.chooseNpcBtn.Text = "Appoint This Person As Leader";
+                    this.chooseNpcBtn.Tag = armyID;
+                    break;
+                case "titleHolder":
+                    this.chooseNpcBtn.Text = "Appoint This Person As Title Holder";
+                    this.chooseNpcBtn.Tag = myFunction;
+                    break;
+                default:
+                    break;
             }
 
             // disable button (until NPC selected)
@@ -167,7 +174,7 @@ namespace hist_mmorpg
                     myNPC.SubItems.Add(Globals_Client.myChar.myNPCs[i].location.id);
 
                     // add item to npcListView
-                    if (myFunction.Equals("bailiff"))
+                    if ((myFunction.Equals("bailiff")) || (myFunction.Equals("titleHolder")))
                     {
                         this.npcListView.Items.Add(myNPC);
                     }
@@ -411,6 +418,7 @@ namespace hist_mmorpg
                 // get chooseNpcBtn tag (determines function)
                 String myButtonTag = Convert.ToString(((Button)sender).Tag);
 
+                // appoint NPC to position
                 // if appointing a bailiff
                 if (myButtonTag.Equals("bailiff"))
                 {
@@ -419,6 +427,16 @@ namespace hist_mmorpg
 
                     // refresh the fief information (in the main form)
                     this.parent.refreshFiefContainer(Globals_Client.fiefToView);
+                }
+
+                // if appointing fief title holder
+                else if (myButtonTag.Equals("titleHolder"))
+                {
+                    // set the selected NPC as title holder
+                    Globals_Client.myChar.grantTitle(selectedNPC, Globals_Client.fiefToView);
+
+                    // refresh the fief information (in the main form)
+                    this.parent.refreshCurrentScreen();
                 }
 
                 // if appointing an army leader
