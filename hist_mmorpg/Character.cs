@@ -405,22 +405,52 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Retrieves stature associated with character's highest rank
+        /// Retrieves character's highest ranking places
         /// </summary>
-        /// <returns>byte containing stature associated with character's highest rank</returns>
-        public byte getHighRankStature()
+        /// <returns>List<Place> containing character's highest ranking places</returns>
+        public List<Place> getHighestRankPlace()
         {
+            List<Place> highestPlaces = new List<Place>();
+
             byte highRankStature = 0;
 
             foreach (String placeID in this.myTitles)
             {
                 if (Globals_Server.fiefMasterList[placeID].rank.stature > highRankStature)
                 {
-                    highRankStature = Globals_Server.fiefMasterList[placeID].rank.stature;
+                    // get place
+                    Place thisPlace = null;
+                    if (Globals_Server.fiefMasterList.ContainsKey(placeID))
+                    {
+                        thisPlace = Globals_Server.fiefMasterList[placeID];
+                    }
+                    else if (Globals_Server.provinceMasterList.ContainsKey(placeID))
+                    {
+                        thisPlace = Globals_Server.provinceMasterList[placeID];
+                    }
+                    else if (Globals_Server.kingdomMasterList.ContainsKey(placeID))
+                    {
+                        thisPlace = Globals_Server.kingdomMasterList[placeID];
+                    }
+
+                    if (thisPlace != null)
+                    {
+                        // clear existing places
+                        if (highestPlaces.Count > 0)
+                        {
+                            highestPlaces.Clear();
+                        }
+
+                        // update highest rank
+                        highRankStature = Globals_Server.fiefMasterList[placeID].rank.stature;
+
+                        // add new place to list
+                        highestPlaces.Add(thisPlace);
+                    }
                 }
             }
 
-            return highRankStature;
+            return highestPlaces;
         }
        
         /// <summary>
@@ -433,7 +463,11 @@ namespace hist_mmorpg
             Double stature = 0;
 
             // get stature for character's highest rank
-            stature = this.getHighRankStature();
+            List<Place> myHighestPlaces = this.getHighestRankPlace();
+            if (myHighestPlaces.Count > 0)
+            {
+                stature += myHighestPlaces[0].rank.stature;
+            }
 
             // factor in age
             if (this.calcCharAge() <= 10)
@@ -2274,24 +2308,33 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Finds the highest ranking fief in the PlayerCharacter's owned fiefs
+        /// Finds the highest ranking fief(s) in the PlayerCharacter's owned fiefs
         /// </summary>
-        /// <returns>The fiefID of the highest ranking fief</returns>
-        public string getHighestRankingFief()
+        /// <returns>A list containing the highest ranking fief(s)</returns>
+        public List<Fief> getHighestRankingFief()
         {
-            string homeFief = null;
-            byte highestStature = 0;
+            List<Fief> highestFiefs = new List<Fief>();
+            int highestRank = 0;
 
             foreach (Fief thisFief in this.ownedFiefs)
             {
-                if (thisFief.rank.stature > highestStature)
+                if (Convert.ToInt32(thisFief.rank.rankID) > highestRank)
                 {
-                    highestStature = thisFief.rank.stature;
-                    homeFief = thisFief.id;
+                    // clear existing fiefs
+                    if (highestFiefs.Count > 0)
+                    {
+                        highestFiefs.Clear();
+                    }
+
+                    // add fief to list
+                    highestFiefs.Add(thisFief);
+
+                    // update highest rank
+                    highestRank = Convert.ToInt32(thisFief.rank.rankID);
                 }
             }
 
-            return homeFief;
+            return highestFiefs;
         }
 
         /// <summary>
@@ -3012,23 +3055,40 @@ namespace hist_mmorpg
 
                 else
                 {
-                    // fief ancestral ownership (can't give away ancestral titles)
-                    if (titlePlace is Fief)
+                    // can't give away highest ranking place
+                    List<Place> highestPlaces = this.getHighestRankPlace();
+                    if (highestPlaces.Count > 0)
                     {
-                        if (titlePlace.owner.charID.Equals((titlePlace as Fief).ancestralOwner.charID))
+                        if (highestPlaces[0].rank.stature == titlePlace.rank.stature)
                         {
-                            toDisplay = "You cannot grant an ancestral title to another character.";
-                            proceed = false;
+                            if (highestPlaces.Count == 1)
+                            {
+                                toDisplay = "You cannot grant your highest ranking title to another character.";
+                                proceed = false;
+                            }
                         }
                     }
 
-                    // provinces can only be given by king
-                    else if (titlePlace is Province)
+                    if (proceed)
                     {
-                        if ((titlePlace as Province).owner != (titlePlace as Province).kingdom.owner)
+                        // fief ancestral ownership (can't give away ancestral titles)
+                        if (titlePlace is Fief)
                         {
-                            toDisplay = "Only the king can grant a provincial title to another character.";
-                            proceed = false;
+                            if (titlePlace.owner.charID.Equals((titlePlace as Fief).ancestralOwner.charID))
+                            {
+                                toDisplay = "You cannot grant an ancestral title to another character.";
+                                proceed = false;
+                            }
+                        }
+
+                        // provinces can only be given by king
+                        else if (titlePlace is Province)
+                        {
+                            if ((titlePlace as Province).owner != (titlePlace as Province).kingdom.owner)
+                            {
+                                toDisplay = "Only the king can grant a provincial title to another character.";
+                                proceed = false;
+                            }
                         }
                     }
                 }

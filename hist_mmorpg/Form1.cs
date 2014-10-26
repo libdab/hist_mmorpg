@@ -4846,6 +4846,7 @@ namespace hist_mmorpg
             this.fiefNextKeyStatsTextBox.ReadOnly = true;
             this.fiefTransferAmountTextBox.Text = "";
 
+            /*
             // disable controls by default (will be enabled further down if appropriate)
             this.adjustSpendBtn.Enabled = false;
             this.taxRateLabel.Enabled = false;
@@ -4858,6 +4859,10 @@ namespace hist_mmorpg
             this.adjOffSpendTextBox.Enabled = false;
             this.adjustKeepSpendTextBox.Enabled = false;
             this.adjustTaxTextBox.Enabled = false;
+            this.fiefGarrExpMaxBtn.Enabled = false;
+            this.fiefInfraExpMaxBtn.Enabled = false;
+            this.fiefKeepExpMaxBtn.Enabled = false;
+            this.fiefOffExpMaxBtn.Enabled = false;
             this.viewBailiffBtn.Enabled = false;
             this.lockoutBtn.Enabled = false;
             this.selfBailiffBtn.Enabled = false;
@@ -4868,6 +4873,7 @@ namespace hist_mmorpg
             this.fiefHomeTreasTextBox.Enabled = false;
             this.fiefTransferAmountTextBox.Enabled = false;
             this.FiefTreasTextBox.Enabled = false;
+            this.fiefGrantTitleBtn.Enabled = false; */
 
             // if fief is NOT owned by player, disable fief management buttons and TextBoxes 
             if (! isOwner)
@@ -4883,6 +4889,10 @@ namespace hist_mmorpg
                 this.adjOffSpendTextBox.Enabled = false;
                 this.adjustKeepSpendTextBox.Enabled = false;
                 this.adjustTaxTextBox.Enabled = false;
+                this.fiefGarrExpMaxBtn.Enabled = false;
+                this.fiefInfraExpMaxBtn.Enabled = false;
+                this.fiefKeepExpMaxBtn.Enabled = false;
+                this.fiefOffExpMaxBtn.Enabled = false;
                 this.viewBailiffBtn.Enabled = false;
                 this.lockoutBtn.Enabled = false;
                 this.selfBailiffBtn.Enabled = false;
@@ -4893,6 +4903,7 @@ namespace hist_mmorpg
                 this.fiefHomeTreasTextBox.Enabled = false;
                 this.fiefTransferAmountTextBox.Enabled = false;
                 this.FiefTreasTextBox.Enabled = false;
+                this.fiefGrantTitleBtn.Enabled = false;
 
                 // set TextBoxes to nowt
                 this.adjGarrSpendTextBox.Text = "";
@@ -4953,6 +4964,10 @@ namespace hist_mmorpg
                     this.adjOffSpendTextBox.Enabled = true;
                     this.adjustKeepSpendTextBox.Enabled = true;
                     this.adjustTaxTextBox.Enabled = true;
+                    this.fiefGarrExpMaxBtn.Enabled = true;
+                    this.fiefInfraExpMaxBtn.Enabled = true;
+                    this.fiefKeepExpMaxBtn.Enabled = true;
+                    this.fiefOffExpMaxBtn.Enabled = true;
                     this.viewBailiffBtn.Enabled = true;
                     this.lockoutBtn.Enabled = true;
                     this.setBailiffBtn.Enabled = true;
@@ -4960,6 +4975,7 @@ namespace hist_mmorpg
                     this.fiefHomeTreasTextBox.Enabled = true;
                     this.fiefHomeTreasTextBox.ReadOnly = true;
                     this.FiefTreasTextBox.ReadOnly = true;
+                    this.fiefGrantTitleBtn.Enabled = true;
 
                     // don't enable 'appoint self' button if you're already the bailiff
                     if (f.bailiff == Globals_Client.myChar)

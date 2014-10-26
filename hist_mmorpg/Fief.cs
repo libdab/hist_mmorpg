@@ -1797,19 +1797,82 @@ namespace hist_mmorpg
             newOwner.ownedFiefs.Add(this);
             this.owner = newOwner;
 
-            // check if fief was old owner's home fief
+            // check if fief was old owner's home fief and, if so, identify new home fief
             if (oldOwner.homeFief.Equals(this.id))
             {
-                // get highest ranking owned fief and set as new home fief
-                oldOwner.homeFief = oldOwner.getHighestRankingFief();
+                List<Fief> candidateFiefs = new List<Fief>();
+                Fief newHome = null;
 
-                // if old owner isn't new home fief's title holder, transfer title
-                Fief newHomeFief = oldOwner.getHomeFief();
-                if (!newHomeFief.titleHolder.Equals(oldOwner.charID))
+                // remove from old owner
+                oldOwner.homeFief = null;
+
+                // check to see if old owner has any other fiefs
+                if (oldOwner.ownedFiefs.Count > 0)
                 {
-                    // remove title from existing holder and assign to old owner
-                    oldOwner.transferTitle(oldOwner, newHomeFief);
+                    // get currently owned ancestral fiefs
+                    foreach (Fief thisFief in oldOwner.ownedFiefs)
+                    {
+                        if (thisFief.ancestralOwner == oldOwner)
+                        {
+                            candidateFiefs.Add(thisFief);
+                        }
+                    }
+
+                    // check for highest ranking fief
+                    if (candidateFiefs.Count > 0)
+                    {
+                        foreach (Fief thisFief in candidateFiefs)
+                        {
+                            if (newHome == null)
+                            {
+                                newHome = thisFief;
+                            }
+                            else
+                            {
+                                if (Convert.ToInt32(thisFief.rank.rankID) > Convert.ToInt32(newHome.rank.rankID))
+                                {
+                                    newHome = thisFief;
+                                }
+                            }
+                        }
+                    }
+
+                    // if no new home yet identified
+                    if (newHome == null)
+                    {
+                    }
+                    // get highest ranking owned fief and set as new home fief
+                    candidateFiefs = oldOwner.getHighestRankingFief();
+                    if (candidateFiefs.Count > 0)
+                    {
+                        // if only one fief at this rank, make it
+                        if (candidateFiefs.Count == 1)
+                        {
+                            newHome = candidateFiefs[0];
+                        }
+                    }
+
+                    // set new home fief in character
+                    oldOwner.homeFief = newHome.id;
+
+                    // if old owner isn't new home fief's title holder, transfer title
+                    Fief newHomeFief = oldOwner.getHomeFief();
+                    if (!newHomeFief.titleHolder.Equals(oldOwner.charID))
+                    {
+                        // remove title from existing holder and assign to old owner
+                        oldOwner.transferTitle(oldOwner, newHomeFief);
+                    }
                 }
+
+                // old owner has no more fiefs
+                else
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(oldOwner.firstName + " " + oldOwner.familyName + " doesn't own any fiefs!  Defeat?");
+                    }
+                }
+
             }
 
             // remove existing bailiff
