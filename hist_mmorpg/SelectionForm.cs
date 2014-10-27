@@ -19,6 +19,14 @@ namespace hist_mmorpg
         /// </summary>
         public Form1 parent;
         /// <summary>
+        /// Holds current function for the form
+        /// </summary>
+        public string function { get; set; }
+        /// <summary>
+        /// Holds armyID (if appointing an army leader)
+        /// </summary>
+        public string armyID { get; set; }
+        /// <summary>
         /// Holds observer (if examining armies in fief)
         /// </summary>
         public Character observer { get; set; }
@@ -27,41 +35,41 @@ namespace hist_mmorpg
         /// Constructor for SelectionForm
         /// </summary>
         /// <param name="par">Parent Form1 object</param>
-        /// <param name="myFunction">String indicating function to be performed</param>
-        /// <param name="armyID">String indicating ID of army (if choosing leader)</param>
+        /// <param name="funct">String indicating function to be performed</param>
+        /// <param name="armID">String indicating ID of army (if choosing leader)</param>
         /// <param name="observer">Observer (if examining armies in fief)</param>
-        public SelectionForm(Form1 par, String myFunction, String armyID = null, Character obs = null)
+        public SelectionForm(Form1 par, String funct, String armID = null, Character obs = null)
         {
             // initialise form elements
             InitializeComponent();
 
             this.parent = par;
+            this.function = funct;
+            this.armyID = armID;
             this.observer = obs;
 
             // initialise NPC display
-            this.initDisplay(myFunction, armyID);
+            this.initDisplay();
         }
 
         /// <summary>
         /// Initialises NPC display screen
         /// </summary>
-        /// <param name="myFunction">String indicating function to be performed</param>
-        /// <param name="armyID">String indicating ID of army (if choosing leader)</param>
-        private void initDisplay(String myFunction, String armyID = null)
+        private void initDisplay()
         {
-            if (((myFunction.Equals("bailiff")) || (myFunction.Equals("leader"))) || (myFunction.Equals("titleHolder")))
+            if (((this.function.Equals("bailiff")) || (this.function.Equals("leader"))) || (this.function.Equals("titleHolder")))
             {
                 // format list display
-                this.setUpNpcList(myFunction, armyID);
+                this.setUpNpcList();
 
                 // refresh information 
-                this.refreshNPCdisplay(myFunction, armyID);
+                this.refreshNPCdisplay();
 
                 // show container
                 this.npcContainer.BringToFront();
             }
 
-            if (myFunction.Equals("lockout"))
+            if (this.function.Equals("lockout"))
             {
                 // format list display
                 this.setUpBarredList();
@@ -73,19 +81,31 @@ namespace hist_mmorpg
                 this.lockOutContainer.BringToFront();
             }
 
-            if (myFunction.Equals("transfer"))
+            if (this.function.Equals("transferTroops"))
             {
                 // format list display
                 this.setUpTransferList();
 
                 // refresh information 
-                this.refreshTransferDisplay(armyID);
+                this.refreshTransferDisplay();
 
                 // show container
                 this.transferContainer.BringToFront();
             }
 
-            if (myFunction.Equals("armies"))
+            if (this.function.Equals("transferFunds"))
+            {
+                // format list display
+                this.setUpTransferFundsList();
+
+                // refresh information 
+                this.refreshTransferFundsDisplay();
+
+                // show container
+                this.transferFundsContainer.BringToFront();
+            }
+
+            if (this.function.Equals("armies"))
             {
                 // format list display
                 this.setUpArmiesList();
@@ -101,9 +121,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Configures UI display for list of household NPCs
         /// </summary>
-        /// <param name="myFunction">String indicating function to be performed</param>
-        /// <param name="armyID">String indicating ID of army (if choosing leader)</param>
-        public void setUpNpcList(String myFunction, String armyID = null)
+        public void setUpNpcList()
         {
             // add necessary columns
             this.npcListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
@@ -111,19 +129,16 @@ namespace hist_mmorpg
             this.npcListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
 
             // set appropriate button text and tag
-            switch (myFunction)
+            switch (this.function)
             {
                 case "bailiff":
                     this.chooseNpcBtn.Text = "Appoint This Person As Bailiff";
-                    this.chooseNpcBtn.Tag = myFunction;
                     break;
                 case "leader":
                     this.chooseNpcBtn.Text = "Appoint This Person As Leader";
-                    this.chooseNpcBtn.Tag = armyID;
                     break;
                 case "titleHolder":
                     this.chooseNpcBtn.Text = "Appoint This Person As Title Holder";
-                    this.chooseNpcBtn.Tag = myFunction;
                     break;
                 default:
                     break;
@@ -134,11 +149,25 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Configures UI display for list of players
+        /// </summary>
+        public void setUpTransferFundsList()
+        {
+            // add necessary columns
+            this.transferFundsListView.Columns.Add("PC Name", -2, HorizontalAlignment.Left);
+            this.transferFundsListView.Columns.Add("PC ID", -2, HorizontalAlignment.Left);
+            this.transferFundsListView.Columns.Add("Player ID", -2, HorizontalAlignment.Left);
+            this.transferFundsListView.Columns.Add("Nationality", -2, HorizontalAlignment.Left);
+
+            // disable controls (until PC selected)
+            this.transferFundsBtn.Enabled = false;
+            this.transferFundsTextBox.Enabled = false;
+        }
+
+        /// <summary>
         /// Refreshes NPC list
         /// </summary>
-        /// <param name="myFunction">String indicating function to be performed</param>
-        /// <param name="armyID">String indicating ID of army (if choosing leader)</param>
-        public void refreshNPCdisplay(String myFunction, String armyID = null)
+        public void refreshNPCdisplay()
         {
             // remove any previously displayed characters
             this.npcDetailsTextBox.ReadOnly = true;
@@ -149,9 +178,9 @@ namespace hist_mmorpg
 
             // if choosing army leader, get army
             Army myArmy = null;
-            if (myFunction.Equals("leader"))
+            if (this.function.Equals("leader"))
             {
-                myArmy = Globals_Server.armyMasterList[armyID];
+                myArmy = Globals_Server.armyMasterList[this.armyID];
             }
 
             ListViewItem myNPC = null;
@@ -174,17 +203,61 @@ namespace hist_mmorpg
                     myNPC.SubItems.Add(Globals_Client.myChar.myNPCs[i].location.id);
 
                     // add item to npcListView
-                    if ((myFunction.Equals("bailiff")) || (myFunction.Equals("titleHolder")))
+                    if ((this.function.Equals("bailiff")) || (this.function.Equals("titleHolder")))
                     {
                         this.npcListView.Items.Add(myNPC);
                     }
                     // if appointing leader, only add item to fiefsListView if is in same fief as army
-                    else if (myFunction.Equals("leader"))
+                    else if (this.function.Equals("leader"))
                     {
                         if (Globals_Client.myChar.myNPCs[i].location.id == myArmy.location)
                         {
                             this.npcListView.Items.Add(myNPC);
                         }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Refreshes transfer funds PC list
+        /// </summary>
+        public void refreshTransferFundsDisplay()
+        {
+            // remove any previously displayed characters
+            this.transferFundsTextBox.Text = "";
+            this.transferFundsLabel.Text = "";
+
+            // clear existing items in list
+            this.transferFundsListView.Items.Clear();
+
+            ListViewItem myPlayerItem = null;
+
+            // iterate through players
+            foreach (KeyValuePair<string, PlayerCharacter> thisPlayer in Globals_Server.pcMasterList)
+            {
+                // only show 'played' PCs
+                if (thisPlayer.Value.playerID != null)
+                {
+                    // don't show this player
+                    if (thisPlayer.Value != Globals_Client.myChar)
+                    {
+                        // Create an item and subitems for each character
+
+                        // name
+                        myPlayerItem = new ListViewItem(thisPlayer.Value.firstName + " " + thisPlayer.Value.familyName);
+
+                        // PC ID
+                        myPlayerItem.SubItems.Add(thisPlayer.Value.charID);
+
+                        // player ID
+                        myPlayerItem.SubItems.Add(thisPlayer.Value.playerID);
+
+                        // nationality
+                        myPlayerItem.SubItems.Add(thisPlayer.Value.nationality);
+
+                        // add item to list
+                        this.transferFundsListView.Items.Add(myPlayerItem);
                     }
                 }
             }
@@ -415,12 +488,9 @@ namespace hist_mmorpg
                 // get selected NPC
                 NonPlayerCharacter selectedNPC = Globals_Server.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
 
-                // get chooseNpcBtn tag (determines function)
-                String myButtonTag = Convert.ToString(((Button)sender).Tag);
-
                 // appoint NPC to position
                 // if appointing a bailiff
-                if (myButtonTag.Equals("bailiff"))
+                if (this.function.Equals("bailiff"))
                 {
                     // set the selected NPC as bailiff
                     Globals_Client.fiefToView.bailiff = selectedNPC;
@@ -430,7 +500,7 @@ namespace hist_mmorpg
                 }
 
                 // if appointing fief title holder
-                else if (myButtonTag.Equals("titleHolder"))
+                else if (this.function.Equals("titleHolder"))
                 {
                     // set the selected NPC as title holder
                     Globals_Client.myChar.grantTitle(selectedNPC, Globals_Client.fiefToView);
@@ -443,12 +513,22 @@ namespace hist_mmorpg
                 else
                 {
                     // get army
-                    Army thisArmy = Globals_Server.armyMasterList[myButtonTag];
+                    if (this.armyID != null)
+                    {
+                        Army thisArmy = Globals_Server.armyMasterList[this.armyID];
 
-                    thisArmy.assignNewLeader(selectedNPC);
+                        thisArmy.assignNewLeader(selectedNPC);
 
-                    // refresh the army information (in the main form)
-                    this.parent.refreshArmyContainer(thisArmy);
+                        // refresh the army information (in the main form)
+                        this.parent.refreshArmyContainer(thisArmy);
+                    }
+                    else
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("No army specified.");
+                        }
+                    }
                 }
             }
 
@@ -554,13 +634,12 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes troop transfer list
         /// </summary>
-        /// <param name="armyID">String indicating ID of army receiving troops</param>
-        public void refreshTransferDisplay(string armyID)
+       public void refreshTransferDisplay()
         {
             ListViewItem thisDetachment = null;
 
             // get army
-            Army thisArmy = Globals_Server.armyMasterList[armyID];
+            Army thisArmy = Globals_Server.armyMasterList[this.armyID];
 
             // get fief
             Fief thisFief = Globals_Server.fiefMasterList[thisArmy.location];
@@ -1166,6 +1245,110 @@ namespace hist_mmorpg
             this.Close();
         }
 
+        /// <summary>
+        /// Responds to the SelectedIndexChanged event of the transferFundsListView
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void transferFundsListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PlayerCharacter transferTo = null;
+
+            if (this.transferFundsListView.SelectedItems.Count > 0)
+            {
+                // get player
+                if (Globals_Server.pcMasterList.ContainsKey(this.transferFundsListView.SelectedItems[0].SubItems[1].Text))
+                {
+                    transferTo = Globals_Server.pcMasterList[this.transferFundsListView.SelectedItems[0].SubItems[1].Text];
+                }
+
+                if (transferTo != null)
+                {
+                    // enable controls
+                    this.transferFundsBtn.Enabled = true;
+                    this.transferFundsTextBox.Enabled = true;
+
+                    // get home fief
+                    Fief home = Globals_Client.myChar.getHomeFief();
+
+                    // get home treasury
+                    int homeTreasury = home.getAvailableTreasury(true);
+
+                    // populate transferFundsLabel to show treasury available
+                    this.transferFundsLabel.Text = homeTreasury.ToString();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the transferFundsBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void transferFundsBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PlayerCharacter playerTo = null;
+
+                if (this.transferFundsListView.SelectedItems.Count > 0)
+                {
+                    // get player
+                    if (Globals_Server.pcMasterList.ContainsKey(this.transferFundsListView.SelectedItems[0].SubItems[1].Text))
+                    {
+                        playerTo = Globals_Server.pcMasterList[this.transferFundsListView.SelectedItems[0].SubItems[1].Text];
+                    }
+
+                    if (playerTo != null)
+                    {
+                        // get home fief
+                        Fief fiefFrom = Globals_Client.myChar.getHomeFief();
+
+                        // get playerTo's home fief
+                        Fief fiefTo = playerTo.getHomeFief();
+
+                        // get amount to transfer
+                        int amount = Convert.ToInt32(this.transferFundsTextBox.Text);
+
+                        if (((fiefFrom != null) && (fiefTo != null)) && (amount > 0))
+                        {
+                            // make sure are enough funds to cover transfer
+                            if (amount > fiefFrom.getAvailableTreasury(true))
+                            {
+                                // if not, inform player and adjust amount downwards
+                                if (Globals_Client.showMessages)
+                                {
+                                    System.Windows.Forms.MessageBox.Show("Too few funds available for this transfer.");
+                                }
+                            }
+
+                            else
+                            {
+                                // make the transfer
+                                this.parent.treasuryTransfer(fiefFrom, fiefTo, amount);
+
+                                // close form
+                                this.Close();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+        }
     }
 
 }

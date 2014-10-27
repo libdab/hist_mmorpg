@@ -408,9 +408,9 @@ namespace hist_mmorpg
             List<string> mySieges002 = new List<string>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "101", "403", null, null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1);
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "101", "403", null, null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
             Globals_Server.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "102", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7);
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "102", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
             Globals_Server.pcMasterList.Add(myChar2.charID, myChar2);
             NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "E", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC1.charID, myNPC1);
@@ -3044,6 +3044,7 @@ namespace hist_mmorpg
             this.fiefsListView.Columns.Add("Fief Name", -2, HorizontalAlignment.Left);
             this.fiefsListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
             this.fiefsListView.Columns.Add("Where am I?", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Home Fief?", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -3122,13 +3123,32 @@ namespace hist_mmorpg
             for (int i = 0; i < Globals_Client.myChar.ownedFiefs.Count; i++)
             {
                 // Create an item and subitem for each fief
+                // name
                 fiefsOwned[i] = new ListViewItem(Globals_Client.myChar.ownedFiefs[i].name);
+
+                // ID
                 fiefsOwned[i].SubItems.Add(Globals_Client.myChar.ownedFiefs[i].id);
-                // indicate if fief is current location
+
+                // current location
                 if (Globals_Client.myChar.ownedFiefs[i] == Globals_Client.myChar.location)
                 {
                     fiefsOwned[i].SubItems.Add("You are here");
                 }
+                else
+                {
+                    fiefsOwned[i].SubItems.Add("");
+                }
+
+                // home fief
+                if (Globals_Client.myChar.ownedFiefs[i].id.Equals(Globals_Client.myChar.homeFief))
+                {
+                    fiefsOwned[i].SubItems.Add("Home");
+                }
+                else
+                {
+                    fiefsOwned[i].SubItems.Add("");
+                }
+
                 // add item to fiefsListView
                 this.fiefsListView.Items.Add(fiefsOwned[i]);
             }
@@ -3534,9 +3554,18 @@ namespace hist_mmorpg
                 }
             }
 
-            // ID
-            charText += "ID: " + ch.charID + "\r\n";
+            // character ID
+            charText += "Character ID: " + ch.charID + "\r\n";
 
+            // player ID
+            if (ch is PlayerCharacter)
+            {
+                if ((ch as PlayerCharacter).playerID != null)
+                {
+                    charText += "Player ID: " + (ch as PlayerCharacter).playerID + "\r\n";
+                }
+            }
+            
             // name
             charText += "Name: " + ch.firstName + " " + ch.familyName + "\r\n";
 
@@ -4845,35 +4874,6 @@ namespace hist_mmorpg
             this.fiefCurrKeyStatsTextBox.ReadOnly = true;
             this.fiefNextKeyStatsTextBox.ReadOnly = true;
             this.fiefTransferAmountTextBox.Text = "";
-
-            /*
-            // disable controls by default (will be enabled further down if appropriate)
-            this.adjustSpendBtn.Enabled = false;
-            this.taxRateLabel.Enabled = false;
-            this.garrSpendLabel.Enabled = false;
-            this.offSpendLabel.Enabled = false;
-            this.infraSpendLabel.Enabled = false;
-            this.keepSpendLabel.Enabled = false;
-            this.adjGarrSpendTextBox.Enabled = false;
-            this.adjInfrSpendTextBox.Enabled = false;
-            this.adjOffSpendTextBox.Enabled = false;
-            this.adjustKeepSpendTextBox.Enabled = false;
-            this.adjustTaxTextBox.Enabled = false;
-            this.fiefGarrExpMaxBtn.Enabled = false;
-            this.fiefInfraExpMaxBtn.Enabled = false;
-            this.fiefKeepExpMaxBtn.Enabled = false;
-            this.fiefOffExpMaxBtn.Enabled = false;
-            this.viewBailiffBtn.Enabled = false;
-            this.lockoutBtn.Enabled = false;
-            this.selfBailiffBtn.Enabled = false;
-            this.setBailiffBtn.Enabled = false;
-            this.removeBaliffBtn.Enabled = false;
-            this.fiefTransferToFiefBtn.Enabled = false;
-            this.fiefTransferToHomeBtn.Enabled = false;
-            this.fiefHomeTreasTextBox.Enabled = false;
-            this.fiefTransferAmountTextBox.Enabled = false;
-            this.FiefTreasTextBox.Enabled = false;
-            this.fiefGrantTitleBtn.Enabled = false; */
 
             // if fief is NOT owned by player, disable fief management buttons and TextBoxes 
             if (! isOwner)
@@ -6644,6 +6644,79 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Responds to the click event of any of the 'transfer funds' buttons
+        /// allowing players to transfer funds between treasuries
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void transferFundsBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // get button
+                Button button = sender as Button;
+                // get transfer parameters from tag
+                string transferType = button.Tag.ToString();
+
+                Fief fiefFrom = null;
+                Fief fiefTo = null;
+                int amount = 0;
+
+                switch (transferType)
+                {
+                    case "toFief":
+                        fiefFrom = Globals_Client.myChar.getHomeFief();
+                        fiefTo = Globals_Client.fiefToView;
+                        amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
+                        break;
+                    case "toHome":
+                        fiefFrom = Globals_Client.fiefToView;
+                        fiefTo = Globals_Client.myChar.getHomeFief();
+                        amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
+                        break;
+                    default:
+                        break;
+                }
+
+                if (((fiefFrom != null) && (fiefTo != null)) && (amount > 0))
+                {
+                    // make sure are enough funds to cover transfer
+                    if (amount > fiefFrom.getAvailableTreasury(true))
+                    {
+                        // if not, inform player and adjust amount downwards
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Too few funds available for this transfer.");
+                        }
+                    }
+
+                    else
+                    {
+                        // make the transfer
+                        this.treasuryTransfer(fiefFrom, fiefTo, amount);
+                    }
+
+                }
+
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+        }
+
+        /*
+        /// <summary>
         /// Responds to the click event of the fiefTransferToFiefBtn button
         /// allowing players to transfer funds from the fief treasury to the home treasury
         /// </summary>
@@ -6729,7 +6802,7 @@ namespace hist_mmorpg
                     System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
                 }
             }
-        }
+        } */
 
         /// <summary>
         /// Transfers funds between the home treasury and the fief treasury
@@ -6737,14 +6810,14 @@ namespace hist_mmorpg
         /// <param name="from">The Fief from which funds are to be transferred</param>
         /// <param name="to">The Fief to which funds are to be transferred</param>
         /// <param name="amount">How much to be transferred</param>
-        private void treasuryTransfer(Fief from, Fief to, int amount)
+        public void treasuryTransfer(Fief from, Fief to, int amount)
         {
             // subtract from source treasury
             from.treasury = from.treasury - amount;
             // add to target treasury
             to.treasury = to.treasury + amount;
             // refresh fief display
-            this.refreshFiefContainer(Globals_Client.fiefToView);
+            this.refreshCurrentScreen();
         }
 
         /// <summary>
@@ -7854,7 +7927,7 @@ namespace hist_mmorpg
                 thisArmyID = this.armyListView.SelectedItems[0].SubItems[0].Text;
 
                 // display selection form
-                SelectionForm chooseLeader = new SelectionForm(this, "leader", armyID: thisArmyID);
+                SelectionForm chooseLeader = new SelectionForm(this, "leader", armID: thisArmyID);
                 chooseLeader.Show();
             }
 
@@ -8083,7 +8156,7 @@ namespace hist_mmorpg
                 thisArmyID = this.armyListView.SelectedItems[0].SubItems[0].Text;
 
                 // display selection form
-                SelectionForm chooseTroops = new SelectionForm(this, "transfer", armyID: thisArmyID);
+                SelectionForm chooseTroops = new SelectionForm(this, "transferTroops", armID: thisArmyID);
                 chooseTroops.Show();
             }
 
@@ -12348,6 +12421,23 @@ namespace hist_mmorpg
 
             SelectionForm chooseTitleHolder = new SelectionForm(this, "titleHolder");
             chooseTitleHolder.Show();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the fiefTransferFundsPlayerBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefTransferFundsPlayerBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            SelectionForm transferFunds = new SelectionForm(this, "transferFunds");
+            transferFunds.Show();
         }
 
     }

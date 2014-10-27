@@ -53,6 +53,13 @@
             this.armiesListContainer = new System.Windows.Forms.SplitContainer();
             this.armiesTextBox = new System.Windows.Forms.TextBox();
             this.armiesListView = new System.Windows.Forms.ListView();
+            this.transferFundsContainer = new System.Windows.Forms.SplitContainer();
+            this.transferFundsListView = new System.Windows.Forms.ListView();
+            this.label1 = new System.Windows.Forms.Label();
+            this.transferFundsLabel = new System.Windows.Forms.Label();
+            this.transferFundsTextBox = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.transferFundsBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.npcContainer)).BeginInit();
             this.npcContainer.Panel1.SuspendLayout();
             this.npcContainer.Panel2.SuspendLayout();
@@ -81,6 +88,10 @@
             this.armiesListContainer.Panel1.SuspendLayout();
             this.armiesListContainer.Panel2.SuspendLayout();
             this.armiesListContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.transferFundsContainer)).BeginInit();
+            this.transferFundsContainer.Panel1.SuspendLayout();
+            this.transferFundsContainer.Panel2.SuspendLayout();
+            this.transferFundsContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // npcContainer
@@ -399,11 +410,90 @@
             this.armiesListView.View = System.Windows.Forms.View.Details;
             this.armiesListView.SelectedIndexChanged += new System.EventHandler(this.armiesListView_SelectedIndexChanged);
             // 
+            // transferFundsContainer
+            // 
+            this.transferFundsContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.transferFundsContainer.Location = new System.Drawing.Point(0, 0);
+            this.transferFundsContainer.Name = "transferFundsContainer";
+            // 
+            // transferFundsContainer.Panel1
+            // 
+            this.transferFundsContainer.Panel1.Controls.Add(this.transferFundsBtn);
+            this.transferFundsContainer.Panel1.Controls.Add(this.label2);
+            this.transferFundsContainer.Panel1.Controls.Add(this.transferFundsTextBox);
+            this.transferFundsContainer.Panel1.Controls.Add(this.transferFundsLabel);
+            this.transferFundsContainer.Panel1.Controls.Add(this.label1);
+            // 
+            // transferFundsContainer.Panel2
+            // 
+            this.transferFundsContainer.Panel2.Controls.Add(this.transferFundsListView);
+            this.transferFundsContainer.Size = new System.Drawing.Size(620, 547);
+            this.transferFundsContainer.SplitterDistance = 288;
+            this.transferFundsContainer.TabIndex = 4;
+            // 
+            // transferFundsListView
+            // 
+            this.transferFundsListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.transferFundsListView.FullRowSelect = true;
+            this.transferFundsListView.Location = new System.Drawing.Point(0, 0);
+            this.transferFundsListView.Name = "transferFundsListView";
+            this.transferFundsListView.Size = new System.Drawing.Size(328, 547);
+            this.transferFundsListView.TabIndex = 0;
+            this.transferFundsListView.UseCompatibleStateImageBehavior = false;
+            this.transferFundsListView.View = System.Windows.Forms.View.Details;
+            this.transferFundsListView.SelectedIndexChanged += new System.EventHandler(this.transferFundsListView_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 45);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(167, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Funds available in home teasury : ";
+            // 
+            // transferFundsLabel
+            // 
+            this.transferFundsLabel.AutoSize = true;
+            this.transferFundsLabel.Location = new System.Drawing.Point(176, 45);
+            this.transferFundsLabel.Name = "transferFundsLabel";
+            this.transferFundsLabel.Size = new System.Drawing.Size(54, 13);
+            this.transferFundsLabel.TabIndex = 1;
+            this.transferFundsLabel.Text = "<amount>";
+            // 
+            // transferFundsTextBox
+            // 
+            this.transferFundsTextBox.Location = new System.Drawing.Point(133, 85);
+            this.transferFundsTextBox.Name = "transferFundsTextBox";
+            this.transferFundsTextBox.Size = new System.Drawing.Size(122, 20);
+            this.transferFundsTextBox.TabIndex = 2;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(14, 88);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(102, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Amount to transfer : ";
+            // 
+            // transferFundsBtn
+            // 
+            this.transferFundsBtn.Location = new System.Drawing.Point(47, 114);
+            this.transferFundsBtn.Name = "transferFundsBtn";
+            this.transferFundsBtn.Size = new System.Drawing.Size(173, 23);
+            this.transferFundsBtn.TabIndex = 4;
+            this.transferFundsBtn.Tag = "toPlayer";
+            this.transferFundsBtn.Text = "Commit amount above";
+            this.transferFundsBtn.UseVisualStyleBackColor = true;
+            this.transferFundsBtn.Click += new System.EventHandler(this.transferFundsBtn_Click);
+            // 
             // SelectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(620, 547);
+            this.Controls.Add(this.transferFundsContainer);
             this.Controls.Add(this.npcContainer);
             this.Controls.Add(this.lockOutContainer);
             this.Controls.Add(this.armiesContainer);
@@ -442,6 +532,11 @@
             this.armiesListContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.armiesListContainer)).EndInit();
             this.armiesListContainer.ResumeLayout(false);
+            this.transferFundsContainer.Panel1.ResumeLayout(false);
+            this.transferFundsContainer.Panel1.PerformLayout();
+            this.transferFundsContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.transferFundsContainer)).EndInit();
+            this.transferFundsContainer.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -473,6 +568,13 @@
         private System.Windows.Forms.ListView armiesListView;
         private System.Windows.Forms.Button armiesCloseBtn;
         private System.Windows.Forms.Button armiesAttackBtn;
+        private System.Windows.Forms.SplitContainer transferFundsContainer;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox transferFundsTextBox;
+        private System.Windows.Forms.Label transferFundsLabel;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ListView transferFundsListView;
+        private System.Windows.Forms.Button transferFundsBtn;
 
     }
 }
