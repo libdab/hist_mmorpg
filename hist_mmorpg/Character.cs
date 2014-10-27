@@ -416,24 +416,25 @@ namespace hist_mmorpg
 
             foreach (String placeID in this.myTitles)
             {
-                if (Globals_Server.fiefMasterList[placeID].rank.stature > highRankStature)
-                {
-                    // get place
-                    Place thisPlace = null;
-                    if (Globals_Server.fiefMasterList.ContainsKey(placeID))
-                    {
-                        thisPlace = Globals_Server.fiefMasterList[placeID];
-                    }
-                    else if (Globals_Server.provinceMasterList.ContainsKey(placeID))
-                    {
-                        thisPlace = Globals_Server.provinceMasterList[placeID];
-                    }
-                    else if (Globals_Server.kingdomMasterList.ContainsKey(placeID))
-                    {
-                        thisPlace = Globals_Server.kingdomMasterList[placeID];
-                    }
+                // get place
+                Place thisPlace = null;
 
-                    if (thisPlace != null)
+                if (Globals_Server.fiefMasterList.ContainsKey(placeID))
+                {
+                    thisPlace = Globals_Server.fiefMasterList[placeID];
+                }
+                else if (Globals_Server.provinceMasterList.ContainsKey(placeID))
+                {
+                    thisPlace = Globals_Server.provinceMasterList[placeID];
+                }
+                else if (Globals_Server.kingdomMasterList.ContainsKey(placeID))
+                {
+                    thisPlace = Globals_Server.kingdomMasterList[placeID];
+                }
+
+                if (thisPlace != null)
+                {
+                    if (thisPlace.rank.stature > highRankStature)
                     {
                         // clear existing places
                         if (highestPlaces.Count > 0)
@@ -442,7 +443,7 @@ namespace hist_mmorpg
                         }
 
                         // update highest rank
-                        highRankStature = Globals_Server.fiefMasterList[placeID].rank.stature;
+                        highRankStature = thisPlace.rank.stature;
 
                         // add new place to list
                         highestPlaces.Add(thisPlace);
@@ -2182,6 +2183,10 @@ namespace hist_mmorpg
         /// </summary>
         public List<Fief> ownedFiefs = new List<Fief>();
         /// <summary>
+        /// Holds character's owned provinces
+        /// </summary>
+        public List<Province> ownedProvinces = new List<Province>();
+        /// <summary>
         /// Holds character's home fief (fiefID)
         /// </summary>
         public String homeFief { get; set; }
@@ -2208,7 +2213,8 @@ namespace hist_mmorpg
         /// <param name="outl">bool holding character outlawed status</param>
         /// <param name="pur">uint holding character purse</param>
         /// <param name="npcs">List<NonPlayerCharacter> holding employees and family of character</param>
-        /// <param name="owned">List<Fief> holding fiefs owned by character</param>
+        /// <param name="ownedF">List<Fief> holding fiefs owned by character</param>
+        /// <param name="ownedP">List<Province> holding provinces owned by character</param>
         /// <param name="home">String holding character's home fief (fiefID)</param>
         /// <param name="anchome">String holding character's ancestral home fief (fiefID)</param>
         /// <param name="pID">String holding ID of player who is currently playing this PlayerCharacter</param>
@@ -2216,14 +2222,15 @@ namespace hist_mmorpg
         /// <param name="myS">List<string> holding character's sieges (siegeIDs)</param>
         public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
-            String sp, String fath, String moth, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> owned, String home, String ancHome, List<String> myTi, List<Army> myA,
+            String sp, String fath, String moth, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> ownedF, List<Province> ownedP, String home, String ancHome, List<String> myTi, List<Army> myA,
             List<string> myS, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String pID = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc)
         {
             this.outlawed = outl;
             this.purse = pur;
             this.myNPCs = npcs;
-            this.ownedFiefs = owned;
+            this.ownedFiefs = ownedF;
+            this.ownedProvinces = ownedP;
             this.homeFief = home;
             this.ancestralHomeFief = ancHome;
             this.playerID = pID;
@@ -2254,6 +2261,8 @@ namespace hist_mmorpg
 			this.myNPCs = new List<NonPlayerCharacter> ();
             // create empty Fief List, to be populated later
             this.ownedFiefs = new List<Fief>();
+            // create empty Province List, to be populated later
+            this.ownedProvinces = new List<Province>();
             this.homeFief = pcr.homeFief;
             this.ancestralHomeFief = pcr.ancestralHomeFief;
             this.playerID = pcr.playerID;
@@ -2572,6 +2581,16 @@ namespace hist_mmorpg
         {
             // add fief
             this.ownedFiefs.Add(f);
+        }
+
+        /// <summary>
+        /// Adds a Province to the character's list of owned provinces
+        /// </summary>
+        /// <param name="p">Province to be added</param>
+        public void addToOwnedProvinces(Province p)
+        {
+            // add fief
+            this.ownedProvinces.Add(p);
         }
 
         /// <summary>
@@ -3743,9 +3762,13 @@ namespace hist_mmorpg
 		/// </summary>
 		public List<String> myNPCs = new List<String>();
 		/// <summary>
-		/// Holds character's owned fiefs (fiefID)
+		/// Holds character's owned fiefs (id)
 		/// </summary>
 		public List<String> ownedFiefs = new List<String>();
+        /// <summary>
+        /// Holds character's owned provinces (id)
+        /// </summary>
+        public List<string> ownedProvinces = new List<string>();
         /// <summary>
         /// Holds character's home fief (fiefID)
         /// </summary>
@@ -3791,6 +3814,13 @@ namespace hist_mmorpg
 					this.ownedFiefs.Add (pc.ownedFiefs[i].id);
 				}
 			}
+            if (pc.ownedProvinces.Count > 0)
+            {
+                foreach (Province thisProv in pc.ownedProvinces)
+                {
+                    this.ownedProvinces.Add(thisProv.id);
+                }
+            }
             this.homeFief = pc.homeFief;
             this.ancestralHomeFief = pc.ancestralHomeFief;
             this.playerID = pc.playerID;

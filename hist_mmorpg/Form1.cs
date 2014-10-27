@@ -85,6 +85,7 @@ namespace hist_mmorpg
             this.setUpArmyList();
             this.setUpSiegeList();
             this.setUpJournalList();
+            this.setUpRoyalGiftsLists();
 
             // initialise character display in UI
             Globals_Client.charToView = Globals_Client.myChar;
@@ -371,6 +372,10 @@ namespace hist_mmorpg
 			List<Fief> myFiefsOwned1 = new List<Fief>();
 			List<Fief> myFiefsOwned2 = new List<Fief>();
 
+            // create lists of provinces owned by PCs and add some fiefs
+            List<Province> myProvsOwned1 = new List<Province>();
+            List<Province> myProvsOwned2 = new List<Province>();
+
             // create DOBs for characters
             Tuple<uint, byte> myDob001 = new Tuple<uint, byte>(1287, 1);
             Tuple<uint, byte> myDob002 = new Tuple<uint, byte>(1260, 0);
@@ -408,9 +413,9 @@ namespace hist_mmorpg
             List<string> mySieges002 = new List<string>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "101", "403", null, null, false, 13000, myEmployees1, myFiefsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "101", "403", null, null, false, 13000, myEmployees1, myFiefsOwned1, myProvsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
             Globals_Server.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "102", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "102", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, myProvsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
             Globals_Server.pcMasterList.Add(myChar2.charID, myChar2);
             NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "E", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC1.charID, myNPC1);
@@ -453,6 +458,14 @@ namespace hist_mmorpg
             myChar2Son2.days = myChar2Son2.getDaysAllowance();
             myChar2Daughter.days = myChar2Daughter.getDaysAllowance();
 
+            // set province owners
+            myProv.owner = myChar1;
+            myProv2.owner = myChar2;
+
+            // Add provinces to list of provinces owned 
+            myChar1.addToOwnedProvinces(myProv);
+            myChar2.addToOwnedProvinces(myProv2);
+
             // set fief owners
 			myFief1.owner = myChar1;
 			myFief2.owner = myChar1;
@@ -461,6 +474,19 @@ namespace hist_mmorpg
 			myFief5.owner = myChar2;
 			myFief6.owner = myChar2;
 			myFief7.owner = myChar2;
+
+            // Add fiefs to list of fiefs owned 
+            myChar1.addToOwnedFiefs(myFief1);
+            myChar1.addToOwnedFiefs(myFief3);
+            myChar1.addToOwnedFiefs(myFief4);
+            myChar2.addToOwnedFiefs(myFief6);
+            myChar1.addToOwnedFiefs(myFief2);
+            myChar2.addToOwnedFiefs(myFief5);
+            myChar2.addToOwnedFiefs(myFief7);
+
+            // set province title holders
+            myProv.titleHolder = myChar1.charID;
+            myProv2.titleHolder = myChar1.charID;
 
             // set fief title holders
             myFief1.titleHolder = myChar1.charID;
@@ -472,10 +498,12 @@ namespace hist_mmorpg
             myFief7.titleHolder = myChar2.charID;
 
             // add to myTitles lists
+            myChar1.myTitles.Add(myProv.id);
             myChar1.myTitles.Add(myFief1.id);
             myChar1.myTitles.Add(myFief2.id);
             myChar1.myTitles.Add(myFief3.id);
             myChar1.myTitles.Add(myFief4.id);
+            myChar2.myTitles.Add(myProv2.id);
             myChar2.myTitles.Add(myFief5.id);
             myChar2.myTitles.Add(myFief6.id);
             myChar2.myTitles.Add(myFief7.id);
@@ -488,10 +516,6 @@ namespace hist_mmorpg
 			myFief5.ancestralOwner = myChar2;
 			myFief6.ancestralOwner = myChar2;
 			myFief7.ancestralOwner = myChar2;
-
-			// set province overlords
-			myProv.owner = myChar1;
-			myProv2.owner = myChar2;
 
             // set kings
             myKingdom1.owner = myChar1;
@@ -517,15 +541,6 @@ namespace hist_mmorpg
             myChar2.myNPCs.Add(myChar2SonWife);
             myChar2.myNPCs.Add(myChar2Son2);
             myChar2.myNPCs.Add(myChar2Daughter);
-
-			// Add fiefs to list of fiefs owned 
-			myChar1.addToOwnedFiefs(myFief1);
-			myChar1.addToOwnedFiefs(myFief3);
-			myChar1.addToOwnedFiefs(myFief4);
-			myChar2.addToOwnedFiefs(myFief6);
-			myChar1.addToOwnedFiefs(myFief2);
-			myChar2.addToOwnedFiefs(myFief5);
-			myChar2.addToOwnedFiefs(myFief7);
 
 			// add some characters to myFief1
 			myFief1.addCharacter(myChar1);
@@ -2942,6 +2957,13 @@ namespace hist_mmorpg
             {
                 this.refreshJournalContainer(Globals_Client.jEntryToView);
             }
+
+            // royal gifts
+            else if (Globals_Client.containerToView == this.royalGiftsContainer)
+            {
+                this.refreshRoyalGiftsContainer();
+            }
+
         }
 
         /// <summary>
@@ -3033,6 +3055,23 @@ namespace hist_mmorpg
             }
 
             return success;
+        }
+
+        /// <summary>
+        /// Creates UI display for PlayerCharacter's list of owned Fiefs
+        /// </summary>
+        public void setUpRoyalGiftsLists()
+        {
+            // add necessary columns
+            // provinces
+            this.royalGiftsProvListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
+            this.royalGiftsProvListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.royalGiftsProvListView.Columns.Add("Title Holder", -2, HorizontalAlignment.Left);
+            // fiefs
+            this.royalGiftsFiefListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Province", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Title Holder", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -3506,6 +3545,101 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Refreshes royal gifts display
+        /// </summary>
+        public void refreshRoyalGiftsContainer()
+        {
+            // disable controls until place selected in ListView
+
+            // remove any previously displayed text
+
+            // clear existing items in places lists
+            this.royalGiftsProvListView.Items.Clear();
+            this.royalGiftsFiefListView.Items.Clear();
+
+            // iterates through owned provinces and fiefs, adding information to appropriate ListView
+            // PROVINCES
+            foreach (Province thisProvince in Globals_Client.myChar.ownedProvinces)
+            {
+                ListViewItem provItem = null;
+
+                // id
+                provItem = new ListViewItem(thisProvince.id);
+
+                // name
+                provItem.SubItems.Add(thisProvince.name);
+
+                // title holder
+                // get character
+                PlayerCharacter thisHolder = null;
+                if (Globals_Server.pcMasterList.ContainsKey(thisProvince.titleHolder))
+                {
+                    thisHolder = Globals_Server.pcMasterList[thisProvince.titleHolder];
+                }
+
+                // title holder name & id
+                if (thisHolder != null)
+                {
+                    provItem.SubItems.Add(thisHolder.firstName + " " + thisHolder.familyName + "(" + thisHolder.charID + ")");
+                }
+                else
+                {
+                    provItem.SubItems.Add("");
+                }
+
+                if (provItem != null)
+                {
+                    // add item to fiefsListView
+                    this.royalGiftsProvListView.Items.Add(provItem);
+                }
+
+            }
+
+            // FIEFS
+            foreach (Fief thisFief in Globals_Client.myChar.ownedFiefs)
+            {
+                ListViewItem fiefItem = null;
+
+                // id
+                fiefItem = new ListViewItem(thisFief.id);
+
+                // name
+                fiefItem.SubItems.Add(thisFief.name);
+
+                // province name
+                fiefItem.SubItems.Add(thisFief.province.name);
+
+                // title holder
+                // get character
+                PlayerCharacter thisHolder = null;
+                if (Globals_Server.pcMasterList.ContainsKey(thisFief.titleHolder))
+                {
+                    thisHolder = Globals_Server.pcMasterList[thisFief.titleHolder];
+                }
+
+                // title holder name & id
+                if (thisHolder != null)
+                {
+                    fiefItem.SubItems.Add(thisHolder.firstName + " " + thisHolder.familyName + "(" + thisHolder.charID + ")");
+                }
+                else
+                {
+                    fiefItem.SubItems.Add("");
+                }
+
+                if (fiefItem != null)
+                {
+                    // add item to fiefsListView
+                    this.royalGiftsFiefListView.Items.Add(fiefItem);
+                }
+
+            }
+
+            Globals_Client.containerToView = this.royalGiftsContainer;
+            Globals_Client.containerToView.BringToFront();
+        }
+
+        /// <summary>
         /// Retrieves information for journal display screen
         /// </summary>
         /// <returns>String containing information to display</returns>
@@ -3764,6 +3898,87 @@ namespace hist_mmorpg
                 charText += this.displayNonPlayerCharacter((NonPlayerCharacter)ch);
             }
 
+
+            // if titles are to be shown
+            if (this.characterTitlesCheckBox.Checked)
+            {
+                charText += "\r\n\r\n------------------ TITLES ------------------\r\n\r\n";
+
+                // check kingdoms
+                foreach (KeyValuePair<string, Kingdom> entry in Globals_Server.kingdomMasterList)
+                {
+                    // if PC is king
+                    if (entry.Value.owner.charID.Equals(ch.charID))
+                    {
+                        // get correct title
+                        for (int i = 0; i < entry.Value.rank.title.Length; i++)
+                        {
+                            if (entry.Value.rank.title[i].Item1 == ch.language.Item1.languageID)
+                            {
+                                charText += entry.Value.rank.title[i].Item2 + " (rank " + entry.Value.rank.rankID + ") of ";
+                                break;
+                            }
+                        }
+                        // get kingdom details
+                        charText += entry.Value.name + " (" + entry.Value.id + ")\r\n";
+                    }
+                }
+
+                // provinces
+                foreach (string titleEntry in ch.myTitles)
+                {
+                    // get province
+                    Place thisPlace = null;
+
+                    if (Globals_Server.provinceMasterList.ContainsKey(titleEntry))
+                    {
+                        thisPlace = Globals_Server.provinceMasterList[titleEntry];
+                    }
+
+                    if (thisPlace != null)
+                    {
+                        // get correct title
+                        foreach (Tuple<string, string> titleName in thisPlace.rank.title)
+                        {
+                            if (titleName.Item1 == ch.language.Item1.languageID)
+                            {
+                                charText += titleName.Item2 + " (rank " + thisPlace.rank.rankID + ") of ";
+                                break;
+                            }
+                        }
+                        // get province details
+                        charText += thisPlace.name + " (" + titleEntry + ")\r\n";
+                    }
+                }
+
+                // fiefs
+                foreach (string titleEntry in ch.myTitles)
+                {
+                    // get fief
+                    Place thisPlace = null;
+
+                    if (Globals_Server.fiefMasterList.ContainsKey(titleEntry))
+                    {
+                        thisPlace = Globals_Server.fiefMasterList[titleEntry];
+                    }
+
+                    if (thisPlace != null)
+                    {
+                        // get correct title
+                        foreach (Tuple<string, string> titleName in thisPlace.rank.title)
+                        {
+                            if (titleName.Item1 == ch.language.Item1.languageID)
+                            {
+                                charText += titleName.Item2 + " (rank " + thisPlace.rank.rankID + ") of ";
+                                break;
+                            }
+                        }
+                        // get fief details
+                        charText += thisPlace.name + " (" + titleEntry + ")\r\n";
+                    }
+                }
+            }
+
             return charText;
         }
 
@@ -3804,68 +4019,6 @@ namespace hist_mmorpg
             for (int i = 0; i < pc.ownedFiefs.Count; i++)
             {
                 pcText += "  - " + pc.ownedFiefs[i].name + "\r\n";
-            }
-
-            // if titles are to be shown
-            if (this.characterTitlesCheckBox.Checked)
-            {
-                pcText += "\r\n\r\n------------------ TITLES ------------------\r\n\r\n";
-
-                // check kingdoms
-                foreach (KeyValuePair<string, Kingdom> entry in Globals_Server.kingdomMasterList)
-                {
-                    // if PC is king
-                    if (entry.Value.owner.charID.Equals(pc.charID))
-                    {
-                        // get correct title
-                        for (int i = 0; i < entry.Value.rank.title.Length; i++)
-                        {
-                            if (entry.Value.rank.title[i].Item1 == pc.language.Item1.languageID)
-                            {
-                                pcText += entry.Value.rank.title[i].Item2 + " (rank " + entry.Value.rank.rankID + ") of ";
-                                break;
-                            }
-                        }
-                        // get kingdom details
-                        pcText += entry.Value.name + " (" + entry.Value.id + ")\r\n";
-                    }
-                }
-
-                // check provinces
-                foreach (KeyValuePair<string, Province> entry in Globals_Server.provinceMasterList)
-                {
-                    // if PC is overlord
-                    if (entry.Value.owner.charID.Equals(pc.charID))
-                    {
-                        // get correct title
-                        for (int i = 0; i < entry.Value.rank.title.Length; i++)
-                        {
-                            if (entry.Value.rank.title[i].Item1 == pc.language.Item1.languageID)
-                            {
-                                pcText += entry.Value.rank.title[i].Item2 + " (rank " + entry.Value.rank.rankID + ") of ";
-                                break;
-                            }                        
-                        }
-                        // get province details
-                        pcText += entry.Value.name + " (" + entry.Value.id + ")\r\n";
-                    }
-                }
-
-                // fiefs
-                for (int i = 0; i < pc.myTitles.Count; i++ )
-                {
-                    // get correct title
-                    for (int ii = 0; ii < Globals_Server.fiefMasterList[pc.myTitles[i]].rank.title.Length; ii++)
-                    {
-                        if (Globals_Server.fiefMasterList[pc.myTitles[i]].rank.title[ii].Item1 == pc.language.Item1.languageID)
-                        {
-                            pcText += Globals_Server.fiefMasterList[pc.myTitles[i]].rank.title[ii].Item2 + " (rank " + Globals_Server.fiefMasterList[pc.myTitles[i]].rank.rankID + ") of ";
-                            break;
-                        }
-                    }
-                    // get fief details
-                    pcText += Globals_Server.fiefMasterList[pc.myTitles[i]].name + " (" + pc.myTitles[i] + ")\r\n";
-                }
             }
 
             return pcText;
@@ -12438,6 +12591,18 @@ namespace hist_mmorpg
 
             SelectionForm transferFunds = new SelectionForm(this, "transferFunds");
             transferFunds.Show();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the royalGiftsToolStripMenuItem
+        /// which displays royal gifts screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void royalGiftsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // display royal gifts screen
+            this.refreshRoyalGiftsContainer();
         }
 
     }
