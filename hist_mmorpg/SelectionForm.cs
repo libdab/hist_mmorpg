@@ -42,7 +42,7 @@ namespace hist_mmorpg
         /// <param name="funct">String indicating function to be performed</param>
         /// <param name="armID">String indicating ID of army (if choosing leader)</param>
         /// <param name="observer">Observer (if examining armies in fief)</param>
-        public SelectionForm(Form1 par, String funct, String armID = null, Character obs = null, String placeID = null)
+        public SelectionForm(Form1 par, String funct, String armID = null, Character obs = null, String place = null)
         {
             // initialise form elements
             InitializeComponent();
@@ -51,6 +51,7 @@ namespace hist_mmorpg
             this.function = funct;
             this.armyID = armID;
             this.observer = obs;
+            this.placeID = place;
 
             // initialise NPC display
             this.initDisplay();
@@ -577,24 +578,94 @@ namespace hist_mmorpg
             if (npcListView.SelectedItems.Count > 0)
             {
                 // get selected NPC
-                NonPlayerCharacter selectedNPC = Globals_Server.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+                Character selectedCharacter = null;
+                if (this.function.Contains("royalGift"))
+                {
+                    if (Globals_Server.pcMasterList.ContainsKey(this.npcListView.SelectedItems[0].SubItems[1].Text))
+                    {
+                        selectedCharacter = Globals_Server.pcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+                    }
+                }
+                else
+                {
+                    if (Globals_Server.npcMasterList.ContainsKey(this.npcListView.SelectedItems[0].SubItems[1].Text))
+                    {
+                        selectedCharacter = Globals_Server.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+                    }
+                }
+
+                // get place (if royal gift)
+                Place thisPlace = null;
+                if (this.function.Contains("royalGift"))
+                {
+                    // get place type and id
+                    string[] placeDetails = this.placeID.Split('|');
+
+                    // get place associated with title
+                    if (placeDetails[0].Equals("province"))
+                    {
+                        if (Globals_Server.provinceMasterList.ContainsKey(placeDetails[1]))
+                        {
+                            thisPlace = Globals_Server.provinceMasterList[placeDetails[1]];
+                        }
+                    }
+                    else if (placeDetails[0].Equals("fief"))
+                    {
+                        if (Globals_Server.fiefMasterList.ContainsKey(placeDetails[1]))
+                        {
+                            thisPlace = Globals_Server.fiefMasterList[placeDetails[1]];
+                        }
+                    }
+                }
 
                 // appoint NPC to position
                 // if appointing a bailiff
                 if (this.function.Equals("bailiff"))
                 {
                     // set the selected NPC as bailiff
-                    Globals_Client.fiefToView.bailiff = selectedNPC;
+                    Globals_Client.fiefToView.bailiff = selectedCharacter;
 
                     // refresh the fief information (in the main form)
                     this.parent.refreshFiefContainer(Globals_Client.fiefToView);
+                }
+
+                // if making a royal gift (title)
+                else if (this.function.Equals("royalGiftTitle"))
+                {
+                    if (thisPlace != null)
+                    {
+                        if (selectedCharacter != null)
+                        {
+                            // set the selected NPC as title holder
+                            Globals_Client.myChar.grantTitle(selectedCharacter, thisPlace);
+
+                            // refresh the fief information (in the main form)
+                            this.parent.refreshCurrentScreen();
+                        }
+                    }
+                }
+
+                // if making a royal gift (title)
+                else if (this.function.Equals("royalGiftFief"))
+                {
+                    if (thisPlace != null)
+                    {
+                        if (selectedCharacter != null)
+                        {
+                            // process the change of ownership
+                            (thisPlace as Fief).changeOwnership((selectedCharacter as PlayerCharacter), "voluntary");
+
+                            // refresh the fief information (in the main form)
+                            this.parent.refreshCurrentScreen();
+                        }
+                    }
                 }
 
                 // if appointing fief title holder
                 else if (this.function.Equals("titleHolder"))
                 {
                     // set the selected NPC as title holder
-                    Globals_Client.myChar.grantTitle(selectedNPC, Globals_Client.fiefToView);
+                    Globals_Client.myChar.grantTitle(selectedCharacter, Globals_Client.fiefToView);
 
                     // refresh the fief information (in the main form)
                     this.parent.refreshCurrentScreen();
@@ -608,7 +679,7 @@ namespace hist_mmorpg
                     {
                         Army thisArmy = Globals_Server.armyMasterList[this.armyID];
 
-                        thisArmy.assignNewLeader(selectedNPC);
+                        thisArmy.assignNewLeader(selectedCharacter);
 
                         // refresh the army information (in the main form)
                         this.parent.refreshArmyContainer(thisArmy);

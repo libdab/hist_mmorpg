@@ -458,6 +458,10 @@ namespace hist_mmorpg
             myChar2Son2.days = myChar2Son2.getDaysAllowance();
             myChar2Daughter.days = myChar2Daughter.getDaysAllowance();
 
+            // set kingdom owners
+            myKingdom1.owner = myChar1;
+            myKingdom2.owner = myChar2;
+
             // set province owners
             myProv.owner = myChar1;
             myProv2.owner = myChar2;
@@ -484,6 +488,10 @@ namespace hist_mmorpg
             myChar2.addToOwnedFiefs(myFief5);
             myChar2.addToOwnedFiefs(myFief7);
 
+            // set kingdom title holders
+            myKingdom1.titleHolder = myChar1.charID;
+            myKingdom2.titleHolder = myChar1.charID;
+
             // set province title holders
             myProv.titleHolder = myChar1.charID;
             myProv2.titleHolder = myChar1.charID;
@@ -497,12 +505,14 @@ namespace hist_mmorpg
             myFief6.titleHolder = myChar2.charID;
             myFief7.titleHolder = myChar2.charID;
 
-            // add to myTitles lists
+            // add titles (all types of places) to myTitles lists
+            myChar1.myTitles.Add(myKingdom1.id);
             myChar1.myTitles.Add(myProv.id);
             myChar1.myTitles.Add(myFief1.id);
             myChar1.myTitles.Add(myFief2.id);
             myChar1.myTitles.Add(myFief3.id);
             myChar1.myTitles.Add(myFief4.id);
+            myChar2.myTitles.Add(myKingdom2.id);
             myChar2.myTitles.Add(myProv2.id);
             myChar2.myTitles.Add(myFief5.id);
             myChar2.myTitles.Add(myFief6.id);
@@ -516,10 +526,6 @@ namespace hist_mmorpg
 			myFief5.ancestralOwner = myChar2;
 			myFief6.ancestralOwner = myChar2;
 			myFief7.ancestralOwner = myChar2;
-
-            // set kings
-            myKingdom1.owner = myChar1;
-            myKingdom2.owner = myChar2;
 
             // set fief bailiffs
             myFief1.bailiff = myChar1;
@@ -3907,23 +3913,30 @@ namespace hist_mmorpg
             {
                 charText += "\r\n\r\n------------------ TITLES ------------------\r\n\r\n";
 
-                // check kingdoms
-                foreach (KeyValuePair<string, Kingdom> entry in Globals_Server.kingdomMasterList)
+                // kingdoms
+                foreach (string titleEntry in ch.myTitles)
                 {
-                    // if PC is king
-                    if (entry.Value.owner.charID.Equals(ch.charID))
+                    // get kingdom
+                    Place thisPlace = null;
+
+                    if (Globals_Server.kingdomMasterList.ContainsKey(titleEntry))
+                    {
+                        thisPlace = Globals_Server.kingdomMasterList[titleEntry];
+                    }
+
+                    if (thisPlace != null)
                     {
                         // get correct title
-                        for (int i = 0; i < entry.Value.rank.title.Length; i++)
+                        foreach (Tuple<string, string> titleName in thisPlace.rank.title)
                         {
-                            if (entry.Value.rank.title[i].Item1 == ch.language.Item1.languageID)
+                            if (titleName.Item1 == ch.language.Item1.languageID)
                             {
-                                charText += entry.Value.rank.title[i].Item2 + " (rank " + entry.Value.rank.rankID + ") of ";
+                                charText += titleName.Item2 + " (rank " + thisPlace.rank.rankID + ") of ";
                                 break;
                             }
                         }
                         // get kingdom details
-                        charText += entry.Value.name + " (" + entry.Value.id + ")\r\n";
+                        charText += thisPlace.name + " (" + titleEntry + ")\r\n";
                     }
                 }
 
@@ -12684,7 +12697,7 @@ namespace hist_mmorpg
                 this.royalGiftsGrantTitleBtn.Text = "Grant Province Title";
                 if (thisProv != null)
                 {
-                    this.royalGiftsGrantTitleBtn.Tag = thisProv.id;
+                    this.royalGiftsGrantTitleBtn.Tag = "province|" + thisProv.id;
                 }
                 this.royalGiftsRevokeTitleBtn.Text = "Revoke Province Title";
             }
@@ -12693,8 +12706,8 @@ namespace hist_mmorpg
                 this.royalGiftsGrantTitleBtn.Text = "Grant Fief Title";
                 if (thisFief != null)
                 {
-                    this.royalGiftsGrantTitleBtn.Tag = thisFief.id;
-                    this.royalGiftsGiftFiefBtn.Tag = thisFief.id;
+                    this.royalGiftsGrantTitleBtn.Tag = "fief|" + thisFief.id;
+                    this.royalGiftsGiftFiefBtn.Tag = "fief|" + thisFief.id;
                 }
                 this.royalGiftsRevokeTitleBtn.Text = "Revoke Fief Title";
             }
@@ -12791,7 +12804,7 @@ namespace hist_mmorpg
                 }
 
                 // open new SelectionForm
-                SelectionForm royalGiftSelection = new SelectionForm(this, giftType, placeID: place);
+                SelectionForm royalGiftSelection = new SelectionForm(this, giftType, place: place);
                 royalGiftSelection.Show();
             }
 

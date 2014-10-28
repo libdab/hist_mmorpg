@@ -3090,13 +3090,17 @@ namespace hist_mmorpg
 
                     if (proceed)
                     {
-                        // fief ancestral ownership (can't give away ancestral titles)
+                        // fief ancestral ownership (only king can give away fief ancestral titles)
                         if (titlePlace is Fief)
                         {
-                            if (titlePlace.owner.charID.Equals((titlePlace as Fief).ancestralOwner.charID))
+                            // check if king
+                            if ((titlePlace as Fief).ancestralOwner != (titlePlace as Fief).province.kingdom.owner)
                             {
-                                toDisplay = "You cannot grant an ancestral title to another character.";
-                                proceed = false;
+                                if (titlePlace.owner.charID.Equals((titlePlace as Fief).ancestralOwner.charID))
+                                {
+                                    toDisplay = "You cannot grant an ancestral title to another character.";
+                                    proceed = false;
+                                }
                             }
                         }
 
