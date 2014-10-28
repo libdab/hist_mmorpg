@@ -53,6 +53,8 @@ namespace hist_mmorpg
             this.armyManagementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewMySiegesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.royalFunctionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.royalGiftsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.journalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewEntriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterContainer = new System.Windows.Forms.SplitContainer();
@@ -235,15 +237,16 @@ namespace hist_mmorpg
             this.journalTextBox = new System.Windows.Forms.TextBox();
             this.journalListView = new System.Windows.Forms.ListView();
             this.royalGiftsContainer = new System.Windows.Forms.SplitContainer();
+            this.royalGiftsRevokeTitleBtn = new System.Windows.Forms.Button();
+            this.royalGiftsGiftFiefBtn = new System.Windows.Forms.Button();
+            this.royalGiftsGrantTitleBtn = new System.Windows.Forms.Button();
             this.royalGiftsPlacesContainer = new System.Windows.Forms.SplitContainer();
-            this.royalGiftsProvListView = new System.Windows.Forms.ListView();
-            this.royalGiftsFiefListView = new System.Windows.Forms.ListView();
             this.royalGiftsProvContainer = new System.Windows.Forms.SplitContainer();
-            this.royalGiftsFiefContainer = new System.Windows.Forms.SplitContainer();
             this.label20 = new System.Windows.Forms.Label();
+            this.royalGiftsProvListView = new System.Windows.Forms.ListView();
+            this.royalGiftsFiefContainer = new System.Windows.Forms.SplitContainer();
             this.label21 = new System.Windows.Forms.Label();
-            this.royalFunctionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.royalGiftsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.royalGiftsFiefListView = new System.Windows.Forms.ListView();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -332,6 +335,7 @@ namespace hist_mmorpg
             this.journalTextContainer.Panel2.SuspendLayout();
             this.journalTextContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.royalGiftsContainer)).BeginInit();
+            this.royalGiftsContainer.Panel1.SuspendLayout();
             this.royalGiftsContainer.Panel2.SuspendLayout();
             this.royalGiftsContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.royalGiftsPlacesContainer)).BeginInit();
@@ -536,6 +540,21 @@ namespace hist_mmorpg
             this.viewMySiegesToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.viewMySiegesToolStripMenuItem.Text = "View my sieges";
             this.viewMySiegesToolStripMenuItem.Click += new System.EventHandler(this.viewMySiegesToolStripMenuItem_Click);
+            // 
+            // royalFunctionsToolStripMenuItem
+            // 
+            this.royalFunctionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.royalGiftsToolStripMenuItem});
+            this.royalFunctionsToolStripMenuItem.Name = "royalFunctionsToolStripMenuItem";
+            this.royalFunctionsToolStripMenuItem.Size = new System.Drawing.Size(103, 20);
+            this.royalFunctionsToolStripMenuItem.Text = "Royal Functions";
+            // 
+            // royalGiftsToolStripMenuItem
+            // 
+            this.royalGiftsToolStripMenuItem.Name = "royalGiftsToolStripMenuItem";
+            this.royalGiftsToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.royalGiftsToolStripMenuItem.Text = "Royal Gifts";
+            this.royalGiftsToolStripMenuItem.Click += new System.EventHandler(this.royalGiftsToolStripMenuItem_Click);
             // 
             // journalToolStripMenuItem
             // 
@@ -1549,7 +1568,7 @@ namespace hist_mmorpg
             // houseContainer
             // 
             this.houseContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.houseContainer.Location = new System.Drawing.Point(0, 0);
+            this.houseContainer.Location = new System.Drawing.Point(0, 24);
             this.houseContainer.Name = "houseContainer";
             // 
             // houseContainer.Panel1
@@ -1581,7 +1600,7 @@ namespace hist_mmorpg
             // houseContainer.Panel2
             // 
             this.houseContainer.Panel2.Controls.Add(this.houseCharContainer);
-            this.houseContainer.Size = new System.Drawing.Size(935, 735);
+            this.houseContainer.Size = new System.Drawing.Size(935, 711);
             this.houseContainer.SplitterDistance = 259;
             this.houseContainer.TabIndex = 7;
             // 
@@ -1813,7 +1832,7 @@ namespace hist_mmorpg
             // houseCharContainer.Panel2
             // 
             this.houseCharContainer.Panel2.Controls.Add(this.houseCharListContainer);
-            this.houseCharContainer.Size = new System.Drawing.Size(672, 735);
+            this.houseCharContainer.Size = new System.Drawing.Size(672, 711);
             this.houseCharContainer.SplitterDistance = 329;
             this.houseCharContainer.TabIndex = 0;
             // 
@@ -1823,7 +1842,7 @@ namespace hist_mmorpg
             this.houseCharTextBox.Location = new System.Drawing.Point(0, 0);
             this.houseCharTextBox.Multiline = true;
             this.houseCharTextBox.Name = "houseCharTextBox";
-            this.houseCharTextBox.Size = new System.Drawing.Size(329, 735);
+            this.houseCharTextBox.Size = new System.Drawing.Size(329, 711);
             this.houseCharTextBox.TabIndex = 0;
             // 
             // houseCharListContainer
@@ -1840,8 +1859,8 @@ namespace hist_mmorpg
             // houseCharListContainer.Panel2
             // 
             this.houseCharListContainer.Panel2.Controls.Add(this.houseCharListView);
-            this.houseCharListContainer.Size = new System.Drawing.Size(339, 735);
-            this.houseCharListContainer.SplitterDistance = 59;
+            this.houseCharListContainer.Size = new System.Drawing.Size(339, 711);
+            this.houseCharListContainer.SplitterDistance = 57;
             this.houseCharListContainer.TabIndex = 0;
             // 
             // houseCharListLabel
@@ -1860,7 +1879,7 @@ namespace hist_mmorpg
             this.houseCharListView.FullRowSelect = true;
             this.houseCharListView.Location = new System.Drawing.Point(0, 0);
             this.houseCharListView.Name = "houseCharListView";
-            this.houseCharListView.Size = new System.Drawing.Size(339, 672);
+            this.houseCharListView.Size = new System.Drawing.Size(339, 650);
             this.houseCharListView.TabIndex = 0;
             this.houseCharListView.UseCompatibleStateImageBehavior = false;
             this.houseCharListView.View = System.Windows.Forms.View.Details;
@@ -2538,12 +2557,47 @@ namespace hist_mmorpg
             this.royalGiftsContainer.Location = new System.Drawing.Point(0, 24);
             this.royalGiftsContainer.Name = "royalGiftsContainer";
             // 
+            // royalGiftsContainer.Panel1
+            // 
+            this.royalGiftsContainer.Panel1.Controls.Add(this.royalGiftsRevokeTitleBtn);
+            this.royalGiftsContainer.Panel1.Controls.Add(this.royalGiftsGiftFiefBtn);
+            this.royalGiftsContainer.Panel1.Controls.Add(this.royalGiftsGrantTitleBtn);
+            // 
             // royalGiftsContainer.Panel2
             // 
             this.royalGiftsContainer.Panel2.Controls.Add(this.royalGiftsPlacesContainer);
             this.royalGiftsContainer.Size = new System.Drawing.Size(935, 711);
             this.royalGiftsContainer.SplitterDistance = 443;
             this.royalGiftsContainer.TabIndex = 11;
+            // 
+            // royalGiftsRevokeTitleBtn
+            // 
+            this.royalGiftsRevokeTitleBtn.Location = new System.Drawing.Point(28, 77);
+            this.royalGiftsRevokeTitleBtn.Name = "royalGiftsRevokeTitleBtn";
+            this.royalGiftsRevokeTitleBtn.Size = new System.Drawing.Size(125, 28);
+            this.royalGiftsRevokeTitleBtn.TabIndex = 2;
+            this.royalGiftsRevokeTitleBtn.Text = "Revoke Title";
+            this.royalGiftsRevokeTitleBtn.UseVisualStyleBackColor = true;
+            // 
+            // royalGiftsGiftFiefBtn
+            // 
+            this.royalGiftsGiftFiefBtn.Location = new System.Drawing.Point(28, 120);
+            this.royalGiftsGiftFiefBtn.Name = "royalGiftsGiftFiefBtn";
+            this.royalGiftsGiftFiefBtn.Size = new System.Drawing.Size(125, 28);
+            this.royalGiftsGiftFiefBtn.TabIndex = 1;
+            this.royalGiftsGiftFiefBtn.Text = "Gift Fief";
+            this.royalGiftsGiftFiefBtn.UseVisualStyleBackColor = true;
+            this.royalGiftsGiftFiefBtn.Click += new System.EventHandler(this.royalGiftsBtn_Click);
+            // 
+            // royalGiftsGrantTitleBtn
+            // 
+            this.royalGiftsGrantTitleBtn.Location = new System.Drawing.Point(28, 34);
+            this.royalGiftsGrantTitleBtn.Name = "royalGiftsGrantTitleBtn";
+            this.royalGiftsGrantTitleBtn.Size = new System.Drawing.Size(125, 28);
+            this.royalGiftsGrantTitleBtn.TabIndex = 0;
+            this.royalGiftsGrantTitleBtn.Text = "Grant Title";
+            this.royalGiftsGrantTitleBtn.UseVisualStyleBackColor = true;
+            this.royalGiftsGrantTitleBtn.Click += new System.EventHandler(this.royalGiftsBtn_Click);
             // 
             // royalGiftsPlacesContainer
             // 
@@ -2563,28 +2617,6 @@ namespace hist_mmorpg
             this.royalGiftsPlacesContainer.SplitterDistance = 231;
             this.royalGiftsPlacesContainer.TabIndex = 0;
             // 
-            // royalGiftsProvListView
-            // 
-            this.royalGiftsProvListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.royalGiftsProvListView.FullRowSelect = true;
-            this.royalGiftsProvListView.Location = new System.Drawing.Point(0, 0);
-            this.royalGiftsProvListView.Name = "royalGiftsProvListView";
-            this.royalGiftsProvListView.Size = new System.Drawing.Size(488, 196);
-            this.royalGiftsProvListView.TabIndex = 0;
-            this.royalGiftsProvListView.UseCompatibleStateImageBehavior = false;
-            this.royalGiftsProvListView.View = System.Windows.Forms.View.Details;
-            // 
-            // royalGiftsFiefListView
-            // 
-            this.royalGiftsFiefListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.royalGiftsFiefListView.FullRowSelect = true;
-            this.royalGiftsFiefListView.Location = new System.Drawing.Point(0, 0);
-            this.royalGiftsFiefListView.Name = "royalGiftsFiefListView";
-            this.royalGiftsFiefListView.Size = new System.Drawing.Size(488, 438);
-            this.royalGiftsFiefListView.TabIndex = 0;
-            this.royalGiftsFiefListView.UseCompatibleStateImageBehavior = false;
-            this.royalGiftsFiefListView.View = System.Windows.Forms.View.Details;
-            // 
             // royalGiftsProvContainer
             // 
             this.royalGiftsProvContainer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -2602,6 +2634,29 @@ namespace hist_mmorpg
             this.royalGiftsProvContainer.Size = new System.Drawing.Size(488, 231);
             this.royalGiftsProvContainer.SplitterDistance = 31;
             this.royalGiftsProvContainer.TabIndex = 0;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label20.Location = new System.Drawing.Point(3, 6);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(79, 17);
+            this.label20.TabIndex = 0;
+            this.label20.Text = "Provinces";
+            // 
+            // royalGiftsProvListView
+            // 
+            this.royalGiftsProvListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.royalGiftsProvListView.FullRowSelect = true;
+            this.royalGiftsProvListView.Location = new System.Drawing.Point(0, 0);
+            this.royalGiftsProvListView.Name = "royalGiftsProvListView";
+            this.royalGiftsProvListView.Size = new System.Drawing.Size(488, 196);
+            this.royalGiftsProvListView.TabIndex = 0;
+            this.royalGiftsProvListView.Tag = "province";
+            this.royalGiftsProvListView.UseCompatibleStateImageBehavior = false;
+            this.royalGiftsProvListView.View = System.Windows.Forms.View.Details;
+            this.royalGiftsProvListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.royalGiftsListView_ItemSelectionChanged);
             // 
             // royalGiftsFiefContainer
             // 
@@ -2621,16 +2676,6 @@ namespace hist_mmorpg
             this.royalGiftsFiefContainer.SplitterDistance = 34;
             this.royalGiftsFiefContainer.TabIndex = 0;
             // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.Location = new System.Drawing.Point(3, 6);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(79, 17);
-            this.label20.TabIndex = 0;
-            this.label20.Text = "Provinces";
-            // 
             // label21
             // 
             this.label21.AutoSize = true;
@@ -2641,20 +2686,18 @@ namespace hist_mmorpg
             this.label21.TabIndex = 1;
             this.label21.Text = "Fiefs";
             // 
-            // royalFunctionsToolStripMenuItem
+            // royalGiftsFiefListView
             // 
-            this.royalFunctionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.royalGiftsToolStripMenuItem});
-            this.royalFunctionsToolStripMenuItem.Name = "royalFunctionsToolStripMenuItem";
-            this.royalFunctionsToolStripMenuItem.Size = new System.Drawing.Size(103, 20);
-            this.royalFunctionsToolStripMenuItem.Text = "Royal Functions";
-            // 
-            // royalGiftsToolStripMenuItem
-            // 
-            this.royalGiftsToolStripMenuItem.Name = "royalGiftsToolStripMenuItem";
-            this.royalGiftsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.royalGiftsToolStripMenuItem.Text = "Royal Gifts";
-            this.royalGiftsToolStripMenuItem.Click += new System.EventHandler(this.royalGiftsToolStripMenuItem_Click);
+            this.royalGiftsFiefListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.royalGiftsFiefListView.FullRowSelect = true;
+            this.royalGiftsFiefListView.Location = new System.Drawing.Point(0, 0);
+            this.royalGiftsFiefListView.Name = "royalGiftsFiefListView";
+            this.royalGiftsFiefListView.Size = new System.Drawing.Size(488, 438);
+            this.royalGiftsFiefListView.TabIndex = 0;
+            this.royalGiftsFiefListView.Tag = "fief";
+            this.royalGiftsFiefListView.UseCompatibleStateImageBehavior = false;
+            this.royalGiftsFiefListView.View = System.Windows.Forms.View.Details;
+            this.royalGiftsFiefListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.royalGiftsListView_ItemSelectionChanged);
             // 
             // Form1
             // 
@@ -2662,12 +2705,12 @@ namespace hist_mmorpg
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
             this.Controls.Add(this.royalGiftsContainer);
+            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
-            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.travelContainer);
@@ -2785,6 +2828,7 @@ namespace hist_mmorpg
             this.journalTextContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.journalTextContainer)).EndInit();
             this.journalTextContainer.ResumeLayout(false);
+            this.royalGiftsContainer.Panel1.ResumeLayout(false);
             this.royalGiftsContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.royalGiftsContainer)).EndInit();
             this.royalGiftsContainer.ResumeLayout(false);
@@ -3023,6 +3067,9 @@ namespace hist_mmorpg
         private System.Windows.Forms.ListView royalGiftsFiefListView;
         private System.Windows.Forms.ToolStripMenuItem royalFunctionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem royalGiftsToolStripMenuItem;
+        private System.Windows.Forms.Button royalGiftsGiftFiefBtn;
+        private System.Windows.Forms.Button royalGiftsGrantTitleBtn;
+        private System.Windows.Forms.Button royalGiftsRevokeTitleBtn;
 
     }
 }

@@ -3550,6 +3550,9 @@ namespace hist_mmorpg
         public void refreshRoyalGiftsContainer()
         {
             // disable controls until place selected in ListView
+            this.royalGiftsGiftFiefBtn.Enabled = false;
+            this.royalGiftsGrantTitleBtn.Enabled = false;
+            this.royalGiftsRevokeTitleBtn.Enabled = false;
 
             // remove any previously displayed text
 
@@ -12603,6 +12606,195 @@ namespace hist_mmorpg
         {
             // display royal gifts screen
             this.refreshRoyalGiftsContainer();
+        }
+
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of either of the royal gifts ListViews
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void royalGiftsListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            Province thisProv = null;
+            Fief thisFief = null;
+
+            // get ListView tag
+            ListView listview = sender as ListView;
+            string whichView = listview.Tag.ToString();
+
+            // check for and correct 'loop backs' due to listview item deselection
+            if (whichView.Equals("province"))
+            {
+                if (this.royalGiftsProvListView.SelectedItems.Count < 1)
+                {
+                    whichView = "fief";
+                }
+            }
+            else if (whichView.Equals("fief"))
+            {
+                if (this.royalGiftsFiefListView.SelectedItems.Count < 1)
+                {
+                    whichView = "province";
+                }
+            }
+
+            // get selected place
+            if (whichView.Equals("province"))
+            {
+                if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                {
+                    // get province
+                    if (Globals_Server.provinceMasterList.ContainsKey(this.royalGiftsProvListView.SelectedItems[0].SubItems[0].Text))
+                    {
+                        thisProv = Globals_Server.provinceMasterList[this.royalGiftsProvListView.SelectedItems[0].SubItems[0].Text];
+                    }
+                }
+            }
+            else if (whichView.Equals("fief"))
+            {
+                if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                {
+                    // get fief
+                    if (Globals_Server.fiefMasterList.ContainsKey(this.royalGiftsFiefListView.SelectedItems[0].SubItems[0].Text))
+                    {
+                        thisFief = Globals_Server.fiefMasterList[this.royalGiftsFiefListView.SelectedItems[0].SubItems[0].Text];
+                    }
+                }
+            }
+
+            // deselect any selected items in other listView
+            if (whichView.Equals("province"))
+            {
+                if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                {
+                    this.royalGiftsFiefListView.SelectedItems[0].Selected = false;
+                }
+            }
+            else if (whichView.Equals("fief"))
+            {
+                if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                {
+                    this.royalGiftsProvListView.SelectedItems[0].Selected = false;
+                }
+            }
+
+            // set button text and tag
+            if (whichView.Equals("province"))
+            {
+                this.royalGiftsGrantTitleBtn.Text = "Grant Province Title";
+                if (thisProv != null)
+                {
+                    this.royalGiftsGrantTitleBtn.Tag = thisProv.id;
+                }
+                this.royalGiftsRevokeTitleBtn.Text = "Revoke Province Title";
+            }
+            else if (whichView.Equals("fief"))
+            {
+                this.royalGiftsGrantTitleBtn.Text = "Grant Fief Title";
+                if (thisFief != null)
+                {
+                    this.royalGiftsGrantTitleBtn.Tag = thisFief.id;
+                    this.royalGiftsGiftFiefBtn.Tag = thisFief.id;
+                }
+                this.royalGiftsRevokeTitleBtn.Text = "Revoke Fief Title";
+            }
+
+            // enable/disable controls as appropriate
+            // provinces
+            if (whichView.Equals("province"))
+            {
+                if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                {
+                    if (thisProv != null)
+                    {
+                        // revoke title button
+                        if (thisProv.titleHolder.Equals(Globals_Client.myChar.charID))
+                        {
+                            this.royalGiftsRevokeTitleBtn.Enabled = false;
+                        }
+                        else
+                        {
+                            this.royalGiftsRevokeTitleBtn.Enabled = true;
+                        }
+                    }
+                }
+
+                // gift fief button
+                this.royalGiftsGiftFiefBtn.Enabled = false;
+            }
+
+            // fiefs
+            else if (whichView.Equals("fief"))
+            {
+                if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                {
+                    if (thisFief != null)
+                    {
+                        // revoke title button
+                        if (thisFief.titleHolder.Equals(Globals_Client.myChar.charID))
+                        {
+                            this.royalGiftsRevokeTitleBtn.Enabled = false;
+                        }
+                        else
+                        {
+                            this.royalGiftsRevokeTitleBtn.Enabled = true;
+                        }
+                    }
+                }
+
+                // gift fief button
+                this.royalGiftsGiftFiefBtn.Enabled = true;
+            }
+
+            // always enable 'grant title' button
+            this.royalGiftsGrantTitleBtn.Enabled = true;
+
+
+            // give focus back to appropriate listview
+            if (whichView.Equals("province"))
+            {
+                this.royalGiftsProvListView.Focus();
+            }
+            else if (whichView.Equals("fief"))
+            {
+                this.royalGiftsFiefListView.Focus();
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of either the royalGiftsGrantTitleBtn button
+        /// or the royalGiftsGiftFiefBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void royalGiftsBtn_Click(object sender, EventArgs e)
+        {
+            // get gift type and place id from button tag and name
+            Button button = sender as Button;
+            string place = button.Tag.ToString();
+            string giftType = null;
+            if (button.Name.ToString().Equals("royalGiftsGrantTitleBtn"))
+            {
+                giftType = "royalGiftTitle";
+            }
+            else if (button.Name.ToString().Equals("royalGiftsGiftFiefBtn"))
+            {
+                giftType = "royalGiftFief";
+            }
+
+            if (giftType != null)
+            {
+                // check for previously opened SelectionForm and close if necessary
+                if (Application.OpenForms.OfType<SelectionForm>().Any())
+                {
+                    Application.OpenForms.OfType<SelectionForm>().First().Close();
+                }
+
+                // open new SelectionForm
+                SelectionForm royalGiftSelection = new SelectionForm(this, giftType, placeID: place);
+                royalGiftSelection.Show();
+            }
+
         }
 
     }

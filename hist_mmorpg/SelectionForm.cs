@@ -30,6 +30,10 @@ namespace hist_mmorpg
         /// Holds observer (if examining armies in fief)
         /// </summary>
         public Character observer { get; set; }
+        /// <summary>
+        /// Holds place id (if granting place title)
+        /// </summary>
+        public string placeID { get; set; }
 
         /// <summary>
         /// Constructor for SelectionForm
@@ -38,7 +42,7 @@ namespace hist_mmorpg
         /// <param name="funct">String indicating function to be performed</param>
         /// <param name="armID">String indicating ID of army (if choosing leader)</param>
         /// <param name="observer">Observer (if examining armies in fief)</param>
-        public SelectionForm(Form1 par, String funct, String armID = null, Character obs = null)
+        public SelectionForm(Form1 par, String funct, String armID = null, Character obs = null, String placeID = null)
         {
             // initialise form elements
             InitializeComponent();
@@ -53,11 +57,12 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Initialises NPC display screen
+        /// Initialises display screen
         /// </summary>
         private void initDisplay()
         {
-            if (((this.function.Equals("bailiff")) || (this.function.Equals("leader"))) || (this.function.Equals("titleHolder")))
+            if (((this.function.Equals("bailiff")) || (this.function.Equals("leader")))
+                || (this.function.Equals("titleHolder")) || (this.function.Contains("royalGift")))
             {
                 // format list display
                 this.setUpNpcList();
@@ -125,20 +130,41 @@ namespace hist_mmorpg
         {
             // add necessary columns
             this.npcListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.npcListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.npcListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
+            this.npcListView.Columns.Add("Character ID", -2, HorizontalAlignment.Left);
 
-            // set appropriate button text and tag
             switch (this.function)
             {
                 case "bailiff":
+                    // add necessary columns
+                    this.npcListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
+                    // set appropriate button text and tag
                     this.chooseNpcBtn.Text = "Appoint This Person As Bailiff";
                     break;
                 case "leader":
+                    // add necessary columns
+                    this.npcListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
+                    // set appropriate button text and tag
                     this.chooseNpcBtn.Text = "Appoint This Person As Leader";
                     break;
                 case "titleHolder":
-                    this.chooseNpcBtn.Text = "Appoint This Person As Title Holder";
+                    // add necessary columns
+                    this.npcListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
+                    // set appropriate button text and tag
+                    this.chooseNpcBtn.Text = "Grant Title To This Person";
+                    break;
+                case "royalGiftTitle":
+                    // add necessary columns
+                    this.npcListView.Columns.Add("Player ID", -2, HorizontalAlignment.Left);
+                    this.npcListView.Columns.Add("Nationality", -2, HorizontalAlignment.Left);
+                    // set appropriate button text and tag
+                    this.chooseNpcBtn.Text = "Grant Title To This Person";
+                    break;
+                case "royalGiftFief":
+                    // add necessary columns
+                    this.npcListView.Columns.Add("Player ID", -2, HorizontalAlignment.Left);
+                    this.npcListView.Columns.Add("Nationality", -2, HorizontalAlignment.Left);
+                    // set appropriate button text and tag
+                    this.chooseNpcBtn.Text = "Gift Fief To This Person";
                     break;
                 default:
                     break;
@@ -169,6 +195,8 @@ namespace hist_mmorpg
         /// </summary>
         public void refreshNPCdisplay()
         {
+            bool addItem = true;
+
             // remove any previously displayed characters
             this.npcDetailsTextBox.ReadOnly = true;
             this.npcDetailsTextBox.Text = "";
@@ -180,42 +208,86 @@ namespace hist_mmorpg
             Army myArmy = null;
             if (this.function.Equals("leader"))
             {
-                myArmy = Globals_Server.armyMasterList[this.armyID];
+                if (this.armyID != null)
+                {
+                    myArmy = Globals_Server.armyMasterList[this.armyID];
+                }
             }
 
-            ListViewItem myNPC = null;
+            ListViewItem myCharItem = null;
 
-            // iterates through employees
-            for (int i = 0; i < Globals_Client.myChar.myNPCs.Count; i++)
+            // for royal gifts, ITERATE THROUGH PLAYERS
+            if (this.function.Contains("royalGift"))
             {
-                // can only appoint males
-                if (Globals_Client.myChar.myNPCs[i].isMale)
+                foreach (KeyValuePair<string, PlayerCharacter> thisPlayer in Globals_Server.pcMasterList)
                 {
-                    // Create an item and subitems for each character
-
-                    // name
-                    myNPC = new ListViewItem(Globals_Client.myChar.myNPCs[i].firstName + " " + Globals_Client.myChar.myNPCs[i].familyName);
-
-                    // charID
-                    myNPC.SubItems.Add(Globals_Client.myChar.myNPCs[i].charID);
-
-                    // location
-                    myNPC.SubItems.Add(Globals_Client.myChar.myNPCs[i].location.id);
-
-                    // add item to npcListView
-                    if ((this.function.Equals("bailiff")) || (this.function.Equals("titleHolder")))
+                    // only show 'played' PCs
+                    if (thisPlayer.Value.playerID != null)
                     {
-                        this.npcListView.Items.Add(myNPC);
-                    }
-                    // if appointing leader, only add item to fiefsListView if is in same fief as army
-                    else if (this.function.Equals("leader"))
-                    {
-                        if (Globals_Client.myChar.myNPCs[i].location.id == myArmy.location)
+                        // don't show this player
+                        if (thisPlayer.Value != Globals_Client.myChar)
                         {
-                            this.npcListView.Items.Add(myNPC);
+                            // Create an item and subitems for each character
+
+                            // name
+                            myCharItem = new ListViewItem(thisPlayer.Value.firstName + " " + thisPlayer.Value.familyName);
+
+                            // PC ID
+                            myCharItem.SubItems.Add(thisPlayer.Value.charID);
+
+                            // player ID
+                            myCharItem.SubItems.Add(thisPlayer.Value.playerID);
+
+                            // nationality
+                            myCharItem.SubItems.Add(thisPlayer.Value.nationality);
                         }
                     }
                 }
+            }
+
+            // else ITERATE THROUGH EMPLOYEES/FAMILY
+            else
+            {
+                for (int i = 0; i < Globals_Client.myChar.myNPCs.Count; i++)
+                {
+                    // can only appoint males
+                    if (Globals_Client.myChar.myNPCs[i].isMale)
+                    {
+                        // Create an item and subitems for each character
+
+                        // name
+                        myCharItem = new ListViewItem(Globals_Client.myChar.myNPCs[i].firstName + " " + Globals_Client.myChar.myNPCs[i].familyName);
+
+                        // charID
+                        myCharItem.SubItems.Add(Globals_Client.myChar.myNPCs[i].charID);
+
+                        // location
+                        myCharItem.SubItems.Add(Globals_Client.myChar.myNPCs[i].location.id);
+
+                        // if appointing leader, only add item to fiefsListView if is in same fief as army
+                        if (this.function.Equals("leader"))
+                        {
+                            if (myArmy != null)
+                            {
+                                if (Globals_Client.myChar.myNPCs[i].location.id != myArmy.location)
+                                {
+                                    addItem = false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // check for null items
+            if (myCharItem == null)
+            {
+                addItem = false;
+            }
+
+            if (addItem)
+            {
+                this.npcListView.Items.Add(myCharItem);
             }
         }
 
@@ -271,7 +343,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void npcListView_SelectedIndexChanged(object sender, EventArgs e)
         {
-            NonPlayerCharacter npcToDisplay = null;
+            Character charToDisplay = null;
 
             string textToDisplay = "";
 
@@ -280,17 +352,33 @@ namespace hist_mmorpg
                 // set textbox to read only
                 this.npcDetailsTextBox.ReadOnly = true;
 
-                // get employee
-                npcToDisplay = Globals_Server.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+                // get character
+                if (this.function.Contains("royalGift"))
+                {
+                    if (Globals_Server.pcMasterList.ContainsKey(this.npcListView.SelectedItems[0].SubItems[1].Text))
+                    {
+                        charToDisplay = Globals_Server.pcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+                    }
+                }
+                else
+                {
+                    if (Globals_Server.npcMasterList.ContainsKey(this.npcListView.SelectedItems[0].SubItems[1].Text))
+                    {
+                        charToDisplay = Globals_Server.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+                    }
+                }
 
-                // enable 'appoint this NPC' button
-                this.chooseNpcBtn.Enabled = true;
+                if (charToDisplay != null)
+                {
+                    // enable 'appoint this NPC' button
+                    this.chooseNpcBtn.Enabled = true;
 
-                // get details
-                textToDisplay += this.displayNPC(npcToDisplay);
+                    // get details
+                    textToDisplay += this.displayCharacter(charToDisplay);
 
-                // display details
-                this.npcDetailsTextBox.Text = textToDisplay;
+                    // display details
+                    this.npcDetailsTextBox.Text = textToDisplay;
+                }
             }
         }
 
@@ -386,75 +474,78 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Retrieves NPC details for display
+        /// Retrieves character details for display
         /// </summary>
         /// <returns>String containing information to display</returns>
-        /// <param name="npc">NonPlayerCharacter whose information is to be displayed</param>
-        public string displayNPC(NonPlayerCharacter npc)
+        /// <param name="thisChar">Character whose information is to be displayed</param>
+        public string displayCharacter(Character thisChar)
         {
             string charText = "";
 
             // ID
-            charText += "ID: " + npc.charID + "\r\n";
+            charText += "ID: " + thisChar.charID + "\r\n";
 
             // name
-            charText += "Name: " + npc.firstName + " " + npc.familyName + "\r\n";
+            charText += "Name: " + thisChar.firstName + " " + thisChar.familyName + "\r\n";
 
             // age
-            charText += "Age: " + npc.calcCharAge() + "\r\n";
+            charText += "Age: " + thisChar.calcCharAge() + "\r\n";
 
             // nationality
-            charText += "Nationality: " + npc.nationality + "\r\n";
+            charText += "Nationality: " + thisChar.nationality + "\r\n";
 
             // health (& max. health)
             charText += "Health: ";
-            if (!npc.isAlive)
+            if (!thisChar.isAlive)
             {
                 charText += "Blimey, you're Dead!";
             }
             else
             {
-                charText += npc.calculateHealth() + " (max. health: " + npc.maxHealth + ")";
+                charText += thisChar.calculateHealth() + " (max. health: " + thisChar.maxHealth + ")";
             }
             charText += "\r\n";
 
             // any death modifiers (from skills)
-            charText += "  (Death modifier from skills: " + npc.calcSkillEffect("death") + ")\r\n";
+            charText += "  (Death modifier from skills: " + thisChar.calcSkillEffect("death") + ")\r\n";
 
             // location
-            charText += "Current location: " + npc.location.name + " (" + npc.location.province.name + ")\r\n";
+            charText += "Current location: " + thisChar.location.name + " (" + thisChar.location.province.name + ")\r\n";
 
             // if in process of auto-moving, display next hex
-            if (npc.goTo.Count != 0)
+            if (thisChar.goTo.Count != 0)
             {
-                charText += "Next Fief (if auto-moving): " + npc.goTo.Peek().id + "\r\n";
+                charText += "Next Fief (if auto-moving): " + thisChar.goTo.Peek().id + "\r\n";
             }
 
             // language
-            charText += "Language: " + npc.language + "\r\n";
+            charText += "Language: " + thisChar.language + "\r\n";
 
             // days left
-            charText += "Days remaining: " + npc.days + "\r\n";
+            charText += "Days remaining: " + thisChar.days + "\r\n";
 
             // stature
-            charText += "Stature: " + npc.calculateStature() + "\r\n";
-            charText += "  (base stature: " + npc.calculateStature(false) + " | modifier: " + npc.statureModifier + ")\r\n";
+            charText += "Stature: " + thisChar.calculateStature() + "\r\n";
+            charText += "  (base stature: " + thisChar.calculateStature(false) + " | modifier: " + thisChar.statureModifier + ")\r\n";
 
             // management rating
-            charText += "Management: " + npc.management + "\r\n";
+            charText += "Management: " + thisChar.management + "\r\n";
 
             // combat rating
-            charText += "Combat: " + npc.combat + "\r\n";
+            charText += "Combat: " + thisChar.combat + "\r\n";
 
             // skills list
             charText += "Skills:\r\n";
-            for (int i = 0; i < npc.skills.Length; i++)
+            for (int i = 0; i < thisChar.skills.Length; i++)
             {
-                charText += "  - " + npc.skills[i].Item1.name + " (level " + npc.skills[i].Item2 + ")\r\n";
+                charText += "  - " + thisChar.skills[i].Item1.name + " (level " + thisChar.skills[i].Item2 + ")\r\n";
             }
 
             // gather additional NPC-specific information
-            charText += this.displayNonPlayerCharacter(npc);
+            if (thisChar is NonPlayerCharacter)
+            {
+                charText += this.displayNonPlayerCharacter(thisChar as NonPlayerCharacter);
+            }
 
             return charText;
         }
