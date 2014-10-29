@@ -240,7 +240,7 @@ namespace hist_mmorpg
                             myCharItem.SubItems.Add(thisPlayer.Value.playerID);
 
                             // nationality
-                            myCharItem.SubItems.Add(thisPlayer.Value.nationality);
+                            myCharItem.SubItems.Add(thisPlayer.Value.nationality.name);
                         }
                     }
                 }
@@ -327,7 +327,7 @@ namespace hist_mmorpg
                         myPlayerItem.SubItems.Add(thisPlayer.Value.playerID);
 
                         // nationality
-                        myPlayerItem.SubItems.Add(thisPlayer.Value.nationality);
+                        myPlayerItem.SubItems.Add(thisPlayer.Value.nationality.name);
 
                         // add item to list
                         this.transferFundsListView.Items.Add(myPlayerItem);
@@ -402,17 +402,7 @@ namespace hist_mmorpg
             armyText += "ID: " + a.armyID + "\r\n\r\n";
 
             // nationality
-            string thisNationality = thisOwner.nationality;
-            armyText += "Nationality: ";
-            if (thisNationality.Equals("E"))
-            {
-                armyText += "English";
-            }
-            else if (thisNationality.Equals("F"))
-            {
-                armyText += "French";
-            }
-            armyText += "\r\n\r\n";
+            armyText += "Nationality: " + thisOwner.nationality.name + "\r\n\r\n";
 
             // owner
             armyText += "Owner: " + thisOwner.firstName + " " + thisOwner.familyName + " (" + thisOwner.charID + ")\r\n\r\n";
@@ -747,7 +737,7 @@ namespace hist_mmorpg
                     barredChars[i].SubItems.Add(myBarredChar.charID);
 
                     // if is in player's nationality
-                    barredChars[i].SubItems.Add(myBarredChar.nationality);
+                    barredChars[i].SubItems.Add(myBarredChar.nationality.name);
 
                     // add item to fiefsListView
                     this.barredListView.Items.Add(barredChars[i]);

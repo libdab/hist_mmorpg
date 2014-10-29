@@ -10,27 +10,6 @@ namespace hist_mmorpg
     /// </summary>
     public class Fief : Place
     {
-        /*
-        /// <summary>
-        /// Holds fief ID
-        /// </summary>
-        public String id { get; set; }
-        /// <summary>
-        /// Holds fief name
-        /// </summary>
-        public String name { get; set; }
-        /// <summary>
-        /// Holds fief owner (PlayerCharacter object)
-        /// </summary>
-        public PlayerCharacter owner { get; set; }
-        /// <summary>
-        /// Holds fief Rank object
-        /// </summary>
-        public Rank rank { get; set; }
-        /// <summary>
-        /// Fief title holder (charID)
-        /// </summary>
-        public String titleHolder { get; set; } */
         /// <summary>
         /// Holds fief's Province object
         /// </summary>
@@ -1758,9 +1737,15 @@ namespace hist_mmorpg
         {
             PlayerCharacter thisKing = null;
 
-            if (this.province.kingdom.owner != null)
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Server.kingdomMasterList)
             {
-                thisKing = this.province.kingdom.owner;
+                if (kingdomEntry.Value.nationality == this.owner.nationality)
+                {
+                    if (kingdomEntry.Value.owner != null)
+                    {
+                        thisKing = kingdomEntry.Value.owner;
+                    }
+                }
             }
 
             return thisKing;

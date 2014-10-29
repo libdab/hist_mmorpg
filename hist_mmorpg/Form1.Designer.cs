@@ -55,6 +55,7 @@ namespace hist_mmorpg
             this.viewMySiegesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.royalFunctionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.royalGiftsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.manageProvincesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.journalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewEntriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterContainer = new System.Windows.Forms.SplitContainer();
@@ -247,6 +248,14 @@ namespace hist_mmorpg
             this.royalGiftsFiefContainer = new System.Windows.Forms.SplitContainer();
             this.label21 = new System.Windows.Forms.Label();
             this.royalGiftsFiefListView = new System.Windows.Forms.ListView();
+            this.provinceContainer = new System.Windows.Forms.SplitContainer();
+            this.provinceListsContainer = new System.Windows.Forms.SplitContainer();
+            this.provinceProvlistContainer = new System.Windows.Forms.SplitContainer();
+            this.label22 = new System.Windows.Forms.Label();
+            this.provinceProvListView = new System.Windows.Forms.ListView();
+            this.provinceFieflistContainer = new System.Windows.Forms.SplitContainer();
+            this.label23 = new System.Windows.Forms.Label();
+            this.provinceFiefListView = new System.Windows.Forms.ListView();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -350,6 +359,21 @@ namespace hist_mmorpg
             this.royalGiftsFiefContainer.Panel1.SuspendLayout();
             this.royalGiftsFiefContainer.Panel2.SuspendLayout();
             this.royalGiftsFiefContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.provinceContainer)).BeginInit();
+            this.provinceContainer.Panel2.SuspendLayout();
+            this.provinceContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.provinceListsContainer)).BeginInit();
+            this.provinceListsContainer.Panel1.SuspendLayout();
+            this.provinceListsContainer.Panel2.SuspendLayout();
+            this.provinceListsContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.provinceProvlistContainer)).BeginInit();
+            this.provinceProvlistContainer.Panel1.SuspendLayout();
+            this.provinceProvlistContainer.Panel2.SuspendLayout();
+            this.provinceProvlistContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.provinceFieflistContainer)).BeginInit();
+            this.provinceFieflistContainer.Panel1.SuspendLayout();
+            this.provinceFieflistContainer.Panel2.SuspendLayout();
+            this.provinceFieflistContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -544,17 +568,25 @@ namespace hist_mmorpg
             // royalFunctionsToolStripMenuItem
             // 
             this.royalFunctionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.royalGiftsToolStripMenuItem});
+            this.royalGiftsToolStripMenuItem,
+            this.manageProvincesToolStripMenuItem});
             this.royalFunctionsToolStripMenuItem.Name = "royalFunctionsToolStripMenuItem";
-            this.royalFunctionsToolStripMenuItem.Size = new System.Drawing.Size(103, 20);
-            this.royalFunctionsToolStripMenuItem.Text = "Royal Functions";
+            this.royalFunctionsToolStripMenuItem.Size = new System.Drawing.Size(175, 20);
+            this.royalFunctionsToolStripMenuItem.Text = "Royal and Overlord Functions";
             // 
             // royalGiftsToolStripMenuItem
             // 
             this.royalGiftsToolStripMenuItem.Name = "royalGiftsToolStripMenuItem";
-            this.royalGiftsToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.royalGiftsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.royalGiftsToolStripMenuItem.Text = "Royal Gifts";
             this.royalGiftsToolStripMenuItem.Click += new System.EventHandler(this.royalGiftsToolStripMenuItem_Click);
+            // 
+            // manageProvincesToolStripMenuItem
+            // 
+            this.manageProvincesToolStripMenuItem.Name = "manageProvincesToolStripMenuItem";
+            this.manageProvincesToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.manageProvincesToolStripMenuItem.Text = "Manage Provinces";
+            this.manageProvincesToolStripMenuItem.Click += new System.EventHandler(this.manageProvincesToolStripMenuItem_Click);
             // 
             // journalToolStripMenuItem
             // 
@@ -2699,11 +2731,122 @@ namespace hist_mmorpg
             this.royalGiftsFiefListView.View = System.Windows.Forms.View.Details;
             this.royalGiftsFiefListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.royalGiftsListView_ItemSelectionChanged);
             // 
+            // provinceContainer
+            // 
+            this.provinceContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.provinceContainer.Location = new System.Drawing.Point(0, 24);
+            this.provinceContainer.Name = "provinceContainer";
+            // 
+            // provinceContainer.Panel2
+            // 
+            this.provinceContainer.Panel2.Controls.Add(this.provinceListsContainer);
+            this.provinceContainer.Size = new System.Drawing.Size(935, 711);
+            this.provinceContainer.SplitterDistance = 442;
+            this.provinceContainer.TabIndex = 12;
+            // 
+            // provinceListsContainer
+            // 
+            this.provinceListsContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.provinceListsContainer.Location = new System.Drawing.Point(0, 0);
+            this.provinceListsContainer.Name = "provinceListsContainer";
+            this.provinceListsContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // provinceListsContainer.Panel1
+            // 
+            this.provinceListsContainer.Panel1.Controls.Add(this.provinceProvlistContainer);
+            // 
+            // provinceListsContainer.Panel2
+            // 
+            this.provinceListsContainer.Panel2.Controls.Add(this.provinceFieflistContainer);
+            this.provinceListsContainer.Size = new System.Drawing.Size(489, 711);
+            this.provinceListsContainer.SplitterDistance = 225;
+            this.provinceListsContainer.TabIndex = 0;
+            // 
+            // provinceProvlistContainer
+            // 
+            this.provinceProvlistContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.provinceProvlistContainer.Location = new System.Drawing.Point(0, 0);
+            this.provinceProvlistContainer.Name = "provinceProvlistContainer";
+            this.provinceProvlistContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // provinceProvlistContainer.Panel1
+            // 
+            this.provinceProvlistContainer.Panel1.Controls.Add(this.label22);
+            // 
+            // provinceProvlistContainer.Panel2
+            // 
+            this.provinceProvlistContainer.Panel2.Controls.Add(this.provinceProvListView);
+            this.provinceProvlistContainer.Size = new System.Drawing.Size(489, 225);
+            this.provinceProvlistContainer.SplitterDistance = 33;
+            this.provinceProvlistContainer.TabIndex = 0;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label22.Location = new System.Drawing.Point(4, 6);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(79, 17);
+            this.label22.TabIndex = 1;
+            this.label22.Text = "Provinces";
+            // 
+            // provinceProvListView
+            // 
+            this.provinceProvListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.provinceProvListView.FullRowSelect = true;
+            this.provinceProvListView.Location = new System.Drawing.Point(0, 0);
+            this.provinceProvListView.Name = "provinceProvListView";
+            this.provinceProvListView.Size = new System.Drawing.Size(489, 188);
+            this.provinceProvListView.TabIndex = 0;
+            this.provinceProvListView.UseCompatibleStateImageBehavior = false;
+            this.provinceProvListView.View = System.Windows.Forms.View.Details;
+            this.provinceProvListView.SelectedIndexChanged += new System.EventHandler(this.provinceProvListView_SelectedIndexChanged);
+            // 
+            // provinceFieflistContainer
+            // 
+            this.provinceFieflistContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.provinceFieflistContainer.Location = new System.Drawing.Point(0, 0);
+            this.provinceFieflistContainer.Name = "provinceFieflistContainer";
+            this.provinceFieflistContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // provinceFieflistContainer.Panel1
+            // 
+            this.provinceFieflistContainer.Panel1.Controls.Add(this.label23);
+            // 
+            // provinceFieflistContainer.Panel2
+            // 
+            this.provinceFieflistContainer.Panel2.Controls.Add(this.provinceFiefListView);
+            this.provinceFieflistContainer.Size = new System.Drawing.Size(489, 482);
+            this.provinceFieflistContainer.SplitterDistance = 29;
+            this.provinceFieflistContainer.TabIndex = 0;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label23.Location = new System.Drawing.Point(4, 6);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(43, 17);
+            this.label23.TabIndex = 2;
+            this.label23.Text = "Fiefs";
+            // 
+            // provinceFiefListView
+            // 
+            this.provinceFiefListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.provinceFiefListView.FullRowSelect = true;
+            this.provinceFiefListView.Location = new System.Drawing.Point(0, 0);
+            this.provinceFiefListView.Name = "provinceFiefListView";
+            this.provinceFiefListView.Size = new System.Drawing.Size(489, 449);
+            this.provinceFiefListView.TabIndex = 0;
+            this.provinceFiefListView.UseCompatibleStateImageBehavior = false;
+            this.provinceFiefListView.View = System.Windows.Forms.View.Details;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
+            this.Controls.Add(this.provinceContainer);
             this.Controls.Add(this.royalGiftsContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.characterContainer);
@@ -2846,6 +2989,23 @@ namespace hist_mmorpg
             this.royalGiftsFiefContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.royalGiftsFiefContainer)).EndInit();
             this.royalGiftsFiefContainer.ResumeLayout(false);
+            this.provinceContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.provinceContainer)).EndInit();
+            this.provinceContainer.ResumeLayout(false);
+            this.provinceListsContainer.Panel1.ResumeLayout(false);
+            this.provinceListsContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.provinceListsContainer)).EndInit();
+            this.provinceListsContainer.ResumeLayout(false);
+            this.provinceProvlistContainer.Panel1.ResumeLayout(false);
+            this.provinceProvlistContainer.Panel1.PerformLayout();
+            this.provinceProvlistContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.provinceProvlistContainer)).EndInit();
+            this.provinceProvlistContainer.ResumeLayout(false);
+            this.provinceFieflistContainer.Panel1.ResumeLayout(false);
+            this.provinceFieflistContainer.Panel1.PerformLayout();
+            this.provinceFieflistContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.provinceFieflistContainer)).EndInit();
+            this.provinceFieflistContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -3070,6 +3230,15 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button royalGiftsGiftFiefBtn;
         private System.Windows.Forms.Button royalGiftsGrantTitleBtn;
         private System.Windows.Forms.Button royalGiftsRevokeTitleBtn;
+        private System.Windows.Forms.ToolStripMenuItem manageProvincesToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer provinceContainer;
+        private System.Windows.Forms.SplitContainer provinceListsContainer;
+        private System.Windows.Forms.SplitContainer provinceProvlistContainer;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.ListView provinceProvListView;
+        private System.Windows.Forms.SplitContainer provinceFieflistContainer;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.ListView provinceFiefListView;
 
     }
 }

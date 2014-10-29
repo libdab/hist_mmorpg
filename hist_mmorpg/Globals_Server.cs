@@ -103,6 +103,14 @@ namespace hist_mmorpg
         /// </summary>
         public static List<String> siegeKeys = new List<String>();
         /// <summary>
+        /// Holds all nationality objects
+        /// </summary>
+        public static Dictionary<string, Nationality> nationalityMasterList = new Dictionary<string, Nationality>();
+        /// <summary>
+        /// Holds keys for nationality objects (used when retrieving from database)
+        /// </summary>
+        public static List<string> nationalityKeys = new List<string>();
+        /// <summary>
         /// Holds Character_Riak objects with existing goTo queues (used during initial load)
         /// </summary>
         public static List<Character_Riak> goToList = new List<Character_Riak>();

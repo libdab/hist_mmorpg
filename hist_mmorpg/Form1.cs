@@ -86,6 +86,7 @@ namespace hist_mmorpg
             this.setUpSiegeList();
             this.setUpJournalList();
             this.setUpRoyalGiftsLists();
+            this.setUpProvinceLists();
 
             // initialise character display in UI
             Globals_Client.charToView = Globals_Client.myChar;
@@ -248,10 +249,16 @@ namespace hist_mmorpg
             Rank myRank17 = new Rank("17", myTitle17, 1);
             Globals_Server.rankMasterList.Add(myRank17.rankID, myRank17);
 
+            // create Nationality objects for Kingdoms and Characters
+            Nationality nationality01 = new Nationality("F", "French");
+            Globals_Server.nationalityMasterList.Add(nationality01.natID, nationality01);
+            Nationality nationality02 = new Nationality("E", "English");
+            Globals_Server.nationalityMasterList.Add(nationality02.natID, nationality02);
+
             // create kingdoms for provinces
-            Kingdom myKingdom1 = new Kingdom("E0000", "England", r: myRank03);
+            Kingdom myKingdom1 = new Kingdom("E0000", "England", nationality02, r: myRank03);
             Globals_Server.kingdomMasterList.Add(myKingdom1.id, myKingdom1);
-            Kingdom myKingdom2 = new Kingdom("B0000", "Boogiboogiland", r: myRank03);
+            Kingdom myKingdom2 = new Kingdom("B0000", "Boogiboogiland", nationality01, r: myRank03);
             Globals_Server.kingdomMasterList.Add(myKingdom2.id, myKingdom2);
 
             // create provinces for fiefs
@@ -413,29 +420,29 @@ namespace hist_mmorpg
             List<string> mySieges002 = new List<string>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, "E", true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "101", "403", null, null, false, 13000, myEmployees1, myFiefsOwned1, myProvsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
+            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, nationality02, true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "101", "403", null, null, false, 13000, myEmployees1, myFiefsOwned1, myProvsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
             Globals_Server.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, "F", true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "102", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, myProvsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
+            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, nationality01, true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "102", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, myProvsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
             Globals_Server.pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, "E", true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, nationality02, true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, "E", true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, mb: myChar1.charID, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, nationality02, true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, mb: myChar1.charID, loc: myFief1);
             Globals_Server.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob005, true, "F", true, 8.50, 6.0, myGoTo5, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, mb: myChar2.charID, loc: myFief6);
+            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob005, true, nationality01, true, 8.50, 6.0, myGoTo5, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, mb: myChar2.charID, loc: myFief6);
             Globals_Server.npcMasterList.Add(myNPC3.charID, myNPC3);
-            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("404", "Bev", "Bond", myDob006, false, "E", true, 2.50, 9.0, myGoTo6, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "101", "101", null, null, 30000, false, false, myTitles006, null, loc: myFief1);
+            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("404", "Bev", "Bond", myDob006, false, nationality02, true, 2.50, 9.0, myGoTo6, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "101", "101", null, null, 30000, false, false, myTitles006, null, loc: myFief1);
             Globals_Server.npcMasterList.Add(myChar1Wife.charID, myChar1Wife);
-            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("405", "Horatio", "Dond", myDob007, true, "F", true, 8.50, 6.0, myGoTo7, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "102", "406", "102", null, 10000, false, true, myTitles007, null, loc: myFief6);
+            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("405", "Horatio", "Dond", myDob007, true, nationality01, true, 8.50, 6.0, myGoTo7, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "102", "406", "102", null, 10000, false, true, myTitles007, null, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2Son.charID, myChar2Son);
-            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob008, false, "E", true, 2.50, 9.0, myGoTo8, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", "405", null, null, 30000, false, false, myTitles008, null, loc: myFief6);
+            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob008, false, nationality02, true, 2.50, 9.0, myGoTo8, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", "405", null, null, 30000, false, false, myTitles008, null, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2SonWife.charID, myChar2SonWife);
-            NonPlayerCharacter myChar1Son = new NonPlayerCharacter("407", "Rickie", "Bond", myDob009, true, "E", true, 2.50, 9.0, myGoTo9, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", "404", 30000, false, true, myTitles009, null, loc: myFief1);
+            NonPlayerCharacter myChar1Son = new NonPlayerCharacter("407", "Rickie", "Bond", myDob009, true, nationality02, true, 2.50, 9.0, myGoTo9, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", "404", 30000, false, true, myTitles009, null, loc: myFief1);
             Globals_Server.npcMasterList.Add(myChar1Son.charID, myChar1Son);
-            NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("408", "Elsie", "Bond", myDob010, false, "E", true, 2.50, 9.0, myGoTo10, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", "404", 30000, false, false, myTitles010, null, loc: myFief1);
+            NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("408", "Elsie", "Bond", myDob010, false, nationality02, true, 2.50, 9.0, myGoTo10, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", "404", 30000, false, false, myTitles010, null, loc: myFief1);
             Globals_Server.npcMasterList.Add(myChar1Daughter.charID, myChar1Daughter);
-            NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("409", "Wayne", "Dond", myDob011, true, "F", true, 2.50, 9.0, myGoTo11, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", null, 30000, false, false, myTitles011, null, loc: myFief6);
+            NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("409", "Wayne", "Dond", myDob011, true, nationality01, true, 2.50, 9.0, myGoTo11, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", null, 30000, false, false, myTitles011, null, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2Son2.charID, myChar2Son2);
-            NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("410", "Esmerelda", "Dond", myDob012, false, "F", true, 2.50, 9.0, myGoTo12, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", null, 30000, false, false, myTitles012, null, loc: myFief6);
+            NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("410", "Esmerelda", "Dond", myDob012, false, nationality01, true, 2.50, 9.0, myGoTo12, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", null, 30000, false, false, myTitles012, null, loc: myFief6);
             Globals_Server.npcMasterList.Add(myChar2Daughter.charID, myChar2Daughter);
 
             /*
@@ -775,7 +782,27 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "langKeys", Globals_Server.langKeys);
 
-			// ========= write RANKS
+            // ========= write NATIONALITY OBJECTS
+            // clear existing key list
+            if (Globals_Server.nationalityKeys.Count > 0)
+            {
+                Globals_Server.nationalityKeys.Clear();
+            }
+
+            // write each object in nationalityMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<string, Nationality> pair in Globals_Server.nationalityMasterList)
+            {
+                bool success = this.writeNationality(gameID, pair.Value);
+                if (success)
+                {
+                    Globals_Server.nationalityKeys.Add(pair.Key);
+                }
+            }
+
+            // write key list to database
+            this.writeKeyList(gameID, "nationalityKeys", Globals_Server.nationalityKeys);
+
+            // ========= write RANKS
             // clear existing key list
             if (Globals_Server.rankKeys.Count > 0)
             {
@@ -1000,6 +1027,14 @@ namespace hist_mmorpg
                 Globals_Server.languageMasterList.Add(lang.languageID, lang);
             }
 
+            // ========= load NATIONALITY OBJECTS
+            foreach (string element in Globals_Server.nationalityKeys)
+            {
+                Nationality nat = this.initialDBload_nationality(gameID, element);
+                // add Nationality to nationalityMasterList
+                Globals_Server.nationalityMasterList.Add(nat.natID, nat);
+            }
+
             // ========= load RANKS
             foreach (string element in Globals_Server.rankKeys)
             {
@@ -1106,19 +1141,33 @@ namespace hist_mmorpg
                 }
 			}
 
-			// populate langKeys
-			var langKeyResult = rClient.Get(gameID, "langKeys");
-			if (langKeyResult.IsSuccess)
+			// populate nationalityKeys
+            var natKeyResult = rClient.Get(gameID, "nationalityKeys");
+			if (natKeyResult.IsSuccess)
 			{
-                Globals_Server.langKeys = langKeyResult.Value.GetObject<List<string>>();
+                Globals_Server.nationalityKeys = natKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
                 if (Globals_Client.showMessages)
                 {
-                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve langKeys from database.");
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve nationalityKeys from database.");
                 }
 			}
+
+            // populate langKeys
+            var langKeyResult = rClient.Get(gameID, "langKeys");
+            if (langKeyResult.IsSuccess)
+            {
+                Globals_Server.langKeys = langKeyResult.Value.GetObject<List<string>>();
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve langKeys from database.");
+                }
+            }
 
             // populate rankKeys
             var rankKeyResult = rClient.Get(gameID, "rankKeys");
@@ -1610,6 +1659,32 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Loads a Nationality for a particular game from database
+        /// </summary>
+        /// <returns>Nationality object</returns>
+        /// <param name="gameID">Game for which Nationality to be retrieved</param>
+        /// <param name="natID">ID of Nationality to be retrieved</param>
+        public Nationality initialDBload_nationality(string gameID, string natID)
+        {
+            var natResult = rClient.Get(gameID, natID);
+            var newNat = new Nationality();
+
+            if (natResult.IsSuccess)
+            {
+                newNat = natResult.Value.GetObject<Nationality>();
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Nationality " + natID);
+                }
+            }
+
+            return newNat;
+        }
+
+        /// <summary>
         /// Loads a Rank for a particular game from database
         /// </summary>
         /// <returns>Rank object</returns>
@@ -1900,6 +1975,9 @@ namespace hist_mmorpg
             // insert language
             pcOut.language = new Tuple<Language, int>(Globals_Server.languageMasterList[pcr.language.Item1], pcr.language.Item2);
 
+            // insert nationality
+            pcOut.nationality = Globals_Server.nationalityMasterList[pcr.nationality];
+
             // insert skills
 			if (pcr.skills.Length > 0)
 			{
@@ -1943,6 +2021,9 @@ namespace hist_mmorpg
 
             // insert language
             npcOut.language = new Tuple<Language, int>(Globals_Server.languageMasterList[npcr.language.Item1], npcr.language.Item2);
+
+            // insert nationality
+            npcOut.nationality = Globals_Server.nationalityMasterList[npcr.nationality];
             
             // insert skills
 			if (npcr.skills.Length > 0)
@@ -2094,15 +2175,15 @@ namespace hist_mmorpg
         /// <param name="kr">Kingdom_Riak to be converted</param>
         public Kingdom KingdomFromRiak(Kingdom_Riak kr)
         {
-            Kingdom oOut = null;
-            oOut = new Kingdom(kr);
+            Kingdom kOut = null;
+            kOut = new Kingdom(kr);
 
             // insert king
             if (kr.owner != null)
             {
                 if (Globals_Server.pcMasterList.ContainsKey(kr.owner))
                 {
-                    oOut.owner = Globals_Server.pcMasterList[kr.owner];
+                    kOut.owner = Globals_Server.pcMasterList[kr.owner];
                 }
                 else
                 {
@@ -2118,7 +2199,7 @@ namespace hist_mmorpg
             {
                 if (Globals_Server.rankMasterList.ContainsKey(kr.rank))
                 {
-                    oOut.rank = Globals_Server.rankMasterList[kr.rank];
+                    kOut.rank = Globals_Server.rankMasterList[kr.rank];
                 }
                 else
                 {
@@ -2129,7 +2210,23 @@ namespace hist_mmorpg
                 }
             }
 
-            return oOut;
+            // insert nationality
+            if (kr.nationality != null)
+            {
+                if (Globals_Server.nationalityMasterList.ContainsKey(kr.nationality))
+                {
+                    kOut.nationality = Globals_Server.nationalityMasterList[kr.nationality];
+                }
+                else
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Kingdom " + kr.id + ": Nationality not found (" + kr.nationality + ")");
+                    }
+                }
+            }
+
+            return kOut;
         }
 
         /// <summary>
@@ -2449,6 +2546,29 @@ namespace hist_mmorpg
 
 			return putLanguageResult.IsSuccess;
 		}
+
+        /// <summary>
+        /// Writes Nationality object to Riak
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
+        /// <param name="n">Nationality to write</param>
+        public bool writeNationality(string gameID, Nationality n)
+        {
+
+            var rNationality = new RiakObject(gameID, n.natID, n);
+            var putNationalityResult = rClient.Put(rNationality);
+
+            if (!putNationalityResult.IsSuccess)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Nationality " + rNationality.Key + " to bucket " + rNationality.Bucket);
+                }
+            }
+
+            return putNationalityResult.IsSuccess;
+        }
 
         /// <summary>
         /// Writes Rank object to Riak
@@ -2970,6 +3090,12 @@ namespace hist_mmorpg
                 this.refreshRoyalGiftsContainer();
             }
 
+            // overlord provinces
+            else if (Globals_Client.containerToView == this.provinceContainer)
+            {
+                this.refreshProvinceContainer();
+            }
+
         }
 
         /// <summary>
@@ -3064,7 +3190,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Creates UI display for PlayerCharacter's list of owned Fiefs
+        /// Creates UI display for king's lists of provinces and fiefs
         /// </summary>
         public void setUpRoyalGiftsLists()
         {
@@ -3078,6 +3204,25 @@ namespace hist_mmorpg
             this.royalGiftsFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
             this.royalGiftsFiefListView.Columns.Add("Province", -2, HorizontalAlignment.Left);
             this.royalGiftsFiefListView.Columns.Add("Title Holder", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for overlord's lists of provinces (and associated fiefs)
+        /// </summary>
+        public void setUpProvinceLists()
+        {
+            // add necessary columns
+            // provinces
+            this.provinceProvListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
+            // fiefs
+            this.provinceFiefListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("Current GDP", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("Last tax income", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -3649,6 +3794,126 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Refreshes overlord province management display
+        /// </summary>
+        public void refreshProvinceContainer()
+        {
+            // disable controls until place selected in ListView
+
+            // remove any previously displayed text
+
+            // clear existing items in places lists
+            this.provinceProvListView.Items.Clear();
+            this.provinceFiefListView.Items.Clear();
+
+            // iterates through provinces where the character holds the title, adding information to ListView
+            foreach (string placeID in Globals_Client.myChar.myTitles)
+            {
+                ListViewItem provItem = null;
+
+                // get province
+                Province thisProvince = null;
+                if (Globals_Server.provinceMasterList.ContainsKey(placeID))
+                {
+                    thisProvince = Globals_Server.provinceMasterList[placeID];
+                }
+
+                if (thisProvince != null)
+                {
+                    // id
+                    provItem = new ListViewItem(thisProvince.id);
+
+                    // name
+                    provItem.SubItems.Add(thisProvince.name);
+
+                    // owner
+                    // get character
+                    PlayerCharacter thisOwner = null;
+                    if (Globals_Server.pcMasterList.ContainsKey(thisProvince.titleHolder))
+                    {
+                        thisOwner = Globals_Server.pcMasterList[thisProvince.titleHolder];
+                    }
+
+                    // title holder name & id
+                    if (thisOwner != null)
+                    {
+                        provItem.SubItems.Add(thisOwner.firstName + " " + thisOwner.familyName + "(" + thisOwner.charID + ")");
+                    }
+                    else
+                    {
+                        provItem.SubItems.Add("");
+                    }
+
+                    if (provItem != null)
+                    {
+                        // add item to fiefsListView
+                        this.provinceProvListView.Items.Add(provItem);
+                    }
+                }
+
+            }
+
+            Globals_Client.containerToView = this.royalGiftsContainer;
+            Globals_Client.containerToView.BringToFront();
+        }
+
+        /// <summary>
+        /// Refreshes information the fief list in the overlord's province management display
+        /// </summary>
+        public void refreshProvinceFiefList(Province p)
+        {
+            // clear existing items in list
+            this.provinceFiefListView.Items.Clear();
+
+            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
+            {
+                ListViewItem fiefItem = null;
+
+                if (fiefEntry.Value.province == p)
+                {
+                    // id
+                    fiefItem = new ListViewItem(fiefEntry.Value.id);
+
+                    // name
+                    fiefItem.SubItems.Add(fiefEntry.Value.name);
+
+                    // owner
+                    // get character
+                    PlayerCharacter thisOwner = null;
+                    if (Globals_Server.pcMasterList.ContainsKey(fiefEntry.Value.titleHolder))
+                    {
+                        thisOwner = Globals_Server.pcMasterList[fiefEntry.Value.titleHolder];
+                    }
+
+                    // owner name & id
+                    if (thisOwner != null)
+                    {
+                        fiefItem.SubItems.Add(thisOwner.firstName + " " + thisOwner.familyName + "(" + thisOwner.charID + ")");
+                    }
+                    else
+                    {
+                        fiefItem.SubItems.Add("");
+                    }
+
+                    // GDP
+                    fiefItem.SubItems.Add("£" + fiefEntry.Value.keyStatsCurrent[1]);
+
+                    // last tax income
+                    fiefItem.SubItems.Add("£" + fiefEntry.Value.keyStatsCurrent[11]);
+
+                    // check for enemy occupation
+
+                    if (fiefItem != null)
+                    {
+                        // add item to fiefsListView
+                        this.provinceFiefListView.Items.Add(fiefItem);
+                    }
+                }
+
+            }
+        }
+
+        /// <summary>
         /// Retrieves information for journal display screen
         /// </summary>
         /// <returns>String containing information to display</returns>
@@ -4142,17 +4407,7 @@ namespace hist_mmorpg
             armyText += "ID: " + a.armyID + "\r\n\r\n";
 
             // nationality
-            string thisNationality = a.getOwner().nationality;
-            armyText += "Nationality: ";
-            if (thisNationality.Equals("E"))
-            {
-                armyText += "English";
-            }
-            else if (thisNationality.Equals("F"))
-            {
-                armyText += "French";
-            }
-            armyText += "\r\n\r\n";
+            armyText += "Nationality: " + a.getOwner().nationality.name + "\r\n\r\n";
 
             // days left
             armyText += "Days left: " + a.days + "\r\n\r\n";
@@ -9772,7 +10027,7 @@ namespace hist_mmorpg
             uint totalSoFar = 0;
 
             // get army nationality
-            string thisNationality = f.owner.nationality.ToUpper();
+            string thisNationality = f.owner.nationality.natID.ToUpper();
             if (!thisNationality.Equals("E"))
             {
                 thisNationality = "O";
@@ -12619,6 +12874,9 @@ namespace hist_mmorpg
         {
             // display royal gifts screen
             this.refreshRoyalGiftsContainer();
+            // display household affairs screen
+            Globals_Client.containerToView = this.royalGiftsContainer;
+            Globals_Client.containerToView.BringToFront();
         }
 
         /// <summary>
@@ -12808,6 +13066,44 @@ namespace hist_mmorpg
                 royalGiftSelection.Show();
             }
 
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the manageProvincesToolStripMenuItem
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void manageProvincesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // display royal gifts screen
+            this.refreshProvinceContainer();
+            // display household affairs screen
+            Globals_Client.containerToView = this.provinceContainer;
+            Globals_Client.containerToView.BringToFront();
+        }
+
+        /// <summary>
+        /// Responds to the SelectedIndexChanged event of the provinceProvListView
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void provinceProvListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.provinceProvListView.SelectedItems.Count > 0)
+            {
+                // get province
+                Province thisProvince = null;
+
+                if (Globals_Server.provinceMasterList.ContainsKey(this.provinceProvListView.SelectedItems[0].SubItems[0].Text))
+                {
+                    thisProvince = Globals_Server.provinceMasterList[this.provinceProvListView.SelectedItems[0].SubItems[0].Text];
+                }
+
+                if (thisProvince != null)
+                {
+                    this.refreshProvinceFiefList(thisProvince);
+                }
+            }
         }
 
     }

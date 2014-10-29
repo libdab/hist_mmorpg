@@ -35,7 +35,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds character nationality
         /// </summary>
-        public String nationality { get; set; }
+        public Nationality nationality { get; set; }
         /// <summary>
         /// bool indicating whether character is alive
         /// </summary>
@@ -129,7 +129,7 @@ namespace hist_mmorpg
         /// <param name="famNam">String holding character's family name</param>
         /// <param name="dob">Tuple<uint, byte> holding character's year and season of birth</param>
         /// <param name="isM">bool holding if character male</param>
-        /// <param name="nat">String holding character nationality</param>
+        /// <param name="nat">Character's Nationality object</param>
         /// <param name="alive">bool indicating whether character is alive</param>
         /// <param name="mxHea">Double holding character maximum health</param>
         /// <param name="vir">Double holding character virility rating</param>
@@ -151,7 +151,7 @@ namespace hist_mmorpg
         /// <param name="myTi">List holding character's titles (fiefIDs)</param>
         /// <param name="aID">String holding armyID of army character is leading</param>
         /// <param name="ails">Dictionary<string, Ailment> holding ailments effecting character's health</param>
-        public Character(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
+        public Character(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, Nationality nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg,
             String famID, String sp, String fath, String moth, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null)
         {
@@ -284,7 +284,7 @@ namespace hist_mmorpg
                 this.familyName = charToUse.familyName;
                 this.birthDate = charToUse.birthDate;
 				this.isMale = charToUse.isMale;
-				this.nationality = charToUse.nationality;
+				this.nationality = null;
                 this.isAlive = charToUse.isAlive;
 				this.maxHealth = charToUse.maxHealth;
 				this.virility = charToUse.virility;
@@ -1366,6 +1366,25 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Gets character's kingdom
+        /// </summary>
+        /// <returns>The kingdom</returns>
+        public Kingdom getKingdom()
+        {
+            Kingdom myKingdom = null;
+
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Server.kingdomMasterList)
+            {
+                if (kingdomEntry.Value.nationality == this.nationality)
+                {
+                    myKingdom = kingdomEntry.Value;
+                }
+            }
+
+            return myKingdom;
+        }
+
+        /// <summary>
         /// Gets character's king
         /// </summary>
         /// <returns>The king</returns>
@@ -1373,9 +1392,15 @@ namespace hist_mmorpg
         {
             PlayerCharacter myKing = null;
 
-            if (this.familyID != null)
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Server.kingdomMasterList)
             {
-                myKing = this.getHeadOfFamily().getHomeFief().province.kingdom.owner;
+                if (kingdomEntry.Value.nationality == this.nationality)
+                {
+                    if (kingdomEntry.Value.owner != null)
+                    {
+                        myKing = kingdomEntry.Value.owner;
+                    }
+                }
             }
 
             return myKing;
@@ -2220,7 +2245,7 @@ namespace hist_mmorpg
         /// <param name="pID">String holding ID of player who is currently playing this PlayerCharacter</param>
         /// <param name="myA">List<Army> holding character's armies</param>
         /// <param name="myS">List<string> holding character's sieges (siegeIDs)</param>
-        public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
+        public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, Nationality nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
             String sp, String fath, String moth, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> ownedF, List<Province> ownedP, String home, String ancHome, List<String> myTi, List<Army> myA,
             List<string> myS, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String pID = null)
@@ -2956,7 +2981,7 @@ namespace hist_mmorpg
                         if (i < typesRecruited.Length - 1)
                         {
                             // get army nationality
-                            string thisNationality = this.nationality.ToUpper();
+                            string thisNationality = this.nationality.natID.ToUpper();
                             if (!thisNationality.Equals("E"))
                             {
                                 thisNationality = "O";
@@ -3168,7 +3193,7 @@ namespace hist_mmorpg
         /// <param name="wa">string holding NPC's wage</param>
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
         /// <param name="isH">bool denoting if is player's heir</param>
-        public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, String nat, bool alive, Double mxHea, Double vir,
+        public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, Nationality nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
             String sp, String fath, String moth, uint wa, bool inEnt, bool isH, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, String mb = null, Fief loc = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc)
@@ -3596,7 +3621,7 @@ namespace hist_mmorpg
 		/// </summary>
 		public bool isMale { get; set; }
 		/// <summary>
-		/// Holds character nationality
+		/// Holds character nationality (ID)
 		/// </summary>
 		public String nationality { get; set; }
         /// <summary>
@@ -3709,7 +3734,7 @@ namespace hist_mmorpg
                 this.firstName = charToUse.firstName;
 				this.birthDate = charToUse.birthDate;
 				this.isMale = charToUse.isMale;
-				this.nationality = charToUse.nationality;
+				this.nationality = charToUse.nationality.natID;
                 this.isAlive = charToUse.isAlive;
 				this.maxHealth = charToUse.maxHealth;
 				this.virility = charToUse.virility;

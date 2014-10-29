@@ -88,6 +88,7 @@
     <Compile Include="Journal.cs" />
     <Compile Include="Kingdom.cs" />
     <Compile Include="Language.cs" />
+    <Compile Include="Nationality.cs" />
     <Compile Include="Place.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
