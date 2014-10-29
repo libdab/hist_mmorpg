@@ -88,8 +88,42 @@ namespace hist_mmorpg
             this.setUpRoyalGiftsLists();
             this.setUpProvinceLists();
 
-            // initialise character display in UI
+            // set player's character
             Globals_Client.charToView = Globals_Client.myChar;
+
+            // check if royal & overlord menus should be displayed
+            if ((Globals_Client.myChar == Globals_Client.myChar.getKing()) || (Globals_Client.myChar.checkIfOverlord()))
+            {
+                this.royalFunctionsToolStripMenuItem.Enabled = true;
+
+                // check if royal gifts menu items should be enabled
+                if (Globals_Client.myChar == Globals_Client.myChar.getKing())
+                {
+                    this.royalGiftsToolStripMenuItem.Enabled = true;
+                }
+                else
+                {
+                    this.royalGiftsToolStripMenuItem.Enabled = false;
+                }
+
+                // check if manage provinces menu items should be enabled
+                if (Globals_Client.myChar.checkIfOverlord())
+                {
+                    this.manageProvincesToolStripMenuItem.Enabled = true;
+                }
+                else
+                {
+                    this.manageProvincesToolStripMenuItem.Enabled = false;
+                }
+            }
+
+            // if not king/overlord, disable royal & overlord menus
+            else
+            {
+                this.royalFunctionsToolStripMenuItem.Enabled = false;
+            }
+
+            // initialise player's character display in UI
             this.refreshCharacterContainer();
 
         }
@@ -3093,7 +3127,7 @@ namespace hist_mmorpg
             // overlord provinces
             else if (Globals_Client.containerToView == this.provinceContainer)
             {
-                this.refreshProvinceContainer();
+                this.refreshProvinceContainer(Globals_Client.provinceToView);
             }
 
         }
@@ -3216,12 +3250,13 @@ namespace hist_mmorpg
             this.provinceProvListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
             this.provinceProvListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
             this.provinceProvListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Last season tax rate", -2, HorizontalAlignment.Left);
             // fiefs
             this.provinceFiefListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
             this.provinceFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
             this.provinceFiefListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
             this.provinceFiefListView.Columns.Add("Current GDP", -2, HorizontalAlignment.Left);
-            this.provinceFiefListView.Columns.Add("Last tax income", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("Last season tax income", -2, HorizontalAlignment.Left);
             this.provinceFiefListView.Columns.Add("", -2, HorizontalAlignment.Left);
         }
 
@@ -3765,10 +3800,14 @@ namespace hist_mmorpg
 
                 // title holder
                 // get character
-                PlayerCharacter thisHolder = null;
+                Character thisHolder = null;
                 if (Globals_Server.pcMasterList.ContainsKey(thisFief.titleHolder))
                 {
                     thisHolder = Globals_Server.pcMasterList[thisFief.titleHolder];
+                }
+                else if (Globals_Server.npcMasterList.ContainsKey(thisFief.titleHolder))
+                {
+                    thisHolder = Globals_Server.npcMasterList[thisFief.titleHolder];
                 }
 
                 // title holder name & id
@@ -3796,11 +3835,15 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes overlord province management display
         /// </summary>
-        public void refreshProvinceContainer()
+        /// <param name="province">Province to display</param>
+        public void refreshProvinceContainer(Province province = null)
         {
             // disable controls until place selected in ListView
+            this.provinceTaxBtn.Enabled = false;
+            this.provinceTaxTextBox.Enabled = false;
 
             // remove any previously displayed text
+            this.provinceTaxTextBox.Text = "";
 
             // clear existing items in places lists
             this.provinceProvListView.Items.Clear();
@@ -3844,6 +3887,33 @@ namespace hist_mmorpg
                         provItem.SubItems.Add("");
                     }
 
+                    // last season tax rate
+                    // get a fief
+                    Fief thisFief = null;
+                    foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
+                    {
+                        if (fiefEntry.Value.province == thisProvince)
+                        {
+                            thisFief = fiefEntry.Value;
+                            break;
+                        }
+                    }
+
+                    // get tax rate from fief
+                    if (thisFief != null)
+                    {
+                        provItem.SubItems.Add(thisFief.keyStatsCurrent[12].ToString());
+                    }
+
+                    // see if province to view has been passed in
+                    if (province != null)
+                    {
+                        if (province == thisProvince)
+                        {
+                            provItem.Selected = true;
+                        }
+                    }
+                    
                     if (provItem != null)
                     {
                         // add item to fiefsListView
@@ -3853,7 +3923,7 @@ namespace hist_mmorpg
 
             }
 
-            Globals_Client.containerToView = this.royalGiftsContainer;
+            Globals_Client.containerToView = this.provinceContainer;
             Globals_Client.containerToView.BringToFront();
         }
 
@@ -3862,6 +3932,8 @@ namespace hist_mmorpg
         /// </summary>
         public void refreshProvinceFiefList(Province p)
         {
+            bool underOccupation = false;
+
             // clear existing items in list
             this.provinceFiefListView.Items.Clear();
 
@@ -3871,6 +3943,12 @@ namespace hist_mmorpg
 
                 if (fiefEntry.Value.province == p)
                 {
+                    // check for enemy occupation
+                    if (fiefEntry.Value.getKing() != Globals_Client.myChar.getKing())
+                    {
+                        underOccupation = true;
+                    }
+
                     // id
                     fiefItem = new ListViewItem(fiefEntry.Value.id);
 
@@ -3896,12 +3974,31 @@ namespace hist_mmorpg
                     }
 
                     // GDP
-                    fiefItem.SubItems.Add("£" + fiefEntry.Value.keyStatsCurrent[1]);
+                    if (!underOccupation)
+                    {
+                        fiefItem.SubItems.Add("£" + fiefEntry.Value.keyStatsCurrent[1]);
+                    }
+                    else
+                    {
+                        fiefItem.SubItems.Add("-");
+                    }
 
                     // last tax income
-                    fiefItem.SubItems.Add("£" + fiefEntry.Value.keyStatsCurrent[11]);
+                    if (!underOccupation)
+                    {
+                        fiefItem.SubItems.Add("£" + fiefEntry.Value.keyStatsCurrent[11]);
+                    }
+                    else
+                    {
+                        fiefItem.SubItems.Add("-");
+                    }
 
-                    // check for enemy occupation
+                    // check if underOccupation message needed
+                    if (underOccupation)
+                    {
+                        fiefItem.SubItems.Add("Under enemy occupation!");
+                        fiefItem.ForeColor = Color.Red;
+                    }
 
                     if (fiefItem != null)
                     {
@@ -5636,7 +5733,7 @@ namespace hist_mmorpg
                 if (spendChanged)
                 {
                     // refresh display
-                    this.refreshFiefContainer(Globals_Client.fiefToView);
+                    this.refreshCurrentScreen();
                 }
             }
         }
@@ -13075,8 +13172,12 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void manageProvincesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // clear existing provinceToView
+            Globals_Client.provinceToView = null;
+
             // display royal gifts screen
             this.refreshProvinceContainer();
+
             // display household affairs screen
             Globals_Client.containerToView = this.provinceContainer;
             Globals_Client.containerToView.BringToFront();
@@ -13093,7 +13194,6 @@ namespace hist_mmorpg
             {
                 // get province
                 Province thisProvince = null;
-
                 if (Globals_Server.provinceMasterList.ContainsKey(this.provinceProvListView.SelectedItems[0].SubItems[0].Text))
                 {
                     thisProvince = Globals_Server.provinceMasterList[this.provinceProvListView.SelectedItems[0].SubItems[0].Text];
@@ -13101,9 +13201,91 @@ namespace hist_mmorpg
 
                 if (thisProvince != null)
                 {
+                    // refresh fief list
                     this.refreshProvinceFiefList(thisProvince);
+
+                    // populate provinceTaxTextBox
+                    this.provinceTaxTextBox.Text = thisProvince.taxRate.ToString();
+
+                    // enable controls
+                    this.provinceTaxBtn.Enabled = true;
+                    this.provinceTaxTextBox.Enabled = true;
+
+                    // set provinceToView
+                    Globals_Client.provinceToView = thisProvince;
                 }
             }
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the provinceTaxBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void provinceTaxBtn_Click(object sender, EventArgs e)
+        {
+            if (this.provinceProvListView.SelectedItems.Count > 0)
+            {
+                bool rateChanged = false;
+
+                // get province
+                Province thisProvince = null;
+                if (Globals_Server.provinceMasterList.ContainsKey(this.provinceProvListView.SelectedItems[0].SubItems[0].Text))
+                {
+                    thisProvince = Globals_Server.provinceMasterList[this.provinceProvListView.SelectedItems[0].SubItems[0].Text];
+                }
+
+                if (thisProvince != null)
+                {
+                    // keep track of whether tax has changed
+                    double originalRate = thisProvince.taxRate;
+
+                    try
+                    {
+                        // get new rate
+                        Double newTax = Convert.ToDouble(this.provinceTaxTextBox.Text);
+
+                        // if rate changed, commit new rate
+                        if (newTax != originalRate)
+                        {
+                            // adjust tax rate
+                            thisProvince.adjustTaxRate(newTax);
+                            rateChanged = true;
+
+                            // display confirmation message
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Province tax rate changed.");
+                            }
+                        }
+                    }
+                    catch (System.FormatException fe)
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                        }
+                    }
+                    catch (System.OverflowException ofe)
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                        }
+                    }
+                    finally
+                    {
+                        // refresh screen if expenditure changed
+                        if (rateChanged)
+                        {
+                            // refresh display
+                            this.refreshCurrentScreen();
+                        }
+                    }
+                }
+
+            }
+
         }
 
     }

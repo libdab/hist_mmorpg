@@ -256,6 +256,9 @@ namespace hist_mmorpg
             this.provinceFieflistContainer = new System.Windows.Forms.SplitContainer();
             this.label23 = new System.Windows.Forms.Label();
             this.provinceFiefListView = new System.Windows.Forms.ListView();
+            this.label28 = new System.Windows.Forms.Label();
+            this.provinceTaxTextBox = new System.Windows.Forms.TextBox();
+            this.provinceTaxBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -360,6 +363,7 @@ namespace hist_mmorpg
             this.royalGiftsFiefContainer.Panel2.SuspendLayout();
             this.royalGiftsFiefContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.provinceContainer)).BeginInit();
+            this.provinceContainer.Panel1.SuspendLayout();
             this.provinceContainer.Panel2.SuspendLayout();
             this.provinceContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.provinceListsContainer)).BeginInit();
@@ -644,7 +648,7 @@ namespace hist_mmorpg
             // fiefContainer
             // 
             this.fiefContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fiefContainer.Location = new System.Drawing.Point(0, 0);
+            this.fiefContainer.Location = new System.Drawing.Point(0, 24);
             this.fiefContainer.Name = "fiefContainer";
             // 
             // fiefContainer.Panel1
@@ -687,7 +691,7 @@ namespace hist_mmorpg
             // fiefContainer.Panel2
             // 
             this.fiefContainer.Panel2.Controls.Add(this.fiefTextContainer);
-            this.fiefContainer.Size = new System.Drawing.Size(935, 735);
+            this.fiefContainer.Size = new System.Drawing.Size(935, 711);
             this.fiefContainer.SplitterDistance = 370;
             this.fiefContainer.TabIndex = 3;
             // 
@@ -1020,8 +1024,8 @@ namespace hist_mmorpg
             // fiefTextContainer.Panel2
             // 
             this.fiefTextContainer.Panel2.Controls.Add(this.fiefFinanceContainer1);
-            this.fiefTextContainer.Size = new System.Drawing.Size(561, 735);
-            this.fiefTextContainer.SplitterDistance = 217;
+            this.fiefTextContainer.Size = new System.Drawing.Size(561, 711);
+            this.fiefTextContainer.SplitterDistance = 209;
             this.fiefTextContainer.TabIndex = 0;
             // 
             // fiefTextBox
@@ -1031,7 +1035,7 @@ namespace hist_mmorpg
             this.fiefTextBox.Multiline = true;
             this.fiefTextBox.Name = "fiefTextBox";
             this.fiefTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.fiefTextBox.Size = new System.Drawing.Size(561, 217);
+            this.fiefTextBox.Size = new System.Drawing.Size(561, 209);
             this.fiefTextBox.TabIndex = 0;
             // 
             // fiefFinanceContainer1
@@ -1047,7 +1051,7 @@ namespace hist_mmorpg
             // fiefFinanceContainer1.Panel2
             // 
             this.fiefFinanceContainer1.Panel2.Controls.Add(this.fiefFinanceContainer2);
-            this.fiefFinanceContainer1.Size = new System.Drawing.Size(561, 514);
+            this.fiefFinanceContainer1.Size = new System.Drawing.Size(561, 498);
             this.fiefFinanceContainer1.SplitterDistance = 187;
             this.fiefFinanceContainer1.TabIndex = 0;
             // 
@@ -1058,7 +1062,7 @@ namespace hist_mmorpg
             this.fiefPrevKeyStatsTextBox.Multiline = true;
             this.fiefPrevKeyStatsTextBox.Name = "fiefPrevKeyStatsTextBox";
             this.fiefPrevKeyStatsTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.fiefPrevKeyStatsTextBox.Size = new System.Drawing.Size(187, 514);
+            this.fiefPrevKeyStatsTextBox.Size = new System.Drawing.Size(187, 498);
             this.fiefPrevKeyStatsTextBox.TabIndex = 0;
             // 
             // fiefFinanceContainer2
@@ -1074,7 +1078,7 @@ namespace hist_mmorpg
             // fiefFinanceContainer2.Panel2
             // 
             this.fiefFinanceContainer2.Panel2.Controls.Add(this.fiefNextKeyStatsTextBox);
-            this.fiefFinanceContainer2.Size = new System.Drawing.Size(370, 514);
+            this.fiefFinanceContainer2.Size = new System.Drawing.Size(370, 498);
             this.fiefFinanceContainer2.SplitterDistance = 186;
             this.fiefFinanceContainer2.TabIndex = 0;
             // 
@@ -1085,7 +1089,7 @@ namespace hist_mmorpg
             this.fiefCurrKeyStatsTextBox.Multiline = true;
             this.fiefCurrKeyStatsTextBox.Name = "fiefCurrKeyStatsTextBox";
             this.fiefCurrKeyStatsTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.fiefCurrKeyStatsTextBox.Size = new System.Drawing.Size(186, 514);
+            this.fiefCurrKeyStatsTextBox.Size = new System.Drawing.Size(186, 498);
             this.fiefCurrKeyStatsTextBox.TabIndex = 0;
             // 
             // fiefNextKeyStatsTextBox
@@ -1095,7 +1099,7 @@ namespace hist_mmorpg
             this.fiefNextKeyStatsTextBox.Multiline = true;
             this.fiefNextKeyStatsTextBox.Name = "fiefNextKeyStatsTextBox";
             this.fiefNextKeyStatsTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.fiefNextKeyStatsTextBox.Size = new System.Drawing.Size(180, 514);
+            this.fiefNextKeyStatsTextBox.Size = new System.Drawing.Size(180, 498);
             this.fiefNextKeyStatsTextBox.TabIndex = 0;
             // 
             // travelContainer
@@ -2737,6 +2741,12 @@ namespace hist_mmorpg
             this.provinceContainer.Location = new System.Drawing.Point(0, 24);
             this.provinceContainer.Name = "provinceContainer";
             // 
+            // provinceContainer.Panel1
+            // 
+            this.provinceContainer.Panel1.Controls.Add(this.label28);
+            this.provinceContainer.Panel1.Controls.Add(this.provinceTaxTextBox);
+            this.provinceContainer.Panel1.Controls.Add(this.provinceTaxBtn);
+            // 
             // provinceContainer.Panel2
             // 
             this.provinceContainer.Panel2.Controls.Add(this.provinceListsContainer);
@@ -2841,17 +2851,43 @@ namespace hist_mmorpg
             this.provinceFiefListView.UseCompatibleStateImageBehavior = false;
             this.provinceFiefListView.View = System.Windows.Forms.View.Details;
             // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(27, 37);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(105, 13);
+            this.label28.TabIndex = 43;
+            this.label28.Text = "Province Tax Rate : ";
+            // 
+            // provinceTaxTextBox
+            // 
+            this.provinceTaxTextBox.Location = new System.Drawing.Point(135, 34);
+            this.provinceTaxTextBox.Name = "provinceTaxTextBox";
+            this.provinceTaxTextBox.Size = new System.Drawing.Size(57, 20);
+            this.provinceTaxTextBox.TabIndex = 38;
+            // 
+            // provinceTaxBtn
+            // 
+            this.provinceTaxBtn.Location = new System.Drawing.Point(30, 64);
+            this.provinceTaxBtn.Name = "provinceTaxBtn";
+            this.provinceTaxBtn.Size = new System.Drawing.Size(165, 23);
+            this.provinceTaxBtn.TabIndex = 37;
+            this.provinceTaxBtn.Text = "Commit rate above";
+            this.provinceTaxBtn.UseVisualStyleBackColor = true;
+            this.provinceTaxBtn.Click += new System.EventHandler(this.provinceTaxBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
             this.Controls.Add(this.provinceContainer);
+            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.royalGiftsContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.meetingPlaceContainer);
@@ -2989,6 +3025,8 @@ namespace hist_mmorpg
             this.royalGiftsFiefContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.royalGiftsFiefContainer)).EndInit();
             this.royalGiftsFiefContainer.ResumeLayout(false);
+            this.provinceContainer.Panel1.ResumeLayout(false);
+            this.provinceContainer.Panel1.PerformLayout();
             this.provinceContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.provinceContainer)).EndInit();
             this.provinceContainer.ResumeLayout(false);
@@ -3239,6 +3277,9 @@ namespace hist_mmorpg
         private System.Windows.Forms.SplitContainer provinceFieflistContainer;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.ListView provinceFiefListView;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.TextBox provinceTaxTextBox;
+        private System.Windows.Forms.Button provinceTaxBtn;
 
     }
 }

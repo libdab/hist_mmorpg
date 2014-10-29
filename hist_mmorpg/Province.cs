@@ -108,6 +108,34 @@ namespace hist_mmorpg
             // rank to be inserted later
             this.rank = null;
         }
+
+        /// <summary>
+        /// Adjusts province tax rate
+        /// </summary>
+        /// <param name="tx">double containing new tax rate</param>
+        public void adjustTaxRate(double tx)
+        {
+            // ensure max 100 and min 0
+            if (tx > 100)
+            {
+                tx = 100;
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The maximum tax rate is 100%.  Rate adjusted.");
+                }
+            }
+            else if (tx < 0)
+            {
+                tx = 0;
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("The minimum tax rate is 0%.  Rate adjusted.");
+                }
+            }
+
+            this.taxRate = tx;
+        }
+
     }
 
 	/// <summary>

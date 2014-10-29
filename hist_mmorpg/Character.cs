@@ -1066,6 +1066,29 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Checks if the character is a province overlord
+        /// </summary>
+        /// <returns>bool indicating if the character is an overlord</returns>
+        public bool checkIfOverlord()
+        {
+            bool isOverlord = false;
+
+            if (this is PlayerCharacter)
+            {
+                foreach (string placeID in this.myTitles)
+                {
+                    if (Globals_Server.provinceMasterList.ContainsKey(placeID))
+                    {
+                        isOverlord = true;
+                        break;
+                    }
+                }
+            }
+
+            return isOverlord;
+        }
+
+        /// <summary>
         /// Promotes a NonPlayerCharacter to a PlayerCharacter
         /// </summary>
         /// <param name="npc">NonPlayerCharacter to be promoted</param>
@@ -1363,47 +1386,6 @@ namespace hist_mmorpg
             }
 
             return mother;
-        }
-
-        /// <summary>
-        /// Gets character's kingdom
-        /// </summary>
-        /// <returns>The kingdom</returns>
-        public Kingdom getKingdom()
-        {
-            Kingdom myKingdom = null;
-
-            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Server.kingdomMasterList)
-            {
-                if (kingdomEntry.Value.nationality == this.nationality)
-                {
-                    myKingdom = kingdomEntry.Value;
-                }
-            }
-
-            return myKingdom;
-        }
-
-        /// <summary>
-        /// Gets character's king
-        /// </summary>
-        /// <returns>The king</returns>
-        public PlayerCharacter getKing()
-        {
-            PlayerCharacter myKing = null;
-
-            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Server.kingdomMasterList)
-            {
-                if (kingdomEntry.Value.nationality == this.nationality)
-                {
-                    if (kingdomEntry.Value.owner != null)
-                    {
-                        myKing = kingdomEntry.Value.owner;
-                    }
-                }
-            }
-
-            return myKing;
         }
 
         /// <summary>
@@ -1955,9 +1937,9 @@ namespace hist_mmorpg
                             // boys = try to get king's firstName 
                             if (this.isMale)
                             {
-                                if (this.getKing() != null)
+                                if ((this as NonPlayerCharacter).getKing() != null)
                                 {
-                                    this.firstName = this.getKing().firstName;
+                                    this.firstName = (this as NonPlayerCharacter).getKing().firstName;
                                 }
                             }
                             else
@@ -3017,6 +2999,51 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Gets character's kingdom
+        /// </summary>
+        /// <returns>The kingdom</returns>
+        public Kingdom getKingdom()
+        {
+            Kingdom myKingdom = null;
+
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Server.kingdomMasterList)
+            {
+                // get kingdom with matching nationality
+                if (kingdomEntry.Value.nationality == this.nationality)
+                {
+                    myKingdom = kingdomEntry.Value;
+                    break;
+                }
+            }
+
+            return myKingdom;
+        }
+
+        /// <summary>
+        /// Gets character's king
+        /// </summary>
+        /// <returns>The king</returns>
+        public PlayerCharacter getKing()
+        {
+            PlayerCharacter myKing = null;
+
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Server.kingdomMasterList)
+            {
+                // get king with matching nationality
+                if (kingdomEntry.Value.nationality == this.nationality)
+                {
+                    if (kingdomEntry.Value.owner != null)
+                    {
+                        myKing = kingdomEntry.Value.owner;
+                    }
+                    break;
+                }
+            }
+
+            return myKing;
+        }
+
+        /// <summary>
         /// Returns the PlayerCharacter's home fief
         /// </summary>
         /// <returns>The home fief</returns>
@@ -3571,6 +3598,104 @@ namespace hist_mmorpg
             }
 
             return myHeadOfFamily;
+        }
+
+        /// <summary>
+        /// Gets character's kingdom
+        /// </summary>
+        /// <returns>The kingdom</returns>
+        public Kingdom getKingdom()
+        {
+            Kingdom myKingdom = null;
+            Character nationalitySource = null;
+
+            // get nationality source
+            // employer
+            if (this.familyID != null)
+            {
+                if (Globals_Server.pcMasterList.ContainsKey(this.familyID))
+                {
+                    nationalitySource = Globals_Server.pcMasterList[this.familyID];
+                }
+            }
+
+            // head of family
+            else if (this.myBoss != null)
+            {
+                if (Globals_Server.pcMasterList.ContainsKey(this.myBoss))
+                {
+                    nationalitySource = Globals_Server.pcMasterList[this.myBoss];
+                }
+            }
+
+            // self
+            else
+            {
+                nationalitySource = this;
+            }
+
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Server.kingdomMasterList)
+            {
+                // get kingdom with matching nationality
+                if (kingdomEntry.Value.nationality == nationalitySource.nationality)
+                {
+                    myKingdom = kingdomEntry.Value;
+                    break;
+                }
+            }
+
+            return myKingdom;
+        }
+
+        /// <summary>
+        /// Gets character's king
+        /// </summary>
+        /// <returns>The king</returns>
+        public PlayerCharacter getKing()
+        {
+            PlayerCharacter myKing = null;
+            Character nationalitySource = null;
+
+            // get nationality source
+            // employer
+            if (this.familyID != null)
+            {
+                if (Globals_Server.pcMasterList.ContainsKey(this.familyID))
+                {
+                    nationalitySource = Globals_Server.pcMasterList[this.familyID];
+                }
+            }
+
+            // head of family
+            else if (this.myBoss != null)
+            {
+                if (Globals_Server.pcMasterList.ContainsKey(this.myBoss))
+                {
+                    nationalitySource = Globals_Server.pcMasterList[this.myBoss];
+                }
+            }
+
+            // self
+            else
+            {
+                nationalitySource = this;
+            }
+
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Server.kingdomMasterList)
+            {
+                // get king with matching nationality
+                if (kingdomEntry.Value.nationality == nationalitySource.nationality)
+                {
+                    if (kingdomEntry.Value.owner != null)
+                    {
+                        myKing = kingdomEntry.Value.owner;
+                    }
+
+                    break;
+                }
+            }
+
+            return myKing;
         }
 
         /// <summary>

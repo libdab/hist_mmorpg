@@ -24,6 +24,10 @@ namespace hist_mmorpg
         /// </summary>
         public static Fief fiefToView;
         /// <summary>
+        /// Holds Province to view in UI
+        /// </summary>
+        public static Province provinceToView;
+        /// <summary>
         /// Holds Army to view in UI
         /// </summary>
         public static Army armyToView;

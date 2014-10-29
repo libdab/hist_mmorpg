@@ -1421,6 +1421,21 @@ namespace hist_mmorpg
             // update fief treasury with new bottom line
             this.treasury += Convert.ToInt32(this.keyStatsCurrent[13]);
 
+            // pay overlord taxes into overlord's treasury
+            // get overlord
+            PlayerCharacter thisOverlord = this.getOverlord();
+            if (thisOverlord != null)
+            {
+                // get overlord's home fief
+                Fief overlordHome = thisOverlord.getHomeFief();
+
+                if (overlordHome != null)
+                {
+                    // pay in taxes
+                    overlordHome.treasury += Convert.ToInt32(this.calcNewOlordTaxes());
+                }
+            }
+
             // check for unrest/rebellion
             this.status = this.checkFiefStatus();
 
@@ -1685,9 +1700,12 @@ namespace hist_mmorpg
         {
             PlayerCharacter myOverlord = null;
 
-            if (this.province.owner != null)
+            if (this.province.titleHolder != null)
             {
-                myOverlord = this.province.owner;
+                if (Globals_Server.pcMasterList.ContainsKey(this.province.titleHolder))
+                {
+                    myOverlord = Globals_Server.pcMasterList[this.province.titleHolder];
+                }
             }
 
             return myOverlord;
