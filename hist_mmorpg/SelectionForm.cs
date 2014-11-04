@@ -226,7 +226,7 @@ namespace hist_mmorpg
                     if (thisPlayer.Value.playerID != null)
                     {
                         // don't show this player
-                        if (thisPlayer.Value != Globals_Client.myChar)
+                        if (thisPlayer.Value != Globals_Client.myPlayerCharacter)
                         {
                             // Create an item and subitems for each character
 
@@ -249,28 +249,28 @@ namespace hist_mmorpg
             // else ITERATE THROUGH EMPLOYEES/FAMILY
             else
             {
-                for (int i = 0; i < Globals_Client.myChar.myNPCs.Count; i++)
+                for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
                 {
                     // can only appoint males
-                    if (Globals_Client.myChar.myNPCs[i].isMale)
+                    if (Globals_Client.myPlayerCharacter.myNPCs[i].isMale)
                     {
                         // Create an item and subitems for each character
 
                         // name
-                        myCharItem = new ListViewItem(Globals_Client.myChar.myNPCs[i].firstName + " " + Globals_Client.myChar.myNPCs[i].familyName);
+                        myCharItem = new ListViewItem(Globals_Client.myPlayerCharacter.myNPCs[i].firstName + " " + Globals_Client.myPlayerCharacter.myNPCs[i].familyName);
 
                         // charID
-                        myCharItem.SubItems.Add(Globals_Client.myChar.myNPCs[i].charID);
+                        myCharItem.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].charID);
 
                         // location
-                        myCharItem.SubItems.Add(Globals_Client.myChar.myNPCs[i].location.id);
+                        myCharItem.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].location.id);
 
                         // if appointing leader, only add item to fiefsListView if is in same fief as army
                         if (this.function.Equals("leader"))
                         {
                             if (myArmy != null)
                             {
-                                if (Globals_Client.myChar.myNPCs[i].location.id != myArmy.location)
+                                if (Globals_Client.myPlayerCharacter.myNPCs[i].location.id != myArmy.location)
                                 {
                                     addItem = false;
                                 }
@@ -313,7 +313,7 @@ namespace hist_mmorpg
                 if (thisPlayer.Value.playerID != null)
                 {
                     // don't show this player
-                    if (thisPlayer.Value != Globals_Client.myChar)
+                    if (thisPlayer.Value != Globals_Client.myPlayerCharacter)
                     {
                         // Create an item and subitems for each character
 
@@ -408,7 +408,7 @@ namespace hist_mmorpg
             armyText += "Owner: " + thisOwner.firstName + " " + thisOwner.familyName + " (" + thisOwner.charID + ")\r\n\r\n";
 
             // check if is your army (will effect display of troop numbers)
-            if (thisOwner == Globals_Client.myChar)
+            if (thisOwner == Globals_Client.myPlayerCharacter)
             {
                 isMyArmy = true;
             }
@@ -627,7 +627,7 @@ namespace hist_mmorpg
                         if (selectedCharacter != null)
                         {
                             // set the selected NPC as title holder
-                            Globals_Client.myChar.grantTitle(selectedCharacter, thisPlace);
+                            Globals_Client.myPlayerCharacter.grantTitle(selectedCharacter, thisPlace);
 
                             // refresh the fief information (in the main form)
                             this.parent.refreshCurrentScreen();
@@ -655,7 +655,7 @@ namespace hist_mmorpg
                 else if (this.function.Equals("titleHolder"))
                 {
                     // set the selected NPC as title holder
-                    Globals_Client.myChar.grantTitle(selectedCharacter, Globals_Client.fiefToView);
+                    Globals_Client.myPlayerCharacter.grantTitle(selectedCharacter, Globals_Client.fiefToView);
 
                     // refresh the fief information (in the main form)
                     this.parent.refreshCurrentScreen();
@@ -1275,7 +1275,7 @@ namespace hist_mmorpg
                 PlayerCharacter otherArmyOwner = otherArmy.getOwner();
 
                 // if selected army is not owned by player && observer is an army leader, enable attack button
-                if ((otherArmyOwner != Globals_Client.myChar) && (this.observer.armyID != null))
+                if ((otherArmyOwner != Globals_Client.myPlayerCharacter) && (this.observer.armyID != null))
                 {
                     this.armiesAttackBtn.Enabled = true;
                 }
@@ -1421,7 +1421,7 @@ namespace hist_mmorpg
                     this.transferFundsTextBox.Enabled = true;
 
                     // get home fief
-                    Fief home = Globals_Client.myChar.getHomeFief();
+                    Fief home = Globals_Client.myPlayerCharacter.getHomeFief();
 
                     // get home treasury
                     int homeTreasury = home.getAvailableTreasury(true);
@@ -1454,7 +1454,7 @@ namespace hist_mmorpg
                     if (playerTo != null)
                     {
                         // get home fief
-                        Fief fiefFrom = Globals_Client.myChar.getHomeFief();
+                        Fief fiefFrom = Globals_Client.myPlayerCharacter.getHomeFief();
 
                         // get playerTo's home fief
                         Fief fiefTo = playerTo.getHomeFief();

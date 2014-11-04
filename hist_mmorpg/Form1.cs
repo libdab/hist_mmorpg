@@ -72,11 +72,11 @@ namespace hist_mmorpg
 				this.initialLoad ();
 			}
 
-            // set myChar
-            Globals_Client.myChar = Globals_Server.pcMasterList[pc];
-                
+            // set myPlayerCharacter
+            Globals_Client.myPlayerCharacter = Globals_Server.pcMasterList[pc];
+
             // set inital fief to display
-            Globals_Client.fiefToView = Globals_Client.myChar.location;
+            Globals_Client.fiefToView = Globals_Client.myPlayerCharacter.location;
 
             // initialise list elements in UI
             this.setUpFiefsList();
@@ -88,16 +88,19 @@ namespace hist_mmorpg
             this.setUpRoyalGiftsLists();
             this.setUpProvinceLists();
 
-            // set player's character
-            Globals_Client.charToView = Globals_Client.myChar;
+            // set player's character to display
+            Globals_Client.charToView = Globals_Client.myPlayerCharacter;
 
             // check if royal & overlord menus should be displayed
-            if ((Globals_Client.myChar == Globals_Client.myChar.getKing()) || (Globals_Client.myChar.checkIfOverlord()))
+            if (((Globals_Client.myPlayerCharacter.checkIsKing())
+                || (Globals_Client.myPlayerCharacter.checkIfOverlord()))
+                || (Globals_Client.myPlayerCharacter.checkIsHerald()))
             {
                 this.royalFunctionsToolStripMenuItem.Enabled = true;
 
                 // check if royal gifts menu items should be enabled
-                if (Globals_Client.myChar == Globals_Client.myChar.getKing())
+                if ((Globals_Client.myPlayerCharacter.checkIsKing())
+                || (Globals_Client.myPlayerCharacter.checkIsHerald()))
                 {
                     this.royalGiftsToolStripMenuItem.Enabled = true;
                 }
@@ -107,7 +110,7 @@ namespace hist_mmorpg
                 }
 
                 // check if manage provinces menu items should be enabled
-                if (Globals_Client.myChar.checkIfOverlord())
+                if (Globals_Client.myPlayerCharacter.checkIfOverlord())
                 {
                     this.manageProvincesToolStripMenuItem.Enabled = true;
                 }
@@ -500,8 +503,14 @@ namespace hist_mmorpg
             myChar2Daughter.days = myChar2Daughter.getDaysAllowance();
 
             // set kingdom owners
-            myKingdom1.owner = myChar1;
-            myKingdom2.owner = myChar2;
+            Globals_Server.kingOne = myChar1;
+            Globals_Server.kingTwo = myChar2;
+            myKingdom1.owner = Globals_Server.kingOne;
+            myKingdom2.owner = Globals_Server.kingTwo;
+
+            // set heralds
+            Globals_Server.heraldOne = myChar1;
+            Globals_Server.heraldTwo = myChar2;
 
             // set province owners
             myProv.owner = myChar1;
@@ -3233,11 +3242,16 @@ namespace hist_mmorpg
             this.royalGiftsProvListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
             this.royalGiftsProvListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
             this.royalGiftsProvListView.Columns.Add("Title Holder", -2, HorizontalAlignment.Left);
+            this.royalGiftsProvListView.Columns.Add("Last Tax Rate", -2, HorizontalAlignment.Left);
+            this.royalGiftsProvListView.Columns.Add("Last Tax Income", -2, HorizontalAlignment.Left);
             // fiefs
             this.royalGiftsFiefListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
             this.royalGiftsFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
             this.royalGiftsFiefListView.Columns.Add("Province", -2, HorizontalAlignment.Left);
             this.royalGiftsFiefListView.Columns.Add("Title Holder", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Last GDP", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Last Tax Income", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Current Treasury", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -3343,19 +3357,19 @@ namespace hist_mmorpg
             // clear existing items in list
             this.fiefsListView.Items.Clear();
 
-            ListViewItem[] fiefsOwned = new ListViewItem[Globals_Client.myChar.ownedFiefs.Count];
+            ListViewItem[] fiefsOwned = new ListViewItem[Globals_Client.myPlayerCharacter.ownedFiefs.Count];
             // iterates through fiefsOwned
-            for (int i = 0; i < Globals_Client.myChar.ownedFiefs.Count; i++)
+            for (int i = 0; i < Globals_Client.myPlayerCharacter.ownedFiefs.Count; i++)
             {
                 // Create an item and subitem for each fief
                 // name
-                fiefsOwned[i] = new ListViewItem(Globals_Client.myChar.ownedFiefs[i].name);
+                fiefsOwned[i] = new ListViewItem(Globals_Client.myPlayerCharacter.ownedFiefs[i].name);
 
                 // ID
-                fiefsOwned[i].SubItems.Add(Globals_Client.myChar.ownedFiefs[i].id);
+                fiefsOwned[i].SubItems.Add(Globals_Client.myPlayerCharacter.ownedFiefs[i].id);
 
                 // current location
-                if (Globals_Client.myChar.ownedFiefs[i] == Globals_Client.myChar.location)
+                if (Globals_Client.myPlayerCharacter.ownedFiefs[i] == Globals_Client.myPlayerCharacter.location)
                 {
                     fiefsOwned[i].SubItems.Add("You are here");
                 }
@@ -3365,7 +3379,7 @@ namespace hist_mmorpg
                 }
 
                 // home fief
-                if (Globals_Client.myChar.ownedFiefs[i].id.Equals(Globals_Client.myChar.homeFief))
+                if (Globals_Client.myPlayerCharacter.ownedFiefs[i].id.Equals(Globals_Client.myPlayerCharacter.homeFief))
                 {
                     fiefsOwned[i].SubItems.Add("Home");
                 }
@@ -3434,13 +3448,13 @@ namespace hist_mmorpg
         {
             string textToDisplay = "";
             // date/season and main character's days left
-            textToDisplay += Globals_Server.clock.seasons[Globals_Server.clock.currentSeason] + ", " + Globals_Server.clock.currentYear + ".  Your days left: " + Globals_Client.myChar.days + "\r\n\r\n";
+            textToDisplay += Globals_Server.clock.seasons[Globals_Server.clock.currentSeason] + ", " + Globals_Server.clock.currentYear + ".  Your days left: " + Globals_Client.myPlayerCharacter.days + "\r\n\r\n";
             // Fief name/ID and province name
-            textToDisplay += "Fief: " + Globals_Client.myChar.location.name + " (" + Globals_Client.myChar.location.id + ")  in " + Globals_Client.myChar.location.province.name + ", " + Globals_Client.myChar.location.province.kingdom.name + "\r\n\r\n";
+            textToDisplay += "Fief: " + Globals_Client.myPlayerCharacter.location.name + " (" + Globals_Client.myPlayerCharacter.location.id + ")  in " + Globals_Client.myPlayerCharacter.location.province.name + ", " + Globals_Client.myPlayerCharacter.location.province.kingdom.name + "\r\n\r\n";
             // Fief owner
-            textToDisplay += "Owner: " + Globals_Client.myChar.location.owner.firstName + " " + Globals_Client.myChar.location.owner.familyName + "\r\n";
+            textToDisplay += "Owner: " + Globals_Client.myPlayerCharacter.location.owner.firstName + " " + Globals_Client.myPlayerCharacter.location.owner.familyName + "\r\n";
             // Fief overlord
-            textToDisplay += "Overlord: " + Globals_Client.myChar.location.getOverlord().firstName + " " + Globals_Client.myChar.location.getOverlord().familyName + "\r\n";
+            textToDisplay += "Overlord: " + Globals_Client.myPlayerCharacter.location.getOverlord().firstName + " " + Globals_Client.myPlayerCharacter.location.getOverlord().familyName + "\r\n";
 
             this.meetingPlaceTextBox.ReadOnly = true;
             this.meetingPlaceTextBox.Text = textToDisplay;
@@ -3463,34 +3477,34 @@ namespace hist_mmorpg
             }
 
             // iterates through characters
-            for (int i = 0; i < Globals_Client.myChar.location.charactersInFief.Count; i++)
+            for (int i = 0; i < Globals_Client.myPlayerCharacter.location.charactersInFief.Count; i++)
             {
                 ListViewItem charsInCourt = null;
 
                 // only display characters in relevant location (in keep, or not)
-                if (Globals_Client.myChar.location.charactersInFief[i].inKeep == ifInKeep)
+                if (Globals_Client.myPlayerCharacter.location.charactersInFief[i].inKeep == ifInKeep)
                 {
                     // don't show the player
-                    if (Globals_Client.myChar.location.charactersInFief[i] != Globals_Client.myChar)
+                    if (Globals_Client.myPlayerCharacter.location.charactersInFief[i] != Globals_Client.myPlayerCharacter)
                     {
 
                         switch (place)
                         {
                             case "tavern":
                                 // only show NPCs
-                                if (Globals_Client.myChar.location.charactersInFief[i] is NonPlayerCharacter)
+                                if (Globals_Client.myPlayerCharacter.location.charactersInFief[i] is NonPlayerCharacter)
                                 {
                                     // only show unemployed
-                                    if ((Globals_Client.myChar.location.charactersInFief[i] as NonPlayerCharacter).wage == 0)
+                                    if ((Globals_Client.myPlayerCharacter.location.charactersInFief[i] as NonPlayerCharacter).wage == 0)
                                     {
                                         // Create an item and subitems for character
-                                        charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myChar.location.charactersInFief[i]);
+                                        charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
                                     }
                                 }
                                 break;
                             default:
                                 // Create an item and subitems for character
-                                charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myChar.location.charactersInFief[i]);
+                                charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
                                 break;
                         }
 
@@ -3539,7 +3553,7 @@ namespace hist_mmorpg
             {
                 myHousehold = ch.getHeadOfFamily().familyName + " (ID: " + ch.familyID + ")";
 
-                if (ch.familyID.Equals(Globals_Client.myChar.charID))
+                if (ch.familyID.Equals(Globals_Client.myPlayerCharacter.charID))
                 {
                     isFamily = true;
                 }
@@ -3568,7 +3582,7 @@ namespace hist_mmorpg
             else
             {
                 // check for employees
-                if (((ch as NonPlayerCharacter).myBoss != null) && (ch as NonPlayerCharacter).myBoss.Equals(Globals_Client.myChar.charID))
+                if (((ch as NonPlayerCharacter).myBoss != null) && (ch as NonPlayerCharacter).myBoss.Equals(Globals_Client.myPlayerCharacter.charID))
                 {
                     isEmployee = true;
                 }
@@ -3600,11 +3614,11 @@ namespace hist_mmorpg
             if (ch is NonPlayerCharacter)
             {
                 // iterate through employees checking for character
-                for (int i = 0; i < Globals_Client.myChar.myNPCs.Count; i++)
+                for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
                 {
-                    if (Globals_Client.myChar.myNPCs[i] == ch)
+                    if (Globals_Client.myPlayerCharacter.myNPCs[i] == ch)
                     {
-                        if (Globals_Client.myChar.myNPCs[i].inEntourage)
+                        if (Globals_Client.myPlayerCharacter.myNPCs[i].inEntourage)
                         {
                             isCompanion = true;
                         }
@@ -3660,47 +3674,47 @@ namespace hist_mmorpg
 
             // iterates through household characters adding information to ListView
             // and checking if naming is required
-            for (int i = 0; i < Globals_Client.myChar.myNPCs.Count; i++)
+            for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
             {
                 ListViewItem houseChar = null;
 
                 // name
-                houseChar = new ListViewItem(Globals_Client.myChar.myNPCs[i].firstName + " " + Globals_Client.myChar.myNPCs[i].familyName);
+                houseChar = new ListViewItem(Globals_Client.myPlayerCharacter.myNPCs[i].firstName + " " + Globals_Client.myPlayerCharacter.myNPCs[i].familyName);
 
                 // charID
-                houseChar.SubItems.Add(Globals_Client.myChar.myNPCs[i].charID);
+                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].charID);
 
                 // function (e.g. employee, son, wife, etc.)
-                houseChar.SubItems.Add(Globals_Client.myChar.myNPCs[i].getFunction(Globals_Client.myChar));
+                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].getFunction(Globals_Client.myPlayerCharacter));
 
                 // responsibilities (i.e. jobs)
-                houseChar.SubItems.Add(Globals_Client.myChar.myNPCs[i].getResponsibilities(Globals_Client.myChar));
+                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].getResponsibilities(Globals_Client.myPlayerCharacter));
 
                 // location
-                houseChar.SubItems.Add(Globals_Client.myChar.myNPCs[i].location.id + " (" + Globals_Client.myChar.myNPCs[i].location.name + ")");
+                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].location.id + " (" + Globals_Client.myPlayerCharacter.myNPCs[i].location.name + ")");
 
                 // show whether is in player's entourage
-                if (Globals_Client.myChar.myNPCs[i].inEntourage)
+                if (Globals_Client.myPlayerCharacter.myNPCs[i].inEntourage)
                 {
                     houseChar.SubItems.Add("Yes");
                 }
 
                 // check if needs to be named
-                if (Globals_Client.myChar.myNPCs[i].familyID != null)
+                if (Globals_Client.myPlayerCharacter.myNPCs[i].familyID != null)
                 {
-                    bool nameRequired = Globals_Client.myChar.myNPCs[i].checkForName(0);
+                    bool nameRequired = Globals_Client.myPlayerCharacter.myNPCs[i].checkForName(0);
 
                     if (nameRequired)
                     {
                         showNameWarning = true;
-                        nameWarning += " - " + Globals_Client.myChar.myNPCs[i].charID + " (" + Globals_Client.myChar.myNPCs[i].firstName + " " + Globals_Client.myChar.myNPCs[i].familyName + ")\r\n";
+                        nameWarning += " - " + Globals_Client.myPlayerCharacter.myNPCs[i].charID + " (" + Globals_Client.myPlayerCharacter.myNPCs[i].firstName + " " + Globals_Client.myPlayerCharacter.myNPCs[i].familyName + ")\r\n";
                     }
                 }
 
                 if (houseChar != null)
                 {
                     // if NPC passed in as parameter, show as selected
-                    if (Globals_Client.myChar.myNPCs[i] == npc)
+                    if (Globals_Client.myPlayerCharacter.myNPCs[i] == npc)
                     {
                         houseChar.Selected = true;
                     }
@@ -3715,7 +3729,7 @@ namespace hist_mmorpg
             this.houseProposeBtn.Enabled = true;
             this.houseProposeBrideTextBox.Enabled = true;
             this.houseProposeGroomTextBox.Enabled = true;
-            this.houseProposeGroomTextBox.Text = Globals_Client.myChar.charID;
+            this.houseProposeGroomTextBox.Text = Globals_Client.myPlayerCharacter.charID;
 
             this.houseCharListView.HideSelection = false;
             this.houseCharListView.Focus();
@@ -3735,6 +3749,13 @@ namespace hist_mmorpg
         /// </summary>
         public void refreshRoyalGiftsContainer()
         {
+            // to store financial data
+            int totGDP = 0;
+            int provTaxInc = 0;
+            int totTaxInc = 0;
+            int totTreas = 0;
+            double taxRate = 0;
+
             // disable controls until place selected in ListView
             this.royalGiftsGiftFiefBtn.Enabled = false;
             this.royalGiftsGrantTitleBtn.Enabled = false;
@@ -3748,7 +3769,7 @@ namespace hist_mmorpg
 
             // iterates through owned provinces and fiefs, adding information to appropriate ListView
             // PROVINCES
-            foreach (Province thisProvince in Globals_Client.myChar.ownedProvinces)
+            foreach (Province thisProvince in Globals_Client.myPlayerCharacter.ownedProvinces)
             {
                 ListViewItem provItem = null;
 
@@ -3776,6 +3797,26 @@ namespace hist_mmorpg
                     provItem.SubItems.Add("");
                 }
 
+                // last season tax rate and total tax income
+                foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
+                {
+                    if (fiefEntry.Value.province == thisProvince)
+                    {
+                        taxRate = fiefEntry.Value.keyStatsCurrent[12];
+                        // update tax income total for province
+                        provTaxInc += Convert.ToInt32(fiefEntry.Value.keyStatsCurrent[11]);
+                    }
+                }
+
+                // add tax rate subitem
+                provItem.SubItems.Add(taxRate.ToString());
+
+                // add tax income subitem
+                provItem.SubItems.Add("£" + provTaxInc);
+
+                // update total tax income for all provinces
+                totTaxInc += provTaxInc;
+
                 if (provItem != null)
                 {
                     // add item to fiefsListView
@@ -3784,8 +3825,14 @@ namespace hist_mmorpg
 
             }
 
+            // add listviewitem with total tax income (all provinces)
+            string[] provItemTotalSubs = new string[] { "", "", "", "", "£" + totTaxInc };
+            ListViewItem provItemTotal = new ListViewItem(provItemTotalSubs);
+            this.royalGiftsProvListView.Items.Add(provItemTotal);
+
             // FIEFS
-            foreach (Fief thisFief in Globals_Client.myChar.ownedFiefs)
+            totTaxInc = 0;
+            foreach (Fief thisFief in Globals_Client.myPlayerCharacter.ownedFiefs)
             {
                 ListViewItem fiefItem = null;
 
@@ -3820,6 +3867,21 @@ namespace hist_mmorpg
                     fiefItem.SubItems.Add("");
                 }
 
+                // GDP
+                fiefItem.SubItems.Add("£" + thisFief.keyStatsCurrent[1]);
+                // update GDP total
+                totGDP += Convert.ToInt32(thisFief.keyStatsCurrent[1]);
+
+                // last tax income
+                fiefItem.SubItems.Add("£" + thisFief.keyStatsCurrent[11]);
+                // update tax income total
+                totTaxInc += Convert.ToInt32(thisFief.keyStatsCurrent[11]);
+
+                // treasury
+                fiefItem.SubItems.Add("£" + thisFief.treasury);
+                // update treasury total
+                totTreas += thisFief.treasury;
+
                 if (fiefItem != null)
                 {
                     // add item to fiefsListView
@@ -3827,6 +3889,11 @@ namespace hist_mmorpg
                 }
 
             }
+
+            // add listviewitem with total GDP and tax income (all fiefs)
+            string[] fiefItemTotalSubs = new string[] { "", "", "", "", "£" + totGDP, "£" + totTaxInc, "£" + totTreas };
+            ListViewItem fiefItemTotal = new ListViewItem(fiefItemTotalSubs);
+            this.royalGiftsFiefListView.Items.Add(fiefItemTotal);
 
             Globals_Client.containerToView = this.royalGiftsContainer;
             Globals_Client.containerToView.BringToFront();
@@ -3850,7 +3917,7 @@ namespace hist_mmorpg
             this.provinceFiefListView.Items.Clear();
 
             // iterates through provinces where the character holds the title, adding information to ListView
-            foreach (string placeID in Globals_Client.myChar.myTitles)
+            foreach (string placeID in Globals_Client.myPlayerCharacter.myTitles)
             {
                 ListViewItem provItem = null;
 
@@ -3944,7 +4011,7 @@ namespace hist_mmorpg
                 if (fiefEntry.Value.province == p)
                 {
                     // check for enemy occupation
-                    if (fiefEntry.Value.getKing() != Globals_Client.myChar.getKing())
+                    if (fiefEntry.Value.getKing() != Globals_Client.myPlayerCharacter.getKing())
                     {
                         underOccupation = true;
                     }
@@ -4039,7 +4106,7 @@ namespace hist_mmorpg
             bool isMyNPC = false;
 
             // check if is in player's myNPCs
-            if (Globals_Client.myChar.myNPCs.Contains((ch as NonPlayerCharacter)) || (ch == Globals_Client.myChar))
+            if (Globals_Client.myPlayerCharacter.myNPCs.Contains((ch as NonPlayerCharacter)) || (ch == Globals_Client.myPlayerCharacter))
             {
                 isMyNPC = true;
             }
@@ -4420,13 +4487,13 @@ namespace hist_mmorpg
             // estimated salary level (if character is male)
             if (npc.isMale)
             {
-                npcText += "Potential salary: " + npc.calcWage(Globals_Client.myChar) + "\r\n";
+                npcText += "Potential salary: " + npc.calcWage(Globals_Client.myPlayerCharacter) + "\r\n";
 
                 // most recent salary offer from player (if any)
                 npcText += "Last offer from this PC: ";
-                if (npc.lastOffer.ContainsKey(Globals_Client.myChar.charID))
+                if (npc.lastOffer.ContainsKey(Globals_Client.myPlayerCharacter.charID))
                 {
-                    npcText += npc.lastOffer[Globals_Client.myChar.charID];
+                    npcText += npc.lastOffer[Globals_Client.myPlayerCharacter.charID];
                 }
                 else
                 {
@@ -4570,7 +4637,7 @@ namespace hist_mmorpg
             string siegeText = "";
             Fief siegeLocation = s.getFief();
             PlayerCharacter fiefOwner = siegeLocation.owner;
-            bool isDefender = (fiefOwner == Globals_Client.myChar);
+            bool isDefender = (fiefOwner == Globals_Client.myPlayerCharacter);
             Army besieger = s.getBesiegingArmy();
             PlayerCharacter besiegingPlayer = s.getBesiegingPlayer();
             Army defenderGarrison = s.getDefenderGarrison();
@@ -5076,7 +5143,7 @@ namespace hist_mmorpg
             // if character not specified, default to player
             if (ch == null)
             {
-                ch = Globals_Client.myChar;
+                ch = Globals_Client.myPlayerCharacter;
             }
 
             // refresh Character display TextBox
@@ -5087,9 +5154,9 @@ namespace hist_mmorpg
             this.travelCampDaysTextBox.Text = "";
 
             // multimove button only enabled if is player or an employee
-            if (ch != Globals_Client.myChar)
+            if (ch != Globals_Client.myPlayerCharacter)
 			{
-                if (!Globals_Client.myChar.myNPCs.Contains(ch))
+                if (!Globals_Client.myPlayerCharacter.myNPCs.Contains(ch))
 				{
 					this.travelMoveToBtn.Enabled = false;
 				}
@@ -5107,7 +5174,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void personalCharacteristicsAndAffairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Globals_Client.charToView = Globals_Client.myChar;
+            Globals_Client.charToView = Globals_Client.myPlayerCharacter;
             this.refreshCharacterContainer(Globals_Client.charToView);
         }
 
@@ -5164,15 +5231,15 @@ namespace hist_mmorpg
             this.armyListView.Items.Clear();
 
             // iterates through player's armies adding information to ListView
-            for (int i = 0; i < Globals_Client.myChar.myArmies.Count; i++)
+            for (int i = 0; i < Globals_Client.myPlayerCharacter.myArmies.Count; i++)
             {
                 ListViewItem thisArmy = null;
 
                 // armyID
-                thisArmy = new ListViewItem(Globals_Client.myChar.myArmies[i].armyID);
+                thisArmy = new ListViewItem(Globals_Client.myPlayerCharacter.myArmies[i].armyID);
 
                 // leader
-                Character armyLeader = Globals_Client.myChar.myArmies[i].getLeader();
+                Character armyLeader = Globals_Client.myPlayerCharacter.myArmies[i].getLeader();
                 if (armyLeader != null)
                 {
                     thisArmy.SubItems.Add(armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")");
@@ -5183,16 +5250,16 @@ namespace hist_mmorpg
                 }
 
                 // location
-                Fief armyLocation = Globals_Server.fiefMasterList[Globals_Client.myChar.myArmies[i].location];
+                Fief armyLocation = Globals_Server.fiefMasterList[Globals_Client.myPlayerCharacter.myArmies[i].location];
                 thisArmy.SubItems.Add(armyLocation.name + " (" + armyLocation.id + ")");
 
                 // size
-                thisArmy.SubItems.Add(Globals_Client.myChar.myArmies[i].calcArmySize().ToString());
+                thisArmy.SubItems.Add(Globals_Client.myPlayerCharacter.myArmies[i].calcArmySize().ToString());
 
                 if (thisArmy != null)
                 {
                     // if army passed in as parameter, show as selected
-                    if (Globals_Client.myChar.myArmies[i] == a)
+                    if (Globals_Client.myPlayerCharacter.myArmies[i] == a)
                     {
                         thisArmy.Selected = true;
                     }
@@ -5206,7 +5273,7 @@ namespace hist_mmorpg
             if (a == null)
             {
                 // if player is not leading any armies, set button text to 'recruit new' and enable
-                if (Globals_Client.myChar.armyID == null)
+                if (Globals_Client.myPlayerCharacter.armyID == null)
                 {
                     this.armyRecruitBtn.Text = "Recruit a New Army In Current Fief";
                     this.armyRecruitBtn.Tag = "new";
@@ -5316,10 +5383,10 @@ namespace hist_mmorpg
             this.siegeListView.Items.Clear();
 
             // iterates through player's sieges adding information to ListView
-            for (int i = 0; i < Globals_Client.myChar.mySieges.Count; i++)
+            for (int i = 0; i < Globals_Client.myPlayerCharacter.mySieges.Count; i++)
             {
                 ListViewItem thisSiegeItem = null;
-                Siege thisSiege = Globals_Client.myChar.getSiege(Globals_Client.myChar.mySieges[i]);
+                Siege thisSiege = Globals_Client.myPlayerCharacter.getSiege(Globals_Client.myPlayerCharacter.mySieges[i]);
 
                 // armyID
                 thisSiegeItem = new ListViewItem(thisSiege.siegeID);
@@ -5365,12 +5432,12 @@ namespace hist_mmorpg
             // if fief not specified, default to player's current location
             if (f == null)
             {
-                f = Globals_Client.myChar.location;
+                f = Globals_Client.myPlayerCharacter.location;
             }
 
             Globals_Client.fiefToView = f;
 
-            bool isOwner = Globals_Client.myChar.ownedFiefs.Contains(Globals_Client.fiefToView);
+            bool isOwner = Globals_Client.myPlayerCharacter.ownedFiefs.Contains(Globals_Client.fiefToView);
             bool displayWarning = false;
             string toDisplay = "";
 
@@ -5443,7 +5510,7 @@ namespace hist_mmorpg
             else
             {
                 // get home fief
-                Fief home = Globals_Client.myChar.getHomeFief();
+                Fief home = Globals_Client.myPlayerCharacter.getHomeFief();
 
                 // get home treasury
                 int homeTreasury = 0;
@@ -5499,7 +5566,7 @@ namespace hist_mmorpg
                     this.fiefGrantTitleBtn.Enabled = true;
 
                     // don't enable 'appoint self' button if you're already the bailiff
-                    if (f.bailiff == Globals_Client.myChar)
+                    if (f.bailiff == Globals_Client.myPlayerCharacter)
                     {
                         this.selfBailiffBtn.Enabled = false;
                     }
@@ -5509,7 +5576,7 @@ namespace hist_mmorpg
                     }
 
                     // don't enable treasury transfer controls if in Home Fief (can't transfer to self)
-                    if (f == Globals_Client.myChar.getHomeFief())
+                    if (f == Globals_Client.myPlayerCharacter.getHomeFief())
                     {
                         this.fiefTransferToFiefBtn.Enabled = false;
                         this.fiefTransferToHomeBtn.Enabled = false;
@@ -5588,7 +5655,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void fiefManagementToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.refreshFiefContainer(Globals_Client.myChar.location);
+            this.refreshFiefContainer(Globals_Client.myPlayerCharacter.location);
         }
 
         /// <summary>
@@ -5759,10 +5826,10 @@ namespace hist_mmorpg
         private void navigateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // ensure reflects player's location
-            Globals_Client.charToView = Globals_Client.myChar;
+            Globals_Client.charToView = Globals_Client.myPlayerCharacter;
 
             // refresh navigation data
-            Globals_Client.fiefToView = Globals_Client.myChar.location;
+            Globals_Client.fiefToView = Globals_Client.myPlayerCharacter.location;
             this.refreshTravelContainer();
 
             // show navigation screen
@@ -5800,7 +5867,7 @@ namespace hist_mmorpg
         private void refreshTravelContainer()
         {
             // get current fief
-            Fief thisFief = Globals_Client.myChar.location;
+            Fief thisFief = Globals_Client.myPlayerCharacter.location;
 
             // string[] to hold direction text
             string[] directions = new string[] { "NE", "E", "SE", "SW", "W", "NW" };
@@ -5808,7 +5875,7 @@ namespace hist_mmorpg
             Button[] travelBtns = new Button[] { travel_NE_btn, travel_E_btn, travel_SE_btn, travel_SW_btn, travel_W_btn, travel_NW_btn };
 
             // get text for home button
-            this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + thisFief.name + " (" + Globals_Client.myChar.location.id + ")" + "\r\n" + Globals_Client.myChar.location.province.name + ", " + Globals_Client.myChar.location.province.kingdom.name;
+            this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + thisFief.name + " (" + Globals_Client.myPlayerCharacter.location.id + ")" + "\r\n" + Globals_Client.myPlayerCharacter.location.province.name + ", " + Globals_Client.myPlayerCharacter.location.province.kingdom.name;
 
             for (int i = 0; i < directions.Length; i++ )
             {
@@ -5830,10 +5897,10 @@ namespace hist_mmorpg
 
             // set text for informational labels
             this.travelLocationLabel.Text = "You are here: " + thisFief.name + " (" + thisFief.id + ")";
-            this.travelDaysLabel.Text = "Your remaining days: " + Globals_Client.myChar.days;
+            this.travelDaysLabel.Text = "Your remaining days: " + Globals_Client.myPlayerCharacter.days;
             
             // set text for 'enter/exit keep' button, depending on whether player in/out of keep
-            if (Globals_Client.myChar.inKeep)
+            if (Globals_Client.myPlayerCharacter.inKeep)
             {
                 this.enterKeepBtn.Text = "Exit Keep";
             }
@@ -5871,7 +5938,7 @@ namespace hist_mmorpg
             if (thisFief.siege != null)
             {
                 // check to see if are inside/outside keep
-                if (Globals_Client.myChar.inKeep)
+                if (Globals_Client.myPlayerCharacter.inKeep)
                 {
                     // if inside keep, disable all controls except tavern and court
                     this.travel_E_btn.Enabled = false;
@@ -5915,14 +5982,14 @@ namespace hist_mmorpg
             // necessary in order to be able to access button tag
             Button button = sender as Button;
             // get target fief using travel button tag (contains direction string)
-            Fief targetFief = Globals_Server.gameMap.getFief(Globals_Client.myChar.location, button.Tag.ToString());
+            Fief targetFief = Globals_Server.gameMap.getFief(Globals_Client.myPlayerCharacter.location, button.Tag.ToString());
 
             if (targetFief != null)
             {
                 // get travel cost
-                double travelCost = this.getTravelCost(Globals_Client.myChar.location, targetFief, Globals_Client.myChar.armyID);
+                double travelCost = this.getTravelCost(Globals_Client.myPlayerCharacter.location, targetFief, Globals_Client.myPlayerCharacter.armyID);
                 // attempt to move player to target fief
-                success = this.moveCharacter(Globals_Client.myChar, targetFief, travelCost);
+                success = this.moveCharacter(Globals_Client.myPlayerCharacter, targetFief, travelCost);
                 // if move successfull, refresh travel display
                 if (success)
                 {
@@ -5958,9 +6025,9 @@ namespace hist_mmorpg
             if (Globals_Client.fiefToView.bailiff != null)
             {
                 // if player is bailiff, show in personal characteristics screen
-                if (Globals_Client.fiefToView.bailiff == Globals_Client.myChar)
+                if (Globals_Client.fiefToView.bailiff == Globals_Client.myPlayerCharacter)
                 {
-                    Globals_Client.charToView = Globals_Client.myChar;
+                    Globals_Client.charToView = Globals_Client.myPlayerCharacter;
                     this.refreshCharacterContainer(Globals_Client.charToView);
                 }
 
@@ -5997,11 +6064,11 @@ namespace hist_mmorpg
             Fief fiefToDisplay = null;
 
             // loop through player's owned fiefs until correct fief is found
-            for (int i = 0; i < Globals_Client.myChar.ownedFiefs.Count; i++)
+            for (int i = 0; i < Globals_Client.myPlayerCharacter.ownedFiefs.Count; i++)
             {
-                if (Globals_Client.myChar.ownedFiefs[i].id.Equals(this.fiefsListView.SelectedItems[0].SubItems[1].Text))
+                if (Globals_Client.myPlayerCharacter.ownedFiefs[i].id.Equals(this.fiefsListView.SelectedItems[0].SubItems[1].Text))
                 {
-                    fiefToDisplay = Globals_Client.myChar.ownedFiefs[i];
+                    fiefToDisplay = Globals_Client.myPlayerCharacter.ownedFiefs[i];
                 }
 
             }
@@ -6026,10 +6093,10 @@ namespace hist_mmorpg
         private void enterKeepBtn_Click(object sender, EventArgs e)
         {
             // if player in keep
-            if (Globals_Client.myChar.inKeep)
+            if (Globals_Client.myPlayerCharacter.inKeep)
             {
                 // exit keep
-                Globals_Client.myChar.exitKeep();
+                Globals_Client.myPlayerCharacter.exitKeep();
                 // change button text
                 this.enterKeepBtn.Text = "Enter Keep";
                 // refresh display
@@ -6039,7 +6106,7 @@ namespace hist_mmorpg
             else
             {
                 // attempt to enter keep
-                bool entered = Globals_Client.myChar.enterKeep();
+                bool entered = Globals_Client.myPlayerCharacter.enterKeep();
                 // if successful
                 if (entered)
                 {
@@ -6065,10 +6132,10 @@ namespace hist_mmorpg
             bool enteredKeep = false;
 
             // if player not in keep
-            if (!Globals_Client.myChar.inKeep)
+            if (!Globals_Client.myPlayerCharacter.inKeep)
             {
                 // attempt to enter keep
-                enteredKeep = Globals_Client.myChar.enterKeep();
+                enteredKeep = Globals_Client.myPlayerCharacter.enterKeep();
             }
             else
             {
@@ -6104,9 +6171,9 @@ namespace hist_mmorpg
             string place = "tavern";
 
             // exit keep if required
-            if (Globals_Client.myChar.inKeep)
+            if (Globals_Client.myPlayerCharacter.inKeep)
             {
-                Globals_Client.myChar.exitKeep();
+                Globals_Client.myPlayerCharacter.exitKeep();
             }
             // set button tags to reflect which meeting place
             this.hireNPC_Btn.Tag = place;
@@ -6141,7 +6208,7 @@ namespace hist_mmorpg
                         charToDisplay = Globals_Client.fiefToView.charactersInFief[i];
 
                         // check whether is employee or family
-                        if (Globals_Client.myChar.myNPCs.Contains(Globals_Client.fiefToView.charactersInFief[i]))
+                        if (Globals_Client.myPlayerCharacter.myNPCs.Contains(Globals_Client.fiefToView.charactersInFief[i]))
                         {
                             // see if is in entourage to set text of entourage button
                             if ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).inEntourage)
@@ -6167,7 +6234,7 @@ namespace hist_mmorpg
 
                             // if is employee
                             if (((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).myBoss != null)
-                                && ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).myBoss.Equals(Globals_Client.myChar.charID)))
+                                && ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).myBoss.Equals(Globals_Client.myPlayerCharacter.charID)))
                             {
                                 // set appropriate text for hire/fire button, and enable it
                                 this.hireNPC_Btn.Text = "Fire NPC";
@@ -6220,7 +6287,7 @@ namespace hist_mmorpg
                             {
                                 // enable marriage proposals
                                 this.meetingPlaceProposeBtn.Enabled = true;
-                                this.meetingPlaceProposeTextBox.Text = Globals_Client.myChar.charID;
+                                this.meetingPlaceProposeTextBox.Text = Globals_Client.myPlayerCharacter.charID;
                                 this.meetingPlaceProposeTextBox.Enabled = true;
                             }
                         }
@@ -6256,7 +6323,7 @@ namespace hist_mmorpg
             string place = Convert.ToString(((Button)sender).Tag);
 
             // if selected NPC is not a current employee
-            if (!Globals_Client.myChar.myNPCs.Contains(Globals_Client.charToView))
+            if (!Globals_Client.myPlayerCharacter.myNPCs.Contains(Globals_Client.charToView))
             {
                 amHiring = true;
 
@@ -6265,7 +6332,7 @@ namespace hist_mmorpg
                     // get offer amount
                     UInt32 newOffer = Convert.ToUInt32(this.hireNPC_TextBox.Text);
                     // submit offer
-                    isHired = Globals_Client.myChar.processEmployOffer((Globals_Client.charToView as NonPlayerCharacter), newOffer);
+                    isHired = Globals_Client.myPlayerCharacter.processEmployOffer((Globals_Client.charToView as NonPlayerCharacter), newOffer);
 
                 }
                 catch (System.FormatException fe)
@@ -6289,7 +6356,7 @@ namespace hist_mmorpg
             else
             {
                 // fire NPC
-                Globals_Client.myChar.fireNPC(Globals_Client.charToView as NonPlayerCharacter);
+                Globals_Client.myPlayerCharacter.fireNPC(Globals_Client.charToView as NonPlayerCharacter);
             }
 
             // refresh appropriate screen
@@ -6350,7 +6417,7 @@ namespace hist_mmorpg
                 }
             }
 
-            if (ch == Globals_Client.myChar)
+            if (ch == Globals_Client.myPlayerCharacter)
             {
                 // if player has moved, indicate success
                 if (ch.goTo.Count < steps)
@@ -6376,7 +6443,7 @@ namespace hist_mmorpg
                 myTextBox = this.meetingPlaceMoveToTextBox;
                 if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
                 {
-                    Globals_Client.myChar.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
+                    Globals_Client.myPlayerCharacter.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
                 }                
             }
             else if (whichScreen.Equals("house"))
@@ -6384,7 +6451,7 @@ namespace hist_mmorpg
                 myTextBox = this.houseMoveToTextBox;
                 if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
                 {
-                    Globals_Client.myChar.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
+                    Globals_Client.myPlayerCharacter.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
                 }
             }
             else if (whichScreen.Equals("travel"))
@@ -6407,7 +6474,7 @@ namespace hist_mmorpg
                     // if character is NPC, check entourage and remove if necessary
                     if (!whichScreen.Equals("travel"))
                     {
-                        if (Globals_Client.myChar.myNPCs.Contains(Globals_Client.charToView))
+                        if (Globals_Client.myPlayerCharacter.myNPCs.Contains(Globals_Client.charToView))
                         {
                             (Globals_Client.charToView as NonPlayerCharacter).inEntourage = false;
                         }
@@ -6620,7 +6687,7 @@ namespace hist_mmorpg
                 }
 
                 // set player as bailiff
-                Globals_Client.fiefToView.bailiff = Globals_Client.myChar;
+                Globals_Client.fiefToView.bailiff = Globals_Client.myPlayerCharacter;
             }
 
             // refresh fief display
@@ -6650,9 +6717,9 @@ namespace hist_mmorpg
             string place = "outsideKeep";
 
             // exit keep if required
-            if (Globals_Client.myChar.inKeep)
+            if (Globals_Client.myPlayerCharacter.inKeep)
             {
-                Globals_Client.myChar.exitKeep();
+                Globals_Client.myPlayerCharacter.exitKeep();
             }
             // set button tags to reflect which meeting place
             this.hireNPC_Btn.Tag = place;
@@ -6694,14 +6761,14 @@ namespace hist_mmorpg
             Character charToDisplay = null;
 
             // loop through the characters in employees
-            for (int i = 0; i < Globals_Client.myChar.myNPCs.Count; i++)
+            for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
             {
                 if (this.houseCharListView.SelectedItems.Count > 0)
                 {
                     // find matching character
-                    if (Globals_Client.myChar.myNPCs[i].charID.Equals(this.houseCharListView.SelectedItems[0].SubItems[1].Text))
+                    if (Globals_Client.myPlayerCharacter.myNPCs[i].charID.Equals(this.houseCharListView.SelectedItems[0].SubItems[1].Text))
                     {
-                        charToDisplay = Globals_Client.myChar.myNPCs[i];
+                        charToDisplay = Globals_Client.myPlayerCharacter.myNPCs[i];
                         break;
                     }
 
@@ -6728,7 +6795,7 @@ namespace hist_mmorpg
 
                 // FAMILY MATTERS CONTROLS
                 // if family selected, enable 'choose heir' button, disbale 'fire' button
-                if ((Globals_Client.charToView.familyID != null) && (Globals_Client.charToView.familyID.Equals(Globals_Client.myChar.charID)))
+                if ((Globals_Client.charToView.familyID != null) && (Globals_Client.charToView.familyID.Equals(Globals_Client.myPlayerCharacter.charID)))
                 {
                     this.houseHeirBtn.Enabled = true;
                     this.houseFireBtn.Enabled = false;
@@ -6851,7 +6918,7 @@ namespace hist_mmorpg
                 byte campDays = Convert.ToByte(this.travelCampDaysTextBox.Text);
 
                 // camp
-                this.campWaitHere(Globals_Client.myChar, campDays);
+                this.campWaitHere(Globals_Client.myPlayerCharacter, campDays);
             }
             catch (System.FormatException fe)
             {
@@ -6908,7 +6975,7 @@ namespace hist_mmorpg
                 bool entourageCamp = false;
 
                 // if character is player, camp entourage
-                if (ch == Globals_Client.myChar)
+                if (ch == Globals_Client.myPlayerCharacter)
                 {
                     entourageCamp = true;
                 }
@@ -6923,7 +6990,7 @@ namespace hist_mmorpg
                         {
                             System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " has been removed from your entourage.");
                         }
-                        Globals_Client.myChar.removeFromEntourage((ch as NonPlayerCharacter));
+                        Globals_Client.myPlayerCharacter.removeFromEntourage((ch as NonPlayerCharacter));
                     }
                 }
 
@@ -6989,22 +7056,22 @@ namespace hist_mmorpg
                 else if (entourageCamp)
                 {
                     // if player is bailiff
-                    if (Globals_Client.myChar == ch.location.bailiff)
+                    if (Globals_Client.myPlayerCharacter == ch.location.bailiff)
                     {
-                        myBailiff = Globals_Client.myChar;
+                        myBailiff = Globals_Client.myPlayerCharacter;
                     }
                     // if not, check for bailiff in entourage
                     else
                     {
-                        for (int i = 0; i < Globals_Client.myChar.myNPCs.Count; i++)
+                        for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
                         {
-                            if (Globals_Client.myChar.myNPCs[i].inEntourage)
+                            if (Globals_Client.myPlayerCharacter.myNPCs[i].inEntourage)
                             {
-                                if (Globals_Client.myChar.myNPCs[i] != ch)
+                                if (Globals_Client.myPlayerCharacter.myNPCs[i] != ch)
                                 {
-                                    if (Globals_Client.myChar.myNPCs[i] == ch.location.bailiff)
+                                    if (Globals_Client.myPlayerCharacter.myNPCs[i] == ch.location.bailiff)
                                     {
-                                        myBailiff = Globals_Client.myChar.myNPCs[i];
+                                        myBailiff = Globals_Client.myPlayerCharacter.myNPCs[i];
                                     }
                                 }
                             }
@@ -7036,7 +7103,7 @@ namespace hist_mmorpg
             // refresh display
             if (proceed)
             {
-                if (ch == Globals_Client.myChar)
+                if (ch == Globals_Client.myPlayerCharacter)
                 {
                     this.refreshTravelContainer();
                 }
@@ -7066,7 +7133,7 @@ namespace hist_mmorpg
                 myTextBox = this.meetingPlaceRouteTextBox;
                 if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
                 {
-                    Globals_Client.myChar.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
+                    Globals_Client.myPlayerCharacter.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
                 }
             }
             else if (whichScreen.Equals("house"))
@@ -7074,7 +7141,7 @@ namespace hist_mmorpg
                 myTextBox = this.houseRouteTextBox;
                 if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
                 {
-                    Globals_Client.myChar.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
+                    Globals_Client.myPlayerCharacter.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
                 }
             }
             else if (whichScreen.Equals("travel"))
@@ -7186,13 +7253,13 @@ namespace hist_mmorpg
                 switch (transferType)
                 {
                     case "toFief":
-                        fiefFrom = Globals_Client.myChar.getHomeFief();
+                        fiefFrom = Globals_Client.myPlayerCharacter.getHomeFief();
                         fiefTo = Globals_Client.fiefToView;
                         amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
                         break;
                     case "toHome":
                         fiefFrom = Globals_Client.fiefToView;
-                        fiefTo = Globals_Client.myChar.getHomeFief();
+                        fiefTo = Globals_Client.myPlayerCharacter.getHomeFief();
                         amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
                         break;
                     default:
@@ -7349,16 +7416,16 @@ namespace hist_mmorpg
         private void familyGetSpousePregBtn_Click(object sender, EventArgs e)
         {
             // get spouse
-            Character mySpouse = Globals_Client.myChar.getSpouse();
+            Character mySpouse = Globals_Client.myPlayerCharacter.getSpouse();
 
             // perform standard checks
-            if (this.checkBeforePregnancyAttempt(Globals_Client.myChar))
+            if (this.checkBeforePregnancyAttempt(Globals_Client.myPlayerCharacter))
             {
                 // ensure are both in/out of keep
-                mySpouse.inKeep = Globals_Client.myChar.inKeep;
+                mySpouse.inKeep = Globals_Client.myPlayerCharacter.inKeep;
 
                 // attempt pregnancy
-                bool pregnant = Globals_Client.myChar.getSpousePregnant(mySpouse);
+                bool pregnant = Globals_Client.myPlayerCharacter.getSpousePregnant(mySpouse);
             }
 
             // refresh screen
@@ -7745,7 +7812,7 @@ namespace hist_mmorpg
                 weeBairn.location.charactersInFief.Add(weeBairn);
 
                 // add baby to family
-                Globals_Client.myChar.myNPCs.Add(weeBairn);
+                Globals_Client.myPlayerCharacter.myNPCs.Add(weeBairn);
             }
             else
             {
@@ -7857,7 +7924,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void button1_Click(object sender, EventArgs e)
         {
-            this.giveBirth(Globals_Server.npcMasterList[Globals_Client.myChar.spouse], Globals_Client.myChar);
+            this.giveBirth(Globals_Server.npcMasterList[Globals_Client.myPlayerCharacter.spouse], Globals_Client.myPlayerCharacter);
         }
 
         /// <summary>
@@ -7873,11 +7940,11 @@ namespace hist_mmorpg
             if (this.houseCharListView.SelectedItems.Count > 0)
             {
                 // get NPC to name
-                for (int i = 0; i < Globals_Client.myChar.myNPCs.Count; i++)
+                for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
                 {
-                    if (Globals_Client.myChar.myNPCs[i].charID.Equals(this.houseCharListView.SelectedItems[0].SubItems[1].Text))
+                    if (Globals_Client.myPlayerCharacter.myNPCs[i].charID.Equals(this.houseCharListView.SelectedItems[0].SubItems[1].Text))
                     {
-                        child = Globals_Client.myChar.myNPCs[i];
+                        child = Globals_Client.myPlayerCharacter.myNPCs[i];
                         break;
                     }
                 }
@@ -8009,8 +8076,8 @@ namespace hist_mmorpg
             }
             else
             {
-                Globals_Client.myChar = Globals_Server.pcMasterList[playerID];
-                Globals_Client.charToView = Globals_Client.myChar;
+                Globals_Client.myPlayerCharacter = Globals_Server.pcMasterList[playerID];
+                Globals_Client.charToView = Globals_Client.myPlayerCharacter;
                 this.refreshCharacterContainer(Globals_Client.charToView);
             }
         }
@@ -8023,7 +8090,7 @@ namespace hist_mmorpg
                 NonPlayerCharacter selectedNPC = Globals_Server.npcMasterList[this.houseCharListView.SelectedItems[0].SubItems[1].Text];
 
                 // check for an existing heir and remove
-                foreach (NonPlayerCharacter npc in Globals_Client.myChar.myNPCs)
+                foreach (NonPlayerCharacter npc in Globals_Client.myPlayerCharacter.myNPCs)
                 {
                     if (npc.isHeir)
                     {
@@ -8049,7 +8116,7 @@ namespace hist_mmorpg
         private void armyManagementToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // get player's army
-            Army thisArmy = Globals_Client.myChar.getArmy();
+            Army thisArmy = Globals_Client.myPlayerCharacter.getArmy();
 
             // display army mangement screen
             this.armyContainer.Panel1.Tag = "management";
@@ -8101,7 +8168,7 @@ namespace hist_mmorpg
             string operation = button.Tag.ToString();
 
             // get fief
-            Fief thisFief = Globals_Client.myChar.location;
+            Fief thisFief = Globals_Client.myPlayerCharacter.location;
 
             // check for siege
             if (thisFief.siege != null)
@@ -8123,15 +8190,15 @@ namespace hist_mmorpg
                     // if no existing army, create one
                     if (operation.Equals("new"))
                     {
-                        Army newArmy = new Army(Globals_Server.getNextArmyID(), Globals_Client.myChar.charID, Globals_Client.myChar.charID, Globals_Client.myChar.days, Globals_Client.myChar.location.id);
+                        Army newArmy = new Army(Globals_Server.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
                         this.addArmy(newArmy);
                     }
 
                     // recruit troops
-                    Globals_Client.myChar.recruitTroops(numberWanted);
+                    Globals_Client.myPlayerCharacter.recruitTroops(numberWanted);
 
                     // get army
-                    Army myArmy = Globals_Client.myChar.getArmy();
+                    Army myArmy = Globals_Client.myPlayerCharacter.getArmy();
 
                     // refresh display
                     this.refreshArmyContainer(myArmy);
@@ -8180,7 +8247,7 @@ namespace hist_mmorpg
             uint maintCost = a.calcArmySize() * 500;
 
             // get available treasury
-            Fief homeFief = Globals_Client.myChar.getHomeFief();
+            Fief homeFief = Globals_Client.myPlayerCharacter.getHomeFief();
             int availTreas = homeFief.getAvailableTreasury();
 
             // check if army is already maintained
@@ -8236,7 +8303,7 @@ namespace hist_mmorpg
             // if is in entourage, remove
             if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
             {
-                Globals_Client.myChar.removeFromEntourage((Globals_Client.charToView as NonPlayerCharacter));
+                Globals_Client.myPlayerCharacter.removeFromEntourage((Globals_Client.charToView as NonPlayerCharacter));
             }
 
             // if is not in entourage, add
@@ -8247,7 +8314,7 @@ namespace hist_mmorpg
                 if (Globals_Client.charToView.armyID == null)
                 {
                     // add to entourage
-                    Globals_Client.myChar.addToEntourage((Globals_Client.charToView as NonPlayerCharacter));
+                    Globals_Client.myPlayerCharacter.addToEntourage((Globals_Client.charToView as NonPlayerCharacter));
 
                 }
 
@@ -8345,8 +8412,8 @@ namespace hist_mmorpg
                 else
                 {
                     // if player is leading an army but not the one on view, disable 'recruit' button
-                    if ((!(Globals_Client.armyToView.leader == Globals_Client.myChar.charID))
-                        && (!(Globals_Client.myChar.armyID == null)))
+                    if ((!(Globals_Client.armyToView.leader == Globals_Client.myPlayerCharacter.charID))
+                        && (!(Globals_Client.myPlayerCharacter.armyID == null)))
                     {
                         this.armyRecruitBtn.Enabled = false;
                         this.armyRecruitTextBox.Enabled = false;
@@ -8358,13 +8425,13 @@ namespace hist_mmorpg
                         this.armyRecruitTextBox.Enabled = true;
 
                         // if army on view is led by player, set button text to 'recruit additional'
-                        if (Globals_Client.armyToView.leader == Globals_Client.myChar.charID)
+                        if (Globals_Client.armyToView.leader == Globals_Client.myPlayerCharacter.charID)
                         {
                             this.armyRecruitBtn.Text = "Recruit Additional Troops From Current Fief";
                             this.armyRecruitBtn.Tag = "add";
                         }
                         // if player is not leading any armies, set button text to 'recruit new'
-                        else if (Globals_Client.myChar.armyID == null)
+                        else if (Globals_Client.myPlayerCharacter.armyID == null)
                         {
                             this.armyRecruitBtn.Text = "Recruit a New Army In Current Fief";
                             this.armyRecruitBtn.Tag = "new";
@@ -8400,7 +8467,7 @@ namespace hist_mmorpg
                     this.armyOddsTextBox.Text = Globals_Client.armyToView.combatOdds.ToString();
 
                     // preload own ID in 'drop off to' textbox (assumes transferring between own armies)
-                    this.armyTransDropWhoTextBox.Text = Globals_Client.myChar.charID;
+                    this.armyTransDropWhoTextBox.Text = Globals_Client.myPlayerCharacter.charID;
                     // and set all troop transfer numbers to 0
                     this.armyTransKnightTextBox.Text = "0";
                     this.armyTransMAAtextBox.Text = "0";
@@ -8474,7 +8541,7 @@ namespace hist_mmorpg
             // get army
             Army thisArmy = Globals_Server.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
 
-            thisArmy.assignNewLeader(Globals_Client.myChar);
+            thisArmy.assignNewLeader(Globals_Client.myPlayerCharacter);
 
             // refresh the army information (in the main form)
             this.refreshArmyContainer(thisArmy);
@@ -8604,7 +8671,7 @@ namespace hist_mmorpg
                         Fief thisFief = Globals_Server.fiefMasterList[Globals_Client.armyToView.location];
 
                         // create transfer entry
-                        string[] thisTransfer = new string[9] { Globals_Client.myChar.charID, this.armyTransDropWhoTextBox.Text,
+                        string[] thisTransfer = new string[9] { Globals_Client.myPlayerCharacter.charID, this.armyTransDropWhoTextBox.Text,
                             troopsToTransfer[0].ToString(), troopsToTransfer[1].ToString(), troopsToTransfer[2].ToString(),
                             troopsToTransfer[3].ToString(), troopsToTransfer[4].ToString(), troopsToTransfer[5].ToString(),
                             (Globals_Client.armyToView.days - daysTaken).ToString() };
@@ -9037,7 +9104,7 @@ namespace hist_mmorpg
             }
 
             // check if has minimum days
-            if (Globals_Client.myChar.days < 1)
+            if (Globals_Client.myPlayerCharacter.days < 1)
             {
                 if (Globals_Client.showMessages)
                 {
@@ -9052,10 +9119,10 @@ namespace hist_mmorpg
                 int reconDays = Globals_Server.myRand.Next(1, 4);
 
                 // check if runs out of time
-                if (Globals_Client.myChar.days < reconDays)
+                if (Globals_Client.myPlayerCharacter.days < reconDays)
                 {
                     // set days to 0
-                    Globals_Client.myChar.adjustDays(Globals_Client.myChar.days);
+                    Globals_Client.myPlayerCharacter.adjustDays(Globals_Client.myPlayerCharacter.days);
                     this.refreshTravelContainer();
                     if (Globals_Client.showMessages)
                     {
@@ -9067,11 +9134,11 @@ namespace hist_mmorpg
                 else
                 {
                     // adjust days
-                    Globals_Client.myChar.adjustDays(reconDays);
+                    Globals_Client.myPlayerCharacter.adjustDays(reconDays);
                     this.refreshTravelContainer();
 
                     // display armies list
-                    SelectionForm examineArmies = new SelectionForm(this, "armies", obs: Globals_Client.myChar);
+                    SelectionForm examineArmies = new SelectionForm(this, "armies", obs: Globals_Client.myPlayerCharacter);
                     examineArmies.Show();
                 }
 
@@ -11540,7 +11607,7 @@ namespace hist_mmorpg
             {
                 Army besiegingArmy = Globals_Client.siegeToView.getBesiegingArmy();
                 PlayerCharacter besiegingPlayer = Globals_Client.siegeToView.getBesiegingPlayer();
-                bool playerIsBesieger = (Globals_Client.myChar == besiegingPlayer);
+                bool playerIsBesieger = (Globals_Client.myPlayerCharacter == besiegingPlayer);
 
                 // display data for selected siege
                 this.siegeTextBox.Text = this.displaySiegeData(Globals_Client.siegeToView);
@@ -11945,7 +12012,7 @@ namespace hist_mmorpg
         private void viewMyHomeFiefToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // get home fief
-            Fief homeFief = Globals_Client.myChar.getHomeFief();
+            Fief homeFief = Globals_Client.myPlayerCharacter.getHomeFief();
 
             if (homeFief != null)
             {
@@ -13076,7 +13143,7 @@ namespace hist_mmorpg
                     if (thisProv != null)
                     {
                         // revoke title button
-                        if (thisProv.titleHolder.Equals(Globals_Client.myChar.charID))
+                        if (thisProv.titleHolder.Equals(Globals_Client.myPlayerCharacter.charID))
                         {
                             this.royalGiftsRevokeTitleBtn.Enabled = false;
                         }
@@ -13099,7 +13166,7 @@ namespace hist_mmorpg
                     if (thisFief != null)
                     {
                         // revoke title button
-                        if (thisFief.titleHolder.Equals(Globals_Client.myChar.charID))
+                        if (thisFief.titleHolder.Equals(Globals_Client.myPlayerCharacter.charID))
                         {
                             this.royalGiftsRevokeTitleBtn.Enabled = false;
                         }

@@ -11,6 +11,34 @@ namespace hist_mmorpg
     public static class Globals_Server
     {
         /// <summary>
+        /// Holds PlayerCharacter associated with the position of sysAdmin for the game
+        /// </summary>
+        public static PlayerCharacter sysAdmin;
+        /// <summary>
+        /// Holds PlayerCharacter associated with the position of king for kingdom one
+        /// </summary>
+        public static PlayerCharacter kingOne;
+        /// <summary>
+        /// Holds PlayerCharacter associated with the position of king for kingdom two
+        /// </summary>
+        public static PlayerCharacter kingTwo;
+        /// <summary>
+        /// Holds PlayerCharacter associated with the position of prince for kingdom one
+        /// </summary>
+        public static PlayerCharacter princeOne;
+        /// <summary>
+        /// Holds PlayerCharacter associated with the position of prince for kingdom two
+        /// </summary>
+        public static PlayerCharacter princeTwo;
+        /// <summary>
+        /// Holds PlayerCharacter associated with the position of herald for kingdom one
+        /// </summary>
+        public static PlayerCharacter heraldOne;
+        /// <summary>
+        /// Holds PlayerCharacter associated with the position of herald for kingdom two
+        /// </summary>
+        public static PlayerCharacter heraldTwo;
+        /// <summary>
         /// List of registered observers
         /// </summary>
         private static List<Form1> registeredObservers = new List<Form1>();

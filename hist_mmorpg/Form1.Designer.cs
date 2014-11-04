@@ -249,6 +249,9 @@ namespace hist_mmorpg
             this.label21 = new System.Windows.Forms.Label();
             this.royalGiftsFiefListView = new System.Windows.Forms.ListView();
             this.provinceContainer = new System.Windows.Forms.SplitContainer();
+            this.label28 = new System.Windows.Forms.Label();
+            this.provinceTaxTextBox = new System.Windows.Forms.TextBox();
+            this.provinceTaxBtn = new System.Windows.Forms.Button();
             this.provinceListsContainer = new System.Windows.Forms.SplitContainer();
             this.provinceProvlistContainer = new System.Windows.Forms.SplitContainer();
             this.label22 = new System.Windows.Forms.Label();
@@ -256,9 +259,6 @@ namespace hist_mmorpg
             this.provinceFieflistContainer = new System.Windows.Forms.SplitContainer();
             this.label23 = new System.Windows.Forms.Label();
             this.provinceFiefListView = new System.Windows.Forms.ListView();
-            this.label28 = new System.Windows.Forms.Label();
-            this.provinceTaxTextBox = new System.Windows.Forms.TextBox();
-            this.provinceTaxBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -581,14 +581,14 @@ namespace hist_mmorpg
             // royalGiftsToolStripMenuItem
             // 
             this.royalGiftsToolStripMenuItem.Name = "royalGiftsToolStripMenuItem";
-            this.royalGiftsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-            this.royalGiftsToolStripMenuItem.Text = "Royal Gifts";
+            this.royalGiftsToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.royalGiftsToolStripMenuItem.Text = "Royal Finances and Gifts";
             this.royalGiftsToolStripMenuItem.Click += new System.EventHandler(this.royalGiftsToolStripMenuItem_Click);
             // 
             // manageProvincesToolStripMenuItem
             // 
             this.manageProvincesToolStripMenuItem.Name = "manageProvincesToolStripMenuItem";
-            this.manageProvincesToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.manageProvincesToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.manageProvincesToolStripMenuItem.Text = "Manage Provinces";
             this.manageProvincesToolStripMenuItem.Click += new System.EventHandler(this.manageProvincesToolStripMenuItem_Click);
             // 
@@ -2754,6 +2754,32 @@ namespace hist_mmorpg
             this.provinceContainer.SplitterDistance = 442;
             this.provinceContainer.TabIndex = 12;
             // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(27, 37);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(105, 13);
+            this.label28.TabIndex = 43;
+            this.label28.Text = "Province Tax Rate : ";
+            // 
+            // provinceTaxTextBox
+            // 
+            this.provinceTaxTextBox.Location = new System.Drawing.Point(135, 34);
+            this.provinceTaxTextBox.Name = "provinceTaxTextBox";
+            this.provinceTaxTextBox.Size = new System.Drawing.Size(57, 20);
+            this.provinceTaxTextBox.TabIndex = 38;
+            // 
+            // provinceTaxBtn
+            // 
+            this.provinceTaxBtn.Location = new System.Drawing.Point(30, 64);
+            this.provinceTaxBtn.Name = "provinceTaxBtn";
+            this.provinceTaxBtn.Size = new System.Drawing.Size(165, 23);
+            this.provinceTaxBtn.TabIndex = 37;
+            this.provinceTaxBtn.Text = "Commit rate above";
+            this.provinceTaxBtn.UseVisualStyleBackColor = true;
+            this.provinceTaxBtn.Click += new System.EventHandler(this.provinceTaxBtn_Click);
+            // 
             // provinceListsContainer
             // 
             this.provinceListsContainer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -2850,32 +2876,6 @@ namespace hist_mmorpg
             this.provinceFiefListView.TabIndex = 0;
             this.provinceFiefListView.UseCompatibleStateImageBehavior = false;
             this.provinceFiefListView.View = System.Windows.Forms.View.Details;
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(27, 37);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(105, 13);
-            this.label28.TabIndex = 43;
-            this.label28.Text = "Province Tax Rate : ";
-            // 
-            // provinceTaxTextBox
-            // 
-            this.provinceTaxTextBox.Location = new System.Drawing.Point(135, 34);
-            this.provinceTaxTextBox.Name = "provinceTaxTextBox";
-            this.provinceTaxTextBox.Size = new System.Drawing.Size(57, 20);
-            this.provinceTaxTextBox.TabIndex = 38;
-            // 
-            // provinceTaxBtn
-            // 
-            this.provinceTaxBtn.Location = new System.Drawing.Point(30, 64);
-            this.provinceTaxBtn.Name = "provinceTaxBtn";
-            this.provinceTaxBtn.Size = new System.Drawing.Size(165, 23);
-            this.provinceTaxBtn.TabIndex = 37;
-            this.provinceTaxBtn.Text = "Commit rate above";
-            this.provinceTaxBtn.UseVisualStyleBackColor = true;
-            this.provinceTaxBtn.Click += new System.EventHandler(this.provinceTaxBtn_Click);
             // 
             // Form1
             // 

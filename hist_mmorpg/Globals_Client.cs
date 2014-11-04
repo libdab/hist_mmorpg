@@ -12,9 +12,9 @@ namespace hist_mmorpg
     public static class Globals_Client
     {
         /// <summary>
-        /// Holds PlayerCharacter associated with the player
+        /// Holds PlayerCharacter associated with the player using this client
         /// </summary>
-        public static PlayerCharacter myChar;
+        public static PlayerCharacter myPlayerCharacter;
         /// <summary>
         /// Holds Character to view in UI
         /// </summary>

@@ -321,7 +321,7 @@ namespace hist_mmorpg
             for (int i = 0; i < this.personae.Length; i++)
             {
                 string[] personaeSplit = this.personae[i].Split('|');
-                if (personaeSplit[0].Equals(Globals_Client.myChar.charID))
+                if (personaeSplit[0].Equals(Globals_Client.myPlayerCharacter.charID))
                 {
                     thisRole = personaeSplit[1];
                     break;
@@ -356,7 +356,7 @@ namespace hist_mmorpg
             {
                 string thisPersonae = this.personae[i];
                 string[] thisPersonaeSplit = thisPersonae.Split('|');
-                if (thisPersonaeSplit[0].Equals(Globals_Client.myChar.charID))
+                if (thisPersonaeSplit[0].Equals(Globals_Client.myPlayerCharacter.charID))
                 {
                     isOfInterest = true;
                     break;
@@ -385,7 +385,7 @@ namespace hist_mmorpg
                     {
                         string thisPersonae = this.personae[i];
                         string[] thisPersonaeSplit = thisPersonae.Split('|');
-                        if (thisPersonaeSplit[0].Equals(Globals_Client.myChar.charID))
+                        if (thisPersonaeSplit[0].Equals(Globals_Client.myPlayerCharacter.charID))
                         {
                             if (thisPersonaeSplit[1].Equals("headOfFamilyBride"))
                             {

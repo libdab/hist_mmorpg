@@ -1163,9 +1163,9 @@ namespace hist_mmorpg
             }
 
             // ============== 6. change GLOBALS_CLIENT.MYCHAR
-            if (Globals_Client.myChar == pc)
+            if (Globals_Client.myPlayerCharacter == pc)
             {
-                Globals_Client.myChar = promotedNPC;
+                Globals_Client.myPlayerCharacter = promotedNPC;
             }
 
         }
@@ -2134,7 +2134,7 @@ namespace hist_mmorpg
             List<Fief> myFiefs = new List<Fief>();
 
             // iterate through owned fiefs, searching for character as bailiff
-            foreach (Fief thisFief in Globals_Client.myChar.ownedFiefs)
+            foreach (Fief thisFief in Globals_Client.myPlayerCharacter.ownedFiefs)
             {
                 if (thisFief.bailiff == this)
                 {
@@ -2154,7 +2154,7 @@ namespace hist_mmorpg
             List<Army> myArmies = new List<Army>();
 
             // iterate through armies, searching for character as leader
-            foreach (Army thisArmy in Globals_Client.myChar.myArmies)
+            foreach (Army thisArmy in Globals_Client.myPlayerCharacter.myArmies)
             {
                 if (thisArmy.getLeader() == this)
                 {
@@ -3041,6 +3041,63 @@ namespace hist_mmorpg
             }
 
             return myKing;
+        }
+
+        /// <summary>
+        /// Check to see if the PlayerCharacter is a king
+        /// </summary>
+        /// <returns>bool indicating whether is a king</returns>
+        public bool checkIsKing()
+        {
+            bool isKing = false;
+
+            if ((this == Globals_Server.kingOne) || (this == Globals_Server.kingTwo))
+            {
+                isKing = true;
+            }
+
+            return isKing;
+        }
+
+        /// <summary>
+        /// Check to see if the PlayerCharacter is a prince
+        /// </summary>
+        /// <returns>bool indicating whether is a prince</returns>
+        public bool checkIsPrince()
+        {
+            bool isPrince = false;
+
+            if ((this == Globals_Server.princeOne) || (this == Globals_Server.princeTwo))
+            {
+                isPrince = true;
+            }
+
+            return isPrince;
+        }
+
+        /// <summary>
+        /// Check to see if the PlayerCharacter is a herald
+        /// </summary>
+        /// <returns>bool indicating whether is a herald</returns>
+        public bool checkIsHerald()
+        {
+            bool isHerald = false;
+
+            if ((this == Globals_Server.heraldOne) || (this == Globals_Server.heraldTwo))
+            {
+                isHerald = true;
+            }
+
+            return isHerald;
+        }
+
+        /// <summary>
+        /// Check to see if the PlayerCharacter is a sysAdmin
+        /// </summary>
+        /// <returns>bool indicating whether is a sysAdmin</returns>
+        public bool checkIsSysAdmin()
+        {
+            return (this == Globals_Server.sysAdmin);
         }
 
         /// <summary>
