@@ -2334,7 +2334,7 @@ namespace hist_mmorpg
 
             foreach (Fief thisFief in this.ownedFiefs)
             {
-                if (Convert.ToInt32(thisFief.rank.rankID) > highestRank)
+                if (thisFief.rank.id > highestRank)
                 {
                     // clear existing fiefs
                     if (highestFiefs.Count > 0)
@@ -2346,7 +2346,7 @@ namespace hist_mmorpg
                     highestFiefs.Add(thisFief);
 
                     // update highest rank
-                    highestRank = Convert.ToInt32(thisFief.rank.rankID);
+                    highestRank = thisFief.rank.id;
                 }
             }
 

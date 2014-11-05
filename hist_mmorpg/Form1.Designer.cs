@@ -2882,9 +2882,9 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
+            this.Controls.Add(this.royalGiftsContainer);
             this.Controls.Add(this.provinceContainer);
             this.Controls.Add(this.fiefContainer);
-            this.Controls.Add(this.royalGiftsContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);

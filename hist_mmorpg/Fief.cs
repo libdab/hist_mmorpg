@@ -1826,7 +1826,7 @@ namespace hist_mmorpg
                                 }
                                 else
                                 {
-                                    if (Convert.ToInt32(thisFief.rank.rankID) > Convert.ToInt32(newHome.rank.rankID))
+                                    if (thisFief.rank.id > newHome.rank.id)
                                     {
                                         newHome = thisFief;
                                     }

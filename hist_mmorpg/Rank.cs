@@ -13,13 +13,11 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds rank ID
         /// </summary>
-        public String rankID { get; set; }
+        public byte id { get; set; }
         /// <summary>
-        /// Holds title in various languages.
-        /// Tuple Item1: Language code
-        /// Tuple Item2: corresponding title
+        /// Holds title name in various languages
         /// </summary>
-        public Tuple<String, String>[] title { get; set; }
+        public TitleName[] title { get; set; }
         /// <summary>
         /// Holds base stature for this rank
         /// </summary>
@@ -28,10 +26,10 @@ namespace hist_mmorpg
         /// <summary>
         /// Constructor for Rank
         /// </summary>
-        /// <param name="id">String holding rank ID</param>
-        /// <param name="ti">Tuple holding title in various languages</param>
+        /// <param name="id">byte holding rank ID</param>
+        /// <param name="ti">TitleName[] holding title name in various languages</param>
         /// <param name="stat">byte holding base stature for rank</param>
-        public Rank(String id, Tuple<String, String>[] ti, byte stat)
+        public Rank(byte id, TitleName[] ti, byte stat)
         {
 
             // TODO: validation
@@ -46,7 +44,7 @@ namespace hist_mmorpg
                 stat = 6;
             }
 
-            this.rankID = id;
+            this.id = id;
             this.title = ti;
             this.stature = stat;
 
@@ -60,5 +58,26 @@ namespace hist_mmorpg
         {
         }
 
+    }
+
+    /// <summary>
+    /// Struct storing data on title name
+    /// </summary>
+    public struct TitleName
+    {
+        /// <summary>
+        /// Holds Language ID
+        /// </summary>
+        public string langID;
+        /// <summary>
+        /// Holds title name associated with specific language
+        /// </summary>
+        public string name;
+
+        public TitleName(string lang, string nam)
+        {
+            this.langID = lang;
+            this.name = nam;
+        }
     }
 }

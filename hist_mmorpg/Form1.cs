@@ -251,40 +251,40 @@ namespace hist_mmorpg
 			List<Character> fief7Chars = new List<Character>();
 
             // create ranks for kingdoms, provinces, fiefs
-            Tuple<string, string>[] myTitle03 = new Tuple<string, string>[3];
-            myTitle03[0] = new Tuple<string, string>("langC", "King");
-            myTitle03[1] = new Tuple<string, string>("E", "King");
-            myTitle03[2] = new Tuple<string, string>("langF", "Roi");
-            Rank myRank03 = new Rank("03", myTitle03, 6);
-            Globals_Server.rankMasterList.Add(myRank03.rankID, myRank03);
+            TitleName[] myTitleName03 = new TitleName[3];
+            myTitleName03[0] = new TitleName("langC", "King");
+            myTitleName03[1] = new TitleName("E", "King");
+            myTitleName03[2] = new TitleName("langF", "Roi");
+            Rank myRank03 = new Rank(3, myTitleName03, 6);
+            Globals_Server.rankMasterList.Add(myRank03.id, myRank03);
 
-            Tuple<string, string>[] myTitle09 = new Tuple<string, string>[3];
-            myTitle09[0] = new Tuple<string, string>("langC", "Prince");
-            myTitle09[1] = new Tuple<string, string>("E", "Prince");
-            myTitle09[2] = new Tuple<string, string>("langF", "Prince");
-            Rank myRank09 = new Rank("09", myTitle09, 4);
-            Globals_Server.rankMasterList.Add(myRank09.rankID, myRank09);
+            TitleName[] myTitleName09 = new TitleName[3];
+            myTitleName09[0] = new TitleName("langC", "Prince");
+            myTitleName09[1] = new TitleName("E", "Prince");
+            myTitleName09[2] = new TitleName("langF", "Prince");
+            Rank myRank09 = new Rank(9, myTitleName09, 4);
+            Globals_Server.rankMasterList.Add(myRank09.id, myRank09);
 
-            Tuple<string, string>[] myTitle11 = new Tuple<string, string>[3];
-            myTitle11[0] = new Tuple<string, string>("langC", "Earl");
-            myTitle11[1] = new Tuple<string, string>("E", "Earl");
-            myTitle11[2] = new Tuple<string, string>("langF", "Comte");
-            Rank myRank11 = new Rank("11", myTitle11, 4);
-            Globals_Server.rankMasterList.Add(myRank11.rankID, myRank11);
+            TitleName[] myTitleName11 = new TitleName[3];
+            myTitleName11[0] = new TitleName("langC", "Earl");
+            myTitleName11[1] = new TitleName("E", "Earl");
+            myTitleName11[2] = new TitleName("langF", "Comte");
+            Rank myRank11 = new Rank(11, myTitleName11, 4);
+            Globals_Server.rankMasterList.Add(myRank11.id, myRank11);
 
-            Tuple<string, string>[] myTitle15 = new Tuple<string, string>[3];
-            myTitle15[0] = new Tuple<string, string>("langC", "Baron");
-            myTitle15[1] = new Tuple<string, string>("E", "Baron");
-            myTitle15[2] = new Tuple<string, string>("langF", "Baron");
-            Rank myRank15 = new Rank("15", myTitle15, 2);
-            Globals_Server.rankMasterList.Add(myRank15.rankID, myRank15);
+            TitleName[] myTitleName15 = new TitleName[3];
+            myTitleName15[0] = new TitleName("langC", "Baron");
+            myTitleName15[1] = new TitleName("E", "Baron");
+            myTitleName15[2] = new TitleName("langF", "Baron");
+            Rank myRank15 = new Rank(15, myTitleName15, 2);
+            Globals_Server.rankMasterList.Add(myRank15.id, myRank15);
 
-            Tuple<string, string>[] myTitle17 = new Tuple<string, string>[3];
-            myTitle17[0] = new Tuple<string, string>("langC", "Lord");
-            myTitle17[1] = new Tuple<string, string>("E", "Lord");
-            myTitle17[2] = new Tuple<string, string>("langF", "Sire");
-            Rank myRank17 = new Rank("17", myTitle17, 1);
-            Globals_Server.rankMasterList.Add(myRank17.rankID, myRank17);
+            TitleName[] myTitleName17 = new TitleName[3];
+            myTitleName17[0] = new TitleName("langC", "Lord");
+            myTitleName17[1] = new TitleName("E", "Lord");
+            myTitleName17[2] = new TitleName("langF", "Sire");
+            Rank myRank17 = new Rank(17, myTitleName17, 1);
+            Globals_Server.rankMasterList.Add(myRank17.id, myRank17);
 
             // create Nationality objects for Kingdoms and Characters
             Nationality nationality01 = new Nationality("F", "French");
@@ -853,7 +853,7 @@ namespace hist_mmorpg
             }
 
             // write each object in rankMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<string, Rank> pair in Globals_Server.rankMasterList)
+            foreach (KeyValuePair<byte, Rank> pair in Globals_Server.rankMasterList)
             {
                 bool success = this.writeRank(gameID, pair.Value);
                 if (success)
@@ -1079,11 +1079,11 @@ namespace hist_mmorpg
             }
 
             // ========= load RANKS
-            foreach (string element in Globals_Server.rankKeys)
+            foreach (byte element in Globals_Server.rankKeys)
             {
-                Rank rank = this.initialDBload_rank(gameID, element);
+                Rank rank = this.initialDBload_rank(gameID, element.ToString());
                 // add Rank to rankMasterList
-                Globals_Server.rankMasterList.Add(rank.rankID, rank);
+                Globals_Server.rankMasterList.Add(rank.id, rank);
             }
 
             // ========= load SIEGES
@@ -1216,7 +1216,7 @@ namespace hist_mmorpg
             var rankKeyResult = rClient.Get(gameID, "rankKeys");
             if (rankKeyResult.IsSuccess)
             {
-                Globals_Server.rankKeys = rankKeyResult.Value.GetObject<List<string>>();
+                Globals_Server.rankKeys = rankKeyResult.Value.GetObject<List<byte>>();
             }
             else
             {
@@ -2340,7 +2340,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="k">key of key list</param>
 		/// <param name="kl">key list to write</param>
-        public bool writeKeyList(string gameID, string k, List<string> kl)
+        public bool writeKeyList<T>(string gameID, string k, List<T> kl)
 		{
 
 			var rList = new RiakObject(gameID, k, kl);
@@ -2622,7 +2622,7 @@ namespace hist_mmorpg
         public bool writeRank(string gameID, Rank r)
         {
 
-            var rRank = new RiakObject(gameID, r.rankID, r);
+            var rRank = new RiakObject(gameID, r.id.ToString(), r);
             var putRankResult = rClient.Put(rRank);
 
             if (!putRankResult.IsSuccess)
@@ -3749,154 +3749,168 @@ namespace hist_mmorpg
         /// </summary>
         public void refreshRoyalGiftsContainer()
         {
-            // to store financial data
-            int totGDP = 0;
-            int provTaxInc = 0;
-            int totTaxInc = 0;
-            int totTreas = 0;
-            double taxRate = 0;
-
-            // disable controls until place selected in ListView
-            this.royalGiftsGiftFiefBtn.Enabled = false;
-            this.royalGiftsGrantTitleBtn.Enabled = false;
-            this.royalGiftsRevokeTitleBtn.Enabled = false;
-
-            // remove any previously displayed text
-
-            // clear existing items in places lists
-            this.royalGiftsProvListView.Items.Clear();
-            this.royalGiftsFiefListView.Items.Clear();
-
-            // iterates through owned provinces and fiefs, adding information to appropriate ListView
-            // PROVINCES
-            foreach (Province thisProvince in Globals_Client.myPlayerCharacter.ownedProvinces)
+            // get PlayerCharacter (to allow for herald viewing king's finances)
+            PlayerCharacter thisKing = null;
+            if (Globals_Client.myPlayerCharacter.checkIsKing())
             {
-                ListViewItem provItem = null;
+                thisKing = Globals_Client.myPlayerCharacter;
+            }
+            else if (Globals_Client.myPlayerCharacter.checkIsHerald())
+            {
+                thisKing = Globals_Client.myPlayerCharacter.getKing();
+            }
+            if (thisKing != null)
+            {
+                // to store financial data
+                int totGDP = 0;
+                int provTaxInc = 0;
+                int totTaxInc = 0;
+                int totTreas = 0;
+                double taxRate = 0;
 
-                // id
-                provItem = new ListViewItem(thisProvince.id);
+                // disable controls until place selected in ListView
+                this.royalGiftsGiftFiefBtn.Enabled = false;
+                this.royalGiftsGrantTitleBtn.Enabled = false;
+                this.royalGiftsRevokeTitleBtn.Enabled = false;
 
-                // name
-                provItem.SubItems.Add(thisProvince.name);
+                // remove any previously displayed text
 
-                // title holder
-                // get character
-                PlayerCharacter thisHolder = null;
-                if (Globals_Server.pcMasterList.ContainsKey(thisProvince.titleHolder))
+                // clear existing items in places lists
+                this.royalGiftsProvListView.Items.Clear();
+                this.royalGiftsFiefListView.Items.Clear();
+
+                // iterates through owned provinces and fiefs, adding information to appropriate ListView
+                // PROVINCES
+                foreach (Province thisProvince in thisKing.ownedProvinces)
                 {
-                    thisHolder = Globals_Server.pcMasterList[thisProvince.titleHolder];
-                }
+                    ListViewItem provItem = null;
 
-                // title holder name & id
-                if (thisHolder != null)
-                {
-                    provItem.SubItems.Add(thisHolder.firstName + " " + thisHolder.familyName + "(" + thisHolder.charID + ")");
-                }
-                else
-                {
-                    provItem.SubItems.Add("");
-                }
+                    // id
+                    provItem = new ListViewItem(thisProvince.id);
 
-                // last season tax rate and total tax income
-                foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
-                {
-                    if (fiefEntry.Value.province == thisProvince)
+                    // name
+                    provItem.SubItems.Add(thisProvince.name);
+
+                    // title holder
+                    // get character
+                    PlayerCharacter thisHolder = null;
+                    if (Globals_Server.pcMasterList.ContainsKey(thisProvince.titleHolder))
                     {
-                        taxRate = fiefEntry.Value.keyStatsCurrent[12];
-                        // update tax income total for province
-                        provTaxInc += Convert.ToInt32(fiefEntry.Value.keyStatsCurrent[11]);
+                        thisHolder = Globals_Server.pcMasterList[thisProvince.titleHolder];
                     }
+
+                    // title holder name & id
+                    if (thisHolder != null)
+                    {
+                        provItem.SubItems.Add(thisHolder.firstName + " " + thisHolder.familyName + "(" + thisHolder.charID + ")");
+                    }
+                    else
+                    {
+                        provItem.SubItems.Add("");
+                    }
+
+                    // last season tax rate and total tax income
+                    foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
+                    {
+                        if (fiefEntry.Value.province == thisProvince)
+                        {
+                            taxRate = fiefEntry.Value.keyStatsCurrent[12];
+                            // update tax income total for province
+                            provTaxInc += Convert.ToInt32(fiefEntry.Value.keyStatsCurrent[11]);
+                        }
+                    }
+
+                    // add tax rate subitem
+                    provItem.SubItems.Add(taxRate.ToString());
+
+                    // add tax income subitem
+                    provItem.SubItems.Add("£" + provTaxInc);
+
+                    // update total tax income for all provinces
+                    totTaxInc += provTaxInc;
+
+                    if (provItem != null)
+                    {
+                        // add item to fiefsListView
+                        this.royalGiftsProvListView.Items.Add(provItem);
+                    }
+
                 }
 
-                // add tax rate subitem
-                provItem.SubItems.Add(taxRate.ToString());
+                // add listviewitem with total tax income (all provinces)
+                string[] provItemTotalSubs = new string[] { "", "", "", "", "£" + totTaxInc };
+                ListViewItem provItemTotal = new ListViewItem(provItemTotalSubs);
+                this.royalGiftsProvListView.Items.Add(provItemTotal);
 
-                // add tax income subitem
-                provItem.SubItems.Add("£" + provTaxInc);
-
-                // update total tax income for all provinces
-                totTaxInc += provTaxInc;
-
-                if (provItem != null)
+                // FIEFS
+                totTaxInc = 0;
+                foreach (Fief thisFief in thisKing.ownedFiefs)
                 {
-                    // add item to fiefsListView
-                    this.royalGiftsProvListView.Items.Add(provItem);
+                    ListViewItem fiefItem = null;
+
+                    // id
+                    fiefItem = new ListViewItem(thisFief.id);
+
+                    // name
+                    fiefItem.SubItems.Add(thisFief.name);
+
+                    // province name
+                    fiefItem.SubItems.Add(thisFief.province.name);
+
+                    // title holder
+                    // get character
+                    Character thisHolder = null;
+                    if (Globals_Server.pcMasterList.ContainsKey(thisFief.titleHolder))
+                    {
+                        thisHolder = Globals_Server.pcMasterList[thisFief.titleHolder];
+                    }
+                    else if (Globals_Server.npcMasterList.ContainsKey(thisFief.titleHolder))
+                    {
+                        thisHolder = Globals_Server.npcMasterList[thisFief.titleHolder];
+                    }
+
+                    // title holder name & id
+                    if (thisHolder != null)
+                    {
+                        fiefItem.SubItems.Add(thisHolder.firstName + " " + thisHolder.familyName + "(" + thisHolder.charID + ")");
+                    }
+                    else
+                    {
+                        fiefItem.SubItems.Add("");
+                    }
+
+                    // GDP
+                    fiefItem.SubItems.Add("£" + thisFief.keyStatsCurrent[1]);
+                    // update GDP total
+                    totGDP += Convert.ToInt32(thisFief.keyStatsCurrent[1]);
+
+                    // last tax income
+                    fiefItem.SubItems.Add("£" + thisFief.keyStatsCurrent[11]);
+                    // update tax income total
+                    totTaxInc += Convert.ToInt32(thisFief.keyStatsCurrent[11]);
+
+                    // treasury
+                    fiefItem.SubItems.Add("£" + thisFief.treasury);
+                    // update treasury total
+                    totTreas += thisFief.treasury;
+
+                    if (fiefItem != null)
+                    {
+                        // add item to fiefsListView
+                        this.royalGiftsFiefListView.Items.Add(fiefItem);
+                    }
+
                 }
 
+                // add listviewitem with total GDP and tax income (all fiefs)
+                string[] fiefItemTotalSubs = new string[] { "", "", "", "", "£" + totGDP, "£" + totTaxInc, "£" + totTreas };
+                ListViewItem fiefItemTotal = new ListViewItem(fiefItemTotalSubs);
+                this.royalGiftsFiefListView.Items.Add(fiefItemTotal);
+
+                Globals_Client.containerToView = this.royalGiftsContainer;
+                Globals_Client.containerToView.BringToFront();
             }
 
-            // add listviewitem with total tax income (all provinces)
-            string[] provItemTotalSubs = new string[] { "", "", "", "", "£" + totTaxInc };
-            ListViewItem provItemTotal = new ListViewItem(provItemTotalSubs);
-            this.royalGiftsProvListView.Items.Add(provItemTotal);
-
-            // FIEFS
-            totTaxInc = 0;
-            foreach (Fief thisFief in Globals_Client.myPlayerCharacter.ownedFiefs)
-            {
-                ListViewItem fiefItem = null;
-
-                // id
-                fiefItem = new ListViewItem(thisFief.id);
-
-                // name
-                fiefItem.SubItems.Add(thisFief.name);
-
-                // province name
-                fiefItem.SubItems.Add(thisFief.province.name);
-
-                // title holder
-                // get character
-                Character thisHolder = null;
-                if (Globals_Server.pcMasterList.ContainsKey(thisFief.titleHolder))
-                {
-                    thisHolder = Globals_Server.pcMasterList[thisFief.titleHolder];
-                }
-                else if (Globals_Server.npcMasterList.ContainsKey(thisFief.titleHolder))
-                {
-                    thisHolder = Globals_Server.npcMasterList[thisFief.titleHolder];
-                }
-
-                // title holder name & id
-                if (thisHolder != null)
-                {
-                    fiefItem.SubItems.Add(thisHolder.firstName + " " + thisHolder.familyName + "(" + thisHolder.charID + ")");
-                }
-                else
-                {
-                    fiefItem.SubItems.Add("");
-                }
-
-                // GDP
-                fiefItem.SubItems.Add("£" + thisFief.keyStatsCurrent[1]);
-                // update GDP total
-                totGDP += Convert.ToInt32(thisFief.keyStatsCurrent[1]);
-
-                // last tax income
-                fiefItem.SubItems.Add("£" + thisFief.keyStatsCurrent[11]);
-                // update tax income total
-                totTaxInc += Convert.ToInt32(thisFief.keyStatsCurrent[11]);
-
-                // treasury
-                fiefItem.SubItems.Add("£" + thisFief.treasury);
-                // update treasury total
-                totTreas += thisFief.treasury;
-
-                if (fiefItem != null)
-                {
-                    // add item to fiefsListView
-                    this.royalGiftsFiefListView.Items.Add(fiefItem);
-                }
-
-            }
-
-            // add listviewitem with total GDP and tax income (all fiefs)
-            string[] fiefItemTotalSubs = new string[] { "", "", "", "", "£" + totGDP, "£" + totTaxInc, "£" + totTreas };
-            ListViewItem fiefItemTotal = new ListViewItem(fiefItemTotalSubs);
-            this.royalGiftsFiefListView.Items.Add(fiefItemTotal);
-
-            Globals_Client.containerToView = this.royalGiftsContainer;
-            Globals_Client.containerToView.BringToFront();
         }
 
         /// <summary>
@@ -4356,11 +4370,11 @@ namespace hist_mmorpg
                     if (thisPlace != null)
                     {
                         // get correct title
-                        foreach (Tuple<string, string> titleName in thisPlace.rank.title)
+                        foreach (TitleName titleName in thisPlace.rank.title)
                         {
-                            if (titleName.Item1 == ch.language.Item1.languageID)
+                            if (titleName.langID == ch.language.Item1.languageID)
                             {
-                                charText += titleName.Item2 + " (rank " + thisPlace.rank.rankID + ") of ";
+                                charText += titleName.name + " (rank " + thisPlace.rank.id + ") of ";
                                 break;
                             }
                         }
@@ -4383,11 +4397,11 @@ namespace hist_mmorpg
                     if (thisPlace != null)
                     {
                         // get correct title
-                        foreach (Tuple<string, string> titleName in thisPlace.rank.title)
+                        foreach (TitleName titleName in thisPlace.rank.title)
                         {
-                            if (titleName.Item1 == ch.language.Item1.languageID)
+                            if (titleName.langID == ch.language.Item1.languageID)
                             {
-                                charText += titleName.Item2 + " (rank " + thisPlace.rank.rankID + ") of ";
+                                charText += titleName.name + " (rank " + thisPlace.rank.id + ") of ";
                                 break;
                             }
                         }
@@ -4410,11 +4424,11 @@ namespace hist_mmorpg
                     if (thisPlace != null)
                     {
                         // get correct title
-                        foreach (Tuple<string, string> titleName in thisPlace.rank.title)
+                        foreach (TitleName titleName in thisPlace.rank.title)
                         {
-                            if (titleName.Item1 == ch.language.Item1.languageID)
+                            if (titleName.langID == ch.language.Item1.languageID)
                             {
-                                charText += titleName.Item2 + " (rank " + thisPlace.rank.rankID + ") of ";
+                                charText += titleName.name + " (rank " + thisPlace.rank.id + ") of ";
                                 break;
                             }
                         }
@@ -4798,9 +4812,9 @@ namespace hist_mmorpg
             fiefText += "Title (rank): ";
             for (int i = 0; i < f.rank.title.Length; i++ )
             {
-                if (f.rank.title[i].Item1 == f.language.Item1.languageID)
+                if (f.rank.title[i].langID == f.language.Item1.languageID)
                 {
-                    fiefText += f.rank.title[i].Item2 + " (" + f.rank.rankID + ")\r\n";
+                    fiefText += f.rank.title[i].name + " (" + f.rank.id + ")\r\n";
                     break;
                 }
             }
@@ -13135,55 +13149,67 @@ namespace hist_mmorpg
             }
 
             // enable/disable controls as appropriate
-            // provinces
-            if (whichView.Equals("province"))
+
+            // check to see if viewer is king or herald
+            if (!Globals_Client.myPlayerCharacter.checkIsHerald())
             {
-                if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                // provinces
+                if (whichView.Equals("province"))
                 {
-                    if (thisProv != null)
+                    if (this.royalGiftsProvListView.SelectedItems.Count > 0)
                     {
-                        // revoke title button
-                        if (thisProv.titleHolder.Equals(Globals_Client.myPlayerCharacter.charID))
+                        if (thisProv != null)
                         {
-                            this.royalGiftsRevokeTitleBtn.Enabled = false;
-                        }
-                        else
-                        {
-                            this.royalGiftsRevokeTitleBtn.Enabled = true;
+                            // revoke title button
+                            if (thisProv.titleHolder.Equals(Globals_Client.myPlayerCharacter.charID))
+                            {
+                                this.royalGiftsRevokeTitleBtn.Enabled = false;
+                            }
+                            else
+                            {
+                                this.royalGiftsRevokeTitleBtn.Enabled = true;
+                            }
                         }
                     }
+
+                    // gift fief button
+                    this.royalGiftsGiftFiefBtn.Enabled = false;
                 }
 
-                // gift fief button
+                // fiefs
+                else if (whichView.Equals("fief"))
+                {
+                    if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                    {
+                        if (thisFief != null)
+                        {
+                            // revoke title button
+                            if (thisFief.titleHolder.Equals(Globals_Client.myPlayerCharacter.charID))
+                            {
+                                this.royalGiftsRevokeTitleBtn.Enabled = false;
+                            }
+                            else
+                            {
+                                this.royalGiftsRevokeTitleBtn.Enabled = true;
+                            }
+                        }
+                    }
+
+                    // gift fief button
+                    this.royalGiftsGiftFiefBtn.Enabled = true;
+                }
+
+                // always enable 'grant title' button
+                this.royalGiftsGrantTitleBtn.Enabled = true;
+            }
+
+            // don't enable controls if herald
+            else
+            {
+                this.royalGiftsGrantTitleBtn.Enabled = false;
+                this.royalGiftsRevokeTitleBtn.Enabled = false;
                 this.royalGiftsGiftFiefBtn.Enabled = false;
             }
-
-            // fiefs
-            else if (whichView.Equals("fief"))
-            {
-                if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
-                {
-                    if (thisFief != null)
-                    {
-                        // revoke title button
-                        if (thisFief.titleHolder.Equals(Globals_Client.myPlayerCharacter.charID))
-                        {
-                            this.royalGiftsRevokeTitleBtn.Enabled = false;
-                        }
-                        else
-                        {
-                            this.royalGiftsRevokeTitleBtn.Enabled = true;
-                        }
-                    }
-                }
-
-                // gift fief button
-                this.royalGiftsGiftFiefBtn.Enabled = true;
-            }
-
-            // always enable 'grant title' button
-            this.royalGiftsGrantTitleBtn.Enabled = true;
-
 
             // give focus back to appropriate listview
             if (whichView.Equals("province"))

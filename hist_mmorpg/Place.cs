@@ -114,7 +114,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds place rank (Rank object)
         /// </summary>
-        public string rank { get; set; }
+        public byte rank { get; set; }
 
         /// <summary>
         /// Constructor for Place_Riak.
@@ -144,7 +144,7 @@ namespace hist_mmorpg
                 this.name = placeToUse.name;
                 this.owner = placeToUse.owner.charID;
                 this.titleHolder = placeToUse.titleHolder;
-                this.rank = placeToUse.rank.rankID;
+                this.rank = placeToUse.rank.id;
             }
         }
     }

@@ -85,11 +85,11 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds all Rank objects
         /// </summary>
-        public static Dictionary<string, Rank> rankMasterList = new Dictionary<string, Rank>();
+        public static Dictionary<byte, Rank> rankMasterList = new Dictionary<byte, Rank>();
         /// <summary>
         /// Holds keys for Rank objects (used when retrieving from database)
         /// </summary>
-        public static List<String> rankKeys = new List<String>();
+        public static List<byte> rankKeys = new List<byte>();
         /// <summary>
         /// Holds all Terrain objects
         /// </summary>
