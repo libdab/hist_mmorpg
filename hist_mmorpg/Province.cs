@@ -97,16 +97,11 @@ namespace hist_mmorpg
         /// </summary>
 		/// <param name="pr">Province_Riak object to use as source</param>
 		public Province(Province_Riak pr)
+			: base(pr: pr)
 		{
-			this.id = pr.id;
-			this.name = pr.name;
-            // overlord to be inserted later
-			this.owner = null;
 			this.taxRate = pr.taxRate;
             // kingdom to be inserted later
             this.kingdom = null;
-            // rank to be inserted later
-            this.rank = null;
         }
 
         /// <summary>

@@ -45,23 +45,19 @@ namespace hist_mmorpg
 			rClient = (RiakClient)rCluster.CreateClient();
 
             // initialise game objects
-			this.initGameObjects("NOTdb", "101");
+			this.initGameObjects("101");
 
 			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
-
-			// write game objects to Riak
-			// this.writeToDB ("testGame");
         }
 
 		/// <summary>
         /// Initialises all game objects
 		/// </summary>
-		/// <param name="source">Where to get object data (database or hard-coded)</param>
-        /// <param name="pc">ID of PlayerCharacter to set as myChar</param>
-        public void initGameObjects(string source, string pc)
+		/// <param name="pc">ID of PlayerCharacter to set as Globals_Client.myPlayerCharacter</param>
+        public void initGameObjects(string pcID)
         {
 
-			if (source == "db")
+			if (Globals_Client.loadFromDatabase)
 			{
 				// load objects from database
 				this.initialDBload ("testGame");
@@ -73,7 +69,7 @@ namespace hist_mmorpg
 			}
 
             // set myPlayerCharacter
-            Globals_Client.myPlayerCharacter = Globals_Server.pcMasterList[pc];
+            Globals_Client.myPlayerCharacter = Globals_Server.pcMasterList[pcID];
 
             // set inital fief to display
             Globals_Client.fiefToView = Globals_Client.myPlayerCharacter.location;
@@ -287,9 +283,9 @@ namespace hist_mmorpg
             Globals_Server.rankMasterList.Add(myRank17.id, myRank17);
 
             // create Nationality objects for Kingdoms and Characters
-            Nationality nationality01 = new Nationality("F", "French");
+			Nationality nationality01 = new Nationality("Fr", "French");
             Globals_Server.nationalityMasterList.Add(nationality01.natID, nationality01);
-            Nationality nationality02 = new Nationality("E", "English");
+			Nationality nationality02 = new Nationality("Eng", "English");
             Globals_Server.nationalityMasterList.Add(nationality02.natID, nationality02);
 
             // create kingdoms for provinces
@@ -785,7 +781,39 @@ namespace hist_mmorpg
             this.writeJournal(gameID, "serverPastEvents", Globals_Server.pastEvents);
             this.writeJournal(gameID, "clientPastEvents", Globals_Client.myPastEvents);
 
-            // ========= write SKILLS
+			// ========= write GLOBALS_SERVER/CLIENT CHARACTER VARIABLES
+			// Globals_Client.myPlayerCharacter
+			this.writeCharacterVar (gameID, "myPlayerCharacter", Globals_Client.myPlayerCharacter);
+			// Globals_Server.sysAdmin
+			this.writeCharacterVar (gameID, "sysAdmin", Globals_Server.sysAdmin);
+			// Globals_Server.kingOne
+			this.writeCharacterVar (gameID, "kingOne", Globals_Server.kingOne);
+			// Globals_Server.kingTwo
+			this.writeCharacterVar (gameID, "kingTwo", Globals_Server.kingTwo);
+			// Globals_Server.princeOne
+			this.writeCharacterVar (gameID, "princeOne", Globals_Server.princeOne);
+			// Globals_Server.princeTwo
+			this.writeCharacterVar (gameID, "princeTwo", Globals_Server.princeTwo);
+			// Globals_Server.heraldOne
+			this.writeCharacterVar (gameID, "heraldOne", Globals_Server.heraldOne);
+			// Globals_Server.heraldTwo
+			this.writeCharacterVar (gameID, "heraldTwo", Globals_Server.heraldTwo);
+
+			// ========= write GLOBALS_SERVER newID VARIABLES
+			// newCharID
+			this.writeNewIDvar (gameID, "newCharID", Globals_Server.newCharID);
+			// newArmyID
+			this.writeNewIDvar (gameID, "newArmyID", Globals_Server.newArmyID);
+			// newDetachmentID
+			this.writeNewIDvar (gameID, "newDetachmentID", Globals_Server.newDetachmentID);
+			// newAilmentID
+			this.writeNewIDvar (gameID, "newAilmentID", Globals_Server.newAilmentID);
+			// newSiegeID
+			this.writeNewIDvar (gameID, "newSiegeID", Globals_Server.newSiegeID);
+			// newJournalEntryID
+			this.writeNewIDvar (gameID, "newJournalEntryID", Globals_Server.newJournalEntryID);
+
+			// ========= write SKILLS
             // clear existing key list
             if (Globals_Server.skillKeys.Count > 0)
 			{
@@ -1048,8 +1076,22 @@ namespace hist_mmorpg
 			Globals_Server.recruitRatios = this.initialDBload_dictDouble(gameID, "recruitRatios");
 			Globals_Server.battleProbabilities = this.initialDBload_dictDouble(gameID, "battleProbabilities");
             Globals_Server.jEntryPriorities = this.initialDBload_dictString(gameID, "jEntryPriorities");
-            
-            // ========= load JOURNALS
+
+			// ========= load GLOBAL_SERVER newID VARIABLES
+			// newCharID
+			Globals_Server.newCharID = this.initialDBload_newIDs (gameID, "newCharID");
+			// newArmyID
+			Globals_Server.newArmyID = this.initialDBload_newIDs (gameID, "newArmyID");
+			// newDetachmentID
+			Globals_Server.newDetachmentID = this.initialDBload_newIDs (gameID, "newDetachmentID");
+			// newAilmentID
+			Globals_Server.newAilmentID = this.initialDBload_newIDs (gameID, "newAilmentID");
+			// newSiegeID
+			Globals_Server.newSiegeID = this.initialDBload_newIDs (gameID, "newSiegeID");
+			// newJournalEntryID
+			Globals_Server.newJournalEntryID = this.initialDBload_newIDs (gameID, "newJournalEntryID");
+
+			// ========= load JOURNALS
             Globals_Server.scheduledEvents = this.initialDBload_journal(gameID, "serverScheduledEvents");
             Globals_Server.pastEvents = this.initialDBload_journal(gameID, "serverPastEvents");
             Globals_Client.myPastEvents = this.initialDBload_journal(gameID, "clientPastEvents");
@@ -1159,6 +1201,16 @@ namespace hist_mmorpg
 				}
                 Globals_Server.goToList.Clear();
 			}
+
+			// ========= write GLOBALS_SERVER/CLIENT CHARACTER VARIABLES
+			Globals_Client.myPlayerCharacter = this.initialDBload_charVariable (gameID, "myPlayerCharacter");
+			Globals_Server.sysAdmin = this.initialDBload_charVariable (gameID, "sysAdmin");
+			Globals_Server.kingOne = this.initialDBload_charVariable (gameID, "kingOne");
+			Globals_Server.kingTwo = this.initialDBload_charVariable (gameID, "kingTwo");
+			Globals_Server.princeOne = this.initialDBload_charVariable (gameID, "princeOne");
+			Globals_Server.princeTwo = this.initialDBload_charVariable (gameID, "princeTwo");
+			Globals_Server.heraldOne = this.initialDBload_charVariable (gameID, "heraldOne");
+			Globals_Server.heraldTwo = this.initialDBload_charVariable (gameID, "heraldTwo");
 
             // ========= load MAP
             Globals_Server.gameMap = this.initialDBload_map(gameID, "mapEdges");
@@ -1366,6 +1418,32 @@ namespace hist_mmorpg
 			return newClock;
 		}
 
+		/// <summary>
+		/// Loads a particular newID variable for a particular game from database
+		/// </summary>
+		/// <returns>uint</returns>
+		/// <param name="gameID">Game for which newID variable to be retrieved</param>
+		/// <param name="clockID">newID variable to be retrieved</param>
+		public uint initialDBload_newIDs(string gameID, string newID)
+		{
+			var newIDResult = rClient.Get(gameID, newID);
+			uint newIDout = 0;
+
+			if (newIDResult.IsSuccess)
+			{
+				newIDout = newIDResult.Value.GetObject<uint>();
+			}
+			else
+			{
+				if (Globals_Client.showMessages)
+				{
+					System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve newID variable " + newID);
+				}
+			}
+
+			return newIDout;
+		}
+
         /// <summary>
         /// Loads a Journal from the database
         /// </summary>
@@ -1391,6 +1469,40 @@ namespace hist_mmorpg
 
             return newJournal;
         }
+
+		/// <summary>
+		/// Loads a Character variable from the database
+		/// </summary>
+		/// <returns>PlayerCharacter object</returns>
+		/// <param name="gameID">Game for which Character variable to be retrieved</param>
+		/// <param name="charVarID">ID of Character variable to be retrieved</param>
+		public PlayerCharacter initialDBload_charVariable(string gameID, string charVarID)
+		{
+			var charVarResult = rClient.Get(gameID, charVarID);
+			string pcID = null;
+			PlayerCharacter newPC = null;
+
+			if (charVarResult.IsSuccess)
+			{
+				pcID = charVarResult.Value.GetObject<string>();
+				if (pcID != null)
+				{
+					if (Globals_Server.pcMasterList.ContainsKey(pcID))
+					{
+						newPC = Globals_Server.pcMasterList[pcID];
+					}
+				}
+			}
+			else
+			{
+				if (Globals_Client.showMessages)
+				{
+					System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Character variable " + charVarID);
+				}
+			}
+
+			return newPC;
+		}
 
         /// <summary>
 		/// Loads Dictionary<string, uint[]> from database
@@ -2298,6 +2410,14 @@ namespace hist_mmorpg
                 }
             }
 
+			// check if province is in owner's list of provinces owned
+			bool provInList = oOut.owner.ownedProvinces.Any(item => item.id == oOut.id);
+			// if not, add it
+			if(! provInList)
+			{
+				oOut.owner.ownedProvinces.Add(oOut);
+			}
+				
             // insert kingdom using kingdomID
             if (pr.kingdom != null)
             {
@@ -2315,7 +2435,7 @@ namespace hist_mmorpg
             }
 
             // insert rank using rankID
-            if (pr.rank != null)
+			if (pr.rank > 0)
             {
                 if (Globals_Server.rankMasterList.ContainsKey(pr.rank))
                 {
@@ -2401,6 +2521,58 @@ namespace hist_mmorpg
 
             return putJournalResult.IsSuccess;
         }
+
+		/// <summary>
+		/// Writes Character variable to Riak
+		/// </summary>
+		/// <returns>bool indicating success</returns>
+		/// <param name="gameID">Game (bucket) to write to</param>
+		/// <param name="key">Riak key to use</param>
+		/// <param name="pc">PlayerCharacter to write</param>
+		public bool writeCharacterVar(string gameID, string key, PlayerCharacter pc)
+		{
+			string pcID = null;
+			if (pc != null)
+			{
+				pcID = pc.charID;
+			}
+
+			var rCharVar = new RiakObject(gameID, key, pcID);
+			var putCharVarResult = rClient.Put(rCharVar);
+
+			if (!putCharVarResult.IsSuccess)
+			{
+				if (Globals_Client.showMessages)
+				{
+					System.Windows.Forms.MessageBox.Show("Write failed: Character variable " + key + " to bucket " + rCharVar.Bucket);
+				}
+			}
+
+			return putCharVarResult.IsSuccess;
+		}
+
+		/// <summary>
+		/// Writes newID variable to Riak
+		/// </summary>
+		/// <returns>bool indicating success</returns>
+		/// <param name="gameID">Game (bucket) to write to</param>
+		/// <param name="key">Riak key to use</param>
+		/// <param name="newID">newID to write</param>
+		public bool writeNewIDvar(string gameID, string key, uint newID)
+		{
+			var rCharVar = new RiakObject(gameID, key, newID);
+			var putCharVarResult = rClient.Put(rCharVar);
+
+			if (!putCharVarResult.IsSuccess)
+			{
+				if (Globals_Client.showMessages)
+				{
+					System.Windows.Forms.MessageBox.Show("Write failed: newID variable " + key + " to bucket " + rCharVar.Bucket);
+				}
+			}
+
+			return putCharVarResult.IsSuccess;
+		}
 
         /// <summary>
 		/// Writes Dictionary object to Riak
@@ -3794,6 +3966,7 @@ namespace hist_mmorpg
                     // title holder
                     // get character
                     PlayerCharacter thisHolder = null;
+					//System.Windows.Forms.MessageBox.Show("Got here!");
                     if (Globals_Server.pcMasterList.ContainsKey(thisProvince.titleHolder))
                     {
                         thisHolder = Globals_Server.pcMasterList[thisProvince.titleHolder];
@@ -4171,7 +4344,7 @@ namespace hist_mmorpg
             charText += "\r\n";
 
             // nationality
-            charText += "Nationality: " + ch.nationality + "\r\n";
+			charText += "Nationality: " + ch.nationality.name + "\r\n";
 
             if (ch is PlayerCharacter)
             {
@@ -4479,6 +4652,13 @@ namespace hist_mmorpg
             {
                 pcText += "  - " + pc.ownedFiefs[i].name + "\r\n";
             }
+
+			// owned provinces
+			pcText += "Provinces owned:\r\n";
+			for (int i = 0; i < pc.ownedProvinces.Count; i++)
+			{
+				pcText += "  - " + pc.ownedProvinces[i].name + "\r\n";
+			}
 
             return pcText;
         }
@@ -8024,15 +8204,20 @@ namespace hist_mmorpg
             // Confirm user wants to close
             switch (MessageBox.Show("Really Quit?", "Exit", MessageBoxButtons.OKCancel))
             {
-                case DialogResult.OK:
-                    // TODO: do whatever necessary to ensure safe closedown
-                    break;
-                // if cancel pressed, do nothing (don't close)
-                case DialogResult.Cancel:
-                    e.Cancel = true;
-                    break;
-                default:
-                    break;
+			case DialogResult.OK:
+				// write to database if necessary
+				if (Globals_Client.writeToDatabase)
+				{
+					this.writeToDB ("testGame");
+				}
+				break;
+
+			// if cancel pressed, do nothing (don't close)
+			case DialogResult.Cancel:
+				e.Cancel = true;
+				break;
+			default:
+				break;
             }
         }
 

@@ -197,6 +197,7 @@ namespace hist_mmorpg
         public void refreshNPCdisplay()
         {
             bool addItem = true;
+			List<ListViewItem> itemsToAdd = new List<ListViewItem>();
 
             // remove any previously displayed characters
             this.npcDetailsTextBox.ReadOnly = true;
@@ -222,11 +223,21 @@ namespace hist_mmorpg
             {
                 foreach (KeyValuePair<string, PlayerCharacter> thisPlayer in Globals_Server.pcMasterList)
                 {
+					addItem = true;
+
                     // only show 'played' PCs
-                    if (thisPlayer.Value.playerID != null)
+					if (thisPlayer.Value.playerID == null)
+					{
+						addItem = false;
+					}
+					else
                     {
                         // don't show this player
-                        if (thisPlayer.Value != Globals_Client.myPlayerCharacter)
+						if (thisPlayer.Value == Globals_Client.myPlayerCharacter)
+						{
+							addItem = false;
+						}
+						else
                         {
                             // Create an item and subitems for each character
 
@@ -241,8 +252,22 @@ namespace hist_mmorpg
 
                             // nationality
                             myCharItem.SubItems.Add(thisPlayer.Value.nationality.name);
+
+							// add item to temporary list
+							itemsToAdd.Add(myCharItem);
                         }
                     }
+
+					// check for null items
+					if (myCharItem == null)
+					{
+						addItem = false;
+					}
+
+					if (addItem)
+					{
+						itemsToAdd.Add(myCharItem);
+					}
                 }
             }
 
@@ -251,8 +276,14 @@ namespace hist_mmorpg
             {
                 for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
                 {
+					addItem = true;
+
                     // can only appoint males
-                    if (Globals_Client.myPlayerCharacter.myNPCs[i].isMale)
+					if (!Globals_Client.myPlayerCharacter.myNPCs [i].isMale)
+					{
+						addItem = false;
+					}
+					else
                     {
                         // Create an item and subitems for each character
 
@@ -277,19 +308,26 @@ namespace hist_mmorpg
                             }
                         }
                     }
+
+					// check for null items
+					if (myCharItem == null)
+					{
+						addItem = false;
+					}
+
+					if (addItem)
+					{
+						// add item to temporary list
+						itemsToAdd.Add(myCharItem);
+					}
                 }
             }
 
-            // check for null items
-            if (myCharItem == null)
-            {
-                addItem = false;
-            }
-
-            if (addItem)
-            {
-                this.npcListView.Items.Add(myCharItem);
-            }
+			// add items to ListView
+			if (itemsToAdd.Count > 0)
+			{
+				this.npcListView.Items.AddRange(itemsToAdd.ToArray());
+			}
         }
 
         /// <summary>

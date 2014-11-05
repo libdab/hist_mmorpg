@@ -39,13 +39,8 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="kr">Kingdom_Riak object to use as source</param>
         public Kingdom(Kingdom_Riak kr)
+			: base(kr: kr)
 		{
-			this.id = kr.id;
-			this.name = kr.name;
-            // overlord to be inserted later
-			this.owner = null;
-            // rank to be inserted later
-            this.rank = null;
             // nationality to be inserted later
             this.nationality = null;
         }

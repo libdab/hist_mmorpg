@@ -316,15 +316,12 @@ namespace hist_mmorpg
         /// </summary>
 		/// <param name="fr">Fief_Riak object to use as source</param>
 		public Fief(Fief_Riak fr)
+			: base(fr: fr)
 		{
 		
-			this.id = fr.id;
-			this.name = fr.name;
             // province to be added later
 			this.province = null;
 			this.population = fr.population;
-            // owner to be added later
-            this.owner = null;
             // ancestral owner to be added later
             this.ancestralOwner = null;
             // bailiff to be added later
@@ -350,11 +347,8 @@ namespace hist_mmorpg
 			this.barredCharacters = fr.barredCharacters;
 			this.englishBarred = fr.englishBarred;
 			this.frenchBarred = fr.frenchBarred;
-            // rank to be added later
-            this.rank = null;
             this.bailiffDaysInFief = fr.bailiffDaysInFief;
             this.treasury = fr.treasury;
-            this.titleHolder = fr.titleHolder;
             this.armies = fr.armies;
             this.hasRecruited = fr.hasRecruited;
             this.troopTransfers = fr.troopTransfers;

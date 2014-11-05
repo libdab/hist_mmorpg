@@ -56,6 +56,42 @@ namespace hist_mmorpg
 
         }
 
+		/// <summary>
+		/// Constructor for Place using Fief_Riak, Province_Riak or Kingdom_Riak object.
+		/// For use when de-serialising from Riak
+		/// </summary>
+		/// <param name="fr">Fief_Riak object to use as source</param>
+		/// <param name="pr">Province_Riak object to use as source</param>
+		/// <param name="kr">Kingdom_Riak object to use as source</param>
+		public Place(Fief_Riak fr = null, Province_Riak pr = null, Kingdom_Riak kr = null)
+		{
+			Place_Riak placeToUse = null;
+			if (fr != null)
+			{
+				placeToUse = fr;
+			}
+			else if (pr != null)
+			{
+				placeToUse = pr;
+			}
+			else if (kr != null)
+			{
+				placeToUse = kr;
+			}
+
+			if (placeToUse != null)
+			{
+				this.id = placeToUse.id;
+				this.name = placeToUse.name;
+				// owner to be inserted later
+				this.owner = null;
+				this.titleHolder = placeToUse.titleHolder;
+				// rank to be inserted later
+				this.rank = null;
+			}
+
+		}
+
         /// <summary>
         /// Constructor for Place taking no parameters.
         /// For use when de-serialising from Riak

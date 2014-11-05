@@ -63,6 +63,14 @@ namespace hist_mmorpg
         /// Holds bool indicating whether or not to display popup debug messages
         /// </summary>
         public static bool showDebugMessages = false;
+		/// <summary>
+		/// Holds bool indicating whether or not to load initial object data from database on startup
+		/// </summary>
+		public static bool loadFromDatabase = false;
+		/// <summary>
+		/// Holds bool indicating whether or not to write current object data to database on exit
+		/// </summary>
+		public static bool writeToDatabase = false;
 
     }
 
