@@ -259,6 +259,10 @@ namespace hist_mmorpg
             this.provinceFieflistContainer = new System.Windows.Forms.SplitContainer();
             this.label23 = new System.Windows.Forms.Label();
             this.provinceFiefListView = new System.Windows.Forms.ListView();
+            this.royalGiftsPositionContainer = new System.Windows.Forms.SplitContainer();
+            this.royalGiftsPositionListView = new System.Windows.Forms.ListView();
+            this.label24 = new System.Windows.Forms.Label();
+            this.royalGiftsPositionBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -378,6 +382,10 @@ namespace hist_mmorpg
             this.provinceFieflistContainer.Panel1.SuspendLayout();
             this.provinceFieflistContainer.Panel2.SuspendLayout();
             this.provinceFieflistContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.royalGiftsPositionContainer)).BeginInit();
+            this.royalGiftsPositionContainer.Panel1.SuspendLayout();
+            this.royalGiftsPositionContainer.Panel2.SuspendLayout();
+            this.royalGiftsPositionContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -2595,9 +2603,7 @@ namespace hist_mmorpg
             // 
             // royalGiftsContainer.Panel1
             // 
-            this.royalGiftsContainer.Panel1.Controls.Add(this.royalGiftsRevokeTitleBtn);
-            this.royalGiftsContainer.Panel1.Controls.Add(this.royalGiftsGiftFiefBtn);
-            this.royalGiftsContainer.Panel1.Controls.Add(this.royalGiftsGrantTitleBtn);
+            this.royalGiftsContainer.Panel1.Controls.Add(this.royalGiftsPositionContainer);
             // 
             // royalGiftsContainer.Panel2
             // 
@@ -2608,7 +2614,7 @@ namespace hist_mmorpg
             // 
             // royalGiftsRevokeTitleBtn
             // 
-            this.royalGiftsRevokeTitleBtn.Location = new System.Drawing.Point(28, 77);
+            this.royalGiftsRevokeTitleBtn.Location = new System.Drawing.Point(21, 67);
             this.royalGiftsRevokeTitleBtn.Name = "royalGiftsRevokeTitleBtn";
             this.royalGiftsRevokeTitleBtn.Size = new System.Drawing.Size(125, 28);
             this.royalGiftsRevokeTitleBtn.TabIndex = 2;
@@ -2617,7 +2623,7 @@ namespace hist_mmorpg
             // 
             // royalGiftsGiftFiefBtn
             // 
-            this.royalGiftsGiftFiefBtn.Location = new System.Drawing.Point(28, 120);
+            this.royalGiftsGiftFiefBtn.Location = new System.Drawing.Point(21, 109);
             this.royalGiftsGiftFiefBtn.Name = "royalGiftsGiftFiefBtn";
             this.royalGiftsGiftFiefBtn.Size = new System.Drawing.Size(125, 28);
             this.royalGiftsGiftFiefBtn.TabIndex = 1;
@@ -2627,7 +2633,7 @@ namespace hist_mmorpg
             // 
             // royalGiftsGrantTitleBtn
             // 
-            this.royalGiftsGrantTitleBtn.Location = new System.Drawing.Point(28, 34);
+            this.royalGiftsGrantTitleBtn.Location = new System.Drawing.Point(21, 26);
             this.royalGiftsGrantTitleBtn.Name = "royalGiftsGrantTitleBtn";
             this.royalGiftsGrantTitleBtn.Size = new System.Drawing.Size(125, 28);
             this.royalGiftsGrantTitleBtn.TabIndex = 0;
@@ -2877,6 +2883,59 @@ namespace hist_mmorpg
             this.provinceFiefListView.UseCompatibleStateImageBehavior = false;
             this.provinceFiefListView.View = System.Windows.Forms.View.Details;
             // 
+            // royalGiftsPositionContainer
+            // 
+            this.royalGiftsPositionContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.royalGiftsPositionContainer.Location = new System.Drawing.Point(0, 0);
+            this.royalGiftsPositionContainer.Name = "royalGiftsPositionContainer";
+            this.royalGiftsPositionContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // royalGiftsPositionContainer.Panel1
+            // 
+            this.royalGiftsPositionContainer.Panel1.Controls.Add(this.royalGiftsPositionBtn);
+            this.royalGiftsPositionContainer.Panel1.Controls.Add(this.label24);
+            this.royalGiftsPositionContainer.Panel1.Controls.Add(this.royalGiftsGiftFiefBtn);
+            this.royalGiftsPositionContainer.Panel1.Controls.Add(this.royalGiftsRevokeTitleBtn);
+            this.royalGiftsPositionContainer.Panel1.Controls.Add(this.royalGiftsGrantTitleBtn);
+            // 
+            // royalGiftsPositionContainer.Panel2
+            // 
+            this.royalGiftsPositionContainer.Panel2.Controls.Add(this.royalGiftsPositionListView);
+            this.royalGiftsPositionContainer.Size = new System.Drawing.Size(443, 711);
+            this.royalGiftsPositionContainer.SplitterDistance = 464;
+            this.royalGiftsPositionContainer.TabIndex = 0;
+            // 
+            // royalGiftsPositionListView
+            // 
+            this.royalGiftsPositionListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.royalGiftsPositionListView.FullRowSelect = true;
+            this.royalGiftsPositionListView.Location = new System.Drawing.Point(0, 0);
+            this.royalGiftsPositionListView.Name = "royalGiftsPositionListView";
+            this.royalGiftsPositionListView.Size = new System.Drawing.Size(443, 243);
+            this.royalGiftsPositionListView.TabIndex = 0;
+            this.royalGiftsPositionListView.Tag = "position";
+            this.royalGiftsPositionListView.UseCompatibleStateImageBehavior = false;
+            this.royalGiftsPositionListView.View = System.Windows.Forms.View.Details;
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label24.Location = new System.Drawing.Point(6, 441);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(74, 17);
+            this.label24.TabIndex = 2;
+            this.label24.Text = "Positions";
+            // 
+            // royalGiftsPositionBtn
+            // 
+            this.royalGiftsPositionBtn.Location = new System.Drawing.Point(12, 377);
+            this.royalGiftsPositionBtn.Name = "royalGiftsPositionBtn";
+            this.royalGiftsPositionBtn.Size = new System.Drawing.Size(125, 28);
+            this.royalGiftsPositionBtn.TabIndex = 3;
+            this.royalGiftsPositionBtn.Text = "Bestow Position";
+            this.royalGiftsPositionBtn.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3044,6 +3103,11 @@ namespace hist_mmorpg
             this.provinceFieflistContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.provinceFieflistContainer)).EndInit();
             this.provinceFieflistContainer.ResumeLayout(false);
+            this.royalGiftsPositionContainer.Panel1.ResumeLayout(false);
+            this.royalGiftsPositionContainer.Panel1.PerformLayout();
+            this.royalGiftsPositionContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.royalGiftsPositionContainer)).EndInit();
+            this.royalGiftsPositionContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -3280,6 +3344,10 @@ namespace hist_mmorpg
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.TextBox provinceTaxTextBox;
         private System.Windows.Forms.Button provinceTaxBtn;
+        private System.Windows.Forms.SplitContainer royalGiftsPositionContainer;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.ListView royalGiftsPositionListView;
+        private System.Windows.Forms.Button royalGiftsPositionBtn;
 
     }
 }

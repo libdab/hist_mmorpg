@@ -139,6 +139,14 @@ namespace hist_mmorpg
         /// </summary>
         public static List<string> nationalityKeys = new List<string>();
         /// <summary>
+        /// Holds all position objects
+        /// </summary>
+        public static Dictionary<byte, Position> positionMasterList = new Dictionary<byte, Position>();
+        /// <summary>
+        /// Holds keys for position objects (used when retrieving from database)
+        /// </summary>
+        public static List<byte> positionKeys = new List<byte>();
+        /// <summary>
         /// Holds Character_Riak objects with existing goTo queues (used during initial load)
         /// </summary>
         public static List<Character_Riak> goToList = new List<Character_Riak>();

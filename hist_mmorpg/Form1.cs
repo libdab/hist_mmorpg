@@ -282,11 +282,21 @@ namespace hist_mmorpg
             Rank myRank17 = new Rank(17, myTitleName17, 1);
             Globals_Server.rankMasterList.Add(myRank17.id, myRank17);
 
-            // create Nationality objects for Kingdoms and Characters
+            // create Nationality objects for Kingdoms, Characters and positions
 			Nationality nationality01 = new Nationality("Fr", "French");
             Globals_Server.nationalityMasterList.Add(nationality01.natID, nationality01);
 			Nationality nationality02 = new Nationality("Eng", "English");
             Globals_Server.nationalityMasterList.Add(nationality02.natID, nationality02);
+
+            // create Positions
+            TitleName myTiName01 = new TitleName("LangC", "Keeper of the Privy Seal");
+            TitleName[] myTitles01 = new TitleName[] { myTiName01 };
+            Position myPos01 = new Position(100, myTitles01, 2, null, nationality02);
+            Globals_Server.positionMasterList.Add(myPos01.id, myPos01);
+            TitleName myTiName02 = new TitleName("LangC", "Lord High Steward");
+            TitleName[] myTitles02 = new TitleName[] { myTiName02 };
+            Position myPos02 = new Position(101, myTitles02, 2, null, nationality02);
+            Globals_Server.positionMasterList.Add(myPos02.id, myPos02);
 
             // create kingdoms for provinces
             Kingdom myKingdom1 = new Kingdom("E0000", "England", nationality02, r: myRank03);
@@ -505,7 +515,7 @@ namespace hist_mmorpg
             myKingdom2.owner = Globals_Server.kingTwo;
 
             // set heralds
-            Globals_Server.heraldOne = myChar1;
+            // Globals_Server.heraldOne = myChar1;
             Globals_Server.heraldTwo = myChar2;
 
             // set province owners
@@ -893,7 +903,27 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "rankKeys", Globals_Server.rankKeys);
 
-			// ========= write NPCs
+            // ========= write POSITIONS
+            // clear existing key list
+            if (Globals_Server.positionKeys.Count > 0)
+            {
+                Globals_Server.positionKeys.Clear();
+            }
+
+            // write each object in positionMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<byte, Position> pair in Globals_Server.positionMasterList)
+            {
+                bool success = this.writePosition(gameID, pair.Value);
+                if (success)
+                {
+                    Globals_Server.positionKeys.Add(pair.Key);
+                }
+            }
+
+            // write key list to database
+            this.writeKeyList(gameID, "positionKeys", Globals_Server.positionKeys);
+
+            // ========= write NPCs
             // clear existing key list
             if (Globals_Server.npcKeys.Count > 0)
 			{
@@ -1128,6 +1158,14 @@ namespace hist_mmorpg
                 Globals_Server.rankMasterList.Add(rank.id, rank);
             }
 
+            // ========= load POSITIONS
+            foreach (byte element in Globals_Server.positionKeys)
+            {
+                Position pos = this.initialDBload_position(gameID, element.ToString());
+                // add Position to positionMasterList
+                Globals_Server.positionMasterList.Add(pos.id, pos);
+            }
+
             // ========= load SIEGES
             foreach (string element in Globals_Server.siegeKeys)
             {
@@ -1275,6 +1313,20 @@ namespace hist_mmorpg
                 if (Globals_Client.showMessages)
                 {
                     System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve rankKeys from database.");
+                }
+            }
+
+            // populate positionKeys
+            var positionKeyResult = rClient.Get(gameID, "positionKeys");
+            if (positionKeyResult.IsSuccess)
+            {
+                Globals_Server.positionKeys = positionKeyResult.Value.GetObject<List<byte>>();
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve positionKeys from database.");
                 }
             }
 
@@ -1866,6 +1918,36 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Loads a Position for a particular game from database
+        /// </summary>
+        /// <returns>Position object</returns>
+        /// <param name="gameID">Game for which Position to be retrieved</param>
+        /// <param name="posID">ID of Position to be retrieved</param>
+        public Position initialDBload_position(string gameID, string posID)
+        {
+            var posResult = rClient.Get(gameID, posID);
+            var posRiak = new Position_Riak();
+            var newPos = new Position();
+
+            if (posResult.IsSuccess)
+            {
+                // extract Position_Riak object
+                posRiak = posResult.Value.GetObject<Position_Riak>();
+                // create Position from Position_Riak
+                newPos = this.PositionfromPosRiak(posRiak);
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Position " + posID);
+                }
+            }
+
+            return newPos;
+        }
+
+        /// <summary>
 		/// Loads a Fief for a particular game from database
 		/// </summary>
         /// <returns>Fief object</returns>
@@ -2116,7 +2198,27 @@ namespace hist_mmorpg
 			return npcOut;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Converts Position_Riak objects into Position objects
+        /// </summary>
+        /// <returns>Position object</returns>
+        /// <param name="pr">Position_Riak object to be converted</param>
+        public Position PositionfromPosRiak(Position_Riak pr)
+        {
+            Position posOut = null;
+            // create Position from Position_Riak
+            posOut = new Position(pr);
+
+            // insert nationality
+            if (Globals_Server.nationalityMasterList.ContainsKey(pr.nationality))
+            {
+                posOut.nationality = Globals_Server.nationalityMasterList[pr.nationality];
+            }
+
+            return posOut;
+        }
+
+        /// <summary>
 		/// Converts PlayerCharacter_Riak objects into PlayerCharacter game objects
 		/// </summary>
         /// <returns>PlayerCharacter object</returns>
@@ -2306,10 +2408,22 @@ namespace hist_mmorpg
         /// <param name="k">Kingdom to be converted</param>
         public Kingdom_Riak KingdomToRiak(Kingdom k)
 		{
-            Kingdom_Riak oOut = null;
-            oOut = new Kingdom_Riak(k);
-			return oOut;
+            Kingdom_Riak kingOut = null;
+            kingOut = new Kingdom_Riak(k);
+			return kingOut;
 		}
+
+        /// <summary>
+        /// Converts Position object into suitable format for JSON serialisation
+        /// </summary>
+        /// <returns>Position_Riak object</returns>
+        /// <param name="p">Position to be converted</param>
+        public Position_Riak PositionToRiak(Position p)
+        {
+            Position_Riak posOut = null;
+            posOut = new Position_Riak(p);
+            return posOut;
+        }
 
         /// <summary>
         /// Converts Province object into suitable format for JSON serialisation
@@ -2713,6 +2827,31 @@ namespace hist_mmorpg
 
 			return putKingResult.IsSuccess;
 		}
+
+        /// <summary>
+        /// Writes Position object to Riak
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
+        /// <param name="p">Position to write</param>
+        public bool writePosition(string gameID, Position p)
+        {
+            // convert Position into Position_Riak
+            Position_Riak riakPos = this.PositionToRiak(p);
+
+            var rPos = new RiakObject(gameID, riakPos.id.ToString(), riakPos);
+            var putPosResult = rClient.Put(rPos);
+
+            if (!putPosResult.IsSuccess)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: Position " + rPos.Key + " to bucket " + rPos.Bucket);
+                }
+            }
+
+            return putPosResult.IsSuccess;
+        }
 
         /// <summary>
         /// Writes Province object to Riak
@@ -3424,6 +3563,11 @@ namespace hist_mmorpg
             this.royalGiftsFiefListView.Columns.Add("Last GDP", -2, HorizontalAlignment.Left);
             this.royalGiftsFiefListView.Columns.Add("Last Tax Income", -2, HorizontalAlignment.Left);
             this.royalGiftsFiefListView.Columns.Add("Current Treasury", -2, HorizontalAlignment.Left);
+            // positions
+            this.royalGiftsPositionListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.royalGiftsPositionListView.Columns.Add("Position", -2, HorizontalAlignment.Left);
+            this.royalGiftsPositionListView.Columns.Add("Stature", -2, HorizontalAlignment.Left);
+            this.royalGiftsPositionListView.Columns.Add("Holder", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -3931,6 +4075,7 @@ namespace hist_mmorpg
             {
                 thisKing = Globals_Client.myPlayerCharacter.getKing();
             }
+
             if (thisKing != null)
             {
                 // to store financial data
@@ -4052,7 +4197,7 @@ namespace hist_mmorpg
                         fiefItem.SubItems.Add("");
                     }
 
-                    // GDP
+                    // gdp
                     fiefItem.SubItems.Add("£" + thisFief.keyStatsCurrent[1]);
                     // update GDP total
                     totGDP += Convert.ToInt32(thisFief.keyStatsCurrent[1]);
@@ -4079,6 +4224,52 @@ namespace hist_mmorpg
                 string[] fiefItemTotalSubs = new string[] { "", "", "", "", "£" + totGDP, "£" + totTaxInc, "£" + totTreas };
                 ListViewItem fiefItemTotal = new ListViewItem(fiefItemTotalSubs);
                 this.royalGiftsFiefListView.Items.Add(fiefItemTotal);
+
+                // POSITIONS
+                foreach (KeyValuePair<byte, Position> thisPos in Globals_Server.positionMasterList)
+                {
+                    // only list posistions for this nationality
+                    if (thisPos.Value.nationality == thisKing.nationality)
+                    {
+                        ListViewItem posItem = null;
+
+                        // id
+                        posItem = new ListViewItem(thisPos.Value.id.ToString());
+
+                        // name
+                        posItem.SubItems.Add(thisPos.Value.title[0].name);
+
+                        // stature
+                        posItem.SubItems.Add(thisPos.Value.stature.ToString());
+
+                        // holder
+                        // get character
+                        Character thisHolder = null;
+                        if (thisPos.Value.officeHolder != null)
+                        {
+                            if (Globals_Server.pcMasterList.ContainsKey(thisPos.Value.officeHolder))
+                            {
+                                thisHolder = Globals_Server.pcMasterList[thisPos.Value.officeHolder];
+                            }
+                        }
+
+                        // title holder name & id
+                        if (thisHolder != null)
+                        {
+                            posItem.SubItems.Add(thisHolder.firstName + " " + thisHolder.familyName + "(" + thisHolder.charID + ")");
+                        }
+                        else
+                        {
+                            posItem.SubItems.Add(" - ");
+                        }
+
+                        if (posItem != null)
+                        {
+                            // add item to royalGiftsPositionListView
+                            this.royalGiftsPositionListView.Items.Add(posItem);
+                        }
+                    }
+                }
 
                 Globals_Client.containerToView = this.royalGiftsContainer;
                 Globals_Client.containerToView.BringToFront();
@@ -13251,6 +13442,7 @@ namespace hist_mmorpg
         {
             Province thisProv = null;
             Fief thisFief = null;
+            Position thisPos = null;
 
             // get ListView tag
             ListView listview = sender as ListView;
@@ -13261,14 +13453,42 @@ namespace hist_mmorpg
             {
                 if (this.royalGiftsProvListView.SelectedItems.Count < 1)
                 {
-                    whichView = "fief";
+                    if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                    {
+                        whichView = "fief";
+                    }
+                    else if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+                    {
+                        whichView = "position";
+                    }
                 }
             }
             else if (whichView.Equals("fief"))
             {
                 if (this.royalGiftsFiefListView.SelectedItems.Count < 1)
                 {
-                    whichView = "province";
+                    if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                    {
+                        whichView = "province";
+                    }
+                    else if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+                    {
+                        whichView = "position";
+                    }
+                }
+            }
+            else if (whichView.Equals("position"))
+            {
+                if (this.royalGiftsPositionListView.SelectedItems.Count < 1)
+                {
+                    if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                    {
+                        whichView = "province";
+                    }
+                    else if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                    {
+                        whichView = "fief";
+                    }
                 }
             }
 
@@ -13295,6 +13515,17 @@ namespace hist_mmorpg
                     }
                 }
             }
+            else if (whichView.Equals("position"))
+            {
+                if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+                {
+                    // get position
+                    if (Globals_Server.positionMasterList.ContainsKey(Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)))
+                    {
+                        thisPos = Globals_Server.positionMasterList[Convert.ToByte(this.royalGiftsFiefListView.SelectedItems[0].SubItems[0].Text)];
+                    }
+                }
+            }
 
             // deselect any selected items in other listView
             if (whichView.Equals("province"))
@@ -13303,12 +13534,31 @@ namespace hist_mmorpg
                 {
                     this.royalGiftsFiefListView.SelectedItems[0].Selected = false;
                 }
+                else if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+                {
+                    this.royalGiftsPositionListView.SelectedItems[0].Selected = false;
+                }
             }
             else if (whichView.Equals("fief"))
             {
                 if (this.royalGiftsProvListView.SelectedItems.Count > 0)
                 {
                     this.royalGiftsProvListView.SelectedItems[0].Selected = false;
+                }
+                else if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+                {
+                    this.royalGiftsPositionListView.SelectedItems[0].Selected = false;
+                }
+            }
+            else if (whichView.Equals("position"))
+            {
+                if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                {
+                    this.royalGiftsProvListView.SelectedItems[0].Selected = false;
+                }
+                else if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                {
+                    this.royalGiftsFiefListView.SelectedItems[0].Selected = false;
                 }
             }
 
@@ -13357,8 +13607,14 @@ namespace hist_mmorpg
                         }
                     }
 
+                    // 'grant title' button
+                    this.royalGiftsGrantTitleBtn.Enabled = true;
+
                     // gift fief button
                     this.royalGiftsGiftFiefBtn.Enabled = false;
+
+                    // bestow position button
+                    this.royalGiftsPositionBtn.Enabled = false;
                 }
 
                 // fiefs
@@ -13377,15 +13633,40 @@ namespace hist_mmorpg
                             {
                                 this.royalGiftsRevokeTitleBtn.Enabled = true;
                             }
+
+                            // gift fief button
+                            this.royalGiftsGiftFiefBtn.Enabled = true;
+
+                            // 'grant title' button
+                            this.royalGiftsGrantTitleBtn.Enabled = true;
+
+                            // bestow position button
+                            this.royalGiftsPositionBtn.Enabled = false;
                         }
                     }
-
-                    // gift fief button
-                    this.royalGiftsGiftFiefBtn.Enabled = true;
                 }
 
-                // always enable 'grant title' button
-                this.royalGiftsGrantTitleBtn.Enabled = true;
+                // positions
+                else if (whichView.Equals("position"))
+                {
+                    if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+                    {
+                        if (thisPos != null)
+                        {
+                            // bestow position button
+                            this.royalGiftsPositionBtn.Enabled = true;
+
+                            // revoke title button
+                            this.royalGiftsRevokeTitleBtn.Enabled = false;
+
+                            // gift fief button
+                            this.royalGiftsGiftFiefBtn.Enabled = false;
+
+                            // always enable 'grant title' button
+                            this.royalGiftsGrantTitleBtn.Enabled = false;
+                        }
+                    }
+                }
             }
 
             // don't enable controls if herald
@@ -13394,6 +13675,7 @@ namespace hist_mmorpg
                 this.royalGiftsGrantTitleBtn.Enabled = false;
                 this.royalGiftsRevokeTitleBtn.Enabled = false;
                 this.royalGiftsGiftFiefBtn.Enabled = false;
+                this.royalGiftsPositionBtn.Enabled = false;
             }
 
             // give focus back to appropriate listview
@@ -13404,6 +13686,10 @@ namespace hist_mmorpg
             else if (whichView.Equals("fief"))
             {
                 this.royalGiftsFiefListView.Focus();
+            }
+            else if (whichView.Equals("position"))
+            {
+                this.royalGiftsPositionListView.Focus();
             }
         }
 
