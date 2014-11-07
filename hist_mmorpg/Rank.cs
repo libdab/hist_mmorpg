@@ -120,12 +120,43 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Sets the Position's officeHolder attribute to the ID of the supplied PlayerCharacter
+        /// Inserts the supplied PlayerCharacter's ID into the Position's officeHolder variable 
         /// </summary>
         /// <param name="pc">PlayerCharacter being assigned to the Position</param>
         public void bestowPosition(PlayerCharacter pc)
         {
+            // remove existing holder if necessary
+            if (this.officeHolder != null)
+            {
+                // get current holder
+                PlayerCharacter currentHolder = null;
+                if (Globals_Server.pcMasterList.ContainsKey(this.officeHolder))
+                {
+                    currentHolder = Globals_Server.pcMasterList[this.officeHolder];
+                }
+
+                // remove from position
+                this.removePosition(currentHolder);
+            }
+
+            // assign position
             this.officeHolder = pc.charID;
+
+            // update stature
+            pc.statureModifier += this.stature;
+        }
+
+        /// <summary>
+        /// Removes the supplied PlayerCharacter's ID from the Position's officeHolder variable 
+        /// </summary>
+        /// <param name="pc">PlayerCharacter being removed from the Position</param>
+        public void removePosition(PlayerCharacter pc)
+        {
+            // remove from position
+            this.officeHolder = null;
+
+            // update stature
+            pc.statureModifier -= this.stature;
         }
     }
 

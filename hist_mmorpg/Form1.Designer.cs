@@ -263,6 +263,7 @@ namespace hist_mmorpg
             this.provinceFieflistContainer = new System.Windows.Forms.SplitContainer();
             this.label23 = new System.Windows.Forms.Label();
             this.provinceFiefListView = new System.Windows.Forms.ListView();
+            this.royalGiftsPositionRemoveBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -2621,6 +2622,7 @@ namespace hist_mmorpg
             // 
             // royalGiftsPositionContainer.Panel1
             // 
+            this.royalGiftsPositionContainer.Panel1.Controls.Add(this.royalGiftsPositionRemoveBtn);
             this.royalGiftsPositionContainer.Panel1.Controls.Add(this.royalGiftsPositionBtn);
             this.royalGiftsPositionContainer.Panel1.Controls.Add(this.label24);
             this.royalGiftsPositionContainer.Panel1.Controls.Add(this.royalGiftsGiftFiefBtn);
@@ -2636,7 +2638,7 @@ namespace hist_mmorpg
             // 
             // royalGiftsPositionBtn
             // 
-            this.royalGiftsPositionBtn.Location = new System.Drawing.Point(12, 377);
+            this.royalGiftsPositionBtn.Location = new System.Drawing.Point(12, 348);
             this.royalGiftsPositionBtn.Name = "royalGiftsPositionBtn";
             this.royalGiftsPositionBtn.Size = new System.Drawing.Size(125, 28);
             this.royalGiftsPositionBtn.TabIndex = 3;
@@ -2672,6 +2674,7 @@ namespace hist_mmorpg
             this.royalGiftsRevokeTitleBtn.TabIndex = 2;
             this.royalGiftsRevokeTitleBtn.Text = "Revoke Title";
             this.royalGiftsRevokeTitleBtn.UseVisualStyleBackColor = true;
+            this.royalGiftsRevokeTitleBtn.Click += new System.EventHandler(this.royalGiftsRevokeTitleBtn_Click);
             // 
             // royalGiftsGrantTitleBtn
             // 
@@ -2937,6 +2940,16 @@ namespace hist_mmorpg
             this.provinceFiefListView.TabIndex = 0;
             this.provinceFiefListView.UseCompatibleStateImageBehavior = false;
             this.provinceFiefListView.View = System.Windows.Forms.View.Details;
+            // 
+            // royalGiftsPositionRemoveBtn
+            // 
+            this.royalGiftsPositionRemoveBtn.Location = new System.Drawing.Point(12, 386);
+            this.royalGiftsPositionRemoveBtn.Name = "royalGiftsPositionRemoveBtn";
+            this.royalGiftsPositionRemoveBtn.Size = new System.Drawing.Size(125, 28);
+            this.royalGiftsPositionRemoveBtn.TabIndex = 4;
+            this.royalGiftsPositionRemoveBtn.Text = "Remove From Position";
+            this.royalGiftsPositionRemoveBtn.UseVisualStyleBackColor = true;
+            this.royalGiftsPositionRemoveBtn.Click += new System.EventHandler(this.royalGiftsPositionRemoveBtn_Click);
             // 
             // Form1
             // 
@@ -3350,6 +3363,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.ListView royalGiftsPositionListView;
         private System.Windows.Forms.Button royalGiftsPositionBtn;
+        private System.Windows.Forms.Button royalGiftsPositionRemoveBtn;
 
     }
 }

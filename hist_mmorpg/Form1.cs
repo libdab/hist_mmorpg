@@ -4090,6 +4090,7 @@ namespace hist_mmorpg
                 this.royalGiftsGrantTitleBtn.Enabled = false;
                 this.royalGiftsRevokeTitleBtn.Enabled = false;
                 this.royalGiftsPositionBtn.Enabled = false;
+                this.royalGiftsPositionRemoveBtn.Enabled = false;
 
                 // remove any previously displayed text
 
@@ -13568,21 +13569,23 @@ namespace hist_mmorpg
             if (whichView.Equals("province"))
             {
                 this.royalGiftsGrantTitleBtn.Text = "Grant Province Title";
+                this.royalGiftsRevokeTitleBtn.Text = "Revoke Province Title";
                 if (thisProv != null)
                 {
                     this.royalGiftsGrantTitleBtn.Tag = "province|" + thisProv.id;
+                    this.royalGiftsRevokeTitleBtn.Tag = "province|" + thisProv.id;
                 }
-                this.royalGiftsRevokeTitleBtn.Text = "Revoke Province Title";
             }
             else if (whichView.Equals("fief"))
             {
                 this.royalGiftsGrantTitleBtn.Text = "Grant Fief Title";
+                this.royalGiftsRevokeTitleBtn.Text = "Revoke Fief Title";
                 if (thisFief != null)
                 {
                     this.royalGiftsGrantTitleBtn.Tag = "fief|" + thisFief.id;
+                    this.royalGiftsRevokeTitleBtn.Tag = "fief|" + thisFief.id;
                     this.royalGiftsGiftFiefBtn.Tag = "fief|" + thisFief.id;
                 }
-                this.royalGiftsRevokeTitleBtn.Text = "Revoke Fief Title";
             }
             else if (whichView.Equals("position"))
             {
@@ -13622,8 +13625,9 @@ namespace hist_mmorpg
                     // gift fief button
                     this.royalGiftsGiftFiefBtn.Enabled = false;
 
-                    // bestow position button
+                    // position buttons
                     this.royalGiftsPositionBtn.Enabled = false;
+                    this.royalGiftsPositionRemoveBtn.Enabled = false;
                 }
 
                 // fiefs
@@ -13649,8 +13653,9 @@ namespace hist_mmorpg
                             // 'grant title' button
                             this.royalGiftsGrantTitleBtn.Enabled = true;
 
-                            // bestow position button
+                            // position buttons
                             this.royalGiftsPositionBtn.Enabled = false;
+                            this.royalGiftsPositionRemoveBtn.Enabled = false;
                         }
                     }
                 }
@@ -13664,6 +13669,16 @@ namespace hist_mmorpg
                         {
                             // bestow position button
                             this.royalGiftsPositionBtn.Enabled = true;
+
+                            // remove position button, enabled if there is a current holder
+                            if (thisPos.officeHolder != null)
+                            {
+                                this.royalGiftsPositionRemoveBtn.Enabled = true;
+                            }
+                            else
+                            {
+                                this.royalGiftsPositionRemoveBtn.Enabled = false;
+                            }
 
                             // revoke title button
                             this.royalGiftsRevokeTitleBtn.Enabled = false;
@@ -13874,6 +13889,102 @@ namespace hist_mmorpg
 
             }
 
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the royalGiftsPositionRemoveBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void royalGiftsPositionRemoveBtn_Click(object sender, EventArgs e)
+        {
+            if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+            {
+                // get position
+                Position thisPos = null;
+                if (Globals_Server.positionMasterList.ContainsKey(Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)))
+                {
+                    thisPos = Globals_Server.positionMasterList[Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)];
+                }
+
+                if (thisPos != null)
+                {
+                    // get current holder
+                    PlayerCharacter currentHolder = null;
+                    if (Globals_Server.pcMasterList.ContainsKey(thisPos.officeHolder))
+                    {
+                        currentHolder = Globals_Server.pcMasterList[thisPos.officeHolder];
+                    }
+
+                    // remove from position
+                    if (currentHolder != null)
+                    {
+                        thisPos.removePosition(currentHolder);
+
+                        // refresh screen
+                        this.refreshCurrentScreen();
+                    }
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the royalGiftsRevokeTitleBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void royalGiftsRevokeTitleBtn_Click(object sender, EventArgs e)
+        {
+            // get place type and id from button tag
+            Button button = sender as Button;
+            string[] placeDetails = button.Tag.ToString().Split('|');
+
+            // fiefs
+            if (placeDetails[0].Equals("fief"))
+            {
+                if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                {
+                    // get fief
+                    Fief thisFief = null;
+                    if (Globals_Server.fiefMasterList.ContainsKey(placeDetails[1]))
+                    {
+                        thisFief = Globals_Server.fiefMasterList[placeDetails[1]];
+                    }
+
+                    // reassign title
+                    if (thisFief != null)
+                    {
+                        Globals_Client.myPlayerCharacter.grantTitle(Globals_Client.myPlayerCharacter, thisFief);
+
+                        // refresh screen
+                        this.refreshCurrentScreen();
+                    }
+                }
+            }
+
+            // provinces
+            else if (placeDetails[0].Equals("province"))
+            {
+                if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                {
+                    // get province
+                    Province thisProv = null;
+                    if (Globals_Server.provinceMasterList.ContainsKey(placeDetails[1]))
+                    {
+                        thisProv = Globals_Server.provinceMasterList[placeDetails[1]];
+                    }
+
+                    // reassign title
+                    if (thisProv != null)
+                    {
+                        Globals_Client.myPlayerCharacter.grantTitle(Globals_Client.myPlayerCharacter, thisProv);
+
+                        // refresh screen
+                        this.refreshCurrentScreen();
+                    }
+                }
+            }
         }
 
     }
