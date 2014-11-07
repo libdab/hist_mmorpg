@@ -4089,12 +4089,14 @@ namespace hist_mmorpg
                 this.royalGiftsGiftFiefBtn.Enabled = false;
                 this.royalGiftsGrantTitleBtn.Enabled = false;
                 this.royalGiftsRevokeTitleBtn.Enabled = false;
+                this.royalGiftsPositionBtn.Enabled = false;
 
                 // remove any previously displayed text
 
                 // clear existing items in places lists
                 this.royalGiftsProvListView.Items.Clear();
                 this.royalGiftsFiefListView.Items.Clear();
+                this.royalGiftsPositionListView.Items.Clear();
 
                 // iterates through owned provinces and fiefs, adding information to appropriate ListView
                 // PROVINCES
@@ -13492,7 +13494,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // get selected place
+            // get selected place or position
             if (whichView.Equals("province"))
             {
                 if (this.royalGiftsProvListView.SelectedItems.Count > 0)
@@ -13522,7 +13524,7 @@ namespace hist_mmorpg
                     // get position
                     if (Globals_Server.positionMasterList.ContainsKey(Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)))
                     {
-                        thisPos = Globals_Server.positionMasterList[Convert.ToByte(this.royalGiftsFiefListView.SelectedItems[0].SubItems[0].Text)];
+                        thisPos = Globals_Server.positionMasterList[Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)];
                     }
                 }
             }
@@ -13581,6 +13583,13 @@ namespace hist_mmorpg
                     this.royalGiftsGiftFiefBtn.Tag = "fief|" + thisFief.id;
                 }
                 this.royalGiftsRevokeTitleBtn.Text = "Revoke Fief Title";
+            }
+            else if (whichView.Equals("position"))
+            {
+                if (thisPos != null)
+                {
+                    this.royalGiftsPositionBtn.Tag = thisPos.id;
+                }
             }
 
             // enable/disable controls as appropriate
@@ -13703,7 +13712,7 @@ namespace hist_mmorpg
         {
             // get gift type and place id from button tag and name
             Button button = sender as Button;
-            string place = button.Tag.ToString();
+            string giftID = button.Tag.ToString();
             string giftType = null;
             if (button.Name.ToString().Equals("royalGiftsGrantTitleBtn"))
             {
@@ -13712,6 +13721,10 @@ namespace hist_mmorpg
             else if (button.Name.ToString().Equals("royalGiftsGiftFiefBtn"))
             {
                 giftType = "royalGiftFief";
+            }
+            else if (button.Name.ToString().Equals("royalGiftsPositionBtn"))
+            {
+                giftType = "royalGiftPosition";
             }
 
             if (giftType != null)
@@ -13723,7 +13736,18 @@ namespace hist_mmorpg
                 }
 
                 // open new SelectionForm
-                SelectionForm royalGiftSelection = new SelectionForm(this, giftType, place: place);
+                SelectionForm royalGiftSelection = null;
+                // if gifting place or place title
+                if (!giftType.Equals("royalGiftPosition"))
+                {
+                    royalGiftSelection = new SelectionForm(this, giftType, place: giftID);
+                }
+
+                // if bestowing position
+                else
+                {
+                    royalGiftSelection = new SelectionForm(this, giftType, posID: Convert.ToByte(giftID));
+                }
                 royalGiftSelection.Show();
             }
 

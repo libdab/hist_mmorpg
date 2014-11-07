@@ -118,6 +118,15 @@ namespace hist_mmorpg
         public Position()
         {
         }
+
+        /// <summary>
+        /// Sets the Position's officeHolder attribute to the ID of the supplied PlayerCharacter
+        /// </summary>
+        /// <param name="pc">PlayerCharacter being assigned to the Position</param>
+        public void bestowPosition(PlayerCharacter pc)
+        {
+            this.officeHolder = pc.charID;
+        }
     }
 
     /// <summary>

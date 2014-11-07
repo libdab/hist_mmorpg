@@ -34,6 +34,10 @@ namespace hist_mmorpg
         /// Holds place id (if granting place title)
         /// </summary>
         public string placeID { get; set; }
+        /// <summary>
+        /// Holds position id (if bestowing a position)
+        /// </summary>
+        public byte positionID { get; set; }
 
         /// <summary>
         /// Constructor for SelectionForm
@@ -42,7 +46,7 @@ namespace hist_mmorpg
         /// <param name="funct">String indicating function to be performed</param>
         /// <param name="armID">String indicating ID of army (if choosing leader)</param>
         /// <param name="observer">Observer (if examining armies in fief)</param>
-        public SelectionForm(Form1 par, String funct, String armID = null, Character obs = null, String place = null)
+        public SelectionForm(Form1 par, String funct, String armID = null, Character obs = null, String place = null, byte posID = 0)
         {
             // initialise form elements
             InitializeComponent();
@@ -52,6 +56,7 @@ namespace hist_mmorpg
             this.armyID = armID;
             this.observer = obs;
             this.placeID = place;
+            this.positionID = posID;
 
             // initialise NPC display
             this.initDisplay();
@@ -167,6 +172,13 @@ namespace hist_mmorpg
                     // set appropriate button text and tag
                     this.chooseNpcBtn.Text = "Gift Fief To This Person";
                     break;
+                case "royalGiftPosition":
+                    // add necessary columns
+                    this.npcListView.Columns.Add("Player ID", -2, HorizontalAlignment.Left);
+                    this.npcListView.Columns.Add("Nationality", -2, HorizontalAlignment.Left);
+                    // set appropriate button text and tag
+                    this.chooseNpcBtn.Text = "Bestow Position Upon This Person";
+                    break;
                 default:
                     break;
             }
@@ -252,9 +264,6 @@ namespace hist_mmorpg
 
                             // nationality
                             myCharItem.SubItems.Add(thisPlayer.Value.nationality.name);
-
-							// add item to temporary list
-							itemsToAdd.Add(myCharItem);
                         }
                     }
 
@@ -595,9 +604,8 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of the chooseNpcBtn button which appoints the selected NPC
-        /// as either 1) the bailiff of the fief displayed in the main UI
-        /// or 2) the player's heir.  Then closes the child (this) form.
+        /// Responds to the click event of the chooseNpcBtn button, assigning a character to
+        /// the selected function (various)
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
@@ -605,7 +613,7 @@ namespace hist_mmorpg
         {
             if (npcListView.SelectedItems.Count > 0)
             {
-                // get selected NPC
+                // get selected character
                 Character selectedCharacter = null;
                 if (this.function.Contains("royalGift"))
                 {
@@ -614,6 +622,8 @@ namespace hist_mmorpg
                         selectedCharacter = Globals_Server.pcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
                     }
                 }
+
+                // if not a royal gift, get an NPC
                 else
                 {
                     if (Globals_Server.npcMasterList.ContainsKey(this.npcListView.SelectedItems[0].SubItems[1].Text))
@@ -622,26 +632,40 @@ namespace hist_mmorpg
                     }
                 }
 
-                // get place (if royal gift)
+                // get place or position (if royal gift)
                 Place thisPlace = null;
+                Position thisPosition = null;
                 if (this.function.Contains("royalGift"))
                 {
-                    // get place type and id
-                    string[] placeDetails = this.placeID.Split('|');
-
-                    // get place associated with title
-                    if (placeDetails[0].Equals("province"))
+                    // if gifting place or place title
+                    if (!this.function.Equals("royalGiftPosition"))
                     {
-                        if (Globals_Server.provinceMasterList.ContainsKey(placeDetails[1]))
+                        // get place type and id
+                        string[] placeDetails = this.placeID.Split('|');
+
+                        // get place associated with title
+                        if (placeDetails[0].Equals("province"))
                         {
-                            thisPlace = Globals_Server.provinceMasterList[placeDetails[1]];
+                            if (Globals_Server.provinceMasterList.ContainsKey(placeDetails[1]))
+                            {
+                                thisPlace = Globals_Server.provinceMasterList[placeDetails[1]];
+                            }
+                        }
+                        else if (placeDetails[0].Equals("fief"))
+                        {
+                            if (Globals_Server.fiefMasterList.ContainsKey(placeDetails[1]))
+                            {
+                                thisPlace = Globals_Server.fiefMasterList[placeDetails[1]];
+                            }
                         }
                     }
-                    else if (placeDetails[0].Equals("fief"))
+
+                    // if gifting a position
+                    else
                     {
-                        if (Globals_Server.fiefMasterList.ContainsKey(placeDetails[1]))
+                        if (Globals_Server.positionMasterList.ContainsKey(this.positionID))
                         {
-                            thisPlace = Globals_Server.fiefMasterList[placeDetails[1]];
+                            thisPosition = Globals_Server.positionMasterList[this.positionID];
                         }
                     }
                 }
@@ -673,7 +697,7 @@ namespace hist_mmorpg
                     }
                 }
 
-                // if making a royal gift (title)
+                // if making a royal gift (fief)
                 else if (this.function.Equals("royalGiftFief"))
                 {
                     if (thisPlace != null)
@@ -682,6 +706,22 @@ namespace hist_mmorpg
                         {
                             // process the change of ownership
                             (thisPlace as Fief).changeOwnership((selectedCharacter as PlayerCharacter), "voluntary");
+
+                            // refresh the fief information (in the main form)
+                            this.parent.refreshCurrentScreen();
+                        }
+                    }
+                }
+
+                // if making a royal gift (position)
+                else if (this.function.Equals("royalGiftPosition"))
+                {
+                    if (thisPosition != null)
+                    {
+                        if (selectedCharacter != null)
+                        {
+                            // process the change of officeHolder
+                            thisPosition.bestowPosition(selectedCharacter as PlayerCharacter);
 
                             // refresh the fief information (in the main form)
                             this.parent.refreshCurrentScreen();
