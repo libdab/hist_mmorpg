@@ -15,6 +15,10 @@ namespace hist_mmorpg
         /// </summary>
         public static Dictionary<string, VictoryData> victoryData = new Dictionary<string,VictoryData>();
         /// <summary>
+        /// Holds keys for VictoryData objects (used when retrieving from database)
+        /// </summary>
+        public static List<String> victoryDataKeys = new List<String>();
+        /// <summary>
         /// Holds PlayerCharacter associated with the position of sysAdmin for the game
         /// </summary>
         public static PlayerCharacter sysAdmin;
@@ -241,7 +245,7 @@ namespace hist_mmorpg
                 thisScore += scoresEntry.Value.calcFiefScore();
 
                 // add to list
-                currentScores.Add(thisScore, scoresEntry.Value.playerCharacterID);
+                currentScores.Add(thisScore, scoresEntry.Value.playerID);
             }
 
             return currentScores;
@@ -485,6 +489,40 @@ namespace hist_mmorpg
             this.currentFiefs = 0;
         }
 
+        /// <summary>
+        /// Constructor for VictoryData taking no parameters.
+        /// For use when de-serialising from Riak
+        /// </summary>
+        public VictoryData()
+        {
+        }
+
+        /// <summary>
+        /// Updates the current data
+        /// </summary>
+        public void updateData()
+        {
+            // get PlayerCharacter
+            PlayerCharacter thisPC = null;
+            if (Globals_Server.pcMasterList.ContainsKey(this.playerCharacterID))
+            {
+                thisPC = Globals_Server.pcMasterList[this.playerCharacterID];
+            }
+
+            // update data
+            if (thisPC != null)
+            {
+                // stature
+                this.currentStature = thisPC.calculateStature();
+
+                // population governed
+                this.currentPopulation = thisPC.getPopulationPercentage();
+
+                // fiefs owned
+                this.currentFiefs = thisPC.getFiefsPercentage();
+            }
+        }
+        
         /// <summary>
         /// Calculates the current stature score
         /// </summary>

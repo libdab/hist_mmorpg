@@ -200,7 +200,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Constructor for Position taking no parameters.
+        /// Constructor for Position_Riak taking no parameters.
         /// For use when de-serialising from Riak
         /// </summary>
         public Position_Riak()

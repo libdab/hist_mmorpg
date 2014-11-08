@@ -734,6 +734,12 @@ namespace hist_mmorpg
             myFief2.barCharacter(myChar2.charID);
             myFief2.barCharacter(myChar1Wife.charID);
 
+            // create VictoryDatas for PCs
+            VictoryData myVicData01 = new VictoryData(myChar1.playerID, myChar1.charID, myChar1.calculateStature(), myChar1.getPopulationPercentage(), myChar1.getFiefsPercentage());
+            Globals_Server.victoryData.Add(myVicData01.playerID, myVicData01);
+            VictoryData myVicData02 = new VictoryData(myChar2.playerID, myChar2.charID, myChar2.calculateStature(), myChar2.getPopulationPercentage(), myChar2.getFiefsPercentage());
+            Globals_Server.victoryData.Add(myVicData02.playerID, myVicData02);
+
 			// try retrieving fief from masterlist using fiefID
 			// Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
 
@@ -1023,7 +1029,27 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "terrKeys", Globals_Server.terrKeys);
 
-			// ========= write FIEFS
+            // ========= write VICTORYDATA OBJECTS
+            // clear existing key list
+            if (Globals_Server.victoryDataKeys.Count > 0)
+            {
+                Globals_Server.victoryDataKeys.Clear();
+            }
+
+            // write each object in victoryData, whilst also repopulating key list
+            foreach (KeyValuePair<string, VictoryData> pair in Globals_Server.victoryData)
+            {
+                bool success = this.writeVictoryData(gameID, pair.Value);
+                if (success)
+                {
+                    Globals_Server.victoryDataKeys.Add(pair.Key);
+                }
+            }
+
+            // write key list to database
+            this.writeKeyList(gameID, "victoryDataKeys", Globals_Server.victoryDataKeys);
+
+            // ========= write FIEFS
             // clear existing key list
             if (Globals_Server.fiefKeys.Count > 0)
 			{
@@ -1125,6 +1151,14 @@ namespace hist_mmorpg
             Globals_Server.scheduledEvents = this.initialDBload_journal(gameID, "serverScheduledEvents");
             Globals_Server.pastEvents = this.initialDBload_journal(gameID, "serverPastEvents");
             Globals_Client.myPastEvents = this.initialDBload_journal(gameID, "clientPastEvents");
+
+            // ========= load TERRAINS
+            foreach (string element in Globals_Server.victoryDataKeys)
+            {
+                VictoryData vicData = this.initialDBload_victoryData(gameID, element);
+                // add VictoryData to Globals_Server.victoryData
+                Globals_Server.victoryData.Add(vicData.playerCharacterID, vicData);
+            }
 
             // ========= load SKILLS
             foreach (string element in Globals_Server.skillKeys)
@@ -1399,6 +1433,20 @@ namespace hist_mmorpg
                     System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve terrKeys from database.");
                 }
 			}
+
+            // populate victoryDataKeys
+            var vicDataResult = rClient.Get(gameID, "victoryDataKeys");
+            if (vicDataResult.IsSuccess)
+            {
+                Globals_Server.victoryDataKeys = vicDataResult.Value.GetObject<List<string>>();
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve victoryDataKeys from database.");
+                }
+            }
 
             // populate fiefKeys
             var fiefKeyResult = rClient.Get(gameID, "fiefKeys");
@@ -1838,6 +1886,32 @@ namespace hist_mmorpg
 
 			return newTerrain;
 		}
+
+        /// <summary>
+        /// Loads a VictoryData object for a particular game from database
+        /// </summary>
+        /// <returns>VictoryData object</returns>
+        /// <param name="gameID">Game for which VictoryData to be retrieved</param>
+        /// <param name="vicDataID">ID of VictoryData to be retrieved</param>
+        public VictoryData initialDBload_victoryData(string gameID, string vicDataID)
+        {
+            var vicDataResult = rClient.Get(gameID, vicDataID);
+            var newVictoryData = new VictoryData();
+
+            if (vicDataResult.IsSuccess)
+            {
+                newVictoryData = vicDataResult.Value.GetObject<VictoryData>();
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve VictoryData " + vicDataID);
+                }
+            }
+
+            return newVictoryData;
+        }
 
         /// <summary>
         /// Loads a Language for a particular game from database
@@ -2948,6 +3022,29 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Writes VictoryData object to Riak
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
+        /// <param name="vicDat">VictoryData to write</param>
+        public bool writeVictoryData(string gameID, VictoryData vicDat)
+        {
+
+            var rVictoryData = new RiakObject(gameID, vicDat.playerCharacterID, vicDat);
+            var putVictoryDataResult = rClient.Put(rVictoryData);
+
+            if (!putVictoryDataResult.IsSuccess)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: VictoryData " + rVictoryData.Key + " to bucket " + rVictoryData.Bucket);
+                }
+            }
+
+            return putVictoryDataResult.IsSuccess;
+        }
+
+        /// <summary>
         /// Writes Terrain object to Riak
         /// </summary>
         /// <returns>bool indicating success</returns>
@@ -3073,7 +3170,7 @@ namespace hist_mmorpg
             // used to check if character update is necessary
             bool performCharacterUpdate = true;
 
-            // switch off messages
+            // SWITCH OFF MESSAGES
             Globals_Client.showMessages = false;
 
             // FIEFS
@@ -3215,7 +3312,33 @@ namespace hist_mmorpg
                 Globals_Server.scheduledEvents.entries.Remove(entriesForRemoval[i].jEntryID);
             }
 
-            // switch on messages
+            //UPDATE AND GET SCORES
+            //update scores
+            foreach (KeyValuePair<string, VictoryData> scoresEntry in Globals_Server.victoryData)
+            {
+                scoresEntry.Value.updateData();
+            }
+
+            // get scores
+            SortedList<double, string> currentScores = Globals_Server.getCurrentScores();
+
+            // show scores
+            if (Globals_Client.showMessages)
+            {
+                string toDisplay = "";
+
+                foreach (KeyValuePair<double, string> thisScore in currentScores.Reverse())
+                {
+                    // get PC
+                    PlayerCharacter thisPC = Globals_Server.pcMasterList[Globals_Server.victoryData[thisScore.Value].playerCharacterID];
+                    toDisplay += "PlayerCharacter: " + thisPC.firstName + " " + thisPC.familyName;
+                    toDisplay += ",   Score: " + thisScore.Key + "\r\n";
+                }
+
+                System.Windows.Forms.MessageBox.Show(toDisplay);
+            }
+
+            // SWITCH ON MESSAGES
             Globals_Client.showMessages = true;
 
             // REFRESH CURRENT SCREEN
