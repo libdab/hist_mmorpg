@@ -222,6 +222,11 @@ namespace hist_mmorpg
         /// </summary>
         public string name;
 
+        /// <summary>
+        /// Constructor for TitleName
+        /// </summary>
+        /// <param name="lang">string holding Language ID</param>
+        /// <param name="nam">string holding title name associated with specific language</param>
         public TitleName(string lang, string nam)
         {
             this.langID = lang;

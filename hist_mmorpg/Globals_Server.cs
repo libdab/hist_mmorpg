@@ -11,6 +11,10 @@ namespace hist_mmorpg
     public static class Globals_Server
     {
         /// <summary>
+        /// Holds data for all players required for the calculation of individual victory
+        /// </summary>
+        public static Dictionary<string, VictoryData> victoryData = new Dictionary<string,VictoryData>();
+        /// <summary>
         /// Holds PlayerCharacter associated with the position of sysAdmin for the game
         /// </summary>
         public static PlayerCharacter sysAdmin;
@@ -218,6 +222,57 @@ namespace hist_mmorpg
         public static Dictionary<string[], byte> jEntryPriorities = new Dictionary<string[], byte>();
 
         /// <summary>
+        /// Gets the current scores for all players
+        /// </summary>
+        /// <returns>SortedList<double, string> containing current scores</returns>
+        public static SortedList<double, string> getCurrentScores()
+        {
+            SortedList<double, string> currentScores = new SortedList<double, string>();
+            double thisScore = 0;
+
+            foreach (KeyValuePair<string, VictoryData> scoresEntry in Globals_Server.victoryData)
+            {
+                // reset score
+                thisScore = 0;
+
+                // get score
+                thisScore += scoresEntry.Value.calcStatureScore();
+                thisScore += scoresEntry.Value.calcPopulationScore();
+                thisScore += scoresEntry.Value.calcFiefScore();
+
+                // add to list
+                currentScores.Add(thisScore, scoresEntry.Value.playerCharacterID);
+            }
+
+            return currentScores;
+        }
+        
+        /// <summary>
+        /// Gets the total population for all fiefs in the game
+        /// </summary>
+        /// <returns>int containing total population</returns>
+        public static int getTotalPopulation()
+        {
+            int totPop = 0;
+
+            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
+            {
+                totPop += fiefEntry.Value.population;
+            }
+
+            return totPop;
+        }
+
+        /// <summary>
+        /// Gets the total number of fiefs in the game
+        /// </summary>
+        /// <returns>int containing number of fiefs</returns>
+        public static int getTotalFiefs()
+        {
+            return Globals_Server.fiefMasterList.Count;
+        }
+
+        /// <summary>
         /// Gets the next available newCharID, then increments it
         /// </summary>
         /// <returns>uint containing newCharID</returns>
@@ -369,6 +424,104 @@ namespace hist_mmorpg
                 // based on the string passed
                 obs.update(info);
             }
+        }
+    }
+
+    /// <summary>
+    /// Class storing data on which to base individual victory
+    /// </summary>
+    public class VictoryData
+    {
+        /// <summary>
+        /// Holds player ID
+        /// </summary>
+        public string playerID;
+        /// <summary>
+        /// Holds PlayerCharacter ID
+        /// </summary>
+        public string playerCharacterID;
+        /// <summary>
+        /// Holds player's stature at start of game
+        /// </summary>
+        public double startStature;
+        /// <summary>
+        /// Holds player's current stature
+        /// </summary>
+        public double currentStature;
+        /// <summary>
+        /// Holds percentage of population under player's control at start of game
+        /// </summary>
+        public double startPopulation;
+        /// <summary>
+        /// Holds percentage of population currently under player's control
+        /// </summary>
+        public double currentPopulation;
+        /// <summary>
+        /// Holds percentage of fiefs under player's control at start of game
+        /// </summary>
+        public double startFiefs;
+        /// <summary>
+        /// Holds percentage of fiefs currently under player's control
+        /// </summary>
+        public double currentFiefs;
+
+        /// <summary>
+        /// Constructor for VictoryData
+        /// </summary>
+        /// <param name="player">string holding Language ID</param>
+        /// <param name="pc">string holding PlayerCharacter ID</param>
+        /// <param name="stat">double player's stature at start of game</param>
+        /// <param name="pop">double holding percentage of population under player's control at start of game</param>
+        /// <param name="fiefs">double holding percentage of fiefs under player's control at start of game</param>
+        public VictoryData(string player, string pc, double stat, double pop, double fiefs)
+        {
+            this.playerID = player;
+            this.playerCharacterID = pc;
+            this.startStature = stat;
+            this.currentStature = 0;
+            this.startPopulation = pop;
+            this.currentPopulation = 0;
+            this.startFiefs = fiefs;
+            this.currentFiefs = 0;
+        }
+
+        /// <summary>
+        /// Calculates the current stature score
+        /// </summary>
+        /// <returns>double containing the stature score</returns>
+        public double calcStatureScore()
+        {
+            double statScore = 0;
+
+            statScore = this.currentStature - (this.currentStature - this.startStature);
+
+            return statScore;
+        }
+
+        /// <summary>
+        /// Calculates the current population  score
+        /// </summary>
+        /// <returns>double containing the population score</returns>
+        public double calcPopulationScore()
+        {
+            double popScore = 0;
+
+            popScore = (this.currentPopulation / 10) - ((this.currentPopulation - this.startPopulation) / 10);
+
+            return popScore;
+        }
+
+        /// <summary>
+        /// Calculates the current fief score
+        /// </summary>
+        /// <returns>double containing the fief score</returns>
+        public double calcFiefScore()
+        {
+            double fiefScore = 0;
+
+            fiefScore = (this.currentFiefs / 10) - ((this.currentFiefs - this.startFiefs) / 10);
+
+            return fiefScore;
         }
     }
 }

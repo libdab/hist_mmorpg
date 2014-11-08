@@ -10395,7 +10395,7 @@ namespace hist_mmorpg
             }
             // apply population loss
             pillageResults += "- Population loss: " + Convert.ToUInt32((f.population * (thisLoss / 100))) + "\r\n";
-            f.population -= Convert.ToUInt32((f.population * (thisLoss / 100)));
+            f.population -= Convert.ToInt32((f.population * (thisLoss / 100)));
 
             // % treasury loss
             thisLoss = (0.2 * pillageMultiplier);

@@ -17,7 +17,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds fief population
         /// </summary>
-        public uint population { get; set; }
+        public int population { get; set; }
         /// <summary>
         /// Holds fief field level
         /// </summary>
@@ -189,7 +189,7 @@ namespace hist_mmorpg
         /// <param name="pil">bool indicating whether pillage has occurred in the fief (current season)</param>
         /// <param name="trans">Dictionary<string, string[]> containing troop detachments in the fief awaiting transfer</param>
         /// <param name="sge">String holding siegeID of active siege</param>
-        public Fief(String id, String nam, Province prov, uint pop, Double fld, Double ind, uint trp, Double tx,
+        public Fief(String id, String nam, Province prov, int pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
             Double kpLvl, Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
             byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, String tiHo = null,
@@ -694,7 +694,7 @@ namespace hist_mmorpg
                     break;
             }
 
-            maxSpend = this.population * thisMultiplier;
+            maxSpend = Convert.ToUInt32(this.population) * thisMultiplier;
 
             return maxSpend;
         }
@@ -1963,7 +1963,7 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Holds fief population
 		/// </summary>
-		public uint population { get; set; }
+		public int population { get; set; }
 		/// <summary>
 		/// Holds fief field level
 		/// </summary>

@@ -3241,6 +3241,48 @@ namespace hist_mmorpg
             return proceed;
         }
 
+        /// <summary>
+        /// Gets the total population of fiefs governed by the PlayerCharacter
+        /// </summary>
+        /// <returns>int containing total population</returns>
+        public int getPopulationGoverned()
+        {
+            int totalPop = 0;
+
+            foreach (Fief thisFief in this.ownedFiefs)
+            {
+                totalPop += thisFief.population;
+            }
+
+            return totalPop;
+        }
+
+        /// <summary>
+        /// Gets the percentage of population in the game governed by the PlayerCharacter
+        /// </summary>
+        /// <returns>double containing percentage of population governed</returns>
+        public double getPopulationPercentage()
+        {
+            double popPercent = 0;
+
+            popPercent = (Convert.ToDouble(this.getPopulationGoverned()) / Globals_Server.getTotalPopulation()) * 100;
+
+            return popPercent;
+        }
+
+        /// <summary>
+        /// Gets the percentage of total fiefs in the game owned by the PlayerCharacter
+        /// </summary>
+        /// <returns>double containing percentage of total fiefs owned</returns>
+        public double getFiefPercentage()
+        {
+            double fiefPercent = 0;
+
+            fiefPercent = (Convert.ToDouble(this.ownedFiefs.Count) / Globals_Server.getTotalFiefs()) * 100;
+
+            return fiefPercent;
+        }
+
     }
 
     /// <summary>
