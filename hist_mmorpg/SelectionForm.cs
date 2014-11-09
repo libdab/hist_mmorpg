@@ -224,7 +224,7 @@ namespace hist_mmorpg
             {
                 if (this.armyID != null)
                 {
-                    myArmy = Globals_Server.armyMasterList[this.armyID];
+                    myArmy = Globals_Game.armyMasterList[this.armyID];
                 }
             }
 
@@ -233,7 +233,7 @@ namespace hist_mmorpg
             // for royal gifts, ITERATE THROUGH PLAYERS
             if (this.function.Contains("royalGift"))
             {
-                foreach (KeyValuePair<string, PlayerCharacter> thisPlayer in Globals_Server.pcMasterList)
+                foreach (KeyValuePair<string, PlayerCharacter> thisPlayer in Globals_Game.pcMasterList)
                 {
 					addItem = true;
 
@@ -354,7 +354,7 @@ namespace hist_mmorpg
             ListViewItem myPlayerItem = null;
 
             // iterate through players
-            foreach (KeyValuePair<string, PlayerCharacter> thisPlayer in Globals_Server.pcMasterList)
+            foreach (KeyValuePair<string, PlayerCharacter> thisPlayer in Globals_Game.pcMasterList)
             {
                 // only show 'played' PCs
                 if (thisPlayer.Value.playerID != null)
@@ -403,16 +403,16 @@ namespace hist_mmorpg
                 // get character
                 if (this.function.Contains("royalGift"))
                 {
-                    if (Globals_Server.pcMasterList.ContainsKey(this.npcListView.SelectedItems[0].SubItems[1].Text))
+                    if (Globals_Game.pcMasterList.ContainsKey(this.npcListView.SelectedItems[0].SubItems[1].Text))
                     {
-                        charToDisplay = Globals_Server.pcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+                        charToDisplay = Globals_Game.pcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
                     }
                 }
                 else
                 {
-                    if (Globals_Server.npcMasterList.ContainsKey(this.npcListView.SelectedItems[0].SubItems[1].Text))
+                    if (Globals_Game.npcMasterList.ContainsKey(this.npcListView.SelectedItems[0].SubItems[1].Text))
                     {
-                        charToDisplay = Globals_Server.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+                        charToDisplay = Globals_Game.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
                     }
                 }
 
@@ -617,18 +617,18 @@ namespace hist_mmorpg
                 Character selectedCharacter = null;
                 if (this.function.Contains("royalGift"))
                 {
-                    if (Globals_Server.pcMasterList.ContainsKey(this.npcListView.SelectedItems[0].SubItems[1].Text))
+                    if (Globals_Game.pcMasterList.ContainsKey(this.npcListView.SelectedItems[0].SubItems[1].Text))
                     {
-                        selectedCharacter = Globals_Server.pcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+                        selectedCharacter = Globals_Game.pcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
                     }
                 }
 
                 // if not a royal gift, get an NPC
                 else
                 {
-                    if (Globals_Server.npcMasterList.ContainsKey(this.npcListView.SelectedItems[0].SubItems[1].Text))
+                    if (Globals_Game.npcMasterList.ContainsKey(this.npcListView.SelectedItems[0].SubItems[1].Text))
                     {
-                        selectedCharacter = Globals_Server.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
+                        selectedCharacter = Globals_Game.npcMasterList[this.npcListView.SelectedItems[0].SubItems[1].Text];
                     }
                 }
 
@@ -646,16 +646,16 @@ namespace hist_mmorpg
                         // get place associated with title
                         if (placeDetails[0].Equals("province"))
                         {
-                            if (Globals_Server.provinceMasterList.ContainsKey(placeDetails[1]))
+                            if (Globals_Game.provinceMasterList.ContainsKey(placeDetails[1]))
                             {
-                                thisPlace = Globals_Server.provinceMasterList[placeDetails[1]];
+                                thisPlace = Globals_Game.provinceMasterList[placeDetails[1]];
                             }
                         }
                         else if (placeDetails[0].Equals("fief"))
                         {
-                            if (Globals_Server.fiefMasterList.ContainsKey(placeDetails[1]))
+                            if (Globals_Game.fiefMasterList.ContainsKey(placeDetails[1]))
                             {
-                                thisPlace = Globals_Server.fiefMasterList[placeDetails[1]];
+                                thisPlace = Globals_Game.fiefMasterList[placeDetails[1]];
                             }
                         }
                     }
@@ -663,9 +663,9 @@ namespace hist_mmorpg
                     // if gifting a position
                     else
                     {
-                        if (Globals_Server.positionMasterList.ContainsKey(this.positionID))
+                        if (Globals_Game.positionMasterList.ContainsKey(this.positionID))
                         {
-                            thisPosition = Globals_Server.positionMasterList[this.positionID];
+                            thisPosition = Globals_Game.positionMasterList[this.positionID];
                         }
                     }
                 }
@@ -745,7 +745,7 @@ namespace hist_mmorpg
                     // get army
                     if (this.armyID != null)
                     {
-                        Army thisArmy = Globals_Server.armyMasterList[this.armyID];
+                        Army thisArmy = Globals_Game.armyMasterList[this.armyID];
 
                         thisArmy.assignNewLeader(selectedCharacter);
 
@@ -795,13 +795,13 @@ namespace hist_mmorpg
                 //NonPlayerCharacter myBarrednpc = null;
                 Character myBarredChar = null;
 
-                if (Globals_Server.pcMasterList.ContainsKey(Globals_Client.fiefToView.barredCharacters[i]))
+                if (Globals_Game.pcMasterList.ContainsKey(Globals_Client.fiefToView.barredCharacters[i]))
                 {
-                    myBarredChar = Globals_Server.pcMasterList[Globals_Client.fiefToView.barredCharacters[i]];
+                    myBarredChar = Globals_Game.pcMasterList[Globals_Client.fiefToView.barredCharacters[i]];
                 }
-                else if (Globals_Server.npcMasterList.ContainsKey(Globals_Client.fiefToView.barredCharacters[i]))
+                else if (Globals_Game.npcMasterList.ContainsKey(Globals_Client.fiefToView.barredCharacters[i]))
                 {
-                    myBarredChar = Globals_Server.npcMasterList[Globals_Client.fiefToView.barredCharacters[i]];
+                    myBarredChar = Globals_Game.npcMasterList[Globals_Client.fiefToView.barredCharacters[i]];
                 }
 
                 if (myBarredChar != null)
@@ -869,10 +869,10 @@ namespace hist_mmorpg
             ListViewItem thisDetachment = null;
 
             // get army
-            Army thisArmy = Globals_Server.armyMasterList[this.armyID];
+            Army thisArmy = Globals_Game.armyMasterList[this.armyID];
 
             // get fief
-            Fief thisFief = Globals_Server.fiefMasterList[thisArmy.location];
+            Fief thisFief = Globals_Game.fiefMasterList[thisArmy.location];
 
             // add troop detachments to list
             foreach (KeyValuePair<string, string[]> troopDetachment in thisFief.troopTransfers)
@@ -927,7 +927,7 @@ namespace hist_mmorpg
             foreach (string armyID in thisFief.armies)
             {
                 // get army
-                Army thisArmy = Globals_Server.armyMasterList[armyID];
+                Army thisArmy = Globals_Game.armyMasterList[armyID];
 
                 // ID
                 armyEntry = new ListViewItem(armyID);
@@ -951,13 +951,13 @@ namespace hist_mmorpg
             // get character
             Character thisCharacter = null;
 
-            if (Globals_Server.pcMasterList.ContainsKey(this.barThisCharTextBox.Text))
+            if (Globals_Game.pcMasterList.ContainsKey(this.barThisCharTextBox.Text))
             {
-                thisCharacter = Globals_Server.pcMasterList[this.barThisCharTextBox.Text];
+                thisCharacter = Globals_Game.pcMasterList[this.barThisCharTextBox.Text];
             }
-            else if (Globals_Server.npcMasterList.ContainsKey(this.barThisCharTextBox.Text))
+            else if (Globals_Game.npcMasterList.ContainsKey(this.barThisCharTextBox.Text))
             {
-                thisCharacter = Globals_Server.npcMasterList[this.barThisCharTextBox.Text];
+                thisCharacter = Globals_Game.npcMasterList[this.barThisCharTextBox.Text];
             }
             else
             {
@@ -999,7 +999,7 @@ namespace hist_mmorpg
             if (barredListView.SelectedItems.Count > 0)
             {
                 // if selected character is in pcMasterList
-                if (Globals_Server.pcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
+                if (Globals_Game.pcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
                 {
                     // remove ID from barred characters
                     Globals_Client.fiefToView.barredCharacters.Remove(this.barredListView.SelectedItems[0].SubItems[1].Text);
@@ -1007,7 +1007,7 @@ namespace hist_mmorpg
                     this.refreshBarredDisplay();
                 }
                 // if selected character is in pcMasterList
-                else if (Globals_Server.npcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
+                else if (Globals_Game.npcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
                 {
                     // remove ID from barred characters
                     Globals_Client.fiefToView.barredCharacters.Remove(this.barredListView.SelectedItems[0].SubItems[1].Text);
@@ -1134,7 +1134,7 @@ namespace hist_mmorpg
                 else
                 {
                     // calculate time taken for transfer
-                    daysTaken = Globals_Server.myRand.Next(10, 31);
+                    daysTaken = Globals_Game.myRand.Next(10, 31);
 
                     // check if have enough days for transfer in this instance
                     if (daysTaken > thisArmy.days)
@@ -1151,7 +1151,7 @@ namespace hist_mmorpg
                 if (proceed)
                 {
                     // get fief
-                    Fief thisFief = Globals_Server.fiefMasterList[thisArmy.location];
+                    Fief thisFief = Globals_Game.fiefMasterList[thisArmy.location];
 
                     // check for minimum days
                     foreach (ListViewItem item in checkedItems)
@@ -1343,7 +1343,7 @@ namespace hist_mmorpg
                 this.armiesTextBox.ReadOnly = true;
 
                 // get details
-                Army otherArmy = Globals_Server.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
+                Army otherArmy = Globals_Game.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
                 textToDisplay += this.displayArmy(otherArmy);
 
                 // display details
@@ -1388,7 +1388,7 @@ namespace hist_mmorpg
 
             // get armies
             Army attacker = this.observer.getArmy();
-            Army defender = Globals_Server.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
+            Army defender = Globals_Game.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
 
             // check has enough days to give battle (1)
             if (this.observer.days < 1)
@@ -1449,7 +1449,7 @@ namespace hist_mmorpg
                             else
                             {
                                 Siege thisSiege = null;
-                                thisSiege = Globals_Server.siegeMasterList[siegeID];
+                                thisSiege = Globals_Game.siegeMasterList[siegeID];
 
                                 // construct event description to be passed into siegeEnd
                                 string siegeDescription = "On this day of Our Lord the forces of ";
@@ -1487,9 +1487,9 @@ namespace hist_mmorpg
             if (this.transferFundsListView.SelectedItems.Count > 0)
             {
                 // get player
-                if (Globals_Server.pcMasterList.ContainsKey(this.transferFundsListView.SelectedItems[0].SubItems[1].Text))
+                if (Globals_Game.pcMasterList.ContainsKey(this.transferFundsListView.SelectedItems[0].SubItems[1].Text))
                 {
-                    transferTo = Globals_Server.pcMasterList[this.transferFundsListView.SelectedItems[0].SubItems[1].Text];
+                    transferTo = Globals_Game.pcMasterList[this.transferFundsListView.SelectedItems[0].SubItems[1].Text];
                 }
 
                 if (transferTo != null)
@@ -1524,9 +1524,9 @@ namespace hist_mmorpg
                 if (this.transferFundsListView.SelectedItems.Count > 0)
                 {
                     // get player
-                    if (Globals_Server.pcMasterList.ContainsKey(this.transferFundsListView.SelectedItems[0].SubItems[1].Text))
+                    if (Globals_Game.pcMasterList.ContainsKey(this.transferFundsListView.SelectedItems[0].SubItems[1].Text))
                     {
-                        playerTo = Globals_Server.pcMasterList[this.transferFundsListView.SelectedItems[0].SubItems[1].Text];
+                        playerTo = Globals_Game.pcMasterList[this.transferFundsListView.SelectedItems[0].SubItems[1].Text];
                     }
 
                     if (playerTo != null)

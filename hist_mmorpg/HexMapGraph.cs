@@ -274,7 +274,7 @@ namespace hist_mmorpg
             if ((getOwned) && (ownedChoices.Count > 0))
             {
                 // choose fief by generating random int between 0 and no. of targets
-                selection = Globals_Server.myRand.Next(0, ownedChoices.Count);
+                selection = Globals_Game.myRand.Next(0, ownedChoices.Count);
 
                 // get Fief
                 goTo = ownedChoices[selection].Target;
@@ -284,7 +284,7 @@ namespace hist_mmorpg
             else
             {
                 // choose fief by generating random int between 0 and no. of targets
-                selection = Globals_Server.myRand.Next(0, choices.Count);
+                selection = Globals_Game.myRand.Next(0, choices.Count);
 
                 // get Fief
                 goTo = choices[selection].Target;

@@ -111,13 +111,13 @@ namespace hist_mmorpg
             if (this.titleHolder != null)
             {
                 // get title holder from appropriate master list
-                if (Globals_Server.npcMasterList.ContainsKey(this.titleHolder))
+                if (Globals_Game.npcMasterList.ContainsKey(this.titleHolder))
                 {
-                    myTitleHolder = Globals_Server.npcMasterList[this.titleHolder];
+                    myTitleHolder = Globals_Game.npcMasterList[this.titleHolder];
                 }
-                else if (Globals_Server.pcMasterList.ContainsKey(this.titleHolder))
+                else if (Globals_Game.pcMasterList.ContainsKey(this.titleHolder))
                 {
-                    myTitleHolder = Globals_Server.pcMasterList[this.titleHolder];
+                    myTitleHolder = Globals_Game.pcMasterList[this.titleHolder];
                 }
             }
 

@@ -130,9 +130,9 @@ namespace hist_mmorpg
             {
                 // get current holder
                 PlayerCharacter currentHolder = null;
-                if (Globals_Server.pcMasterList.ContainsKey(this.officeHolder))
+                if (Globals_Game.pcMasterList.ContainsKey(this.officeHolder))
                 {
-                    currentHolder = Globals_Server.pcMasterList[this.officeHolder];
+                    currentHolder = Globals_Game.pcMasterList[this.officeHolder];
                 }
 
                 // remove from position

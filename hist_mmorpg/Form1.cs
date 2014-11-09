@@ -35,7 +35,7 @@ namespace hist_mmorpg
         public Form1()
         {
             // register as observer
-            Globals_Server.registerObserver(this);
+            Globals_Game.registerObserver(this);
 
             // initialise form elements
             InitializeComponent();
@@ -57,7 +57,7 @@ namespace hist_mmorpg
         public void initGameObjects(string pcID)
         {
 
-			if (Globals_Client.loadFromDatabase)
+            if (Globals_Game.loadFromDatabase)
 			{
 				// load objects from database
 				this.initialDBload ("testGame");
@@ -69,7 +69,7 @@ namespace hist_mmorpg
 			}
 
             // set myPlayerCharacter
-            Globals_Client.myPlayerCharacter = Globals_Server.pcMasterList[pcID];
+            Globals_Client.myPlayerCharacter = Globals_Game.pcMasterList[pcID];
 
             // set inital fief to display
             Globals_Client.fiefToView = Globals_Client.myPlayerCharacter.location;
@@ -127,6 +127,13 @@ namespace hist_mmorpg
 
         }
 
+        /// <summary>
+        /// Creates new game
+        /// </summary>
+        public void startNewGame()
+        {
+        }
+
 		/// <summary>
 		/// Creates some game objects from code (temporary)
 		/// </summary>
@@ -134,7 +141,7 @@ namespace hist_mmorpg
 		{
             // create GameClock
             GameClock myGameClock = new GameClock("clock001", 1320);
-            Globals_Server.clock = myGameClock;
+            Globals_Game.clock = myGameClock;
 
 			// create skills
 			// Dictionary of skill effects
@@ -145,7 +152,7 @@ namespace hist_mmorpg
 			// create skill
 			Skill command = new Skill("sk001", "Command", effectsCommand);
 			// add to skillsCollection
-			Globals_Server.skillMasterList.Add(command.skillID, command);
+			Globals_Game.skillMasterList.Add(command.skillID, command);
 
             Dictionary<string, double> effectsChivalry = new Dictionary<string, double>();
             effectsChivalry.Add("famExpense", 0.2);
@@ -154,7 +161,7 @@ namespace hist_mmorpg
             effectsChivalry.Add("npcHire", 0.1);
             effectsChivalry.Add("siege", 0.1);
 			Skill chivalry = new Skill("sk002", "Chivalry", effectsChivalry);
-            Globals_Server.skillMasterList.Add(chivalry.skillID, chivalry);
+            Globals_Game.skillMasterList.Add(chivalry.skillID, chivalry);
 
             Dictionary<string, double> effectsAbrasiveness = new Dictionary<string, double>();
 			effectsAbrasiveness.Add("battle", 0.15);
@@ -164,7 +171,7 @@ namespace hist_mmorpg
             effectsAbrasiveness.Add("time", 0.05);
             effectsAbrasiveness.Add("siege", -0.1);
 			Skill abrasiveness = new Skill("sk003", "Abrasiveness", effectsAbrasiveness);
-            Globals_Server.skillMasterList.Add(abrasiveness.skillID, abrasiveness);
+            Globals_Game.skillMasterList.Add(abrasiveness.skillID, abrasiveness);
 
             Dictionary<string, double> effectsAccountancy = new Dictionary<string, double>();
             effectsAccountancy.Add("time", 0.1);
@@ -172,7 +179,7 @@ namespace hist_mmorpg
             effectsAccountancy.Add("famExpense", -0.2);
             effectsAccountancy.Add("fiefLoy", -0.05);
 			Skill accountancy = new Skill("sk004", "Accountancy", effectsAccountancy);
-            Globals_Server.skillMasterList.Add(accountancy.skillID, accountancy);
+            Globals_Game.skillMasterList.Add(accountancy.skillID, accountancy);
 
             Dictionary<string, double> effectsStupidity = new Dictionary<string, double>();
             effectsStupidity.Add("battle", -0.4);
@@ -184,7 +191,7 @@ namespace hist_mmorpg
             effectsStupidity.Add("time", -0.1);
             effectsStupidity.Add("siege", -0.4);
 			Skill stupidity = new Skill("sk005", "Stupidity", effectsStupidity);
-            Globals_Server.skillMasterList.Add(stupidity.skillID, stupidity);
+            Globals_Game.skillMasterList.Add(stupidity.skillID, stupidity);
 
             Dictionary<string, double> effectsRobust = new Dictionary<string, double>();
             effectsRobust.Add("virility", 0.2);
@@ -192,7 +199,7 @@ namespace hist_mmorpg
             effectsRobust.Add("fiefLoy", 0.05);
             effectsRobust.Add("death", -0.2);
 			Skill robust = new Skill("sk006", "Robust", effectsRobust);
-            Globals_Server.skillMasterList.Add(robust.skillID, robust);
+            Globals_Game.skillMasterList.Add(robust.skillID, robust);
 
             Dictionary<string, double> effectsPious = new Dictionary<string, double>();
             effectsPious.Add("virility", -0.2);
@@ -200,19 +207,19 @@ namespace hist_mmorpg
             effectsPious.Add("fiefLoy", 0.1);
             effectsPious.Add("time", -0.1);
 			Skill pious = new Skill("sk007", "Pious", effectsPious);
-            Globals_Server.skillMasterList.Add(pious.skillID, pious);
+            Globals_Game.skillMasterList.Add(pious.skillID, pious);
 
 			// add each skillsCollection key to skillsKeys
-            foreach (KeyValuePair<string, Skill> entry in Globals_Server.skillMasterList)
+            foreach (KeyValuePair<string, Skill> entry in Globals_Game.skillMasterList)
 			{
-                Globals_Server.skillKeys.Add(entry.Key);
+                Globals_Game.skillKeys.Add(entry.Key);
 			}
 
             // create Language objects
             Language c = new Language("langC", "Celtic");
-            Globals_Server.languageMasterList.Add(c.languageID, c);
+            Globals_Game.languageMasterList.Add(c.languageID, c);
             Language f = new Language("langF", "French");
-            Globals_Server.languageMasterList.Add(f.languageID, f);
+            Globals_Game.languageMasterList.Add(f.languageID, f);
             // create languages for Fiefs
             Tuple<Language, int> myLang1 = new Tuple<Language, int>(c, 1);
             Tuple<Language, int> myLang2 = new Tuple<Language, int>(c, 2);
@@ -220,13 +227,13 @@ namespace hist_mmorpg
 
 			// create terrain objects
 			Terrain plains = new Terrain("P", "Plains", 1);
-			Globals_Server.terrainMasterList.Add (plains.terrainCode, plains);
+			Globals_Game.terrainMasterList.Add (plains.terrainCode, plains);
 			Terrain hills = new Terrain("H", "Hills", 1.5);
-            Globals_Server.terrainMasterList.Add(hills.terrainCode, hills);
+            Globals_Game.terrainMasterList.Add(hills.terrainCode, hills);
 			Terrain forrest = new Terrain("F", "Forrest", 1.5);
-            Globals_Server.terrainMasterList.Add(forrest.terrainCode, forrest);
+            Globals_Game.terrainMasterList.Add(forrest.terrainCode, forrest);
 			Terrain mountains = new Terrain("M", "Mountains", 90);
-            Globals_Server.terrainMasterList.Add(mountains.terrainCode, mountains);
+            Globals_Game.terrainMasterList.Add(mountains.terrainCode, mountains);
 
 			// create keep barred lists for fiefs
 			List<string> keep1BarChars = new List<string>();
@@ -252,63 +259,63 @@ namespace hist_mmorpg
             myTitleName03[1] = new TitleName("E", "King");
             myTitleName03[2] = new TitleName("langF", "Roi");
             Rank myRank03 = new Rank(3, myTitleName03, 6);
-            Globals_Server.rankMasterList.Add(myRank03.id, myRank03);
+            Globals_Game.rankMasterList.Add(myRank03.id, myRank03);
 
             TitleName[] myTitleName09 = new TitleName[3];
             myTitleName09[0] = new TitleName("langC", "Prince");
             myTitleName09[1] = new TitleName("E", "Prince");
             myTitleName09[2] = new TitleName("langF", "Prince");
             Rank myRank09 = new Rank(9, myTitleName09, 4);
-            Globals_Server.rankMasterList.Add(myRank09.id, myRank09);
+            Globals_Game.rankMasterList.Add(myRank09.id, myRank09);
 
             TitleName[] myTitleName11 = new TitleName[3];
             myTitleName11[0] = new TitleName("langC", "Earl");
             myTitleName11[1] = new TitleName("E", "Earl");
             myTitleName11[2] = new TitleName("langF", "Comte");
             Rank myRank11 = new Rank(11, myTitleName11, 4);
-            Globals_Server.rankMasterList.Add(myRank11.id, myRank11);
+            Globals_Game.rankMasterList.Add(myRank11.id, myRank11);
 
             TitleName[] myTitleName15 = new TitleName[3];
             myTitleName15[0] = new TitleName("langC", "Baron");
             myTitleName15[1] = new TitleName("E", "Baron");
             myTitleName15[2] = new TitleName("langF", "Baron");
             Rank myRank15 = new Rank(15, myTitleName15, 2);
-            Globals_Server.rankMasterList.Add(myRank15.id, myRank15);
+            Globals_Game.rankMasterList.Add(myRank15.id, myRank15);
 
             TitleName[] myTitleName17 = new TitleName[3];
             myTitleName17[0] = new TitleName("langC", "Lord");
             myTitleName17[1] = new TitleName("E", "Lord");
             myTitleName17[2] = new TitleName("langF", "Sire");
             Rank myRank17 = new Rank(17, myTitleName17, 1);
-            Globals_Server.rankMasterList.Add(myRank17.id, myRank17);
+            Globals_Game.rankMasterList.Add(myRank17.id, myRank17);
 
             // create Nationality objects for Kingdoms, Characters and positions
 			Nationality nationality01 = new Nationality("Fr", "French");
-            Globals_Server.nationalityMasterList.Add(nationality01.natID, nationality01);
+            Globals_Game.nationalityMasterList.Add(nationality01.natID, nationality01);
 			Nationality nationality02 = new Nationality("Eng", "English");
-            Globals_Server.nationalityMasterList.Add(nationality02.natID, nationality02);
+            Globals_Game.nationalityMasterList.Add(nationality02.natID, nationality02);
 
             // create Positions
             TitleName myTiName01 = new TitleName("LangC", "Keeper of the Privy Seal");
             TitleName[] myTitles01 = new TitleName[] { myTiName01 };
             Position myPos01 = new Position(100, myTitles01, 2, null, nationality02);
-            Globals_Server.positionMasterList.Add(myPos01.id, myPos01);
+            Globals_Game.positionMasterList.Add(myPos01.id, myPos01);
             TitleName myTiName02 = new TitleName("LangC", "Lord High Steward");
             TitleName[] myTitles02 = new TitleName[] { myTiName02 };
             Position myPos02 = new Position(101, myTitles02, 2, null, nationality02);
-            Globals_Server.positionMasterList.Add(myPos02.id, myPos02);
+            Globals_Game.positionMasterList.Add(myPos02.id, myPos02);
 
             // create kingdoms for provinces
             Kingdom myKingdom1 = new Kingdom("E0000", "England", nationality02, r: myRank03);
-            Globals_Server.kingdomMasterList.Add(myKingdom1.id, myKingdom1);
+            Globals_Game.kingdomMasterList.Add(myKingdom1.id, myKingdom1);
             Kingdom myKingdom2 = new Kingdom("B0000", "Boogiboogiland", nationality01, r: myRank03);
-            Globals_Server.kingdomMasterList.Add(myKingdom2.id, myKingdom2);
+            Globals_Game.kingdomMasterList.Add(myKingdom2.id, myKingdom2);
 
             // create provinces for fiefs
             Province myProv = new Province("ESX00", "Sussex", 6.2, king: myKingdom1, r: myRank11);
-            Globals_Server.provinceMasterList.Add(myProv.id, myProv);
+            Globals_Game.provinceMasterList.Add(myProv.id, myProv);
             Province myProv2 = new Province("ESR00", "Surrey", 6.2, king: myKingdom2, r: myRank11);
-            Globals_Server.provinceMasterList.Add(myProv2.id, myProv2);
+            Globals_Game.provinceMasterList.Add(myProv2.id, myProv2);
 
             // create financial arrays for fiefs
             double[] prevFin001 = new double[] { 6.6, 4760000, 10, 12000, 42000, 2000, 2000, 5.3, 476000, 47594, 105594, 29512, 6.2, 340894 };
@@ -345,24 +352,24 @@ namespace hist_mmorpg
             Dictionary<string, string[]> transfers007 = new Dictionary<string, string[]>();
 
             Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, 0, 2000000, armies001, false, transfers001, false, r: myRank17);
-            Globals_Server.fiefMasterList.Add(myFief1.id, myFief1);
+            Globals_Game.fiefMasterList.Add(myFief1.id, myFief1);
             Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, 0, 4000, armies002, false, transfers002, false, r: myRank15);
-            Globals_Server.fiefMasterList.Add(myFief2.id, myFief2);
+            Globals_Game.fiefMasterList.Add(myFief2.id, myFief2);
             Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, 0, 100000, armies003, false, transfers003, false, r: myRank17);
-            Globals_Server.fiefMasterList.Add(myFief3.id, myFief3);
+            Globals_Game.fiefMasterList.Add(myFief3.id, myFief3);
             Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, 0, 100000, armies004, false, transfers004, false, r: myRank17);
-            Globals_Server.fiefMasterList.Add(myFief4.id, myFief4);
+            Globals_Game.fiefMasterList.Add(myFief4.id, myFief4);
             Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', myLang3, plains, fief5Chars, keep5BarChars, false, false, 0, 100000, armies005, false, transfers005, false, r: myRank15);
-            Globals_Server.fiefMasterList.Add(myFief5.id, myFief5);
+            Globals_Game.fiefMasterList.Add(myFief5.id, myFief5);
             Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, 0, 100000, armies006, false, transfers006, false, r: myRank17);
-            Globals_Server.fiefMasterList.Add(myFief6.id, myFief6);
+            Globals_Game.fiefMasterList.Add(myFief6.id, myFief6);
             Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, 0, 100000, armies007, false, transfers007, false, r: myRank15);
-            Globals_Server.fiefMasterList.Add(myFief7.id, myFief7);
+            Globals_Game.fiefMasterList.Add(myFief7.id, myFief7);
 
 			// create QuickGraph undirected graph
 			// 1. create graph
 			var myHexMap = new HexMapGraph("map001");
-            Globals_Server.gameMap = myHexMap;
+            Globals_Game.gameMap = myHexMap;
 			// 2. Add edge and auto create vertices
 			// from myFief1
 			myHexMap.addHexesAndRoute(myFief1, myFief2, "W", (myFief1.terrain.travelCost + myFief2.terrain.travelCost) / 2);
@@ -464,35 +471,35 @@ namespace hist_mmorpg
 
             // create some characters
             PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, nationality02, true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "101", "403", null, null, false, 13000, myEmployees1, myFiefsOwned1, myProvsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
-            Globals_Server.pcMasterList.Add(myChar1.charID, myChar1);
+            Globals_Game.pcMasterList.Add(myChar1.charID, myChar1);
             PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, nationality01, true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "102", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, myProvsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
-            Globals_Server.pcMasterList.Add(myChar2.charID, myChar2);
+            Globals_Game.pcMasterList.Add(myChar2.charID, myChar2);
             NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, nationality02, true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
-            Globals_Server.npcMasterList.Add(myNPC1.charID, myNPC1);
+            Globals_Game.npcMasterList.Add(myNPC1.charID, myNPC1);
             NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, nationality02, true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, mb: myChar1.charID, loc: myFief1);
-            Globals_Server.npcMasterList.Add(myNPC2.charID, myNPC2);
+            Globals_Game.npcMasterList.Add(myNPC2.charID, myNPC2);
             NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob005, true, nationality01, true, 8.50, 6.0, myGoTo5, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, mb: myChar2.charID, loc: myFief6);
-            Globals_Server.npcMasterList.Add(myNPC3.charID, myNPC3);
+            Globals_Game.npcMasterList.Add(myNPC3.charID, myNPC3);
             NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("404", "Bev", "Bond", myDob006, false, nationality02, true, 2.50, 9.0, myGoTo6, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "101", "101", null, null, 30000, false, false, myTitles006, null, loc: myFief1);
-            Globals_Server.npcMasterList.Add(myChar1Wife.charID, myChar1Wife);
+            Globals_Game.npcMasterList.Add(myChar1Wife.charID, myChar1Wife);
             NonPlayerCharacter myChar2Son = new NonPlayerCharacter("405", "Horatio", "Dond", myDob007, true, nationality01, true, 8.50, 6.0, myGoTo7, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "102", "406", "102", null, 10000, false, true, myTitles007, null, loc: myFief6);
-            Globals_Server.npcMasterList.Add(myChar2Son.charID, myChar2Son);
+            Globals_Game.npcMasterList.Add(myChar2Son.charID, myChar2Son);
             NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob008, false, nationality02, true, 2.50, 9.0, myGoTo8, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", "405", null, null, 30000, false, false, myTitles008, null, loc: myFief6);
-            Globals_Server.npcMasterList.Add(myChar2SonWife.charID, myChar2SonWife);
+            Globals_Game.npcMasterList.Add(myChar2SonWife.charID, myChar2SonWife);
             NonPlayerCharacter myChar1Son = new NonPlayerCharacter("407", "Rickie", "Bond", myDob009, true, nationality02, true, 2.50, 9.0, myGoTo9, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", "404", 30000, false, true, myTitles009, null, loc: myFief1);
-            Globals_Server.npcMasterList.Add(myChar1Son.charID, myChar1Son);
+            Globals_Game.npcMasterList.Add(myChar1Son.charID, myChar1Son);
             NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("408", "Elsie", "Bond", myDob010, false, nationality02, true, 2.50, 9.0, myGoTo10, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", "404", 30000, false, false, myTitles010, null, loc: myFief1);
-            Globals_Server.npcMasterList.Add(myChar1Daughter.charID, myChar1Daughter);
+            Globals_Game.npcMasterList.Add(myChar1Daughter.charID, myChar1Daughter);
             NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("409", "Wayne", "Dond", myDob011, true, nationality01, true, 2.50, 9.0, myGoTo11, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", null, 30000, false, false, myTitles011, null, loc: myFief6);
-            Globals_Server.npcMasterList.Add(myChar2Son2.charID, myChar2Son2);
+            Globals_Game.npcMasterList.Add(myChar2Son2.charID, myChar2Son2);
             NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("410", "Esmerelda", "Dond", myDob012, false, nationality01, true, 2.50, 9.0, myGoTo12, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", null, 30000, false, false, myTitles012, null, loc: myFief6);
-            Globals_Server.npcMasterList.Add(myChar2Daughter.charID, myChar2Daughter);
+            Globals_Game.npcMasterList.Add(myChar2Daughter.charID, myChar2Daughter);
 
             /*
             // create and add a scheduled birth
             string[] birthPersonae = new string[] { myChar1Wife.familyID + "|headOfFamily", myChar1Wife.charID + "|mother", myChar1Wife.spouse + "|father" };
-            JournalEntry myEntry = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 1, birthPersonae, "birth");
-            Globals_Server.scheduledEvents.entries.Add(myEntry.jEntryID, myEntry); */
+            JournalEntry myEntry = new JournalEntry(Globals_Game.getNextJournalEntryID(), 1320, 1, birthPersonae, "birth");
+            Globals_Game.scheduledEvents.entries.Add(myEntry.jEntryID, myEntry); */
 
             // get character's correct days allowance
             myChar1.days = myChar1.getDaysAllowance();
@@ -509,14 +516,14 @@ namespace hist_mmorpg
             myChar2Daughter.days = myChar2Daughter.getDaysAllowance();
 
             // set kingdom owners
-            Globals_Server.kingOne = myChar1;
-            Globals_Server.kingTwo = myChar2;
-            myKingdom1.owner = Globals_Server.kingOne;
-            myKingdom2.owner = Globals_Server.kingTwo;
+            Globals_Game.kingOne = myChar1;
+            Globals_Game.kingTwo = myChar2;
+            myKingdom1.owner = Globals_Game.kingOne;
+            myKingdom2.owner = Globals_Game.kingTwo;
 
             // set heralds
-            // Globals_Server.heraldOne = myChar1;
-            Globals_Server.heraldTwo = myChar2;
+            // Globals_Game.heraldOne = myChar1;
+            Globals_Game.heraldTwo = myChar2;
 
             // set province owners
             myProv.owner = myChar1;
@@ -619,8 +626,13 @@ namespace hist_mmorpg
             myFief6.addCharacter(myChar2Daughter);
 
             // create and add ailment
-            Ailment myAilment1 = new Ailment(Globals_Server.getNextAilmentID(), "Battlefield injury", Globals_Server.clock.seasons[Globals_Server.clock.currentSeason] + ", " + Globals_Server.clock.currentYear, 3, 1);
+            Ailment myAilment1 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
             myChar1.ailments.Add(myAilment1.ailmentID, myAilment1);
+
+            // populate Globals_Server.victoryConditionTypes
+            Globals_Server.victoryConditionTypes.Add(0, "Individual points");
+            Globals_Server.victoryConditionTypes.Add(1, "Individual position");
+            Globals_Server.victoryConditionTypes.Add(2, "Team");
 
             // populate Globals_Server.combatValues
             uint[] eCombatValues = new uint[] {9, 9, 1, 9, 3, 1};
@@ -642,91 +654,91 @@ namespace hist_mmorpg
             double[] pChance = new double[] { 10, 20, 30, 40, 50, 60 };
             Globals_Server.battleProbabilities.Add("pillage", pChance);
 
-            // populate Globals_Server.jEntryPriorities
+            // populate Globals_Game.jEntryPriorities
             // marriage
             string[] thisPriorityKey001 = {"proposalMade", "headOfFamilyBride"};
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey001, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey001, 2);
             string[] thisPriorityKey002 = { "proposalRejected", "headOfFamilyGroom" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey002, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey002, 2);
             string[] thisPriorityKey003 = { "proposalAccepted", "headOfFamilyGroom" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey003, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey003, 2);
             string[] thisPriorityKey004 = { "marriage", "headOfFamilyBride" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey004, 1);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey004, 1);
             string[] thisPriorityKey005 = { "marriage", "headOfFamilyGroom" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey005, 1);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey005, 1);
             string[] thisPriorityKey016 = { "marriageCancelled", "headOfFamilyGroom" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey016, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey016, 2);
             string[] thisPriorityKey017 = { "marriageCancelled", "headOfFamilyBride" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey017, 1);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey017, 1);
             // birth
             string[] thisPriorityKey006 = { "birth", "headOfFamily" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey006, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey006, 2);
             string[] thisPriorityKey007 = { "birth", "father" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey007, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey007, 2);
             // battle
             string[] thisPriorityKey008 = { "battle", "defenderOwner" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey008, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey008, 2);
             string[] thisPriorityKey009 = { "battle", "sallyOwner" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey009, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey009, 2);
             string[] thisPriorityKey010 = { "battle", "fiefOwner" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey010, 1);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey010, 1);
             // siege
             string[] thisPriorityKey011 = { "siege", "fiefOwner" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey011, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey011, 2);
             string[] thisPriorityKey012 = { "siegeReduction", "fiefOwner" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey012, 1);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey012, 1);
             string[] thisPriorityKey013 = { "siegeStorm", "fiefOwner" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey013, 1);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey013, 1);
             string[] thisPriorityKey014 = { "siegeNegotiation", "fiefOwner" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey014, 1);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey014, 1);
             string[] thisPriorityKey015 = { "siegeEnd", "fiefOwner" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey015, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey015, 2);
             // death
             string[] thisPriorityKey018 = { "deathOfHeir", "headOfFamily" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey018, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey018, 2);
             string[] thisPriorityKey019 = { "deathOfFamilyMember", "headOfFamily" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey019, 1);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey019, 1);
             string[] thisPriorityKey020 = { "deathOfEmployee", "employer" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey020, 1);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey020, 1);
             string[] thisPriorityKey021 = { "deathOfPlayer", "newHeadOfFamily" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey021, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey021, 2);
             string[] thisPriorityKey022 = { "deathOfPlayer", "deceasedHeadOfFamily" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey022, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey022, 2);
             // injury
             string[] thisPriorityKey023 = { "injury", "employer" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey023, 1);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey023, 1);
             string[] thisPriorityKey024 = { "injury", "headOfFamily" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey024, 1);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey024, 1);
             string[] thisPriorityKey025 = { "injury", "injuredCharacter" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey025, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey025, 2);
             // pillage
             string[] thisPriorityKey026 = { "pillage", "fiefOwner" };
-            Globals_Server.jEntryPriorities.Add(thisPriorityKey026, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey026, 2);
             // next un-used key = thisPriorityKey027
 
 
             // create an army and add in appropriate places
             uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 200, 400};
-            Army myArmy = new Army(Globals_Server.getNextArmyID(), null, null, 90, null, trp: myArmyTroops);
-            Globals_Server.armyMasterList.Add(myArmy.armyID, myArmy);
+            Army myArmy = new Army(Globals_Game.getNextArmyID(), null, null, 90, null, trp: myArmyTroops);
+            Globals_Game.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
             myArmy.leader = myChar1.charID;
-            myArmy.days = Globals_Server.pcMasterList[myArmy.leader].days;
+            myArmy.days = Globals_Game.pcMasterList[myArmy.leader].days;
             myChar1.myArmies.Add(myArmy);
             myChar1.armyID = myArmy.armyID;
-            myArmy.location = Globals_Server.pcMasterList[myArmy.leader].location.id;
+            myArmy.location = Globals_Game.pcMasterList[myArmy.leader].location.id;
             myChar1.location.armies.Add(myArmy.armyID);
 
             // create another (enemy) army and add in appropriate places
             uint[] myArmyTroops2 = new uint[] { 10, 10, 30, 0, 200, 0 };
-            Army myArmy2 = new Army(Globals_Server.getNextArmyID(), null, null, 90, null, trp: myArmyTroops2, aggr: 1);
-            Globals_Server.armyMasterList.Add(myArmy2.armyID, myArmy2);
+            Army myArmy2 = new Army(Globals_Game.getNextArmyID(), null, null, 90, null, trp: myArmyTroops2, aggr: 1);
+            Globals_Game.armyMasterList.Add(myArmy2.armyID, myArmy2);
             myArmy2.owner = myChar2.charID;
             myArmy2.leader = myChar2.charID;
-            myArmy2.days = Globals_Server.pcMasterList[myArmy2.leader].days;
+            myArmy2.days = Globals_Game.pcMasterList[myArmy2.leader].days;
             myChar2.myArmies.Add(myArmy2);
             myChar2.armyID = myArmy2.armyID;
-            myArmy2.location = Globals_Server.pcMasterList[myArmy2.leader].location.id;
+            myArmy2.location = Globals_Game.pcMasterList[myArmy2.leader].location.id;
             myChar2.location.armies.Add(myArmy2.armyID);
 
             // bar a character from the myFief1 keep
@@ -736,9 +748,9 @@ namespace hist_mmorpg
 
             // create VictoryDatas for PCs
             VictoryData myVicData01 = new VictoryData(myChar1.playerID, myChar1.charID, myChar1.calculateStature(), myChar1.getPopulationPercentage(), myChar1.getFiefsPercentage());
-            Globals_Server.victoryData.Add(myVicData01.playerID, myVicData01);
+            Globals_Game.victoryData.Add(myVicData01.playerID, myVicData01);
             VictoryData myVicData02 = new VictoryData(myChar2.playerID, myChar2.charID, myChar2.calculateStature(), myChar2.getPopulationPercentage(), myChar2.getFiefsPercentage());
-            Globals_Server.victoryData.Add(myVicData02.playerID, myVicData02);
+            Globals_Game.victoryData.Add(myVicData02.playerID, myVicData02);
 
 			// try retrieving fief from masterlist using fiefID
 			// Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
@@ -753,21 +765,21 @@ namespace hist_mmorpg
         {
 
             // create array of skills between 2-3 in length
-            Tuple<Skill, int>[] skillSet = new Tuple<Skill, int>[Globals_Server.myRand.Next(2, 4)];
+            Tuple<Skill, int>[] skillSet = new Tuple<Skill, int>[Globals_Game.myRand.Next(2, 4)];
 
             // populate array of skills with randomly chosen skills
             // 1) make temporary copy of skillKeys
-            List<string> skillKeysCopy = new List<string>(Globals_Server.skillKeys);
+            List<string> skillKeysCopy = new List<string>(Globals_Game.skillKeys);
             // 2) choose random skill, removing entry from keys list to ensure no duplication
             // Also assign random skill level
             for (int i = 0; i < skillSet.Length; i++)
             {
                 // choose random skill
-                int randSkill = Globals_Server.myRand.Next(0, skillKeysCopy.Count - 1);
+                int randSkill = Globals_Game.myRand.Next(0, skillKeysCopy.Count - 1);
                 // assign random skill level
-                int randSkillLevel = Globals_Server.myRand.Next(1, 10);
+                int randSkillLevel = Globals_Game.myRand.Next(1, 10);
                 // create Skill tuple
-                skillSet[i] = new Tuple<Skill, int>(Globals_Server.skillMasterList[skillKeysCopy[randSkill]], randSkillLevel);
+                skillSet[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[skillKeysCopy[randSkill]], randSkillLevel);
                 skillKeysCopy.RemoveAt(randSkill);
             }
 
@@ -782,335 +794,344 @@ namespace hist_mmorpg
         public void writeToDB(string gameID)
 		{
 			// ========= write CLOCK
-            this.writeClock(gameID, Globals_Server.clock);
+            this.writeClock(gameID, Globals_Game.clock);
 
-			// ========= write GLOBALS_SERVER DICTIONARIES
-			this.writeDictionary(gameID, "combatValues", Globals_Server.combatValues);
-			this.writeDictionary(gameID, "recruitRatios", Globals_Server.recruitRatios);
-			this.writeDictionary(gameID, "battleProbabilities", Globals_Server.battleProbabilities);
-			// convert jEntryPriorities prior to writing
-			Dictionary<string, byte> jEntryPrioritiesRiak = this.jEntryPrioritiesToRiak (Globals_Server.jEntryPriorities);
+			// ========= write GLOBALS_SERVER/GAME DICTIONARIES
+            this.writeDictionary(gameID, "combatValues", Globals_Server.combatValues);
+            this.writeDictionary(gameID, "recruitRatios", Globals_Server.recruitRatios);
+            this.writeDictionary(gameID, "battleProbabilities", Globals_Server.battleProbabilities);
+            this.writeDictionary(gameID, "victoryConditionTypes", Globals_Server.victoryConditionTypes);
+            // convert jEntryPriorities prior to writing
+			Dictionary<string, byte> jEntryPrioritiesRiak = this.jEntryPrioritiesToRiak (Globals_Game.jEntryPriorities);
 			this.writeDictionary(gameID, "jEntryPriorities", jEntryPrioritiesRiak);
 
             // ========= write JOURNALS
-            this.writeJournal(gameID, "serverScheduledEvents", Globals_Server.scheduledEvents);
-            this.writeJournal(gameID, "serverPastEvents", Globals_Server.pastEvents);
+            this.writeJournal(gameID, "serverScheduledEvents", Globals_Game.scheduledEvents);
+            this.writeJournal(gameID, "serverPastEvents", Globals_Game.pastEvents);
             this.writeJournal(gameID, "clientPastEvents", Globals_Client.myPastEvents);
 
-			// ========= write GLOBALS_SERVER/CLIENT CHARACTER VARIABLES
+			// ========= write GLOBALS_GAME/CLIENT CHARACTER VARIABLES
 			// Globals_Client.myPlayerCharacter
 			this.writeCharacterVar (gameID, "myPlayerCharacter", Globals_Client.myPlayerCharacter);
-			// Globals_Server.sysAdmin
-			this.writeCharacterVar (gameID, "sysAdmin", Globals_Server.sysAdmin);
-			// Globals_Server.kingOne
-			this.writeCharacterVar (gameID, "kingOne", Globals_Server.kingOne);
-			// Globals_Server.kingTwo
-			this.writeCharacterVar (gameID, "kingTwo", Globals_Server.kingTwo);
-			// Globals_Server.princeOne
-			this.writeCharacterVar (gameID, "princeOne", Globals_Server.princeOne);
-			// Globals_Server.princeTwo
-			this.writeCharacterVar (gameID, "princeTwo", Globals_Server.princeTwo);
-			// Globals_Server.heraldOne
-			this.writeCharacterVar (gameID, "heraldOne", Globals_Server.heraldOne);
-			// Globals_Server.heraldTwo
-			this.writeCharacterVar (gameID, "heraldTwo", Globals_Server.heraldTwo);
+            // Globals_Game.sysAdmin
+			this.writeCharacterVar (gameID, "sysAdmin", Globals_Game.sysAdmin);
+            // Globals_Game.kingOne
+			this.writeCharacterVar (gameID, "kingOne", Globals_Game.kingOne);
+            // Globals_Game.kingTwo
+			this.writeCharacterVar (gameID, "kingTwo", Globals_Game.kingTwo);
+            // Globals_Game.princeOne
+			this.writeCharacterVar (gameID, "princeOne", Globals_Game.princeOne);
+            // Globals_Game.princeTwo
+			this.writeCharacterVar (gameID, "princeTwo", Globals_Game.princeTwo);
+            // Globals_Game.heraldOne
+			this.writeCharacterVar (gameID, "heraldOne", Globals_Game.heraldOne);
+            // Globals_Game.heraldTwo
+			this.writeCharacterVar (gameID, "heraldTwo", Globals_Game.heraldTwo);
 
-			// ========= write GLOBALS_SERVER newID VARIABLES
+			// ========= write GLOBALS_GAME/SERVER newID VARIABLES
 			// newCharID
-			this.writeNewIDvar (gameID, "newCharID", Globals_Server.newCharID);
+			this.writeNewIDvar (gameID, "newCharID", Globals_Game.newCharID);
 			// newArmyID
-			this.writeNewIDvar (gameID, "newArmyID", Globals_Server.newArmyID);
+			this.writeNewIDvar (gameID, "newArmyID", Globals_Game.newArmyID);
 			// newDetachmentID
-			this.writeNewIDvar (gameID, "newDetachmentID", Globals_Server.newDetachmentID);
+			this.writeNewIDvar (gameID, "newDetachmentID", Globals_Game.newDetachmentID);
 			// newAilmentID
-			this.writeNewIDvar (gameID, "newAilmentID", Globals_Server.newAilmentID);
+			this.writeNewIDvar (gameID, "newAilmentID", Globals_Game.newAilmentID);
 			// newSiegeID
-			this.writeNewIDvar (gameID, "newSiegeID", Globals_Server.newSiegeID);
+			this.writeNewIDvar (gameID, "newSiegeID", Globals_Game.newSiegeID);
 			// newJournalEntryID
-			this.writeNewIDvar (gameID, "newJournalEntryID", Globals_Server.newJournalEntryID);
+			this.writeNewIDvar (gameID, "newJournalEntryID", Globals_Game.newJournalEntryID);
+            // currentVictoryType
+            this.writeNewIDvar(gameID, "currentVictoryType", Globals_Game.currentVictoryType);
+            // duration
+            this.writeNewIDvar(gameID, "duration", Globals_Game.duration);
+            // startYear
+            this.writeNewIDvar(gameID, "startYear", Globals_Game.startYear);
+            // newJournalEntryID
+            this.writeNewIDvar(gameID, "newGameID", Globals_Server.newGameID);
 
 			// ========= write SKILLS
             // clear existing key list
-            if (Globals_Server.skillKeys.Count > 0)
+            if (Globals_Game.skillKeys.Count > 0)
 			{
-                Globals_Server.skillKeys.Clear();
+                Globals_Game.skillKeys.Clear();
 			}
 
             // write each object in skillMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<string, Skill> pair in Globals_Server.skillMasterList)
+            foreach (KeyValuePair<string, Skill> pair in Globals_Game.skillMasterList)
 			{
 				bool success = this.writeSkill (gameID, pair.Value);
 				if (success)
 				{
-                    Globals_Server.skillKeys.Add(pair.Key);
+                    Globals_Game.skillKeys.Add(pair.Key);
 				}
 			}
 
             // write key list to database
-            this.writeKeyList(gameID, "skillKeys", Globals_Server.skillKeys);
+            this.writeKeyList(gameID, "skillKeys", Globals_Game.skillKeys);
 
 			// ========= write LANGUAGES
             // clear existing key list
-            if (Globals_Server.langKeys.Count > 0)
+            if (Globals_Game.langKeys.Count > 0)
             {
-                Globals_Server.langKeys.Clear();
+                Globals_Game.langKeys.Clear();
             }
 
             // write each object in languageMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<string, Language> pair in Globals_Server.languageMasterList)
+            foreach (KeyValuePair<string, Language> pair in Globals_Game.languageMasterList)
             {
                 bool success = this.writeLanguage(gameID, pair.Value);
                 if (success)
                 {
-                    Globals_Server.langKeys.Add(pair.Key);
+                    Globals_Game.langKeys.Add(pair.Key);
                 }
             }
 
             // write key list to database
-            this.writeKeyList(gameID, "langKeys", Globals_Server.langKeys);
+            this.writeKeyList(gameID, "langKeys", Globals_Game.langKeys);
 
             // ========= write NATIONALITY OBJECTS
             // clear existing key list
-            if (Globals_Server.nationalityKeys.Count > 0)
+            if (Globals_Game.nationalityKeys.Count > 0)
             {
-                Globals_Server.nationalityKeys.Clear();
+                Globals_Game.nationalityKeys.Clear();
             }
 
             // write each object in nationalityMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<string, Nationality> pair in Globals_Server.nationalityMasterList)
+            foreach (KeyValuePair<string, Nationality> pair in Globals_Game.nationalityMasterList)
             {
                 bool success = this.writeNationality(gameID, pair.Value);
                 if (success)
                 {
-                    Globals_Server.nationalityKeys.Add(pair.Key);
+                    Globals_Game.nationalityKeys.Add(pair.Key);
                 }
             }
 
             // write key list to database
-            this.writeKeyList(gameID, "nationalityKeys", Globals_Server.nationalityKeys);
+            this.writeKeyList(gameID, "nationalityKeys", Globals_Game.nationalityKeys);
 
             // ========= write RANKS
             // clear existing key list
-            if (Globals_Server.rankKeys.Count > 0)
+            if (Globals_Game.rankKeys.Count > 0)
             {
-                Globals_Server.rankKeys.Clear();
+                Globals_Game.rankKeys.Clear();
             }
 
             // write each object in rankMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<byte, Rank> pair in Globals_Server.rankMasterList)
+            foreach (KeyValuePair<byte, Rank> pair in Globals_Game.rankMasterList)
             {
                 bool success = this.writeRank(gameID, pair.Value);
                 if (success)
                 {
-                    Globals_Server.rankKeys.Add(pair.Key);
+                    Globals_Game.rankKeys.Add(pair.Key);
                 }
             }
 
             // write key list to database
-            this.writeKeyList(gameID, "rankKeys", Globals_Server.rankKeys);
+            this.writeKeyList(gameID, "rankKeys", Globals_Game.rankKeys);
 
             // ========= write POSITIONS
             // clear existing key list
-            if (Globals_Server.positionKeys.Count > 0)
+            if (Globals_Game.positionKeys.Count > 0)
             {
-                Globals_Server.positionKeys.Clear();
+                Globals_Game.positionKeys.Clear();
             }
 
             // write each object in positionMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<byte, Position> pair in Globals_Server.positionMasterList)
+            foreach (KeyValuePair<byte, Position> pair in Globals_Game.positionMasterList)
             {
                 bool success = this.writePosition(gameID, pair.Value);
                 if (success)
                 {
-                    Globals_Server.positionKeys.Add(pair.Key);
+                    Globals_Game.positionKeys.Add(pair.Key);
                 }
             }
 
             // write key list to database
-            this.writeKeyList(gameID, "positionKeys", Globals_Server.positionKeys);
+            this.writeKeyList(gameID, "positionKeys", Globals_Game.positionKeys);
 
             // ========= write NPCs
             // clear existing key list
-            if (Globals_Server.npcKeys.Count > 0)
+            if (Globals_Game.npcKeys.Count > 0)
 			{
-                Globals_Server.npcKeys.Clear();
+                Globals_Game.npcKeys.Clear();
 			}
 
             // write each object in npcMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<string, NonPlayerCharacter> pair in Globals_Server.npcMasterList)
+            foreach (KeyValuePair<string, NonPlayerCharacter> pair in Globals_Game.npcMasterList)
 			{
 				bool success = this.writeNPC (gameID, pair.Value);
 				if (success)
 				{
-                    Globals_Server.npcKeys.Add(pair.Key);
+                    Globals_Game.npcKeys.Add(pair.Key);
 				}
 			}
 
             // write key list to database
-            this.writeKeyList(gameID, "npcKeys", Globals_Server.npcKeys);
+            this.writeKeyList(gameID, "npcKeys", Globals_Game.npcKeys);
 
 			// ========= write PCs
             // clear existing key list
-            if (Globals_Server.pcKeys.Count > 0)
+            if (Globals_Game.pcKeys.Count > 0)
 			{
-                Globals_Server.pcKeys.Clear();
+                Globals_Game.pcKeys.Clear();
 			}
 
             // write each object in pcMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<string, PlayerCharacter> pair in Globals_Server.pcMasterList)
+            foreach (KeyValuePair<string, PlayerCharacter> pair in Globals_Game.pcMasterList)
 			{
 				bool success = this.writePC (gameID, pair.Value);
 				if (success)
 				{
-                    Globals_Server.pcKeys.Add(pair.Key);
+                    Globals_Game.pcKeys.Add(pair.Key);
 				}
 			}
 
             // write key list to database
-            this.writeKeyList(gameID, "pcKeys", Globals_Server.pcKeys);
+            this.writeKeyList(gameID, "pcKeys", Globals_Game.pcKeys);
 
 			// ========= write KINGDOMS
             // clear existing key list
-            if (Globals_Server.kingKeys.Count > 0)
+            if (Globals_Game.kingKeys.Count > 0)
             {
-                Globals_Server.kingKeys.Clear();
+                Globals_Game.kingKeys.Clear();
             }
 
             // write each object in kingdomMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<string, Kingdom> pair in Globals_Server.kingdomMasterList)
+            foreach (KeyValuePair<string, Kingdom> pair in Globals_Game.kingdomMasterList)
             {
                 bool success = this.writeKingdom(gameID, pair.Value);
                 if (success)
                 {
-                    Globals_Server.kingKeys.Add(pair.Key);
+                    Globals_Game.kingKeys.Add(pair.Key);
                 }
             }
 
             // write key list to database
-            this.writeKeyList(gameID, "kingKeys", Globals_Server.kingKeys);
+            this.writeKeyList(gameID, "kingKeys", Globals_Game.kingKeys);
 
 			// ========= write PROVINCES
             // clear existing key list
-            if (Globals_Server.provKeys.Count > 0)
+            if (Globals_Game.provKeys.Count > 0)
 			{
-                Globals_Server.provKeys.Clear();
+                Globals_Game.provKeys.Clear();
 			}
 
             // write each object in provinceMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<string, Province> pair in Globals_Server.provinceMasterList)
+            foreach (KeyValuePair<string, Province> pair in Globals_Game.provinceMasterList)
 			{
 				bool success = this.writeProvince (gameID, pair.Value);
 				if (success)
 				{
-                    Globals_Server.provKeys.Add(pair.Key);
+                    Globals_Game.provKeys.Add(pair.Key);
 				}
 			}
 
             // write key list to database
-            this.writeKeyList(gameID, "provKeys", Globals_Server.provKeys);
+            this.writeKeyList(gameID, "provKeys", Globals_Game.provKeys);
 
 			// ========= write TERRAINS
             // clear existing key list
-            if (Globals_Server.terrKeys.Count > 0)
+            if (Globals_Game.terrKeys.Count > 0)
 			{
-                Globals_Server.terrKeys.Clear();
+                Globals_Game.terrKeys.Clear();
 			}
 
             // write each object in terrainMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<string, Terrain> pair in Globals_Server.terrainMasterList)
+            foreach (KeyValuePair<string, Terrain> pair in Globals_Game.terrainMasterList)
 			{
 				bool success = this.writeTerrain (gameID, pair.Value);
 				if (success)
 				{
-                    Globals_Server.terrKeys.Add(pair.Key);
+                    Globals_Game.terrKeys.Add(pair.Key);
 				}
 			}
 
             // write key list to database
-            this.writeKeyList(gameID, "terrKeys", Globals_Server.terrKeys);
+            this.writeKeyList(gameID, "terrKeys", Globals_Game.terrKeys);
 
             // ========= write VICTORYDATA OBJECTS
             // clear existing key list
-            if (Globals_Server.victoryDataKeys.Count > 0)
+            if (Globals_Game.victoryDataKeys.Count > 0)
             {
-                Globals_Server.victoryDataKeys.Clear();
+                Globals_Game.victoryDataKeys.Clear();
             }
 
             // write each object in victoryData, whilst also repopulating key list
-            foreach (KeyValuePair<string, VictoryData> pair in Globals_Server.victoryData)
+            foreach (KeyValuePair<string, VictoryData> pair in Globals_Game.victoryData)
             {
                 bool success = this.writeVictoryData(gameID, pair.Value);
                 if (success)
                 {
-                    Globals_Server.victoryDataKeys.Add(pair.Key);
+                    Globals_Game.victoryDataKeys.Add(pair.Key);
                 }
             }
 
             // write key list to database
-            this.writeKeyList(gameID, "victoryDataKeys", Globals_Server.victoryDataKeys);
+            this.writeKeyList(gameID, "victoryDataKeys", Globals_Game.victoryDataKeys);
 
             // ========= write FIEFS
             // clear existing key list
-            if (Globals_Server.fiefKeys.Count > 0)
+            if (Globals_Game.fiefKeys.Count > 0)
 			{
-                Globals_Server.fiefKeys.Clear();
+                Globals_Game.fiefKeys.Clear();
 			}
 
             // write each object in fiefMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<string, Fief> pair in Globals_Server.fiefMasterList)
+            foreach (KeyValuePair<string, Fief> pair in Globals_Game.fiefMasterList)
 			{
 				bool success = this.writeFief (gameID, pair.Value);
 				if (success)
 				{
-                    Globals_Server.fiefKeys.Add(pair.Key);
+                    Globals_Game.fiefKeys.Add(pair.Key);
 				}
 			}
 
             // write key list to database
-            this.writeKeyList(gameID, "fiefKeys", Globals_Server.fiefKeys);
+            this.writeKeyList(gameID, "fiefKeys", Globals_Game.fiefKeys);
 
 			// ========= write ARMIES
             // clear existing key list
-            if (Globals_Server.armyKeys.Count > 0)
+            if (Globals_Game.armyKeys.Count > 0)
             {
-                Globals_Server.armyKeys.Clear();
+                Globals_Game.armyKeys.Clear();
             }
 
             // write each object in armyMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<string, Army> pair in Globals_Server.armyMasterList)
+            foreach (KeyValuePair<string, Army> pair in Globals_Game.armyMasterList)
             {
                 bool success = this.writeArmy(gameID, pair.Value);
                 if (success)
                 {
-                    Globals_Server.armyKeys.Add(pair.Key);
+                    Globals_Game.armyKeys.Add(pair.Key);
                 }
             }
 				
 			// write key list to database
-			this.writeKeyList(gameID, "armyKeys", Globals_Server.armyKeys);
+			this.writeKeyList(gameID, "armyKeys", Globals_Game.armyKeys);
 
 			// ========= write SIEGES
             // clear existing key list
-            if (Globals_Server.siegeKeys.Count > 0)
+            if (Globals_Game.siegeKeys.Count > 0)
             {
-                Globals_Server.siegeKeys.Clear();
+                Globals_Game.siegeKeys.Clear();
             }
 
             // write each object in siegeMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<string, Siege> pair in Globals_Server.siegeMasterList)
+            foreach (KeyValuePair<string, Siege> pair in Globals_Game.siegeMasterList)
             {
                 bool success = this.writeSiege(gameID, pair.Value);
                 if (success)
                 {
-                    Globals_Server.siegeKeys.Add(pair.Key);
+                    Globals_Game.siegeKeys.Add(pair.Key);
                 }
             }
 
             // write key list to database
-            this.writeKeyList(gameID, "siegeKeys", Globals_Server.siegeKeys);
+            this.writeKeyList(gameID, "siegeKeys", Globals_Game.siegeKeys);
 
 			// ========= write MAP (edges collection)
-            this.writeMapEdges(gameID, Globals_Server.gameMap);
+            this.writeMapEdges(gameID, Globals_Game.gameMap);
 
 		}
 
@@ -1125,167 +1146,176 @@ namespace hist_mmorpg
 			this.initialDBload_keyLists (gameID);
 
             // ========= load CLOCK
-            Globals_Server.clock = this.initialDBload_clock(gameID, "gameClock");
+            Globals_Game.clock = this.initialDBload_clock(gameID, "gameClock");
 
-            // ========= load GLOBAL_SERVER DICTIONARIES
-			Globals_Server.combatValues = this.initialDBload_dictUint(gameID, "combatValues");
-			Globals_Server.recruitRatios = this.initialDBload_dictDouble(gameID, "recruitRatios");
-			Globals_Server.battleProbabilities = this.initialDBload_dictDouble(gameID, "battleProbabilities");
-            Globals_Server.jEntryPriorities = this.initialDBload_dictString(gameID, "jEntryPriorities");
+            // ========= load GLOBAL_SERVER/GAME DICTIONARIES
+            Globals_Server.combatValues = this.initialDBload_dictStringUint(gameID, "combatValues");
+            Globals_Server.recruitRatios = this.initialDBload_dictStringDouble(gameID, "recruitRatios");
+            Globals_Server.battleProbabilities = this.initialDBload_dictStringDouble(gameID, "battleProbabilities");
+            Globals_Server.victoryConditionTypes = this.initialDBload_dictIntString(gameID, "victoryConditionTypes");
+            Globals_Game.jEntryPriorities = this.initialDBload_dictStringByte(gameID, "jEntryPriorities");
 
-			// ========= load GLOBAL_SERVER newID VARIABLES
+			// ========= load GLOBAL_GAME/SERVER newID VARIABLES
 			// newCharID
-			Globals_Server.newCharID = this.initialDBload_newIDs (gameID, "newCharID");
+			Globals_Game.newCharID = this.initialDBload_newIDs (gameID, "newCharID");
 			// newArmyID
-			Globals_Server.newArmyID = this.initialDBload_newIDs (gameID, "newArmyID");
+			Globals_Game.newArmyID = this.initialDBload_newIDs (gameID, "newArmyID");
 			// newDetachmentID
-			Globals_Server.newDetachmentID = this.initialDBload_newIDs (gameID, "newDetachmentID");
+			Globals_Game.newDetachmentID = this.initialDBload_newIDs (gameID, "newDetachmentID");
 			// newAilmentID
-			Globals_Server.newAilmentID = this.initialDBload_newIDs (gameID, "newAilmentID");
+			Globals_Game.newAilmentID = this.initialDBload_newIDs (gameID, "newAilmentID");
 			// newSiegeID
-			Globals_Server.newSiegeID = this.initialDBload_newIDs (gameID, "newSiegeID");
+			Globals_Game.newSiegeID = this.initialDBload_newIDs (gameID, "newSiegeID");
 			// newJournalEntryID
-			Globals_Server.newJournalEntryID = this.initialDBload_newIDs (gameID, "newJournalEntryID");
+			Globals_Game.newJournalEntryID = this.initialDBload_newIDs (gameID, "newJournalEntryID");
+            // currentVictoryType
+            Globals_Game.currentVictoryType = this.initialDBload_newIDs(gameID, "currentVictoryType");
+            // duration
+            Globals_Game.duration = this.initialDBload_newIDs(gameID, "duration");
+            // startYear
+            Globals_Game.startYear = this.initialDBload_newIDs(gameID, "startYear");
+            // newGameID
+            Globals_Server.newGameID = this.initialDBload_newIDs(gameID, "newGameID");
 
 			// ========= load JOURNALS
-            Globals_Server.scheduledEvents = this.initialDBload_journal(gameID, "serverScheduledEvents");
-            Globals_Server.pastEvents = this.initialDBload_journal(gameID, "serverPastEvents");
+            Globals_Game.scheduledEvents = this.initialDBload_journal(gameID, "serverScheduledEvents");
+            Globals_Game.pastEvents = this.initialDBload_journal(gameID, "serverPastEvents");
             Globals_Client.myPastEvents = this.initialDBload_journal(gameID, "clientPastEvents");
 
             // ========= load TERRAINS
-            foreach (string element in Globals_Server.victoryDataKeys)
+            foreach (string element in Globals_Game.victoryDataKeys)
             {
                 VictoryData vicData = this.initialDBload_victoryData(gameID, element);
-                // add VictoryData to Globals_Server.victoryData
-                Globals_Server.victoryData.Add(vicData.playerCharacterID, vicData);
+                // add VictoryData to Globals_Game.victoryData
+                Globals_Game.victoryData.Add(vicData.playerCharacterID, vicData);
             }
 
             // ========= load SKILLS
-            foreach (string element in Globals_Server.skillKeys)
+            foreach (string element in Globals_Game.skillKeys)
 			{
 				Skill skill = this.initialDBload_skill (gameID, element);
                 // add Skill to skillMasterList
-                Globals_Server.skillMasterList.Add(skill.skillID, skill);
+                Globals_Game.skillMasterList.Add(skill.skillID, skill);
 			}
 
             // ========= load LANGUAGES
-            foreach (string element in Globals_Server.langKeys)
+            foreach (string element in Globals_Game.langKeys)
             {
                 Language lang = this.initialDBload_language(gameID, element);
                 // add Language to languageMasterList
-                Globals_Server.languageMasterList.Add(lang.languageID, lang);
+                Globals_Game.languageMasterList.Add(lang.languageID, lang);
             }
 
             // ========= load NATIONALITY OBJECTS
-            foreach (string element in Globals_Server.nationalityKeys)
+            foreach (string element in Globals_Game.nationalityKeys)
             {
                 Nationality nat = this.initialDBload_nationality(gameID, element);
                 // add Nationality to nationalityMasterList
-                Globals_Server.nationalityMasterList.Add(nat.natID, nat);
+                Globals_Game.nationalityMasterList.Add(nat.natID, nat);
             }
 
             // ========= load RANKS
-            foreach (byte element in Globals_Server.rankKeys)
+            foreach (byte element in Globals_Game.rankKeys)
             {
                 Rank rank = this.initialDBload_rank(gameID, element.ToString());
                 // add Rank to rankMasterList
-                Globals_Server.rankMasterList.Add(rank.id, rank);
+                Globals_Game.rankMasterList.Add(rank.id, rank);
             }
 
             // ========= load POSITIONS
-            foreach (byte element in Globals_Server.positionKeys)
+            foreach (byte element in Globals_Game.positionKeys)
             {
                 Position pos = this.initialDBload_position(gameID, element.ToString());
                 // add Position to positionMasterList
-                Globals_Server.positionMasterList.Add(pos.id, pos);
+                Globals_Game.positionMasterList.Add(pos.id, pos);
             }
 
             // ========= load SIEGES
-            foreach (string element in Globals_Server.siegeKeys)
+            foreach (string element in Globals_Game.siegeKeys)
             {
                 Siege s = this.initialDBload_Siege(gameID, element);
                 // add Siege to siegeMasterList
-                Globals_Server.siegeMasterList.Add(s.siegeID, s);
+                Globals_Game.siegeMasterList.Add(s.siegeID, s);
             }
 
             // ========= load ARMIES
-            foreach (string element in Globals_Server.armyKeys)
+            foreach (string element in Globals_Game.armyKeys)
             {
                 Army a = this.initialDBload_Army(gameID, element);
                 // add Army to armyMasterList
-                Globals_Server.armyMasterList.Add(a.armyID, a);
+                Globals_Game.armyMasterList.Add(a.armyID, a);
             }
 
             // ========= load NPCs
-            foreach (string element in Globals_Server.npcKeys)
+            foreach (string element in Globals_Game.npcKeys)
 			{
 				NonPlayerCharacter npc = this.initialDBload_NPC (gameID, element);
                 // add NPC to npcMasterList
-                Globals_Server.npcMasterList.Add(npc.charID, npc);
+                Globals_Game.npcMasterList.Add(npc.charID, npc);
 			}
 
             // ========= load PCs
-            foreach (string element in Globals_Server.pcKeys)
+            foreach (string element in Globals_Game.pcKeys)
 			{
 				PlayerCharacter pc = this.initialDBload_PC (gameID, element);
                 // add PC to pcMasterList
-                Globals_Server.pcMasterList.Add(pc.charID, pc);
+                Globals_Game.pcMasterList.Add(pc.charID, pc);
 			}
 
             // ========= load KINGDOMS
-            foreach (string element in Globals_Server.kingKeys)
+            foreach (string element in Globals_Game.kingKeys)
             {
                 Kingdom king = this.initialDBload_Kingdom(gameID, element);
                 // add Kingdom to kingdomMasterList
-                Globals_Server.kingdomMasterList.Add(king.id, king);
+                Globals_Game.kingdomMasterList.Add(king.id, king);
             }
 
             // ========= load PROVINCES
-            foreach (string element in Globals_Server.provKeys)
+            foreach (string element in Globals_Game.provKeys)
 			{
 				Province prov = this.initialDBload_Province (gameID, element);
                 // add Province to provinceMasterList
-                Globals_Server.provinceMasterList.Add(prov.id, prov);
+                Globals_Game.provinceMasterList.Add(prov.id, prov);
 			}
 
             // ========= load TERRAINS
-            foreach (string element in Globals_Server.terrKeys)
+            foreach (string element in Globals_Game.terrKeys)
 			{
 				Terrain terr = this.initialDBload_terrain (gameID, element);
                 // add Terrain to terrainMasterList
-                Globals_Server.terrainMasterList.Add(terr.terrainCode, terr);
+                Globals_Game.terrainMasterList.Add(terr.terrainCode, terr);
 			}
 
             // ========= load FIEFS
-            foreach (string element in Globals_Server.fiefKeys)
+            foreach (string element in Globals_Game.fiefKeys)
 			{
 				Fief f = this.initialDBload_Fief (gameID, element);
                 // add Fief to fiefMasterList
-                Globals_Server.fiefMasterList.Add(f.id, f);
+                Globals_Game.fiefMasterList.Add(f.id, f);
 			}
 
             // ========= process any CHARACTER goTo QUEUES containing entries
-            if (Globals_Server.goToList.Count > 0)
+            if (Globals_Game.goToList.Count > 0)
 			{
-                for (int i = 0; i < Globals_Server.goToList.Count; i++)
+                for (int i = 0; i < Globals_Game.goToList.Count; i++)
 				{
-                    this.populate_goTo(Globals_Server.goToList[i]);
+                    this.populate_goTo(Globals_Game.goToList[i]);
 				}
-                Globals_Server.goToList.Clear();
+                Globals_Game.goToList.Clear();
 			}
 
-			// ========= write GLOBALS_SERVER/CLIENT CHARACTER VARIABLES
+			// ========= write GLOBALS_GAME/CLIENT CHARACTER VARIABLES
 			Globals_Client.myPlayerCharacter = this.initialDBload_charVariable (gameID, "myPlayerCharacter");
-			Globals_Server.sysAdmin = this.initialDBload_charVariable (gameID, "sysAdmin");
-			Globals_Server.kingOne = this.initialDBload_charVariable (gameID, "kingOne");
-			Globals_Server.kingTwo = this.initialDBload_charVariable (gameID, "kingTwo");
-			Globals_Server.princeOne = this.initialDBload_charVariable (gameID, "princeOne");
-			Globals_Server.princeTwo = this.initialDBload_charVariable (gameID, "princeTwo");
-			Globals_Server.heraldOne = this.initialDBload_charVariable (gameID, "heraldOne");
-			Globals_Server.heraldTwo = this.initialDBload_charVariable (gameID, "heraldTwo");
+			Globals_Game.sysAdmin = this.initialDBload_charVariable (gameID, "sysAdmin");
+			Globals_Game.kingOne = this.initialDBload_charVariable (gameID, "kingOne");
+			Globals_Game.kingTwo = this.initialDBload_charVariable (gameID, "kingTwo");
+			Globals_Game.princeOne = this.initialDBload_charVariable (gameID, "princeOne");
+			Globals_Game.princeTwo = this.initialDBload_charVariable (gameID, "princeTwo");
+			Globals_Game.heraldOne = this.initialDBload_charVariable (gameID, "heraldOne");
+			Globals_Game.heraldTwo = this.initialDBload_charVariable (gameID, "heraldTwo");
 
             // ========= load MAP
-            Globals_Server.gameMap = this.initialDBload_map(gameID, "mapEdges");
+            Globals_Game.gameMap = this.initialDBload_map(gameID, "mapEdges");
 		}
 
 		/// <summary>
@@ -1298,7 +1328,7 @@ namespace hist_mmorpg
 			var skillKeyResult = rClient.Get(gameID, "skillKeys");
 			if (skillKeyResult.IsSuccess)
 			{
-                Globals_Server.skillKeys = skillKeyResult.Value.GetObject<List<string>>();
+                Globals_Game.skillKeys = skillKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1312,7 +1342,7 @@ namespace hist_mmorpg
             var natKeyResult = rClient.Get(gameID, "nationalityKeys");
 			if (natKeyResult.IsSuccess)
 			{
-                Globals_Server.nationalityKeys = natKeyResult.Value.GetObject<List<string>>();
+                Globals_Game.nationalityKeys = natKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1326,7 +1356,7 @@ namespace hist_mmorpg
             var langKeyResult = rClient.Get(gameID, "langKeys");
             if (langKeyResult.IsSuccess)
             {
-                Globals_Server.langKeys = langKeyResult.Value.GetObject<List<string>>();
+                Globals_Game.langKeys = langKeyResult.Value.GetObject<List<string>>();
             }
             else
             {
@@ -1340,7 +1370,7 @@ namespace hist_mmorpg
             var rankKeyResult = rClient.Get(gameID, "rankKeys");
             if (rankKeyResult.IsSuccess)
             {
-                Globals_Server.rankKeys = rankKeyResult.Value.GetObject<List<byte>>();
+                Globals_Game.rankKeys = rankKeyResult.Value.GetObject<List<byte>>();
             }
             else
             {
@@ -1354,7 +1384,7 @@ namespace hist_mmorpg
             var positionKeyResult = rClient.Get(gameID, "positionKeys");
             if (positionKeyResult.IsSuccess)
             {
-                Globals_Server.positionKeys = positionKeyResult.Value.GetObject<List<byte>>();
+                Globals_Game.positionKeys = positionKeyResult.Value.GetObject<List<byte>>();
             }
             else
             {
@@ -1368,7 +1398,7 @@ namespace hist_mmorpg
             var npcKeyResult = rClient.Get(gameID, "npcKeys");
 			if (npcKeyResult.IsSuccess)
 			{
-                Globals_Server.npcKeys = npcKeyResult.Value.GetObject<List<string>>();
+                Globals_Game.npcKeys = npcKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1382,7 +1412,7 @@ namespace hist_mmorpg
             var pcKeyResult = rClient.Get(gameID, "pcKeys");
 			if (pcKeyResult.IsSuccess)
 			{
-                Globals_Server.pcKeys = pcKeyResult.Value.GetObject<List<string>>();
+                Globals_Game.pcKeys = pcKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1396,7 +1426,7 @@ namespace hist_mmorpg
             var kingKeyResult = rClient.Get(gameID, "kingKeys");
             if (kingKeyResult.IsSuccess)
             {
-                Globals_Server.kingKeys = kingKeyResult.Value.GetObject<List<string>>();
+                Globals_Game.kingKeys = kingKeyResult.Value.GetObject<List<string>>();
             }
             else
             {
@@ -1410,7 +1440,7 @@ namespace hist_mmorpg
             var provKeyResult = rClient.Get(gameID, "provKeys");
 			if (provKeyResult.IsSuccess)
 			{
-                Globals_Server.provKeys = provKeyResult.Value.GetObject<List<string>>();
+                Globals_Game.provKeys = provKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1424,7 +1454,7 @@ namespace hist_mmorpg
             var terrKeyResult = rClient.Get(gameID, "terrKeys");
 			if (terrKeyResult.IsSuccess)
 			{
-                Globals_Server.terrKeys = terrKeyResult.Value.GetObject<List<string>>();
+                Globals_Game.terrKeys = terrKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1438,7 +1468,7 @@ namespace hist_mmorpg
             var vicDataResult = rClient.Get(gameID, "victoryDataKeys");
             if (vicDataResult.IsSuccess)
             {
-                Globals_Server.victoryDataKeys = vicDataResult.Value.GetObject<List<string>>();
+                Globals_Game.victoryDataKeys = vicDataResult.Value.GetObject<List<string>>();
             }
             else
             {
@@ -1452,7 +1482,7 @@ namespace hist_mmorpg
             var fiefKeyResult = rClient.Get(gameID, "fiefKeys");
 			if (fiefKeyResult.IsSuccess)
 			{
-                Globals_Server.fiefKeys = fiefKeyResult.Value.GetObject<List<string>>();
+                Globals_Game.fiefKeys = fiefKeyResult.Value.GetObject<List<string>>();
 			}
 			else
 			{
@@ -1466,7 +1496,7 @@ namespace hist_mmorpg
             var armyKeyResult = rClient.Get(gameID, "armyKeys");
             if (armyKeyResult.IsSuccess)
             {
-                Globals_Server.armyKeys = armyKeyResult.Value.GetObject<List<string>>();
+                Globals_Game.armyKeys = armyKeyResult.Value.GetObject<List<string>>();
             }
             else
             {
@@ -1480,7 +1510,7 @@ namespace hist_mmorpg
             var siegeKeyResult = rClient.Get(gameID, "siegeKeys");
             if (siegeKeyResult.IsSuccess)
             {
-                Globals_Server.siegeKeys = siegeKeyResult.Value.GetObject<List<string>>();
+                Globals_Game.siegeKeys = siegeKeyResult.Value.GetObject<List<string>>();
             }
             else
             {
@@ -1587,9 +1617,9 @@ namespace hist_mmorpg
 				pcID = charVarResult.Value.GetObject<string>();
 				if (pcID != null)
 				{
-					if (Globals_Server.pcMasterList.ContainsKey(pcID))
+					if (Globals_Game.pcMasterList.ContainsKey(pcID))
 					{
-						newPC = Globals_Server.pcMasterList[pcID];
+						newPC = Globals_Game.pcMasterList[pcID];
 					}
 				}
 			}
@@ -1610,7 +1640,7 @@ namespace hist_mmorpg
 		/// <returns>Dictionary<string, uint[]> object</returns>
 		/// <param name="gameID">Game for which Dictionary to be retrieved</param>
 		/// <param name="dictID">ID of Dictionary to be retrieved</param>
-        public Dictionary<string, uint[]> initialDBload_dictUint(string gameID, string dictID)
+        public Dictionary<string, uint[]> initialDBload_dictStringUint(string gameID, string dictID)
 		{
 			var dictResult = rClient.Get(gameID, dictID);
 			var newDict = new Dictionary<string, uint[]>();
@@ -1636,7 +1666,7 @@ namespace hist_mmorpg
         /// <returns>Dictionary<string, byte> object</returns>
         /// <param name="gameID">Game for which Dictionary to be retrieved</param>
         /// <param name="dictID">ID of Dictionary to be retrieved</param>
-        public Dictionary<string[], byte> initialDBload_dictString(string gameID, string dictID)
+        public Dictionary<string[], byte> initialDBload_dictStringByte(string gameID, string dictID)
         {
 			Dictionary<string[], byte> dictOut = new Dictionary<string[], byte>();
             var dictResult = rClient.Get(gameID, dictID);
@@ -1685,7 +1715,7 @@ namespace hist_mmorpg
 		/// <returns>Dictionary<string, double[]> object</returns>
 		/// <param name="gameID">Game for which Dictionary to be retrieved</param>
 		/// <param name="dictID">ID of Dictionary to be retrieved</param>
-        public Dictionary<string, double[]> initialDBload_dictDouble(string gameID, string dictID)
+        public Dictionary<string, double[]> initialDBload_dictStringDouble(string gameID, string dictID)
 		{
 			var dictResult = rClient.Get(gameID, dictID);
 			var newDict = new Dictionary<string, double[]>();
@@ -1705,7 +1735,33 @@ namespace hist_mmorpg
 			return newDict;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Loads Dictionary<uint, string> from database
+        /// </summary>
+        /// <returns>Dictionary<uint, string> object</returns>
+        /// <param name="gameID">Game for which Dictionary to be retrieved</param>
+        /// <param name="dictID">ID of Dictionary to be retrieved</param>
+        public Dictionary<uint, string> initialDBload_dictIntString(string gameID, string dictID)
+        {
+            var dictResult = rClient.Get(gameID, dictID);
+            var newDict = new Dictionary<uint, string>();
+
+            if (dictResult.IsSuccess)
+            {
+                newDict = dictResult.Value.GetObject<Dictionary<uint, string>>();
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Dictionary " + dictID);
+                }
+            }
+
+            return newDict;
+        }
+
+        /// <summary>
 		/// Loads a skill for a particular game from database
 		/// </summary>
         /// <returns>Skill object</returns>
@@ -1750,7 +1806,7 @@ namespace hist_mmorpg
                 // if NonPlayerCharacter_Riak goTo queue contains entries, store for later processing
 				if (npcRiak.goTo.Count > 0)
 				{
-                    Globals_Server.goToList.Add(npcRiak);
+                    Globals_Game.goToList.Add(npcRiak);
 				}
                 // create NonPlayerCharacter from NonPlayerCharacter_Riak
                 myNPC = this.NPCfromRiakNPC(npcRiak);
@@ -1785,7 +1841,7 @@ namespace hist_mmorpg
                 // if PlayerCharacter_Riak goTo queue contains entries, store for later processing
                 if (pcRiak.goTo.Count > 0)
 				{
-                    Globals_Server.goToList.Add(pcRiak);
+                    Globals_Game.goToList.Add(pcRiak);
 				}
                 // create PlayerCharacter from PlayerCharacter_Riak
                 myPC = this.PCfromRiakPC(pcRiak);
@@ -2161,13 +2217,13 @@ namespace hist_mmorpg
 			fOut = new Fief (fr);
 
 			// insert province
-            fOut.province = Globals_Server.provinceMasterList[fr.province];
+            fOut.province = Globals_Game.provinceMasterList[fr.province];
 
             // insert language
-            fOut.language = new Tuple<Language, int>(Globals_Server.languageMasterList[fr.language.Item1], fr.language.Item2);
+            fOut.language = new Tuple<Language, int>(Globals_Game.languageMasterList[fr.language.Item1], fr.language.Item2);
 
             // insert owner
-            fOut.owner = Globals_Server.pcMasterList[fr.owner];
+            fOut.owner = Globals_Game.pcMasterList[fr.owner];
 			// check if fief is in owner's list of fiefs owned
 			bool fiefInList = fOut.owner.ownedFiefs.Any(item => item.id == fOut.id);
 			// if not, add it
@@ -2177,18 +2233,18 @@ namespace hist_mmorpg
 			}
 
 			// insert ancestral owner
-            fOut.ancestralOwner = Globals_Server.pcMasterList[fr.ancestralOwner];
+            fOut.ancestralOwner = Globals_Game.pcMasterList[fr.ancestralOwner];
 
 			// insert bailiff (PC or NPC)
 			if (fr.bailiff != null)
 			{
-                if (Globals_Server.npcMasterList.ContainsKey(fr.bailiff))
+                if (Globals_Game.npcMasterList.ContainsKey(fr.bailiff))
                 {
-                    fOut.bailiff = Globals_Server.npcMasterList[fr.bailiff];
+                    fOut.bailiff = Globals_Game.npcMasterList[fr.bailiff];
                 }
-                else if (Globals_Server.pcMasterList.ContainsKey(fr.bailiff))
+                else if (Globals_Game.pcMasterList.ContainsKey(fr.bailiff))
                 {
-                    fOut.bailiff = Globals_Server.pcMasterList[fr.bailiff];
+                    fOut.bailiff = Globals_Game.pcMasterList[fr.bailiff];
 				}
                 else
                 {
@@ -2201,22 +2257,22 @@ namespace hist_mmorpg
 			}
 				
 			//insert terrain
-            fOut.terrain = Globals_Server.terrainMasterList[fr.terrain];
+            fOut.terrain = Globals_Game.terrainMasterList[fr.terrain];
 
 			// insert characters
 			if (fr.characters.Count > 0)
 			{
 				for (int i = 0; i < fr.characters.Count; i++)
 				{
-                    if (Globals_Server.npcMasterList.ContainsKey(fr.characters[i]))
+                    if (Globals_Game.npcMasterList.ContainsKey(fr.characters[i]))
 					{
-                        fOut.charactersInFief.Add(Globals_Server.npcMasterList[fr.characters[i]]);
-                        Globals_Server.npcMasterList[fr.characters[i]].location = fOut;
+                        fOut.charactersInFief.Add(Globals_Game.npcMasterList[fr.characters[i]]);
+                        Globals_Game.npcMasterList[fr.characters[i]].location = fOut;
 					}
-                    else if (Globals_Server.pcMasterList.ContainsKey(fr.characters[i]))
+                    else if (Globals_Game.pcMasterList.ContainsKey(fr.characters[i]))
                     {
-                        fOut.charactersInFief.Add(Globals_Server.pcMasterList[fr.characters[i]]);
-                        Globals_Server.pcMasterList[fr.characters[i]].location = fOut;
+                        fOut.charactersInFief.Add(Globals_Game.pcMasterList[fr.characters[i]]);
+                        Globals_Game.pcMasterList[fr.characters[i]].location = fOut;
                     }
                     else
                     {
@@ -2232,9 +2288,9 @@ namespace hist_mmorpg
             // insert rank using rankID
             if (fr.rank != null)
             {
-                if (Globals_Server.rankMasterList.ContainsKey(fr.rank))
+                if (Globals_Game.rankMasterList.ContainsKey(fr.rank))
                 {
-                    fOut.rank = Globals_Server.rankMasterList[fr.rank];
+                    fOut.rank = Globals_Game.rankMasterList[fr.rank];
                 }
                 else
                 {
@@ -2284,9 +2340,9 @@ namespace hist_mmorpg
             posOut = new Position(pr);
 
             // insert nationality
-            if (Globals_Server.nationalityMasterList.ContainsKey(pr.nationality))
+            if (Globals_Game.nationalityMasterList.ContainsKey(pr.nationality))
             {
-                posOut.nationality = Globals_Server.nationalityMasterList[pr.nationality];
+                posOut.nationality = Globals_Game.nationalityMasterList[pr.nationality];
             }
 
             return posOut;
@@ -2304,17 +2360,17 @@ namespace hist_mmorpg
 			pcOut = new PlayerCharacter (pcr);
 
             // insert language
-            pcOut.language = new Tuple<Language, int>(Globals_Server.languageMasterList[pcr.language.Item1], pcr.language.Item2);
+            pcOut.language = new Tuple<Language, int>(Globals_Game.languageMasterList[pcr.language.Item1], pcr.language.Item2);
 
             // insert nationality
-            pcOut.nationality = Globals_Server.nationalityMasterList[pcr.nationality];
+            pcOut.nationality = Globals_Game.nationalityMasterList[pcr.nationality];
 
             // insert skills
 			if (pcr.skills.Length > 0)
 			{
 				for (int i = 0; i < pcr.skills.Length; i++)
 				{
-                    pcOut.skills[i] = new Tuple<Skill, int>(Globals_Server.skillMasterList[pcr.skills[i].Item1], pcr.skills[i].Item2);
+                    pcOut.skills[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[pcr.skills[i].Item1], pcr.skills[i].Item2);
 				}
 			}
 
@@ -2323,7 +2379,7 @@ namespace hist_mmorpg
 			{
 				for (int i = 0; i < pcr.myNPCs.Count; i++)
 				{
-                    pcOut.myNPCs.Add(Globals_Server.npcMasterList[pcr.myNPCs[i]]);
+                    pcOut.myNPCs.Add(Globals_Game.npcMasterList[pcr.myNPCs[i]]);
 				}
 			}
 
@@ -2332,7 +2388,7 @@ namespace hist_mmorpg
             {
                 for (int i = 0; i < pcr.myArmies.Count; i++)
                 {
-                    pcOut.myArmies.Add(Globals_Server.armyMasterList[pcr.myArmies[i]]);
+                    pcOut.myArmies.Add(Globals_Game.armyMasterList[pcr.myArmies[i]]);
                 }
             }
 
@@ -2351,17 +2407,17 @@ namespace hist_mmorpg
 			npcOut = new NonPlayerCharacter (npcr);
 
             // insert language
-            npcOut.language = new Tuple<Language, int>(Globals_Server.languageMasterList[npcr.language.Item1], npcr.language.Item2);
+            npcOut.language = new Tuple<Language, int>(Globals_Game.languageMasterList[npcr.language.Item1], npcr.language.Item2);
 
             // insert nationality
-            npcOut.nationality = Globals_Server.nationalityMasterList[npcr.nationality];
+            npcOut.nationality = Globals_Game.nationalityMasterList[npcr.nationality];
             
             // insert skills
 			if (npcr.skills.Length > 0)
 			{
 				for (int i = 0; i < npcr.skills.Length; i++)
 				{
-                    npcOut.skills[i] = new Tuple<Skill, int>(Globals_Server.skillMasterList[npcr.skills[i].Item1], npcr.skills[i].Item2);
+                    npcOut.skills[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[npcr.skills[i].Item1], npcr.skills[i].Item2);
 				}
 			}
 
@@ -2425,7 +2481,7 @@ namespace hist_mmorpg
         /// <param name="te">'String-ified' edge to be converted</param>
         public TaggedEdge<Fief, string> EdgeString_to_EdgeFief(TaggedEdge<string, string> te)
 		{
-            TaggedEdge<Fief, string> edgeOut = new TaggedEdge<Fief, string>(Globals_Server.fiefMasterList[te.Source], Globals_Server.fiefMasterList[te.Target], te.Tag);
+            TaggedEdge<Fief, string> edgeOut = new TaggedEdge<Fief, string>(Globals_Game.fiefMasterList[te.Source], Globals_Game.fiefMasterList[te.Target], te.Tag);
 			return edgeOut;
 		}
 
@@ -2442,17 +2498,17 @@ namespace hist_mmorpg
 
 			if (cr is PlayerCharacter_Riak)
 			{
-                if (Globals_Server.pcMasterList.ContainsKey(cr.charID))
+                if (Globals_Game.pcMasterList.ContainsKey(cr.charID))
 				{
-                    myCh = Globals_Server.pcMasterList[cr.charID];
+                    myCh = Globals_Game.pcMasterList[cr.charID];
 					success = true;
 				}
 			}
 			else if (cr is NonPlayerCharacter_Riak)
 			{
-                if (Globals_Server.npcMasterList.ContainsKey(cr.charID))
+                if (Globals_Game.npcMasterList.ContainsKey(cr.charID))
 				{
-                    myCh = Globals_Server.npcMasterList[cr.charID];
+                    myCh = Globals_Game.npcMasterList[cr.charID];
 					success = true;
 				}
 			}
@@ -2468,7 +2524,7 @@ namespace hist_mmorpg
             {
                 foreach (string value in cr.goTo)
                 {
-                    myCh.goTo.Enqueue(Globals_Server.fiefMasterList[value]);
+                    myCh.goTo.Enqueue(Globals_Game.fiefMasterList[value]);
                 }
             }
 
@@ -2524,9 +2580,9 @@ namespace hist_mmorpg
             // insert king
             if (kr.owner != null)
             {
-                if (Globals_Server.pcMasterList.ContainsKey(kr.owner))
+                if (Globals_Game.pcMasterList.ContainsKey(kr.owner))
                 {
-                    kOut.owner = Globals_Server.pcMasterList[kr.owner];
+                    kOut.owner = Globals_Game.pcMasterList[kr.owner];
                 }
                 else
                 {
@@ -2540,9 +2596,9 @@ namespace hist_mmorpg
             // insert rank
             if (kr.rank != null)
             {
-                if (Globals_Server.rankMasterList.ContainsKey(kr.rank))
+                if (Globals_Game.rankMasterList.ContainsKey(kr.rank))
                 {
-                    kOut.rank = Globals_Server.rankMasterList[kr.rank];
+                    kOut.rank = Globals_Game.rankMasterList[kr.rank];
                 }
                 else
                 {
@@ -2556,9 +2612,9 @@ namespace hist_mmorpg
             // insert nationality
             if (kr.nationality != null)
             {
-                if (Globals_Server.nationalityMasterList.ContainsKey(kr.nationality))
+                if (Globals_Game.nationalityMasterList.ContainsKey(kr.nationality))
                 {
-                    kOut.nationality = Globals_Server.nationalityMasterList[kr.nationality];
+                    kOut.nationality = Globals_Game.nationalityMasterList[kr.nationality];
                 }
                 else
                 {
@@ -2585,9 +2641,9 @@ namespace hist_mmorpg
             // insert overlord using overlordID
 			if (pr.owner != null)
 			{
-                if (Globals_Server.pcMasterList.ContainsKey(pr.owner))
+                if (Globals_Game.pcMasterList.ContainsKey(pr.owner))
                 {
-                    oOut.owner = Globals_Server.pcMasterList[pr.owner];
+                    oOut.owner = Globals_Game.pcMasterList[pr.owner];
                 }
                 else
                 {
@@ -2609,9 +2665,9 @@ namespace hist_mmorpg
             // insert kingdom using kingdomID
             if (pr.kingdom != null)
             {
-                if (Globals_Server.kingdomMasterList.ContainsKey(pr.kingdom))
+                if (Globals_Game.kingdomMasterList.ContainsKey(pr.kingdom))
                 {
-                    oOut.kingdom = Globals_Server.kingdomMasterList[pr.kingdom];
+                    oOut.kingdom = Globals_Game.kingdomMasterList[pr.kingdom];
                 }
                 else
                 {
@@ -2625,9 +2681,9 @@ namespace hist_mmorpg
             // insert rank using rankID
 			if (pr.rank > 0)
             {
-                if (Globals_Server.rankMasterList.ContainsKey(pr.rank))
+                if (Globals_Game.rankMasterList.ContainsKey(pr.rank))
                 {
-                    oOut.rank = Globals_Server.rankMasterList[pr.rank];
+                    oOut.rank = Globals_Game.rankMasterList[pr.rank];
                 }
                 else
                 {
@@ -3174,13 +3230,13 @@ namespace hist_mmorpg
             Globals_Client.showMessages = false;
 
             // FIEFS
-            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
+            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
             {
                 fiefEntry.Value.updateFief();
             }
 
             // NONPLAYERCHARACTERS
-            foreach (KeyValuePair<string, NonPlayerCharacter> npcEntry in Globals_Server.npcMasterList)
+            foreach (KeyValuePair<string, NonPlayerCharacter> npcEntry in Globals_Game.npcMasterList)
             {
                 // check if NonPlayerCharacter is alive
                 performCharacterUpdate = npcEntry.Value.isAlive;
@@ -3210,7 +3266,7 @@ namespace hist_mmorpg
             }
 
             // PLAYERCHARACTERS
-            foreach (KeyValuePair<string, PlayerCharacter> pcEntry in Globals_Server.pcMasterList)
+            foreach (KeyValuePair<string, PlayerCharacter> pcEntry in Globals_Game.pcMasterList)
             {
                 // check if PlayerCharacter is alive
                 performCharacterUpdate = pcEntry.Value.isAlive;
@@ -3239,7 +3295,7 @@ namespace hist_mmorpg
             bool hasDissolved = false;
 
             // iterate through armies
-            foreach (KeyValuePair<string, Army> armyEntry in Globals_Server.armyMasterList)
+            foreach (KeyValuePair<string, Army> armyEntry in Globals_Game.armyMasterList)
             {
                 hasDissolved = armyEntry.Value.updateArmy();
 
@@ -3270,7 +3326,7 @@ namespace hist_mmorpg
             bool hasEnded = false;
 
             // iterate through sieges
-            foreach (KeyValuePair<string, Siege> siegeEntry in Globals_Server.siegeMasterList)
+            foreach (KeyValuePair<string, Siege> siegeEntry in Globals_Game.siegeMasterList)
             {
                 hasEnded = siegeEntry.Value.updateSiege();
 
@@ -3302,25 +3358,25 @@ namespace hist_mmorpg
             }
 
             // ADVANCE SEASON AND YEAR
-            Globals_Server.clock.advanceSeason();
+            Globals_Game.clock.advanceSeason();
 
             // CHECK SCHEDULED EVENTS
             List<JournalEntry> entriesForRemoval = this.processScheduledEvents();
-            // remove processed events from Globals_Server.scheduledEvents
+            // remove processed events from Globals_Game.scheduledEvents
             for (int i = 0; i < entriesForRemoval.Count; i++ )
             {
-                Globals_Server.scheduledEvents.entries.Remove(entriesForRemoval[i].jEntryID);
+                Globals_Game.scheduledEvents.entries.Remove(entriesForRemoval[i].jEntryID);
             }
 
             //UPDATE AND GET SCORES
             //update scores
-            foreach (KeyValuePair<string, VictoryData> scoresEntry in Globals_Server.victoryData)
+            foreach (KeyValuePair<string, VictoryData> scoresEntry in Globals_Game.victoryData)
             {
                 scoresEntry.Value.updateData();
             }
 
             // get scores
-            SortedList<double, string> currentScores = Globals_Server.getCurrentScores();
+            SortedList<double, string> currentScores = Globals_Game.getCurrentScores();
 
             // show scores
             if (Globals_Client.showMessages)
@@ -3330,7 +3386,7 @@ namespace hist_mmorpg
                 foreach (KeyValuePair<double, string> thisScore in currentScores.Reverse())
                 {
                     // get PC
-                    PlayerCharacter thisPC = Globals_Server.pcMasterList[Globals_Server.victoryData[thisScore.Value].playerCharacterID];
+                    PlayerCharacter thisPC = Globals_Game.pcMasterList[Globals_Game.victoryData[thisScore.Value].playerCharacterID];
                     toDisplay += "PlayerCharacter: " + thisPC.firstName + " " + thisPC.familyName;
                     toDisplay += ",   Score: " + thisScore.Key + "\r\n";
                 }
@@ -3355,11 +3411,11 @@ namespace hist_mmorpg
             bool proceed = true;
 
             // iterate through clock's scheduled events
-            foreach (KeyValuePair<uint, JournalEntry> jEntry in Globals_Server.scheduledEvents.entries)
+            foreach (KeyValuePair<uint, JournalEntry> jEntry in Globals_Game.scheduledEvents.entries)
             {
                 proceed = true;
 
-                if ((jEntry.Value.year == Globals_Server.clock.currentYear) && (jEntry.Value.season == Globals_Server.clock.currentSeason))
+                if ((jEntry.Value.year == Globals_Game.clock.currentYear) && (jEntry.Value.season == Globals_Game.clock.currentSeason))
                 {
                     //BIRTH
                     if ((jEntry.Value.type).ToLower().Equals("birth"))
@@ -3375,16 +3431,16 @@ namespace hist_mmorpg
                             switch (thisPersonaeSplit[1])
                             {
                                 case "mother":
-                                    mummy = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                                    mummy = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
                                     break;
                                 case "father":
-                                    if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                    if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
                                     {
-                                        daddy = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                                        daddy = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
                                     }
-                                    else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                    else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
                                     {
-                                        daddy = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                                        daddy = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
                                     }
                                     break;
                                 default:
@@ -3425,16 +3481,16 @@ namespace hist_mmorpg
                             switch (thisPersonaeSplit[1])
                             {
                                 case "bride":
-                                    bride = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                                    bride = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
                                     break;
                                 case "groom":
-                                    if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                    if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
                                     {
-                                        groom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                                        groom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
                                     }
-                                    else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                    else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
                                     {
-                                        groom = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                                        groom = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
                                     }
                                     break;
                                 default:
@@ -3611,7 +3667,7 @@ namespace hist_mmorpg
                     else
                     {
                         // end the siege
-                        Siege thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
+                        Siege thisSiege = Globals_Game.siegeMasterList[thisSiegeID];
                         if (Globals_Client.showMessages)
                         {
                             System.Windows.Forms.MessageBox.Show("Siege (" + thisSiegeID + ") ended.");
@@ -3649,12 +3705,12 @@ namespace hist_mmorpg
             bool success = false;
 
             // generate random int 0-6 to see if moves
-            int randomInt = Globals_Server.myRand.Next(7);
+            int randomInt = Globals_Game.myRand.Next(7);
 
             if (randomInt > 0)
             {
                 // get a destination
-                Fief target = Globals_Server.gameMap.chooseRandomHex(npc.location);
+                Fief target = Globals_Game.gameMap.chooseRandomHex(npc.location);
 
                 // get travel cost
                 double travelCost = this.getTravelCost(npc.location, target);
@@ -3887,7 +3943,7 @@ namespace hist_mmorpg
         {
             string textToDisplay = "";
             // date/season and main character's days left
-            textToDisplay += Globals_Server.clock.seasons[Globals_Server.clock.currentSeason] + ", " + Globals_Server.clock.currentYear + ".  Your days left: " + Globals_Client.myPlayerCharacter.days + "\r\n\r\n";
+            textToDisplay += Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear + ".  Your days left: " + Globals_Client.myPlayerCharacter.days + "\r\n\r\n";
             // Fief name/ID and province name
             textToDisplay += "Fief: " + Globals_Client.myPlayerCharacter.location.name + " (" + Globals_Client.myPlayerCharacter.location.id + ")  in " + Globals_Client.myPlayerCharacter.location.province.name + ", " + Globals_Client.myPlayerCharacter.location.province.kingdom.name + "\r\n\r\n";
             // Fief owner
@@ -4238,9 +4294,9 @@ namespace hist_mmorpg
                     // get character
                     PlayerCharacter thisHolder = null;
 					//System.Windows.Forms.MessageBox.Show("Got here!");
-                    if (Globals_Server.pcMasterList.ContainsKey(thisProvince.titleHolder))
+                    if (Globals_Game.pcMasterList.ContainsKey(thisProvince.titleHolder))
                     {
-                        thisHolder = Globals_Server.pcMasterList[thisProvince.titleHolder];
+                        thisHolder = Globals_Game.pcMasterList[thisProvince.titleHolder];
                     }
 
                     // title holder name & id
@@ -4254,7 +4310,7 @@ namespace hist_mmorpg
                     }
 
                     // last season tax rate and total tax income
-                    foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
+                    foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
                     {
                         if (fiefEntry.Value.province == thisProvince)
                         {
@@ -4304,13 +4360,13 @@ namespace hist_mmorpg
                     // title holder
                     // get character
                     Character thisHolder = null;
-                    if (Globals_Server.pcMasterList.ContainsKey(thisFief.titleHolder))
+                    if (Globals_Game.pcMasterList.ContainsKey(thisFief.titleHolder))
                     {
-                        thisHolder = Globals_Server.pcMasterList[thisFief.titleHolder];
+                        thisHolder = Globals_Game.pcMasterList[thisFief.titleHolder];
                     }
-                    else if (Globals_Server.npcMasterList.ContainsKey(thisFief.titleHolder))
+                    else if (Globals_Game.npcMasterList.ContainsKey(thisFief.titleHolder))
                     {
-                        thisHolder = Globals_Server.npcMasterList[thisFief.titleHolder];
+                        thisHolder = Globals_Game.npcMasterList[thisFief.titleHolder];
                     }
 
                     // title holder name & id
@@ -4352,7 +4408,7 @@ namespace hist_mmorpg
                 this.royalGiftsFiefListView.Items.Add(fiefItemTotal);
 
                 // POSITIONS
-                foreach (KeyValuePair<byte, Position> thisPos in Globals_Server.positionMasterList)
+                foreach (KeyValuePair<byte, Position> thisPos in Globals_Game.positionMasterList)
                 {
                     // only list posistions for this nationality
                     if (thisPos.Value.nationality == thisKing.nationality)
@@ -4373,9 +4429,9 @@ namespace hist_mmorpg
                         Character thisHolder = null;
                         if (thisPos.Value.officeHolder != null)
                         {
-                            if (Globals_Server.pcMasterList.ContainsKey(thisPos.Value.officeHolder))
+                            if (Globals_Game.pcMasterList.ContainsKey(thisPos.Value.officeHolder))
                             {
-                                thisHolder = Globals_Server.pcMasterList[thisPos.Value.officeHolder];
+                                thisHolder = Globals_Game.pcMasterList[thisPos.Value.officeHolder];
                             }
                         }
 
@@ -4427,9 +4483,9 @@ namespace hist_mmorpg
 
                 // get province
                 Province thisProvince = null;
-                if (Globals_Server.provinceMasterList.ContainsKey(placeID))
+                if (Globals_Game.provinceMasterList.ContainsKey(placeID))
                 {
-                    thisProvince = Globals_Server.provinceMasterList[placeID];
+                    thisProvince = Globals_Game.provinceMasterList[placeID];
                 }
 
                 if (thisProvince != null)
@@ -4443,9 +4499,9 @@ namespace hist_mmorpg
                     // owner
                     // get character
                     PlayerCharacter thisOwner = null;
-                    if (Globals_Server.pcMasterList.ContainsKey(thisProvince.titleHolder))
+                    if (Globals_Game.pcMasterList.ContainsKey(thisProvince.titleHolder))
                     {
-                        thisOwner = Globals_Server.pcMasterList[thisProvince.titleHolder];
+                        thisOwner = Globals_Game.pcMasterList[thisProvince.titleHolder];
                     }
 
                     // title holder name & id
@@ -4461,7 +4517,7 @@ namespace hist_mmorpg
                     // last season tax rate
                     // get a fief
                     Fief thisFief = null;
-                    foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
+                    foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
                     {
                         if (fiefEntry.Value.province == thisProvince)
                         {
@@ -4508,7 +4564,7 @@ namespace hist_mmorpg
             // clear existing items in list
             this.provinceFiefListView.Items.Clear();
 
-            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Server.fiefMasterList)
+            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
             {
                 ListViewItem fiefItem = null;
 
@@ -4529,9 +4585,9 @@ namespace hist_mmorpg
                     // owner
                     // get character
                     PlayerCharacter thisOwner = null;
-                    if (Globals_Server.pcMasterList.ContainsKey(fiefEntry.Value.titleHolder))
+                    if (Globals_Game.pcMasterList.ContainsKey(fiefEntry.Value.titleHolder))
                     {
-                        thisOwner = Globals_Server.pcMasterList[fiefEntry.Value.titleHolder];
+                        thisOwner = Globals_Game.pcMasterList[fiefEntry.Value.titleHolder];
                     }
 
                     // owner name & id
@@ -4766,7 +4822,7 @@ namespace hist_mmorpg
             {
                 if (ch.spouse != null)
                 {
-                    NonPlayerCharacter thisSpouse = Globals_Server.npcMasterList[ch.spouse];
+                    NonPlayerCharacter thisSpouse = Globals_Game.npcMasterList[ch.spouse];
                     if (thisSpouse.isPregnant)
                     {
                         charText += "Your spouse is pregnant (congratulations!)\r\n";
@@ -4852,9 +4908,9 @@ namespace hist_mmorpg
                     // get kingdom
                     Place thisPlace = null;
 
-                    if (Globals_Server.kingdomMasterList.ContainsKey(titleEntry))
+                    if (Globals_Game.kingdomMasterList.ContainsKey(titleEntry))
                     {
-                        thisPlace = Globals_Server.kingdomMasterList[titleEntry];
+                        thisPlace = Globals_Game.kingdomMasterList[titleEntry];
                     }
 
                     if (thisPlace != null)
@@ -4879,9 +4935,9 @@ namespace hist_mmorpg
                     // get province
                     Place thisPlace = null;
 
-                    if (Globals_Server.provinceMasterList.ContainsKey(titleEntry))
+                    if (Globals_Game.provinceMasterList.ContainsKey(titleEntry))
                     {
-                        thisPlace = Globals_Server.provinceMasterList[titleEntry];
+                        thisPlace = Globals_Game.provinceMasterList[titleEntry];
                     }
 
                     if (thisPlace != null)
@@ -4906,9 +4962,9 @@ namespace hist_mmorpg
                     // get fief
                     Place thisPlace = null;
 
-                    if (Globals_Server.fiefMasterList.ContainsKey(titleEntry))
+                    if (Globals_Game.fiefMasterList.ContainsKey(titleEntry))
                     {
-                        thisPlace = Globals_Server.fiefMasterList[titleEntry];
+                        thisPlace = Globals_Game.fiefMasterList[titleEntry];
                     }
 
                     if (thisPlace != null)
@@ -5041,7 +5097,7 @@ namespace hist_mmorpg
         {
             string armyText = "";
             uint[] troopNumbers = a.troops;
-            Fief armyLocation = Globals_Server.fiefMasterList[a.location];
+            Fief armyLocation = Globals_Game.fiefMasterList[a.location];
 
             // check if is garrison in a siege
             string siegeID = a.checkIfSiegeDefenderGarrison();
@@ -5174,7 +5230,7 @@ namespace hist_mmorpg
             siegeText += "Besieging player: " + besiegingPlayer.firstName + " " + besiegingPlayer.familyName + " (ID: " + besiegingPlayer.charID + ")\r\n\r\n";
 
             // start date
-            siegeText += "Start date: " + s.startYear + ", " + Globals_Server.clock.seasons[s.startSeason] + "\r\n\r\n";
+            siegeText += "Start date: " + s.startYear + ", " + Globals_Game.clock.seasons[s.startSeason] + "\r\n\r\n";
 
             // duration so far
             siegeText += "Days used so far: " + s.totalDays + "\r\n\r\n";
@@ -5618,9 +5674,9 @@ namespace hist_mmorpg
                 // family expenses
                 fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
                 // famExpenses modifier for player/spouse
-                if ((f.owner.spouse != null) && (Globals_Server.npcMasterList[f.owner.spouse].management > f.owner.management))
+                if ((f.owner.spouse != null) && (Globals_Game.npcMasterList[f.owner.spouse].management > f.owner.management))
                 {
-                    fiefText += "  (which may include a famExpense skills modifier: " + Globals_Server.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")";
+                    fiefText += "  (which may include a famExpense skills modifier: " + Globals_Game.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")";
                 }
                 else
                 {
@@ -5761,7 +5817,7 @@ namespace hist_mmorpg
                 }
 
                 // location
-                Fief armyLocation = Globals_Server.fiefMasterList[Globals_Client.myPlayerCharacter.myArmies[i].location];
+                Fief armyLocation = Globals_Game.fiefMasterList[Globals_Client.myPlayerCharacter.myArmies[i].location];
                 thisArmy.SubItems.Add(armyLocation.name + " (" + armyLocation.id + ")");
 
                 // size
@@ -5843,7 +5899,7 @@ namespace hist_mmorpg
                 thisEntry = new ListViewItem(Convert.ToString(thisJentry.Value.jEntryID));
 
                 // date
-                string entrySeason = Globals_Server.clock.seasons[thisJentry.Value.season];
+                string entrySeason = Globals_Game.clock.seasons[thisJentry.Value.season];
                 thisEntry.SubItems.Add(entrySeason + ", " + thisJentry.Value.year);
 
                 // type
@@ -6361,12 +6417,12 @@ namespace hist_mmorpg
             cost = (source.terrain.travelCost + target.terrain.travelCost) / 2;
 
             // apply season modifier
-            cost = cost * Globals_Server.clock.calcSeasonTravMod();
+            cost = cost * Globals_Game.clock.calcSeasonTravMod();
 
             // if necessary, apply army modifier
             if (armyID != null)
             {
-                cost = cost * Globals_Server.armyMasterList[armyID].calcMovementModifier();
+                cost = cost * Globals_Game.armyMasterList[armyID].calcMovementModifier();
             }
 
             return cost;
@@ -6391,7 +6447,7 @@ namespace hist_mmorpg
             for (int i = 0; i < directions.Length; i++ )
             {
                 // retrieve target fief for that direction
-                Fief target = Globals_Server.gameMap.getFief(thisFief, directions[i]);
+                Fief target = Globals_Game.gameMap.getFief(thisFief, directions[i]);
                 // display fief details and travel cost
                 if (target != null)
                 {
@@ -6493,7 +6549,7 @@ namespace hist_mmorpg
             // necessary in order to be able to access button tag
             Button button = sender as Button;
             // get target fief using travel button tag (contains direction string)
-            Fief targetFief = Globals_Server.gameMap.getFief(Globals_Client.myPlayerCharacter.location, button.Tag.ToString());
+            Fief targetFief = Globals_Game.gameMap.getFief(Globals_Client.myPlayerCharacter.location, button.Tag.ToString());
 
             if (targetFief != null)
             {
@@ -6971,13 +7027,13 @@ namespace hist_mmorpg
             }
 
             // check for existence of fief
-            if (Globals_Server.fiefMasterList.ContainsKey(myTextBox.Text.ToUpper()))
+            if (Globals_Game.fiefMasterList.ContainsKey(myTextBox.Text.ToUpper()))
             {
                 // retrieves target fief
-                Fief target = Globals_Server.fiefMasterList[myTextBox.Text.ToUpper()];
+                Fief target = Globals_Game.fiefMasterList[myTextBox.Text.ToUpper()];
 
                 // obtains goTo queue for shortest path to target
-                Globals_Client.charToView.goTo = Globals_Server.gameMap.getShortestPath(Globals_Client.charToView.location, target);
+                Globals_Client.charToView.goTo = Globals_Game.gameMap.getShortestPath(Globals_Client.charToView.location, target);
 
                 // if retrieve valid path
                 if (Globals_Client.charToView.goTo.Count > 0)
@@ -7678,7 +7734,7 @@ namespace hist_mmorpg
                 }
 
                 // get the target fief
-                target = Globals_Server.gameMap.getFief(source, directions[i].ToUpper());
+                target = Globals_Game.gameMap.getFief(source, directions[i].ToUpper());
 
                 // if target successfully acquired, add to queue
                 if (target != null)
@@ -7870,7 +7926,7 @@ namespace hist_mmorpg
             try
             {
                 Fief fiefFrom = Globals_Client.fiefToView;
-                Fief fiefTo = Globals_Server.fiefMasterList[Globals_Client.myChar.homeFief];
+                Fief fiefTo = Globals_Game.fiefMasterList[Globals_Client.myChar.homeFief];
                 int amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
 
                 // make sure are enough funds to cover transfer
@@ -7970,7 +8026,7 @@ namespace hist_mmorpg
             // family name
             newNPC.familyName = daddy.familyName;
             // date of birth
-            newNPC.birthDate = new Tuple<uint, byte>(Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason);
+            newNPC.birthDate = new Tuple<uint, byte>(Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason);
             // nationality
             newNPC.nationality = daddy.nationality;
             // whether is alive
@@ -8008,7 +8064,7 @@ namespace hist_mmorpg
             // skills
             newNPC.skills = this.generateSkillSetFromParents(mummy.skills, daddy.skills, newNPC.isMale);
             // charID
-            newNPC.charID = Convert.ToString(Globals_Server.getNextCharID());
+            newNPC.charID = Convert.ToString(Globals_Game.getNextCharID());
             // stature modifier
             newNPC.statureModifier = 0;
             // employer (myBoss)
@@ -8032,7 +8088,7 @@ namespace hist_mmorpg
             bool isMale = false;
 
             // generate random (0-1) to see if male or female
-            if (Globals_Server.myRand.Next(0, 2) == 0)
+            if (Globals_Game.myRand.Next(0, 2) == 0)
             {
                 isMale = true;
             }
@@ -8054,7 +8110,7 @@ namespace hist_mmorpg
             Double parentalAverage = (mummyStat + daddyStat) / 2;
 
             // generate random (0 - 100) to determine relationship of new stat to parentalAverage
-            double randPercentage = Globals_Server.GetRandomDouble(100);
+            double randPercentage = Globals_Game.GetRandomDouble(100);
 
             // calculate new stat
             if (randPercentage <= 35)
@@ -8142,7 +8198,7 @@ namespace hist_mmorpg
             else
             {
                 // generate random (2-3) to see how many skills child will have
-                numSkills = Globals_Server.myRand.Next(2, 4);
+                numSkills = Globals_Game.myRand.Next(2, 4);
             }
 
             // if are only 2 skills in parents' skill pool (i.e. both parents have same skills)
@@ -8208,7 +8264,7 @@ namespace hist_mmorpg
                 int PrevChosenSkill = 0;
 
                 // get a skill from the first parent
-                chosenSkill = Globals_Server.myRand.Next(0, firstSkillSet.Length);
+                chosenSkill = Globals_Game.myRand.Next(0, firstSkillSet.Length);
 
                 // creat new skill item
                 mySkill = new Tuple<Skill, int>(firstSkillSet[chosenSkill].Item1, firstSkillSet[chosenSkill].Item2);
@@ -8222,7 +8278,7 @@ namespace hist_mmorpg
                 {
                     do {
                         // get another skill from the first parent
-                        chosenSkill = Globals_Server.myRand.Next(0, firstSkillSet.Length);
+                        chosenSkill = Globals_Game.myRand.Next(0, firstSkillSet.Length);
 
                         // creat new skill item
                         mySkill = new Tuple<Skill, int>(firstSkillSet[chosenSkill].Item1, firstSkillSet[chosenSkill].Item2);
@@ -8235,7 +8291,7 @@ namespace hist_mmorpg
                 }
 
                 // get a skill from the other parent
-                chosenSkill = Globals_Server.myRand.Next(0, lastSkillSet.Length);
+                chosenSkill = Globals_Game.myRand.Next(0, lastSkillSet.Length);
 
                 // check to see if already have skill in newSkillsList
                 bool duplicate = false;
@@ -8316,7 +8372,7 @@ namespace hist_mmorpg
             if (!isStillborn)
             {
                 // add baby to npcMasterList
-                Globals_Server.npcMasterList.Add(weeBairn.charID, weeBairn);
+                Globals_Game.npcMasterList.Add(weeBairn.charID, weeBairn);
 
                 // set baby's location
                 weeBairn.location = mummy.location;
@@ -8406,10 +8462,10 @@ namespace hist_mmorpg
             }
 
             // put together new journal entry
-            JournalEntry childbirth = new JournalEntry(Globals_Server.getNextJournalEntryID(), Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, childbirthPersonae, "birth", descr: description);
+            JournalEntry childbirth = new JournalEntry(Globals_Game.getNextJournalEntryID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, childbirthPersonae, "birth", descr: description);
 
             // add new journal entry to pastEvents
-            Globals_Server.addPastEvent(childbirth);
+            Globals_Game.addPastEvent(childbirth);
 
             // if appropriate, process mother's death
             if (mummyDied)
@@ -8435,7 +8491,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void button1_Click(object sender, EventArgs e)
         {
-            this.giveBirth(Globals_Server.npcMasterList[Globals_Client.myPlayerCharacter.spouse], Globals_Client.myPlayerCharacter);
+            this.giveBirth(Globals_Game.npcMasterList[Globals_Client.myPlayerCharacter.spouse], Globals_Client.myPlayerCharacter);
         }
 
         /// <summary>
@@ -8523,7 +8579,7 @@ namespace hist_mmorpg
             {
 			case DialogResult.OK:
 				// write to database if necessary
-				if (Globals_Client.writeToDatabase)
+                    if (Globals_Game.writeToDatabase)
 				{
 					this.writeToDB ("testGame");
 				}
@@ -8583,7 +8639,7 @@ namespace hist_mmorpg
                     System.Windows.Forms.MessageBox.Show("No PlayerCharacter ID entered.  Operation cancelled.");
                 }
             }
-            else if (!Globals_Server.pcMasterList.ContainsKey(playerID))
+            else if (!Globals_Game.pcMasterList.ContainsKey(playerID))
             {
                 if (Globals_Client.showMessages)
                 {
@@ -8592,7 +8648,7 @@ namespace hist_mmorpg
             }
             else
             {
-                Globals_Client.myPlayerCharacter = Globals_Server.pcMasterList[playerID];
+                Globals_Client.myPlayerCharacter = Globals_Game.pcMasterList[playerID];
                 Globals_Client.charToView = Globals_Client.myPlayerCharacter;
                 this.refreshCharacterContainer(Globals_Client.charToView);
             }
@@ -8603,7 +8659,7 @@ namespace hist_mmorpg
             if (this.houseCharListView.SelectedItems.Count > 0)
             {
                 // get selected NPC
-                NonPlayerCharacter selectedNPC = Globals_Server.npcMasterList[this.houseCharListView.SelectedItems[0].SubItems[1].Text];
+                NonPlayerCharacter selectedNPC = Globals_Game.npcMasterList[this.houseCharListView.SelectedItems[0].SubItems[1].Text];
 
                 // check for an existing heir and remove
                 foreach (NonPlayerCharacter npc in Globals_Client.myPlayerCharacter.myNPCs)
@@ -8652,10 +8708,10 @@ namespace hist_mmorpg
             PlayerCharacter armyOwner = a.getOwner();
 
             // get location
-            Fief armyLocation = Globals_Server.fiefMasterList[a.location];
+            Fief armyLocation = Globals_Game.fiefMasterList[a.location];
 
             // add to armyMasterList
-            Globals_Server.armyMasterList.Add(a.armyID, a);
+            Globals_Game.armyMasterList.Add(a.armyID, a);
 
             // add to owner's myArmies
             armyOwner.myArmies.Add(a);
@@ -8706,7 +8762,7 @@ namespace hist_mmorpg
                     // if no existing army, create one
                     if (operation.Equals("new"))
                     {
-                        Army newArmy = new Army(Globals_Server.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
+                        Army newArmy = new Army(Globals_Game.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
                         this.addArmy(newArmy);
                     }
 
@@ -8868,7 +8924,7 @@ namespace hist_mmorpg
             // get army to view
             if (this.armyListView.SelectedItems.Count > 0)
             {
-                Globals_Client.armyToView = Globals_Server.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+                Globals_Client.armyToView = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
             }
 
             if (Globals_Client.armyToView != null)
@@ -9055,7 +9111,7 @@ namespace hist_mmorpg
         private void armyAppointSelfBtn_Click(object sender, EventArgs e)
         {
             // get army
-            Army thisArmy = Globals_Server.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+            Army thisArmy = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
 
             thisArmy.assignNewLeader(Globals_Client.myPlayerCharacter);
 
@@ -9152,7 +9208,7 @@ namespace hist_mmorpg
                     else
                     {
                         // calculate time taken for transfer
-                        daysTaken = Globals_Server.myRand.Next(10, 31);
+                        daysTaken = Globals_Game.myRand.Next(10, 31);
 
                         // check if have enough days for transfer in this instance
                         if (daysTaken > Globals_Client.armyToView.days)
@@ -9166,7 +9222,7 @@ namespace hist_mmorpg
                     }
 
                     // check transfer recipient exists
-                    if (!Globals_Server.pcMasterList.ContainsKey(this.armyTransDropWhoTextBox.Text))
+                    if (!Globals_Game.pcMasterList.ContainsKey(this.armyTransDropWhoTextBox.Text))
                     {
                         if (Globals_Client.showMessages)
                         {
@@ -9184,7 +9240,7 @@ namespace hist_mmorpg
                         }
 
                         // get fief
-                        Fief thisFief = Globals_Server.fiefMasterList[Globals_Client.armyToView.location];
+                        Fief thisFief = Globals_Game.fiefMasterList[Globals_Client.armyToView.location];
 
                         // create transfer entry
                         string[] thisTransfer = new string[9] { Globals_Client.myPlayerCharacter.charID, this.armyTransDropWhoTextBox.Text,
@@ -9193,7 +9249,7 @@ namespace hist_mmorpg
                             (Globals_Client.armyToView.days - daysTaken).ToString() };
 
                         // add to fief's troopTransfers list
-                        thisFief.troopTransfers.Add(Globals_Server.getNextDetachmentID(), thisTransfer);
+                        thisFief.troopTransfers.Add(Globals_Game.getNextDetachmentID(), thisTransfer);
                     }
 
                     if (adjustDays)
@@ -9285,7 +9341,7 @@ namespace hist_mmorpg
             Siege thisSiege = null;
             if (siegeID != null)
             {
-                thisSiege = Globals_Server.siegeMasterList[siegeID];
+                thisSiege = Globals_Game.siegeMasterList[siegeID];
             }
 
             // remove from siege
@@ -9325,7 +9381,7 @@ namespace hist_mmorpg
             }
 
             // remove from armyMasterList
-            Globals_Server.armyMasterList.Remove(a.armyID);
+            Globals_Game.armyMasterList.Remove(a.armyID);
 
             // set army to null
             a = null;
@@ -9499,7 +9555,7 @@ namespace hist_mmorpg
                 else
                 {
                     // see how long reconnaissance takes
-                    int reconDays = Globals_Server.myRand.Next(1, 4);
+                    int reconDays = Globals_Game.myRand.Next(1, 4);
 
                     // check if runs out of time
                     if (Globals_Client.armyToView.days < reconDays)
@@ -9573,7 +9629,7 @@ namespace hist_mmorpg
                 else
                 {
                     // see how long reconnaissance takes
-                    int reconDays = Globals_Server.myRand.Next(1, 4);
+                    int reconDays = Globals_Game.myRand.Next(1, 4);
 
                     // check if runs out of time
                     if (Globals_Client.charToView.days < reconDays)
@@ -9632,7 +9688,7 @@ namespace hist_mmorpg
             else
             {
                 // see how long reconnaissance takes
-                int reconDays = Globals_Server.myRand.Next(1, 4);
+                int reconDays = Globals_Game.myRand.Next(1, 4);
 
                 // check if runs out of time
                 if (Globals_Client.myPlayerCharacter.days < reconDays)
@@ -9751,7 +9807,7 @@ namespace hist_mmorpg
             }
 
             // generate random percentage
-            int randomPercentage = Globals_Server.myRand.Next(101);
+            int randomPercentage = Globals_Game.myRand.Next(101);
 
             // compare random percentage to battleChance
             if (randomPercentage <= thisChance)
@@ -9784,7 +9840,7 @@ namespace hist_mmorpg
             double attackerVictoryChance = this.calcVictoryChance(attackerValue, defenderValue);
 
             // generate random percentage
-            int randomPercentage = Globals_Server.myRand.Next(101);
+            int randomPercentage = Globals_Game.myRand.Next(101);
 
             // compare random percentage to attackerVictoryChance
             if (randomPercentage <= attackerVictoryChance)
@@ -9818,8 +9874,8 @@ namespace hist_mmorpg
             double[] battleCasualties = new double[2];
 
             // generate casualty increments
-            double winnerIncrement = Globals_Server.GetRandomDouble(min: 0.01, max: 0.02);
-            double loserIncrement = Globals_Server.GetRandomDouble(min: 0.04, max: 0.08);
+            double winnerIncrement = Globals_Game.GetRandomDouble(min: 0.01, max: 0.02);
+            double loserIncrement = Globals_Game.GetRandomDouble(min: 0.04, max: 0.08);
 
             // determine highest/lowest battle value
             double maxBV = Math.Max(attackerValue, defenderValue);
@@ -9867,7 +9923,7 @@ namespace hist_mmorpg
                     hasRetreated[0] = true;
 
                     // generate random 1-2 to determine retreat distance
-                    retreatDistance[0] = Globals_Server.myRand.Next(1, 3);
+                    retreatDistance[0] = Globals_Game.myRand.Next(1, 3);
                 }
             }
             else
@@ -9879,7 +9935,7 @@ namespace hist_mmorpg
                     hasRetreated[1] = true;
 
                     // generate random 1-2 to determine retreat distance
-                    retreatDistance[1] = Globals_Server.myRand.Next(1, 3);
+                    retreatDistance[1] = Globals_Game.myRand.Next(1, 3);
                 }
             }
 
@@ -9920,7 +9976,7 @@ namespace hist_mmorpg
                 Fief from = a.getLocation();
 
                 // get fief to retreat to
-                Fief target = Globals_Server.gameMap.chooseRandomHex(from, true, thisOwner, retreatFrom);
+                Fief target = Globals_Game.gameMap.chooseRandomHex(from, true, thisOwner, retreatFrom);
 
                 // get travel cost
                 double travelCost = this.getTravelCost(from, target);
@@ -10001,7 +10057,7 @@ namespace hist_mmorpg
             if (thisSiegeID != null)
             {
                 // get siege
-                thisSiege = Globals_Server.siegeMasterList[thisSiegeID];
+                thisSiege = Globals_Game.siegeMasterList[thisSiegeID];
             }            
             
             // get starting troop numbers
@@ -10421,7 +10477,7 @@ namespace hist_mmorpg
 
             // =================== construct and send JOURNAL ENTRY
             // ID
-            uint entryID = Globals_Server.getNextJournalEntryID();
+            uint entryID = Globals_Game.getNextJournalEntryID();
 
             // personae
             // personae tags vary depending on circumstance
@@ -10454,10 +10510,10 @@ namespace hist_mmorpg
             string battleDescription = toDisplay;
 
             // put together new journal entry
-            JournalEntry battleResult = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, battlePersonae, "battle", loc: battleLocation, descr: battleDescription);
+            JournalEntry battleResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, battlePersonae, "battle", loc: battleLocation, descr: battleDescription);
 
             // add new journal entry to pastEvents
-            Globals_Server.addPastEvent(battleResult);
+            Globals_Game.addPastEvent(battleResult);
 
             // display pop-up informational message
             if (Globals_Client.showMessages)
@@ -10498,7 +10554,7 @@ namespace hist_mmorpg
             pillageMultiplier = a.calcArmySize() / (f.population / 1000);
 
             // calculate days taken for pillage
-            double daysTaken = Globals_Server.myRand.Next(7, 16);
+            double daysTaken = Globals_Game.myRand.Next(7, 16);
             if (daysTaken > a.days)
             {
                 daysTaken = a.days;
@@ -10596,11 +10652,11 @@ namespace hist_mmorpg
 
             // check for jackpot
             // generate randomPercentage to see if hit the jackpot
-            int myRandomPercent = Globals_Server.myRand.Next(101);
+            int myRandomPercent = Globals_Game.myRand.Next(101);
             if (myRandomPercent <= 30)
             {
                 // generate random int to multiply amount pillaged
-                int myRandomMultiplier = Globals_Server.myRand.Next(3, 11);
+                int myRandomMultiplier = Globals_Game.myRand.Next(3, 11);
                 moneyPillagedTotal = moneyPillagedTotal * myRandomMultiplier;
                 pillageResults += "  - with bonus for jackpot: " + Convert.ToInt32(moneyPillagedTotal) + "\r\n";
             }
@@ -10618,7 +10674,7 @@ namespace hist_mmorpg
 
             // =================== construct and send JOURNAL ENTRY
             // ID
-            uint entryID = Globals_Server.getNextJournalEntryID();
+            uint entryID = Globals_Game.getNextJournalEntryID();
 
             // personae
             List<string> tempPersonae = new List<string>();
@@ -10660,10 +10716,10 @@ namespace hist_mmorpg
             pillageDescription += pillageResults;
 
             // put together new journal entry
-            JournalEntry pillageEntry = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, pillagePersonae, "pillage", loc: pillageLocation, descr: pillageDescription);
+            JournalEntry pillageEntry = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, pillagePersonae, "pillage", loc: pillageLocation, descr: pillageDescription);
 
             // add new journal entry to pastEvents
-            Globals_Server.addPastEvent(pillageEntry);
+            Globals_Game.addPastEvent(pillageEntry);
 
             // show message
             if (Globals_Client.showMessages)
@@ -10767,7 +10823,7 @@ namespace hist_mmorpg
             }
 
             // create temporary army for battle/siege
-            defender = new Army("Garrison" + Globals_Server.getNextArmyID(), armyLeaderID, f.owner.charID, armyLeaderDays, f.id, trp: troopsForArmy);
+            defender = new Army("Garrison" + Globals_Game.getNextArmyID(), armyLeaderID, f.owner.charID, armyLeaderDays, f.id, trp: troopsForArmy);
             this.addArmy(defender);
 
             return defender;
@@ -10955,7 +11011,7 @@ namespace hist_mmorpg
                 for (int i = 0; i < f.armies.Count; i++)
                 {
                     // get army
-                    Army armyInFief = Globals_Server.armyMasterList[f.armies[i]];
+                    Army armyInFief = Globals_Game.armyMasterList[f.armies[i]];
 
                     // check if owned by fief owner
                     if (armyInFief.owner.Equals(f.owner.charID))
@@ -11038,7 +11094,7 @@ namespace hist_mmorpg
                 bool proceed = true;
 
                 // get army
-                Army thisArmy = Globals_Server.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+                Army thisArmy = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
 
                 // get fief
                 Fief thisFief = thisArmy.getLocation();
@@ -11101,7 +11157,7 @@ namespace hist_mmorpg
 
             // =================== construct and send JOURNAL ENTRY
             // ID
-            uint entryID = Globals_Server.getNextJournalEntryID();
+            uint entryID = Globals_Game.getNextJournalEntryID();
 
             // personae
             List<string> tempPersonae = new List<string>();
@@ -11139,10 +11195,10 @@ namespace hist_mmorpg
             }
 
             // put together new journal entry
-            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, siegePersonae, "siegeEnd", loc: siegeLocation, descr: siegeDescription);
+            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siegeEnd", loc: siegeLocation, descr: siegeDescription);
 
             // add new journal entry to pastEvents
-            Globals_Server.addPastEvent(siegeResult);
+            Globals_Game.addPastEvent(siegeResult);
 
             // disband garrison
             this.disbandArmy(defenderGarrison);
@@ -11183,7 +11239,7 @@ namespace hist_mmorpg
             }
 
             // remove from master list
-            Globals_Server.siegeMasterList.Remove(s.siegeID);
+            Globals_Game.siegeMasterList.Remove(s.siegeID);
 
             // set to null
             s = null;
@@ -11292,7 +11348,7 @@ namespace hist_mmorpg
 
             // =================== start construction of JOURNAL ENTRY
             // ID
-            uint entryID = Globals_Server.getNextJournalEntryID();
+            uint entryID = Globals_Game.getNextJournalEntryID();
 
             // personae
             List<string> tempPersonae = new List<string>();
@@ -11336,7 +11392,7 @@ namespace hist_mmorpg
             double successChance = this.calcStormSuccess(keepLvl);
 
             // generate random double 0-100 to see if storm a success
-            double myRandomDouble = Globals_Server.GetRandomDouble(100);
+            double myRandomDouble = Globals_Game.GetRandomDouble(100);
 
             if (myRandomDouble <= successChance)
             {
@@ -11360,7 +11416,7 @@ namespace hist_mmorpg
             }
 
             // generate random double 0-1 to see what proportion of extraDamageMultiplier will apply
-            double myRandomDouble = Globals_Server.GetRandomDouble(1);
+            double myRandomDouble = Globals_Game.GetRandomDouble(1);
             extraDamageMultiplier =  extraDamageMultiplier * myRandomDouble;
 
             keepDamageModifier += (0.015 * extraDamageMultiplier);
@@ -11548,10 +11604,10 @@ namespace hist_mmorpg
             }
 
             // create and send JOURNAL ENTRY
-            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, siegePersonae, "siegeStorm", loc: siegeLocation, descr: siegeDescription);
+            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siegeStorm", loc: siegeLocation, descr: siegeDescription);
 
             // add new journal entry to pastEvents
-            Globals_Server.addPastEvent(siegeResult);
+            Globals_Game.addPastEvent(siegeResult);
 
             // inform player of result
             System.Windows.Forms.MessageBox.Show(siegeDescription);
@@ -11584,7 +11640,7 @@ namespace hist_mmorpg
 
             // =================== start construction of JOURNAL ENTRY
             // ID
-            uint entryID = Globals_Server.getNextJournalEntryID();
+            uint entryID = Globals_Game.getNextJournalEntryID();
 
             // personae
             List<string> tempPersonae = new List<string>();
@@ -11629,7 +11685,7 @@ namespace hist_mmorpg
             */
 
             // generate random double 0-100 to see if storm a success
-            double myRandomDouble = Globals_Server.GetRandomDouble(100);
+            double myRandomDouble = Globals_Game.GetRandomDouble(100);
 
             if (myRandomDouble <= successChance)
             {
@@ -11679,10 +11735,10 @@ namespace hist_mmorpg
             }
 
             // create and send JOURNAL ENTRY
-            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, siegePersonae, "siegeStorm", loc: siegeLocation, descr: siegeDescription);
+            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siegeStorm", loc: siegeLocation, descr: siegeDescription);
 
             // add new journal entry to pastEvents
-            Globals_Server.addPastEvent(siegeResult);
+            Globals_Game.addPastEvent(siegeResult);
 
             // update total defender siege losses
             s.totalCasualtiesDefender += Convert.ToInt32(defenderCasualties);
@@ -11809,7 +11865,7 @@ namespace hist_mmorpg
 
                     // =================== construct and send JOURNAL ENTRY
                     // ID
-                    uint entryID = Globals_Server.getNextJournalEntryID();
+                    uint entryID = Globals_Game.getNextJournalEntryID();
 
                     // personae
                     List<string> tempPersonae = new List<string>();
@@ -11846,10 +11902,10 @@ namespace hist_mmorpg
                     siegeDescription += besiegedFief.keepLevel + ".";
 
                     // put together new journal entry
-                    JournalEntry siegeResult = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, siegePersonae, "siegeReduction", loc: siegeLocation, descr: siegeDescription);
+                    JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siegeReduction", loc: siegeLocation, descr: siegeDescription);
 
                     // add new journal entry to pastEvents
-                    Globals_Server.addPastEvent(siegeResult);
+                    Globals_Game.addPastEvent(siegeResult);
                 }
 
                 if (type.Equals("storm"))
@@ -11906,12 +11962,12 @@ namespace hist_mmorpg
         public uint getFinancialYear(int relativeSeason)
         {
             uint financialYear = 0;
-            uint thisYear = Globals_Server.clock.currentYear;
+            uint thisYear = Globals_Game.clock.currentYear;
 
             switch (relativeSeason)
             {
                 case (-1):
-                    if (Globals_Server.clock.currentSeason == 0)
+                    if (Globals_Game.clock.currentSeason == 0)
                     {
                         financialYear = thisYear - 1;
                     }
@@ -11921,7 +11977,7 @@ namespace hist_mmorpg
                     }
                     break;
                 case (1):
-                    if (Globals_Server.clock.currentSeason == 4)
+                    if (Globals_Game.clock.currentSeason == 4)
                     {
                         financialYear = thisYear + 1;
                     }
@@ -11946,7 +12002,7 @@ namespace hist_mmorpg
         public byte getFinancialSeason(int relativeSeason)
         {
             byte financialSeason = 0;
-            byte thisSeason = Globals_Server.clock.currentSeason;
+            byte thisSeason = Globals_Game.clock.currentSeason;
 
             switch (relativeSeason)
             {
@@ -11997,7 +12053,7 @@ namespace hist_mmorpg
             for (int i = 0; i < target.armies.Count; i++)
             {
                 // get army
-                Army armyInFief = Globals_Server.armyMasterList[target.armies[i]];
+                Army armyInFief = Globals_Game.armyMasterList[target.armies[i]];
 
                 // check is in keep
                 if (armyInFief.getOwner().inKeep)
@@ -12026,10 +12082,10 @@ namespace hist_mmorpg
             }
             
             // create siege object
-            Siege mySiege = new Siege(Globals_Server.getNextSiegeID(), Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, attacker.getOwner().charID, target.owner.charID, attacker.armyID, defenderGarrison.armyID, target.id, minDays, target.keepLevel, defAdd: defAddID);
+            Siege mySiege = new Siege(Globals_Game.getNextSiegeID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, attacker.getOwner().charID, target.owner.charID, attacker.armyID, defenderGarrison.armyID, target.id, minDays, target.keepLevel, defAdd: defAddID);
 
             // add to master list
-            Globals_Server.siegeMasterList.Add(mySiege.siegeID, mySiege);
+            Globals_Game.siegeMasterList.Add(mySiege.siegeID, mySiege);
 
             // add to siege owners
             mySiege.getBesiegingPlayer().mySieges.Add(mySiege.siegeID);
@@ -12051,7 +12107,7 @@ namespace hist_mmorpg
 
             // =================== construct and send JOURNAL ENTRY
             // ID
-            uint entryID = Globals_Server.getNextJournalEntryID();
+            uint entryID = Globals_Game.getNextJournalEntryID();
 
             // personae
             List<string> tempPersonae = new List<string>();
@@ -12096,10 +12152,10 @@ namespace hist_mmorpg
             siegeDescription += ".";
 
             // put together new journal entry
-            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Server.clock.currentYear, Globals_Server.clock.currentSeason, siegePersonae, "siege", loc: siegeLocation, descr: siegeDescription);
+            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siege", loc: siegeLocation, descr: siegeDescription);
 
             // add new journal entry to pastEvents
-            Globals_Server.addPastEvent(siegeResult);
+            Globals_Game.addPastEvent(siegeResult);
 
             // display siege in siege screen
             this.refreshSiegeContainer(mySiege);
@@ -12116,7 +12172,7 @@ namespace hist_mmorpg
             // get siege to view
             if (this.siegeListView.SelectedItems.Count > 0)
             {
-                Globals_Client.siegeToView = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+                Globals_Client.siegeToView = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
             }
 
             if (Globals_Client.siegeToView != null)
@@ -12206,7 +12262,7 @@ namespace hist_mmorpg
                 bool proceed = true;
 
                 // get army
-                Army thisArmy = Globals_Server.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+                Army thisArmy = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
 
                 // get fief
                 Fief thisFief = thisArmy.getLocation();
@@ -12256,7 +12312,7 @@ namespace hist_mmorpg
                 bool proceed = true;
 
                 // get siege
-                Siege thisSiege = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+                Siege thisSiege = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
 
                 // perform conditional checks here
                 proceed = this.checksBeforeSiegeOperation(thisSiege);
@@ -12289,7 +12345,7 @@ namespace hist_mmorpg
                 bool proceed = true;
 
                 // get siege
-                Siege thisSiege = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+                Siege thisSiege = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
 
                 // perform conditional checks here
                 proceed = this.checksBeforeSiegeOperation(thisSiege);
@@ -12327,7 +12383,7 @@ namespace hist_mmorpg
                 string roundType = button.Tag.ToString();
 
                 // get siege
-                Siege thisSiege = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+                Siege thisSiege = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
 
                 // perform conditional checks here
                 proceed = this.checksBeforeSiegeOperation(thisSiege);
@@ -12360,7 +12416,7 @@ namespace hist_mmorpg
                 bool proceed = true;
 
                 // get siege
-                Siege thisSiege = Globals_Server.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+                Siege thisSiege = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
 
                 // perform conditional checks here
                 proceed = this.checksBeforeSiegeOperation(thisSiege, "end");
@@ -12404,7 +12460,7 @@ namespace hist_mmorpg
             if (husband.spouse != null)
             {
                 // get spouse
-                NonPlayerCharacter wife = Globals_Server.npcMasterList[husband.spouse];
+                NonPlayerCharacter wife = Globals_Game.npcMasterList[husband.spouse];
 
                 // check to make sure is in same fief
                 if (!(wife.location == husband.location))
@@ -12628,18 +12684,18 @@ namespace hist_mmorpg
         {
             // create and add a past event
             string[] myEventPersonae = new string[] { "101|father", "404|mother" };
-            JournalEntry myEntry = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 0, myEventPersonae, "birth");
-            Globals_Server.addPastEvent(myEntry);
+            JournalEntry myEntry = new JournalEntry(Globals_Game.getNextJournalEntryID(), 1320, 0, myEventPersonae, "birth");
+            Globals_Game.addPastEvent(myEntry);
 
             // and another
             string[] myEventPersonae002 = new string[] { "101|attackerOwner", "102|defenderOwner", "402|attackerLeader", "403|defenderLeader", "101|fiefOwner" };
-            JournalEntry myEntry002 = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 0, myEventPersonae002, "battle", "ESX02", "On this day there was a battle between the forces of blah and blah.");
-            Globals_Server.addPastEvent(myEntry002);
+            JournalEntry myEntry002 = new JournalEntry(Globals_Game.getNextJournalEntryID(), 1320, 0, myEventPersonae002, "battle", "ESX02", "On this day there was a battle between the forces of blah and blah.");
+            Globals_Game.addPastEvent(myEntry002);
 
             // and another
             string[] myEventPersonae003 = new string[] { "405|father", "406|mother", "102|familyHead", "101|uncle"};
-            JournalEntry myEntry003 = new JournalEntry(Globals_Server.getNextJournalEntryID(), 1320, 0, myEventPersonae003, "birth");
-            Globals_Server.addPastEvent(myEntry003);
+            JournalEntry myEntry003 = new JournalEntry(Globals_Game.getNextJournalEntryID(), 1320, 0, myEventPersonae003, "birth");
+            Globals_Game.addPastEvent(myEntry003);
         }
 
         /// <summary>
@@ -12653,11 +12709,11 @@ namespace hist_mmorpg
             switch (infoSplit[0])
             {
                 case "newEvent":
-                    // get jEntry ID and retrieve from Globals_Server
+                    // get jEntry ID and retrieve from Globals_Game
                     if (infoSplit[1] != null)
                     {
                         uint newJentryID = Convert.ToUInt32(infoSplit[1]);
-                        JournalEntry newJentry = Globals_Server.pastEvents.entries[newJentryID];
+                        JournalEntry newJentry = Globals_Game.pastEvents.entries[newJentryID];
 
                         // check to see if is of interest to player
                         if (newJentry.checkEventForInterest())
@@ -12680,8 +12736,8 @@ namespace hist_mmorpg
         private void viewEntriesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // get entries for current season by default
-            uint thisYear = Globals_Server.clock.currentYear;
-            byte thisSeason = Globals_Server.clock.currentSeason;
+            uint thisYear = Globals_Game.clock.currentYear;
+            byte thisSeason = Globals_Game.clock.currentSeason;
             Globals_Client.eventSetToView = Globals_Client.myPastEvents.getEventsOnDate(yr: thisYear, seas: thisSeason);
 
             // get max index position
@@ -12808,9 +12864,9 @@ namespace hist_mmorpg
                 groomID = this.houseProposeGroomTextBox.Text;
 
                 // get bride
-                if (Globals_Server.npcMasterList.ContainsKey(brideID))
+                if (Globals_Game.npcMasterList.ContainsKey(brideID))
                 {
-                    bride = Globals_Server.npcMasterList[brideID];
+                    bride = Globals_Game.npcMasterList[brideID];
                 }
 
                 if (bride == null)
@@ -12823,13 +12879,13 @@ namespace hist_mmorpg
                 else
                 {
                     // get groom
-                    if (Globals_Server.npcMasterList.ContainsKey(groomID))
+                    if (Globals_Game.npcMasterList.ContainsKey(groomID))
                     {
-                        groom = Globals_Server.npcMasterList[groomID];
+                        groom = Globals_Game.npcMasterList[groomID];
                     }
-                    else if (Globals_Server.pcMasterList.ContainsKey(groomID))
+                    else if (Globals_Game.pcMasterList.ContainsKey(groomID))
                     {
-                        groom = Globals_Server.pcMasterList[groomID];
+                        groom = Globals_Game.pcMasterList[groomID];
                     }
 
                     if (groom == null)
@@ -12871,15 +12927,15 @@ namespace hist_mmorpg
             bool success = true;
 
             // get interested parties
-            PlayerCharacter headOfFamilyGroom = Globals_Server.pcMasterList[groom.familyID];
-            PlayerCharacter headOfFamilyBride = Globals_Server.pcMasterList[bride.familyID];
+            PlayerCharacter headOfFamilyGroom = Globals_Game.pcMasterList[groom.familyID];
+            PlayerCharacter headOfFamilyBride = Globals_Game.pcMasterList[bride.familyID];
 
             // ID
-            uint proposalID = Globals_Server.getNextJournalEntryID();
+            uint proposalID = Globals_Game.getNextJournalEntryID();
 
             // date
-            uint year = Globals_Server.clock.currentYear;
-            byte season = Globals_Server.clock.currentSeason;
+            uint year = Globals_Game.clock.currentYear;
+            byte season = Globals_Game.clock.currentSeason;
 
             // personae
             string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
@@ -12905,7 +12961,7 @@ namespace hist_mmorpg
 
             // create and send a proposal (journal entry)
             JournalEntry myProposal = new JournalEntry(proposalID, year, season, myProposalPersonae, "proposalMade", descr: description);
-            success = Globals_Server.addPastEvent(myProposal);
+            success = Globals_Game.addPastEvent(myProposal);
 
             return success;
         }
@@ -12934,22 +12990,22 @@ namespace hist_mmorpg
                 switch (thisPersonaeSplit[1])
                 {
                     case "headOfFamilyBride":
-                        headOfFamilyBride = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        headOfFamilyBride = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
                         break;
                     case "headOfFamilyGroom":
-                        headOfFamilyGroom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        headOfFamilyGroom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
                         break;
                     case "bride":
-                        bride = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                        bride = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
                         break;
                     case "groom":
-                        if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
                         {
-                            groom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                            groom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
                         }
-                        else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
                         {
-                            groom = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                            groom = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
                         }
                         break;
                     default:
@@ -12958,11 +13014,11 @@ namespace hist_mmorpg
             }
 
             // ID
-            uint replyID = Globals_Server.getNextJournalEntryID();
+            uint replyID = Globals_Game.getNextJournalEntryID();
 
             // date
-            uint year = Globals_Server.clock.currentYear;
-            byte season = Globals_Server.clock.currentSeason;
+            uint year = Globals_Game.clock.currentYear;
+            byte season = Globals_Game.clock.currentSeason;
 
             // personae
             string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
@@ -13002,7 +13058,7 @@ namespace hist_mmorpg
 
             // create and send a proposal reply (journal entry)
             JournalEntry myProposalReply = new JournalEntry(replyID, year, season, myReplyPersonae, type, descr: description);
-            success = Globals_Server.addPastEvent(myProposalReply);
+            success = Globals_Game.addPastEvent(myProposalReply);
 
             if (success)
             {
@@ -13016,7 +13072,7 @@ namespace hist_mmorpg
                 {
                     jEntry.description += "REJECTED ";
                 }
-                jEntry.description += "this proposal in " + Globals_Server.clock.seasons[season] + ", " + year;
+                jEntry.description += "this proposal in " + Globals_Game.clock.seasons[season] + ", " + year;
 
                 // if accepted, process engagement
                 if (proposalAccepted)
@@ -13054,22 +13110,22 @@ namespace hist_mmorpg
                 switch (thisPersonaeSplit[1])
                 {
                     case "headOfFamilyBride":
-                        headOfFamilyBride = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        headOfFamilyBride = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
                         break;
                     case "headOfFamilyGroom":
-                        headOfFamilyGroom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        headOfFamilyGroom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
                         break;
                     case "bride":
-                        bride = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                        bride = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
                         break;
                     case "groom":
-                        if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
                         {
-                            groom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                            groom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
                         }
-                        else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
                         {
-                            groom = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                            groom = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
                         }
                         break;
                     default:
@@ -13078,11 +13134,11 @@ namespace hist_mmorpg
             }
 
             // ID
-            uint replyID = Globals_Server.getNextJournalEntryID();
+            uint replyID = Globals_Game.getNextJournalEntryID();
 
             // date
-            uint year = Globals_Server.clock.currentYear;
-            byte season = Globals_Server.clock.currentSeason;
+            uint year = Globals_Game.clock.currentYear;
+            byte season = Globals_Game.clock.currentSeason;
             if (season == 3)
             {
                 season = 0;
@@ -13105,7 +13161,7 @@ namespace hist_mmorpg
 
             // create and add a marriage entry to the scheduledEvents journal
             JournalEntry marriageEntry = new JournalEntry(replyID, year, season, marriagePersonae, type);
-            success = Globals_Server.addScheduledEvent(marriageEntry);
+            success = Globals_Game.addScheduledEvent(marriageEntry);
 
             // show bride and groom as engaged
             if (success)
@@ -13140,22 +13196,22 @@ namespace hist_mmorpg
                 switch (thisPersonaeSplit[1])
                 {
                     case "headOfFamilyGroom":
-                        headOfFamilyGroom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        headOfFamilyGroom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
                         break;
                     case "headOfFamilyBride":
-                        headOfFamilyBride = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        headOfFamilyBride = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
                         break;
                     case "bride":
-                        bride = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                        bride = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
                         break;
                     case "groom":
-                        if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
                         {
-                            groom = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                            groom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
                         }
-                        else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
                         {
-                            groom = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                            groom = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
                         }
                         break;
                     default:
@@ -13164,11 +13220,11 @@ namespace hist_mmorpg
             }
 
             // ID
-            uint marriageID = Globals_Server.getNextJournalEntryID();
+            uint marriageID = Globals_Game.getNextJournalEntryID();
 
             // date
-            uint year = Globals_Server.clock.currentYear;
-            byte season = Globals_Server.clock.currentSeason;
+            uint year = Globals_Game.clock.currentYear;
+            byte season = Globals_Game.clock.currentSeason;
 
             // personae
             string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
@@ -13188,7 +13244,7 @@ namespace hist_mmorpg
 
             // create and add a marriage entry to the pastEvents journal
             JournalEntry marriageEntry = new JournalEntry(marriageID, year, season, marriagePersonae, type, descr: description);
-            success = Globals_Server.addPastEvent(marriageEntry);
+            success = Globals_Game.addPastEvent(marriageEntry);
 
             if (success)
             {
@@ -13374,9 +13430,9 @@ namespace hist_mmorpg
                     groomID = this.houseProposeGroomTextBox.Text;
 
                     // get bride
-                    if (Globals_Server.npcMasterList.ContainsKey(brideID))
+                    if (Globals_Game.npcMasterList.ContainsKey(brideID))
                     {
-                        bride = Globals_Server.npcMasterList[brideID];
+                        bride = Globals_Game.npcMasterList[brideID];
                     }
 
                     if (bride == null)
@@ -13389,13 +13445,13 @@ namespace hist_mmorpg
                     else
                     {
                         // get groom
-                        if (Globals_Server.npcMasterList.ContainsKey(groomID))
+                        if (Globals_Game.npcMasterList.ContainsKey(groomID))
                         {
-                            groom = Globals_Server.npcMasterList[groomID];
+                            groom = Globals_Game.npcMasterList[groomID];
                         }
-                        else if (Globals_Server.pcMasterList.ContainsKey(groomID))
+                        else if (Globals_Game.pcMasterList.ContainsKey(groomID))
                         {
-                            groom = Globals_Server.pcMasterList[groomID];
+                            groom = Globals_Game.pcMasterList[groomID];
                         }
 
                         if (groom == null)
@@ -13624,9 +13680,9 @@ namespace hist_mmorpg
                 if (this.royalGiftsProvListView.SelectedItems.Count > 0)
                 {
                     // get province
-                    if (Globals_Server.provinceMasterList.ContainsKey(this.royalGiftsProvListView.SelectedItems[0].SubItems[0].Text))
+                    if (Globals_Game.provinceMasterList.ContainsKey(this.royalGiftsProvListView.SelectedItems[0].SubItems[0].Text))
                     {
-                        thisProv = Globals_Server.provinceMasterList[this.royalGiftsProvListView.SelectedItems[0].SubItems[0].Text];
+                        thisProv = Globals_Game.provinceMasterList[this.royalGiftsProvListView.SelectedItems[0].SubItems[0].Text];
                     }
                 }
             }
@@ -13635,9 +13691,9 @@ namespace hist_mmorpg
                 if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
                 {
                     // get fief
-                    if (Globals_Server.fiefMasterList.ContainsKey(this.royalGiftsFiefListView.SelectedItems[0].SubItems[0].Text))
+                    if (Globals_Game.fiefMasterList.ContainsKey(this.royalGiftsFiefListView.SelectedItems[0].SubItems[0].Text))
                     {
-                        thisFief = Globals_Server.fiefMasterList[this.royalGiftsFiefListView.SelectedItems[0].SubItems[0].Text];
+                        thisFief = Globals_Game.fiefMasterList[this.royalGiftsFiefListView.SelectedItems[0].SubItems[0].Text];
                     }
                 }
             }
@@ -13646,9 +13702,9 @@ namespace hist_mmorpg
                 if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
                 {
                     // get position
-                    if (Globals_Server.positionMasterList.ContainsKey(Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)))
+                    if (Globals_Game.positionMasterList.ContainsKey(Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)))
                     {
-                        thisPos = Globals_Server.positionMasterList[Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)];
+                        thisPos = Globals_Game.positionMasterList[Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)];
                     }
                 }
             }
@@ -13920,9 +13976,9 @@ namespace hist_mmorpg
             {
                 // get province
                 Province thisProvince = null;
-                if (Globals_Server.provinceMasterList.ContainsKey(this.provinceProvListView.SelectedItems[0].SubItems[0].Text))
+                if (Globals_Game.provinceMasterList.ContainsKey(this.provinceProvListView.SelectedItems[0].SubItems[0].Text))
                 {
-                    thisProvince = Globals_Server.provinceMasterList[this.provinceProvListView.SelectedItems[0].SubItems[0].Text];
+                    thisProvince = Globals_Game.provinceMasterList[this.provinceProvListView.SelectedItems[0].SubItems[0].Text];
                 }
 
                 if (thisProvince != null)
@@ -13956,9 +14012,9 @@ namespace hist_mmorpg
 
                 // get province
                 Province thisProvince = null;
-                if (Globals_Server.provinceMasterList.ContainsKey(this.provinceProvListView.SelectedItems[0].SubItems[0].Text))
+                if (Globals_Game.provinceMasterList.ContainsKey(this.provinceProvListView.SelectedItems[0].SubItems[0].Text))
                 {
-                    thisProvince = Globals_Server.provinceMasterList[this.provinceProvListView.SelectedItems[0].SubItems[0].Text];
+                    thisProvince = Globals_Game.provinceMasterList[this.provinceProvListView.SelectedItems[0].SubItems[0].Text];
                 }
 
                 if (thisProvince != null)
@@ -14025,18 +14081,18 @@ namespace hist_mmorpg
             {
                 // get position
                 Position thisPos = null;
-                if (Globals_Server.positionMasterList.ContainsKey(Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)))
+                if (Globals_Game.positionMasterList.ContainsKey(Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)))
                 {
-                    thisPos = Globals_Server.positionMasterList[Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)];
+                    thisPos = Globals_Game.positionMasterList[Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)];
                 }
 
                 if (thisPos != null)
                 {
                     // get current holder
                     PlayerCharacter currentHolder = null;
-                    if (Globals_Server.pcMasterList.ContainsKey(thisPos.officeHolder))
+                    if (Globals_Game.pcMasterList.ContainsKey(thisPos.officeHolder))
                     {
-                        currentHolder = Globals_Server.pcMasterList[thisPos.officeHolder];
+                        currentHolder = Globals_Game.pcMasterList[thisPos.officeHolder];
                     }
 
                     // remove from position
@@ -14070,9 +14126,9 @@ namespace hist_mmorpg
                 {
                     // get fief
                     Fief thisFief = null;
-                    if (Globals_Server.fiefMasterList.ContainsKey(placeDetails[1]))
+                    if (Globals_Game.fiefMasterList.ContainsKey(placeDetails[1]))
                     {
-                        thisFief = Globals_Server.fiefMasterList[placeDetails[1]];
+                        thisFief = Globals_Game.fiefMasterList[placeDetails[1]];
                     }
 
                     // reassign title
@@ -14093,9 +14149,9 @@ namespace hist_mmorpg
                 {
                     // get province
                     Province thisProv = null;
-                    if (Globals_Server.provinceMasterList.ContainsKey(placeDetails[1]))
+                    if (Globals_Game.provinceMasterList.ContainsKey(placeDetails[1]))
                     {
-                        thisProv = Globals_Server.provinceMasterList[placeDetails[1]];
+                        thisProv = Globals_Game.provinceMasterList[placeDetails[1]];
                     }
 
                     // reassign title

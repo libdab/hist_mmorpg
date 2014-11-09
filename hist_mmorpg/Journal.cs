@@ -260,7 +260,7 @@ namespace hist_mmorpg
             entryText += "ID: " + this.jEntryID + "\r\n\r\n";
 
             // year and season
-            entryText += "Date: " + Globals_Server.clock.seasons[this.season] + ", " + this.year + "\r\n\r\n";
+            entryText += "Date: " + Globals_Game.clock.seasons[this.season] + ", " + this.year + "\r\n\r\n";
 
             // type
             entryText += "Type: " + this.type + "\r\n\r\n";
@@ -276,13 +276,13 @@ namespace hist_mmorpg
                 // get character
                 if (thisPersonaeSplit[0] != null)
                 {
-                    if (Globals_Server.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                    if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
                     {
-                        thisCharacter = Globals_Server.pcMasterList[thisPersonaeSplit[0]];
+                        thisCharacter = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
                     }
-                    else if (Globals_Server.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                    else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
                     {
-                        thisCharacter = Globals_Server.npcMasterList[thisPersonaeSplit[0]];
+                        thisCharacter = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
                     }
                 }
 
@@ -294,7 +294,7 @@ namespace hist_mmorpg
             // location
             if (this.location != null)
             {
-                Fief thisFief = Globals_Server.fiefMasterList[this.location];
+                Fief thisFief = Globals_Game.fiefMasterList[this.location];
                 entryText += "Location: " + thisFief.name + " (" + this.location + ")\r\n\r\n";
             }
 
@@ -329,7 +329,7 @@ namespace hist_mmorpg
             }
 
             // get priority
-            foreach (KeyValuePair <string[], byte> priorityEntry in Globals_Server.jEntryPriorities)
+            foreach (KeyValuePair <string[], byte> priorityEntry in Globals_Game.jEntryPriorities)
             {
                 if (priorityEntry.Key[0] == this.type)
                 {

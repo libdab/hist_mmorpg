@@ -82,6 +82,7 @@
     </Compile>
     <Compile Include="GameClock.cs" />
     <Compile Include="Globals_Client.cs" />
+    <Compile Include="Globals_Game.cs" />
     <Compile Include="Globals_Server.cs" />
     <Compile Include="HexMapGraph.cs" />
     <Compile Include="Interfaces.cs" />

@@ -206,9 +206,9 @@ namespace hist_mmorpg
             Character myLeader = this.getLeader();
 
             // get old fief
-            Fief myOldFief = Globals_Server.fiefMasterList[this.location];
+            Fief myOldFief = Globals_Game.fiefMasterList[this.location];
             // get new fief
-            Fief myNewFief = Globals_Server.fiefMasterList[myLeader.location.id];
+            Fief myNewFief = Globals_Game.fiefMasterList[myLeader.location.id];
 
             // remove from old fief
             myOldFief.removeArmy(this.armyID);
@@ -251,7 +251,7 @@ namespace hist_mmorpg
             uint movementMod = 1;
 
             // generate random double (0-100)
-            Double myRandomDouble = Globals_Server.myRand.NextDouble() * 100;
+            Double myRandomDouble = Globals_Game.myRand.NextDouble() * 100;
 
             // calculate chance of modifier based on army size
             Double modifierChance = Math.Floor(this.calcArmySize() / (Double)1000);
@@ -282,7 +282,7 @@ namespace hist_mmorpg
             }
 
             // get fief
-            Fief currentFief = Globals_Server.fiefMasterList[this.location];
+            Fief currentFief = Globals_Game.fiefMasterList[this.location];
 
             // get leader
             Character myLeader = this.getLeader();
@@ -300,7 +300,7 @@ namespace hist_mmorpg
             }
 
             // factor in effect of season (add 20 if is winter or spring)
-            if ((Globals_Server.clock.currentSeason == 0) || (Globals_Server.clock.currentSeason == 3))
+            if ((Globals_Game.clock.currentSeason == 0) || (Globals_Game.clock.currentSeason == 3))
             {
                 attritionChance = attritionChance + 20;
                 toDisplay += "Season effect: 20\r\n";
@@ -317,7 +317,7 @@ namespace hist_mmorpg
             }
 
             // generate random number (0-100) to check if attrition occurs
-            Double randomPercent = Globals_Server.myRand.NextDouble() * 100;
+            Double randomPercent = Globals_Game.myRand.NextDouble() * 100;
 
             // check if attrition occurs
             if (randomPercent <= attritionChance)
@@ -327,7 +327,7 @@ namespace hist_mmorpg
                 toDisplay += "casualtyModifier: " + casualtyModifier + "\r\n";
 
                 // factor in effect of season on potential losses (* 3 if is winter or spring)
-                if ((Globals_Server.clock.currentSeason == 0) || (Globals_Server.clock.currentSeason == 3))
+                if ((Globals_Game.clock.currentSeason == 0) || (Globals_Game.clock.currentSeason == 3))
                 {
                     casualtyModifier = casualtyModifier * 3;
                     toDisplay += "casualtyModifier after seasonal effect: " + casualtyModifier + "\r\n";
@@ -440,7 +440,7 @@ namespace hist_mmorpg
             uint[] troopNumbers = new uint[6] {0, 0, 0, 0, 0, 0};
 
             // get random int (0-2) to decide whether to over- or under-estimate troop number
-            int overUnder = Globals_Server.myRand.Next(3);
+            int overUnder = Globals_Game.myRand.Next(3);
 
             // get observer's estimate variance (based on his leadership value)
             double estimateVariance = observer.getEstimateVariance();
@@ -452,7 +452,7 @@ namespace hist_mmorpg
                 troopNumbers[i] = this.troops[i];
 
                 // generate random double between 0 and estimate variance to decide variance in this case
-                double thisVariance = Globals_Server.GetRandomDouble(estimateVariance);
+                double thisVariance = Globals_Game.GetRandomDouble(estimateVariance);
 
                 // apply variance (negatively or positively) to troop number
                 // 0 = under-estimate, 1-2 = over-estimate
@@ -475,7 +475,7 @@ namespace hist_mmorpg
         /// <returns>the fief</returns>
         public Fief getLocation()
         {
-            return Globals_Server.fiefMasterList[this.location];
+            return Globals_Game.fiefMasterList[this.location];
         }
 
         /// <summary>
@@ -487,7 +487,7 @@ namespace hist_mmorpg
             PlayerCharacter myOwner = null;
 
             // get leader from PC master list
-            myOwner = Globals_Server.pcMasterList[this.owner];
+            myOwner = Globals_Game.pcMasterList[this.owner];
 
             return myOwner;
         }
@@ -503,13 +503,13 @@ namespace hist_mmorpg
             if (this.leader != null)
             {
                 // get leader from appropriate master list
-                if (Globals_Server.npcMasterList.ContainsKey(this.leader))
+                if (Globals_Game.npcMasterList.ContainsKey(this.leader))
                 {
-                    myLeader = Globals_Server.npcMasterList[this.leader];
+                    myLeader = Globals_Game.npcMasterList[this.leader];
                 }
-                else if (Globals_Server.pcMasterList.ContainsKey(this.leader))
+                else if (Globals_Game.pcMasterList.ContainsKey(this.leader))
                 {
-                    myLeader = Globals_Server.pcMasterList[this.leader];
+                    myLeader = Globals_Game.pcMasterList[this.leader];
                 }
             }
 
@@ -653,9 +653,9 @@ namespace hist_mmorpg
         {
             Siege thisSiege = null;
 
-            if (Globals_Server.siegeMasterList.ContainsKey(siegeID))
+            if (Globals_Game.siegeMasterList.ContainsKey(siegeID))
             {
-                thisSiege = Globals_Server.siegeMasterList[siegeID];
+                thisSiege = Globals_Game.siegeMasterList[siegeID];
             }
 
             return thisSiege;

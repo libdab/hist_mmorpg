@@ -126,9 +126,9 @@ namespace hist_mmorpg
 
             if (this.besiegedFief != null)
             {
-                if (Globals_Server.fiefMasterList.ContainsKey(this.besiegedFief))
+                if (Globals_Game.fiefMasterList.ContainsKey(this.besiegedFief))
                 {
-                    besiegedFief = Globals_Server.fiefMasterList[this.besiegedFief];
+                    besiegedFief = Globals_Game.fiefMasterList[this.besiegedFief];
                 }
             }
 
@@ -145,9 +145,9 @@ namespace hist_mmorpg
 
             if (this.besiegerArmy != null)
             {
-                if (Globals_Server.armyMasterList.ContainsKey(this.besiegerArmy))
+                if (Globals_Game.armyMasterList.ContainsKey(this.besiegerArmy))
                 {
-                    besieger = Globals_Server.armyMasterList[this.besiegerArmy];
+                    besieger = Globals_Game.armyMasterList[this.besiegerArmy];
                 }
             }
 
@@ -164,9 +164,9 @@ namespace hist_mmorpg
 
             if (this.defenderGarrison != null)
             {
-                if (Globals_Server.armyMasterList.ContainsKey(this.defenderGarrison))
+                if (Globals_Game.armyMasterList.ContainsKey(this.defenderGarrison))
                 {
-                    defenderGarrison = Globals_Server.armyMasterList[this.defenderGarrison];
+                    defenderGarrison = Globals_Game.armyMasterList[this.defenderGarrison];
                 }
             }
 
@@ -183,9 +183,9 @@ namespace hist_mmorpg
 
             if (this.defenderAdditional != null)
             {
-                if (Globals_Server.armyMasterList.ContainsKey(this.defenderAdditional))
+                if (Globals_Game.armyMasterList.ContainsKey(this.defenderAdditional))
                 {
-                    thisDefenderAdditional = Globals_Server.armyMasterList[this.defenderAdditional];
+                    thisDefenderAdditional = Globals_Game.armyMasterList[this.defenderAdditional];
                 }
             }
 
@@ -202,9 +202,9 @@ namespace hist_mmorpg
 
             if (this.defendingPlayer != null)
             {
-                if (Globals_Server.pcMasterList.ContainsKey(this.defendingPlayer))
+                if (Globals_Game.pcMasterList.ContainsKey(this.defendingPlayer))
                 {
-                    defendingPlyr = Globals_Server.pcMasterList[this.defendingPlayer];
+                    defendingPlyr = Globals_Game.pcMasterList[this.defendingPlayer];
                 }
             }
 
@@ -221,9 +221,9 @@ namespace hist_mmorpg
 
             if (this.besiegingPlayer != null)
             {
-                if (Globals_Server.pcMasterList.ContainsKey(this.besiegingPlayer))
+                if (Globals_Game.pcMasterList.ContainsKey(this.besiegingPlayer))
                 {
-                    besiegingPlyr = Globals_Server.pcMasterList[this.besiegingPlayer];
+                    besiegingPlyr = Globals_Game.pcMasterList[this.besiegingPlayer];
                 }
             }
 

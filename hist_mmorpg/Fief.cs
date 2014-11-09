@@ -1458,7 +1458,7 @@ namespace hist_mmorpg
                 // method 1 (depends on tax rate and surplus)
                 if ((this.taxRate > 20) && (this.keyStatsCurrent[13] > (this.keyStatsCurrent[8] * 0.1)))
                 {
-                    if (Globals_Server.GetRandomDouble(100) <= (this.taxRate - 20))
+                    if (Globals_Game.GetRandomDouble(100) <= (this.taxRate - 20))
                     {
                         stat = 'R';
                     }
@@ -1467,7 +1467,7 @@ namespace hist_mmorpg
                 // method 2 (depends on fief loyalty level)
                 if (!stat.Equals('R'))
                 {
-                    double chance = Globals_Server.GetRandomDouble(100);
+                    double chance = Globals_Game.GetRandomDouble(100);
                     
                     // loyalty 3-4
                     if ((this.loyalty > 3) && (this.loyalty <= 4))
@@ -1640,7 +1640,7 @@ namespace hist_mmorpg
             int maxNumber = Convert.ToInt32(this.population / 100) * 5;
 
             // generate random double between min and max
-            double myRandomDouble = Globals_Server.GetRandomDouble(min: minProportion, max: maxProportion);
+            double myRandomDouble = Globals_Game.GetRandomDouble(min: minProportion, max: maxProportion);
 
             // apply random double as modifier to maxNumber
             numberTroops = Convert.ToInt32(maxNumber * myRandomDouble);
@@ -1673,13 +1673,13 @@ namespace hist_mmorpg
             if (this.titleHolder != null)
             {
                 // get title holder from appropriate master list
-                if (Globals_Server.npcMasterList.ContainsKey(this.titleHolder))
+                if (Globals_Game.npcMasterList.ContainsKey(this.titleHolder))
                 {
-                    myTitleHolder = Globals_Server.npcMasterList[this.titleHolder];
+                    myTitleHolder = Globals_Game.npcMasterList[this.titleHolder];
                 }
-                else if (Globals_Server.pcMasterList.ContainsKey(this.titleHolder))
+                else if (Globals_Game.pcMasterList.ContainsKey(this.titleHolder))
                 {
-                    myTitleHolder = Globals_Server.pcMasterList[this.titleHolder];
+                    myTitleHolder = v.pcMasterList[this.titleHolder];
                 }
             }
 
@@ -1696,9 +1696,9 @@ namespace hist_mmorpg
 
             if (this.province.titleHolder != null)
             {
-                if (Globals_Server.pcMasterList.ContainsKey(this.province.titleHolder))
+                if (Globals_Game.pcMasterList.ContainsKey(this.province.titleHolder))
                 {
-                    myOverlord = Globals_Server.pcMasterList[this.province.titleHolder];
+                    myOverlord = Globals_Game.pcMasterList[this.province.titleHolder];
                 }
             }
 
@@ -1716,9 +1716,9 @@ namespace hist_mmorpg
             if (this.siege != null)
             {
                 // get siege
-                if (Globals_Server.siegeMasterList.ContainsKey(this.siege))
+                if (Globals_Game.siegeMasterList.ContainsKey(this.siege))
                 {
-                    mySiege = Globals_Server.siegeMasterList[this.siege];
+                    mySiege = Globals_Game.siegeMasterList[this.siege];
                 }
             }
 
@@ -1749,7 +1749,7 @@ namespace hist_mmorpg
         {
             PlayerCharacter thisKing = null;
 
-            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Server.kingdomMasterList)
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Game.kingdomMasterList)
             {
                 if (kingdomEntry.Value.nationality == this.owner.nationality)
                 {
