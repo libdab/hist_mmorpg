@@ -215,7 +215,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds duration (number of turns) for the current game
         /// </summary>
-        public static uint duration = 400;
+        public static uint duration = 100;
         /// <summary>
         /// Holds start year for current game
         /// </summary>
@@ -229,6 +229,15 @@ namespace hist_mmorpg
         /// </summary>
         public static bool writeToDatabase = false;
 
+        /// <summary>
+        /// Gets the game's end date (year)
+        /// </summary>
+        /// <returns>uint containing end year</returns>
+        public static uint getGameEndDate()
+        {
+            return Globals_Game.startYear + Globals_Game.duration;
+        }
+        
         /// <summary>
         /// Gets the current scores for all players
         /// </summary>

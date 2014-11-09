@@ -3360,38 +3360,106 @@ namespace hist_mmorpg
             // ADVANCE SEASON AND YEAR
             Globals_Game.clock.advanceSeason();
 
-            // CHECK SCHEDULED EVENTS
-            List<JournalEntry> entriesForRemoval = this.processScheduledEvents();
-            // remove processed events from Globals_Game.scheduledEvents
-            for (int i = 0; i < entriesForRemoval.Count; i++ )
+            //UPDATE AND GET SCORES for individual point game
+            SortedList<double, string> currentScores = new SortedList<double,string>();
+            if (Globals_Game.currentVictoryType == 0)
             {
-                Globals_Game.scheduledEvents.entries.Remove(entriesForRemoval[i].jEntryID);
-            }
-
-            //UPDATE AND GET SCORES
-            //update scores
-            foreach (KeyValuePair<string, VictoryData> scoresEntry in Globals_Game.victoryData)
-            {
-                scoresEntry.Value.updateData();
-            }
-
-            // get scores
-            SortedList<double, string> currentScores = Globals_Game.getCurrentScores();
-
-            // show scores
-            if (Globals_Client.showMessages)
-            {
-                string toDisplay = "";
-
-                foreach (KeyValuePair<double, string> thisScore in currentScores.Reverse())
+                //update scores
+                foreach (KeyValuePair<string, VictoryData> scoresEntry in Globals_Game.victoryData)
                 {
-                    // get PC
-                    PlayerCharacter thisPC = Globals_Game.pcMasterList[Globals_Game.victoryData[thisScore.Value].playerCharacterID];
-                    toDisplay += "PlayerCharacter: " + thisPC.firstName + " " + thisPC.familyName;
-                    toDisplay += ",   Score: " + thisScore.Key + "\r\n";
+                    scoresEntry.Value.updateData();
                 }
 
-                System.Windows.Forms.MessageBox.Show(toDisplay);
+                // get scores
+                currentScores = Globals_Game.getCurrentScores();
+            }
+
+            // CHECK FOR END GAME
+            string gameResults = "";
+            bool endDateReached = false;
+            bool absoluteVictory = false;
+
+            // absolute victory (all fiefs owned by one kingdom)
+            Kingdom victor = this.checkAbsoluteVictory();
+            if (victor != null)
+            {
+                absoluteVictory = true;
+                gameResults += "The kingdom of " + victor.name + " under the valiant leadership of ";
+                gameResults += victor.owner.firstName + " " + victor.owner.familyName;
+                gameResults += " is victorious, having taken all fiefs under its control.";
+            }
+
+            // if no absolute victory
+            else
+            {
+                // check if game end date reached
+                if (Globals_Game.getGameEndDate() == Globals_Game.clock.currentYear)
+                {
+                    endDateReached = true;
+                }
+            }
+
+            if (endDateReached)
+            {
+                // individual points game
+                if (Globals_Game.currentVictoryType == 0)
+                {
+                    // get top scorer (ID)
+                    string topScorer = currentScores.Last().Value;
+
+                    foreach (KeyValuePair<double, string> scoresEntry in currentScores.Reverse())
+                    {
+                        // get PC
+                        PlayerCharacter thisPC = Globals_Game.pcMasterList[Globals_Game.victoryData[scoresEntry.Value].playerCharacterID];
+
+                        // check for top scorer
+                        if (thisPC.playerID.Equals(topScorer))
+                        {
+                            gameResults += "The winner is " + thisPC.firstName + " " + thisPC.familyName + " (player: " + thisPC.playerID + ")";
+                            gameResults += " with a score of " + scoresEntry.Key + ".\r\n\r\nThe rest of the scores are:\r\n";
+                        }
+
+                        else
+                        {
+                            gameResults += thisPC.firstName + " " + thisPC.familyName + " (player: " + thisPC.playerID + ")";
+                            gameResults += " with a score of " + scoresEntry.Key + ".\r\n";
+                        }
+                    }
+                }
+
+                // individual position game
+                else if (Globals_Game.currentVictoryType == 1)
+                {
+                    gameResults += "The winners are ";
+                    gameResults += Globals_Game.kingOne.firstName + " " + Globals_Game.kingOne.familyName + " (King of Kingdom One)";
+                    gameResults += " and " + Globals_Game.kingTwo.firstName + " " + Globals_Game.kingTwo.familyName + " (King of Kingdom Two).";
+                }
+
+                // team game
+                else if (Globals_Game.currentVictoryType == 2)
+                {
+                    // TODO: check for historical victory
+                }
+            }
+
+            // announce winners
+            if ((endDateReached) || (absoluteVictory))
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(gameResults);
+                }
+            }
+
+            // CHECK SCHEDULED EVENTS
+            if (!endDateReached)
+            {
+                List<JournalEntry> entriesForRemoval = this.processScheduledEvents();
+                // remove processed events from Globals_Game.scheduledEvents
+                for (int i = 0; i < entriesForRemoval.Count; i++)
+                {
+                    Globals_Game.scheduledEvents.entries.Remove(entriesForRemoval[i].jEntryID);
+                }
             }
 
             // SWITCH ON MESSAGES
@@ -3399,6 +3467,42 @@ namespace hist_mmorpg
 
             // REFRESH CURRENT SCREEN
             this.refreshCurrentScreen();
+        }
+
+        /// <summary>
+        /// Checks for absolute victory (all fiefs owned by one kingdom)
+        /// </summary>
+        /// <returns>Kingdom object belonging to victor</returns>
+        public Kingdom checkAbsoluteVictory()
+        {
+            Kingdom victor = null;
+            int fiefCount = 0;
+
+            // iterate through kingdoms
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Game.kingdomMasterList)
+            {
+                // reset fiefCount
+                fiefCount = 0;
+
+                // iterate through fiefs, checking if owned by this kingdom
+                foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
+                {
+                    if (fiefEntry.Value.getKingdom() == kingdomEntry.Value)
+                    {
+                        // if owned by this kingdom, increment count
+                        fiefCount++;
+                    }
+                }
+
+                // check if kingdom owns all fiefs
+                if (fiefCount == Globals_Game.fiefMasterList.Count)
+                {
+                    victor = kingdomEntry.Value;
+                    break;
+                }
+            }
+
+            return victor;
         }
 
         /// <summary>

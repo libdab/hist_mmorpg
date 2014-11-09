@@ -1764,6 +1764,26 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Gets fief's kingdom
+        /// </summary>
+        /// <returns>The kingdom</returns>
+        public Kingdom getKingdom()
+        {
+            Kingdom thisKingdom = null;
+
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Game.kingdomMasterList)
+            {
+                if (kingdomEntry.Value.nationality == this.owner.nationality)
+                {
+                    thisKingdom = kingdomEntry.Value;
+                    break;
+                }
+            }
+
+            return thisKingdom;
+        }
+
+        /// <summary>
         /// Processes the functions involved in a change of fief ownership
         /// </summary>
         /// <returns>bool indicating success</returns>
