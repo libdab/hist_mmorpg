@@ -5962,6 +5962,7 @@ namespace hist_mmorpg
             this.armyExamineBtn.Enabled = false;
             this.armyPillageBtn.Enabled = false;
             this.armySiegeBtn.Enabled = false;
+            this.armyQuellRebellionBtn.Enabled = false;
             
             // clear existing items in armies list
             this.armyListView.Items.Clear();
@@ -9203,6 +9204,18 @@ namespace hist_mmorpg
                     this.armyPillageBtn.Enabled = true;
                     this.armySiegeBtn.Enabled = true;
 
+                    // check to see if current fief is in rebellion and enable control as appropriate
+                    // get fief
+                    Fief thisFief = Globals_Game.fiefMasterList[Globals_Client.armyToView.location];
+                    if (thisFief.status.Equals("U"))
+                    {
+                        this.armyQuellRebellionBtn.Enabled = true;
+                    }
+                    else
+                    {
+                        this.armyQuellRebellionBtn.Enabled = false;
+                    }
+
                     // set auto combat values
                     this.armyAggroTextBox.Text = Globals_Client.armyToView.aggression.ToString();
                     this.armyOddsTextBox.Text = Globals_Client.armyToView.combatOdds.ToString();
@@ -10702,7 +10715,8 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="f">The fief being pillaged</param>
         /// <param name="a">The pillaging army</param>
-        public void processPillage(Fief f, Army a)
+        /// <param name="circumstance">The circumstance under which the fief is being pillaged</param>
+        public void processPillage(Fief f, Army a, string circumstance = "pillage")
         {
             string pillageResults = "";
             double thisLoss = 0;
@@ -10863,16 +10877,34 @@ namespace hist_mmorpg
             string pillageLocation = f.id;
 
             // use popup text as description
-            string pillageDescription = "On this day of Our Lord the fief of " + f.name + " owned by ";
-            pillageDescription += f.owner.firstName + " " + f.owner.familyName;
-            if (defenderLeader != null)
+            string pillageDescription = "";
+
+            if (circumstance.Equals("pillage"))
+            {
+                pillageDescription += "On this day of Our Lord the fief of ";
+            }
+            else if (circumstance.Equals("quellRebellion"))
+            {
+                pillageDescription += "On this day of Our Lord the rebellion in the fief of ";
+            }
+            pillageDescription += f.name + " owned by " + f.owner.firstName + " " + f.owner.familyName;
+
+            if ((circumstance.Equals("pillage")) && (defenderLeader != null))
             {
                 if (f.owner != defenderLeader)
                 {
                     pillageDescription += " and defended by " + defenderLeader.firstName + " " + defenderLeader.familyName + ",";
                 }
             }
-            pillageDescription += " was pillaged by the forces of ";
+
+            if (circumstance.Equals("pillage"))
+            {
+                pillageDescription += " was pillaged by the forces of ";
+            }
+            else if (circumstance.Equals("quellRebellion"))
+            {
+                pillageDescription += " was quelled by the forces of ";
+            }
             pillageDescription += armyOwner.firstName + " " + armyOwner.familyName;
             if (armyLeader != null)
             {
@@ -10881,7 +10913,7 @@ namespace hist_mmorpg
                     pillageDescription += ", led by " + armyLeader.firstName + " " + armyLeader.familyName;
                 }
             }
-            pillageDescription += ".\r\n\r\nPillage results:\r\n";
+            pillageDescription += ".\r\n\r\nResults:\r\n";
             pillageDescription += pillageResults;
 
             // put together new journal entry
@@ -10893,7 +10925,20 @@ namespace hist_mmorpg
             // show message
             if (Globals_Client.showMessages)
             {
-                System.Windows.Forms.MessageBox.Show(pillageDescription, "PILLAGE RESULTS");
+                // set label
+                string messageLabel = "";
+
+                if (circumstance.Equals("pillage"))
+                {
+                    messageLabel += "PILLAGE ";
+                }
+                else if (circumstance.Equals("quellRebellion"))
+                {
+                    messageLabel += "QUELL REBELLION ";
+                }
+
+                // show message
+                System.Windows.Forms.MessageBox.Show(pillageDescription, messageLabel + "RESULTS");
             }
         }
 
@@ -11073,56 +11118,70 @@ namespace hist_mmorpg
         public bool checksBeforePillageSiege(Army a, Fief f, string circumstance = "pillage")
         {
             bool proceed = true;
+            string operation = "";
 
             // check if is your own fief
-            if (f.owner == a.getOwner())
+            // note: not necessary for quell rebellion
+            if (!circumstance.Equals("quellRebellion"))
             {
-                proceed = false;
-                if (circumstance == "pillage")
+                if (f.owner == a.getOwner())
                 {
-                    if (Globals_Client.showMessages)
+                    proceed = false;
+                    if (circumstance.Equals("pillage"))
                     {
-                        System.Windows.Forms.MessageBox.Show("You cannot pillage your own fief!  Pillage cancelled.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("You cannot pillage your own fief!  Pillage cancelled.");
+                        }
                     }
-                }
-                else if (circumstance == "siege")
-                {
-                    if (Globals_Client.showMessages)
+                    else if (circumstance.Equals("siege"))
                     {
-                        System.Windows.Forms.MessageBox.Show("You cannot besiege your own fief!  Siege cancelled.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("You cannot besiege your own fief!  Siege cancelled.");
+                        }
                     }
                 }
             }
 
             // check if fief is under siege
-            if ((f.siege != null) && (proceed))
+            // note: not necessary for quell rebellion
+            if (!circumstance.Equals("quellRebellion"))
             {
-                proceed = false;
-                if (circumstance == "pillage")
+                if ((f.siege != null) && (proceed))
                 {
-                    if (Globals_Client.showMessages)
+                    proceed = false;
+                    if (circumstance.Equals("pillage"))
                     {
-                        System.Windows.Forms.MessageBox.Show("You cannot pillage a fief that is under siege.  Pillage cancelled.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("You cannot pillage a fief that is under siege.  Pillage cancelled.");
+                        }
                     }
-                }
-                else if (circumstance == "siege")
-                {
-                    if (Globals_Client.showMessages)
+                    else if (circumstance.Equals("siege"))
                     {
-                        System.Windows.Forms.MessageBox.Show("This fief is already under siege.  Siege cancelled.");
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("This fief is already under siege.  Siege cancelled.");
+                        }
                     }
                 }
             }
 
-            if (circumstance == "pillage")
+            // check if fief already pillages
+            // note: not necessary for quell rebellion (get a 'free' pillage)
+            if (!circumstance.Equals("quellRebellion"))
             {
-                // check isPillaged = false
-                if ((f.isPillaged) && (proceed))
+                if (circumstance.Equals("pillage"))
                 {
-                    proceed = false;
-                    if (Globals_Client.showMessages)
+                    // check isPillaged = false
+                    if ((f.isPillaged) && (proceed))
                     {
-                        System.Windows.Forms.MessageBox.Show("This fief has already been pillaged during\r\nthe current season.  Pillage cancelled.");
+                        proceed = false;
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("This fief has already been pillaged during\r\nthe current season.  Pillage cancelled.");
+                        }
                     }
                 }
             }
@@ -11131,36 +11190,49 @@ namespace hist_mmorpg
             if (a.getLeader() == null)
             {
                 proceed = false;
-                if (circumstance == "pillage")
+
+                if (circumstance.Equals("quellRebellion"))
                 {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("This army has no leader.  Pillage cancelled.");
-                    }
+                    operation = "Operation";
                 }
-                else if (circumstance == "siege")
+                if (circumstance.Equals("pillage"))
                 {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("This army has no leader.  Siege cancelled.");
-                    }
+                    operation = "Pillage";
+                }
+                else if (circumstance.Equals("siege"))
+                {
+                    operation = "Siege";
+                }
+
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("This army has no leader.  " + operation + " cancelled.");
                 }
             }
 
             // check has min days required
-            if (circumstance == "pillage")
+            if ((circumstance.Equals("pillage")) || (circumstance.Equals("quellRebellion")))
             {
                 // pillage = min 7
                 if ((a.days < 7) && (proceed))
                 {
                     proceed = false;
+                    if (circumstance.Equals("quellRebellion"))
+                    {
+                        operation = "Quell rebellion";
+                    }
+                    else
+                    {
+                        operation = "Pillage";
+                    }
+
                     if (Globals_Client.showMessages)
                     {
-                        System.Windows.Forms.MessageBox.Show("This army has too few days remaining for\r\na pillage operation.  Pillage cancelled.");
+                        System.Windows.Forms.MessageBox.Show("This army has too few days remaining for\r\na this operation.  " + operation + " cancelled.");
                     }
                 }
             }
-            else if (circumstance == "siege")
+            else if (circumstance.Equals("siege"))
             {
                 // siege = 1 (to set up siege)
                 if ((a.days < 1) && (proceed))
@@ -11192,20 +11264,24 @@ namespace hist_mmorpg
                             if (armyInFief.aggression > 1)
                             {
                                 proceed = false;
-                                if (circumstance == "pillage")
+                                if (circumstance.Equals("pillage"))
                                 {
-                                    if (Globals_Client.showMessages)
-                                    {
-                                        System.Windows.Forms.MessageBox.Show("There is at least one defending army (" + armyInFief.armyID + ") that must be defeated\r\nbefore you can pillage this fief.  Pillage cancelled.");
-                                    }
+                                    operation = "Pillage";
                                 }
-                                else if (circumstance == "siege")
+                                else if (circumstance.Equals("siege"))
                                 {
-                                    if (Globals_Client.showMessages)
-                                    {
-                                        System.Windows.Forms.MessageBox.Show("There is at least one defending army (" + armyInFief.armyID + ") that must be defeated\r\nbefore you can besiege this fief.  Siege cancelled.");
-                                    }
+                                    operation = "Siege";
                                 }
+                                else if (circumstance.Equals("quellRebellion"))
+                                {
+                                    operation = "Quell rebellion";
+                                }
+
+                                if (Globals_Client.showMessages)
+                                {
+                                    System.Windows.Forms.MessageBox.Show("There is at least one defending army (" + armyInFief.armyID + ") that must be defeated\r\nbefore you can conduct this operation.  " + operation + " cancelled.");
+                                }
+
                                 break;
                             }
                         }
@@ -14332,6 +14408,127 @@ namespace hist_mmorpg
                         this.refreshCurrentScreen();
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Checks to see if an attempts to quell a rebellion has been successful
+        /// </summary>
+        /// <returns>bool indicating quell success or failure</returns>
+        /// <param name="a">The army trying to quell the rebellion</param>
+        /// <param name="f">The rebelling fief</param>
+        public bool quell_checkSuccess(Army a, Fief f)
+        {
+            bool rebellionQuelled = false;
+
+            // calculate base chance of success, based on army size and fief population
+            double successChance = a.calcArmySize() / (f.population / Convert.ToDouble(1000));
+
+            // get army leader
+            Character aLeader = null;
+            if (a.getLeader() != null)
+            {
+                aLeader = a.getLeader();
+            }
+
+            if (aLeader != null)
+            {
+                // apply any bonus for leadership skills
+                successChance += aLeader.getLeadershipValue();
+
+                // apply any bonus for ancestral ownership
+                if ((f.owner != f.ancestralOwner) && (aLeader == f.ancestralOwner))
+                {
+                    successChance += (aLeader.calculateStature() * 2.22);
+                }
+            }
+
+            // ensure successChance always between 1 > 99 (to allow for minimum chance of success/failure)
+            if (successChance < 1)
+            {
+                successChance = 1;
+            }
+            else if (successChance > 99)
+            {
+                successChance = 99;
+            }
+
+            // generate random double 0-100 to check for success
+            rebellionQuelled = (Globals_Game.GetRandomDouble(101) <= successChance);
+
+            return rebellionQuelled;
+        }
+
+        /// <summary>
+        /// Attempts to quell the rebellion in the specified fief using the specified army
+        /// </summary>
+        /// <param name="a">The army trying to quell the rebellion</param>
+        /// <param name="f">The rebelling fief</param>
+        public void quellRebellion(Army a, Fief f)
+        {
+            // check to see if quell attempt was successful
+            bool quellSuccessful = this.quell_checkSuccess(a, f);
+
+            // if quell successful
+            if (quellSuccessful)
+            {
+                // pillage the fief
+                this.processPillage(f, a, "quellRebellion");
+
+                // process change of ownership, if appropriate
+                if (f.owner != a.getOwner())
+                {
+                    f.changeOwnership(a.getOwner());
+                }
+            }
+
+            // if quell not successful
+            else
+            {
+                // retreat army 1 hex
+                this.processRetreat(a, 1);
+            }
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the armyQuellRebellionBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyQuellRebellionBtn_Click(object sender, EventArgs e)
+        {
+            if (this.armyListView.SelectedItems.Count > 0)
+            {
+                bool proceed = true;
+
+                // get army
+                Army thisArmy = null;
+                if (Globals_Game.armyMasterList.ContainsKey(this.armyListView.SelectedItems[0].SubItems[0].Text))
+                {
+                    thisArmy = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+                }
+
+                if (thisArmy != null)
+                {
+                    // get fief
+                    Fief thisFief = null;
+                    if (Globals_Game.fiefMasterList.ContainsKey(thisArmy.location))
+                    {
+                        thisFief = Globals_Game.fiefMasterList[thisArmy.location];
+                    }
+
+                    if (thisFief != null)
+                    {
+                        // do various checks
+                        proceed = this.checksBeforePillageSiege(thisArmy, thisFief, circumstance: "quellRebellion");
+
+                        if (proceed)
+                        {
+                            this.quellRebellion(thisArmy, thisFief);
+                        }
+                    }
+                }
+
             }
         }
 
