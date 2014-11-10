@@ -50,6 +50,17 @@ namespace hist_mmorpg
 			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
         }
 
+        /// <summary>
+        /// Starts a new game using the parameters provided
+        /// </summary>
+        /// <param name="gameID">gameID of the new game</param>
+        /// <param name="startYear">Starting year of the new game</param>
+        /// <param name="duration">duration (years) of the new game</param>
+        /// <param name="gameType">gameType of the new game (sets victory conditions)</param>        
+        public void startNewGame(string gameID, uint startYear = 1337, uint duration = 100, uint gameType = 0)
+        {
+        }
+
 		/// <summary>
         /// Initialises all game objects
 		/// </summary>
@@ -308,7 +319,7 @@ namespace hist_mmorpg
             // create kingdoms for provinces
             Kingdom myKingdom1 = new Kingdom("E0000", "England", nationality02, r: myRank03);
             Globals_Game.kingdomMasterList.Add(myKingdom1.id, myKingdom1);
-            Kingdom myKingdom2 = new Kingdom("B0000", "Boogiboogiland", nationality01, r: myRank03);
+            Kingdom myKingdom2 = new Kingdom("B0000", "France", nationality01, r: myRank03);
             Globals_Game.kingdomMasterList.Add(myKingdom2.id, myKingdom2);
 
             // create provinces for fiefs
@@ -629,10 +640,10 @@ namespace hist_mmorpg
             Ailment myAilment1 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
             myChar1.ailments.Add(myAilment1.ailmentID, myAilment1);
 
-            // populate Globals_Server.victoryConditionTypes
-            Globals_Server.victoryConditionTypes.Add(0, "Individual points");
-            Globals_Server.victoryConditionTypes.Add(1, "Individual position");
-            Globals_Server.victoryConditionTypes.Add(2, "Team");
+            // populate Globals_Server.gameTypes
+            Globals_Server.gameTypes.Add(0, "Individual points");
+            Globals_Server.gameTypes.Add(1, "Individual position");
+            Globals_Server.gameTypes.Add(2, "Team historical");
 
             // populate Globals_Server.combatValues
             uint[] eCombatValues = new uint[] {9, 9, 1, 9, 3, 1};
@@ -800,7 +811,7 @@ namespace hist_mmorpg
             this.writeDictionary(gameID, "combatValues", Globals_Server.combatValues);
             this.writeDictionary(gameID, "recruitRatios", Globals_Server.recruitRatios);
             this.writeDictionary(gameID, "battleProbabilities", Globals_Server.battleProbabilities);
-            this.writeDictionary(gameID, "victoryConditionTypes", Globals_Server.victoryConditionTypes);
+            this.writeDictionary(gameID, "victoryConditionTypes", Globals_Server.gameTypes);
             // convert jEntryPriorities prior to writing
 			Dictionary<string, byte> jEntryPrioritiesRiak = this.jEntryPrioritiesToRiak (Globals_Game.jEntryPriorities);
 			this.writeDictionary(gameID, "jEntryPriorities", jEntryPrioritiesRiak);
@@ -841,8 +852,8 @@ namespace hist_mmorpg
 			this.writeNewIDvar (gameID, "newSiegeID", Globals_Game.newSiegeID);
 			// newJournalEntryID
 			this.writeNewIDvar (gameID, "newJournalEntryID", Globals_Game.newJournalEntryID);
-            // currentVictoryType
-            this.writeNewIDvar(gameID, "currentVictoryType", Globals_Game.currentVictoryType);
+            // gameType
+            this.writeNewIDvar(gameID, "currentVictoryType", Globals_Game.gameType);
             // duration
             this.writeNewIDvar(gameID, "duration", Globals_Game.duration);
             // startYear
@@ -1152,7 +1163,7 @@ namespace hist_mmorpg
             Globals_Server.combatValues = this.initialDBload_dictStringUint(gameID, "combatValues");
             Globals_Server.recruitRatios = this.initialDBload_dictStringDouble(gameID, "recruitRatios");
             Globals_Server.battleProbabilities = this.initialDBload_dictStringDouble(gameID, "battleProbabilities");
-            Globals_Server.victoryConditionTypes = this.initialDBload_dictIntString(gameID, "victoryConditionTypes");
+            Globals_Server.gameTypes = this.initialDBload_dictIntString(gameID, "victoryConditionTypes");
             Globals_Game.jEntryPriorities = this.initialDBload_dictStringByte(gameID, "jEntryPriorities");
 
 			// ========= load GLOBAL_GAME/SERVER newID VARIABLES
@@ -1168,8 +1179,8 @@ namespace hist_mmorpg
 			Globals_Game.newSiegeID = this.initialDBload_newIDs (gameID, "newSiegeID");
 			// newJournalEntryID
 			Globals_Game.newJournalEntryID = this.initialDBload_newIDs (gameID, "newJournalEntryID");
-            // currentVictoryType
-            Globals_Game.currentVictoryType = this.initialDBload_newIDs(gameID, "currentVictoryType");
+            // gameType
+            Globals_Game.gameType = this.initialDBload_newIDs(gameID, "currentVictoryType");
             // duration
             Globals_Game.duration = this.initialDBload_newIDs(gameID, "duration");
             // startYear
@@ -3362,7 +3373,7 @@ namespace hist_mmorpg
 
             //UPDATE AND GET SCORES for individual point game
             SortedList<double, string> currentScores = new SortedList<double,string>();
-            if (Globals_Game.currentVictoryType == 0)
+            if (Globals_Game.gameType == 0)
             {
                 //update scores
                 foreach (KeyValuePair<string, VictoryData> scoresEntry in Globals_Game.victoryData)
@@ -3378,9 +3389,10 @@ namespace hist_mmorpg
             string gameResults = "";
             bool endDateReached = false;
             bool absoluteVictory = false;
+            Kingdom victor = null;
 
             // absolute victory (all fiefs owned by one kingdom)
-            Kingdom victor = this.checkAbsoluteVictory();
+            victor = this.checkTeamAbsoluteVictory();
             if (victor != null)
             {
                 absoluteVictory = true;
@@ -3399,10 +3411,10 @@ namespace hist_mmorpg
                 }
             }
 
-            if (endDateReached)
+            // individual points game
+            if (Globals_Game.gameType == 0)
             {
-                // individual points game
-                if (Globals_Game.currentVictoryType == 0)
+                if ((endDateReached) || (absoluteVictory))
                 {
                     // get top scorer (ID)
                     string topScorer = currentScores.Last().Value;
@@ -3412,10 +3424,15 @@ namespace hist_mmorpg
                         // get PC
                         PlayerCharacter thisPC = Globals_Game.pcMasterList[Globals_Game.victoryData[scoresEntry.Value].playerCharacterID];
 
+                        if (absoluteVictory)
+                        {
+                            gameResults += "\r\n\r\n";
+                        }
+
                         // check for top scorer
                         if (thisPC.playerID.Equals(topScorer))
                         {
-                            gameResults += "The winner is " + thisPC.firstName + " " + thisPC.familyName + " (player: " + thisPC.playerID + ")";
+                            gameResults += "The individual winner is " + thisPC.firstName + " " + thisPC.familyName + " (player: " + thisPC.playerID + ")";
                             gameResults += " with a score of " + scoresEntry.Key + ".\r\n\r\nThe rest of the scores are:\r\n";
                         }
 
@@ -3426,19 +3443,40 @@ namespace hist_mmorpg
                         }
                     }
                 }
+            }
 
-                // individual position game
-                else if (Globals_Game.currentVictoryType == 1)
+            // individual position game
+            else if (Globals_Game.gameType == 1)
+            {
+                if ((endDateReached) || (absoluteVictory))
                 {
-                    gameResults += "The winners are ";
+                    if (absoluteVictory)
+                    {
+                        gameResults += "\r\n\r\n";
+                    }
+
+                    gameResults += "The individual winners are ";
                     gameResults += Globals_Game.kingOne.firstName + " " + Globals_Game.kingOne.familyName + " (King of Kingdom One)";
                     gameResults += " and " + Globals_Game.kingTwo.firstName + " " + Globals_Game.kingTwo.familyName + " (King of Kingdom Two).";
                 }
+            }
 
-                // team game
-                else if (Globals_Game.currentVictoryType == 2)
+            // team historical game
+            else if (Globals_Game.gameType == 2)
+            {
+                if ((endDateReached) && (!absoluteVictory))
                 {
-                    // TODO: check for historical victory
+                    victor = this.checkTeamHistoricalVictory();
+                    gameResults += "The kingdom of " + victor.name + " under the valiant leadership of ";
+                    gameResults += victor.owner.firstName + " " + victor.owner.familyName + " is victorious.";
+                    if (victor.nationality.natID.Equals("Fr"))
+                    {
+                        gameResults += "  It has managed to eject the English from its sovereign territory.";
+                    }
+                    else if (victor.nationality.natID.Equals("Eng"))
+                    {
+                        gameResults += "  It has managed to retain control of at least one fief in French sovereign territory.";
+                    }
                 }
             }
 
@@ -3470,10 +3508,40 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Checks for a historical team victory (victory depends on whether the English own any French fiefs)
+        /// </summary>
+        /// <returns>Kingdom object belonging to victor</returns>
+        public Kingdom checkTeamHistoricalVictory()
+        {
+            Kingdom victor = null;
+
+            // get France and England
+            Kingdom france = Globals_Game.kingdomMasterList["Fr"];
+            Kingdom england = Globals_Game.kingdomMasterList["Eng"];
+
+            // set France as victor by default
+            victor = france;
+
+            // check each French fief for enemy occupation
+            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
+            {
+                if (fiefEntry.Value.getRightfulKingdom() == france)
+                {
+                    if (fiefEntry.Value.getCurrentKingdom() == england)
+                    {
+                        victor = england;
+                    }
+                }
+            }
+
+            return victor;
+        }
+
+        /// <summary>
         /// Checks for absolute victory (all fiefs owned by one kingdom)
         /// </summary>
         /// <returns>Kingdom object belonging to victor</returns>
-        public Kingdom checkAbsoluteVictory()
+        public Kingdom checkTeamAbsoluteVictory()
         {
             Kingdom victor = null;
             int fiefCount = 0;
@@ -3487,7 +3555,7 @@ namespace hist_mmorpg
                 // iterate through fiefs, checking if owned by this kingdom
                 foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
                 {
-                    if (fiefEntry.Value.getKingdom() == kingdomEntry.Value)
+                    if (fiefEntry.Value.getCurrentKingdom() == kingdomEntry.Value)
                     {
                         // if owned by this kingdom, increment count
                         fiefCount++;
@@ -4675,10 +4743,7 @@ namespace hist_mmorpg
                 if (fiefEntry.Value.province == p)
                 {
                     // check for enemy occupation
-                    if (fiefEntry.Value.getKing() != Globals_Client.myPlayerCharacter.getKing())
-                    {
-                        underOccupation = true;
-                    }
+                    underOccupation = fiefEntry.Value.checkEnemyOccupation();
 
                     // id
                     fiefItem = new ListViewItem(fiefEntry.Value.id);

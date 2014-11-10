@@ -1742,10 +1742,26 @@ namespace hist_mmorpg
         } */
 
         /// <summary>
-        /// Gets fief's king
+        /// Gets the fief's rightful king (i.e. the king of the kingdom that the fief traditionally belongs to)
         /// </summary>
         /// <returns>The king</returns>
-        public PlayerCharacter getKing()
+        public PlayerCharacter getRightfulKing()
+        {
+            PlayerCharacter thisKing = null;
+
+            if (this.province.kingdom.owner != null)
+            {
+                thisKing = this.province.kingdom.owner;
+            }
+
+            return thisKing;
+        }
+
+        /// <summary>
+        /// Gets the fief's current king (i.e. the king of the current owner)
+        /// </summary>
+        /// <returns>The king</returns>
+        public PlayerCharacter getCurrentKing()
         {
             PlayerCharacter thisKing = null;
 
@@ -1764,10 +1780,42 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Gets fief's kingdom
+        /// Checks if the fief is under enemy occupation
+        /// </summary>
+        /// <returns>bool indicating whether is under enemy occupation</returns>
+        public bool checkEnemyOccupation()
+        {
+            bool isOccupied = false;
+
+            if (this.getRightfulKing() != this.getCurrentKing())
+            {
+                isOccupied = true;
+            }
+
+            return isOccupied;
+        }
+
+        /// <summary>
+        /// Gets the fief's rightful kingdom (i.e. the kingdom that the fief traditionally belongs to)
         /// </summary>
         /// <returns>The kingdom</returns>
-        public Kingdom getKingdom()
+        public Kingdom getRightfulKingdom()
+        {
+            Kingdom thisKingdom = null;
+
+            if (this.province.kingdom != null)
+            {
+                thisKingdom = this.province.kingdom;
+            }
+
+            return thisKingdom;
+        }
+
+        /// <summary>
+        /// Gets the fief's current kingdom (i.e. the kingdom of the current owner)
+        /// </summary>
+        /// <returns>The kingdom</returns>
+        public Kingdom getCurrentKingdom()
         {
             Kingdom thisKingdom = null;
 

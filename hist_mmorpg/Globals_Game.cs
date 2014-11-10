@@ -209,9 +209,9 @@ namespace hist_mmorpg
         /// </summary>
         public static Dictionary<string[], byte> jEntryPriorities = new Dictionary<string[], byte>();
         /// <summary>
-        /// Holds type of victory condition chosen for current game
+        /// Holds type of game  (sets victory conditions)
         /// </summary>
-        public static uint currentVictoryType = 0;
+        public static uint gameType = 0;
         /// <summary>
         /// Holds duration (number of turns) for the current game
         /// </summary>

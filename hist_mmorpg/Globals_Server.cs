@@ -31,9 +31,9 @@ namespace hist_mmorpg
         /// </summary>
         public static Dictionary<string, double[]> battleProbabilities = new Dictionary<string, double[]>();
         /// <summary>
-        /// Holds types of game victory conditions
+        /// Holds type of game  (sets victory conditions)
         /// </summary>
-        public static Dictionary<uint, string> victoryConditionTypes = new Dictionary<uint, string>();
+        public static Dictionary<uint, string> gameTypes = new Dictionary<uint, string>();
 
         /// <summary>
         /// Gets the next available newGameID, then increments it
