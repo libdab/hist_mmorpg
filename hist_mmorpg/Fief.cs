@@ -1449,23 +1449,23 @@ namespace hist_mmorpg
         /// <returns>char indicating fief status</returns>
         public char checkFiefStatus()
         {
-            char stat = this.status;
+            char originalStatus = this.status;
 
             // if fief in rebellion it can only be recovered by combat or bribe,
             // so don't run check
-            if (! stat.Equals('R'))
+            if (!this.status.Equals('R'))
             {
                 // method 1 (depends on tax rate and surplus)
                 if ((this.taxRate > 20) && (this.keyStatsCurrent[13] > (this.keyStatsCurrent[8] * 0.1)))
                 {
                     if (Globals_Game.GetRandomDouble(100) <= (this.taxRate - 20))
                     {
-                        stat = 'R';
+                        this.status = 'R';
                     }
                 }
 
                 // method 2 (depends on fief loyalty level)
-                if (!stat.Equals('R'))
+                if (!this.status.Equals('R'))
                 {
                     double chance = Globals_Game.GetRandomDouble(100);
                     
@@ -1474,15 +1474,15 @@ namespace hist_mmorpg
                     {
                         if (chance <= 2)
                         {
-                            stat = 'R';
+                            this.status = 'R';
                         }
                         else if (chance <= 10)
                         {
-                            stat = 'U';
+                            this.status = 'U';
                         }
                         else
                         {
-                            stat = 'C';
+                            this.status = 'C';
                         }
                     }
 
@@ -1491,15 +1491,15 @@ namespace hist_mmorpg
                     {
                         if (chance <= 14)
                         {
-                            stat = 'R';
+                            this.status = 'R';
                         }
                         else if (chance <= 30)
                         {
-                            stat = 'U';
+                            this.status = 'U';
                         }
                         else
                         {
-                            stat = 'C';
+                            this.status = 'C';
                         }
                     }
 
@@ -1508,15 +1508,15 @@ namespace hist_mmorpg
                     {
                         if (chance <= 26)
                         {
-                            stat = 'R';
+                            this.status = 'R';
                         }
                         else if (chance <= 50)
                         {
-                            stat = 'U';
+                            this.status = 'U';
                         }
                         else
                         {
-                            stat = 'C';
+                            this.status = 'C';
                         }
                     }
 
@@ -1525,15 +1525,15 @@ namespace hist_mmorpg
                     {
                         if (chance <= 38)
                         {
-                            stat = 'R';
+                            this.status = 'R';
                         }
                         else if (chance <= 70)
                         {
-                            stat = 'U';
+                            this.status = 'U';
                         }
                         else
                         {
-                            stat = 'C';
+                            this.status = 'C';
                         }
                     }
 
@@ -1542,21 +1542,94 @@ namespace hist_mmorpg
                     {
                         if (chance <= 50)
                         {
-                            stat = 'R';
+                            this.status = 'R';
                         }
                         else if (chance <= 90)
                         {
-                            stat = 'U';
+                            this.status = 'U';
                         }
                         else
                         {
-                            stat = 'C';
+                            this.status = 'C';
                         }
                     }
                 }
             }
 
-            return stat;
+            // if status changed, CREATE JOURNAL ENTRY
+            if (this.status != originalStatus)
+            {
+                // get old and new status
+                string oldStatus = "";
+                string newStatus = "";
+                if (originalStatus.Equals('C'))
+                {
+                    oldStatus = "calm";
+                }
+                else if (originalStatus.Equals('U'))
+                {
+                    oldStatus = "unrest";
+                }
+                else if (originalStatus.Equals('R'))
+                {
+                    oldStatus = "rebellion";
+                }
+                if (this.status.Equals('C'))
+                {
+                    newStatus = "CALM";
+                }
+                else if (this.status.Equals('U'))
+                {
+                    newStatus = "UNREST";
+                }
+                else if (this.status.Equals('R'))
+                {
+                    newStatus = "REBELLION";
+                }
+
+                // get interested parties
+                bool success = true;
+                PlayerCharacter fiefOwner = this.owner;
+
+                // ID
+                uint entryID = Globals_Game.getNextJournalEntryID();
+
+                // date
+                uint year = Globals_Game.clock.currentYear;
+                byte season = Globals_Game.clock.currentSeason;
+
+                // personae
+                string[] thisPersonae = new string[] { fiefOwner.charID + "|fiefOwner" };
+
+                // type
+                string type = "";
+                if (this.status.Equals('C'))
+                {
+                    type = "fiefStatusCalm";
+                }
+                else if (this.status.Equals('U'))
+                {
+                    type = "fiefStatusUnrest";
+                }
+                else if (this.status.Equals('R'))
+                {
+                    type = "fiefStatusRebellion";
+                }
+
+                // location
+                string location = this.id;
+
+                // description
+                string description = "On this day of Our Lord the status of the fief of " + this.name;
+                description += ", owned by " + fiefOwner.firstName + " " + fiefOwner.familyName + ",";
+                description += " changed from " + originalStatus + " to " + newStatus + ".";
+
+                // create and add a journal entry to the pastEvents journal
+                JournalEntry newEntry = new JournalEntry(entryID, year, season, thisPersonae, type, loc: location, descr: description);
+                success = Globals_Game.addPastEvent(newEntry);
+            }
+
+            return this.status;
         }
 
         /// <summary>

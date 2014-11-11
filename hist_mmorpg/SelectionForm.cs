@@ -613,7 +613,7 @@ namespace hist_mmorpg
         {
             if (npcListView.SelectedItems.Count > 0)
             {
-                // get selected character
+                // if royal gift, get selected PlayerCharacter
                 Character selectedCharacter = null;
                 if (this.function.Contains("royalGift"))
                 {
@@ -670,7 +670,7 @@ namespace hist_mmorpg
                     }
                 }
 
-                // appoint NPC to position
+                // appoint character to position
                 // if appointing a bailiff
                 if (this.function.Equals("bailiff"))
                 {

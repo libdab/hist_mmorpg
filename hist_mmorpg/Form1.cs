@@ -362,7 +362,7 @@ namespace hist_mmorpg
             Dictionary<string, string[]> transfers006 = new Dictionary<string, string[]>();
             Dictionary<string, string[]> transfers007 = new Dictionary<string, string[]>();
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', myLang1, plains, fief1Chars, keep1BarChars, false, false, 0, 2000000, armies001, false, transfers001, false, r: myRank17);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'R', myLang1, plains, fief1Chars, keep1BarChars, false, false, 0, 2000000, armies001, false, transfers001, false, r: myRank17);
             Globals_Game.fiefMasterList.Add(myFief1.id, myFief1);
             Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, 0, 4000, armies002, false, transfers002, false, r: myRank15);
             Globals_Game.fiefMasterList.Add(myFief2.id, myFief2);
@@ -9207,7 +9207,7 @@ namespace hist_mmorpg
                     // check to see if current fief is in rebellion and enable control as appropriate
                     // get fief
                     Fief thisFief = Globals_Game.fiefMasterList[Globals_Client.armyToView.location];
-                    if (thisFief.status.Equals("U"))
+                    if (thisFief.status.Equals('R'))
                     {
                         this.armyQuellRebellionBtn.Enabled = true;
                     }
@@ -10760,17 +10760,20 @@ namespace hist_mmorpg
             f.population -= Convert.ToInt32((f.population * (thisLoss / 100)));
 
             // % treasury loss
-            thisLoss = (0.2 * pillageMultiplier);
-            // ensure is at least 1%
-            if (thisLoss < 1)
+            if (!circumstance.Equals("quellRebellion"))
             {
-                thisLoss = 1;
-            }
-            // apply treasury loss
-            pillageResults += "- Treasury loss: " + Convert.ToInt32((f.treasury * (thisLoss / 100))) + "\r\n";
-            if (f.treasury > 0)
-            {
-                f.treasury -= Convert.ToInt32((f.treasury * (thisLoss / 100)));
+                thisLoss = (0.2 * pillageMultiplier);
+                // ensure is at least 1%
+                if (thisLoss < 1)
+                {
+                    thisLoss = 1;
+                }
+                // apply treasury loss
+                pillageResults += "- Treasury loss: " + Convert.ToInt32((f.treasury * (thisLoss / 100))) + "\r\n";
+                if (f.treasury > 0)
+                {
+                    f.treasury -= Convert.ToInt32((f.treasury * (thisLoss / 100)));
+                }
             }
 
             // % loyalty loss
@@ -10867,7 +10870,7 @@ namespace hist_mmorpg
             {
                 tempPersonae.Add(armyLeader.charID + "|attackerLeader");
             }
-            if (defenderLeader != null)
+            if ((defenderLeader != null) && (!circumstance.Equals("quellRebellion")))
             {
                 tempPersonae.Add(defenderLeader.charID + "|defenderLeader");
             }
@@ -10875,6 +10878,17 @@ namespace hist_mmorpg
 
             // location
             string pillageLocation = f.id;
+
+            // type
+            string type = "";
+            if (circumstance.Equals("pillage"))
+            {
+                type += "pillage";
+            }
+            else if (circumstance.Equals("quellRebellion"))
+            {
+                type += "rebellionQuelled";
+            }
 
             // use popup text as description
             string pillageDescription = "";
@@ -10917,7 +10931,7 @@ namespace hist_mmorpg
             pillageDescription += pillageResults;
 
             // put together new journal entry
-            JournalEntry pillageEntry = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, pillagePersonae, "pillage", loc: pillageLocation, descr: pillageDescription);
+            JournalEntry pillageEntry = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, pillagePersonae, type, loc: pillageLocation, descr: pillageDescription);
 
             // add new journal entry to pastEvents
             Globals_Game.addPastEvent(pillageEntry);
@@ -14480,6 +14494,9 @@ namespace hist_mmorpg
                 {
                     f.changeOwnership(a.getOwner());
                 }
+
+                // set status
+                f.status = 'C';
             }
 
             // if quell not successful
@@ -14487,6 +14504,55 @@ namespace hist_mmorpg
             {
                 // retreat army 1 hex
                 this.processRetreat(a, 1);
+
+                // CREATE JOURNAL ENTRY
+                // get interested parties
+                bool success = true;
+                PlayerCharacter fiefOwner = f.owner;
+                PlayerCharacter attackerOwner = a.getOwner();
+                Character attackerLeader = null;
+                if (a.getLeader() != null)
+                {
+                    attackerLeader = a.getLeader();
+                }
+
+                // ID
+                uint entryID = Globals_Game.getNextJournalEntryID();
+
+                // date
+                uint year = Globals_Game.clock.currentYear;
+                byte season = Globals_Game.clock.currentSeason;
+
+                // personae
+                List<string> tempPersonae = new List<string>();
+                tempPersonae.Add(fiefOwner.charID + "|fiefOwner");
+                tempPersonae.Add(attackerOwner.charID + "|attackerOwner");
+                if (attackerLeader != null)
+                {
+                    tempPersonae.Add(attackerLeader.charID + "|attackerLeader");
+                }
+                string[] quellPersonae = tempPersonae.ToArray();
+
+                // type
+                string type = "rebellionQuellFailed";
+
+                // location
+                string location = f.id;
+
+                // description
+                string description = "On this day of Our Lord the attempt by the forces of ";
+                description += attackerOwner.firstName + " " + attackerOwner.familyName;
+                if (attackerLeader != null)
+                {
+                    description += ", led by " + attackerLeader.firstName + " " + attackerLeader.familyName + ",";
+                }
+                description += " FAILED in their attempt to quell the rebellion in the fief of " + f.name;
+                description += ", owned by " + fiefOwner.firstName + " " + fiefOwner.familyName + ".";
+                description += "\r\n\r\nThe army was forced to retreat into an adjoining fief.";
+
+                // create and add a journal entry to the pastEvents journal
+                JournalEntry quellEntry = new JournalEntry(entryID, year, season, quellPersonae, type, loc: location, descr: description);
+                success = Globals_Game.addPastEvent(quellEntry);
             }
         }
 
