@@ -122,28 +122,69 @@ namespace hist_mmorpg
         /// <summary>
         /// Inserts the supplied PlayerCharacter's ID into the Position's officeHolder variable 
         /// </summary>
-        /// <param name="pc">PlayerCharacter being assigned to the Position</param>
-        public void bestowPosition(PlayerCharacter pc)
+        /// <param name="newPositionHolder">PlayerCharacter being assigned to the Position</param>
+        public void bestowPosition(PlayerCharacter newPositionHolder)
         {
+            PlayerCharacter oldPositionHolder = null;
+
             // remove existing holder if necessary
             if (this.officeHolder != null)
             {
                 // get current holder
-                PlayerCharacter currentHolder = null;
                 if (Globals_Game.pcMasterList.ContainsKey(this.officeHolder))
                 {
-                    currentHolder = Globals_Game.pcMasterList[this.officeHolder];
+                    oldPositionHolder = Globals_Game.pcMasterList[this.officeHolder];
                 }
 
                 // remove from position
-                this.removePosition(currentHolder);
+                this.removePosition(oldPositionHolder);
             }
 
             // assign position
-            this.officeHolder = pc.charID;
+            this.officeHolder = newPositionHolder.charID;
 
             // update stature
-            pc.statureModifier += this.stature;
+            newPositionHolder.statureModifier += this.stature;
+
+            // CREATE JOURNAL ENTRY
+            // get interested parties
+            bool success = true;
+            PlayerCharacter king = this.getKingdom().owner;
+
+            // ID
+            uint entryID = Globals_Game.getNextJournalEntryID();
+
+            // date
+            uint year = Globals_Game.clock.currentYear;
+            byte season = Globals_Game.clock.currentSeason;
+
+            // personae
+            List<string> tempPersonae = new List<string>();
+            tempPersonae.Add(king.charID + "|king");
+            tempPersonae.Add(newPositionHolder.charID + "|newPositionHolder");
+            if (oldPositionHolder != null)
+            {
+                tempPersonae.Add(oldPositionHolder.charID + "|oldPositionHolder");
+            }
+            string[] thisPersonae = tempPersonae.ToArray();
+
+            // type
+            string type = "grantPosition";
+
+            // description
+            string description = "On this day of Our Lord the position of " + this.title[0].name;
+            description += " was granted by His Majesty " + king.firstName + " " + king.familyName + " to ";
+            description += newPositionHolder.firstName + " " + newPositionHolder.familyName;
+            if (oldPositionHolder != null)
+            {
+                description += "; This has necessitated the removal of ";
+                description += oldPositionHolder.firstName + " " + oldPositionHolder.familyName + " from the position";
+            }
+            description += ".";
+
+            // create and add a journal entry to the pastEvents journal
+            JournalEntry thisEntry = new JournalEntry(entryID, year, season, thisPersonae, type, descr: description);
+            success = Globals_Game.addPastEvent(thisEntry);
         }
 
         /// <summary>
@@ -157,6 +198,26 @@ namespace hist_mmorpg
 
             // update stature
             pc.statureModifier -= this.stature;
+        }
+
+        /// <summary>
+        /// Gets the Kingdom associated with the position 
+        /// </summary>
+        /// <returns>The Kingdom</returns>
+        public Kingdom getKingdom()
+        {
+            Kingdom thisKingdom = null;
+
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Game.kingdomMasterList)
+            {
+                if (kingdomEntry.Value.nationality == this.nationality)
+                {
+                    thisKingdom = kingdomEntry.Value;
+                    break;
+                }
+            }
+
+            return thisKingdom;
         }
     }
 

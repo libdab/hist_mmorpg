@@ -294,8 +294,16 @@ namespace hist_mmorpg
             // location
             if (this.location != null)
             {
-                Fief thisFief = Globals_Game.fiefMasterList[this.location];
-                entryText += "Location: " + thisFief.name + " (" + this.location + ")\r\n\r\n";
+                Place thisPlace = null;
+                if (Globals_Game.fiefMasterList.ContainsKey(this.location))
+                {
+                    thisPlace = Globals_Game.fiefMasterList[this.location];
+                }
+                else if (Globals_Game.provinceMasterList.ContainsKey(this.location))
+                {
+                    thisPlace = Globals_Game.provinceMasterList[this.location];
+                }
+                entryText += "Location: " + thisPlace.name + " (" + this.location + ")\r\n\r\n";
             }
 
             // description

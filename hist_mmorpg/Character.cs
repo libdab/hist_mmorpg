@@ -3146,17 +3146,77 @@ namespace hist_mmorpg
         /// <param name="titlePlace">The place to which the title refers</param>
         public void transferTitle(Character newTitleHolder, Place titlePlace)
         {
-            Character currentTitleHolder = titlePlace.getTitleHolder();
+            Character oldTitleHolder = titlePlace.getTitleHolder();
 
             // remove title from existing holder
-            if (currentTitleHolder != null)
+            if (oldTitleHolder != null)
             {
-                currentTitleHolder.myTitles.Remove(titlePlace.id);
+                oldTitleHolder.myTitles.Remove(titlePlace.id);
             }
 
             // add title to new owner
             newTitleHolder.myTitles.Add(titlePlace.id);
             titlePlace.titleHolder = newTitleHolder.charID;
+
+            // CREATE JOURNAL ENTRY
+            // get interested parties
+            bool success = true;
+            PlayerCharacter placeOwner = titlePlace.owner;
+
+            // ID
+            uint entryID = Globals_Game.getNextJournalEntryID();
+
+            // date
+            uint year = Globals_Game.clock.currentYear;
+            byte season = Globals_Game.clock.currentSeason;
+
+            // personae
+            List<string> tempPersonae = new List<string>();
+            tempPersonae.Add(placeOwner.charID + "|placeOwner");
+            tempPersonae.Add(newTitleHolder.charID + "|newTitleHolder");
+            if ((oldTitleHolder != null) && (oldTitleHolder != placeOwner))
+            {
+                tempPersonae.Add(oldTitleHolder.charID + "|oldTitleHolder");
+            }
+            string[] thisPersonae = tempPersonae.ToArray();
+
+            // type
+            string type = "";
+            if (titlePlace is Fief)
+            {
+                type += "grantTitleFief";
+            }
+            else if (titlePlace is Province)
+            {
+                type += "grantTitleProvince";
+            }
+
+            // location
+            string location = titlePlace.id;
+
+            // description
+            string description = "On this day of Our Lord the title of the ";
+            if (titlePlace is Fief)
+            {
+                description += "fief";
+            }
+            else if (titlePlace is Province)
+            {
+                description += "province";
+            }
+            description += " of " + titlePlace.name + " was granted by its owner ";
+            description += placeOwner.firstName + " " + placeOwner.familyName + " to ";
+            description += newTitleHolder.firstName + " " + newTitleHolder.familyName;
+            if ((oldTitleHolder != null) && (oldTitleHolder != placeOwner))
+            {
+                description += "; This has necessitated the removal of ";
+                description += oldTitleHolder.firstName + " " + oldTitleHolder.familyName + " from the title";
+            }
+            description += ".";
+
+            // create and add a journal entry to the pastEvents journal
+            JournalEntry thisEntry = new JournalEntry(entryID, year, season, thisPersonae, type, loc: location, descr: description);
+            success = Globals_Game.addPastEvent(thisEntry);
         }
 
         /// <summary>
