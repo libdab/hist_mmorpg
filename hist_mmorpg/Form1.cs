@@ -45,7 +45,7 @@ namespace hist_mmorpg
 			rClient = (RiakClient)rCluster.CreateClient();
 
             // initialise game objects
-			this.initGameObjects("101");
+            this.initGameObjects("Char_101");
 
 			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
         }
@@ -481,29 +481,29 @@ namespace hist_mmorpg
             List<string> mySieges002 = new List<string>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("101", "Dave", "Bond", myDob001, true, nationality02, true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "101", "403", null, null, false, 13000, myEmployees1, myFiefsOwned1, myProvsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
+            PlayerCharacter myChar1 = new PlayerCharacter("Char_101", "Dave", "Bond", myDob001, true, nationality02, true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "Char_101", "Char_403", null, null, false, 13000, myEmployees1, myFiefsOwned1, myProvsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
             Globals_Game.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("102", "Bave", "Dond", myDob002, true, nationality01, true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "102", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, myProvsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
+            PlayerCharacter myChar2 = new PlayerCharacter("Char_102", "Bave", "Dond", myDob002, true, nationality01, true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "Char_102", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, myProvsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
             Globals_Game.pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("401", "Jimmy", "Servant", myDob003, true, nationality02, true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("Char_401", "Jimmy", "Servant", myDob003, true, nationality02, true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("402", "Johnny", "Servant", myDob004, true, nationality02, true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, mb: myChar1.charID, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("Char_402", "Johnny", "Servant", myDob004, true, nationality02, true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, mb: myChar1.charID, loc: myFief1);
             Globals_Game.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("403", "Harry", "Bailiff", myDob005, true, nationality01, true, 8.50, 6.0, myGoTo5, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, mb: myChar2.charID, loc: myFief6);
+            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("Char_403", "Harry", "Bailiff", myDob005, true, nationality01, true, 8.50, 6.0, myGoTo5, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, mb: myChar2.charID, loc: myFief6);
             Globals_Game.npcMasterList.Add(myNPC3.charID, myNPC3);
-            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("404", "Bev", "Bond", myDob006, false, nationality02, true, 2.50, 9.0, myGoTo6, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "101", "101", null, null, 30000, false, false, myTitles006, null, loc: myFief1);
+            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("Char_404", "Bev", "Bond", myDob006, false, nationality02, true, 2.50, 9.0, myGoTo6, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "Char_101", "Char_101", null, null, 30000, false, false, myTitles006, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myChar1Wife.charID, myChar1Wife);
-            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("405", "Horatio", "Dond", myDob007, true, nationality01, true, 8.50, 6.0, myGoTo7, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "102", "406", "102", null, 10000, false, true, myTitles007, null, loc: myFief6);
+            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("Char_405", "Horatio", "Dond", myDob007, true, nationality01, true, 8.50, 6.0, myGoTo7, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "Char_102", "Char_406", "Char_102", null, 10000, false, true, myTitles007, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2Son.charID, myChar2Son);
-            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("406", "Mave", "Dond", myDob008, false, nationality02, true, 2.50, 9.0, myGoTo8, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", "405", null, null, 30000, false, false, myTitles008, null, loc: myFief6);
+            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("Char_406", "Mave", "Dond", myDob008, false, nationality02, true, 2.50, 9.0, myGoTo8, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_102", "Char_405", null, null, 30000, false, false, myTitles008, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2SonWife.charID, myChar2SonWife);
-            NonPlayerCharacter myChar1Son = new NonPlayerCharacter("407", "Rickie", "Bond", myDob009, true, nationality02, true, 2.50, 9.0, myGoTo9, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", "404", 30000, false, true, myTitles009, null, loc: myFief1);
+            NonPlayerCharacter myChar1Son = new NonPlayerCharacter("Char_407", "Rickie", "Bond", myDob009, true, nationality02, true, 2.50, 9.0, myGoTo9, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_101", null, "Char_101", "Char_404", 30000, false, true, myTitles009, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myChar1Son.charID, myChar1Son);
-            NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("408", "Elsie", "Bond", myDob010, false, nationality02, true, 2.50, 9.0, myGoTo10, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "101", null, "101", "404", 30000, false, false, myTitles010, null, loc: myFief1);
+            NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("Char_408", "Elsie", "Bond", myDob010, false, nationality02, true, 2.50, 9.0, myGoTo10, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_101", null, "Char_101", "Char_404", 30000, false, false, myTitles010, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myChar1Daughter.charID, myChar1Daughter);
-            NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("409", "Wayne", "Dond", myDob011, true, nationality01, true, 2.50, 9.0, myGoTo11, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", null, 30000, false, false, myTitles011, null, loc: myFief6);
+            NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("Char_409", "Wayne", "Dond", myDob011, true, nationality01, true, 2.50, 9.0, myGoTo11, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_102", null, "Char_102", null, 30000, false, false, myTitles011, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2Son2.charID, myChar2Son2);
-            NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("410", "Esmerelda", "Dond", myDob012, false, nationality01, true, 2.50, 9.0, myGoTo12, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "102", null, "102", null, 30000, false, false, myTitles012, null, loc: myFief6);
+            NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("Char_410", "Esmerelda", "Dond", myDob012, false, nationality01, true, 2.50, 9.0, myGoTo12, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_102", null, "Char_102", null, 30000, false, false, myTitles012, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2Daughter.charID, myChar2Daughter);
 
             /*
@@ -8262,7 +8262,7 @@ namespace hist_mmorpg
             // skills
             newNPC.skills = this.generateSkillSetFromParents(mummy.skills, daddy.skills, newNPC.isMale);
             // charID
-            newNPC.charID = Convert.ToString(Globals_Game.getNextCharID());
+            newNPC.charID = Globals_Game.getNextCharID();
             // stature modifier
             newNPC.statureModifier = 0;
             // employer (myBoss)

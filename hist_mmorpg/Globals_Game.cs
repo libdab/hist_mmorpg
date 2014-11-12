@@ -292,10 +292,10 @@ namespace hist_mmorpg
         /// <summary>
         /// Gets the next available newCharID, then increments it
         /// </summary>
-        /// <returns>uint containing newCharID</returns>
-        public static uint getNextCharID()
+        /// <returns>string containing newCharID</returns>
+        public static string getNextCharID()
         {
-            uint charID = Globals_Game.newCharID;
+            string charID = "Char_" + Globals_Game.newCharID;
             Globals_Game.newCharID++;
             return charID;
         }

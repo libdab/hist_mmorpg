@@ -322,7 +322,7 @@ namespace hist_mmorpg
             switch (circumstance)
             {
                 case "respawn":
-                    this.charID = Convert.ToString(Globals_Game.getNextCharID());
+                    this.charID = Globals_Game.getNextCharID();
                     this.birthDate = new Tuple<uint, byte>(Globals_Game.clock.currentYear - 20, Globals_Game.clock.currentSeason);
                     this.maxHealth = Globals_Game.myRand.Next(1, 10);
                     this.goTo = new Queue<Fief>();
