@@ -1450,7 +1450,7 @@ namespace hist_mmorpg
         public char checkFiefStatus()
         {
             char originalStatus = this.status;
-
+ 
             // if fief in rebellion it can only be recovered by combat or bribe,
             // so don't run check
             if (!this.status.Equals('R'))
@@ -1556,9 +1556,16 @@ namespace hist_mmorpg
                 }
             }
 
-            // if status changed, CREATE JOURNAL ENTRY
+            // if status changed
             if (this.status != originalStatus)
             {
+                // if necessary, APPLY STATUS LOSS
+                if (this.status.Equals('R'))
+                {
+                    this.owner.statureModifier += -0.1;
+                }
+
+                // CREATE JOURNAL ENTRY
                 // get old and new status
                 string oldStatus = "";
                 string newStatus = "";
@@ -1622,7 +1629,7 @@ namespace hist_mmorpg
                 // description
                 string description = "On this day of Our Lord the status of the fief of " + this.name;
                 description += ", owned by " + fiefOwner.firstName + " " + fiefOwner.familyName + ",";
-                description += " changed from " + originalStatus + " to " + newStatus + ".";
+                description += " changed from " + oldStatus + " to " + newStatus + ".";
 
                 // create and add a journal entry to the pastEvents journal
                 JournalEntry newEntry = new JournalEntry(entryID, year, season, thisPersonae, type, loc: location, descr: description);
@@ -2065,6 +2072,53 @@ namespace hist_mmorpg
                         this.barredCharacters.Remove(newOwner.myNPCs[i].charID);
                     }
                 }
+
+                // CREATE JOURNAL ENTRY
+                bool entryAdded = true;
+
+                // ID
+                uint entryID = Globals_Game.getNextJournalEntryID();
+
+                // date
+                uint year = Globals_Game.clock.currentYear;
+                byte season = Globals_Game.clock.currentSeason;
+
+                // personae
+                string[] thisPersonae = new string[] { newOwner.charID + "|newOwner", oldOwner.charID + "|oldOwner" };
+
+                // type
+                string type = "";
+                if (circumstance.Equals("hostile"))
+                {
+                    type = "fiefOwnership_Hostile";
+                }
+                else
+                {
+                    type = "fiefOwnership_Gift";
+                }
+
+                // location
+                string location = this.id;
+
+                // description
+                string oldOwnerTitle = "";
+                string description = "On this day of Our Lord the ownership of the fief of " + this.name;
+                if (circumstance.Equals("hostile"))
+                {
+                    description += " has passed from";
+                }
+                else
+                {
+                    description += " was granted by";
+                    oldOwnerTitle = "His Majesty ";
+                }
+                description += " the previous owner, ";
+                description += oldOwnerTitle + oldOwner.firstName + " " + oldOwner.familyName + ", to the NEW OWNER,";
+                description += newOwner.firstName + " " + newOwner.familyName + ".";
+
+                // create and add a journal entry to the pastEvents journal
+                JournalEntry thisEntry = new JournalEntry(entryID, year, season, thisPersonae, type, loc: location, descr: description);
+                entryAdded = Globals_Game.addPastEvent(thisEntry);
             }
 
             return success;
@@ -2076,27 +2130,6 @@ namespace hist_mmorpg
 	/// </summary>
 	public class Fief_Riak : Place_Riak
 	{
-        /*
-		/// <summary>
-		/// Holds fief ID
-		/// </summary>
-		public String id { get; set; }
-		/// <summary>
-		/// Holds fief name
-		/// </summary>
-		public String name { get; set; }
-        /// <summary>
-        /// Holds fief owner (charID)
-        /// </summary>
-        public String owner { get; set; }
-        /// <summary>
-        /// Holds fief Rank (ID)
-        /// </summary>
-        public String rankID { get; set; }
-        /// <summary>
-        /// Fief title holder (charID)
-        /// </summary>
-        public String titleHolder { get; set; } */
         /// <summary>
 		/// Holds fief's Province object (provinceID)
 		/// </summary>
@@ -2244,12 +2277,6 @@ namespace hist_mmorpg
 		public Fief_Riak(Fief f)
             : base(f: f)
 		{
-            /*
-			this.id = f.id;
-			this.name = f.name;
-            this.owner = f.owner.charID;
-            this.rankID = f.rank.rankID;
-            this.titleHolder = f.titleHolder; */
             this.province = f.province.id;
 			this.population = f.population;
 			this.ancestralOwner = f.ancestralOwner.charID;

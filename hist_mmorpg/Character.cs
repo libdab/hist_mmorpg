@@ -405,9 +405,52 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Retrieves character's highest rank
+        /// </summary>
+        /// <returns>The highest rank</returns>
+        public Rank getHighestRank()
+        {
+            Rank highestRank = null;
+            byte rankValue = 255;
+
+            foreach (String placeID in this.myTitles)
+            {
+                // get place
+                Place thisPlace = null;
+
+                if (Globals_Game.fiefMasterList.ContainsKey(placeID))
+                {
+                    thisPlace = Globals_Game.fiefMasterList[placeID];
+                }
+                else if (Globals_Game.provinceMasterList.ContainsKey(placeID))
+                {
+                    thisPlace = Globals_Game.provinceMasterList[placeID];
+                }
+                else if (Globals_Game.kingdomMasterList.ContainsKey(placeID))
+                {
+                    thisPlace = Globals_Game.kingdomMasterList[placeID];
+                }
+
+                if (thisPlace != null)
+                {
+                    if (thisPlace.rank.id < rankValue)
+                    {
+                        // update highest rank value
+                        rankValue = thisPlace.rank.id;
+
+                        // update highest rank
+                        highestRank = thisPlace.rank;
+                    }
+                }
+            }
+
+            return highestRank;
+        }
+
+        /// <summary>
         /// Retrieves character's highest ranking places
         /// </summary>
-        /// <returns>List<Place> containing character's highest ranking places</returns>
+        /// <returns>List containing character's highest ranking places</returns>
         public List<Place> getHighestRankPlace()
         {
             List<Place> highestPlaces = new List<Place>();

@@ -725,7 +725,35 @@ namespace hist_mmorpg
             // pillage
             string[] thisPriorityKey026 = { "pillage", "fiefOwner" };
             Globals_Game.jEntryPriorities.Add(thisPriorityKey026, 2);
-            // next un-used key = thisPriorityKey027
+            // fief status change
+            string[] thisPriorityKey027 = { "fiefStatusUnrest", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey027, 1);
+            string[] thisPriorityKey028 = { "fiefStatusRebellion", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey028, 2);
+            // quelling rebellion
+            string[] thisPriorityKey029 = { "rebellionQuelled", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey029, 1);
+            string[] thisPriorityKey030 = { "rebellionQuellFailed", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey030, 1);
+            // fief/province/position title holder change
+            string[] thisPriorityKey031 = { "grantTitleFief", "newTitleHolder" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey031, 1);
+            string[] thisPriorityKey032 = { "grantTitleFief", "oldTitleHolder" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey032, 1);
+            string[] thisPriorityKey033 = { "grantTitleProvince", "newTitleHolder" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey033, 1);
+            string[] thisPriorityKey034 = { "grantTitleProvince", "oldTitleHolder" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey034, 1);
+            string[] thisPriorityKey035 = { "grantPosition", "newPositionHolder" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey035, 1);
+            string[] thisPriorityKey036 = { "grantPosition", "oldPositionHolder" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey036, 1);
+            // fief change of ownership
+            string[] thisPriorityKey037 = { "fiefOwnership_Hostile", "oldOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey037, 2);
+            string[] thisPriorityKey038 = { "fiefOwnership_Gift", "newOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey038, 2);
+            // next available key = thisPriorityKey039
 
 
             // create an army and add in appropriate places
@@ -10232,6 +10260,7 @@ namespace hist_mmorpg
             bool battleHasCommenced = false;
             uint[] battleValues = new uint[2];
             double[] casualtyModifiers = new double[2];
+            double statureChange = 0;
 
             // if applicable, get siege
             Siege thisSiege = null;
@@ -10310,6 +10339,29 @@ namespace hist_mmorpg
                 // WHO HAS WON?
                 // calculate if attacker has won
                 attackerVictorious = this.decideBattleVictory(battleValues[0], battleValues[1]);
+
+                // UPDATE STATURE
+                // get winner and loser
+                Army winner = null;
+                Army loser = null;
+                if (attackerVictorious)
+                {
+                    winner = attacker;
+                    loser = defender;
+                }
+                else
+                {
+                    winner = defender;
+                    loser = attacker;
+                }
+
+                // calculate and apply winner's stature increase
+                statureChange = 0.8 * (loser.calcArmySize() / Convert.ToDouble(10000));
+                winner.getOwner().statureModifier += statureChange;
+
+                // calculate and apply loser's stature loss
+                statureChange = -0.5 * (winner.calcArmySize() / Convert.ToDouble(10000));
+                loser.getOwner().statureModifier += statureChange;
 
                 // CASUALTIES
                 // calculate troop casualties for both sides
@@ -10854,6 +10906,12 @@ namespace hist_mmorpg
 
             // apply to army owner's home fief treasury
             armyOwner.getHomeFief().treasury += Convert.ToInt32(moneyPillagedOwner);
+
+            // apply loss of stature to army owner if fief has same language
+            if (armyOwner.language.Item1 == f.language.Item1)
+            {
+                armyOwner.statureModifier += -0.2;
+            }
 
             // set isPillaged for fief
             f.isPillaged = true;
@@ -11603,7 +11661,7 @@ namespace hist_mmorpg
             PlayerCharacter attackingPlayer = s.getBesiegingPlayer();
             Character defenderLeader = defenderGarrison.getLeader();
             Character attackerLeader = besiegingArmy.getLeader();
-            double statureIncrease = 0;
+            double statureChange = 0;
 
             // =================== start construction of JOURNAL ENTRY
             // ID
@@ -11642,22 +11700,6 @@ namespace hist_mmorpg
             // get STORM RESULT
             uint[] battleValues = this.calculateBattleValue(besiegingArmy, defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel));
             stormSuccess = this.decideBattleVictory(battleValues[0], battleValues[1]);
-
-            /*
-            // calculate current keep level
-            double keepLvl = this.calcStormKeepLevel(s);
-
-            // calculate success chance based on keep level
-            double successChance = this.calcStormSuccess(keepLvl);
-
-            // generate random double 0-100 to see if storm a success
-            double myRandomDouble = Globals_Game.GetRandomDouble(100);
-
-            if (myRandomDouble <= successChance)
-            {
-                stormSuccess = true;
-            }
-            */
 
             // KEEP DAMAGE
             // base damage to keep level (10%)
@@ -11807,7 +11849,7 @@ namespace hist_mmorpg
                 }
 
                 // calculate change to besieging player's stature
-                statureIncrease = 0.1 * (Convert.ToDouble(s.getFief().population) / 10000);
+                statureChange = 0.1 * (s.getFief().population / Convert.ToDouble(10000));
 
                 // construct event description
                 siegeDescription = "On this day of Our Lord the forces of ";
@@ -11821,7 +11863,7 @@ namespace hist_mmorpg
                 siegeDescriptionFull += ".\r\n\r\nThe ownership of this fief has now passed from ";
                 siegeDescriptionFull += s.getDefendingPlayer().firstName + " " + s.getDefendingPlayer().familyName;
                 siegeDescriptionFull += " to " + s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
-                siegeDescriptionFull += " who has also earned an increase of " + statureIncrease + " stature.";
+                siegeDescriptionFull += " who has also earned an increase of " + statureChange + " stature.";
                 // details of ransoms
                 if (totalRansom > 0)
                 {
@@ -11849,7 +11891,7 @@ namespace hist_mmorpg
             else
             {
                 // calculate change to besieging player's stature
-                statureIncrease = -0.2 * (Convert.ToDouble(s.getFief().population) / 10000);
+                statureChange = -0.2 * (Convert.ToDouble(s.getFief().population) / 10000);
 
                 // description
                 siegeDescription = "On this day of Our Lord the forces of ";
@@ -11859,7 +11901,7 @@ namespace hist_mmorpg
                 siegeDescription += "and " + defenderCasualties + " for the defending forces";
                 siegeDescription += ". In addition the keep level was reduced from " + originalKeepLvl + " to ";
                 siegeDescription += besiegedFief.keepLevel + ".\r\n\r\nThis failure has resulted in a loss of ";
-                siegeDescription += statureIncrease + " for " + s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                siegeDescription += statureChange + " for " + s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
             }
 
             // create and send JOURNAL ENTRY
@@ -11872,7 +11914,7 @@ namespace hist_mmorpg
             System.Windows.Forms.MessageBox.Show(siegeDescription);
 
             // apply change to besieging player's stature
-            s.getBesiegingPlayer().statureModifier += statureIncrease;
+            s.getBesiegingPlayer().statureModifier += statureChange;
 
             // refresh screen
             this.refreshCurrentScreen();
@@ -11935,14 +11977,6 @@ namespace hist_mmorpg
             uint[] battleValues = this.calculateBattleValue(besieger, defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel));
             double successChance = this.calcVictoryChance(battleValues[0], battleValues[1]) / 2;
 
-            /*
-            // calculate current keep level
-            double keepLvl = this.calcStormKeepLevel(s);
-
-            // calculate success chance based on keep level
-            double successChance = (this.calcStormSuccess(keepLvl) / 2);
-            */
-
             // generate random double 0-100 to see if storm a success
             double myRandomDouble = Globals_Game.GetRandomDouble(100);
 
@@ -11955,7 +11989,7 @@ namespace hist_mmorpg
             if (negotiateSuccess)
             {
                 // add to winning player's stature
-                double statureIncrease = 0.2 * (Convert.ToDouble(s.getFief().population) / 10000);
+                double statureIncrease = 0.2 * (s.getFief().population / Convert.ToDouble(10000));
                 s.getBesiegingPlayer().statureModifier += statureIncrease;
 
                 // construct event description to be passed into siegeEnd
@@ -13510,17 +13544,32 @@ namespace hist_mmorpg
                 // remove fiancees
                 bride.fiancee = null;
                 groom.fiancee = null;
+
                 // add spouses
                 bride.spouse = groom.charID;
                 groom.spouse = bride.charID;
+
                 // change wife's family
                 bride.familyID = groom.familyID;
                 bride.familyName = groom.familyName;
+
                 // switch myNPCs
                 headOfFamilyBride.myNPCs.Remove(bride as NonPlayerCharacter);
                 headOfFamilyGroom.myNPCs.Add(bride as NonPlayerCharacter);
+
                 // move wife to groom's location
                 bride.location = groom.location;
+
+                // check to see if headOfFamilyBride should receive increase in stature
+                // get highest rank for headOfFamilyBride and headOfFamilyGroom
+                Rank brideHighestRank = headOfFamilyBride.getHighestRank();
+                Rank groomHighestRank = headOfFamilyGroom.getHighestRank();
+
+                // compare ranks
+                if (groomHighestRank.id < brideHighestRank.id)
+                {
+                    headOfFamilyBride.statureModifier += ((brideHighestRank.id - groomHighestRank.id) * 0.4);
+                }
             }
 
             return success;
