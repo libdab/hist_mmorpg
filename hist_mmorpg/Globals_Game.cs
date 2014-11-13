@@ -107,6 +107,14 @@ namespace hist_mmorpg
         /// </summary>
         public static List<String> terrKeys = new List<String>();
         /// <summary>
+        /// Holds all BaseLanguage objects
+        /// </summary>
+        public static Dictionary<string, BaseLanguage> baseLanguageMasterList = new Dictionary<string, BaseLanguage>();
+        /// <summary>
+        /// Holds keys for BaseLanguage objects (used when retrieving from database)
+        /// </summary>
+        public static List<String> baseLangKeys = new List<String>();
+        /// <summary>
         /// Holds all Language objects
         /// </summary>
         public static Dictionary<string, Language> languageMasterList = new Dictionary<string, Language>();

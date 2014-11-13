@@ -1403,7 +1403,7 @@ namespace hist_mmorpg
             // meetingPlaceContainer
             // 
             this.meetingPlaceContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.meetingPlaceContainer.Location = new System.Drawing.Point(0, 0);
+            this.meetingPlaceContainer.Location = new System.Drawing.Point(0, 24);
             this.meetingPlaceContainer.Name = "meetingPlaceContainer";
             // 
             // meetingPlaceContainer.Panel1
@@ -1422,7 +1422,7 @@ namespace hist_mmorpg
             // meetingPlaceContainer.Panel2
             // 
             this.meetingPlaceContainer.Panel2.Controls.Add(this.meetingPlaceCharsContainer);
-            this.meetingPlaceContainer.Size = new System.Drawing.Size(935, 735);
+            this.meetingPlaceContainer.Size = new System.Drawing.Size(935, 711);
             this.meetingPlaceContainer.SplitterDistance = 249;
             this.meetingPlaceContainer.TabIndex = 6;
             // 
@@ -1530,7 +1530,7 @@ namespace hist_mmorpg
             // meetingPlaceCharsContainer.Panel2
             // 
             this.meetingPlaceCharsContainer.Panel2.Controls.Add(this.meetingPlaceCharsListContainer);
-            this.meetingPlaceCharsContainer.Size = new System.Drawing.Size(682, 735);
+            this.meetingPlaceCharsContainer.Size = new System.Drawing.Size(682, 711);
             this.meetingPlaceCharsContainer.SplitterDistance = 273;
             this.meetingPlaceCharsContainer.TabIndex = 0;
             // 
@@ -1540,7 +1540,7 @@ namespace hist_mmorpg
             this.meetingPlaceCharDisplayTextBox.Location = new System.Drawing.Point(0, 0);
             this.meetingPlaceCharDisplayTextBox.Multiline = true;
             this.meetingPlaceCharDisplayTextBox.Name = "meetingPlaceCharDisplayTextBox";
-            this.meetingPlaceCharDisplayTextBox.Size = new System.Drawing.Size(273, 735);
+            this.meetingPlaceCharDisplayTextBox.Size = new System.Drawing.Size(273, 711);
             this.meetingPlaceCharDisplayTextBox.TabIndex = 0;
             // 
             // meetingPlaceCharsListContainer
@@ -1557,8 +1557,8 @@ namespace hist_mmorpg
             // meetingPlaceCharsListContainer.Panel2
             // 
             this.meetingPlaceCharsListContainer.Panel2.Controls.Add(this.meetingPlaceCharsListView);
-            this.meetingPlaceCharsListContainer.Size = new System.Drawing.Size(405, 735);
-            this.meetingPlaceCharsListContainer.SplitterDistance = 226;
+            this.meetingPlaceCharsListContainer.Size = new System.Drawing.Size(405, 711);
+            this.meetingPlaceCharsListContainer.SplitterDistance = 218;
             this.meetingPlaceCharsListContainer.TabIndex = 0;
             // 
             // meetingPlaceTextBoxContainer
@@ -1575,8 +1575,8 @@ namespace hist_mmorpg
             // meetingPlaceTextBoxContainer.Panel2
             // 
             this.meetingPlaceTextBoxContainer.Panel2.Controls.Add(this.meetingPlaceTextBox);
-            this.meetingPlaceTextBoxContainer.Size = new System.Drawing.Size(405, 226);
-            this.meetingPlaceTextBoxContainer.SplitterDistance = 110;
+            this.meetingPlaceTextBoxContainer.Size = new System.Drawing.Size(405, 218);
+            this.meetingPlaceTextBoxContainer.SplitterDistance = 106;
             this.meetingPlaceTextBoxContainer.TabIndex = 1;
             // 
             // meetingPlaceLabel
@@ -1595,7 +1595,7 @@ namespace hist_mmorpg
             this.meetingPlaceTextBox.Location = new System.Drawing.Point(0, 0);
             this.meetingPlaceTextBox.Multiline = true;
             this.meetingPlaceTextBox.Name = "meetingPlaceTextBox";
-            this.meetingPlaceTextBox.Size = new System.Drawing.Size(405, 112);
+            this.meetingPlaceTextBox.Size = new System.Drawing.Size(405, 108);
             this.meetingPlaceTextBox.TabIndex = 0;
             // 
             // meetingPlaceCharsListView
@@ -1605,7 +1605,7 @@ namespace hist_mmorpg
             this.meetingPlaceCharsListView.GridLines = true;
             this.meetingPlaceCharsListView.Location = new System.Drawing.Point(0, 0);
             this.meetingPlaceCharsListView.Name = "meetingPlaceCharsListView";
-            this.meetingPlaceCharsListView.Size = new System.Drawing.Size(405, 505);
+            this.meetingPlaceCharsListView.Size = new System.Drawing.Size(405, 489);
             this.meetingPlaceCharsListView.TabIndex = 0;
             this.meetingPlaceCharsListView.UseCompatibleStateImageBehavior = false;
             this.meetingPlaceCharsListView.View = System.Windows.Forms.View.Details;
@@ -2968,6 +2968,7 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
+            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.royalGiftsContainer);
             this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.provinceContainer);
@@ -2976,7 +2977,6 @@ namespace hist_mmorpg
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.fiefsOwnedContainer);
-            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.journalContainer);

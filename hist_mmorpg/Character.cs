@@ -55,7 +55,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds character's language and dialect
         /// </summary>
-        public Tuple<Language, int> language { get; set; }
+        public Language language { get; set; }
         /// <summary>
         /// Holds character's remaining days in season
         /// </summary>
@@ -134,7 +134,7 @@ namespace hist_mmorpg
         /// <param name="mxHea">Double holding character maximum health</param>
         /// <param name="vir">Double holding character virility rating</param>
         /// <param name="go">Queue<Fief> of Fiefs to auto-travel to</param>
-        /// <param name="lang">Tuple<Language, int> holding character language and dialect</param>
+        /// <param name="lang">Language object holding character's language</param>
         /// <param name="day">double holding character remaining days in season</param>
         /// <param name="stat">Double holding character stature rating</param>
         /// <param name="mngmnt">Double holding character management rating</param>
@@ -152,7 +152,7 @@ namespace hist_mmorpg
         /// <param name="aID">String holding armyID of army character is leading</param>
         /// <param name="ails">Dictionary<string, Ailment> holding ailments effecting character's health</param>
         public Character(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, Nationality nat, bool alive, Double mxHea, Double vir,
-            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg,
+            Queue<Fief> go, Language lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg,
             String famID, String sp, String fath, String moth, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null)
         {
 
@@ -563,6 +563,16 @@ namespace hist_mmorpg
             if (currentStature)
             {
                 stature += this.statureModifier;
+            }
+
+            // ensure returned stature lies between 1-9
+            if (stature > 9)
+            {
+                stature = 9;
+            }
+            else if (stature < 1)
+            {
+                stature = 1;
             }
 
             return stature;
@@ -2271,7 +2281,7 @@ namespace hist_mmorpg
         /// <param name="myA">List<Army> holding character's armies</param>
         /// <param name="myS">List<string> holding character's sieges (siegeIDs)</param>
         public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, Nationality nat, bool alive, Double mxHea, Double vir,
-            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
+            Queue<Fief> go, Language lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
             String sp, String fath, String moth, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> ownedF, List<Province> ownedP, String home, String ancHome, List<String> myTi, List<Army> myA,
             List<string> myS, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String pID = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc)
@@ -2849,7 +2859,7 @@ namespace hist_mmorpg
                 else
                 {
                     // 3. Check language and loyalty permit recruitment
-                    if ((!this.language.Item1.languageID.Equals(this.location.language.Item1.languageID))
+                    if ((this.language.baseLanguage != this.location.language.baseLanguage)
                         && (this.location.loyalty < 7))
                     {
                         proceed = false;
@@ -3423,7 +3433,7 @@ namespace hist_mmorpg
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
         /// <param name="isH">bool denoting if is player's heir</param>
         public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, Nationality nat, bool alive, Double mxHea, Double vir,
-            Queue<Fief> go, Tuple<Language, int> lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
+            Queue<Fief> go, Language lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
             String sp, String fath, String moth, uint wa, bool inEnt, bool isH, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, String mb = null, Fief loc = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc)
         {
@@ -3970,7 +3980,7 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Holds character language and dialect
 		/// </summary>
-        public Tuple<String, int> language { get; set; }
+        public string language { get; set; }
 		/// <summary>
 		/// Holds character's remaining days in season
 		/// </summary>
@@ -4073,7 +4083,7 @@ namespace hist_mmorpg
 						this.goTo.Add (value.id);
 					}
 				}
-				this.language = new Tuple<string,int>(charToUse.language.Item1.languageID, charToUse.language.Item2);
+                this.language = charToUse.language.id;
 				this.days = charToUse.days;
 				this.statureModifier = charToUse.statureModifier;
 				this.management = charToUse.management;

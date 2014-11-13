@@ -226,15 +226,17 @@ namespace hist_mmorpg
                 Globals_Game.skillKeys.Add(entry.Key);
 			}
 
-            // create Language objects
-            Language c = new Language("langC", "Celtic");
-            Globals_Game.languageMasterList.Add(c.languageID, c);
-            Language f = new Language("langF", "French");
-            Globals_Game.languageMasterList.Add(f.languageID, f);
-            // create languages for Fiefs
-            Tuple<Language, int> myLang1 = new Tuple<Language, int>(c, 1);
-            Tuple<Language, int> myLang2 = new Tuple<Language, int>(c, 2);
-            Tuple<Language, int> myLang3 = new Tuple<Language, int>(f, 1);
+            // create BaseLanguage & Language objects
+            BaseLanguage c = new BaseLanguage("langC", "Celtic");
+            Globals_Game.baseLanguageMasterList.Add(c.id, c);
+            Language c1 = new Language(c, 1);
+            Globals_Game.languageMasterList.Add(c1.id, c1);
+            Language c2 = new Language(c, 2);
+            Globals_Game.languageMasterList.Add(c2.id, c2);
+            BaseLanguage f = new BaseLanguage("langF", "French");
+            Globals_Game.baseLanguageMasterList.Add(f.id, f);
+            Language f1 = new Language(f, 1);
+            Globals_Game.languageMasterList.Add(f1.id, f1);
 
 			// create terrain objects
 			Terrain plains = new Terrain("P", "Plains", 1);
@@ -267,35 +269,35 @@ namespace hist_mmorpg
             // create ranks for kingdoms, provinces, fiefs
             TitleName[] myTitleName03 = new TitleName[3];
             myTitleName03[0] = new TitleName("langC", "King");
-            myTitleName03[1] = new TitleName("E", "King");
+            myTitleName03[1] = new TitleName("langE", "King");
             myTitleName03[2] = new TitleName("langF", "Roi");
             Rank myRank03 = new Rank(3, myTitleName03, 6);
             Globals_Game.rankMasterList.Add(myRank03.id, myRank03);
 
             TitleName[] myTitleName09 = new TitleName[3];
             myTitleName09[0] = new TitleName("langC", "Prince");
-            myTitleName09[1] = new TitleName("E", "Prince");
+            myTitleName09[1] = new TitleName("langE", "Prince");
             myTitleName09[2] = new TitleName("langF", "Prince");
             Rank myRank09 = new Rank(9, myTitleName09, 4);
             Globals_Game.rankMasterList.Add(myRank09.id, myRank09);
 
             TitleName[] myTitleName11 = new TitleName[3];
             myTitleName11[0] = new TitleName("langC", "Earl");
-            myTitleName11[1] = new TitleName("E", "Earl");
+            myTitleName11[1] = new TitleName("langE", "Earl");
             myTitleName11[2] = new TitleName("langF", "Comte");
             Rank myRank11 = new Rank(11, myTitleName11, 4);
             Globals_Game.rankMasterList.Add(myRank11.id, myRank11);
 
             TitleName[] myTitleName15 = new TitleName[3];
             myTitleName15[0] = new TitleName("langC", "Baron");
-            myTitleName15[1] = new TitleName("E", "Baron");
+            myTitleName15[1] = new TitleName("langE", "Baron");
             myTitleName15[2] = new TitleName("langF", "Baron");
             Rank myRank15 = new Rank(15, myTitleName15, 2);
             Globals_Game.rankMasterList.Add(myRank15.id, myRank15);
 
             TitleName[] myTitleName17 = new TitleName[3];
             myTitleName17[0] = new TitleName("langC", "Lord");
-            myTitleName17[1] = new TitleName("E", "Lord");
+            myTitleName17[1] = new TitleName("langE", "Lord");
             myTitleName17[2] = new TitleName("langF", "Sire");
             Rank myRank17 = new Rank(17, myTitleName17, 1);
             Globals_Game.rankMasterList.Add(myRank17.id, myRank17);
@@ -362,19 +364,19 @@ namespace hist_mmorpg
             Dictionary<string, string[]> transfers006 = new Dictionary<string, string[]>();
             Dictionary<string, string[]> transfers007 = new Dictionary<string, string[]>();
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'R', myLang1, plains, fief1Chars, keep1BarChars, false, false, 0, 2000000, armies001, false, transfers001, false, r: myRank17);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'R', c1, plains, fief1Chars, keep1BarChars, false, false, 0, 2000000, armies001, false, transfers001, false, r: myRank17);
             Globals_Game.fiefMasterList.Add(myFief1.id, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U', myLang1, hills, fief2Chars, keep2BarChars, false, false, 0, 4000, armies002, false, transfers002, false, r: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U',c1, hills, fief2Chars, keep2BarChars, false, false, 0, 4000, armies002, false, transfers002, false, r: myRank15);
             Globals_Game.fiefMasterList.Add(myFief2.id, myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', myLang1, plains, fief3Chars, keep3BarChars, false, false, 0, 100000, armies003, false, transfers003, false, r: myRank17);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', c1, plains, fief3Chars, keep3BarChars, false, false, 0, 100000, armies003, false, transfers003, false, r: myRank17);
             Globals_Game.fiefMasterList.Add(myFief3.id, myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', myLang1, plains, fief4Chars, keep4BarChars, false, false, 0, 100000, armies004, false, transfers004, false, r: myRank17);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', c1, plains, fief4Chars, keep4BarChars, false, false, 0, 100000, armies004, false, transfers004, false, r: myRank17);
             Globals_Game.fiefMasterList.Add(myFief4.id, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', myLang3, plains, fief5Chars, keep5BarChars, false, false, 0, 100000, armies005, false, transfers005, false, r: myRank15);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', f1, plains, fief5Chars, keep5BarChars, false, false, 0, 100000, armies005, false, transfers005, false, r: myRank15);
             Globals_Game.fiefMasterList.Add(myFief5.id, myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', myLang3, plains, fief6Chars, keep6BarChars, false, false, 0, 100000, armies006, false, transfers006, false, r: myRank17);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', f1, plains, fief6Chars, keep6BarChars, false, false, 0, 100000, armies006, false, transfers006, false, r: myRank17);
             Globals_Game.fiefMasterList.Add(myFief6.id, myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', myLang3, forrest, fief7Chars, keep7BarChars, false, false, 0, 100000, armies007, false, transfers007, false, r: myRank15);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', f1, forrest, fief7Chars, keep7BarChars, false, false, 0, 100000, armies007, false, transfers007, false, r: myRank15);
             Globals_Game.fiefMasterList.Add(myFief7.id, myFief7);
 
 			// create QuickGraph undirected graph
@@ -481,29 +483,29 @@ namespace hist_mmorpg
             List<string> mySieges002 = new List<string>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("Char_101", "Dave", "Bond", myDob001, true, nationality02, true, 8.50, 9.0, myGoTo1, myLang1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "Char_101", "Char_403", null, null, false, 13000, myEmployees1, myFiefsOwned1, myProvsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
+            PlayerCharacter myChar1 = new PlayerCharacter("Char_101", "Dave", "Bond", myDob001, true, nationality02, true, 8.50, 9.0, myGoTo1, c1, 90, 0, 7.2, 6.1, generateSkillSet(), false, false, "Char_101", "Char_403", null, null, false, 13000, myEmployees1, myFiefsOwned1, myProvsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
             Globals_Game.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("Char_102", "Bave", "Dond", myDob002, true, nationality01, true, 8.50, 6.0, myGoTo2, myLang1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "Char_102", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, myProvsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
+            PlayerCharacter myChar2 = new PlayerCharacter("Char_102", "Bave", "Dond", myDob002, true, nationality01, true, 8.50, 6.0, myGoTo2, f1, 90, 0, 5.0, 4.5, generateSkillSet(), false, false, "Char_102", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, myProvsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
             Globals_Game.pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("Char_401", "Jimmy", "Servant", myDob003, true, nationality02, true, 8.50, 6.0, myGoTo3, myLang1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("Char_401", "Jimmy", "Servant", myDob003, true, nationality02, true, 8.50, 6.0, myGoTo3, c1, 90, 0, 3.3, 6.7, generateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("Char_402", "Johnny", "Servant", myDob004, true, nationality02, true, 8.50, 6.0, myGoTo4, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, mb: myChar1.charID, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("Char_402", "Johnny", "Servant", myDob004, true, nationality02, true, 8.50, 6.0, myGoTo4, c1, 90, 0, 7.1, 5.2, generateSkillSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, mb: myChar1.charID, loc: myFief1);
             Globals_Game.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("Char_403", "Harry", "Bailiff", myDob005, true, nationality01, true, 8.50, 6.0, myGoTo5, myLang1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, mb: myChar2.charID, loc: myFief6);
+            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("Char_403", "Harry", "Bailiff", myDob005, true, nationality01, true, 8.50, 6.0, myGoTo5, c1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, mb: myChar2.charID, loc: myFief6);
             Globals_Game.npcMasterList.Add(myNPC3.charID, myNPC3);
-            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("Char_404", "Bev", "Bond", myDob006, false, nationality02, true, 2.50, 9.0, myGoTo6, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "Char_101", "Char_101", null, null, 30000, false, false, myTitles006, null, loc: myFief1);
+            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("Char_404", "Bev", "Bond", myDob006, false, nationality02, true, 2.50, 9.0, myGoTo6, f1, 90, 0, 4.0, 6.0, generateSkillSet(), false, false, "Char_101", "Char_101", null, null, 30000, false, false, myTitles006, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myChar1Wife.charID, myChar1Wife);
-            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("Char_405", "Horatio", "Dond", myDob007, true, nationality01, true, 8.50, 6.0, myGoTo7, myLang3, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "Char_102", "Char_406", "Char_102", null, 10000, false, true, myTitles007, null, loc: myFief6);
+            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("Char_405", "Horatio", "Dond", myDob007, true, nationality01, true, 8.50, 6.0, myGoTo7, f1, 90, 0, 7.1, 5.2, generateSkillSet(), true, false, "Char_102", "Char_406", "Char_102", null, 10000, false, true, myTitles007, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2Son.charID, myChar2Son);
-            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("Char_406", "Mave", "Dond", myDob008, false, nationality02, true, 2.50, 9.0, myGoTo8, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_102", "Char_405", null, null, 30000, false, false, myTitles008, null, loc: myFief6);
+            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("Char_406", "Mave", "Dond", myDob008, false, nationality02, true, 2.50, 9.0, myGoTo8, f1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_102", "Char_405", null, null, 30000, false, false, myTitles008, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2SonWife.charID, myChar2SonWife);
-            NonPlayerCharacter myChar1Son = new NonPlayerCharacter("Char_407", "Rickie", "Bond", myDob009, true, nationality02, true, 2.50, 9.0, myGoTo9, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_101", null, "Char_101", "Char_404", 30000, false, true, myTitles009, null, loc: myFief1);
+            NonPlayerCharacter myChar1Son = new NonPlayerCharacter("Char_407", "Rickie", "Bond", myDob009, true, nationality02, true, 2.50, 9.0, myGoTo9, c1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_101", null, "Char_101", "Char_404", 30000, false, true, myTitles009, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myChar1Son.charID, myChar1Son);
-            NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("Char_408", "Elsie", "Bond", myDob010, false, nationality02, true, 2.50, 9.0, myGoTo10, myLang1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_101", null, "Char_101", "Char_404", 30000, false, false, myTitles010, null, loc: myFief1);
+            NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("Char_408", "Elsie", "Bond", myDob010, false, nationality02, true, 2.50, 9.0, myGoTo10, c1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_101", null, "Char_101", "Char_404", 30000, false, false, myTitles010, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myChar1Daughter.charID, myChar1Daughter);
-            NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("Char_409", "Wayne", "Dond", myDob011, true, nationality01, true, 2.50, 9.0, myGoTo11, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_102", null, "Char_102", null, 30000, false, false, myTitles011, null, loc: myFief6);
+            NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("Char_409", "Wayne", "Dond", myDob011, true, nationality01, true, 2.50, 9.0, myGoTo11, f1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_102", null, "Char_102", null, 30000, false, false, myTitles011, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2Son2.charID, myChar2Son2);
-            NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("Char_410", "Esmerelda", "Dond", myDob012, false, nationality01, true, 2.50, 9.0, myGoTo12, myLang3, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_102", null, "Char_102", null, 30000, false, false, myTitles012, null, loc: myFief6);
+            NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("Char_410", "Esmerelda", "Dond", myDob012, false, nationality01, true, 2.50, 9.0, myGoTo12, f1, 90, 0, 4.0, 6.0, generateSkillSet(), true, false, "Char_102", null, "Char_102", null, 30000, false, false, myTitles012, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2Daughter.charID, myChar2Daughter);
 
             /*
@@ -909,6 +911,26 @@ namespace hist_mmorpg
             // write key list to database
             this.writeKeyList(gameID, "skillKeys", Globals_Game.skillKeys);
 
+            // ========= write BASELANGUAGES
+            // clear existing key list
+            if (Globals_Game.baseLangKeys.Count > 0)
+            {
+                Globals_Game.baseLangKeys.Clear();
+            }
+
+            // write each object in baseLanguageMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<string, BaseLanguage> pair in Globals_Game.baseLanguageMasterList)
+            {
+                bool success = this.writeBaseLanguage(gameID, pair.Value);
+                if (success)
+                {
+                    Globals_Game.baseLangKeys.Add(pair.Key);
+                }
+            }
+
+            // write key list to database
+            this.writeKeyList(gameID, "baseLangKeys", Globals_Game.baseLangKeys);
+
 			// ========= write LANGUAGES
             // clear existing key list
             if (Globals_Game.langKeys.Count > 0)
@@ -1237,12 +1259,20 @@ namespace hist_mmorpg
                 Globals_Game.skillMasterList.Add(skill.skillID, skill);
 			}
 
+            // ========= load BASELANGUAGES
+            foreach (string element in Globals_Game.baseLangKeys)
+            {
+                BaseLanguage bLang = this.initialDBload_baseLanguage(gameID, element);
+                // add BaseLanguage to baseLanguageMasterList
+                Globals_Game.baseLanguageMasterList.Add(bLang.id, bLang);
+            }
+
             // ========= load LANGUAGES
             foreach (string element in Globals_Game.langKeys)
             {
                 Language lang = this.initialDBload_language(gameID, element);
                 // add Language to languageMasterList
-                Globals_Game.languageMasterList.Add(lang.languageID, lang);
+                Globals_Game.languageMasterList.Add(lang.id, lang);
             }
 
             // ========= load NATIONALITY OBJECTS
@@ -2009,19 +2039,50 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Loads a BaseLanguage for a particular game from database
+        /// </summary>
+        /// <returns>BaseLanguage object</returns>
+        /// <param name="gameID">Game for which BaseLanguage to be retrieved</param>
+        /// <param name="bLangID">ID of Language to be retrieved</param>
+        public BaseLanguage initialDBload_baseLanguage(string gameID, string bLangID)
+        {
+            var bLangResult = rClient.Get(gameID, bLangID);
+            var newBaseLang = new BaseLanguage();
+
+            if (bLangResult.IsSuccess)
+            {
+                newBaseLang = bLangResult.Value.GetObject<BaseLanguage>();
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve BaseLanguage " + bLangID);
+                }
+            }
+
+            return newBaseLang;
+        }
+
+        /// <summary>
         /// Loads a Language for a particular game from database
         /// </summary>
         /// <returns>Language object</returns>
         /// <param name="gameID">Game for which Language to be retrieved</param>
-        /// <param name="rankID">ID of Language to be retrieved</param>
+        /// <param name="langID">ID of Language to be retrieved</param>
         public Language initialDBload_language(string gameID, string langID)
         {
             var languageResult = rClient.Get(gameID, langID);
+            var langRiak = new Language_Riak();
             var newLanguage = new Language();
 
             if (languageResult.IsSuccess)
             {
-                newLanguage = languageResult.Value.GetObject<Language>();
+                // extract Language_Riak
+                langRiak = languageResult.Value.GetObject<Language_Riak>();
+
+                // create Language from Language_Riak
+                newLanguage = this.LanguageFromRiak(langRiak);
             }
             else
             {
@@ -2259,7 +2320,7 @@ namespace hist_mmorpg
             fOut.province = Globals_Game.provinceMasterList[fr.province];
 
             // insert language
-            fOut.language = new Tuple<Language, int>(Globals_Game.languageMasterList[fr.language.Item1], fr.language.Item2);
+            fOut.language = Globals_Game.languageMasterList[fr.language];
 
             // insert owner
             fOut.owner = Globals_Game.pcMasterList[fr.owner];
@@ -2350,9 +2411,9 @@ namespace hist_mmorpg
         /// <param name="pc">PlayerCharacter to be converted</param>
 		public PlayerCharacter_Riak PCtoRiak(PlayerCharacter pc)
 		{
-			PlayerCharacter_Riak pcOut = null;
-			pcOut = new PlayerCharacter_Riak (pc);
-			return pcOut;
+			PlayerCharacter_Riak pcRiakOut = null;
+			pcRiakOut = new PlayerCharacter_Riak (pc);
+			return pcRiakOut;
 		}
 
 		/// <summary>
@@ -2362,10 +2423,22 @@ namespace hist_mmorpg
         /// <param name="npc">NonPlayerCharacter to be converted</param>
 		public NonPlayerCharacter_Riak NPCtoRiak(NonPlayerCharacter npc)
 		{
-			NonPlayerCharacter_Riak npcOut = null;
-			npcOut = new NonPlayerCharacter_Riak (npc);
-			return npcOut;
+			NonPlayerCharacter_Riak npcRiakOut = null;
+			npcRiakOut = new NonPlayerCharacter_Riak (npc);
+			return npcRiakOut;
 		}
+
+        /// <summary>
+        /// Converts Language object (containing nested objects) into suitable format for JSON serialisation
+        /// </summary>
+        /// <returns>Language_Riak object</returns>
+        /// <param name="l">Language to be converted</param>
+        public Language_Riak LangToRiak(Language l)
+        {
+            Language_Riak langRiakOut = null;
+            langRiakOut = new Language_Riak(l);
+            return langRiakOut;
+        }
 
         /// <summary>
         /// Converts Position_Riak objects into Position objects
@@ -2399,7 +2472,7 @@ namespace hist_mmorpg
 			pcOut = new PlayerCharacter (pcr);
 
             // insert language
-            pcOut.language = new Tuple<Language, int>(Globals_Game.languageMasterList[pcr.language.Item1], pcr.language.Item2);
+            pcOut.language = Globals_Game.languageMasterList[pcr.language];
 
             // insert nationality
             pcOut.nationality = Globals_Game.nationalityMasterList[pcr.nationality];
@@ -2434,33 +2507,50 @@ namespace hist_mmorpg
             return pcOut;
 		}
 
-		/// <summary>
-		/// Converts NonPlayerCharacter_Riak objects into NonPlayerCharacter game objects
-		/// </summary>
+        /// <summary>
+        /// Converts NonPlayerCharacter_Riak objects into NonPlayerCharacter game objects
+        /// </summary>
         /// <returns>NonPlayerCharacter object</returns>
         /// <param name="npcr">NonPlayerCharacter_Riak object to be converted</param>
-		public NonPlayerCharacter NPCfromRiakNPC(NonPlayerCharacter_Riak npcr)
-		{
-			NonPlayerCharacter npcOut = null;
+        public NonPlayerCharacter NPCfromRiakNPC(NonPlayerCharacter_Riak npcr)
+        {
+            NonPlayerCharacter npcOut = null;
             // create NonPlayerCharacter from NonPlayerCharacter_Riak
-			npcOut = new NonPlayerCharacter (npcr);
+            npcOut = new NonPlayerCharacter(npcr);
 
             // insert language
-            npcOut.language = new Tuple<Language, int>(Globals_Game.languageMasterList[npcr.language.Item1], npcr.language.Item2);
+            npcOut.language = Globals_Game.languageMasterList[npcr.language];
 
             // insert nationality
             npcOut.nationality = Globals_Game.nationalityMasterList[npcr.nationality];
-            
-            // insert skills
-			if (npcr.skills.Length > 0)
-			{
-				for (int i = 0; i < npcr.skills.Length; i++)
-				{
-                    npcOut.skills[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[npcr.skills[i].Item1], npcr.skills[i].Item2);
-				}
-			}
 
-			return npcOut;
+            // insert skills
+            if (npcr.skills.Length > 0)
+            {
+                for (int i = 0; i < npcr.skills.Length; i++)
+                {
+                    npcOut.skills[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[npcr.skills[i].Item1], npcr.skills[i].Item2);
+                }
+            }
+
+            return npcOut;
+        }
+
+        /// <summary>
+        /// Converts Language_Riak objects into Language game objects
+		/// </summary>
+        /// <returns>Language object</returns>
+        /// <param name="lr">Language_Riak object to be converted</param>
+		public Language LanguageFromRiak(Language_Riak lr)
+		{
+            Language langOut = null;
+            // create NonPlayerCharacter from NonPlayerCharacter_Riak
+            langOut = new Language(lr);
+
+            // insert BaseLanguage
+            langOut.baseLanguage = Globals_Game.baseLanguageMasterList[lr.baseLanguage];
+
+			return langOut;
 		}
 
 		/// <summary>
@@ -2933,6 +3023,7 @@ namespace hist_mmorpg
             // convert NonPlayerCharacter into NonPlayerCharacter_Riak
 			NonPlayerCharacter_Riak riakNPC = this.NPCtoRiak (npc);
 
+            // write NonPlayerCharacter_Riak to database
 			var rNPC = new RiakObject(gameID, riakNPC.charID, riakNPC);
 			var putNPCresult = rClient.Put(rNPC);
 
@@ -2958,7 +3049,8 @@ namespace hist_mmorpg
             // convert PlayerCharacter into PlayerCharacter_Riak
             PlayerCharacter_Riak riakPC = this.PCtoRiak(pc);
 
-			var rPC = new RiakObject(gameID, riakPC.charID, riakPC);
+            // write PlayerCharacter_Riak to database
+            var rPC = new RiakObject(gameID, riakPC.charID, riakPC);
 			var putPCresult = rClient.Put(rPC);
 
 			if (! putPCresult.IsSuccess)
@@ -3048,6 +3140,29 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Writes BaseLanguage object to Riak
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="gameID">Game (bucket) to write to</param>
+        /// <param name="bl">BaseLanguage to write</param>
+        public bool writeBaseLanguage(string gameID, BaseLanguage bl)
+        {
+
+            var rBaseLanguage = new RiakObject(gameID, bl.id, bl);
+            var putBaseLanguageResult = rClient.Put(rBaseLanguage);
+
+            if (!putBaseLanguageResult.IsSuccess)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Write failed: BaseLanguage " + rBaseLanguage.Key + " to bucket " + rBaseLanguage.Bucket);
+                }
+            }
+
+            return putBaseLanguageResult.IsSuccess;
+        }
+
+        /// <summary>
 		/// Writes Language object to Riak
 		/// </summary>
         /// <returns>bool indicating success</returns>
@@ -3055,8 +3170,11 @@ namespace hist_mmorpg
         /// <param name="l">Language to write</param>
         public bool writeLanguage(string gameID, Language l)
 		{
+            // convert Language into Language_Riak
+            Language_Riak riakLang = this.LangToRiak(l);
 
-			var rLanguage = new RiakObject(gameID, l.languageID, l);
+            // write Language_Riak to database
+            var rLanguage = new RiakObject(gameID, riakLang.id, riakLang);
 			var putLanguageResult = rClient.Put(rLanguage);
 
 			if (! putLanguageResult.IsSuccess)
@@ -4952,7 +5070,7 @@ namespace hist_mmorpg
             charText += "Current location: " + ch.location.name + " (" + ch.location.province.name + ")\r\n";
             
             // language
-            charText += "Language: " + ch.language.Item1.name + " (dialect " + ch.language.Item2 + ")\r\n";
+            charText += "Language: " + ch.language.getName() + "\r\n";
 
             if (isMyNPC)
             {
@@ -5115,7 +5233,7 @@ namespace hist_mmorpg
                         // get correct title
                         foreach (TitleName titleName in thisPlace.rank.title)
                         {
-                            if (titleName.langID == ch.language.Item1.languageID)
+                            if (titleName.langID == ch.language.baseLanguage.id)
                             {
                                 charText += titleName.name + " (rank " + thisPlace.rank.id + ") of ";
                                 break;
@@ -5142,7 +5260,7 @@ namespace hist_mmorpg
                         // get correct title
                         foreach (TitleName titleName in thisPlace.rank.title)
                         {
-                            if (titleName.langID == ch.language.Item1.languageID)
+                            if (titleName.langID == ch.language.baseLanguage.id)
                             {
                                 charText += titleName.name + " (rank " + thisPlace.rank.id + ") of ";
                                 break;
@@ -5169,7 +5287,7 @@ namespace hist_mmorpg
                         // get correct title
                         foreach (TitleName titleName in thisPlace.rank.title)
                         {
-                            if (titleName.langID == ch.language.Item1.languageID)
+                            if (titleName.langID == ch.language.baseLanguage.id)
                             {
                                 charText += titleName.name + " (rank " + thisPlace.rank.id + ") of ";
                                 break;
@@ -5562,7 +5680,7 @@ namespace hist_mmorpg
             fiefText += "Title (rank): ";
             for (int i = 0; i < f.rank.title.Length; i++ )
             {
-                if (f.rank.title[i].langID == f.language.Item1.languageID)
+                if (f.rank.title[i].langID == f.language.baseLanguage.id)
                 {
                     fiefText += f.rank.title[i].name + " (" + f.rank.id + ")\r\n";
                     break;
@@ -5628,7 +5746,7 @@ namespace hist_mmorpg
             fiefText += "\r\n";
 
             // language
-            fiefText += "Language: " + f.language.Item1.name + " (dialect " + f.language.Item2 + ")\r\n";
+            fiefText += "Language: " + f.language.getName() + "\r\n";
 
             // terrain type
             fiefText += "Terrain: " + f.terrain.description + "\r\n";
@@ -10908,7 +11026,11 @@ namespace hist_mmorpg
             armyOwner.getHomeFief().treasury += Convert.ToInt32(moneyPillagedOwner);
 
             // apply loss of stature to army owner if fief has same language
-            if (armyOwner.language.Item1 == f.language.Item1)
+            if (armyOwner.language.id == f.language.id)
+            {
+                armyOwner.statureModifier += -0.3;
+            }
+            else if (armyOwner.language.baseLanguage.id == f.language.baseLanguage.id)
             {
                 armyOwner.statureModifier += -0.2;
             }

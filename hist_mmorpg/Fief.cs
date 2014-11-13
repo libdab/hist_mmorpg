@@ -91,7 +91,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds fief language and dialect
         /// </summary>
-        public Tuple<Language, int> language { get; set; }
+        public Language language { get; set; }
         /// <summary>
         /// Holds terrain object
         /// </summary>
@@ -174,7 +174,7 @@ namespace hist_mmorpg
         /// <param name="kpLvl">Double holding fief keep level</param>
         /// <param name="loy">Double holding fief loyalty rating</param>
         /// <param name="stat">char holding fief status</param>
-        /// <param name="lang">Tuple<Language, int> holding language and dialect</param>
+        /// <param name="lang">Language object holding language and dialect</param>
         /// <param name="terr">Terrain object for fief</param>
         /// <param name="chars">List holding characters present in fief</param>
         /// <param name="barChars">List holding IDs of characters barred from keep</param>
@@ -191,7 +191,7 @@ namespace hist_mmorpg
         /// <param name="sge">String holding siegeID of active siege</param>
         public Fief(String id, String nam, Province prov, int pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
-            Double kpLvl, Double loy, char stat, Tuple<Language, int> lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
+            Double kpLvl, Double loy, char stat, Language lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
             byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, String tiHo = null,
             PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank r = null, string sge = null)
             : base(id, nam, own: own, r: r, tiHo: tiHo)
@@ -2209,9 +2209,9 @@ namespace hist_mmorpg
 		/// </summary>
 		public char status { get; set; }
         /// <summary>
-        /// Holds fief language and dialect
+        /// Holds fief language (ID)
         /// </summary>
-        public Tuple<String, int> language { get; set; }
+        public string language { get; set; }
         /// <summary>
         /// Holds terrain object (terrainCode)
 		/// </summary>
@@ -2299,7 +2299,7 @@ namespace hist_mmorpg
 			this.keepLevel = f.keepLevel;
 			this.loyalty = f.loyalty;
 			this.status = f.status;
-            this.language = new Tuple<string,int>(f.language.Item1.languageID, f.language.Item2);
+            this.language = f.language.id;
 			this.terrain = f.terrain.terrainCode;
 			if (f.charactersInFief.Count > 0)
 			{
