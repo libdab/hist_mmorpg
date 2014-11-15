@@ -2113,7 +2113,7 @@ namespace hist_mmorpg
                     oldOwnerTitle = "His Majesty ";
                 }
                 description += " the previous owner, ";
-                description += oldOwnerTitle + oldOwner.firstName + " " + oldOwner.familyName + ", to the NEW OWNER,";
+				description += oldOwnerTitle + oldOwner.firstName + " " + oldOwner.familyName + ", to the NEW OWNER, ";
                 description += newOwner.firstName + " " + newOwner.familyName + ".";
 
                 // create and add a journal entry to the pastEvents journal

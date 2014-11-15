@@ -1243,12 +1243,12 @@ namespace hist_mmorpg
             Globals_Game.pastEvents = this.initialDBload_journal(gameID, "serverPastEvents");
             Globals_Client.myPastEvents = this.initialDBload_journal(gameID, "clientPastEvents");
 
-            // ========= load TERRAINS
+			// ========= load victoryData
             foreach (string element in Globals_Game.victoryDataKeys)
             {
                 VictoryData vicData = this.initialDBload_victoryData(gameID, element);
                 // add VictoryData to Globals_Game.victoryData
-                Globals_Game.victoryData.Add(vicData.playerCharacterID, vicData);
+				Globals_Game.victoryData.Add(vicData.playerID , vicData);
             }
 
             // ========= load SKILLS
@@ -1421,17 +1421,31 @@ namespace hist_mmorpg
                 }
 			}
 
-            // populate langKeys
-            var langKeyResult = rClient.Get(gameID, "langKeys");
-            if (langKeyResult.IsSuccess)
+			// populate langKeys
+			var langKeyResult = rClient.Get(gameID, "langKeys");
+			if (langKeyResult.IsSuccess)
+			{
+				Globals_Game.langKeys = langKeyResult.Value.GetObject<List<string>>();
+			}
+			else
+			{
+				if (Globals_Client.showMessages)
+				{
+					System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve langKeys from database.");
+				}
+			}
+
+			// populate baseLangKeys
+			var bLangKeyResult = rClient.Get(gameID, "baseLangKeys");
+			if (bLangKeyResult.IsSuccess)
             {
-                Globals_Game.langKeys = langKeyResult.Value.GetObject<List<string>>();
+				Globals_Game.baseLangKeys = bLangKeyResult.Value.GetObject<List<string>>();
             }
             else
             {
                 if (Globals_Client.showMessages)
                 {
-                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve langKeys from database.");
+					System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve baseLangKeys from database.");
                 }
             }
 
@@ -1678,13 +1692,13 @@ namespace hist_mmorpg
 		public PlayerCharacter initialDBload_charVariable(string gameID, string charVarID)
 		{
 			var charVarResult = rClient.Get(gameID, charVarID);
-			string pcID = null;
+			String pcID = "";
 			PlayerCharacter newPC = null;
 
 			if (charVarResult.IsSuccess)
 			{
-				pcID = charVarResult.Value.GetObject<string>();
-				if (pcID != null)
+				pcID = charVarResult.Value.GetObject<String>();
+				if (pcID != "")
 				{
 					if (Globals_Game.pcMasterList.ContainsKey(pcID))
 					{
@@ -2163,6 +2177,7 @@ namespace hist_mmorpg
             {
                 // extract Position_Riak object
                 posRiak = posResult.Value.GetObject<Position_Riak>();
+
                 // create Position from Position_Riak
                 newPos = this.PositionfromPosRiak(posRiak);
             }
@@ -2904,11 +2919,12 @@ namespace hist_mmorpg
 		/// <param name="pc">PlayerCharacter to write</param>
 		public bool writeCharacterVar(string gameID, string key, PlayerCharacter pc)
 		{
-			string pcID = null;
+			String pcID = "";
 			if (pc != null)
 			{
 				pcID = pc.charID;
 			}
+			pcID = "\"" + pcID + "\"";
 
 			var rCharVar = new RiakObject(gameID, key, pcID);
 			var putCharVarResult = rClient.Put(rCharVar);
@@ -3243,7 +3259,7 @@ namespace hist_mmorpg
         public bool writeVictoryData(string gameID, VictoryData vicDat)
         {
 
-            var rVictoryData = new RiakObject(gameID, vicDat.playerCharacterID, vicDat);
+			var rVictoryData = new RiakObject(gameID, vicDat.playerID, vicDat);
             var putVictoryDataResult = rClient.Put(rVictoryData);
 
             if (!putVictoryDataResult.IsSuccess)

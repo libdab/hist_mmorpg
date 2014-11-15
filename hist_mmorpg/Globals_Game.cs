@@ -231,11 +231,11 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds bool indicating whether or not to load initial object data from database on startup
         /// </summary>
-        public static bool loadFromDatabase = false;
+		public static bool loadFromDatabase = false;
         /// <summary>
         /// Holds bool indicating whether or not to write current object data to database on exit
         /// </summary>
-        public static bool writeToDatabase = false;
+		public static bool writeToDatabase = false;
 
         /// <summary>
         /// Gets the game's end date (year)
