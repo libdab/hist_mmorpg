@@ -14785,6 +14785,133 @@ namespace hist_mmorpg
             }
         }
 
+        /// <summary>
+        /// Creates game objects using data imported from a CSV file and writes them to the database
+        /// </summary>
+        /// <returns>bool indicating success state</returns>
+        /// <param name="objectType">The type of objects to be created</param>
+        /// <param name="filename">The name of the CSV file</param>
+        public bool ImportFromCSV(string objectType, string filename)
+        {
+            bool inputFileError = false;
+            string lineIn;
+            string[] lineParts;
+            StreamReader srPlaces = null;
+            List<string> keyList = new List<string>();
+
+            try
+            {
+                // opens StreamReader to read in  data from csv file
+                srPlaces = new StreamReader(filename);
+            }
+            // catch following IO exceptions that could be thrown by the StreamReader 
+            catch (FileNotFoundException fnfe)
+            {
+                inputFileError = true;
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fnfe.Message);
+                }
+            }
+            catch (IOException ioe)
+            {
+                inputFileError = true;
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ioe.Message);
+                }
+            }
+
+            // while there is data in the line
+            while ((lineIn = srPlaces.ReadLine()) != null)
+            {
+                // put the contents of the line into lineParts array, splitting on (char)9 (TAB)
+                lineParts = lineIn.Split(',');
+
+                if (objectType.Equals("fief"))
+                {
+                    Fief_Riak thisFiefRiak = null;
+
+                    if (lineParts.Length != 61)
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Not enough data parts present for fief object.");
+                        }
+                    }
+                    else
+                    {
+                        thisFiefRiak = this.importFromCSV_Fief(lineParts);
+
+                        if (thisFiefRiak != null)
+                        {
+                            // TODO: save to Riak
+
+                            // add fief id to keylist
+                            keyList.Add(thisFiefRiak.id);
+                        }
+                    }
+                }
+            }
+
+            if (keyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            return inputFileError;
+        }
+
+        /// <summary>
+        /// Creates a Fief_Riak object using data in a string array
+        /// </summary>
+        /// <returns>Fief_Riak object</returns>
+        /// <param name="fiefData">string[] holding source data</param>
+        public Fief_Riak importFromCSV_Fief(string[] fiefData)
+        {
+            Fief_Riak thisFiefRiak = null;
+
+            try
+            {
+
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisFiefRiak;
+        }
+
     }
 
 }
