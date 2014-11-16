@@ -140,15 +140,15 @@ namespace hist_mmorpg
         /// </summary>
         public string name { get; set; }
         /// <summary>
-        /// Holds place owner (PlayerCharacter object)
+        /// Holds place owner (id)
         /// </summary>
         public string owner { get; set; }
         /// <summary>
-        /// Holds place title holder (charID)
+        /// Holds place title holder (id)
         /// </summary>
         public string titleHolder { get; set; }
         /// <summary>
-        /// Holds place rank (Rank object)
+        /// Holds place rank (id)
         /// </summary>
         public byte rank { get; set; }
 
@@ -182,6 +182,35 @@ namespace hist_mmorpg
                 this.titleHolder = placeToUse.titleHolder;
                 this.rank = placeToUse.rank.id;
             }
+        }
+
+        /// <summary>
+        /// Constructor for Place_Riak taking seperate values.
+        /// For creating Place_Riak from CSV file.
+        /// </summary>
+        /// <param name="id">String holding place ID</param>
+        /// <param name="nam">String holding place name</param>
+        /// <param name="own">Place owner (PlayerCharacter)</param>
+        /// <param name="tiHo">String holding place title holder (charID)</param>
+        /// <param name="rnk">Place rank (Rank object)</param>
+        public Place_Riak(String id, String nam, byte r, String tiHo = null, string own = null)
+        {
+
+            // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
+            // SX,SY,WK,YS/00
+
+            // validate nam length = 1-40
+            if ((nam.Length < 1) || (nam.Length > 40))
+            {
+                throw new InvalidDataException("Place name must be between 1 and 40 characters in length");
+            }
+
+            this.id = id;
+            this.name = nam;
+            this.owner = own;
+            this.titleHolder = tiHo;
+            this.rank = r;
+
         }
     }
 

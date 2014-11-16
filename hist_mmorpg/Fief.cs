@@ -169,8 +169,8 @@ namespace hist_mmorpg
         /// <param name="garrNxt">uint holding garrison expenditure (next season)</param>
         /// <param name="infraNxt">uint holding infrastructure expenditure (next season)</param>
         /// <param name="keepNxt">uint holding keep expenditure (next season)</param>
-        /// <param name="finCurr">String [] holding financial data for current season</param>
-        /// <param name="finPrev">String [] holding financial data for previous season</param>
+        /// <param name="finCurr">Double [] holding financial data for current season</param>
+        /// <param name="finPrev">Double [] holding financial data for previous season</param>
         /// <param name="kpLvl">Double holding fief keep level</param>
         /// <param name="loy">Double holding fief loyalty rating</param>
         /// <param name="stat">char holding fief status</param>
@@ -2219,7 +2219,7 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Holds list of characters present in fief (charIDs)
 		/// </summary>
-		public List<String> characters = new List<String>();
+		public List<String> charactersInFief = new List<String>();
 		/// <summary>
 		/// Holds list of characters banned from keep (charIDs)
 		/// </summary>
@@ -2305,7 +2305,7 @@ namespace hist_mmorpg
 			{
 				for (int i = 0; i < f.charactersInFief.Count; i++)
 				{
-					this.characters.Add (f.charactersInFief[i].charID);
+					this.charactersInFief.Add (f.charactersInFief[i].charID);
 				}
 			}
 			this.barredCharacters = f.barredCharacters;
@@ -2320,6 +2320,155 @@ namespace hist_mmorpg
             this.siege = f.siege;
 		}
 
+        /// <summary>
+        /// Constructor for Fief_Riak taking seperate values.
+        /// For creating Fief_Riak from CSV file.
+        /// </summary>
+        /// <param name="prov">String holding Fief's Province object (id)</param>
+        /// <param name="pop">uint holding fief population</param>
+        /// <param name="fld">Double holding fief field level</param>
+        /// <param name="fld">Double holding fief industry level</param>
+        /// <param name="trp">uint holding no. of troops in fief</param>
+        /// <param name="tx">Double holding fief tax rate</param>
+        /// <param name="txNxt">Double holding fief tax rate (next season)</param>
+        /// <param name="offNxt">uint holding officials expenditure (next season)</param>
+        /// <param name="garrNxt">uint holding garrison expenditure (next season)</param>
+        /// <param name="infraNxt">uint holding infrastructure expenditure (next season)</param>
+        /// <param name="keepNxt">uint holding keep expenditure (next season)</param>
+        /// <param name="finCurr">Double [] holding financial data for current season</param>
+        /// <param name="finPrev">Double [] holding financial data for previous season</param>
+        /// <param name="kpLvl">Double holding fief keep level</param>
+        /// <param name="loy">Double holding fief loyalty rating</param>
+        /// <param name="stat">char holding fief status</param>
+        /// <param name="lang">String holding Language object (id)</param>
+        /// <param name="terr">String holding Terrain object (id)</param>
+        /// <param name="chars">List holding characters present (id)</param>
+        /// <param name="barChars">List holding IDs of characters barred from keep</param>
+        /// <param name="engBarr">bool indicating whether English nationality barred from keep</param>
+        /// <param name="frBarr">bool indicating whether French nationality barred from keep</param>
+        /// <param name="ancOwn">String holding ancestral owner (id)</param>
+        /// <param name="bail">String holding fief bailiff (id)</param>
+        /// <param name="bailInF">byte holding days bailiff in fief</param>
+        /// <param name="treas">int containing fief treasury</param>
+        /// <param name="arms">List holding IDs of armies present in fief</param>
+        /// <param name="rec">bool indicating whether recruitment has occurred in the fief (current season)</param>
+        /// <param name="pil">bool indicating whether pillage has occurred in the fief (current season)</param>
+        /// <param name="trans">Dictionary<string, string[]> containing troop detachments in the fief awaiting transfer</param>
+        /// <param name="sge">String holding siegeID of active siege</param>
+        public Fief_Riak(String id, String nam, string prov, int pop, Double fld, Double ind, uint trp, Double tx,
+            Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
+            Double kpLvl, Double loy, char stat, string lang, string terr, List<string> chars, List<string> barChars, bool engBarr, bool frBarr,
+            byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, byte r, String tiHo = null,
+            string own = null, string ancOwn = null, string bail = null, string sge = null)
+            : base(id, nam, own: own, r: r, tiHo: tiHo)
+        {
+
+            // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
+            // SX,SY,WK,YS/01-19
+
+            // validate nam length = 1-40
+            if ((nam.Length < 1) || (nam.Length > 40))
+            {
+                throw new InvalidDataException("Fief name must be between 1 and 40 characters in length");
+            }
+
+            // TODO: validate prov ID = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
+            // SX,SY,WK,YS/00
+
+            // validate pop = 1-2000000
+            if ((pop < 1) || (pop > 2000000))
+            {
+                throw new InvalidDataException("Fief population must be an integer between 1 and 2000000");
+            }
+
+            // TODO: validate own ID = 1-10000?
+            // TODO: validate ancOwn ID = 1-10000?
+            // TODO: validate bail ID = 1-10000?
+
+            // validate fld >= 0
+            if (fld < 0)
+            {
+                throw new InvalidDataException("Fief field level must be a double >= 0");
+            }
+
+            // validate ind >= 0
+            if (ind < 0)
+            {
+                throw new InvalidDataException("Fief industry level must be a double >= 0");
+            }
+
+            // TODO: validate trp = (upper limit?)
+            // validate tx = 0-100.00
+            if ((tx < 0) || (tx > 100))
+            {
+                throw new InvalidDataException("Fief tax rate must be a double between 0 and 100");
+            }
+
+            // TODO: validate off = (upper limit?)
+            // TODO: validate garr = (upper limit?)
+            // TODO: validate infra = (upper limit?)
+            // TODO: validate keep = (upper limit?)
+            // validate tx = 0-100.00
+            if ((txNxt < 0) || (txNxt > 100))
+            {
+                throw new InvalidDataException("Fief tax rate (next season) must be a double between 0 and 100");
+            }
+
+            // TODO: validate offNxt = (upper limit?)
+            // TODO: validate garrNxt = (upper limit?)
+            // TODO: validate infraNxt = (upper limit?)
+            // TODO: validate keepNxt = (upper limit?)
+
+            // validate keepLvl >= 0
+            if (kpLvl < 0)
+            {
+                throw new InvalidDataException("Fief keep level must be a double >= 0");
+            }
+
+            // validate loy = 0-9.00
+            if ((loy < 0) || (loy > 9))
+            {
+                throw new InvalidDataException("Fief loyalty must be a double between 0 and 9");
+            }
+
+            // validate stat = C/U/R
+            if (((!stat.Equals('C')) && (!stat.Equals('U'))) && (!stat.Equals('R')))
+            {
+                throw new InvalidDataException("Fief status must be 'C', 'U' or 'R'");
+            }
+
+            this.province = prov;
+            this.population = pop;
+            this.ancestralOwner = ancOwn;
+            this.bailiff = bail;
+            this.fields = fld;
+            this.industry = ind;
+            this.troops = trp;
+            this.taxRate = tx;
+            this.taxRateNext = txNxt;
+            this.officialsSpendNext = offNxt;
+            this.garrisonSpendNext = garrNxt;
+            this.infrastructureSpendNext = infraNxt;
+            this.keepSpendNext = keepNxt;
+            this.keyStatsCurrent = finCurr;
+            this.keyStatsPrevious = finPrev;
+            this.keepLevel = kpLvl;
+            this.loyalty = loy;
+            this.status = stat;
+            this.language = lang;
+            this.terrain = terr;
+            this.charactersInFief = chars;
+            this.barredCharacters = barChars;
+            this.englishBarred = engBarr;
+            this.frenchBarred = frBarr;
+            this.bailiffDaysInFief = bailInF;
+            this.treasury = treas;
+            this.armies = arms;
+            this.hasRecruited = rec;
+            this.troopTransfers = trans;
+            this.isPillaged = pil;
+            this.siege = sge;
+        }
         /// <summary>
         /// Constructor for Fief_Riak taking no parameters.
         /// For use when de-serialising from Riak

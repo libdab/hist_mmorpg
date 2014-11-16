@@ -298,7 +298,7 @@ namespace hist_mmorpg
                 // create empty array, to be populated later
                 this.skills = new Tuple<Skill, int>[charToUse.skills.Length];
 				this.inKeep = charToUse.inKeep;
-				this.isPregnant = charToUse.pregnant;
+				this.isPregnant = charToUse.isPregnant;
                 this.spouse = charToUse.spouse;
                 this.father = charToUse.father;
                 this.mother = charToUse.mother;
@@ -4008,7 +4008,7 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Holds character pregnancy status
 		/// </summary>
-		public bool pregnant { get; set; }
+		public bool isPregnant { get; set; }
 		/// <summary>
 		/// Holds current location (Fief ID)
 		/// </summary>
@@ -4094,7 +4094,7 @@ namespace hist_mmorpg
 					this.skills [i] = new Tuple<string,int>(charToUse.skills [i].Item1.skillID, charToUse.skills [i].Item2);
 				}
 				this.inKeep = charToUse.inKeep;
-				this.pregnant = charToUse.isPregnant;
+				this.isPregnant = charToUse.isPregnant;
 				this.location = charToUse.location.id;
                 this.spouse = charToUse.spouse;
                 this.father = charToUse.father;
@@ -4106,6 +4106,144 @@ namespace hist_mmorpg
                 this.fiancee = charToUse.fiancee;
             }
 		}
+
+        /// <summary>
+        /// Constructor for Character_Riak taking seperate values.
+        /// For creating Character_Riak from CSV file.
+        /// </summary>
+        /// <param name="id">string holding character ID</param>
+        /// <param name="firstNam">String holding character's first name</param>
+        /// <param name="famNam">String holding character's family name</param>
+        /// <param name="dob">Tuple<uint, byte> holding character's year and season of birth</param>
+        /// <param name="isM">bool holding if character male</param>
+        /// <param name="nat">string holding Character's Nationality (id)</param>
+        /// <param name="alive">bool indicating whether character is alive</param>
+        /// <param name="mxHea">Double holding character maximum health</param>
+        /// <param name="vir">Double holding character virility rating</param>
+        /// <param name="go">Queue (string) of Fiefs to auto-travel (id)</param>
+        /// <param name="lang">string holding Language (id)</param>
+        /// <param name="day">double holding character remaining days in season</param>
+        /// <param name="stat">Double holding character stature rating</param>
+        /// <param name="mngmnt">Double holding character management rating</param>
+        /// <param name="cbt">Double holding character combat rating</param>
+        /// <param name="skl">string array containing character's skills (id)</param>
+        /// <param name="inK">bool indicating if character is in the keep</param>
+        /// <param name="preg">bool holding character pregnancy status</param>
+        /// <param name="famID">String holding charID of head of family with which character associated</param>
+        /// <param name="sp">String holding spouse (charID)</param>
+        /// <param name="fath">String holding father (charID)</param>
+        /// <param name="moth">String holding mother (charID)</param>
+        /// <param name="fia">string holding fiancee (charID)</param>
+        /// <param name="loc">string holding current location (id)</param>
+        /// <param name="myTi">List holding character's titles (fiefIDs)</param>
+        /// <param name="aID">String holding armyID of army character is leading</param>
+        /// <param name="ails">Dictionary (string, Ailment) holding ailments effecting character's health</param>
+        public Character_Riak(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, string nat, bool alive, Double mxHea, Double vir,
+            List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] skl, bool inK, bool preg,
+            String famID, String sp, String fath, String moth, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, string loc = null, String aID = null)
+        {
+
+            // validation
+            // TODO validate id = 1-10000?
+
+            // validate firstNam length = 2-40
+            if ((firstNam.Length < 2) || (firstNam.Length > 40))
+            {
+                throw new InvalidDataException("Character first name must be between 2 and 40 characters in length");
+            }
+
+            // validate famNam length = 2-40
+            if ((famNam.Length < 2) || (famNam.Length > 40))
+            {
+                throw new InvalidDataException("Character family name must be between 2 and 40 characters in length");
+            }
+
+            // TODO: validate dob
+
+            // validate preg = not if male
+            if (isM)
+            {
+				this.isPregnant = false;
+            }
+
+            //  TODO: validate nat
+
+            // validate maxHea = 1-9.00
+            if ((mxHea < 1) || (mxHea > 9))
+            {
+                throw new InvalidDataException("Character maximum health must be a double between 1 and 9");
+            }
+
+            // validate vir = 1-9.00
+            if ((vir < 1) || (vir > 9))
+            {
+                throw new InvalidDataException("Character virility must be a double between 1 and 9");
+            }
+
+
+            // TODO: validate lang = string B,C,D,E,F,G,H,I,L/1-3
+
+            // validate day = 0-90
+            if ((day > 90) || (day < 0))
+            {
+                throw new InvalidDataException("Character remaining days must be a double between 0 and 90");
+            }
+
+            // validate stat = 0-9.00
+            if (stat > 9)
+            {
+                throw new InvalidDataException("Character stature must be a double between 0 and 9");
+            }
+
+            // validate mngmnt = 0-9.00
+            if (mngmnt > 9)
+            {
+                throw new InvalidDataException("Character stature must be a double between 0 and 9");
+            }
+
+            // validate cbt = 0-9.00
+            if (cbt > 9)
+            {
+                throw new InvalidDataException("Character stature must be a double between 0 and 9");
+            }
+
+            // TODO: validate spID = 1-10000?
+            // TODO: ensure married characters have a sp and unmarried ones don't? (but may initially be null)
+            // TODO: validate fath ID = 1-10000?
+
+            // TODO: validate famHead ID = 1-10000?
+
+            this.charID = id;
+            this.firstName = firstNam;
+            this.familyName = famNam;
+            this.birthDate = dob;
+            this.isMale = isM;
+            this.nationality = nat;
+            this.isAlive = alive;
+            this.maxHealth = mxHea;
+            this.virility = vir;
+            this.goTo = go;
+            this.language = lang;
+            this.days = day;
+            this.statureModifier = stat;
+            this.management = mngmnt;
+            this.combat = cbt;
+            this.skills = skl;
+            this.inKeep = inK;
+            this.isPregnant = preg;
+			this.location = loc;
+            this.spouse = sp;
+            this.father = fath;
+            this.mother = moth;
+            this.familyID = famID;
+            this.myTitles = myTi;
+            this.armyID = aID;
+            if (ails != null)
+            {
+                this.ailments = ails;
+            }
+            this.fiancee = fia;
+        }
 
 	}
 
@@ -4201,6 +4339,38 @@ namespace hist_mmorpg
 		}
 
         /// <summary>
+        /// Constructor for PlayerCharacter_Riak taking seperate values.
+        /// For creating PlayerCharacter_Riak from CSV file.
+        /// </summary>
+        /// <param name="outl">bool holding character outlawed status</param>
+        /// <param name="pur">uint holding character purse</param>
+        /// <param name="npcs">List (string) holding employees and family (id)</param>
+        /// <param name="ownedF">List (string) holding fiefs owned (id)</param>
+        /// <param name="ownedP">List (string) holding provinces owned (id)</param>
+        /// <param name="home">String holding character's home fief (id)</param>
+        /// <param name="anchome">String holding character's ancestral home fief (id)</param>
+        /// <param name="pID">String holding ID of player who is currently playing this PlayerCharacter</param>
+        /// <param name="myA">List (string) holding character's armies (id)</param>
+        /// <param name="myS">List<string> holding character's sieges (id)</param>
+        public PlayerCharacter_Riak(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, string nat, bool alive, Double mxHea, Double vir,
+            List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] skl, bool inK, bool preg, String famID,
+            String sp, String fath, String moth, bool outl, uint pur, List<string> npcs, List<string> ownedF, List<string> ownedP, String home, String ancHome, List<String> myTi, List<string> myA,
+            List<string> myS, string fia, Dictionary<string, Ailment> ails = null, string loc = null, String pID = null)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc)
+        {
+            this.outlawed = outl;
+            this.purse = pur;
+            this.myNPCs = npcs;
+            this.ownedFiefs = ownedF;
+            this.ownedProvinces = ownedP;
+            this.homeFief = home;
+            this.ancestralHomeFief = ancHome;
+            this.playerID = pID;
+            this.myArmies = myA;
+            this.mySieges = myS;
+        }
+
+        /// <summary>
         /// Constructor for PlayerCharacter_Riak taking no parameters.
         /// For use when de-serialising from Riak
         /// </summary>
@@ -4254,6 +4424,30 @@ namespace hist_mmorpg
 			this.lastOffer = npc.lastOffer;
             this.isHeir = npc.isHeir;
 		}
+
+        /// <summary>
+        /// Constructor for NonPlayerCharacter_Riak taking seperate values.
+        /// For creating NonPlayerCharacter_Riak from CSV file.
+        /// </summary>
+        /// <param name="mb">String holding NPC's employer (charID)</param>
+        /// <param name="wa">string holding NPC's wage</param>
+        /// <param name="inEnt">bool denoting if in employer's entourage</param>
+        /// <param name="isH">bool denoting if is player's heir</param>
+        public NonPlayerCharacter_Riak(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, string nat, bool alive, Double mxHea, Double vir,
+            List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] skl, bool inK, bool preg, String famID,
+            String sp, String fath, String moth, uint wa, bool inEnt, bool isH, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, String mb = null, string loc = null)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc)
+        {
+            // TODO: validate hb = 1-10000
+            // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
+            // TODO: validate wa = uint
+
+            this.myBoss = mb;
+            this.wage = wa;
+            this.inEntourage = inEnt;
+            this.lastOffer = new Dictionary<string, uint>();
+            this.isHeir = isH;
+        }
 
         /// <summary>
         /// Constructor for NonPlayerCharacter_Riak taking no parameters.

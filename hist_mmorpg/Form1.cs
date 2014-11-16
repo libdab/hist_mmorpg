@@ -2375,25 +2375,25 @@ namespace hist_mmorpg
             fOut.terrain = Globals_Game.terrainMasterList[fr.terrain];
 
 			// insert characters
-			if (fr.characters.Count > 0)
+			if (fr.charactersInFief.Count > 0)
 			{
-				for (int i = 0; i < fr.characters.Count; i++)
+				for (int i = 0; i < fr.charactersInFief.Count; i++)
 				{
-                    if (Globals_Game.npcMasterList.ContainsKey(fr.characters[i]))
+                    if (Globals_Game.npcMasterList.ContainsKey(fr.charactersInFief[i]))
 					{
-                        fOut.charactersInFief.Add(Globals_Game.npcMasterList[fr.characters[i]]);
-                        Globals_Game.npcMasterList[fr.characters[i]].location = fOut;
+                        fOut.charactersInFief.Add(Globals_Game.npcMasterList[fr.charactersInFief[i]]);
+                        Globals_Game.npcMasterList[fr.charactersInFief[i]].location = fOut;
 					}
-                    else if (Globals_Game.pcMasterList.ContainsKey(fr.characters[i]))
+                    else if (Globals_Game.pcMasterList.ContainsKey(fr.charactersInFief[i]))
                     {
-                        fOut.charactersInFief.Add(Globals_Game.pcMasterList[fr.characters[i]]);
-                        Globals_Game.pcMasterList[fr.characters[i]].location = fOut;
+                        fOut.charactersInFief.Add(Globals_Game.pcMasterList[fr.charactersInFief[i]]);
+                        Globals_Game.pcMasterList[fr.charactersInFief[i]].location = fOut;
                     }
                     else
                     {
                         if (Globals_Client.showMessages)
                         {
-                            System.Windows.Forms.MessageBox.Show("Unable to identify character (" + fr.characters[i] + ") for Fief " + fOut.id);
+                            System.Windows.Forms.MessageBox.Show("Unable to identify character (" + fr.charactersInFief[i] + ") for Fief " + fOut.id);
                         }
                     }
 
@@ -14874,7 +14874,57 @@ namespace hist_mmorpg
 
             try
             {
+                // create financial data arrays
+                // current
+                double[] finCurr = new double[] { Convert.ToDouble(fiefData[13]), Convert.ToDouble(fiefData[14]),
+                    Convert.ToDouble(fiefData[15]), Convert.ToDouble(fiefData[16]), Convert.ToDouble(fiefData[17]),
+                    Convert.ToDouble(fiefData[18]), Convert.ToDouble(fiefData[19]), Convert.ToDouble(fiefData[20]),
+               Convert.ToDouble(fiefData[21]), Convert.ToDouble(fiefData[22]), Convert.ToDouble(fiefData[23]),
+                Convert.ToDouble(fiefData[24]), Convert.ToDouble(fiefData[25]), Convert.ToDouble(fiefData[26]) };
 
+                // previous
+                double[] finPrev = new double[] { Convert.ToDouble(fiefData[27]), Convert.ToDouble(fiefData[28]),
+                    Convert.ToDouble(fiefData[29]), Convert.ToDouble(fiefData[30]), Convert.ToDouble(fiefData[31]),
+                    Convert.ToDouble(fiefData[32]), Convert.ToDouble(fiefData[33]), Convert.ToDouble(fiefData[34]),
+               Convert.ToDouble(fiefData[35]), Convert.ToDouble(fiefData[36]), Convert.ToDouble(fiefData[37]),
+                Convert.ToDouble(fiefData[38]), Convert.ToDouble(fiefData[39]), Convert.ToDouble(fiefData[40]) };
+
+                // check for presence of conditional values
+                string tiHo, own, ancOwn, bail, sge;
+                tiHo = own = ancOwn = bail = sge = null;
+
+                if (!fiefData[53].Equals(""))
+                {
+                    tiHo = fiefData[53];
+                }
+                if (!fiefData[54].Equals(""))
+                {
+                    own = fiefData[54];
+                }
+                if (!fiefData[55].Equals(""))
+                {
+                    ancOwn = fiefData[55];
+                }
+                if (!fiefData[56].Equals(""))
+                {
+                    bail = fiefData[56];
+                }
+                if (!fiefData[57].Equals(""))
+                {
+                    sge = fiefData[57];
+                }
+
+                // create Fife_Riak object
+                thisFiefRiak = new Fief_Riak(fiefData[0], fiefData[1], fiefData[2], Convert.ToInt32(fiefData[3]),
+                    Convert.ToDouble(fiefData[4]), Convert.ToDouble(fiefData[5]), Convert.ToUInt32(fiefData[6]),
+                    Convert.ToDouble(fiefData[7]), Convert.ToDouble(fiefData[8]), Convert.ToUInt32(fiefData[9]),
+                    Convert.ToUInt32(fiefData[10]), Convert.ToUInt32(fiefData[11]), Convert.ToUInt32(fiefData[12]),
+                    finCurr, finPrev, Convert.ToDouble(fiefData[41]), Convert.ToDouble(fiefData[42]),
+                    Convert.ToChar(fiefData[43]), fiefData[44], fiefData[45], new List<string>(), new List<string>(),
+                    Convert.ToBoolean(fiefData[46]), Convert.ToBoolean(fiefData[47]), Convert.ToByte(fiefData[48]),
+                    Convert.ToInt32(fiefData[49]), new List<string>(), Convert.ToBoolean(fiefData[50]),
+                    new Dictionary<string, string[]>(), Convert.ToBoolean(fiefData[51]), Convert.ToByte(fiefData[52]),
+                    tiHo: tiHo, own: own, ancOwn: ancOwn, bail: bail, sge: sge);
             }
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
