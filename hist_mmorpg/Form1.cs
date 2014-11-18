@@ -14855,7 +14855,7 @@ namespace hist_mmorpg
                     }
                 }
 
-                if (lineParts[0].Equals("province"))
+                else if (lineParts[0].Equals("province"))
                 {
                     Province_Riak thisProvRiak = null;
 
@@ -14877,6 +14877,32 @@ namespace hist_mmorpg
 
                             // add fief id to keylist
                             keyList.Add(thisProvRiak.id);
+                        }
+                    }
+                }
+
+                else if (lineParts[0].Equals("pc"))
+                {
+                    PlayerCharacter_Riak thisPcRiak = null;
+
+                    if (lineParts.Length != 8)
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Not enough data parts present for PlayerCharacter object.");
+                        }
+                    }
+                    else
+                    {
+                        thisPcRiak = this.importFromCSV_PC(lineParts);
+
+                        if (thisPcRiak != null)
+                        {
+                            // TODO: save to Riak
+
+                            // add fief id to keylist
+                            keyList.Add(thisPcRiak.charID);
                         }
                     }
                 }
@@ -15055,6 +15081,73 @@ namespace hist_mmorpg
             }
 
             return thisProvRiak;
+        }
+
+        /// <summary>
+        /// Creates a PlayerCharacter_Riak object using data in a string array
+        /// </summary>
+        /// <returns>PlayerCharacter_Riak object</returns>
+        /// <param name="pcData">string[] holding source data</param>
+        public PlayerCharacter_Riak importFromCSV_PC(string[] pcData)
+        {
+            PlayerCharacter_Riak thisPcRiak = null;
+
+            try
+            {
+                // check for presence of conditional values
+                string tiHo, own, kingdom;
+                tiHo = own = kingdom = null;
+
+                if (!pcData[5].Equals(""))
+                {
+                    tiHo = pcData[5];
+                }
+                if (!pcData[6].Equals(""))
+                {
+                    own = pcData[6];
+                }
+                if (!pcData[7].Equals(""))
+                {
+                    kingdom = pcData[7];
+                }
+
+                // create Fife_Riak object
+                thisPcRiak = new PlayerCharacter_Riak();
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisPcRiak;
         }
 
     }
