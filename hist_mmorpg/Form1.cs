@@ -239,14 +239,16 @@ namespace hist_mmorpg
             Globals_Game.languageMasterList.Add(f1.id, f1);
 
 			// create terrain objects
-			Terrain plains = new Terrain("P", "Plains", 1);
+			Terrain plains = new Terrain("terr_P", "Plains", 1);
 			Globals_Game.terrainMasterList.Add (plains.terrainCode, plains);
-			Terrain hills = new Terrain("H", "Hills", 1.5);
+            Terrain hills = new Terrain("terr_H", "Hills", 1.5);
             Globals_Game.terrainMasterList.Add(hills.terrainCode, hills);
-			Terrain forrest = new Terrain("F", "Forrest", 1.5);
+            Terrain forrest = new Terrain("terr_F", "Forrest", 1.5);
             Globals_Game.terrainMasterList.Add(forrest.terrainCode, forrest);
-			Terrain mountains = new Terrain("M", "Mountains", 90);
+            Terrain mountains = new Terrain("terr_M", "Mountains", 15);
             Globals_Game.terrainMasterList.Add(mountains.terrainCode, mountains);
+            Terrain impassable_mountains = new Terrain("terr_MX", "Impassable mountains", 90);
+            Globals_Game.terrainMasterList.Add(impassable_mountains.terrainCode, impassable_mountains);
 
 			// create keep barred lists for fiefs
 			List<string> keep1BarChars = new List<string>();
@@ -14789,9 +14791,8 @@ namespace hist_mmorpg
         /// Creates game objects using data imported from a CSV file and writes them to the database
         /// </summary>
         /// <returns>bool indicating success state</returns>
-        /// <param name="objectType">The type of objects to be created</param>
         /// <param name="filename">The name of the CSV file</param>
-        public bool ImportFromCSV(string objectType, string filename)
+        public bool ImportFromCSV(string filename)
         {
             bool inputFileError = false;
             string lineIn;
@@ -14828,16 +14829,16 @@ namespace hist_mmorpg
                 // put the contents of the line into lineParts array, splitting on (char)9 (TAB)
                 lineParts = lineIn.Split(',');
 
-                if (objectType.Equals("fief"))
+                if (lineParts[0].Equals("fief"))
                 {
                     Fief_Riak thisFiefRiak = null;
 
-                    if (lineParts.Length != 61)
+                    if (lineParts.Length != 59)
                     {
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
                         {
-                            MessageBox.Show("Not enough data parts present for fief object.");
+                            MessageBox.Show("Not enough data parts present for Fief object.");
                         }
                     }
                     else
@@ -14850,6 +14851,32 @@ namespace hist_mmorpg
 
                             // add fief id to keylist
                             keyList.Add(thisFiefRiak.id);
+                        }
+                    }
+                }
+
+                if (lineParts[0].Equals("province"))
+                {
+                    Province_Riak thisProvRiak = null;
+
+                    if (lineParts.Length != 8)
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Not enough data parts present for Province object.");
+                        }
+                    }
+                    else
+                    {
+                        thisProvRiak = this.importFromCSV_Prov(lineParts);
+
+                        if (thisProvRiak != null)
+                        {
+                            // TODO: save to Riak
+
+                            // add fief id to keylist
+                            keyList.Add(thisProvRiak.id);
                         }
                     }
                 }
@@ -14876,54 +14903,54 @@ namespace hist_mmorpg
             {
                 // create financial data arrays
                 // current
-                double[] finCurr = new double[] { Convert.ToDouble(fiefData[13]), Convert.ToDouble(fiefData[14]),
-                    Convert.ToDouble(fiefData[15]), Convert.ToDouble(fiefData[16]), Convert.ToDouble(fiefData[17]),
-                    Convert.ToDouble(fiefData[18]), Convert.ToDouble(fiefData[19]), Convert.ToDouble(fiefData[20]),
-               Convert.ToDouble(fiefData[21]), Convert.ToDouble(fiefData[22]), Convert.ToDouble(fiefData[23]),
-                Convert.ToDouble(fiefData[24]), Convert.ToDouble(fiefData[25]), Convert.ToDouble(fiefData[26]) };
+                double[] finCurr = new double[] { Convert.ToDouble(fiefData[14]), Convert.ToDouble(fiefData[15]),
+                    Convert.ToDouble(fiefData[16]), Convert.ToDouble(fiefData[17]), Convert.ToDouble(fiefData[18]),
+                    Convert.ToDouble(fiefData[19]), Convert.ToDouble(fiefData[20]), Convert.ToDouble(fiefData[21]),
+               Convert.ToDouble(fiefData[22]), Convert.ToDouble(fiefData[23]), Convert.ToDouble(fiefData[24]),
+                Convert.ToDouble(fiefData[25]), Convert.ToDouble(fiefData[26]), Convert.ToDouble(fiefData[27]) };
 
                 // previous
-                double[] finPrev = new double[] { Convert.ToDouble(fiefData[27]), Convert.ToDouble(fiefData[28]),
-                    Convert.ToDouble(fiefData[29]), Convert.ToDouble(fiefData[30]), Convert.ToDouble(fiefData[31]),
-                    Convert.ToDouble(fiefData[32]), Convert.ToDouble(fiefData[33]), Convert.ToDouble(fiefData[34]),
-               Convert.ToDouble(fiefData[35]), Convert.ToDouble(fiefData[36]), Convert.ToDouble(fiefData[37]),
-                Convert.ToDouble(fiefData[38]), Convert.ToDouble(fiefData[39]), Convert.ToDouble(fiefData[40]) };
+                double[] finPrev = new double[] { Convert.ToDouble(fiefData[28]), Convert.ToDouble(fiefData[29]),
+                    Convert.ToDouble(fiefData[30]), Convert.ToDouble(fiefData[31]), Convert.ToDouble(fiefData[32]),
+                    Convert.ToDouble(fiefData[33]), Convert.ToDouble(fiefData[34]), Convert.ToDouble(fiefData[35]),
+               Convert.ToDouble(fiefData[36]), Convert.ToDouble(fiefData[37]), Convert.ToDouble(fiefData[38]),
+                Convert.ToDouble(fiefData[39]), Convert.ToDouble(fiefData[40]), Convert.ToDouble(fiefData[41]) };
 
                 // check for presence of conditional values
                 string tiHo, own, ancOwn, bail, sge;
                 tiHo = own = ancOwn = bail = sge = null;
 
-                if (!fiefData[53].Equals(""))
-                {
-                    tiHo = fiefData[53];
-                }
                 if (!fiefData[54].Equals(""))
                 {
-                    own = fiefData[54];
+                    tiHo = fiefData[54];
                 }
                 if (!fiefData[55].Equals(""))
                 {
-                    ancOwn = fiefData[55];
+                    own = fiefData[55];
                 }
                 if (!fiefData[56].Equals(""))
                 {
-                    bail = fiefData[56];
+                    ancOwn = fiefData[56];
                 }
                 if (!fiefData[57].Equals(""))
                 {
-                    sge = fiefData[57];
+                    bail = fiefData[57];
+                }
+                if (!fiefData[58].Equals(""))
+                {
+                    sge = fiefData[58];
                 }
 
                 // create Fife_Riak object
-                thisFiefRiak = new Fief_Riak(fiefData[0], fiefData[1], fiefData[2], Convert.ToInt32(fiefData[3]),
-                    Convert.ToDouble(fiefData[4]), Convert.ToDouble(fiefData[5]), Convert.ToUInt32(fiefData[6]),
-                    Convert.ToDouble(fiefData[7]), Convert.ToDouble(fiefData[8]), Convert.ToUInt32(fiefData[9]),
-                    Convert.ToUInt32(fiefData[10]), Convert.ToUInt32(fiefData[11]), Convert.ToUInt32(fiefData[12]),
-                    finCurr, finPrev, Convert.ToDouble(fiefData[41]), Convert.ToDouble(fiefData[42]),
-                    Convert.ToChar(fiefData[43]), fiefData[44], fiefData[45], new List<string>(), new List<string>(),
-                    Convert.ToBoolean(fiefData[46]), Convert.ToBoolean(fiefData[47]), Convert.ToByte(fiefData[48]),
-                    Convert.ToInt32(fiefData[49]), new List<string>(), Convert.ToBoolean(fiefData[50]),
-                    new Dictionary<string, string[]>(), Convert.ToBoolean(fiefData[51]), Convert.ToByte(fiefData[52]),
+                thisFiefRiak = new Fief_Riak(fiefData[1], fiefData[2], fiefData[3], Convert.ToInt32(fiefData[4]),
+                    Convert.ToDouble(fiefData[5]), Convert.ToDouble(fiefData[6]), Convert.ToUInt32(fiefData[7]),
+                    Convert.ToDouble(fiefData[8]), Convert.ToDouble(fiefData[9]), Convert.ToUInt32(fiefData[10]),
+                    Convert.ToUInt32(fiefData[11]), Convert.ToUInt32(fiefData[12]), Convert.ToUInt32(fiefData[13]),
+                    finCurr, finPrev, Convert.ToDouble(fiefData[42]), Convert.ToDouble(fiefData[43]),
+                    Convert.ToChar(fiefData[44]), fiefData[45], fiefData[46], new List<string>(), new List<string>(),
+                    Convert.ToBoolean(fiefData[47]), Convert.ToBoolean(fiefData[48]), Convert.ToByte(fiefData[49]),
+                    Convert.ToInt32(fiefData[50]), new List<string>(), Convert.ToBoolean(fiefData[51]),
+                    new Dictionary<string, string[]>(), Convert.ToBoolean(fiefData[52]), Convert.ToByte(fiefData[53]),
                     tiHo: tiHo, own: own, ancOwn: ancOwn, bail: bail, sge: sge);
             }
             // catch exception that could result from incorrect conversion of string to numeric 
@@ -14960,6 +14987,74 @@ namespace hist_mmorpg
             }
 
             return thisFiefRiak;
+        }
+
+        /// <summary>
+        /// Creates a Province_Riak object using data in a string array
+        /// </summary>
+        /// <returns>Province_Riak object</returns>
+        /// <param name="provData">string[] holding source data</param>
+        public Province_Riak importFromCSV_Prov(string[] provData)
+        {
+            Province_Riak thisProvRiak = null;
+
+            try
+            {
+                // check for presence of conditional values
+                string tiHo, own, kingdom;
+                tiHo = own = kingdom = null;
+
+                if (!provData[5].Equals(""))
+                {
+                    tiHo = provData[5];
+                }
+                if (!provData[6].Equals(""))
+                {
+                    own = provData[6];
+                }
+                if (!provData[7].Equals(""))
+                {
+                    kingdom = provData[7];
+                }
+
+                // create Fife_Riak object
+                thisProvRiak = new Province_Riak(provData[1], provData[2], Convert.ToByte(provData[3]),
+                    Convert.ToDouble(provData[4]), tiHo, own, kingdom);
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisProvRiak;
         }
 
     }

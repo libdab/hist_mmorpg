@@ -113,8 +113,8 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="otax">Double holding province tax rate</param>
         /// <param name="king">string holding Province's Kingdom (id)</param>
-        public Province_Riak(String id, String nam, Double otax, byte r, String tiHo = null, string own = null, string king = null)
-            : base(id, nam, own: own, r: r, tiHo: tiHo)
+        public Province_Riak(String id, String nam, byte r, Double otax, String tiHo = null, string own = null, string king = null)
+            : base(id, nam, r, own: own, tiHo: tiHo)
         {
             this.taxRate = otax;
             this.kingdom = king;
