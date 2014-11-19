@@ -15094,6 +15094,203 @@ namespace hist_mmorpg
 
             try
             {
+                // copy array to list (to get variable length collections)
+                List<string> tempPcData = pcData.ToList();
+
+                // create empty lists/dictionaries (myTitles, myNPCs, myOwnedFiefs, myOwnedProvinces, myArmies, mySieges)
+                List<string> myTitles = new List<string>();
+                List<string> myNPCs = new List<string>();
+                List<string> myOwnedFiefs = new List<string>();
+                List<string> myOwnedProvinces = new List<string>();
+                List<string> myArmies = new List<string>();
+                List<string> mySieges = new List<string>();
+
+                // create variables to hold start/end index positions
+                int tiStart, tiEnd, npcStart, npcEnd, fiStart, fiEnd, prStart, prEnd, arStart, arEnd, siStart, siEnd;
+                tiStart = tiEnd = npcStart = npcEnd = fiStart = fiEnd = prStart = prEnd = arStart = arEnd = siStart = siEnd = -1;
+
+                // iterate through main list STORING START/END INDEX POSITIONS
+                for (int i = 0; i < tempPcData.Count; i++ )
+                {
+                    if (tempPcData[i].Equals("tiStart"))
+                    {
+                        tiStart = i;
+                    }
+                    else if (tempPcData[i].Equals("tiEnd"))
+                    {
+                        tiEnd = i;
+                    }
+                    else if (tempPcData[i].Equals("npcStart"))
+                    {
+                        npcStart = i;
+                    }
+                    else if (tempPcData[i].Equals("npcEnd"))
+                    {
+                        npcEnd = i;
+                    }
+                    else if (tempPcData[i].Equals("fiStart"))
+                    {
+                        fiStart = i;
+                    }
+                    else if (tempPcData[i].Equals("fiEnd"))
+                    {
+                        fiEnd = i;
+                    }
+                    else if (tempPcData[i].Equals("prStart"))
+                    {
+                        prStart = i;
+                    }
+                    else if (tempPcData[i].Equals("prEnd"))
+                    {
+                        prEnd = i;
+                    }
+                    else if (tempPcData[i].Equals("arStart"))
+                    {
+                        arStart = i;
+                    }
+                    else if (tempPcData[i].Equals("arEnd"))
+                    {
+                        arEnd = i;
+                    }
+                    else if (tempPcData[i].Equals("siStart"))
+                    {
+                        siStart = i;
+                    }
+                    else if (tempPcData[i].Equals("siEnd"))
+                    {
+                        siEnd = i;
+                    }
+                }
+
+                // ADD ITEMS to appropriate list
+                // myTitles
+                if ((tiStart != -1) && (tiEnd != -1))
+                {
+                    for (int i = tiStart + 1; i < tiEnd; i++)
+                    {
+                        myTitles.Add(tempPcData[i]);
+                    }
+                }
+
+                // myNPCs
+                if ((npcStart != -1) && (npcEnd != -1))
+                {
+                    for (int i = npcStart + 1; i < npcEnd; i++)
+                    {
+                        myNPCs.Add(tempPcData[i]);
+                    }
+                }
+
+                // myOwnedFiefs
+                if ((fiStart != -1) && (fiEnd != -1))
+                {
+                    for (int i = fiStart + 1; i < fiEnd; i++)
+                    {
+                        myOwnedFiefs.Add(tempPcData[i]);
+                    }
+                }
+
+                // myOwnedProvinces
+                if ((prStart != -1) && (prEnd != -1))
+                {
+                    for (int i = prStart + 1; i < prEnd; i++)
+                    {
+                        myOwnedProvinces.Add(tempPcData[i]);
+                    }
+                }
+
+                // myArmies
+                if ((arStart != -1) && (arEnd != -1))
+                {
+                    for (int i = arStart + 1; i < arEnd; i++)
+                    {
+                        myArmies.Add(tempPcData[i]);
+                    }
+                }
+
+                // mySieges
+                if ((siStart != -1) && (siEnd != -1))
+                {
+                    for (int i = siStart + 1; i < siEnd; i++)
+                    {
+                        mySieges.Add(tempPcData[i]);
+                    }
+                }
+
+                // REMOVE ITEMS from main list
+                // mySieges
+                if ((siStart != -1) && (siEnd != -1))
+                {
+                    for (int i = siEnd; i >= siStart; i--)
+                    {
+                        tempPcData.RemoveAt(i);
+                    }
+                }
+
+                // myArmies
+                if ((arStart != -1) && (arEnd != -1))
+                {
+                    for (int i = arEnd; i >= arStart; i--)
+                    {
+                        tempPcData.RemoveAt(i);
+                    }
+                }
+
+                // myOwnedProvinces
+                if ((prStart != -1) && (prEnd != -1))
+                {
+                    for (int i = prEnd; i >= prStart; i--)
+                    {
+                        tempPcData.RemoveAt(i);
+                    }
+                }
+
+                // myOwnedFiefs
+                if ((fiStart != -1) && (fiEnd != -1))
+                {
+                    for (int i = fiEnd; i >= fiStart; i--)
+                    {
+                        tempPcData.RemoveAt(i);
+                    }
+                }
+
+                // myNPCs
+                if ((npcStart != -1) && (npcEnd != -1))
+                {
+                    for (int i = npcEnd; i >= npcStart; i--)
+                    {
+                        tempPcData.RemoveAt(i);
+                    }
+                }
+
+                // myTitles
+                if ((tiStart != -1) && (tiEnd != -1))
+                {
+                    for (int i = tiEnd; i >= tiStart; i--)
+                    {
+                        tempPcData.RemoveAt(i);
+                    }
+                }
+
+                // CONVERT LIST BACK TO ARRAY for rest of processing
+                pcData = tempPcData.ToArray();
+
+                // create DOB tuple
+                Tuple<uint, byte> dob = new Tuple<uint,byte>(Convert.ToUInt32(pcData[4]), Convert.ToByte(pcData[5]));
+
+                // create skills set
+                List<Tuple<string, int>> tempSkills = new List<Tuple<string,int>>();
+                Tuple<string, int> skill01 = new Tuple<string,int>(pcData[16], Convert.ToInt32(pcData[17]));
+                tempSkills.Add(skill01);
+                Tuple<string, int> skill02 = new Tuple<string,int>(pcData[18], Convert.ToInt32(pcData[19]));
+                tempSkills.Add(skill02);
+                if (!pcData[19].Equals(""))
+                {
+                Tuple<string, int> skill03 = new Tuple<string,int>(pcData[19], Convert.ToInt32(pcData[20]));
+                tempSkills.Add(skill03);
+                }
+                Tuple<string, int>[] skills = tempSkills.ToArray();
+
                 // check for presence of conditional values
                 string tiHo, own, kingdom;
                 tiHo = own = kingdom = null;
@@ -15112,7 +15309,13 @@ namespace hist_mmorpg
                 }
 
                 // create Fife_Riak object
-                thisPcRiak = new PlayerCharacter_Riak();
+                /*
+                thisPcRiak = new PlayerCharacter_Riak(pcData[1], pcData[2], pcData[3], dob, Convert.ToBoolean(pcData[6]),
+                    pcData[7], Convert.ToBoolean(pcData[8]), Convert.ToDouble(pcData[9]), Convert.ToDouble(pcData[10]),
+                    new List<string>(), pcData[11], Convert.ToDouble(pcData[12]), Convert.ToDouble(pcData[13]),
+                    Convert.ToDouble(pcData[14]), Convert.ToDouble(pcData[15]), skills, Convert.ToBoolean(pcData[21]),
+                    Convert.ToBoolean(pcData[22]), pcData[23], pcData[24], pcData[25], pcData[26], new List<string>(),
+                    pcData[27], ails: new Dictionary<string, Ailment>(), loc: pcData[28], aID: pcData[29]); */
             }
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)

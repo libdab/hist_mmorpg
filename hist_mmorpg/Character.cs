@@ -4114,7 +4114,7 @@ namespace hist_mmorpg
         /// <param name="id">string holding character ID</param>
         /// <param name="firstNam">String holding character's first name</param>
         /// <param name="famNam">String holding character's family name</param>
-        /// <param name="dob">Tuple<uint, byte> holding character's year and season of birth</param>
+        /// <param name="dob">Tuple(uint, byte) holding character's year and season of birth</param>
         /// <param name="isM">bool holding if character male</param>
         /// <param name="nat">string holding Character's Nationality (id)</param>
         /// <param name="alive">bool indicating whether character is alive</param>
