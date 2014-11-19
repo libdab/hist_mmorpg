@@ -416,6 +416,16 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Checks whether the supplied integer is odd or even
+        /// </summary>
+        /// <returns>bool indicating whether odd</returns>
+        /// <param name="value">Integer to be checked</param>
+        public static bool IsOdd(int value)
+        {
+            return value % 2 != 0;
+        }
+
+        /// <summary>
         /// Adds an observer (Form1 object) to the list of registered observers
         /// </summary>
         /// <param name="obs">Observer to be added</param>
