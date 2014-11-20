@@ -14823,24 +14823,21 @@ namespace hist_mmorpg
                 {
                     Fief_Riak thisFiefRiak = null;
 
-                    if (lineParts.Length != 59)
+                    thisFiefRiak = this.importFromCSV_Fief(lineParts);
+
+                    if (thisFiefRiak != null)
+                    {
+                        // TODO: save to Riak
+
+                        // add fief id to keylist
+                        keyList.Add(thisFiefRiak.id);
+                    }
+                    else
                     {
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
                         {
-                            MessageBox.Show("Not enough data parts present for Fief object.");
-                        }
-                    }
-                    else
-                    {
-                        thisFiefRiak = this.importFromCSV_Fief(lineParts);
-
-                        if (thisFiefRiak != null)
-                        {
-                            // TODO: save to Riak
-
-                            // add fief id to keylist
-                            keyList.Add(thisFiefRiak.id);
+                            MessageBox.Show("Unable to create Fief object: " + lineParts[1]);
                         }
                     }
                 }
@@ -14871,28 +14868,74 @@ namespace hist_mmorpg
                     }
                 }
 
-                else if (lineParts[0].Equals("pc"))
+                else if (lineParts[0].Equals("kingdom"))
                 {
-                    PlayerCharacter_Riak thisPcRiak = null;
+                    Kingdom_Riak thisKingRiak = null;
 
-                    if (lineParts.Length != 8)
+                    if (lineParts.Length != 7)
                     {
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
                         {
-                            MessageBox.Show("Not enough data parts present for PlayerCharacter object.");
+                            MessageBox.Show("Not enough data parts present for Kingdom object.");
                         }
                     }
                     else
                     {
-                        thisPcRiak = this.importFromCSV_PC(lineParts);
+                        thisKingRiak = this.importFromCSV_Kingdom(lineParts);
 
-                        if (thisPcRiak != null)
+                        if (thisKingRiak != null)
                         {
                             // TODO: save to Riak
 
                             // add fief id to keylist
-                            keyList.Add(thisPcRiak.charID);
+                            keyList.Add(thisKingRiak.id);
+                        }
+                    }
+                }
+
+                else if (lineParts[0].Equals("pc"))
+                {
+                    PlayerCharacter_Riak thisPcRiak = null;
+
+                    thisPcRiak = this.importFromCSV_PC(lineParts);
+
+                    if (thisPcRiak != null)
+                    {
+                        // TODO: save to Riak
+
+                        // add id to keylist
+                        keyList.Add(thisPcRiak.charID);
+                    }
+                    else
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Unable to create PlayerCharacter object: " + lineParts[1]);
+                        }
+                    }
+                }
+
+                else if (lineParts[0].Equals("npc"))
+                {
+                    NonPlayerCharacter_Riak thisNpcRiak = null;
+
+                    thisNpcRiak = this.importFromCSV_NPC(lineParts);
+
+                    if (thisNpcRiak != null)
+                    {
+                        // TODO: save to Riak
+
+                        // add id to keylist
+                        keyList.Add(thisNpcRiak.charID);
+                    }
+                    else
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Unable to create NonPlayerCharacter object: " + lineParts[1]);
                         }
                     }
                 }
@@ -14917,6 +14960,77 @@ namespace hist_mmorpg
 
             try
             {
+                // create empty lists for variable length collections
+                // (characters, barredChars, armies)
+                List<string> characters = new List<string>();
+                List<string> barredChars = new List<string>();
+                List<string> armies = new List<string>();
+
+                // check to see if any data present for variable length collections
+                if (fiefData.Length > 53)
+                {
+                    // create variables to hold start/end index positions
+                    int chStart, chEnd, barChStart, barChEnd, arStart, arEnd;
+                    chStart = chEnd = barChStart = barChEnd = arStart = arEnd = -1;
+
+                    // iterate through main list STORING START/END INDEX POSITIONS
+                    for (int i = 54; i < fiefData.Length; i++)
+                    {
+                        if (fiefData[i].Equals("chStart"))
+                        {
+                            chStart = i;
+                        }
+                        else if (fiefData[i].Equals("chEnd"))
+                        {
+                            chEnd = i;
+                        }
+                        else if (fiefData[i].Equals("barChStart"))
+                        {
+                            barChStart = i;
+                        }
+                        else if (fiefData[i].Equals("barChEnd"))
+                        {
+                            barChEnd = i;
+                        }
+                        else if (fiefData[i].Equals("arStart"))
+                        {
+                            arStart = i;
+                        }
+                        else if (fiefData[i].Equals("arEnd"))
+                        {
+                            arEnd = i;
+                        }
+                    }
+
+                    // ADD ITEMS to appropriate list
+                    // characters
+                    if ((chStart > -1) && (chEnd > -1))
+                    {
+                        for (int i = chStart + 1; i < chEnd; i++)
+                        {
+                            characters.Add(fiefData[i]);
+                        }
+                    }
+
+                    // barredChars
+                    if ((barChStart > -1) && (barChEnd > -1))
+                    {
+                        for (int i = barChStart + 1; i < barChEnd; i++)
+                        {
+                            barredChars.Add(fiefData[i]);
+                        }
+                    }
+
+                    // armies
+                    if ((arStart > -1) && (arEnd > -1))
+                    {
+                        for (int i = arStart + 1; i < arEnd; i++)
+                        {
+                            armies.Add(fiefData[i]);
+                        }
+                    }
+                }
+
                 // create financial data arrays
                 // current
                 double[] finCurr = new double[] { Convert.ToDouble(fiefData[14]), Convert.ToDouble(fiefData[15]),
@@ -14936,23 +15050,23 @@ namespace hist_mmorpg
                 string tiHo, own, ancOwn, bail, sge;
                 tiHo = own = ancOwn = bail = sge = null;
 
-                if (!fiefData[54].Equals(""))
+                if (!String.IsNullOrWhiteSpace(fiefData[54]))
                 {
                     tiHo = fiefData[54];
                 }
-                if (!fiefData[55].Equals(""))
+                if (!String.IsNullOrWhiteSpace(fiefData[55]))
                 {
                     own = fiefData[55];
                 }
-                if (!fiefData[56].Equals(""))
+                if (!String.IsNullOrWhiteSpace(fiefData[56]))
                 {
                     ancOwn = fiefData[56];
                 }
-                if (!fiefData[57].Equals(""))
+                if (!String.IsNullOrWhiteSpace(fiefData[57]))
                 {
                     bail = fiefData[57];
                 }
-                if (!fiefData[58].Equals(""))
+                if (!String.IsNullOrWhiteSpace(fiefData[58]))
                 {
                     sge = fiefData[58];
                 }
@@ -14963,9 +15077,9 @@ namespace hist_mmorpg
                     Convert.ToDouble(fiefData[8]), Convert.ToDouble(fiefData[9]), Convert.ToUInt32(fiefData[10]),
                     Convert.ToUInt32(fiefData[11]), Convert.ToUInt32(fiefData[12]), Convert.ToUInt32(fiefData[13]),
                     finCurr, finPrev, Convert.ToDouble(fiefData[42]), Convert.ToDouble(fiefData[43]),
-                    Convert.ToChar(fiefData[44]), fiefData[45], fiefData[46], new List<string>(), new List<string>(),
+                    Convert.ToChar(fiefData[44]), fiefData[45], fiefData[46], characters, barredChars,
                     Convert.ToBoolean(fiefData[47]), Convert.ToBoolean(fiefData[48]), Convert.ToByte(fiefData[49]),
-                    Convert.ToInt32(fiefData[50]), new List<string>(), Convert.ToBoolean(fiefData[51]),
+                    Convert.ToInt32(fiefData[50]), armies, Convert.ToBoolean(fiefData[51]),
                     new Dictionary<string, string[]>(), Convert.ToBoolean(fiefData[52]), Convert.ToByte(fiefData[53]),
                     tiHo: tiHo, own: own, ancOwn: ancOwn, bail: bail, sge: sge);
             }
@@ -15020,20 +15134,20 @@ namespace hist_mmorpg
                 string tiHo, own, kingdom;
                 tiHo = own = kingdom = null;
 
-                if (!provData[5].Equals(""))
+                if (!String.IsNullOrWhiteSpace(provData[5]))
                 {
                     tiHo = provData[5];
                 }
-                if (!provData[6].Equals(""))
+                if (!String.IsNullOrWhiteSpace(provData[6]))
                 {
                     own = provData[6];
                 }
-                if (!provData[7].Equals(""))
+                if (!String.IsNullOrWhiteSpace(provData[7]))
                 {
                     kingdom = provData[7];
                 }
 
-                // create Fife_Riak object
+                // create Province_Riak object
                 thisProvRiak = new Province_Riak(provData[1], provData[2], Convert.ToByte(provData[3]),
                     Convert.ToDouble(provData[4]), tiHo, own, kingdom);
             }
@@ -15074,6 +15188,70 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Creates a Kingdom_Riak object using data in a string array
+        /// </summary>
+        /// <returns>Kingdom_Riak object</returns>
+        /// <param name="kingData">string[] holding source data</param>
+        public Kingdom_Riak importFromCSV_Kingdom(string[] kingData)
+        {
+            Kingdom_Riak thisKingRiak = null;
+
+            try
+            {
+                // check for presence of conditional values
+                string tiHo, own;
+                tiHo = own = null;
+
+                if (!String.IsNullOrWhiteSpace(kingData[5]))
+                {
+                    tiHo = kingData[5];
+                }
+                if (!String.IsNullOrWhiteSpace(kingData[6]))
+                {
+                    own = kingData[6];
+                }
+
+                // create Province_Riak object
+                thisKingRiak = new Kingdom_Riak(kingData[1], kingData[2], Convert.ToByte(kingData[3]), kingData[4],
+                    tiHo, own);
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisKingRiak;
+        }
+
+        /// <summary>
         /// Creates a PlayerCharacter_Riak object using data in a string array
         /// </summary>
         /// <returns>PlayerCharacter_Riak object</returns>
@@ -15095,7 +15273,7 @@ namespace hist_mmorpg
                 List<string> mySieges = new List<string>();
 
                 // check to see if any data present for variable length collections
-                if (pcData.Length > 50)
+                if (pcData.Length > 30)
                 {
                     // create variables to hold start/end index positions
                     int skStart, skEnd, tiStart, tiEnd, npcStart, npcEnd, fiStart, fiEnd, prStart, prEnd, arStart, arEnd,
@@ -15104,7 +15282,7 @@ namespace hist_mmorpg
                         = arEnd = siStart = siEnd = -1;
 
                     // iterate through main list STORING START/END INDEX POSITIONS
-                    for (int i = 51; i < pcData.Length; i++)
+                    for (int i = 31; i < pcData.Length; i++)
                     {
                         if (pcData[i].Equals("skStart"))
                         {
@@ -15168,7 +15346,7 @@ namespace hist_mmorpg
                     // skills
                     List<Tuple<string, int>> tempSkills = new List<Tuple<string, int>>();
 
-                    if ((skStart != -1) && (skEnd != -1))
+                    if ((skStart > -1) && (skEnd > -1))
                     {
                         // check to ensure all skills have accompanying skill level
                         if (!Globals_Game.IsOdd(skStart + skEnd))
@@ -15184,7 +15362,7 @@ namespace hist_mmorpg
                     }
 
                     // myTitles
-                    if ((tiStart != -1) && (tiEnd != -1))
+                    if ((tiStart > -1) && (tiEnd > -1))
                     {
                         for (int i = tiStart + 1; i < tiEnd; i++)
                         {
@@ -15193,7 +15371,7 @@ namespace hist_mmorpg
                     }
 
                     // myNPCs
-                    if ((npcStart != -1) && (npcEnd != -1))
+                    if ((npcStart > -1) && (npcEnd > -1))
                     {
                         for (int i = npcStart + 1; i < npcEnd; i++)
                         {
@@ -15202,7 +15380,7 @@ namespace hist_mmorpg
                     }
 
                     // myOwnedFiefs
-                    if ((fiStart != -1) && (fiEnd != -1))
+                    if ((fiStart > -1) && (fiEnd > -1))
                     {
                         for (int i = fiStart + 1; i < fiEnd; i++)
                         {
@@ -15211,7 +15389,7 @@ namespace hist_mmorpg
                     }
 
                     // myOwnedProvinces
-                    if ((prStart != -1) && (prEnd != -1))
+                    if ((prStart > -1) && (prEnd > -1))
                     {
                         for (int i = prStart + 1; i < prEnd; i++)
                         {
@@ -15220,7 +15398,7 @@ namespace hist_mmorpg
                     }
 
                     // myArmies
-                    if ((arStart != -1) && (arEnd != -1))
+                    if ((arStart > -1) && (arEnd > -1))
                     {
                         for (int i = arStart + 1; i < arEnd; i++)
                         {
@@ -15229,7 +15407,7 @@ namespace hist_mmorpg
                     }
 
                     // mySieges
-                    if ((siStart != -1) && (siEnd != -1))
+                    if ((siStart > -1) && (siEnd > -1))
                     {
                         for (int i = siStart + 1; i < siEnd; i++)
                         {
@@ -15245,17 +15423,17 @@ namespace hist_mmorpg
                 string loc, aID, pID;
                 loc = aID = pID = null;
 
-                if (!pcData[27].Equals(""))
+                if (!String.IsNullOrWhiteSpace(pcData[27]))
                 {
                     loc = pcData[27];
                 }
-                if (!pcData[28].Equals(""))
+                if (!String.IsNullOrWhiteSpace(pcData[28]))
                 {
                     aID = pcData[28];
                 }
-                if (!pcData[29].Equals(""))
+                if (!String.IsNullOrWhiteSpace(pcData[29]))
                 {
-                    pID = pcData[30];
+                    pID = pcData[29];
                 }
 
                 // create PlayerCharacter_Riak object
@@ -15267,6 +15445,144 @@ namespace hist_mmorpg
                     pcData[22], Convert.ToBoolean(pcData[23]), Convert.ToUInt32(pcData[24]), myNPCs, myOwnedFiefs,
                     myOwnedProvinces, pcData[25], pcData[26], myArmies, mySieges, ails: new Dictionary<string, Ailment>(),
                     loc: loc, aID: aID, pID: pID);
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisPcRiak;
+        }
+
+        /// <summary>
+        /// Creates a NonPlayerCharacter_Riak object using data in a string array
+        /// </summary>
+        /// <returns>NonPlayerCharacter_Riak object</returns>
+        /// <param name="npcData">string[] holding source data</param>
+        public NonPlayerCharacter_Riak importFromCSV_NPC(string[] npcData)
+        {
+            NonPlayerCharacter_Riak thisPcRiak = null;
+
+            try
+            {
+                // create empty lists for variable length collections
+                // (skills, myTitles)
+                Tuple<string, int>[] skills = null;
+                List<string> myTitles = new List<string>();
+
+                // check to see if any data present for variable length collections
+                if (npcData.Length > 28)
+                {
+                    // create variables to hold start/end index positions
+                    int skStart, skEnd, tiStart, tiEnd;
+                    skStart = skEnd = tiStart = tiEnd = -1;
+
+                    // iterate through main list STORING START/END INDEX POSITIONS
+                    for (int i = 29; i < npcData.Length; i++)
+                    {
+                        if (npcData[i].Equals("skStart"))
+                        {
+                            skStart = i;
+                        }
+                        else if (npcData[i].Equals("skEnd"))
+                        {
+                            skEnd = i;
+                        }
+                        else if (npcData[i].Equals("tiStart"))
+                        {
+                            tiStart = i;
+                        }
+                        else if (npcData[i].Equals("tiEnd"))
+                        {
+                            tiEnd = i;
+                        }
+                    }
+
+                    // ADD ITEMS to appropriate list
+                    // skills
+                    List<Tuple<string, int>> tempSkills = new List<Tuple<string, int>>();
+
+                    if ((skStart > -1) && (skEnd > -1))
+                    {
+                        // check to ensure all skills have accompanying skill level
+                        if (!Globals_Game.IsOdd(skStart + skEnd))
+                        {
+                            for (int i = tiStart + 1; i < tiEnd; i = i + 2)
+                            {
+                                Tuple<string, int> thisSkill = new Tuple<string, int>(npcData[i], Convert.ToInt32(npcData[i + 1]));
+                                tempSkills.Add(thisSkill);
+                            }
+                            // convert skills list to skills array
+                            skills = tempSkills.ToArray();
+                        }
+                    }
+
+                    // myTitles
+                    if ((tiStart > -1) && (tiEnd > -1))
+                    {
+                        for (int i = tiStart + 1; i < tiEnd; i++)
+                        {
+                            myTitles.Add(npcData[i]);
+                        }
+                    }
+                }
+
+                // create DOB tuple
+                Tuple<uint, byte> dob = new Tuple<uint, byte>(Convert.ToUInt32(npcData[4]), Convert.ToByte(npcData[5]));
+
+                // check for presence of CONDITIONAL VARIABLES
+                string loc, aID, boss;
+                loc = aID = boss = null;
+
+                if (!String.IsNullOrWhiteSpace(npcData[26]))
+                {
+                    loc = npcData[26];
+                }
+                if (!String.IsNullOrWhiteSpace(npcData[27]))
+                {
+                    aID = npcData[27];
+                }
+                if (!String.IsNullOrWhiteSpace(npcData[28]))
+                {
+                    boss = npcData[28];
+                }
+
+                // create PlayerCharacter_Riak object
+                thisPcRiak = new NonPlayerCharacter_Riak(npcData[1], npcData[2], npcData[3], dob, Convert.ToBoolean(npcData[6]),
+                    npcData[7], Convert.ToBoolean(npcData[8]), Convert.ToDouble(npcData[9]), Convert.ToDouble(npcData[10]),
+                    new List<string>(), npcData[11], Convert.ToDouble(npcData[12]), Convert.ToDouble(npcData[13]),
+                    Convert.ToDouble(npcData[14]), Convert.ToDouble(npcData[15]), skills, Convert.ToBoolean(npcData[16]),
+                    Convert.ToBoolean(npcData[17]), npcData[18], npcData[19], npcData[20], npcData[21], myTitles, npcData[22],
+                    Convert.ToUInt32(npcData[23]), Convert.ToBoolean(npcData[24]), Convert.ToBoolean(npcData[25]),
+                    ails: new Dictionary<string, Ailment>(), loc: loc, aID: aID, mb: boss);
             }
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)

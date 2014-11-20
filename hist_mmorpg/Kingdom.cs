@@ -74,6 +74,17 @@ namespace hist_mmorpg
         public Kingdom_Riak()
 		{
 		}
+
+        /// <summary>
+        /// Constructor for Kingdom_Riak taking seperate values.
+        /// For creating Kingdom_Riak from CSV file.
+        /// </summary>
+        /// <param name="nat">Kingdom's Nationality object</param>
+        public Kingdom_Riak(String id, String nam, byte r, string nat, String tiHo = null, string own = null)
+            : base(id, nam, r, own: own, tiHo: tiHo)
+        {
+            this.nationality = nat;
+        }
     }
 
 }
