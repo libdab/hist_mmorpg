@@ -14939,6 +14939,29 @@ namespace hist_mmorpg
                         }
                     }
                 }
+
+                else if (lineParts[0].Equals("skill"))
+                {
+                    Skill thisSkill = null;
+
+                    thisSkill = this.importFromCSV_Skill(lineParts);
+
+                    if (thisSkill != null)
+                    {
+                        // TODO: save to Riak
+
+                        // add id to keylist
+                        keyList.Add(thisSkill.skillID);
+                    }
+                    else
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Unable to create Skill object: " + lineParts[1]);
+                        }
+                    }
+                }
             }
 
             if (keyList.Count > 0)
@@ -14967,7 +14990,7 @@ namespace hist_mmorpg
                 List<string> armies = new List<string>();
 
                 // check to see if any data present for variable length collections
-                if (fiefData.Length > 53)
+                if (fiefData.Length > 54)
                 {
                     // create variables to hold start/end index positions
                     int chStart, chEnd, barChStart, barChEnd, arStart, arEnd;
@@ -15282,7 +15305,7 @@ namespace hist_mmorpg
                         = arEnd = siStart = siEnd = -1;
 
                     // iterate through main list STORING START/END INDEX POSITIONS
-                    for (int i = 31; i < pcData.Length; i++)
+                    for (int i = 30; i < pcData.Length; i++)
                     {
                         if (pcData[i].Equals("skStart"))
                         {
@@ -15489,7 +15512,7 @@ namespace hist_mmorpg
         /// <param name="npcData">string[] holding source data</param>
         public NonPlayerCharacter_Riak importFromCSV_NPC(string[] npcData)
         {
-            NonPlayerCharacter_Riak thisPcRiak = null;
+            NonPlayerCharacter_Riak thisNpcRiak = null;
 
             try
             {
@@ -15506,7 +15529,7 @@ namespace hist_mmorpg
                     skStart = skEnd = tiStart = tiEnd = -1;
 
                     // iterate through main list STORING START/END INDEX POSITIONS
-                    for (int i = 29; i < npcData.Length; i++)
+                    for (int i = 28; i < npcData.Length; i++)
                     {
                         if (npcData[i].Equals("skStart"))
                         {
@@ -15576,7 +15599,7 @@ namespace hist_mmorpg
                 }
 
                 // create PlayerCharacter_Riak object
-                thisPcRiak = new NonPlayerCharacter_Riak(npcData[1], npcData[2], npcData[3], dob, Convert.ToBoolean(npcData[6]),
+                thisNpcRiak = new NonPlayerCharacter_Riak(npcData[1], npcData[2], npcData[3], dob, Convert.ToBoolean(npcData[6]),
                     npcData[7], Convert.ToBoolean(npcData[8]), Convert.ToDouble(npcData[9]), Convert.ToDouble(npcData[10]),
                     new List<string>(), npcData[11], Convert.ToDouble(npcData[12]), Convert.ToDouble(npcData[13]),
                     Convert.ToDouble(npcData[14]), Convert.ToDouble(npcData[15]), skills, Convert.ToBoolean(npcData[16]),
@@ -15617,7 +15640,96 @@ namespace hist_mmorpg
                 }
             }
 
-            return thisPcRiak;
+            return thisNpcRiak;
+        }
+
+        /// <summary>
+        /// Creates a Skill object using data in a string array
+        /// </summary>
+        /// <returns>Skill object</returns>
+        /// <param name="skillData">string[] holding source data</param>
+        public Skill importFromCSV_Skill(string[] skillData)
+        {
+            Skill thisSkill = null;
+
+            try
+            {
+                // create empty lists for variable length collections
+                // (effects)
+                Dictionary<string, double> effects = new Dictionary<string,double>();
+
+                // check to see if any data present for variable length collections
+                if (skillData.Length > 3)
+                {
+                    // create variables to hold start/end index positions
+                    int effStart, effEnd;
+                    effStart = effEnd = -1;
+
+                    // iterate through main list STORING START/END INDEX POSITIONS
+                    for (int i = 3; i < skillData.Length; i++)
+                    {
+                        if (skillData[i].Equals("effStart"))
+                        {
+                            effStart = i;
+                        }
+                        else if (skillData[i].Equals("effEnd"))
+                        {
+                            effEnd = i;
+                        }
+                    }
+
+                    // ADD ITEMS to appropriate list
+                    // effects
+                    if ((effStart > -1) && (effEnd > -1))
+                    {
+                        // check to ensure all effects have accompanying effect level
+                        if (!Globals_Game.IsOdd(effStart + effEnd))
+                        {
+                            for (int i = effStart + 1; i < effEnd; i = i + 2)
+                            {
+                                effects.Add(skillData[i], Convert.ToDouble(skillData[i+1]));
+                            }
+                        }
+                    }
+                }
+
+                // create Skill object
+                thisSkill = new Skill(skillData[1], skillData[2], effects);
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisSkill;
         }
 
     }
