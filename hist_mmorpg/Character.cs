@@ -109,7 +109,7 @@ namespace hist_mmorpg
         /// </summary>
         public Fief location { get; set; }
         /// <summary>
-        /// Holds character's titles (fiefIDs)
+        /// Holds character's titles (IDs)
         /// </summary>
         public List<String> myTitles { get; set; }
         /// <summary>

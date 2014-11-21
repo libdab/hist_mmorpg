@@ -943,7 +943,7 @@ namespace hist_mmorpg
             // write each object in languageMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, Language> pair in Globals_Game.languageMasterList)
             {
-                bool success = this.writeLanguage(gameID, pair.Value);
+                bool success = this.writeLanguage(gameID, l: pair.Value);
                 if (success)
                 {
                     Globals_Game.langKeys.Add(pair.Key);
@@ -1003,7 +1003,7 @@ namespace hist_mmorpg
             // write each object in positionMasterList, whilst also repopulating key list
             foreach (KeyValuePair<byte, Position> pair in Globals_Game.positionMasterList)
             {
-                bool success = this.writePosition(gameID, pair.Value);
+                bool success = this.writePosition(gameID, p: pair.Value);
                 if (success)
                 {
                     Globals_Game.positionKeys.Add(pair.Key);
@@ -1023,7 +1023,7 @@ namespace hist_mmorpg
             // write each object in npcMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, NonPlayerCharacter> pair in Globals_Game.npcMasterList)
 			{
-				bool success = this.writeNPC (gameID, pair.Value);
+				bool success = this.writeNPC (gameID, npc: pair.Value);
 				if (success)
 				{
                     Globals_Game.npcKeys.Add(pair.Key);
@@ -1043,7 +1043,7 @@ namespace hist_mmorpg
             // write each object in pcMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, PlayerCharacter> pair in Globals_Game.pcMasterList)
 			{
-				bool success = this.writePC (gameID, pair.Value);
+				bool success = this.writePC (gameID, pc: pair.Value);
 				if (success)
 				{
                     Globals_Game.pcKeys.Add(pair.Key);
@@ -1063,7 +1063,7 @@ namespace hist_mmorpg
             // write each object in kingdomMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, Kingdom> pair in Globals_Game.kingdomMasterList)
             {
-                bool success = this.writeKingdom(gameID, pair.Value);
+                bool success = this.writeKingdom(gameID, k: pair.Value);
                 if (success)
                 {
                     Globals_Game.kingKeys.Add(pair.Key);
@@ -1083,7 +1083,7 @@ namespace hist_mmorpg
             // write each object in provinceMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, Province> pair in Globals_Game.provinceMasterList)
 			{
-				bool success = this.writeProvince (gameID, pair.Value);
+				bool success = this.writeProvince (gameID, p: pair.Value);
 				if (success)
 				{
                     Globals_Game.provKeys.Add(pair.Key);
@@ -1143,7 +1143,7 @@ namespace hist_mmorpg
             // write each object in fiefMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, Fief> pair in Globals_Game.fiefMasterList)
 			{
-				bool success = this.writeFief (gameID, pair.Value);
+				bool success = this.writeFief (gameID, f: pair.Value);
 				if (success)
 				{
                     Globals_Game.fiefKeys.Add(pair.Key);
@@ -3031,18 +3031,22 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
-		/// Writes NonPlayerCharacter object to Riak
+        /// Writes NonPlayerCharacter or NonPlayerCharacter_Riak object to Riak
 		/// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="npc">NonPlayerCharacter to write</param>
-        public bool writeNPC(string gameID, NonPlayerCharacter npc)
+        /// <param name="npcr">NonPlayerCharacter_Riak to write</param>
+        public bool writeNPC(string gameID, NonPlayerCharacter npc = null, NonPlayerCharacter_Riak npcr = null)
 		{
-            // convert NonPlayerCharacter into NonPlayerCharacter_Riak
-			NonPlayerCharacter_Riak riakNPC = this.NPCtoRiak (npc);
+            if (npc != null)
+            {
+                // convert NonPlayerCharacter into NonPlayerCharacter_Riak
+                npcr = this.NPCtoRiak(npc);
+            }
 
             // write NonPlayerCharacter_Riak to database
-			var rNPC = new RiakObject(gameID, riakNPC.charID, riakNPC);
+            var rNPC = new RiakObject(gameID, npcr.charID, npcr);
 			var putNPCresult = rClient.Put(rNPC);
 
 			if (! putNPCresult.IsSuccess)
@@ -3057,18 +3061,22 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
-		/// Writes PlayerCharacter object to Riak
+        /// Writes PlayerCharacter or PlayerCharacter_Riak object to Riak
 		/// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="pc">PlayerCharacter to write</param>
-        public bool writePC(string gameID, PlayerCharacter pc)
+        /// <param name="pcr">PlayerCharacter_Riak to write</param>
+        public bool writePC(string gameID, PlayerCharacter pc = null, PlayerCharacter_Riak pcr = null)
 		{
-            // convert PlayerCharacter into PlayerCharacter_Riak
-            PlayerCharacter_Riak riakPC = this.PCtoRiak(pc);
+            if (pc != null)
+            {
+                // convert PlayerCharacter into PlayerCharacter_Riak
+                pcr = this.PCtoRiak(pc);
+            }
 
             // write PlayerCharacter_Riak to database
-            var rPC = new RiakObject(gameID, riakPC.charID, riakPC);
+            var rPC = new RiakObject(gameID, pcr.charID, pcr);
 			var putPCresult = rClient.Put(rPC);
 
 			if (! putPCresult.IsSuccess)
@@ -3083,17 +3091,21 @@ namespace hist_mmorpg
 		}
 
 		/// <summary>
-		/// Writes Kingdom object to Riak
+        /// Writes Kingdom or Kingdom_Riak object to Riak
 		/// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="k">Kingdom to write</param>
-        public bool writeKingdom(string gameID, Kingdom k)
+        /// <param name="kr">Kingdom_Riak to write</param>
+        public bool writeKingdom(string gameID, Kingdom k = null, Kingdom_Riak kr = null)
 		{
-            // convert Kingdom into Kingdom_Riak
-            Kingdom_Riak riakKing = this.KingdomToRiak(k);
+            if (k != null)
+            {
+                // convert Kingdom into Kingdom_Riak
+                kr = this.KingdomToRiak(k);
+            }
 
-			var rKing = new RiakObject(gameID, riakKing.id, riakKing);
+			var rKing = new RiakObject(gameID, kr.id, kr);
 			var putKingResult = rClient.Put(rKing);
 
 			if (! putKingResult.IsSuccess)
@@ -3108,17 +3120,21 @@ namespace hist_mmorpg
 		}
 
         /// <summary>
-        /// Writes Position object to Riak
+        /// Writes Position or Position_Riak object to Riak
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="p">Position to write</param>
-        public bool writePosition(string gameID, Position p)
+        /// <param name="pr">Position_Riak to write</param>
+        public bool writePosition(string gameID, Position p = null, Position_Riak pr = null)
         {
-            // convert Position into Position_Riak
-            Position_Riak riakPos = this.PositionToRiak(p);
+            if (p != null)
+            {
+                // convert Position into Position_Riak
+                pr = this.PositionToRiak(p);
+            }
 
-            var rPos = new RiakObject(gameID, riakPos.id.ToString(), riakPos);
+            var rPos = new RiakObject(gameID, pr.id.ToString(), pr);
             var putPosResult = rClient.Put(rPos);
 
             if (!putPosResult.IsSuccess)
@@ -3133,17 +3149,21 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Writes Province object to Riak
+        /// Writes Province or Province_Riak object to Riak
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="p">Province to write</param>
-        public bool writeProvince(string gameID, Province p)
+        /// <param name="pr">Province_Riak to write</param>
+        public bool writeProvince(string gameID, Province p = null, Province_Riak pr = null)
         {
-            // convert Province into Province_Riak
-            Province_Riak riakProv = this.ProvinceToRiak(p);
+            if (p != null)
+            {
+                // convert Province into Province_Riak
+                pr = this.ProvinceToRiak(p);
+            }
 
-            var rProv = new RiakObject(gameID, riakProv.id, riakProv);
+            var rProv = new RiakObject(gameID, pr.id, pr);
             var putProvResult = rClient.Put(rProv);
 
             if (!putProvResult.IsSuccess)
@@ -3181,18 +3201,22 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-		/// Writes Language object to Riak
+        /// Writes Language or Language_Riak object to Riak
 		/// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="l">Language to write</param>
-        public bool writeLanguage(string gameID, Language l)
+        /// <param name="lr">Language_Riak to write</param>
+        public bool writeLanguage(string gameID, Language l = null, Language_Riak lr = null)
 		{
-            // convert Language into Language_Riak
-            Language_Riak riakLang = this.LangToRiak(l);
+            if (l != null)
+            {
+                // convert Language into Language_Riak
+                lr = this.LangToRiak(l);
+            }
 
             // write Language_Riak to database
-            var rLanguage = new RiakObject(gameID, riakLang.id, riakLang);
+            var rLanguage = new RiakObject(gameID, lr.id, lr);
 			var putLanguageResult = rClient.Put(rLanguage);
 
 			if (! putLanguageResult.IsSuccess)
@@ -3299,17 +3323,21 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-		/// Writes Fief object to Riak
+        /// Writes Fief or Fief_Riak object to Riak
 		/// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
 		/// <param name="f">Fief to write</param>
-        public bool writeFief(string gameID, Fief f)
+        /// <param name="fr">Fief_Riak to write</param>
+        public bool writeFief(string gameID, Fief f = null, Fief_Riak fr = null)
 		{
-            // convert Fief into Fief_Riak
-            Fief_Riak riakFief = this.FieftoRiak(f);
+            if (f != null)
+            {
+                // convert Fief to Fief_Riak 
+                fr = this.FieftoRiak(f);
+            }
 
-			var rFief = new RiakObject(gameID, riakFief.id, riakFief);
+			var rFief = new RiakObject(gameID, fr.id, fr);
 			var putFiefResult = rClient.Put(rFief);
 
 			if (! putFiefResult.IsSuccess)
@@ -14841,7 +14869,8 @@ namespace hist_mmorpg
 
                     if (thisFiefRiak != null)
                     {
-                        // TODO: save to Riak
+                        // save to Riak
+                        this.writeFief(bucketID, fr: thisFiefRiak);
 
                         // add fief id to keylist
                         fiefKeyList.Add(thisFiefRiak.id);
@@ -14874,9 +14903,10 @@ namespace hist_mmorpg
 
                         if (thisProvRiak != null)
                         {
-                            // TODO: save to Riak
+                            // save to Riak
+                            this.writeProvince(bucketID, pr: thisProvRiak);
 
-                            // add fief id to keylist
+                            // add province id to keylist
                             provKeyList.Add(thisProvRiak.id);
                         }
                         else
@@ -14908,9 +14938,10 @@ namespace hist_mmorpg
 
                         if (thisKingRiak != null)
                         {
-                            // TODO: save to Riak
+                            // save to Riak
+                            this.writeKingdom(bucketID, kr: thisKingRiak);
 
-                            // add fief id to keylist
+                            // add kingdom id to keylist
                             kingKeyList.Add(thisKingRiak.id);
                         }
                         else
@@ -14932,7 +14963,8 @@ namespace hist_mmorpg
 
                     if (thisPcRiak != null)
                     {
-                        // TODO: save to Riak
+                        // save to Riak
+                        this.writePC(bucketID, pcr: thisPcRiak);
 
                         // add id to keylist
                         pcKeyList.Add(thisPcRiak.charID);
@@ -14955,7 +14987,8 @@ namespace hist_mmorpg
 
                     if (thisNpcRiak != null)
                     {
-                        // TODO: save to Riak
+                        // save to Riak
+                        this.writeNPC(bucketID, npcr: thisNpcRiak);
 
                         // add id to keylist
                         npcKeyList.Add(thisNpcRiak.charID);
@@ -14978,7 +15011,8 @@ namespace hist_mmorpg
 
                     if (thisSkill != null)
                     {
-                        // TODO: save to Riak
+                        // save to Riak
+                        this.writeSkill(bucketID, thisSkill);
 
                         // add id to keylist
                         skillKeyList.Add(thisSkill.skillID);
@@ -15011,7 +15045,8 @@ namespace hist_mmorpg
 
                         if (thisArmy != null)
                         {
-                            // TODO: save to Riak
+                            // save to Riak
+                            this.writeArmy(bucketID, thisArmy);
 
                             // add id to keylist
                             armyKeyList.Add(thisArmy.armyID);
@@ -15045,7 +15080,8 @@ namespace hist_mmorpg
 
                         if (thisLangRiak != null)
                         {
-                            // TODO: save to Riak
+                            // save to Riak
+                            this.writeLanguage(bucketID, lr: thisLangRiak);
 
                             // add id to keylist
                             langKeyList.Add(thisLangRiak.id);
@@ -15079,7 +15115,8 @@ namespace hist_mmorpg
 
                         if (thisBaseLang != null)
                         {
-                            // TODO: save to Riak
+                            // save to Riak
+                            this.writeBaseLanguage(bucketID, thisBaseLang);
 
                             // add id to keylist
                             baseLangKeyList.Add(thisBaseLang.id);
@@ -15113,7 +15150,8 @@ namespace hist_mmorpg
 
                         if (thisNat != null)
                         {
-                            // TODO: save to Riak
+                            // save to Riak
+                            this.writeNationality(bucketID, thisNat);
 
                             // add id to keylist
                             natKeyList.Add(thisNat.natID);
@@ -15137,7 +15175,8 @@ namespace hist_mmorpg
 
                     if (thisRank != null)
                     {
-                        // TODO: save to Riak
+                        // save to Riak
+                        this.writeRank(bucketID, thisRank);
 
                         // add id to keylist
                         rankKeyList.Add(thisRank.id);
@@ -15160,7 +15199,8 @@ namespace hist_mmorpg
 
                     if (thisPosRiak != null)
                     {
-                        // TODO: save to Riak
+                        // save to Riak
+                        this.writePosition(bucketID, pr: thisPosRiak);
 
                         // add id to keylist
                         posKeyList.Add(thisPosRiak.id);
@@ -15193,7 +15233,8 @@ namespace hist_mmorpg
 
                         if (thisSiege != null)
                         {
-                            // TODO: save to Riak
+                            // save to Riak
+                            this.writeSiege(bucketID, thisSiege);
 
                             // add id to keylist
                             siegeKeyList.Add(thisSiege.siegeID);
@@ -15227,7 +15268,8 @@ namespace hist_mmorpg
 
                         if (thisTerr != null)
                         {
-                            // TODO: save to Riak
+                            // save to Riak
+                            this.writeTerrain(bucketID, thisTerr);
 
                             // add id to keylist
                             terrKeyList.Add(thisTerr.terrainCode);
@@ -15249,84 +15291,98 @@ namespace hist_mmorpg
             if (fiefKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "fiefKeys", fiefKeyList);
             }
 
             // provinces
             if (provKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "provKeys", provKeyList);
             }
 
             // kingdoms
             if (kingKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "kingKeys", kingKeyList);
             }
 
             // PCs
             if (pcKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "pcKeys", pcKeyList);
             }
 
             // NPCs
             if (npcKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "npcKeys", npcKeyList);
             }
 
             // skills
             if (skillKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "skillKeys", skillKeyList);
             }
 
             // armies
             if (armyKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "armyKeys", armyKeyList);
             }
 
             // languages
             if (langKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "langKeys", langKeyList);
             }
 
             // baseLanguages
             if (baseLangKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "baseLangKeys", baseLangKeyList);
             }
 
             // nationalities
             if (natKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "nationalityKeys", natKeyList);
             }
 
             // ranks
             if (rankKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "rankKeys", rankKeyList);
             }
 
             // positions
             if (posKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "positionKeys", posKeyList);
             }
 
             // sieges
             if (siegeKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "siegeKeys", siegeKeyList);
             }
 
             // terrains
             if (terrKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
+                this.writeKeyList(bucketID, "terrKeys", terrKeyList);
             }
 
             return inputFileError;
@@ -16629,6 +16685,264 @@ namespace hist_mmorpg
             }
 
             return thisTerr;
+        }
+
+        /// <summary>
+        /// Uses individual game objects to populate variable-length collections within other game objects
+        /// </summary>
+        public void SynchGameObjectCollections()
+        {
+
+            // iterate through FIEFS
+            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
+            {
+                // get titleHolder
+                if (!String.IsNullOrWhiteSpace(fiefEntry.Value.titleHolder))
+                {
+                    Character thisTiHo = fiefEntry.Value.getTitleHolder();
+
+                    // put fief id in holder's myTitles
+                    if (thisTiHo != null)
+                    {
+                        if (!thisTiHo.myTitles.Contains(fiefEntry.Key))
+                        {
+                            thisTiHo.myTitles.Add(fiefEntry.Key);
+                        }
+                    }
+                }
+
+                // get owner
+                if (fiefEntry.Value.owner != null)
+                {
+                    PlayerCharacter thisOwner = fiefEntry.Value.owner;
+
+                    // put fief in owner's ownedFiefs
+                    if (!thisOwner.ownedFiefs.Contains(fiefEntry.Value))
+                    {
+                        thisOwner.ownedFiefs.Add(fiefEntry.Value);
+                    }
+                }
+            }
+
+            // iterate through PROVINCES
+            foreach (KeyValuePair<string, Province> provEntry in Globals_Game.provinceMasterList)
+            {
+                // get titleHolder
+                if (!String.IsNullOrWhiteSpace(provEntry.Value.titleHolder))
+                {
+                    Character thisTiHo = provEntry.Value.getTitleHolder();
+
+                    // put fief id in holder's myTitles
+                    if (thisTiHo != null)
+                    {
+                        if (!thisTiHo.myTitles.Contains(provEntry.Key))
+                        {
+                            thisTiHo.myTitles.Add(provEntry.Key);
+                        }
+                    }
+                }
+
+                // get owner
+                if (provEntry.Value.owner != null)
+                {
+                    PlayerCharacter thisOwner = provEntry.Value.owner;
+
+                    // put province in owner's ownedProvinces
+                    if (!thisOwner.ownedProvinces.Contains(provEntry.Value))
+                    {
+                        thisOwner.ownedProvinces.Add(provEntry.Value);
+                    }
+                }
+            }
+
+            // iterate through KINGDOMS
+            foreach (KeyValuePair<string, Kingdom> kingEntry in Globals_Game.kingdomMasterList)
+            {
+                // get titleHolder
+                if (!String.IsNullOrWhiteSpace(kingEntry.Value.titleHolder))
+                {
+                    Character thisTiHo = kingEntry.Value.getTitleHolder();
+
+                    // put fief id in holder's myTitles
+                    if (thisTiHo != null)
+                    {
+                        if (!thisTiHo.myTitles.Contains(kingEntry.Key))
+                        {
+                            thisTiHo.myTitles.Add(kingEntry.Key);
+                        }
+                    }
+                }
+            }
+
+            // iterate through PCs
+            foreach (KeyValuePair<string, PlayerCharacter> pcEntry in Globals_Game.pcMasterList)
+            {
+                if (pcEntry.Value.isAlive)
+                {
+                    // get location
+                    if (pcEntry.Value.location != null)
+                    {
+                        Fief thisFief = pcEntry.Value.location;
+
+                        // put PC in fief's characters
+                        if (!thisFief.charactersInFief.Contains(pcEntry.Value))
+                        {
+                            thisFief.charactersInFief.Add(pcEntry.Value);
+                        }
+                    }
+                }
+            }
+
+            // iterate through NPCs
+            foreach (KeyValuePair<string, NonPlayerCharacter> npcEntry in Globals_Game.npcMasterList)
+            {
+                if (npcEntry.Value.isAlive)
+                {
+                    // get location
+                    if (npcEntry.Value.location != null)
+                    {
+                        Fief thisFief = npcEntry.Value.location;
+
+                        // put NPC in fief's characters
+                        if (!thisFief.charactersInFief.Contains(npcEntry.Value))
+                        {
+                            thisFief.charactersInFief.Add(npcEntry.Value);
+                        }
+                    }
+
+                    // get employer
+                    if (String.IsNullOrWhiteSpace(npcEntry.Value.myBoss))
+                    {
+                        PlayerCharacter thisBoss = npcEntry.Value.getEmployer();
+
+                        if (thisBoss != null)
+                        {
+                            // put NPC in employer's myNPCs
+                            if (!thisBoss.myNPCs.Contains(npcEntry.Value))
+                            {
+                                thisBoss.myNPCs.Add(npcEntry.Value);
+                            }
+                        }
+                    }
+
+                    // get familyID
+                    if (String.IsNullOrWhiteSpace(npcEntry.Value.familyID))
+                    {
+                        PlayerCharacter thisHeadOfFamily = npcEntry.Value.getHeadOfFamily();
+
+                        if (thisHeadOfFamily != null)
+                        {
+                            // put NPC in headOfFamily's myNPCs
+                            if (!thisHeadOfFamily.myNPCs.Contains(npcEntry.Value))
+                            {
+                                thisHeadOfFamily.myNPCs.Add(npcEntry.Value);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // iterate through SIEGES
+            foreach (KeyValuePair<string, Siege> siegeEntry in Globals_Game.siegeMasterList)
+            {
+                // ensure siege not ended
+                if (String.IsNullOrWhiteSpace(siegeEntry.Value.endDate))
+                {
+                    // get attacking PC
+                    if (!String.IsNullOrWhiteSpace(siegeEntry.Value.besiegingPlayer))
+                    {
+                        PlayerCharacter attacker = siegeEntry.Value.getBesiegingPlayer();
+
+                        // put siege id in attacker's mySieges
+                        if (attacker != null)
+                        {
+                            if (!attacker.mySieges.Contains(siegeEntry.Key))
+                            {
+                                attacker.mySieges.Add(siegeEntry.Key);
+                            }
+                        }
+                    }
+
+                    // get defending PC
+                    if (!String.IsNullOrWhiteSpace(siegeEntry.Value.defendingPlayer))
+                    {
+                        PlayerCharacter defender = siegeEntry.Value.getDefendingPlayer();
+
+                        // put siege id in defender's mySieges
+                        if (defender != null)
+                        {
+                            if (!defender.mySieges.Contains(siegeEntry.Key))
+                            {
+                                defender.mySieges.Add(siegeEntry.Key);
+                            }
+                        }
+                    }
+
+                    // get defending Fief
+                    if (!String.IsNullOrWhiteSpace(siegeEntry.Value.besiegedFief))
+                    {
+                        Fief besiegedFief = siegeEntry.Value.getFief();
+
+                        // put siege id in fief's siege
+                        if (besiegedFief != null)
+                        {
+                            if (!besiegedFief.siege.Equals(siegeEntry.Key))
+                            {
+                                besiegedFief.siege = siegeEntry.Key;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // iterate through ARMIES
+            foreach (KeyValuePair<string, Army> armyEntry in Globals_Game.armyMasterList)
+            {
+                // get army owner
+                if (!String.IsNullOrWhiteSpace(armyEntry.Value.owner))
+                {
+                    PlayerCharacter owner = armyEntry.Value.getOwner();
+
+                    // put army in owner's myArmies
+                    if (owner != null)
+                    {
+                        if (!owner.myArmies.Contains(armyEntry.Value))
+                        {
+                            owner.myArmies.Add(armyEntry.Value);
+                        }
+                    }
+                }
+
+                // get army leader
+                if (!String.IsNullOrWhiteSpace(armyEntry.Value.leader))
+                {
+                    Character leader = armyEntry.Value.getLeader();
+
+                    // put army id in leader's armyID
+                    if (leader != null)
+                    {
+                        if (!leader.armyID.Equals(armyEntry.Key))
+                        {
+                            leader.armyID = armyEntry.Key;
+                        }
+                    }
+                }
+
+                // get army location
+                if (!String.IsNullOrWhiteSpace(armyEntry.Value.location))
+                {
+                    Fief thisFief = armyEntry.Value.getLocation();
+
+                    // put army id in fief's armies
+                    if (thisFief != null)
+                    {
+                        if (!thisFief.armies.Contains(armyEntry.Key))
+                        {
+                            thisFief.armies.Add(armyEntry.Key);
+                        }
+                    }
+                }
+            }
         }
 
     }
