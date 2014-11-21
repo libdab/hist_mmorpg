@@ -142,5 +142,19 @@ namespace hist_mmorpg
         public Language_Riak()
         {
         }
+
+        /// <summary>
+        /// Constructor for Language_Riak taking seperate values.
+        /// For creating Language_Riak from CSV file.
+        /// </summary>
+        /// <param name="id">string holding Language ID</param>
+        /// <param name="bLang">string holding BaseLanguage (ID)</param>
+        /// <param name="dial">int holding language dialect code</param>
+        public Language_Riak(string id, string bLang, int dial)
+        {
+            this.id = id;
+            this.baseLanguage = bLang;
+            this.dialect = dial;
+        }
     }
 }

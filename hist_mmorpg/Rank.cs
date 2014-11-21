@@ -261,6 +261,24 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Constructor for Position_Riak taking seperate values.
+        /// For creating Position_Riak from CSV file.
+        /// </summary>
+        /// <param name="id">byte holding Position ID</param>
+        /// <param name="ti">title name in various languages</param>
+        /// <param name="stat">byte holding stature for this position</param>
+        /// <param name="holder">string ID of the office holder</param>
+        /// <param name="nat">string holding ID of Nationality associated with the position</param>
+        public Position_Riak(byte id, TitleName[] ti, byte stat, string holder, string nat)
+        {
+            this.id = id;
+            this.title = ti;
+            this.stature = stat;
+            this.officeHolder = holder;
+            this.nationality = nat;
+        }
+
+        /// <summary>
         /// Constructor for Position_Riak taking no parameters.
         /// For use when de-serialising from Riak
         /// </summary>

@@ -14782,13 +14782,27 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success state</returns>
         /// <param name="filename">The name of the CSV file</param>
-        public bool ImportFromCSV(string filename)
+        /// <param name="bucketID">The name of the Riak bucket in which to store the game objects</param>
+        public bool ImportFromCSV(string filename, string bucketID)
         {
             bool inputFileError = false;
             string lineIn;
             string[] lineParts;
             StreamReader srPlaces = null;
-            List<string> keyList = new List<string>();
+            List<string> fiefKeyList = new List<string>();
+            List<string> provKeyList = new List<string>();
+            List<string> kingKeyList = new List<string>();
+            List<string> pcKeyList = new List<string>();
+            List<string> npcKeyList = new List<string>();
+            List<string> skillKeyList = new List<string>();
+            List<string> armyKeyList = new List<string>();
+            List<string> langKeyList = new List<string>();
+            List<string> baseLangKeyList = new List<string>();
+            List<string> natKeyList = new List<string>();
+            List<byte> rankKeyList = new List<byte>();
+            List<byte> posKeyList = new List<byte>();
+            List<string> siegeKeyList = new List<string>();
+            List<string> terrKeyList = new List<string>();
 
             try
             {
@@ -14830,7 +14844,7 @@ namespace hist_mmorpg
                         // TODO: save to Riak
 
                         // add fief id to keylist
-                        keyList.Add(thisFiefRiak.id);
+                        fiefKeyList.Add(thisFiefRiak.id);
                     }
                     else
                     {
@@ -14851,7 +14865,7 @@ namespace hist_mmorpg
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
                         {
-                            MessageBox.Show("Not enough data parts present for Province object.");
+                            MessageBox.Show("Incorrect number of data parts for Province object.");
                         }
                     }
                     else
@@ -14863,7 +14877,15 @@ namespace hist_mmorpg
                             // TODO: save to Riak
 
                             // add fief id to keylist
-                            keyList.Add(thisProvRiak.id);
+                            provKeyList.Add(thisProvRiak.id);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Province object: " + lineParts[1]);
+                            }
                         }
                     }
                 }
@@ -14877,7 +14899,7 @@ namespace hist_mmorpg
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
                         {
-                            MessageBox.Show("Not enough data parts present for Kingdom object.");
+                            MessageBox.Show("Incorrect number of data parts for Kingdom object.");
                         }
                     }
                     else
@@ -14889,7 +14911,15 @@ namespace hist_mmorpg
                             // TODO: save to Riak
 
                             // add fief id to keylist
-                            keyList.Add(thisKingRiak.id);
+                            kingKeyList.Add(thisKingRiak.id);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Kingdom object: " + lineParts[1]);
+                            }
                         }
                     }
                 }
@@ -14905,7 +14935,7 @@ namespace hist_mmorpg
                         // TODO: save to Riak
 
                         // add id to keylist
-                        keyList.Add(thisPcRiak.charID);
+                        pcKeyList.Add(thisPcRiak.charID);
                     }
                     else
                     {
@@ -14928,7 +14958,7 @@ namespace hist_mmorpg
                         // TODO: save to Riak
 
                         // add id to keylist
-                        keyList.Add(thisNpcRiak.charID);
+                        npcKeyList.Add(thisNpcRiak.charID);
                     }
                     else
                     {
@@ -14951,7 +14981,7 @@ namespace hist_mmorpg
                         // TODO: save to Riak
 
                         // add id to keylist
-                        keyList.Add(thisSkill.skillID);
+                        skillKeyList.Add(thisSkill.skillID);
                     }
                     else
                     {
@@ -14962,9 +14992,339 @@ namespace hist_mmorpg
                         }
                     }
                 }
+
+                else if (lineParts[0].Equals("army"))
+                {
+                    Army thisArmy = null;
+
+                    if (lineParts.Length != 15)
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Incorrect number of data parts for Army object.");
+                        }
+                    }
+                    else
+                    {
+                        thisArmy = this.importFromCSV_Army(lineParts);
+
+                        if (thisArmy != null)
+                        {
+                            // TODO: save to Riak
+
+                            // add id to keylist
+                            armyKeyList.Add(thisArmy.armyID);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Army object: " + lineParts[1]);
+                            }
+                        }
+                    }
+                }
+
+                else if (lineParts[0].Equals("language"))
+                {
+                    Language_Riak thisLangRiak = null;
+
+                    if (lineParts.Length != 4)
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Incorrect number of data parts for Language object.");
+                        }
+                    }
+                    else
+                    {
+                        thisLangRiak = this.importFromCSV_Language(lineParts);
+
+                        if (thisLangRiak != null)
+                        {
+                            // TODO: save to Riak
+
+                            // add id to keylist
+                            langKeyList.Add(thisLangRiak.id);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Language object: " + lineParts[1]);
+                            }
+                        }
+                    }
+                }
+
+                else if (lineParts[0].Equals("baseLanguage"))
+                {
+                    BaseLanguage thisBaseLang = null;
+
+                    if (lineParts.Length != 3)
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Incorrect number of data parts for BaseLanguage object.");
+                        }
+                    }
+                    else
+                    {
+                        thisBaseLang = this.importFromCSV_BaseLanguage(lineParts);
+
+                        if (thisBaseLang != null)
+                        {
+                            // TODO: save to Riak
+
+                            // add id to keylist
+                            baseLangKeyList.Add(thisBaseLang.id);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create BaseLanguage object: " + lineParts[1]);
+                            }
+                        }
+                    }
+                }
+
+                else if (lineParts[0].Equals("nationality"))
+                {
+                    Nationality thisNat = null;
+
+                    if (lineParts.Length != 3)
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Incorrect number of data parts for Nationality object.");
+                        }
+                    }
+                    else
+                    {
+                        thisNat = this.importFromCSV_Nationality(lineParts);
+
+                        if (thisNat != null)
+                        {
+                            // TODO: save to Riak
+
+                            // add id to keylist
+                            natKeyList.Add(thisNat.natID);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Nationality object: " + lineParts[1]);
+                            }
+                        }
+                    }
+                }
+
+                else if (lineParts[0].Equals("rank"))
+                {
+                    Rank thisRank = null;
+
+                    thisRank = this.importFromCSV_Rank(lineParts);
+
+                    if (thisRank != null)
+                    {
+                        // TODO: save to Riak
+
+                        // add id to keylist
+                        rankKeyList.Add(thisRank.id);
+                    }
+                    else
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Unable to create Rank object: " + lineParts[1]);
+                        }
+                    }
+                }
+
+                else if (lineParts[0].Equals("position"))
+                {
+                    Position_Riak thisPosRiak = null;
+
+                    thisPosRiak = this.importFromCSV_Position(lineParts);
+
+                    if (thisPosRiak != null)
+                    {
+                        // TODO: save to Riak
+
+                        // add id to keylist
+                        posKeyList.Add(thisPosRiak.id);
+                    }
+                    else
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Unable to create Position object: " + lineParts[1]);
+                        }
+                    }
+                }
+
+                else if (lineParts[0].Equals("siege"))
+                {
+                    Siege thisSiege = null;
+
+                    if (lineParts.Length != 16)
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Incorrect number of data parts for Siege object.");
+                        }
+                    }
+                    else
+                    {
+                        thisSiege = this.importFromCSV_Siege(lineParts);
+
+                        if (thisSiege != null)
+                        {
+                            // TODO: save to Riak
+
+                            // add id to keylist
+                            siegeKeyList.Add(thisSiege.siegeID);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Siege object: " + lineParts[1]);
+                            }
+                        }
+                    }
+                }
+
+                else if (lineParts[0].Equals("terrain"))
+                {
+                    Terrain thisTerr = null;
+
+                    if (lineParts.Length != 4)
+                    {
+                        inputFileError = true;
+                        if (Globals_Client.showDebugMessages)
+                        {
+                            MessageBox.Show("Incorrect number of data parts for Terrain object.");
+                        }
+                    }
+                    else
+                    {
+                        thisTerr = this.importFromCSV_Terrain(lineParts);
+
+                        if (thisTerr != null)
+                        {
+                            // TODO: save to Riak
+
+                            // add id to keylist
+                            terrKeyList.Add(thisTerr.terrainCode);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Terrain object: " + lineParts[1]);
+                            }
+                        }
+                    }
+                }
             }
 
-            if (keyList.Count > 0)
+            // save keyLists to database
+            // fiefs
+            if (fiefKeyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            // provinces
+            if (provKeyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            // kingdoms
+            if (kingKeyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            // PCs
+            if (pcKeyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            // NPCs
+            if (npcKeyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            // skills
+            if (skillKeyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            // armies
+            if (armyKeyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            // languages
+            if (langKeyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            // baseLanguages
+            if (baseLangKeyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            // nationalities
+            if (natKeyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            // ranks
+            if (rankKeyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            // positions
+            if (posKeyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            // sieges
+            if (siegeKeyList.Count > 0)
+            {
+                // TODO: save keylist to Riak
+            }
+
+            // terrains
+            if (terrKeyList.Count > 0)
             {
                 // TODO: save keylist to Riak
             }
@@ -15234,7 +15594,7 @@ namespace hist_mmorpg
                     own = kingData[6];
                 }
 
-                // create Province_Riak object
+                // create Kingdom_Riak object
                 thisKingRiak = new Kingdom_Riak(kingData[1], kingData[2], Convert.ToByte(kingData[3]), kingData[4],
                     tiHo, own);
             }
@@ -15598,7 +15958,7 @@ namespace hist_mmorpg
                     boss = npcData[28];
                 }
 
-                // create PlayerCharacter_Riak object
+                // create NonPlayerCharacter_Riak object
                 thisNpcRiak = new NonPlayerCharacter_Riak(npcData[1], npcData[2], npcData[3], dob, Convert.ToBoolean(npcData[6]),
                     npcData[7], Convert.ToBoolean(npcData[8]), Convert.ToDouble(npcData[9]), Convert.ToDouble(npcData[10]),
                     new List<string>(), npcData[11], Convert.ToDouble(npcData[12]), Convert.ToDouble(npcData[13]),
@@ -15730,6 +16090,545 @@ namespace hist_mmorpg
             }
 
             return thisSkill;
+        }
+
+        /// <summary>
+        /// Creates a Army object using data in a string array
+        /// </summary>
+        /// <returns>Army object</returns>
+        /// <param name="armyData">string[] holding source data</param>
+        public Army importFromCSV_Army(string[] armyData)
+        {
+            Army thisArmy = null;
+
+            try
+            {
+                // create troops array
+                uint[] troops = new uint[] { Convert.ToUInt32(armyData[9]), Convert.ToUInt32(armyData[10]),
+                    Convert.ToUInt32(armyData[11]), Convert.ToUInt32(armyData[12]), Convert.ToUInt32(armyData[13]),
+                    Convert.ToUInt32(armyData[14])};
+
+                // check for presence of conditional values
+                string maint, aggr, odds;
+                maint = aggr = odds = null;
+
+                if (!String.IsNullOrWhiteSpace(armyData[6]))
+                {
+                    maint = armyData[6];
+                }
+                if (!String.IsNullOrWhiteSpace(armyData[7]))
+                {
+                    aggr = armyData[7];
+                }
+                if (!String.IsNullOrWhiteSpace(armyData[8]))
+                {
+                    odds = armyData[8];
+                }
+
+                // create Army object
+                thisArmy = new Army(armyData[1], armyData[2], armyData[3], Convert.ToDouble(armyData[4]), armyData[5],
+                    maint: Convert.ToBoolean(maint), aggr: Convert.ToByte(aggr), odds: Convert.ToByte(odds), trp: troops);
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisArmy;
+        }
+
+        /// <summary>
+        /// Creates a Language_Riak object using data in a string array
+        /// </summary>
+        /// <returns>Language_Riak object</returns>
+        /// <param name="langData">string[] holding source data</param>
+        public Language_Riak importFromCSV_Language(string[] langData)
+        {
+            Language_Riak thisLangRiak = null;
+
+            try
+            {
+                // create Language_Riak object
+                thisLangRiak = new Language_Riak(langData[1], langData[2], Convert.ToInt32(langData[3]));
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisLangRiak;
+        }
+
+        /// <summary>
+        /// Creates a BaseLanguage object using data in a string array
+        /// </summary>
+        /// <returns>BaseLanguage object</returns>
+        /// <param name="baseLangData">string[] holding source data</param>
+        public BaseLanguage importFromCSV_BaseLanguage(string[] baseLangData)
+        {
+            BaseLanguage thisBaseLang = null;
+
+            try
+            {
+                // create BaseLanguage object
+                thisBaseLang = new BaseLanguage(baseLangData[1], baseLangData[2]);
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisBaseLang;
+        }
+
+        /// <summary>
+        /// Creates a Nationality object using data in a string array
+        /// </summary>
+        /// <returns>Nationality object</returns>
+        /// <param name="natData">string[] holding source data</param>
+        public Nationality importFromCSV_Nationality(string[] natData)
+        {
+            Nationality thisNat = null;
+
+            try
+            {
+                // create Nationality object
+                thisNat = new Nationality(natData[1], natData[2]);
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisNat;
+        }
+
+        /// <summary>
+        /// Creates a Rank object using data in a string array
+        /// </summary>
+        /// <returns>Rank object</returns>
+        /// <param name="rankData">string[] holding source data</param>
+        public Rank importFromCSV_Rank(string[] rankData)
+        {
+            Rank thisRank = null;
+
+            try
+            {
+                // create empty lists for variable length collections
+                // (title)
+                TitleName[] title = null;
+
+                // create variables to hold start/end index positions
+                int tiStart, tiEnd;
+                tiStart = tiEnd = -1;
+
+                // iterate through main list STORING START/END INDEX POSITIONS
+                for (int i = 3; i < rankData.Length; i++)
+                {
+                    if (rankData[i].Equals("tiStart"))
+                    {
+                        tiStart = i;
+                    }
+                    else if (rankData[i].Equals("tiEnd"))
+                    {
+                        tiEnd = i;
+                    }
+                }
+
+                // ADD ITEMS to appropriate list
+                // title
+                List<TitleName> tempTitle = new List<TitleName>();
+
+                if ((tiStart > -1) && (tiEnd > -1))
+                {
+                    // check to ensure all effects have accompanying effect level
+                    if (!Globals_Game.IsOdd(tiStart + tiEnd))
+                    {
+                        for (int i = tiStart + 1; i < tiEnd; i = i + 2)
+                        {
+                            TitleName thisTitle = new TitleName(rankData[i], rankData[i + 1]);
+                            tempTitle.Add(thisTitle);
+                        }
+                        // create title array from list
+                        title = tempTitle.ToArray();
+                    }
+                }
+
+                if (title.Length > 0)
+                {
+                    // create Rank object
+                    thisRank = new Rank(Convert.ToByte(rankData[1]), title, Convert.ToByte(rankData[2]));
+                }
+
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisRank;
+        }
+
+        /// <summary>
+        /// Creates a Position_Riak object using data in a string array
+        /// </summary>
+        /// <returns>Position_Riak object</returns>
+        /// <param name="posData">string[] holding source data</param>
+        public Position_Riak importFromCSV_Position(string[] posData)
+        {
+            Position_Riak thisPosRiak = null;
+
+            try
+            {
+                // create empty lists for variable length collections
+                // (title)
+                TitleName[] title = null;
+
+                // create variables to hold start/end index positions
+                int tiStart, tiEnd;
+                tiStart = tiEnd = -1;
+
+                // iterate through main list STORING START/END INDEX POSITIONS
+                for (int i = 3; i < posData.Length; i++)
+                {
+                    if (posData[i].Equals("tiStart"))
+                    {
+                        tiStart = i;
+                    }
+                    else if (posData[i].Equals("tiEnd"))
+                    {
+                        tiEnd = i;
+                    }
+                }
+
+                // ADD ITEMS to appropriate list
+                // title
+                List<TitleName> tempTitle = new List<TitleName>();
+
+                if ((tiStart > -1) && (tiEnd > -1))
+                {
+                    // check to ensure all effects have accompanying effect level
+                    if (!Globals_Game.IsOdd(tiStart + tiEnd))
+                    {
+                        for (int i = tiStart + 1; i < tiEnd; i = i + 2)
+                        {
+                            TitleName thisTitle = new TitleName(posData[i], posData[i + 1]);
+                            tempTitle.Add(thisTitle);
+                        }
+                        // create title array from list
+                        title = tempTitle.ToArray();
+                    }
+                }
+
+                if (title.Length > 0)
+                {
+                    // create Rank object
+                    thisPosRiak = new Position_Riak(Convert.ToByte(posData[1]), title, Convert.ToByte(posData[2]), posData[3], posData[4]);
+                }
+
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisPosRiak;
+        }
+
+        /// <summary>
+        /// Creates a Siege object using data in a string array
+        /// </summary>
+        /// <returns>Siege object</returns>
+        /// <param name="siegeData">string[] holding source data</param>
+        public Siege importFromCSV_Siege(string[] siegeData)
+        {
+            Siege thisSiege = null;
+
+            try
+            {
+                // check for presence of conditional values
+                string totAttCas, totDefCas, totDays, defenderAdd, siegeEnd;
+                totAttCas = totDefCas = totDays = defenderAdd = siegeEnd = null;
+
+                if (!String.IsNullOrWhiteSpace(siegeData[11]))
+                {
+                    totAttCas = siegeData[11];
+                }
+                if (!String.IsNullOrWhiteSpace(siegeData[12]))
+                {
+                    totDefCas = siegeData[12];
+                }
+                if (!String.IsNullOrWhiteSpace(siegeData[13]))
+                {
+                    totDays = siegeData[13];
+                }
+                if (!String.IsNullOrWhiteSpace(siegeData[14]))
+                {
+                    defenderAdd = siegeData[14];
+                }
+                if (!String.IsNullOrWhiteSpace(siegeData[15]))
+                {
+                    siegeEnd = siegeData[15];
+                }
+
+                // create Siege object
+                thisSiege = new Siege(siegeData[1], Convert.ToUInt32(siegeData[2]), Convert.ToByte(siegeData[3]), siegeData[4],
+                    siegeData[5], siegeData[6], siegeData[7], siegeData[8], Convert.ToDouble(siegeData[9]),
+                    Convert.ToDouble(siegeData[10]), Convert.ToInt32(totAttCas), Convert.ToInt32(totDefCas),
+                    Convert.ToDouble(totDays), defenderAdd, siegeEnd);
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisSiege;
+        }
+
+        /// <summary>
+        /// Creates a Terrain object using data in a string array
+        /// </summary>
+        /// <returns>Terrain object</returns>
+        /// <param name="terrData">string[] holding source data</param>
+        public Terrain importFromCSV_Terrain(string[] terrData)
+        {
+            Terrain thisTerr = null;
+
+            try
+            {
+                // create Terrain object
+                thisTerr = new Terrain(terrData[1], terrData[2], Convert.ToDouble(terrData[3]));
+            }
+            // catch exception that could result from incorrect conversion of string to numeric 
+            catch (FormatException fe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fe.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(aoore.Message);
+                }
+            }
+            // catch exception that could be thrown by several checks in the Fief constructor
+            catch (InvalidDataException ide)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ide.Message);
+                }
+            }
+            // catch exception that could result from incorrect numeric values
+            catch (OverflowException oe)
+            {
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(oe.Message);
+                }
+            }
+
+            return thisTerr;
         }
 
     }

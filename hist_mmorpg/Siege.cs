@@ -89,7 +89,9 @@ namespace hist_mmorpg
         /// <param name="totday">double containing days used by siege so far</param>
         /// <param name="defAdd">String holding additional defending army (armyID)</param>
         /// <param name="end">string holding season and year the siege ended</param>
-        public Siege(String id, uint startYr, byte startSeas, string bsgPlayer, string defPlayer, string bsgArmy, string defGarr, string fief, double day, double kpLvl, int totAtt = 0, int totDef = 0, double totDay = 0, string defAdd = null, string end = null)
+        public Siege(String id, uint startYr, byte startSeas, string bsgPlayer, string defPlayer, string bsgArmy,
+            string defGarr, string fief, double day, double kpLvl, int totAtt = 0, int totDef = 0, double totDay = 0,
+            string defAdd = null, string end = null)
         {
             this.siegeID = id;
             this.startYear = startYr;
