@@ -323,7 +323,7 @@ namespace hist_mmorpg
             // create kingdoms for provinces
             Kingdom myKingdom1 = new Kingdom("E0000", "England", nationality02, r: myRank03);
             Globals_Game.kingdomMasterList.Add(myKingdom1.id, myKingdom1);
-            Kingdom myKingdom2 = new Kingdom("B0000", "France", nationality01, r: myRank03);
+            Kingdom myKingdom2 = new Kingdom("F0000", "France", nationality01, r: myRank03);
             Globals_Game.kingdomMasterList.Add(myKingdom2.id, myKingdom2);
 
             // create provinces for fiefs
@@ -8373,22 +8373,38 @@ namespace hist_mmorpg
         {
             NonPlayerCharacter newNPC = new NonPlayerCharacter();
 
+            // charID
+            newNPC.charID = Globals_Game.getNextCharID();
             // first name
             newNPC.firstName = "Baby";
             // family name
             newNPC.familyName = daddy.familyName;
             // date of birth
             newNPC.birthDate = new Tuple<uint, byte>(Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason);
+            // sex
+            newNPC.isMale = this.generateSex();
             // nationality
             newNPC.nationality = daddy.nationality;
             // whether is alive
             newNPC.isAlive = true;
+            // maxHealth
+            newNPC.maxHealth = this.generateKeyCharacteristics(mummy.maxHealth, daddy.maxHealth);
+            // virility
+            newNPC.virility = this.generateKeyCharacteristics(mummy.virility, daddy.virility);
             // goTo queue
             newNPC.goTo = new Queue<Fief>();
             // language
             newNPC.language = daddy.language;
             // days left
             newNPC.days = 90;
+            // stature modifier
+            newNPC.statureModifier = 0;
+            // management
+            newNPC.management = this.generateKeyCharacteristics(mummy.management, daddy.management);
+            // combat
+            newNPC.combat = this.generateKeyCharacteristics(mummy.combat, daddy.combat);
+            // skills
+            newNPC.skills = this.generateSkillSetFromParents(mummy.skills, daddy.skills, newNPC.isMale);
             // if in keep
             newNPC.inKeep = mummy.inKeep;
             // if pregnant
@@ -8399,34 +8415,28 @@ namespace hist_mmorpg
             newNPC.spouse = null;
             // father
             newNPC.father = daddy.charID;
+            // mother
+            newNPC.mother = mummy.charID;
+            // fiancee
+            newNPC.fiancee = null;
             // location
             newNPC.location = null;
             // titles
             newNPC.myTitles = new List<string>();
-            // sex
-            newNPC.isMale = this.generateSex();
-            // maxHealth
-            newNPC.maxHealth = this.generateKeyCharacteristics(mummy.maxHealth, daddy.maxHealth);
-            // virility
-            newNPC.virility = this.generateKeyCharacteristics(mummy.virility, daddy.virility);
-            // management
-            newNPC.management = this.generateKeyCharacteristics(mummy.management, daddy.management);
-            // combat
-            newNPC.combat = this.generateKeyCharacteristics(mummy.combat, daddy.combat);
-            // skills
-            newNPC.skills = this.generateSkillSetFromParents(mummy.skills, daddy.skills, newNPC.isMale);
-            // charID
-            newNPC.charID = Globals_Game.getNextCharID();
-            // stature modifier
-            newNPC.statureModifier = 0;
+            // armyID
+            newNPC.armyID = null;
+            // ailments
+            newNPC.ailments = new Dictionary<string, Ailment>();
             // employer (myBoss)
             newNPC.myBoss = null;
             // salary/allowance
             newNPC.wage = 0;
-            // inEntourage
-            newNPC.inEntourage = false;
             // lastOffer (will remain empty for family members)
             newNPC.lastOffer = new Dictionary<string, uint>();
+            // inEntourage
+            newNPC.inEntourage = false;
+            // isHeir
+            newNPC.isHeir = false;
 
             return newNPC;
         }
@@ -15856,6 +15866,10 @@ namespace hist_mmorpg
                 }
 
                 // create DOB tuple
+                if (!String.IsNullOrWhiteSpace(pcData[5]))
+                {
+                    pcData[5] = Globals_Game.myRand.Next(4).ToString();
+                }
                 Tuple<uint, byte> dob = new Tuple<uint,byte>(Convert.ToUInt32(pcData[4]), Convert.ToByte(pcData[5]));
 
                 // check for presence of CONDITIONAL VARIABLES
