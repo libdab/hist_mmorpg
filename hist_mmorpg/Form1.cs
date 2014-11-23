@@ -227,16 +227,20 @@ namespace hist_mmorpg
 			}
 
             // create BaseLanguage & Language objects
-            BaseLanguage c = new BaseLanguage("langC", "Celtic");
+            BaseLanguage c = new BaseLanguage("lang_C", "Celtic");
             Globals_Game.baseLanguageMasterList.Add(c.id, c);
             Language c1 = new Language(c, 1);
             Globals_Game.languageMasterList.Add(c1.id, c1);
             Language c2 = new Language(c, 2);
             Globals_Game.languageMasterList.Add(c2.id, c2);
-            BaseLanguage f = new BaseLanguage("langF", "French");
+            BaseLanguage f = new BaseLanguage("lang_F", "French");
             Globals_Game.baseLanguageMasterList.Add(f.id, f);
             Language f1 = new Language(f, 1);
             Globals_Game.languageMasterList.Add(f1.id, f1);
+            BaseLanguage e = new BaseLanguage("lang_E", "English");
+            Globals_Game.baseLanguageMasterList.Add(e.id, e);
+            Language e1 = new Language(e, 1);
+            Globals_Game.languageMasterList.Add(e1.id, e1);
 
 			// create terrain objects
 			Terrain plains = new Terrain("terr_P", "Plains", 1);
@@ -247,7 +251,7 @@ namespace hist_mmorpg
             Globals_Game.terrainMasterList.Add(forrest.terrainCode, forrest);
             Terrain mountains = new Terrain("terr_M", "Mountains", 15);
             Globals_Game.terrainMasterList.Add(mountains.terrainCode, mountains);
-            Terrain impassable_mountains = new Terrain("terr_MX", "Impassable mountains", 90);
+            Terrain impassable_mountains = new Terrain("terr_MX", "Impassable mountains", 91);
             Globals_Game.terrainMasterList.Add(impassable_mountains.terrainCode, impassable_mountains);
 
 			// create keep barred lists for fiefs
@@ -269,38 +273,43 @@ namespace hist_mmorpg
 			List<Character> fief7Chars = new List<Character>();
 
             // create ranks for kingdoms, provinces, fiefs
-            TitleName[] myTitleName03 = new TitleName[3];
-            myTitleName03[0] = new TitleName("langC", "King");
-            myTitleName03[1] = new TitleName("langE", "King");
-            myTitleName03[2] = new TitleName("langF", "Roi");
+            TitleName[] myTitleName03 = new TitleName[4];
+            myTitleName03[0] = new TitleName("lang_C1", "King");
+            myTitleName03[1] = new TitleName("lang_C2", "King");
+            myTitleName03[2] = new TitleName("lang_E1", "King");
+            myTitleName03[3] = new TitleName("lang_F1", "Roi");
             Rank myRank03 = new Rank(3, myTitleName03, 6);
             Globals_Game.rankMasterList.Add(myRank03.id, myRank03);
 
-            TitleName[] myTitleName09 = new TitleName[3];
-            myTitleName09[0] = new TitleName("langC", "Prince");
-            myTitleName09[1] = new TitleName("langE", "Prince");
-            myTitleName09[2] = new TitleName("langF", "Prince");
+            TitleName[] myTitleName09 = new TitleName[4];
+            myTitleName09[0] = new TitleName("lang_C1", "Prince");
+            myTitleName09[1] = new TitleName("lang_C2", "Prince");
+            myTitleName09[2] = new TitleName("lang_E1", "Prince");
+            myTitleName09[3] = new TitleName("lang_F1", "Prince");
             Rank myRank09 = new Rank(9, myTitleName09, 4);
             Globals_Game.rankMasterList.Add(myRank09.id, myRank09);
 
-            TitleName[] myTitleName11 = new TitleName[3];
-            myTitleName11[0] = new TitleName("langC", "Earl");
-            myTitleName11[1] = new TitleName("langE", "Earl");
-            myTitleName11[2] = new TitleName("langF", "Comte");
+            TitleName[] myTitleName11 = new TitleName[4];
+            myTitleName11[0] = new TitleName("lang_C1", "Earl");
+            myTitleName11[1] = new TitleName("lang_C2", "Earl");
+            myTitleName11[2] = new TitleName("lang_E1", "Earl");
+            myTitleName11[3] = new TitleName("lang_F1", "Comte");
             Rank myRank11 = new Rank(11, myTitleName11, 4);
             Globals_Game.rankMasterList.Add(myRank11.id, myRank11);
 
-            TitleName[] myTitleName15 = new TitleName[3];
-            myTitleName15[0] = new TitleName("langC", "Baron");
-            myTitleName15[1] = new TitleName("langE", "Baron");
-            myTitleName15[2] = new TitleName("langF", "Baron");
+            TitleName[] myTitleName15 = new TitleName[4];
+            myTitleName15[0] = new TitleName("lang_C1", "Baron");
+            myTitleName15[1] = new TitleName("lang_C2", "Baron");
+            myTitleName15[2] = new TitleName("lang_E1", "Baron");
+            myTitleName15[3] = new TitleName("lang_F1", "Baron");
             Rank myRank15 = new Rank(15, myTitleName15, 2);
             Globals_Game.rankMasterList.Add(myRank15.id, myRank15);
 
-            TitleName[] myTitleName17 = new TitleName[3];
-            myTitleName17[0] = new TitleName("langC", "Lord");
-            myTitleName17[1] = new TitleName("langE", "Lord");
-            myTitleName17[2] = new TitleName("langF", "Sire");
+            TitleName[] myTitleName17 = new TitleName[4];
+            myTitleName17[0] = new TitleName("lang_C1", "Lord");
+            myTitleName17[1] = new TitleName("lang_C2", "Lord");
+            myTitleName17[2] = new TitleName("lang_E1", "Lord");
+            myTitleName17[3] = new TitleName("lang_F1", "Sire");
             Rank myRank17 = new Rank(17, myTitleName17, 1);
             Globals_Game.rankMasterList.Add(myRank17.id, myRank17);
 
@@ -311,12 +320,16 @@ namespace hist_mmorpg
             Globals_Game.nationalityMasterList.Add(nationality02.natID, nationality02);
 
             // create Positions
-            TitleName myTiName01 = new TitleName("LangC", "Keeper of the Privy Seal");
-            TitleName[] myTitles01 = new TitleName[] { myTiName01 };
+            TitleName myTiName01 = new TitleName("lang_C1", "Keeper of the Privy Seal");
+            TitleName myTiName011 = new TitleName("lang_C2", "Keeper of the Privy Seal");
+            TitleName myTiName012 = new TitleName("lang_E1", "Keeper of the Privy Seal");
+            TitleName[] myTitles01 = new TitleName[] { myTiName01, myTiName011, myTiName012 };
             Position myPos01 = new Position(100, myTitles01, 2, null, nationality02);
             Globals_Game.positionMasterList.Add(myPos01.id, myPos01);
-            TitleName myTiName02 = new TitleName("LangC", "Lord High Steward");
-            TitleName[] myTitles02 = new TitleName[] { myTiName02 };
+            TitleName myTiName02 = new TitleName("lang_C1", "Lord High Steward");
+            TitleName myTiName021 = new TitleName("lang_C2", "Lord High Steward");
+            TitleName myTiName022 = new TitleName("lang_E1", "Lord High Steward");
+            TitleName[] myTitles02 = new TitleName[] { myTiName02, myTiName021, myTiName022 };
             Position myPos02 = new Position(101, myTitles02, 2, null, nationality02);
             Globals_Game.positionMasterList.Add(myPos02.id, myPos02);
 
@@ -4783,7 +4796,7 @@ namespace hist_mmorpg
                         posItem = new ListViewItem(thisPos.Value.id.ToString());
 
                         // name
-                        posItem.SubItems.Add(thisPos.Value.title[0].name);
+                        posItem.SubItems.Add(thisPos.Value.getName(thisKing.language));
 
                         // stature
                         posItem.SubItems.Add(thisPos.Value.stature.ToString());
@@ -5258,7 +5271,7 @@ namespace hist_mmorpg
             }
 
 
-            // if titles are to be shown
+            // if TITLES are to be shown
             if (this.characterTitlesCheckBox.Checked)
             {
                 charText += "\r\n\r\n------------------ TITLES ------------------\r\n\r\n";
@@ -5277,14 +5290,7 @@ namespace hist_mmorpg
                     if (thisPlace != null)
                     {
                         // get correct title
-                        foreach (TitleName titleName in thisPlace.rank.title)
-                        {
-                            if (titleName.langID == ch.language.baseLanguage.id)
-                            {
-                                charText += titleName.name + " (rank " + thisPlace.rank.id + ") of ";
-                                break;
-                            }
-                        }
+                        charText += thisPlace.rank.getName(ch.language) + " (rank " + thisPlace.rank.id + ") of ";
                         // get kingdom details
                         charText += thisPlace.name + " (" + titleEntry + ")\r\n";
                     }
@@ -5304,14 +5310,7 @@ namespace hist_mmorpg
                     if (thisPlace != null)
                     {
                         // get correct title
-                        foreach (TitleName titleName in thisPlace.rank.title)
-                        {
-                            if (titleName.langID == ch.language.baseLanguage.id)
-                            {
-                                charText += titleName.name + " (rank " + thisPlace.rank.id + ") of ";
-                                break;
-                            }
-                        }
+                        charText += thisPlace.rank.getName(ch.language) + " (rank " + thisPlace.rank.id + ") of ";
                         // get province details
                         charText += thisPlace.name + " (" + titleEntry + ")\r\n";
                     }
@@ -5331,14 +5330,7 @@ namespace hist_mmorpg
                     if (thisPlace != null)
                     {
                         // get correct title
-                        foreach (TitleName titleName in thisPlace.rank.title)
-                        {
-                            if (titleName.langID == ch.language.baseLanguage.id)
-                            {
-                                charText += titleName.name + " (rank " + thisPlace.rank.id + ") of ";
-                                break;
-                            }
-                        }
+                        charText += thisPlace.rank.getName((thisPlace as Fief).language) + " (rank " + thisPlace.rank.id + ") of ";
                         // get fief details
                         charText += thisPlace.name + " (" + titleEntry + ")\r\n";
                     }
@@ -5724,14 +5716,7 @@ namespace hist_mmorpg
 
             // rank
             fiefText += "Title (rank): ";
-            for (int i = 0; i < f.rank.title.Length; i++ )
-            {
-                if (f.rank.title[i].langID == f.language.baseLanguage.id)
-                {
-                    fiefText += f.rank.title[i].name + " (" + f.rank.id + ")\r\n";
-                    break;
-                }
-            }
+            fiefText += f.rank.getName(f.language) + " (" + f.rank.id + ")\r\n";
 
             // population
             fiefText += "Population: " + f.population + "\r\n";

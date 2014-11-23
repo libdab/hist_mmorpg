@@ -70,6 +70,52 @@ namespace hist_mmorpg
         {
         }
 
+        /// <summary>
+        /// Gets the correct name for the rank depending on the specified Language
+        /// </summary>
+        /// <returns>string containing the name</returns>
+        /// <param name="l">The Language to be used</param>
+        public string getName(Language l)
+        {
+            string rankName = null;
+            bool nameFound = false;
+
+            // iterate through TitleNames and get correct name
+            foreach (TitleName titleName in this.title)
+            {
+                if (titleName.langID == l.id)
+                {
+                    rankName = titleName.name;
+                    nameFound = true;
+                    break;
+                }
+            }
+
+            // if no name found for specified language
+            if (!nameFound)
+            {
+                // iterate through TitleNames and get generic name
+                foreach (TitleName titleName in this.title)
+                {
+                    if ((titleName.langID.Equals("generic")) || (titleName.langID.Contains("lang_E")))
+                    {
+                        rankName = titleName.name;
+                        nameFound = true;
+                        break;
+                    }
+                }
+            }
+
+            // if still no name found
+            if (!nameFound)
+            {
+                // get first name
+                rankName = this.title[0].name;
+            }
+
+            return rankName;
+        }
+
     }
 
     /// <summary>
@@ -293,7 +339,7 @@ namespace hist_mmorpg
     public struct TitleName
     {
         /// <summary>
-        /// Holds Language ID
+        /// Holds Language ID or "generic"
         /// </summary>
         public string langID;
         /// <summary>
