@@ -14811,7 +14811,7 @@ namespace hist_mmorpg
             bool inputFileError = false;
             string lineIn;
             string[] lineParts;
-            StreamReader srPlaces = null;
+            StreamReader srObjects = null;
             List<string> fiefKeyList = new List<string>();
             List<string> provKeyList = new List<string>();
             List<string> kingKeyList = new List<string>();
@@ -14830,7 +14830,7 @@ namespace hist_mmorpg
             try
             {
                 // opens StreamReader to read in  data from csv file
-                srPlaces = new StreamReader(filename);
+                srObjects = new StreamReader(filename);
             }
             // catch following IO exceptions that could be thrown by the StreamReader 
             catch (FileNotFoundException fnfe)
@@ -14851,7 +14851,7 @@ namespace hist_mmorpg
             }
 
             // while there is data in the line
-            while ((lineIn = srPlaces.ReadLine()) != null)
+            while ((lineIn = srObjects.ReadLine()) != null)
             {
                 // put the contents of the line into lineParts array, splitting on (char)9 (TAB)
                 lineParts = lineIn.Split(',');
@@ -16942,6 +16942,153 @@ namespace hist_mmorpg
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Creates game map using data imported from a CSV file and writes it to the database
+        /// </summary>
+        /// <returns>bool indicating success state</returns>
+        /// <param name="filename">The name of the CSV file</param>
+        /// <param name="bucketID">The name of the Riak bucket in which to store the game objects</param>
+        public bool CreateMapArrayFromCSV(string filename, string bucketID)
+        {
+            bool success = true;
+            List<TaggedEdge<string, string>> mapEdges = new List<TaggedEdge<string, string>>();
+            string lineIn;
+            string[] lineParts;
+            StreamReader srHexes = null;
+            string[,] mapHexes = null;
+            int row = 0;
+
+            try
+            {
+                // opens StreamReader to read in  data from csv file
+                srHexes = new StreamReader(filename);
+            }
+            // catch following IO exceptions that could be thrown by the StreamReader 
+            catch (FileNotFoundException fnfe)
+            {
+                success = false;
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(fnfe.Message);
+                }
+            }
+            catch (IOException ioe)
+            {
+                success = false;
+                if (Globals_Client.showDebugMessages)
+                {
+                    MessageBox.Show(ioe.Message);
+                }
+            }
+
+            // CREATE HEXMAP ARRAY
+            // while there is data in the line
+            while ((lineIn = srHexes.ReadLine()) != null)
+            {
+                // put the contents of the line into lineParts array, splitting on (char)9 (TAB)
+                lineParts = lineIn.Split(',');
+
+                // first line should contain array dimensions
+                if (lineParts[0].Equals("dimensions"))
+                {
+                    mapHexes = new string[Convert.ToInt32(lineParts[1]), Convert.ToInt32(lineParts[2])];
+                }
+
+                // the rest of the lines hold the values (fiefIDs)
+                else
+                {
+                    for (int i = 0; i < mapHexes.GetLength(1); i++ )
+                    {
+                        mapHexes[row, i] = lineParts[i];
+                    }
+
+                    // increment row
+                    row++;
+                }
+            }
+
+            // create list of map edges from array
+            mapEdges = this.CreateMapFromArray(mapHexes);
+
+            // save to database
+
+            return success;
+        }
+
+        /// <summary>
+        /// Creates list of map edges using a 2D string array
+        /// </summary>
+        /// <returns>List containing map edges</returns>
+        /// <param name="mapArray">string[,] containing map data</param>
+        public List<TaggedEdge<string, string>> CreateMapFromArray(string[,] mapArray)
+        {
+            List<TaggedEdge<string, string>> edgesOut = new List<TaggedEdge<string, string>>();
+            TaggedEdge<string, string> thisEdge = null;
+
+            // iterate row
+            for (int i = 0; i < mapArray.GetLength(0); i++)
+            {
+                // iterate column
+                for (int j = 0; j < mapArray.GetLength(1); j++)
+                {
+                    // don't process null entries
+                    if (!String.IsNullOrWhiteSpace(mapArray[i, j]))
+                    {
+                        // if not first hex in row, ADD LINKS BETWEEN THIS HEX/FIEF AND PREVIOUS HEX/FIEF
+                        if (j != 0)
+                        {
+                            if (!String.IsNullOrWhiteSpace(mapArray[i, j-1]))
+                            {
+                                // add link to previous
+                                thisEdge = new TaggedEdge<string, string>(mapArray[i, j], mapArray[i, j - 1], "W");
+                                edgesOut.Add(thisEdge);
+
+                                // add link from previous
+                                thisEdge = new TaggedEdge<string, string>(mapArray[i, j - 1], mapArray[i, j], "E");
+                                edgesOut.Add(thisEdge);
+                            }
+                        }
+
+                        // if not first row, ADD LINKS BETWEEN THIS HEX/FIEF AND HEX/FIEFS ABOVE
+                        if (i != 0)
+                        {
+                            // if not first column in even-numbered row, add link between this hex/fief and hex/fief above left
+                            if (!((!Globals_Game.IsOdd(i)) && (j == 0)))
+                            {
+                                if (!String.IsNullOrWhiteSpace(mapArray[i-1, j]))
+                                {
+                                    // add link to above left
+                                    thisEdge = new TaggedEdge<string, string>(mapArray[i, j], mapArray[i - 1, j], "NW");
+                                    edgesOut.Add(thisEdge);
+
+                                    // add link from above left
+                                    thisEdge = new TaggedEdge<string, string>(mapArray[i - 1, j], mapArray[i, j], "SE");
+                                    edgesOut.Add(thisEdge);
+                                }
+                            }
+
+                            // if not last column in odd-numbered row, add link between this hex/fief and hex/fief above right
+                            if (!((Globals_Game.IsOdd(i)) && (j == mapArray.GetLength(1) - 1)))
+                            {
+                                if (!String.IsNullOrWhiteSpace(mapArray[i - 1, j + 1]))
+                                {
+                                    // add link to above right
+                                    thisEdge = new TaggedEdge<string, string>(mapArray[i, j], mapArray[i - 1, j + 1], "NE");
+                                    edgesOut.Add(thisEdge);
+
+                                    // add link from above right
+                                    thisEdge = new TaggedEdge<string, string>(mapArray[i - 1, j + 1], mapArray[i, j], "SW");
+                                    edgesOut.Add(thisEdge);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return edgesOut;
         }
 
     }

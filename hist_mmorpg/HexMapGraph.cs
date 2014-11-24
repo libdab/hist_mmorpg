@@ -76,15 +76,19 @@ namespace hist_mmorpg
         public bool addHexesAndRoute(Fief s, Fief t, string tag, double cost)
         {
             bool success = false;
+
             // create route
             TaggedEdge<Fief, string> myEdge = this.createEdge(s, t, tag);
+
             // use route as source to add route and hex to graph
             success = this.myMap.AddVerticesAndEdge(myEdge);
+
             // if successful, add route cost
             if (success)
             {
                 this.addCost(myEdge, cost);
             }
+
             return success;
         }
 
