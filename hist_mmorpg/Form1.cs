@@ -1207,7 +1207,7 @@ namespace hist_mmorpg
             this.writeKeyList(gameID, "siegeKeys", Globals_Game.siegeKeys);
 
 			// ========= write MAP (edges collection)
-            this.writeMapEdges(gameID, Globals_Game.gameMap);
+            this.writeMapEdges(gameID, map: Globals_Game.gameMap);
 
 		}
 
@@ -3413,13 +3413,17 @@ namespace hist_mmorpg
 		/// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
-		/// <param name="map">HexMapGraph containing edges collection</param>
-        public bool writeMapEdges(string gameID, HexMapGraph map)
+        /// <param name="map">HexMapGraph containing edges collection to write</param>
+        /// <param name="edges">Edges collection to write</param>
+        public bool writeMapEdges(string gameID, HexMapGraph map = null, List<TaggedEdge<string, string>> edges = null)
 		{
-            // extract edges collection from HexMapGraph
-            List<TaggedEdge<string, string>> riakMapEdges = this.EdgeCollection_to_Riak(map.myMap.Edges.ToList());
+            if (map != null)
+            {
+                // convert Language into Language_Riak
+                edges = this.EdgeCollection_to_Riak(map.myMap.Edges.ToList());
+            }
 
-			var rMapE = new RiakObject(gameID, "mapEdges", riakMapEdges);
+            var rMapE = new RiakObject(gameID, "mapEdges", edges);
 			var putMapResultE = rClient.Put(rMapE);
 
 			if (! putMapResultE.IsSuccess)
@@ -17013,6 +17017,7 @@ namespace hist_mmorpg
             mapEdges = this.CreateMapFromArray(mapHexes);
 
             // save to database
+            this.writeMapEdges(bucketID, edges: mapEdges);
 
             return success;
         }
@@ -17054,17 +17059,30 @@ namespace hist_mmorpg
                         // if not first row, ADD LINKS BETWEEN THIS HEX/FIEF AND HEX/FIEFS ABOVE
                         if (i != 0)
                         {
+                            // keep track of target columns
+                            int col = 0;
+
                             // if not first column in even-numbered row, add link between this hex/fief and hex/fief above left
                             if (!((!Globals_Game.IsOdd(i)) && (j == 0)))
                             {
-                                if (!String.IsNullOrWhiteSpace(mapArray[i-1, j]))
+                                // target correct column (above left is different for odd/even numbered rows)
+                                if (Globals_Game.IsOdd(i))
+                                {
+                                    col = j;
+                                }
+                                else
+                                {
+                                    col = j - 1;
+                                }
+
+                                if (!String.IsNullOrWhiteSpace(mapArray[i - 1, col]))
                                 {
                                     // add link to above left
-                                    thisEdge = new TaggedEdge<string, string>(mapArray[i, j], mapArray[i - 1, j], "NW");
+                                    thisEdge = new TaggedEdge<string, string>(mapArray[i, j], mapArray[i - 1, col], "NW");
                                     edgesOut.Add(thisEdge);
 
                                     // add link from above left
-                                    thisEdge = new TaggedEdge<string, string>(mapArray[i - 1, j], mapArray[i, j], "SE");
+                                    thisEdge = new TaggedEdge<string, string>(mapArray[i - 1, col], mapArray[i, j], "SE");
                                     edgesOut.Add(thisEdge);
                                 }
                             }
@@ -17072,14 +17090,24 @@ namespace hist_mmorpg
                             // if not last column in odd-numbered row, add link between this hex/fief and hex/fief above right
                             if (!((Globals_Game.IsOdd(i)) && (j == mapArray.GetLength(1) - 1)))
                             {
-                                if (!String.IsNullOrWhiteSpace(mapArray[i - 1, j + 1]))
+                                // target correct column (above right is different for odd/even numbered rows)
+                                if (Globals_Game.IsOdd(i))
+                                {
+                                    col = j+1;
+                                }
+                                else
+                                {
+                                    col = j;
+                                }
+
+                                if (!String.IsNullOrWhiteSpace(mapArray[i - 1, col]))
                                 {
                                     // add link to above right
-                                    thisEdge = new TaggedEdge<string, string>(mapArray[i, j], mapArray[i - 1, j + 1], "NE");
+                                    thisEdge = new TaggedEdge<string, string>(mapArray[i, j], mapArray[i - 1, col], "NE");
                                     edgesOut.Add(thisEdge);
 
                                     // add link from above right
-                                    thisEdge = new TaggedEdge<string, string>(mapArray[i - 1, j + 1], mapArray[i, j], "SW");
+                                    thisEdge = new TaggedEdge<string, string>(mapArray[i - 1, col], mapArray[i, j], "SW");
                                     edgesOut.Add(thisEdge);
                                 }
                             }
