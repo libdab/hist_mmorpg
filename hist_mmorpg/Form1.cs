@@ -47,6 +47,8 @@ namespace hist_mmorpg
             // initialise game objects
             this.initGameObjects("Char_101");
 
+            this.ImportFromCSV("Province_E.csv", "blah");
+
 			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
         }
 
@@ -826,16 +828,20 @@ namespace hist_mmorpg
             // populate array of skills with randomly chosen skills
             // 1) make temporary copy of skillKeys
             List<string> skillKeysCopy = new List<string>(Globals_Game.skillKeys);
-            // 2) choose random skill, removing entry from keys list to ensure no duplication
-            // Also assign random skill level
+
+            // 2) choose random skill, and assign random skill level
             for (int i = 0; i < skillSet.Length; i++)
             {
                 // choose random skill
                 int randSkill = Globals_Game.myRand.Next(0, skillKeysCopy.Count - 1);
+
                 // assign random skill level
                 int randSkillLevel = Globals_Game.myRand.Next(1, 10);
+
                 // create Skill tuple
                 skillSet[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[skillKeysCopy[randSkill]], randSkillLevel);
+
+                // remove skill from skillKeysCopy to ensure isn't chosen again
                 skillKeysCopy.RemoveAt(randSkill);
             }
 
@@ -15405,7 +15411,7 @@ namespace hist_mmorpg
                 List<string> armies = new List<string>();
 
                 // check to see if any data present for variable length collections
-                if (fiefData.Length > 54)
+                if (fiefData.Length > 59)
                 {
                     // create variables to hold start/end index positions
                     int chStart, chEnd, barChStart, barChEnd, arStart, arEnd;
@@ -15787,9 +15793,9 @@ namespace hist_mmorpg
                     if ((skStart > -1) && (skEnd > -1))
                     {
                         // check to ensure all skills have accompanying skill level
-                        if (!Globals_Game.IsOdd(skStart + skEnd))
+                        if (Globals_Game.IsOdd(skStart + skEnd))
                         {
-                            for (int i = tiStart + 1; i < tiEnd; i = i + 2)
+                            for (int i = skStart + 1; i < skEnd; i = i + 2)
                             {
                                 Tuple<string, int> thisSkill = new Tuple<string, int>(pcData[i], Convert.ToInt32(pcData[i+1]));
                                 tempSkills.Add(thisSkill);
@@ -15854,8 +15860,21 @@ namespace hist_mmorpg
                     }
                 }
 
+                // if no skills, generate random set
+                if (skills == null)
+                {
+                    Tuple<Skill, int>[] generatedSkills = this.generateSkillSet();
+
+                    // convert to format for saving to database
+                    skills = new Tuple<String, int>[generatedSkills.Length];
+                    for (int i = 0; i < generatedSkills.Length; i++)
+                    {
+                        skills[i] = new Tuple<string, int>(generatedSkills[i].Item1.skillID, generatedSkills[i].Item2);
+                    }
+                }
+
                 // create DOB tuple
-                if (!String.IsNullOrWhiteSpace(pcData[5]))
+                if (String.IsNullOrWhiteSpace(pcData[5]))
                 {
                     pcData[5] = Globals_Game.myRand.Next(4).ToString();
                 }
@@ -15941,14 +15960,14 @@ namespace hist_mmorpg
                 List<string> myTitles = new List<string>();
 
                 // check to see if any data present for variable length collections
-                if (npcData.Length > 28)
+                if (npcData.Length > 29)
                 {
                     // create variables to hold start/end index positions
                     int skStart, skEnd, tiStart, tiEnd;
                     skStart = skEnd = tiStart = tiEnd = -1;
 
                     // iterate through main list STORING START/END INDEX POSITIONS
-                    for (int i = 28; i < npcData.Length; i++)
+                    for (int i = 29; i < npcData.Length; i++)
                     {
                         if (npcData[i].Equals("skStart"))
                         {
@@ -15975,9 +15994,9 @@ namespace hist_mmorpg
                     if ((skStart > -1) && (skEnd > -1))
                     {
                         // check to ensure all skills have accompanying skill level
-                        if (!Globals_Game.IsOdd(skStart + skEnd))
+                        if (Globals_Game.IsOdd(skStart + skEnd))
                         {
-                            for (int i = tiStart + 1; i < tiEnd; i = i + 2)
+                            for (int i = skStart + 1; i < skEnd; i = i + 2)
                             {
                                 Tuple<string, int> thisSkill = new Tuple<string, int>(npcData[i], Convert.ToInt32(npcData[i + 1]));
                                 tempSkills.Add(thisSkill);
@@ -15997,7 +16016,24 @@ namespace hist_mmorpg
                     }
                 }
 
+                // if no skills, generate random set
+                if (skills == null)
+                {
+                    Tuple<Skill, int>[] generatedSkills = this.generateSkillSet();
+
+                    // convert to format for saving to database
+                    skills = new Tuple<String, int>[generatedSkills.Length];
+                    for (int i = 0; i < generatedSkills.Length; i++)
+                    {
+                        skills[i] = new Tuple<string, int>(generatedSkills[i].Item1.skillID, generatedSkills[i].Item2);
+                    }
+                }
+
                 // create DOB tuple
+                if (String.IsNullOrWhiteSpace(npcData[5]))
+                {
+                    npcData[5] = Globals_Game.myRand.Next(4).ToString();
+                }
                 Tuple<uint, byte> dob = new Tuple<uint, byte>(Convert.ToUInt32(npcData[4]), Convert.ToByte(npcData[5]));
 
                 // check for presence of CONDITIONAL VARIABLES
@@ -16413,7 +16449,7 @@ namespace hist_mmorpg
                 if ((tiStart > -1) && (tiEnd > -1))
                 {
                     // check to ensure all effects have accompanying effect level
-                    if (!Globals_Game.IsOdd(tiStart + tiEnd))
+                    if (Globals_Game.IsOdd(tiStart + tiEnd))
                     {
                         for (int i = tiStart + 1; i < tiEnd; i = i + 2)
                         {
@@ -16507,7 +16543,7 @@ namespace hist_mmorpg
                 if ((tiStart > -1) && (tiEnd > -1))
                 {
                     // check to ensure all effects have accompanying effect level
-                    if (!Globals_Game.IsOdd(tiStart + tiEnd))
+                    if (Globals_Game.IsOdd(tiStart + tiEnd))
                     {
                         for (int i = tiStart + 1; i < tiEnd; i = i + 2)
                         {
