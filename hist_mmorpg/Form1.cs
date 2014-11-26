@@ -45,9 +45,12 @@ namespace hist_mmorpg
 			rClient = (RiakClient)rCluster.CreateClient();
 
             // initialise game objects
-            this.initGameObjects("Char_101");
+			this.initGameObjects("Char_47", "fromCSV");
 
-            this.ImportFromCSV("Province_E.csv", "blah");
+			//this.SynchGameObjectCollections ();
+
+			//this.ImportFromCSV("gameObjects.csv", "fromCSV", true);
+			//this.CreateMapArrayFromCSV ("map.csv", "fromCSV");
 
 			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
         }
@@ -67,13 +70,14 @@ namespace hist_mmorpg
         /// Initialises all game objects
 		/// </summary>
 		/// <param name="pc">ID of PlayerCharacter to set as Globals_Client.myPlayerCharacter</param>
-        public void initGameObjects(string pcID)
+		/// <param name="gameID">gameID of the game</param>
+		public void initGameObjects(string pcID, string gameID)
         {
 
             if (Globals_Game.loadFromDatabase)
 			{
 				// load objects from database
-				this.initialDBload ("testGame");
+				this.initialDBload (gameID);
 			}
 			else
 			{
@@ -14816,12 +14820,15 @@ namespace hist_mmorpg
         /// <returns>bool indicating success state</returns>
         /// <param name="filename">The name of the CSV file</param>
         /// <param name="bucketID">The name of the Riak bucket in which to store the game objects</param>
-        public bool ImportFromCSV(string filename, string bucketID)
+		/// <param name="resynch">bool indicating whether or not to resynch the game objects</param>
+		public bool ImportFromCSV(string filename, string bucketID, bool resynch = false)
         {
             bool inputFileError = false;
             string lineIn;
             string[] lineParts;
             StreamReader srObjects = null;
+
+			// list for storing object keys
             List<string> fiefKeyList = new List<string>();
             List<string> provKeyList = new List<string>();
             List<string> kingKeyList = new List<string>();
@@ -14836,6 +14843,15 @@ namespace hist_mmorpg
             List<byte> posKeyList = new List<byte>();
             List<string> siegeKeyList = new List<string>();
             List<string> terrKeyList = new List<string>();
+
+			// dictionaries for storing objects (if resynching)
+			Dictionary<string, Fief_Riak> fiefMasterList = new Dictionary<string, Fief_Riak>();
+			Dictionary<string, PlayerCharacter_Riak> pcMasterList = new Dictionary<string, PlayerCharacter_Riak>();
+			Dictionary<string, NonPlayerCharacter_Riak> npcMasterList = new Dictionary<string, NonPlayerCharacter_Riak>();
+			Dictionary<string, Province_Riak> provinceMasterList = new Dictionary<string, Province_Riak>();
+			Dictionary<string, Kingdom_Riak> kingdomMasterList = new Dictionary<string, Kingdom_Riak>();
+			Dictionary<string, Siege> siegeMasterList = new Dictionary<string, Siege>();
+			Dictionary<string, Army> armyMasterList = new Dictionary<string, Army>();
 
             try
             {
@@ -14874,8 +14890,18 @@ namespace hist_mmorpg
 
                     if (thisFiefRiak != null)
                     {
-                        // save to Riak
-                        this.writeFief(bucketID, fr: thisFiefRiak);
+						// check for resynching
+						if (resynch)
+						{
+							// add to masterList
+							fiefMasterList.Add (thisFiefRiak.id, thisFiefRiak);
+						}
+
+						else
+						{
+							// save to Riak
+							this.writeFief(bucketID, fr: thisFiefRiak);
+						}
 
                         // add fief id to keylist
                         fiefKeyList.Add(thisFiefRiak.id);
@@ -14908,8 +14934,18 @@ namespace hist_mmorpg
 
                         if (thisProvRiak != null)
                         {
-                            // save to Riak
-                            this.writeProvince(bucketID, pr: thisProvRiak);
+							// check for resynching
+							if (resynch)
+							{
+								// add to masterList
+								provinceMasterList.Add (thisProvRiak.id, thisProvRiak);
+							}
+
+							else
+							{
+								// save to Riak
+								this.writeProvince(bucketID, pr: thisProvRiak);
+							}
 
                             // add province id to keylist
                             provKeyList.Add(thisProvRiak.id);
@@ -14943,8 +14979,18 @@ namespace hist_mmorpg
 
                         if (thisKingRiak != null)
                         {
-                            // save to Riak
-                            this.writeKingdom(bucketID, kr: thisKingRiak);
+							// check for resynching
+							if (resynch)
+							{
+								// add to masterList
+								kingdomMasterList.Add (thisKingRiak.id, thisKingRiak);
+							}
+
+							else
+							{
+								// save to Riak
+								this.writeKingdom(bucketID, kr: thisKingRiak);
+							}
 
                             // add kingdom id to keylist
                             kingKeyList.Add(thisKingRiak.id);
@@ -14968,8 +15014,18 @@ namespace hist_mmorpg
 
                     if (thisPcRiak != null)
                     {
-                        // save to Riak
-                        this.writePC(bucketID, pcr: thisPcRiak);
+						// check for resynching
+						if (resynch)
+						{
+							// add to masterList
+							pcMasterList.Add (thisPcRiak.charID, thisPcRiak);
+						}
+
+						else
+						{
+							// save to Riak
+							this.writePC(bucketID, pcr: thisPcRiak);
+						}
 
                         // add id to keylist
                         pcKeyList.Add(thisPcRiak.charID);
@@ -14992,8 +15048,18 @@ namespace hist_mmorpg
 
                     if (thisNpcRiak != null)
                     {
-                        // save to Riak
-                        this.writeNPC(bucketID, npcr: thisNpcRiak);
+						// check for resynching
+						if (resynch)
+						{
+							// add to masterList
+							npcMasterList.Add (thisNpcRiak.charID, thisNpcRiak);
+						}
+
+						else
+						{
+							// save to Riak
+							this.writeNPC(bucketID, npcr: thisNpcRiak);
+						}
 
                         // add id to keylist
                         npcKeyList.Add(thisNpcRiak.charID);
@@ -15050,8 +15116,18 @@ namespace hist_mmorpg
 
                         if (thisArmy != null)
                         {
-                            // save to Riak
-                            this.writeArmy(bucketID, thisArmy);
+							// check for resynching
+							if (resynch)
+							{
+								// add to masterList
+								armyMasterList.Add (thisArmy.armyID, thisArmy);
+							}
+
+							else
+							{
+								// save to Riak
+								this.writeArmy(bucketID, thisArmy);
+							}
 
                             // add id to keylist
                             armyKeyList.Add(thisArmy.armyID);
@@ -15238,8 +15314,18 @@ namespace hist_mmorpg
 
                         if (thisSiege != null)
                         {
-                            // save to Riak
-                            this.writeSiege(bucketID, thisSiege);
+							// check for resynching
+							if (resynch)
+							{
+								// add to masterList
+								siegeMasterList.Add (thisSiege.siegeID, thisSiege);
+							}
+
+							else
+							{
+								// save to Riak
+								this.writeSiege(bucketID, thisSiege);
+							}
 
                             // add id to keylist
                             siegeKeyList.Add(thisSiege.siegeID);
@@ -15290,6 +15376,14 @@ namespace hist_mmorpg
                     }
                 }
             }
+
+			// perform resynch if appropriate
+			if(resynch)
+			{
+				// pass objects for resynching/writing
+				this.SynchGameObjectCollections (fiefMasterList, pcMasterList, npcMasterList, provinceMasterList,
+					kingdomMasterList, siegeMasterList, armyMasterList, bucketID);
+			}
 
             // save keyLists to database
             // fiefs
@@ -15418,7 +15512,7 @@ namespace hist_mmorpg
                     chStart = chEnd = barChStart = barChEnd = arStart = arEnd = -1;
 
                     // iterate through main list STORING START/END INDEX POSITIONS
-                    for (int i = 54; i < fiefData.Length; i++)
+					for (int i = 59; i < fiefData.Length; i++)
                     {
                         if (fiefData[i].Equals("chStart"))
                         {
@@ -16729,16 +16823,35 @@ namespace hist_mmorpg
         /// <summary>
         /// Uses individual game objects to populate variable-length collections within other game objects
         /// </summary>
-        public void SynchGameObjectCollections()
+		/// <param name="fiefMasterList">Fief_Riak objects</param>
+		/// <param name="pcMasterList">PlayerCharacter_Riak objects</param>
+		/// <param name="npcMasterList">NonPlayerCharacter_Riak objects</param>
+		/// <param name="provinceMasterList">Province_Riak objects</param>
+		/// <param name="kingdomMasterList">Kingdom_Riak objects</param>
+		/// <param name="siegeMasterList">Siege objects</param>
+		/// <param name="armyMasterList">Army objects</param>
+		/// <param name="bucketID">The name of the Riak bucket in which to store the game objects</param>
+		public void SynchGameObjectCollections(Dictionary<string, Fief_Riak> fiefMasterList, Dictionary<string,
+			PlayerCharacter_Riak> pcMasterList, Dictionary<string, NonPlayerCharacter_Riak> npcMasterList,
+			Dictionary<string, Province_Riak> provinceMasterList, Dictionary<string, Kingdom_Riak> kingdomMasterList,
+			Dictionary<string, Siege> siegeMasterList, Dictionary<string, Army> armyMasterList, string bucketID)
         {
 
-            // iterate through FIEFS
-            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
+			// iterate through FIEFS
+			foreach (KeyValuePair<string, Fief_Riak> fiefEntry in fiefMasterList)
             {
                 // get titleHolder
                 if (!String.IsNullOrWhiteSpace(fiefEntry.Value.titleHolder))
                 {
-                    Character thisTiHo = fiefEntry.Value.getTitleHolder();
+					Character_Riak thisTiHo = null;
+					if (pcMasterList.ContainsKey(fiefEntry.Value.titleHolder))
+					{
+						thisTiHo = pcMasterList[fiefEntry.Value.titleHolder];
+					}
+					else if (npcMasterList.ContainsKey(fiefEntry.Value.titleHolder))
+					{
+						thisTiHo = npcMasterList[fiefEntry.Value.titleHolder];
+					}
 
                     // put fief id in holder's myTitles
                     if (thisTiHo != null)
@@ -16753,23 +16866,35 @@ namespace hist_mmorpg
                 // get owner
                 if (fiefEntry.Value.owner != null)
                 {
-                    PlayerCharacter thisOwner = fiefEntry.Value.owner;
+					PlayerCharacter_Riak thisOwner = null;
+					if (pcMasterList.ContainsKey(fiefEntry.Value.owner))
+					{
+						thisOwner = pcMasterList[fiefEntry.Value.owner];
+					}
 
                     // put fief in owner's ownedFiefs
-                    if (!thisOwner.ownedFiefs.Contains(fiefEntry.Value))
+					if (!thisOwner.ownedFiefs.Contains(fiefEntry.Key))
                     {
-                        thisOwner.ownedFiefs.Add(fiefEntry.Value);
+						thisOwner.ownedFiefs.Add(fiefEntry.Key);
                     }
                 }
             }
 
             // iterate through PROVINCES
-            foreach (KeyValuePair<string, Province> provEntry in Globals_Game.provinceMasterList)
+			foreach (KeyValuePair<string, Province_Riak> provEntry in provinceMasterList)
             {
                 // get titleHolder
                 if (!String.IsNullOrWhiteSpace(provEntry.Value.titleHolder))
                 {
-                    Character thisTiHo = provEntry.Value.getTitleHolder();
+					Character_Riak thisTiHo = null;
+					if (pcMasterList.ContainsKey(provEntry.Value.titleHolder))
+					{
+						thisTiHo = pcMasterList[provEntry.Value.titleHolder];
+					}
+					else if (npcMasterList.ContainsKey(provEntry.Value.titleHolder))
+					{
+						thisTiHo = npcMasterList[provEntry.Value.titleHolder];
+					}
 
                     // put fief id in holder's myTitles
                     if (thisTiHo != null)
@@ -16784,23 +16909,35 @@ namespace hist_mmorpg
                 // get owner
                 if (provEntry.Value.owner != null)
                 {
-                    PlayerCharacter thisOwner = provEntry.Value.owner;
+					PlayerCharacter_Riak thisOwner = null;
+					if (pcMasterList.ContainsKey(provEntry.Value.owner))
+					{
+						thisOwner = pcMasterList[provEntry.Value.owner];
+					}
 
                     // put province in owner's ownedProvinces
-                    if (!thisOwner.ownedProvinces.Contains(provEntry.Value))
+					if (!thisOwner.ownedProvinces.Contains(provEntry.Key))
                     {
-                        thisOwner.ownedProvinces.Add(provEntry.Value);
+						thisOwner.ownedProvinces.Add(provEntry.Key);
                     }
                 }
             }
 
             // iterate through KINGDOMS
-            foreach (KeyValuePair<string, Kingdom> kingEntry in Globals_Game.kingdomMasterList)
+			foreach (KeyValuePair<string, Kingdom_Riak> kingEntry in kingdomMasterList)
             {
                 // get titleHolder
                 if (!String.IsNullOrWhiteSpace(kingEntry.Value.titleHolder))
                 {
-                    Character thisTiHo = kingEntry.Value.getTitleHolder();
+					Character_Riak thisTiHo = null;
+					if (pcMasterList.ContainsKey(kingEntry.Value.titleHolder))
+					{
+						thisTiHo = pcMasterList[kingEntry.Value.titleHolder];
+					}
+					else if (npcMasterList.ContainsKey(kingEntry.Value.titleHolder))
+					{
+						thisTiHo = npcMasterList[kingEntry.Value.titleHolder];
+					}
 
                     // put fief id in holder's myTitles
                     if (thisTiHo != null)
@@ -16814,67 +16951,86 @@ namespace hist_mmorpg
             }
 
             // iterate through PCs
-            foreach (KeyValuePair<string, PlayerCharacter> pcEntry in Globals_Game.pcMasterList)
+			foreach (KeyValuePair<string, PlayerCharacter_Riak> pcEntry in pcMasterList)
             {
                 if (pcEntry.Value.isAlive)
                 {
                     // get location
-                    if (pcEntry.Value.location != null)
+					if (!String.IsNullOrWhiteSpace(pcEntry.Value.location))
                     {
-                        Fief thisFief = pcEntry.Value.location;
+						Fief_Riak thisFief = null;
+						if (fiefMasterList.ContainsKey(pcEntry.Value.location))
+						{
+							thisFief = fiefMasterList[pcEntry.Value.location];
+						}
 
                         // put PC in fief's characters
-                        if (!thisFief.charactersInFief.Contains(pcEntry.Value))
+						if (!thisFief.charactersInFief.Contains(pcEntry.Key))
                         {
-                            thisFief.charactersInFief.Add(pcEntry.Value);
+							thisFief.charactersInFief.Add(pcEntry.Key);
                         }
                     }
                 }
             }
 
             // iterate through NPCs
-            foreach (KeyValuePair<string, NonPlayerCharacter> npcEntry in Globals_Game.npcMasterList)
+			foreach (KeyValuePair<string, NonPlayerCharacter_Riak> npcEntry in npcMasterList)
             {
                 if (npcEntry.Value.isAlive)
                 {
                     // get location
-                    if (npcEntry.Value.location != null)
+					if (!String.IsNullOrWhiteSpace(npcEntry.Value.location))
                     {
-                        Fief thisFief = npcEntry.Value.location;
+						Fief_Riak thisFief = null;
+						if (fiefMasterList.ContainsKey(npcEntry.Value.location))
+						{
+							thisFief = fiefMasterList[npcEntry.Value.location];
+						}
 
                         // put NPC in fief's characters
-                        if (!thisFief.charactersInFief.Contains(npcEntry.Value))
-                        {
-                            thisFief.charactersInFief.Add(npcEntry.Value);
-                        }
+						if (thisFief != null)
+						{
+							if (!thisFief.charactersInFief.Contains(npcEntry.Key))
+							{
+								thisFief.charactersInFief.Add(npcEntry.Key);
+							}
+						}
                     }
 
                     // get employer
-                    if (String.IsNullOrWhiteSpace(npcEntry.Value.myBoss))
+					if (!String.IsNullOrWhiteSpace(npcEntry.Value.myBoss))
                     {
-                        PlayerCharacter thisBoss = npcEntry.Value.getEmployer();
+						PlayerCharacter_Riak thisBoss = null;
+						if (pcMasterList.ContainsKey(npcEntry.Value.myBoss))
+						{
+							thisBoss = pcMasterList[npcEntry.Value.myBoss];
+						}
 
                         if (thisBoss != null)
                         {
                             // put NPC in employer's myNPCs
-                            if (!thisBoss.myNPCs.Contains(npcEntry.Value))
+							if (!thisBoss.myNPCs.Contains(npcEntry.Key))
                             {
-                                thisBoss.myNPCs.Add(npcEntry.Value);
+								thisBoss.myNPCs.Add(npcEntry.Key);
                             }
                         }
                     }
 
                     // get familyID
-                    if (String.IsNullOrWhiteSpace(npcEntry.Value.familyID))
+					if (!String.IsNullOrWhiteSpace(npcEntry.Value.familyID))
                     {
-                        PlayerCharacter thisHeadOfFamily = npcEntry.Value.getHeadOfFamily();
+						PlayerCharacter_Riak thisHeadOfFamily = null;
+						if (pcMasterList.ContainsKey(npcEntry.Value.familyID))
+						{
+							thisHeadOfFamily = pcMasterList[npcEntry.Value.familyID];
+						}
 
                         if (thisHeadOfFamily != null)
                         {
                             // put NPC in headOfFamily's myNPCs
-                            if (!thisHeadOfFamily.myNPCs.Contains(npcEntry.Value))
+							if (!thisHeadOfFamily.myNPCs.Contains(npcEntry.Key))
                             {
-                                thisHeadOfFamily.myNPCs.Add(npcEntry.Value);
+								thisHeadOfFamily.myNPCs.Add(npcEntry.Key);
                             }
                         }
                     }
@@ -16882,7 +17038,7 @@ namespace hist_mmorpg
             }
 
             // iterate through SIEGES
-            foreach (KeyValuePair<string, Siege> siegeEntry in Globals_Game.siegeMasterList)
+            foreach (KeyValuePair<string, Siege> siegeEntry in siegeMasterList)
             {
                 // ensure siege not ended
                 if (String.IsNullOrWhiteSpace(siegeEntry.Value.endDate))
@@ -16890,7 +17046,11 @@ namespace hist_mmorpg
                     // get attacking PC
                     if (!String.IsNullOrWhiteSpace(siegeEntry.Value.besiegingPlayer))
                     {
-                        PlayerCharacter attacker = siegeEntry.Value.getBesiegingPlayer();
+						PlayerCharacter_Riak attacker = null;
+						if (pcMasterList.ContainsKey(siegeEntry.Value.besiegingPlayer))
+						{
+							attacker = pcMasterList[siegeEntry.Value.besiegingPlayer];
+						}
 
                         // put siege id in attacker's mySieges
                         if (attacker != null)
@@ -16905,7 +17065,11 @@ namespace hist_mmorpg
                     // get defending PC
                     if (!String.IsNullOrWhiteSpace(siegeEntry.Value.defendingPlayer))
                     {
-                        PlayerCharacter defender = siegeEntry.Value.getDefendingPlayer();
+						PlayerCharacter_Riak defender = null;
+						if (pcMasterList.ContainsKey(siegeEntry.Value.defendingPlayer))
+						{
+							defender = pcMasterList[siegeEntry.Value.defendingPlayer];
+						}
 
                         // put siege id in defender's mySieges
                         if (defender != null)
@@ -16920,7 +17084,11 @@ namespace hist_mmorpg
                     // get defending Fief
                     if (!String.IsNullOrWhiteSpace(siegeEntry.Value.besiegedFief))
                     {
-                        Fief besiegedFief = siegeEntry.Value.getFief();
+						Fief_Riak besiegedFief = null;
+						if (fiefMasterList.ContainsKey(siegeEntry.Value.besiegedFief))
+						{
+							besiegedFief = fiefMasterList[siegeEntry.Value.besiegedFief];
+						}
 
                         // put siege id in fief's siege
                         if (besiegedFief != null)
@@ -16935,19 +17103,23 @@ namespace hist_mmorpg
             }
 
             // iterate through ARMIES
-            foreach (KeyValuePair<string, Army> armyEntry in Globals_Game.armyMasterList)
+            foreach (KeyValuePair<string, Army> armyEntry in armyMasterList)
             {
                 // get army owner
                 if (!String.IsNullOrWhiteSpace(armyEntry.Value.owner))
                 {
-                    PlayerCharacter owner = armyEntry.Value.getOwner();
+					PlayerCharacter_Riak owner = null;
+					if (pcMasterList.ContainsKey(armyEntry.Value.owner))
+					{
+						owner = pcMasterList[armyEntry.Value.owner];
+					}
 
                     // put army in owner's myArmies
                     if (owner != null)
                     {
-                        if (!owner.myArmies.Contains(armyEntry.Value))
+						if (!owner.myArmies.Contains(armyEntry.Key))
                         {
-                            owner.myArmies.Add(armyEntry.Value);
+							owner.myArmies.Add(armyEntry.Key);
                         }
                     }
                 }
@@ -16955,7 +17127,15 @@ namespace hist_mmorpg
                 // get army leader
                 if (!String.IsNullOrWhiteSpace(armyEntry.Value.leader))
                 {
-                    Character leader = armyEntry.Value.getLeader();
+					Character_Riak leader = null;
+					if (pcMasterList.ContainsKey(armyEntry.Value.leader))
+					{
+						leader = pcMasterList[armyEntry.Value.leader];
+					}
+					else if (npcMasterList.ContainsKey(armyEntry.Value.leader))
+					{
+						leader = npcMasterList[armyEntry.Value.leader];
+					}
 
                     // put army id in leader's armyID
                     if (leader != null)
@@ -16970,7 +17150,11 @@ namespace hist_mmorpg
                 // get army location
                 if (!String.IsNullOrWhiteSpace(armyEntry.Value.location))
                 {
-                    Fief thisFief = armyEntry.Value.getLocation();
+					Fief_Riak thisFief = null;
+					if (fiefMasterList.ContainsKey(armyEntry.Value.location))
+					{
+						thisFief = fiefMasterList[armyEntry.Value.location];
+					}
 
                     // put army id in fief's armies
                     if (thisFief != null)
@@ -16982,6 +17166,44 @@ namespace hist_mmorpg
                     }
                 }
             }
+
+			// save all objects
+			foreach (KeyValuePair<string, Fief_Riak> fiefEntry in fiefMasterList)
+			{
+				// save to Riak
+				this.writeFief(bucketID, fr: fiefEntry.Value);
+			}
+			foreach (KeyValuePair<string, Province_Riak> provEntry in provinceMasterList)
+			{
+				// save to Riak
+				this.writeProvince(bucketID, pr: provEntry.Value);
+			}
+			foreach (KeyValuePair<string, Kingdom_Riak> kingEntry in kingdomMasterList)
+			{
+				// save to Riak
+				this.writeKingdom(bucketID, kr: kingEntry.Value);
+			}
+			foreach (KeyValuePair<string, PlayerCharacter_Riak> pcEntry in pcMasterList)
+			{
+				// save to Riak
+				this.writePC(bucketID, pcr: pcEntry.Value);
+			}
+			foreach (KeyValuePair<string, NonPlayerCharacter_Riak> npcEntry in npcMasterList)
+			{
+				// save to Riak
+				this.writeNPC(bucketID, npcr: npcEntry.Value);
+			}
+			foreach (KeyValuePair<string, Siege> siegeEntry in siegeMasterList)
+			{
+				// save to Riak
+				this.writeSiege(bucketID, siegeEntry.Value);
+			}
+			foreach (KeyValuePair<string, Army> armyEntry in armyMasterList)
+			{
+				// save to Riak
+				this.writeArmy(bucketID, armyEntry.Value);
+			}
+
         }
 
         /// <summary>
