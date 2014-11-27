@@ -45,11 +45,11 @@ namespace hist_mmorpg
 			rClient = (RiakClient)rCluster.CreateClient();
 
             // initialise game objects
-			this.initGameObjects("Char_47", "fromCSV");
+			this.initGameObjects("Char_101", "fromCSV");
 
 			//this.SynchGameObjectCollections ();
 
-			//this.ImportFromCSV("gameObjects.csv", "fromCSV", true);
+			this.ImportFromCSV("gameObjects.csv", "fromCSV");
 			//this.CreateMapArrayFromCSV ("map.csv", "fromCSV");
 
 			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
@@ -167,7 +167,7 @@ namespace hist_mmorpg
             effectsCommand.Add("siege", 0.4);
 			effectsCommand.Add("npcHire", 0.2);
 			// create skill
-			Skill command = new Skill("sk001", "Command", effectsCommand);
+			Skill command = new Skill("skill_1", "Command", effectsCommand);
 			// add to skillsCollection
 			Globals_Game.skillMasterList.Add(command.skillID, command);
 
@@ -177,7 +177,7 @@ namespace hist_mmorpg
             effectsChivalry.Add("fiefLoy", 0.2);
             effectsChivalry.Add("npcHire", 0.1);
             effectsChivalry.Add("siege", 0.1);
-			Skill chivalry = new Skill("sk002", "Chivalry", effectsChivalry);
+            Skill chivalry = new Skill("skill_2", "Chivalry", effectsChivalry);
             Globals_Game.skillMasterList.Add(chivalry.skillID, chivalry);
 
             Dictionary<string, double> effectsAbrasiveness = new Dictionary<string, double>();
@@ -187,7 +187,7 @@ namespace hist_mmorpg
             effectsAbrasiveness.Add("famExpense", 0.05);
             effectsAbrasiveness.Add("time", 0.05);
             effectsAbrasiveness.Add("siege", -0.1);
-			Skill abrasiveness = new Skill("sk003", "Abrasiveness", effectsAbrasiveness);
+            Skill abrasiveness = new Skill("skill_3", "Abrasiveness", effectsAbrasiveness);
             Globals_Game.skillMasterList.Add(abrasiveness.skillID, abrasiveness);
 
             Dictionary<string, double> effectsAccountancy = new Dictionary<string, double>();
@@ -195,7 +195,7 @@ namespace hist_mmorpg
             effectsAccountancy.Add("fiefExpense", -0.2);
             effectsAccountancy.Add("famExpense", -0.2);
             effectsAccountancy.Add("fiefLoy", -0.05);
-			Skill accountancy = new Skill("sk004", "Accountancy", effectsAccountancy);
+            Skill accountancy = new Skill("skill_4", "Accountancy", effectsAccountancy);
             Globals_Game.skillMasterList.Add(accountancy.skillID, accountancy);
 
             Dictionary<string, double> effectsStupidity = new Dictionary<string, double>();
@@ -207,7 +207,7 @@ namespace hist_mmorpg
             effectsStupidity.Add("npcHire", -0.1);
             effectsStupidity.Add("time", -0.1);
             effectsStupidity.Add("siege", -0.4);
-			Skill stupidity = new Skill("sk005", "Stupidity", effectsStupidity);
+            Skill stupidity = new Skill("skill_5", "Stupidity", effectsStupidity);
             Globals_Game.skillMasterList.Add(stupidity.skillID, stupidity);
 
             Dictionary<string, double> effectsRobust = new Dictionary<string, double>();
@@ -215,7 +215,7 @@ namespace hist_mmorpg
             effectsRobust.Add("npcHire", 0.05);
             effectsRobust.Add("fiefLoy", 0.05);
             effectsRobust.Add("death", -0.2);
-			Skill robust = new Skill("sk006", "Robust", effectsRobust);
+            Skill robust = new Skill("skill_6", "Robust", effectsRobust);
             Globals_Game.skillMasterList.Add(robust.skillID, robust);
 
             Dictionary<string, double> effectsPious = new Dictionary<string, double>();
@@ -223,7 +223,7 @@ namespace hist_mmorpg
             effectsPious.Add("npcHire", 0.1);
             effectsPious.Add("fiefLoy", 0.1);
             effectsPious.Add("time", -0.1);
-			Skill pious = new Skill("sk007", "Pious", effectsPious);
+            Skill pious = new Skill("skill_7", "Pious", effectsPious);
             Globals_Game.skillMasterList.Add(pious.skillID, pious);
 
 			// add each skillsCollection key to skillsKeys
@@ -16232,7 +16232,7 @@ namespace hist_mmorpg
                     if ((effStart > -1) && (effEnd > -1))
                     {
                         // check to ensure all effects have accompanying effect level
-                        if (!Globals_Game.IsOdd(effStart + effEnd))
+                        if (Globals_Game.IsOdd(effStart + effEnd))
                         {
                             for (int i = effStart + 1; i < effEnd; i = i + 2)
                             {
@@ -16243,7 +16243,10 @@ namespace hist_mmorpg
                 }
 
                 // create Skill object
-                thisSkill = new Skill(skillData[1], skillData[2], effects);
+                if (effects.Count > 0)
+                {
+                    thisSkill = new Skill(skillData[1], skillData[2], effects);
+                }
             }
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
@@ -16618,7 +16621,7 @@ namespace hist_mmorpg
                 tiStart = tiEnd = -1;
 
                 // iterate through main list STORING START/END INDEX POSITIONS
-                for (int i = 3; i < posData.Length; i++)
+                for (int i = 5; i < posData.Length; i++)
                 {
                     if (posData[i].Equals("tiStart"))
                     {
