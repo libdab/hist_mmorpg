@@ -49,7 +49,7 @@ namespace hist_mmorpg
 
 			//this.SynchGameObjectCollections ();
 
-			this.ImportFromCSV("gameObjects.csv", "fromCSV");
+			//this.ImportFromCSV("gameObjects.csv", "fromCSV");
 			//this.CreateMapArrayFromCSV ("map.csv", "fromCSV");
 
 			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
@@ -14085,7 +14085,6 @@ namespace hist_mmorpg
         {
             // display royal gifts screen
             this.refreshRoyalGiftsContainer();
-            // display household affairs screen
             Globals_Client.containerToView = this.royalGiftsContainer;
             Globals_Client.containerToView.BringToFront();
         }
@@ -17378,6 +17377,36 @@ namespace hist_mmorpg
             }
 
             return edgesOut;
+        }
+
+        /// <summary>
+        /// Responds to the click event of either of the 'edit character' MenuItems
+        /// displaying the appropriate screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditCharMenuItem_Click(object sender, EventArgs e)
+        {
+            // get MenuItem
+            ToolStripMenuItem thisItem = (sender as ToolStripMenuItem);
+            string whichCharType = thisItem.Tag.ToString();
+
+            // display edit object screen
+            Globals_Client.containerToView = this.adminEditContainer;
+            Globals_Client.containerToView.BringToFront();
+
+            // display edit character panel
+            this.adminEditCharContainer.BringToFront();
+
+            // display appropriate panel for character type
+            if (whichCharType.Equals("pc"))
+            {
+                this.adminEditCharPcPanel.BringToFront();
+            }
+            else if (whichCharType.Equals("npc"))
+            {
+                this.adminEditCharNpcPanel.BringToFront();
+            }
         }
 
     }
