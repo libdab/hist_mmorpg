@@ -17398,14 +17398,107 @@ namespace hist_mmorpg
             // display edit character panel
             this.adminEditCharContainer.BringToFront();
 
-            // display appropriate panel for character type
-            if (whichCharType.Equals("pc"))
+            // change admin edit control properties to match object type
+            // and display appropriate panel
+            switch (whichCharType)
             {
-                this.adminEditCharPcPanel.BringToFront();
+                case "pc":
+                    this.adminEditGetBtn.Text = "Get PC";
+                    this.adminEditSaveBtn.Text = "Save PC";
+                    this.adminEditLabel.Text = "PC ID";
+                    this.adminEditCharPcPanel.BringToFront();
+                    break;
+                case "npc":
+                    this.adminEditGetBtn.Text = "Get NPC";
+                    this.adminEditSaveBtn.Text = "Save NPC";
+                    this.adminEditLabel.Text = "NPC ID";
+                    this.adminEditCharNpcPanel.BringToFront();
+                    break;
+                default:
+                    break;
             }
-            else if (whichCharType.Equals("npc"))
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the 'edit place' MenuItems
+        /// displaying the appropriate screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditPlaceMenuItem_Click(object sender, EventArgs e)
+        {
+            // get MenuItem
+            ToolStripMenuItem thisItem = (sender as ToolStripMenuItem);
+            string whichPlaceType = thisItem.Tag.ToString();
+
+            // display edit object screen
+            Globals_Client.containerToView = this.adminEditContainer;
+            Globals_Client.containerToView.BringToFront();
+
+            // display edit place panel
+            this.adminEditPlaceContainer.BringToFront();
+
+            // change admin edit control properties to match object type
+            // and display appropriate panel
+            switch (whichPlaceType)
             {
-                this.adminEditCharNpcPanel.BringToFront();
+                case "fief":
+                    this.adminEditGetBtn.Text = "Get Fief";
+                    this.adminEditSaveBtn.Text = "Save Fief";
+                    this.adminEditLabel.Text = "Fief ID";
+                    this.adminEditFiefPanel.BringToFront();
+                    break;
+                case "province":
+                    this.adminEditGetBtn.Text = "Get Province";
+                    this.adminEditSaveBtn.Text = "Save Province";
+                    this.adminEditLabel.Text = "Province ID";
+                    this.adminEditProvPanel.BringToFront();
+                    break;
+                case "kingdom":
+                    this.adminEditGetBtn.Text = "Get Kingdom";
+                    this.adminEditSaveBtn.Text = "Save Kingdom";
+                    this.adminEditLabel.Text = "Kingdom ID";
+                    this.adminEditKingPanel.BringToFront();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the 'edit object' MenuItems
+        /// displaying the appropriate screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditObjectMenuItem_Click(object sender, EventArgs e)
+        {
+            // get MenuItem
+            ToolStripMenuItem thisItem = (sender as ToolStripMenuItem);
+            string whichObjectType = thisItem.Tag.ToString();
+
+            // display edit object screen
+            Globals_Client.containerToView = this.adminEditContainer;
+            Globals_Client.containerToView.BringToFront();
+
+            // change admin edit control properties to match object type
+            // and display appropriate panel
+            switch (whichObjectType)
+            {
+                case "skill":
+                    this.adminEditGetBtn.Text = "Get Skill";
+                    this.adminEditSaveBtn.Text = "Save Skill";
+                    this.adminEditLabel.Text = "Skill ID";
+                    this.adminEditSkillPanel.BringToFront();
+                    break;
+                case "army":
+                    this.adminEditGetBtn.Text = "Get Army";
+                    this.adminEditSaveBtn.Text = "Save Army";
+                    this.adminEditLabel.Text = "Army ID";
+                    this.adminEditArmyPanel.BringToFront();
+                    break;
+                default:
+                    break;
             }
         }
 
