@@ -17406,8 +17406,9 @@ namespace hist_mmorpg
             Globals_Client.containerToView = this.adminEditContainer;
             Globals_Client.containerToView.BringToFront();
 
-            // set tag to identify object type (for retrieving object)
+            // set get/save button tag to identify object type (for retrieving and saving object)
             this.adminEditGetBtn.Tag = objectType;
+            this.adminEditSaveBtn.Tag = objectType;
 
             // clear previous object ID from TextBox
             this.adminEditTextBox.Text = "";
@@ -17986,7 +17987,23 @@ namespace hist_mmorpg
                 // name
                 this.adminEditSkillNameTextBox.Text = s.name;
                 // effects - iterates through skill effects adding information to ListView
-                foreach (KeyValuePair<string, double> effectEntry in s.effects)
+                this.refreshSkillEffectsList(s.effects);
+            }
+        }
+
+        /// <summary>
+        /// Refreshes the skill effects list on the edit Skill display
+        /// </summary>
+        /// <param name="effects">The effects to be displayed</param>
+        public void refreshSkillEffectsList(Dictionary<string, Double> effects)
+        {
+            // clear existing data
+            this.adminEditSkillEffsListView.Items.Clear();
+
+            if (effects.Count > 0)
+            {
+                // iterate through skill effects adding information to ListView
+                foreach (KeyValuePair<string, double> effectEntry in effects)
                 {
                     ListViewItem skillItem = null;
 
@@ -17998,7 +18015,7 @@ namespace hist_mmorpg
 
                     if (skillItem != null)
                     {
-                        // add item to fiefsListView
+                        // add item to ListView
                         this.adminEditSkillEffsListView.Items.Add(skillItem);
                     }
 
@@ -18060,6 +18077,135 @@ namespace hist_mmorpg
                 else
                 {
                     this.adminEditArmyMaintCheckBox.Checked = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the SelectedIndexChanged event of any of the adminEditSkillEffsListView
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditSkillEffsListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.adminEditSkillEffsListView.SelectedItems.Count > 0)
+            {
+                // display selected skill for editing
+                this.adminEditSkillEffTextBox.Text = this.adminEditSkillEffsListView.SelectedItems[0].SubItems[0].Text;
+                this.adminEditSkillEfflvlTextBox.Text = this.adminEditSkillEffsListView.SelectedItems[0].SubItems[1].Text;
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the 'edit skill effects' buttons
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditSkillEffBtn_Click(object sender, EventArgs e)
+        {
+            string effName = null;
+            double effLvl = 0;
+            bool effectsChanged = false;
+
+            // get button and tag
+            Button thisButton = (sender as Button);
+            string operation = thisButton.Tag.ToString();
+
+            try
+            {
+                // get effects collection
+                Dictionary<string, double> effects = new Dictionary<string, double>();
+                for (int i = 0; i < this.adminEditSkillEffsListView.Items.Count; i++ )
+                {
+                    effects.Add(this.adminEditSkillEffsListView.Items[i].SubItems[0].Text,
+                        Convert.ToDouble(this.adminEditSkillEffsListView.Items[i].SubItems[1].Text));
+                }
+
+                // get selected effect
+                effName = this.adminEditSkillEffTextBox.Text;
+                if (!String.IsNullOrWhiteSpace(effName))
+                {
+                    effLvl = Convert.ToDouble(this.adminEditSkillEfflvlTextBox.Text);
+                }
+
+                if (effLvl > 0)
+                {
+                    // perform operation
+                    switch (operation)
+                    {
+                        // change selected effect
+                        case "chaEffect":
+                            // check effect present in collection
+                            if (effects.ContainsKey(effName))
+                            {
+                                effects[effName] = effLvl;
+                                effectsChanged = true;
+                            }
+                            else
+                            {
+                                if (Globals_Client.showMessages)
+                                {
+                                    System.Windows.Forms.MessageBox.Show("The effect " + effName + " does not exist.  Operation cancelled.");
+                                }
+                            }
+                            break;
+                        case "addEffect":
+                            // check effect present in collection
+                            if (!effects.ContainsKey(effName))
+                            {
+                                effects.Add(effName, effLvl);
+                                effectsChanged = true;
+                            }
+                            else
+                            {
+                                if (Globals_Client.showMessages)
+                                {
+                                    System.Windows.Forms.MessageBox.Show("The effect " + effName + " already exists.  Operation cancelled.");
+                                }
+                            }
+                            break;
+                        case "delEffect":
+                            // check effect present in collection
+                            if (effects.ContainsKey(effName))
+                            {
+                                effects.Remove(effName);
+                                effectsChanged = true;
+                            }
+                            else
+                            {
+                                if (Globals_Client.showMessages)
+                                {
+                                    System.Windows.Forms.MessageBox.Show("The effect " + effName + " does not exist.  Operation cancelled.");
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if (effectsChanged)
+                    {
+                        this.refreshSkillEffectsList(effects);
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Effects updated.");
+                        }
+                    }
+                }
+
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
                 }
             }
         }

@@ -282,7 +282,8 @@ namespace hist_mmorpg
             this.adminEditLabel = new System.Windows.Forms.Label();
             this.adminEditTextBox = new System.Windows.Forms.TextBox();
             this.adminEditSkillPanel = new System.Windows.Forms.Panel();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.adminEditSkillEffsListView = new System.Windows.Forms.ListView();
+            this.adminEditSkillEfflvlTextBox = new System.Windows.Forms.TextBox();
             this.adminEditSkillEffDelBtn = new System.Windows.Forms.Button();
             this.adminEditSkillEffAddBtn = new System.Windows.Forms.Button();
             this.adminEditSkillEffChngBtn = new System.Windows.Forms.Button();
@@ -309,58 +310,6 @@ namespace hist_mmorpg
             this.adminEditArmyLdrTextBox = new System.Windows.Forms.TextBox();
             this.label74 = new System.Windows.Forms.Label();
             this.adminEditArmyIdTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharContainer = new System.Windows.Forms.SplitContainer();
-            this.label42 = new System.Windows.Forms.Label();
-            this.label41 = new System.Windows.Forms.Label();
-            this.label40 = new System.Windows.Forms.Label();
-            this.label39 = new System.Windows.Forms.Label();
-            this.label38 = new System.Windows.Forms.Label();
-            this.label37 = new System.Windows.Forms.Label();
-            this.label36 = new System.Windows.Forms.Label();
-            this.label35 = new System.Windows.Forms.Label();
-            this.label34 = new System.Windows.Forms.Label();
-            this.label33 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
-            this.label31 = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
-            this.label29 = new System.Windows.Forms.Label();
-            this.label27 = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
-            this.adminEditCharInKpCheckBox = new System.Windows.Forms.CheckBox();
-            this.adminEditCharLocTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharSkLvlTextBox2 = new System.Windows.Forms.TextBox();
-            this.adminEditCharSkLvlTextBox3 = new System.Windows.Forms.TextBox();
-            this.adminEditCharSkLvlTextBox1 = new System.Windows.Forms.TextBox();
-            this.adminEditCharSkNameTextBox3 = new System.Windows.Forms.TextBox();
-            this.adminEditCharSkNameTextBox2 = new System.Windows.Forms.TextBox();
-            this.adminEditCharSkNameTextBox1 = new System.Windows.Forms.TextBox();
-            this.admineditCharManTextBox = new System.Windows.Forms.TextBox();
-            this.admineditCharComTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharStatTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharHeaTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharVirTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharDaysTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharLangTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharNatTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharByearTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharBseasTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditChar1stnameTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharSurnameTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharIDTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharNpcPanel = new System.Windows.Forms.Panel();
-            this.label47 = new System.Windows.Forms.Label();
-            this.adminEditCharWageTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharPcPanel = new System.Windows.Forms.Panel();
-            this.adminEditCharOutlCheckBox = new System.Windows.Forms.CheckBox();
-            this.label46 = new System.Windows.Forms.Label();
-            this.adminEditCharPurseTextBox = new System.Windows.Forms.TextBox();
-            this.label44 = new System.Windows.Forms.Label();
-            this.label45 = new System.Windows.Forms.Label();
-            this.adminEditCharAncHomeTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharHomeTextBox = new System.Windows.Forms.TextBox();
-            this.label43 = new System.Windows.Forms.Label();
-            this.adminEditCharPIDTextBox = new System.Windows.Forms.TextBox();
             this.adminEditPlaceContainer = new System.Windows.Forms.SplitContainer();
             this.label52 = new System.Windows.Forms.Label();
             this.label51 = new System.Windows.Forms.Label();
@@ -419,9 +368,60 @@ namespace hist_mmorpg
             this.adminEditFiefPopTextBox = new System.Windows.Forms.TextBox();
             this.adminEditFiefFldTextBox = new System.Windows.Forms.TextBox();
             this.adminEditFiefIndTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditSkillEffsListView = new System.Windows.Forms.ListView();
-            this.adminEditCharSexCheckBox = new System.Windows.Forms.CheckBox();
+            this.adminEditCharContainer = new System.Windows.Forms.SplitContainer();
             this.label85 = new System.Windows.Forms.Label();
+            this.adminEditCharSexCheckBox = new System.Windows.Forms.CheckBox();
+            this.label42 = new System.Windows.Forms.Label();
+            this.label41 = new System.Windows.Forms.Label();
+            this.label40 = new System.Windows.Forms.Label();
+            this.label39 = new System.Windows.Forms.Label();
+            this.label38 = new System.Windows.Forms.Label();
+            this.label37 = new System.Windows.Forms.Label();
+            this.label36 = new System.Windows.Forms.Label();
+            this.label35 = new System.Windows.Forms.Label();
+            this.label34 = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.label32 = new System.Windows.Forms.Label();
+            this.label31 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.adminEditCharInKpCheckBox = new System.Windows.Forms.CheckBox();
+            this.adminEditCharLocTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharSkLvlTextBox2 = new System.Windows.Forms.TextBox();
+            this.adminEditCharSkLvlTextBox3 = new System.Windows.Forms.TextBox();
+            this.adminEditCharSkLvlTextBox1 = new System.Windows.Forms.TextBox();
+            this.adminEditCharSkNameTextBox3 = new System.Windows.Forms.TextBox();
+            this.adminEditCharSkNameTextBox2 = new System.Windows.Forms.TextBox();
+            this.adminEditCharSkNameTextBox1 = new System.Windows.Forms.TextBox();
+            this.admineditCharManTextBox = new System.Windows.Forms.TextBox();
+            this.admineditCharComTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharStatTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharHeaTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharVirTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharDaysTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharLangTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharNatTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharByearTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharBseasTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditChar1stnameTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharSurnameTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharIDTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharNpcPanel = new System.Windows.Forms.Panel();
+            this.label47 = new System.Windows.Forms.Label();
+            this.adminEditCharWageTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharPcPanel = new System.Windows.Forms.Panel();
+            this.adminEditCharOutlCheckBox = new System.Windows.Forms.CheckBox();
+            this.label46 = new System.Windows.Forms.Label();
+            this.adminEditCharPurseTextBox = new System.Windows.Forms.TextBox();
+            this.label44 = new System.Windows.Forms.Label();
+            this.label45 = new System.Windows.Forms.Label();
+            this.adminEditCharAncHomeTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharHomeTextBox = new System.Windows.Forms.TextBox();
+            this.label43 = new System.Windows.Forms.Label();
+            this.adminEditCharPIDTextBox = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -551,12 +551,6 @@ namespace hist_mmorpg
             this.adminEditContainer.SuspendLayout();
             this.adminEditSkillPanel.SuspendLayout();
             this.adminEditArmyPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.adminEditCharContainer)).BeginInit();
-            this.adminEditCharContainer.Panel1.SuspendLayout();
-            this.adminEditCharContainer.Panel2.SuspendLayout();
-            this.adminEditCharContainer.SuspendLayout();
-            this.adminEditCharNpcPanel.SuspendLayout();
-            this.adminEditCharPcPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.adminEditPlaceContainer)).BeginInit();
             this.adminEditPlaceContainer.Panel1.SuspendLayout();
             this.adminEditPlaceContainer.Panel2.SuspendLayout();
@@ -564,6 +558,12 @@ namespace hist_mmorpg
             this.adminEditKingPanel.SuspendLayout();
             this.adminEditProvPanel.SuspendLayout();
             this.adminEditFiefPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.adminEditCharContainer)).BeginInit();
+            this.adminEditCharContainer.Panel1.SuspendLayout();
+            this.adminEditCharContainer.Panel2.SuspendLayout();
+            this.adminEditCharContainer.SuspendLayout();
+            this.adminEditCharNpcPanel.SuspendLayout();
+            this.adminEditCharPcPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -674,13 +674,13 @@ namespace hist_mmorpg
             this.pCToolStripMenuItem,
             this.nPCToolStripMenuItem});
             this.characterToolStripMenuItem2.Name = "characterToolStripMenuItem2";
-            this.characterToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
+            this.characterToolStripMenuItem2.Size = new System.Drawing.Size(125, 22);
             this.characterToolStripMenuItem2.Text = "Character";
             // 
             // pCToolStripMenuItem
             // 
             this.pCToolStripMenuItem.Name = "pCToolStripMenuItem";
-            this.pCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.pCToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
             this.pCToolStripMenuItem.Tag = "PC";
             this.pCToolStripMenuItem.Text = "PC";
             this.pCToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -688,7 +688,7 @@ namespace hist_mmorpg
             // nPCToolStripMenuItem
             // 
             this.nPCToolStripMenuItem.Name = "nPCToolStripMenuItem";
-            this.nPCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.nPCToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
             this.nPCToolStripMenuItem.Tag = "NPC";
             this.nPCToolStripMenuItem.Text = "NPC";
             this.nPCToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -700,13 +700,13 @@ namespace hist_mmorpg
             this.provinceToolStripMenuItem,
             this.kingdomToolStripMenuItem});
             this.placeToolStripMenuItem.Name = "placeToolStripMenuItem";
-            this.placeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.placeToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.placeToolStripMenuItem.Text = "Place";
             // 
             // fiefToolStripMenuItem1
             // 
             this.fiefToolStripMenuItem1.Name = "fiefToolStripMenuItem1";
-            this.fiefToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.fiefToolStripMenuItem1.Size = new System.Drawing.Size(123, 22);
             this.fiefToolStripMenuItem1.Tag = "Fief";
             this.fiefToolStripMenuItem1.Text = "Fief";
             this.fiefToolStripMenuItem1.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -714,7 +714,7 @@ namespace hist_mmorpg
             // provinceToolStripMenuItem
             // 
             this.provinceToolStripMenuItem.Name = "provinceToolStripMenuItem";
-            this.provinceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.provinceToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.provinceToolStripMenuItem.Tag = "Province";
             this.provinceToolStripMenuItem.Text = "Province";
             this.provinceToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -722,7 +722,7 @@ namespace hist_mmorpg
             // kingdomToolStripMenuItem
             // 
             this.kingdomToolStripMenuItem.Name = "kingdomToolStripMenuItem";
-            this.kingdomToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.kingdomToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.kingdomToolStripMenuItem.Tag = "Kingdom";
             this.kingdomToolStripMenuItem.Text = "Kingdom";
             this.kingdomToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -730,7 +730,7 @@ namespace hist_mmorpg
             // armyToolStripMenuItem1
             // 
             this.armyToolStripMenuItem1.Name = "armyToolStripMenuItem1";
-            this.armyToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.armyToolStripMenuItem1.Size = new System.Drawing.Size(125, 22);
             this.armyToolStripMenuItem1.Tag = "Army";
             this.armyToolStripMenuItem1.Text = "Army";
             this.armyToolStripMenuItem1.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -738,7 +738,7 @@ namespace hist_mmorpg
             // skillToolStripMenuItem
             // 
             this.skillToolStripMenuItem.Name = "skillToolStripMenuItem";
-            this.skillToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.skillToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.skillToolStripMenuItem.Tag = "Skill";
             this.skillToolStripMenuItem.Text = "Skill";
             this.skillToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -3249,8 +3249,8 @@ namespace hist_mmorpg
             // 
             // adminEditContainer.Panel2
             // 
-            this.adminEditContainer.Panel2.Controls.Add(this.adminEditArmyPanel);
             this.adminEditContainer.Panel2.Controls.Add(this.adminEditSkillPanel);
+            this.adminEditContainer.Panel2.Controls.Add(this.adminEditArmyPanel);
             this.adminEditContainer.Panel2.Controls.Add(this.adminEditPlaceContainer);
             this.adminEditContainer.Panel2.Controls.Add(this.adminEditCharContainer);
             this.adminEditContainer.Size = new System.Drawing.Size(935, 711);
@@ -3295,7 +3295,7 @@ namespace hist_mmorpg
             // adminEditSkillPanel
             // 
             this.adminEditSkillPanel.Controls.Add(this.adminEditSkillEffsListView);
-            this.adminEditSkillPanel.Controls.Add(this.textBox1);
+            this.adminEditSkillPanel.Controls.Add(this.adminEditSkillEfflvlTextBox);
             this.adminEditSkillPanel.Controls.Add(this.adminEditSkillEffDelBtn);
             this.adminEditSkillPanel.Controls.Add(this.adminEditSkillEffAddBtn);
             this.adminEditSkillPanel.Controls.Add(this.adminEditSkillEffChngBtn);
@@ -3312,13 +3312,24 @@ namespace hist_mmorpg
             this.adminEditSkillPanel.Size = new System.Drawing.Size(620, 711);
             this.adminEditSkillPanel.TabIndex = 2;
             // 
-            // textBox1
+            // adminEditSkillEffsListView
             // 
-            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox1.Location = new System.Drawing.Point(150, 165);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(23, 20);
-            this.textBox1.TabIndex = 38;
+            this.adminEditSkillEffsListView.FullRowSelect = true;
+            this.adminEditSkillEffsListView.Location = new System.Drawing.Point(14, 72);
+            this.adminEditSkillEffsListView.Name = "adminEditSkillEffsListView";
+            this.adminEditSkillEffsListView.Size = new System.Drawing.Size(159, 88);
+            this.adminEditSkillEffsListView.TabIndex = 39;
+            this.adminEditSkillEffsListView.UseCompatibleStateImageBehavior = false;
+            this.adminEditSkillEffsListView.View = System.Windows.Forms.View.Details;
+            this.adminEditSkillEffsListView.SelectedIndexChanged += new System.EventHandler(this.adminEditSkillEffsListView_SelectedIndexChanged);
+            // 
+            // adminEditSkillEfflvlTextBox
+            // 
+            this.adminEditSkillEfflvlTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditSkillEfflvlTextBox.Location = new System.Drawing.Point(150, 165);
+            this.adminEditSkillEfflvlTextBox.Name = "adminEditSkillEfflvlTextBox";
+            this.adminEditSkillEfflvlTextBox.Size = new System.Drawing.Size(23, 20);
+            this.adminEditSkillEfflvlTextBox.TabIndex = 38;
             // 
             // adminEditSkillEffDelBtn
             // 
@@ -3326,8 +3337,10 @@ namespace hist_mmorpg
             this.adminEditSkillEffDelBtn.Name = "adminEditSkillEffDelBtn";
             this.adminEditSkillEffDelBtn.Size = new System.Drawing.Size(47, 25);
             this.adminEditSkillEffDelBtn.TabIndex = 37;
+            this.adminEditSkillEffDelBtn.Tag = "delEffect";
             this.adminEditSkillEffDelBtn.Text = "Delete";
             this.adminEditSkillEffDelBtn.UseVisualStyleBackColor = true;
+            this.adminEditSkillEffDelBtn.Click += new System.EventHandler(this.adminEditSkillEffBtn_Click);
             // 
             // adminEditSkillEffAddBtn
             // 
@@ -3335,8 +3348,10 @@ namespace hist_mmorpg
             this.adminEditSkillEffAddBtn.Name = "adminEditSkillEffAddBtn";
             this.adminEditSkillEffAddBtn.Size = new System.Drawing.Size(38, 25);
             this.adminEditSkillEffAddBtn.TabIndex = 36;
+            this.adminEditSkillEffAddBtn.Tag = "addEffect";
             this.adminEditSkillEffAddBtn.Text = "Add";
             this.adminEditSkillEffAddBtn.UseVisualStyleBackColor = true;
+            this.adminEditSkillEffAddBtn.Click += new System.EventHandler(this.adminEditSkillEffBtn_Click);
             // 
             // adminEditSkillEffChngBtn
             // 
@@ -3344,8 +3359,10 @@ namespace hist_mmorpg
             this.adminEditSkillEffChngBtn.Name = "adminEditSkillEffChngBtn";
             this.adminEditSkillEffChngBtn.Size = new System.Drawing.Size(55, 25);
             this.adminEditSkillEffChngBtn.TabIndex = 35;
+            this.adminEditSkillEffChngBtn.Tag = "chaEffect";
             this.adminEditSkillEffChngBtn.Text = "Change";
             this.adminEditSkillEffChngBtn.UseVisualStyleBackColor = true;
+            this.adminEditSkillEffChngBtn.Click += new System.EventHandler(this.adminEditSkillEffBtn_Click);
             // 
             // label84
             // 
@@ -3558,509 +3575,6 @@ namespace hist_mmorpg
             this.adminEditArmyIdTextBox.Name = "adminEditArmyIdTextBox";
             this.adminEditArmyIdTextBox.Size = new System.Drawing.Size(137, 20);
             this.adminEditArmyIdTextBox.TabIndex = 25;
-            // 
-            // adminEditCharContainer
-            // 
-            this.adminEditCharContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.adminEditCharContainer.Location = new System.Drawing.Point(0, 0);
-            this.adminEditCharContainer.Name = "adminEditCharContainer";
-            this.adminEditCharContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // adminEditCharContainer.Panel1
-            // 
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label85);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSexCheckBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label42);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label41);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label40);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label39);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label38);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label37);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label36);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label35);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label34);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label33);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label32);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label31);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label30);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label29);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label27);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label26);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.label25);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharInKpCheckBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharLocTextBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSkLvlTextBox2);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSkLvlTextBox3);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSkLvlTextBox1);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSkNameTextBox3);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSkNameTextBox2);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSkNameTextBox1);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.admineditCharManTextBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.admineditCharComTextBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharStatTextBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharHeaTextBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharVirTextBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharDaysTextBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharLangTextBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharNatTextBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharByearTextBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharBseasTextBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditChar1stnameTextBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSurnameTextBox);
-            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharIDTextBox);
-            // 
-            // adminEditCharContainer.Panel2
-            // 
-            this.adminEditCharContainer.Panel2.Controls.Add(this.adminEditCharNpcPanel);
-            this.adminEditCharContainer.Panel2.Controls.Add(this.adminEditCharPcPanel);
-            this.adminEditCharContainer.Size = new System.Drawing.Size(620, 711);
-            this.adminEditCharContainer.SplitterDistance = 500;
-            this.adminEditCharContainer.TabIndex = 0;
-            // 
-            // label42
-            // 
-            this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(168, 427);
-            this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(88, 13);
-            this.label42.TabIndex = 40;
-            this.label42.Text = "Location (Fief ID)";
-            // 
-            // label41
-            // 
-            this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(168, 401);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(105, 13);
-            this.label41.TabIndex = 39;
-            this.label41.Text = "Skill 3 (ID and rating)";
-            // 
-            // label40
-            // 
-            this.label40.AutoSize = true;
-            this.label40.Location = new System.Drawing.Point(168, 375);
-            this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(105, 13);
-            this.label40.TabIndex = 38;
-            this.label40.Text = "Skill 2 (ID and rating)";
-            // 
-            // label39
-            // 
-            this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(168, 349);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(105, 13);
-            this.label39.TabIndex = 37;
-            this.label39.Text = "Skill 1 (ID and rating)";
-            // 
-            // label38
-            // 
-            this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(168, 323);
-            this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(43, 13);
-            this.label38.TabIndex = 36;
-            this.label38.Text = "Combat";
-            // 
-            // label37
-            // 
-            this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(168, 296);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(69, 13);
-            this.label37.TabIndex = 35;
-            this.label37.Text = "Management";
-            // 
-            // label36
-            // 
-            this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(168, 270);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(33, 13);
-            this.label36.TabIndex = 34;
-            this.label36.Text = "Virility";
-            // 
-            // label35
-            // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(168, 244);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(85, 13);
-            this.label35.TabIndex = 33;
-            this.label35.Text = "Maximum Health";
-            // 
-            // label34
-            // 
-            this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(168, 218);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(81, 13);
-            this.label34.TabIndex = 32;
-            this.label34.Text = "Stature Modifier";
-            // 
-            // label33
-            // 
-            this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(168, 192);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(84, 13);
-            this.label33.TabIndex = 31;
-            this.label33.Text = "Days Remaining";
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(168, 166);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(75, 13);
-            this.label32.TabIndex = 30;
-            this.label32.Text = "Language (ID)";
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(168, 140);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(76, 13);
-            this.label31.TabIndex = 29;
-            this.label31.Text = "Nationality (ID)";
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(168, 114);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(25, 13);
-            this.label30.TabIndex = 28;
-            this.label30.Text = "Sex";
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(168, 88);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(113, 13);
-            this.label29.TabIndex = 27;
-            this.label29.Text = "Birth Year and Season";
-            // 
-            // label27
-            // 
-            this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(168, 62);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(67, 13);
-            this.label27.TabIndex = 26;
-            this.label27.Text = "Family Name";
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(168, 37);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(57, 13);
-            this.label26.TabIndex = 25;
-            this.label26.Text = "First Name";
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(168, 13);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(18, 13);
-            this.label25.TabIndex = 24;
-            this.label25.Text = "ID";
-            // 
-            // adminEditCharInKpCheckBox
-            // 
-            this.adminEditCharInKpCheckBox.AutoSize = true;
-            this.adminEditCharInKpCheckBox.Location = new System.Drawing.Point(14, 451);
-            this.adminEditCharInKpCheckBox.Name = "adminEditCharInKpCheckBox";
-            this.adminEditCharInKpCheckBox.Size = new System.Drawing.Size(63, 17);
-            this.adminEditCharInKpCheckBox.TabIndex = 23;
-            this.adminEditCharInKpCheckBox.Text = "In Keep";
-            this.adminEditCharInKpCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // adminEditCharLocTextBox
-            // 
-            this.adminEditCharLocTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharLocTextBox.Location = new System.Drawing.Point(14, 424);
-            this.adminEditCharLocTextBox.Name = "adminEditCharLocTextBox";
-            this.adminEditCharLocTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharLocTextBox.TabIndex = 22;
-            // 
-            // adminEditCharSkLvlTextBox2
-            // 
-            this.adminEditCharSkLvlTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharSkLvlTextBox2.Location = new System.Drawing.Point(130, 372);
-            this.adminEditCharSkLvlTextBox2.Name = "adminEditCharSkLvlTextBox2";
-            this.adminEditCharSkLvlTextBox2.Size = new System.Drawing.Size(20, 20);
-            this.adminEditCharSkLvlTextBox2.TabIndex = 21;
-            // 
-            // adminEditCharSkLvlTextBox3
-            // 
-            this.adminEditCharSkLvlTextBox3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharSkLvlTextBox3.Location = new System.Drawing.Point(130, 398);
-            this.adminEditCharSkLvlTextBox3.Name = "adminEditCharSkLvlTextBox3";
-            this.adminEditCharSkLvlTextBox3.Size = new System.Drawing.Size(20, 20);
-            this.adminEditCharSkLvlTextBox3.TabIndex = 20;
-            // 
-            // adminEditCharSkLvlTextBox1
-            // 
-            this.adminEditCharSkLvlTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharSkLvlTextBox1.Location = new System.Drawing.Point(131, 346);
-            this.adminEditCharSkLvlTextBox1.Name = "adminEditCharSkLvlTextBox1";
-            this.adminEditCharSkLvlTextBox1.Size = new System.Drawing.Size(20, 20);
-            this.adminEditCharSkLvlTextBox1.TabIndex = 19;
-            // 
-            // adminEditCharSkNameTextBox3
-            // 
-            this.adminEditCharSkNameTextBox3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharSkNameTextBox3.Location = new System.Drawing.Point(14, 398);
-            this.adminEditCharSkNameTextBox3.Name = "adminEditCharSkNameTextBox3";
-            this.adminEditCharSkNameTextBox3.Size = new System.Drawing.Size(110, 20);
-            this.adminEditCharSkNameTextBox3.TabIndex = 16;
-            // 
-            // adminEditCharSkNameTextBox2
-            // 
-            this.adminEditCharSkNameTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharSkNameTextBox2.Location = new System.Drawing.Point(14, 372);
-            this.adminEditCharSkNameTextBox2.Name = "adminEditCharSkNameTextBox2";
-            this.adminEditCharSkNameTextBox2.Size = new System.Drawing.Size(110, 20);
-            this.adminEditCharSkNameTextBox2.TabIndex = 15;
-            // 
-            // adminEditCharSkNameTextBox1
-            // 
-            this.adminEditCharSkNameTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharSkNameTextBox1.Location = new System.Drawing.Point(14, 346);
-            this.adminEditCharSkNameTextBox1.Name = "adminEditCharSkNameTextBox1";
-            this.adminEditCharSkNameTextBox1.Size = new System.Drawing.Size(110, 20);
-            this.adminEditCharSkNameTextBox1.TabIndex = 14;
-            // 
-            // admineditCharManTextBox
-            // 
-            this.admineditCharManTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.admineditCharManTextBox.Location = new System.Drawing.Point(14, 294);
-            this.admineditCharManTextBox.Name = "admineditCharManTextBox";
-            this.admineditCharManTextBox.Size = new System.Drawing.Size(137, 20);
-            this.admineditCharManTextBox.TabIndex = 13;
-            // 
-            // admineditCharComTextBox
-            // 
-            this.admineditCharComTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.admineditCharComTextBox.Location = new System.Drawing.Point(14, 320);
-            this.admineditCharComTextBox.Name = "admineditCharComTextBox";
-            this.admineditCharComTextBox.Size = new System.Drawing.Size(137, 20);
-            this.admineditCharComTextBox.TabIndex = 12;
-            // 
-            // adminEditCharStatTextBox
-            // 
-            this.adminEditCharStatTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharStatTextBox.Location = new System.Drawing.Point(14, 216);
-            this.adminEditCharStatTextBox.Name = "adminEditCharStatTextBox";
-            this.adminEditCharStatTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharStatTextBox.TabIndex = 11;
-            // 
-            // adminEditCharHeaTextBox
-            // 
-            this.adminEditCharHeaTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharHeaTextBox.Location = new System.Drawing.Point(14, 242);
-            this.adminEditCharHeaTextBox.Name = "adminEditCharHeaTextBox";
-            this.adminEditCharHeaTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharHeaTextBox.TabIndex = 10;
-            // 
-            // adminEditCharVirTextBox
-            // 
-            this.adminEditCharVirTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharVirTextBox.Location = new System.Drawing.Point(14, 268);
-            this.adminEditCharVirTextBox.Name = "adminEditCharVirTextBox";
-            this.adminEditCharVirTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharVirTextBox.TabIndex = 9;
-            // 
-            // adminEditCharDaysTextBox
-            // 
-            this.adminEditCharDaysTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharDaysTextBox.Location = new System.Drawing.Point(14, 190);
-            this.adminEditCharDaysTextBox.Name = "adminEditCharDaysTextBox";
-            this.adminEditCharDaysTextBox.Size = new System.Drawing.Size(31, 20);
-            this.adminEditCharDaysTextBox.TabIndex = 8;
-            // 
-            // adminEditCharLangTextBox
-            // 
-            this.adminEditCharLangTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharLangTextBox.Location = new System.Drawing.Point(14, 164);
-            this.adminEditCharLangTextBox.Name = "adminEditCharLangTextBox";
-            this.adminEditCharLangTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharLangTextBox.TabIndex = 7;
-            // 
-            // adminEditCharNatTextBox
-            // 
-            this.adminEditCharNatTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharNatTextBox.Location = new System.Drawing.Point(14, 138);
-            this.adminEditCharNatTextBox.Name = "adminEditCharNatTextBox";
-            this.adminEditCharNatTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharNatTextBox.TabIndex = 6;
-            // 
-            // adminEditCharByearTextBox
-            // 
-            this.adminEditCharByearTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharByearTextBox.Location = new System.Drawing.Point(14, 86);
-            this.adminEditCharByearTextBox.Name = "adminEditCharByearTextBox";
-            this.adminEditCharByearTextBox.Size = new System.Drawing.Size(48, 20);
-            this.adminEditCharByearTextBox.TabIndex = 4;
-            // 
-            // adminEditCharBseasTextBox
-            // 
-            this.adminEditCharBseasTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharBseasTextBox.Location = new System.Drawing.Point(68, 86);
-            this.adminEditCharBseasTextBox.Name = "adminEditCharBseasTextBox";
-            this.adminEditCharBseasTextBox.Size = new System.Drawing.Size(17, 20);
-            this.adminEditCharBseasTextBox.TabIndex = 3;
-            // 
-            // adminEditChar1stnameTextBox
-            // 
-            this.adminEditChar1stnameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditChar1stnameTextBox.Location = new System.Drawing.Point(14, 34);
-            this.adminEditChar1stnameTextBox.Name = "adminEditChar1stnameTextBox";
-            this.adminEditChar1stnameTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditChar1stnameTextBox.TabIndex = 2;
-            // 
-            // adminEditCharSurnameTextBox
-            // 
-            this.adminEditCharSurnameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharSurnameTextBox.Location = new System.Drawing.Point(14, 60);
-            this.adminEditCharSurnameTextBox.Name = "adminEditCharSurnameTextBox";
-            this.adminEditCharSurnameTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharSurnameTextBox.TabIndex = 1;
-            // 
-            // adminEditCharIDTextBox
-            // 
-            this.adminEditCharIDTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharIDTextBox.Location = new System.Drawing.Point(14, 8);
-            this.adminEditCharIDTextBox.Name = "adminEditCharIDTextBox";
-            this.adminEditCharIDTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharIDTextBox.TabIndex = 0;
-            // 
-            // adminEditCharNpcPanel
-            // 
-            this.adminEditCharNpcPanel.Controls.Add(this.label47);
-            this.adminEditCharNpcPanel.Controls.Add(this.adminEditCharWageTextBox);
-            this.adminEditCharNpcPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.adminEditCharNpcPanel.Location = new System.Drawing.Point(0, 0);
-            this.adminEditCharNpcPanel.Name = "adminEditCharNpcPanel";
-            this.adminEditCharNpcPanel.Size = new System.Drawing.Size(620, 207);
-            this.adminEditCharNpcPanel.TabIndex = 1;
-            // 
-            // label47
-            // 
-            this.label47.AutoSize = true;
-            this.label47.Location = new System.Drawing.Point(168, 17);
-            this.label47.Name = "label47";
-            this.label47.Size = new System.Drawing.Size(36, 13);
-            this.label47.TabIndex = 41;
-            this.label47.Text = "Wage";
-            // 
-            // adminEditCharWageTextBox
-            // 
-            this.adminEditCharWageTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharWageTextBox.Location = new System.Drawing.Point(14, 15);
-            this.adminEditCharWageTextBox.Name = "adminEditCharWageTextBox";
-            this.adminEditCharWageTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharWageTextBox.TabIndex = 41;
-            // 
-            // adminEditCharPcPanel
-            // 
-            this.adminEditCharPcPanel.Controls.Add(this.adminEditCharOutlCheckBox);
-            this.adminEditCharPcPanel.Controls.Add(this.label46);
-            this.adminEditCharPcPanel.Controls.Add(this.adminEditCharPurseTextBox);
-            this.adminEditCharPcPanel.Controls.Add(this.label44);
-            this.adminEditCharPcPanel.Controls.Add(this.label45);
-            this.adminEditCharPcPanel.Controls.Add(this.adminEditCharAncHomeTextBox);
-            this.adminEditCharPcPanel.Controls.Add(this.adminEditCharHomeTextBox);
-            this.adminEditCharPcPanel.Controls.Add(this.label43);
-            this.adminEditCharPcPanel.Controls.Add(this.adminEditCharPIDTextBox);
-            this.adminEditCharPcPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.adminEditCharPcPanel.Location = new System.Drawing.Point(0, 0);
-            this.adminEditCharPcPanel.Name = "adminEditCharPcPanel";
-            this.adminEditCharPcPanel.Size = new System.Drawing.Size(620, 207);
-            this.adminEditCharPcPanel.TabIndex = 0;
-            // 
-            // adminEditCharOutlCheckBox
-            // 
-            this.adminEditCharOutlCheckBox.AutoSize = true;
-            this.adminEditCharOutlCheckBox.Location = new System.Drawing.Point(14, 119);
-            this.adminEditCharOutlCheckBox.Name = "adminEditCharOutlCheckBox";
-            this.adminEditCharOutlCheckBox.Size = new System.Drawing.Size(71, 17);
-            this.adminEditCharOutlCheckBox.TabIndex = 44;
-            this.adminEditCharOutlCheckBox.Text = "Outlawed";
-            this.adminEditCharOutlCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // label46
-            // 
-            this.label46.AutoSize = true;
-            this.label46.Location = new System.Drawing.Point(168, 97);
-            this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(34, 13);
-            this.label46.TabIndex = 43;
-            this.label46.Text = "Purse";
-            // 
-            // adminEditCharPurseTextBox
-            // 
-            this.adminEditCharPurseTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharPurseTextBox.Location = new System.Drawing.Point(14, 93);
-            this.adminEditCharPurseTextBox.Name = "adminEditCharPurseTextBox";
-            this.adminEditCharPurseTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharPurseTextBox.TabIndex = 41;
-            // 
-            // label44
-            // 
-            this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(168, 69);
-            this.label44.Name = "label44";
-            this.label44.Size = new System.Drawing.Size(122, 13);
-            this.label44.TabIndex = 41;
-            this.label44.Text = "Ancestral Home (Fief ID)";
-            // 
-            // label45
-            // 
-            this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(168, 43);
-            this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(75, 13);
-            this.label45.TabIndex = 42;
-            this.label45.Text = "Home (Fief ID)";
-            // 
-            // adminEditCharAncHomeTextBox
-            // 
-            this.adminEditCharAncHomeTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharAncHomeTextBox.Location = new System.Drawing.Point(14, 67);
-            this.adminEditCharAncHomeTextBox.Name = "adminEditCharAncHomeTextBox";
-            this.adminEditCharAncHomeTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharAncHomeTextBox.TabIndex = 41;
-            // 
-            // adminEditCharHomeTextBox
-            // 
-            this.adminEditCharHomeTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharHomeTextBox.Location = new System.Drawing.Point(13, 41);
-            this.adminEditCharHomeTextBox.Name = "adminEditCharHomeTextBox";
-            this.adminEditCharHomeTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharHomeTextBox.TabIndex = 42;
-            // 
-            // label43
-            // 
-            this.label43.AutoSize = true;
-            this.label43.Location = new System.Drawing.Point(168, 17);
-            this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(50, 13);
-            this.label43.TabIndex = 41;
-            this.label43.Text = "Player ID";
-            // 
-            // adminEditCharPIDTextBox
-            // 
-            this.adminEditCharPIDTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharPIDTextBox.Location = new System.Drawing.Point(13, 15);
-            this.adminEditCharPIDTextBox.Name = "adminEditCharPIDTextBox";
-            this.adminEditCharPIDTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharPIDTextBox.TabIndex = 41;
             // 
             // adminEditPlaceContainer
             // 
@@ -4621,15 +4135,72 @@ namespace hist_mmorpg
             this.adminEditFiefIndTextBox.Size = new System.Drawing.Size(92, 20);
             this.adminEditFiefIndTextBox.TabIndex = 3;
             // 
-            // adminEditSkillEffsListView
+            // adminEditCharContainer
             // 
-            this.adminEditSkillEffsListView.FullRowSelect = true;
-            this.adminEditSkillEffsListView.Location = new System.Drawing.Point(14, 72);
-            this.adminEditSkillEffsListView.Name = "adminEditSkillEffsListView";
-            this.adminEditSkillEffsListView.Size = new System.Drawing.Size(159, 88);
-            this.adminEditSkillEffsListView.TabIndex = 39;
-            this.adminEditSkillEffsListView.UseCompatibleStateImageBehavior = false;
-            this.adminEditSkillEffsListView.View = System.Windows.Forms.View.Details;
+            this.adminEditCharContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.adminEditCharContainer.Location = new System.Drawing.Point(0, 0);
+            this.adminEditCharContainer.Name = "adminEditCharContainer";
+            this.adminEditCharContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // adminEditCharContainer.Panel1
+            // 
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label85);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSexCheckBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label42);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label41);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label40);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label39);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label38);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label37);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label36);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label35);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label34);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label33);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label32);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label31);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label30);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label29);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label27);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label26);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.label25);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharInKpCheckBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharLocTextBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSkLvlTextBox2);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSkLvlTextBox3);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSkLvlTextBox1);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSkNameTextBox3);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSkNameTextBox2);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSkNameTextBox1);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.admineditCharManTextBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.admineditCharComTextBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharStatTextBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharHeaTextBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharVirTextBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharDaysTextBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharLangTextBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharNatTextBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharByearTextBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharBseasTextBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditChar1stnameTextBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharSurnameTextBox);
+            this.adminEditCharContainer.Panel1.Controls.Add(this.adminEditCharIDTextBox);
+            // 
+            // adminEditCharContainer.Panel2
+            // 
+            this.adminEditCharContainer.Panel2.Controls.Add(this.adminEditCharNpcPanel);
+            this.adminEditCharContainer.Panel2.Controls.Add(this.adminEditCharPcPanel);
+            this.adminEditCharContainer.Size = new System.Drawing.Size(620, 711);
+            this.adminEditCharContainer.SplitterDistance = 500;
+            this.adminEditCharContainer.TabIndex = 0;
+            // 
+            // label85
+            // 
+            this.label85.AutoSize = true;
+            this.label85.Location = new System.Drawing.Point(168, 452);
+            this.label85.Name = "label85";
+            this.label85.Size = new System.Drawing.Size(76, 13);
+            this.label85.TabIndex = 42;
+            this.label85.Text = "Keep Location";
             // 
             // adminEditCharSexCheckBox
             // 
@@ -4641,14 +4212,450 @@ namespace hist_mmorpg
             this.adminEditCharSexCheckBox.Text = "Is Male";
             this.adminEditCharSexCheckBox.UseVisualStyleBackColor = true;
             // 
-            // label85
+            // label42
             // 
-            this.label85.AutoSize = true;
-            this.label85.Location = new System.Drawing.Point(168, 452);
-            this.label85.Name = "label85";
-            this.label85.Size = new System.Drawing.Size(76, 13);
-            this.label85.TabIndex = 42;
-            this.label85.Text = "Keep Location";
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(168, 427);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(88, 13);
+            this.label42.TabIndex = 40;
+            this.label42.Text = "Location (Fief ID)";
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(168, 401);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(105, 13);
+            this.label41.TabIndex = 39;
+            this.label41.Text = "Skill 3 (ID and rating)";
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Location = new System.Drawing.Point(168, 375);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(105, 13);
+            this.label40.TabIndex = 38;
+            this.label40.Text = "Skill 2 (ID and rating)";
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(168, 349);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(105, 13);
+            this.label39.TabIndex = 37;
+            this.label39.Text = "Skill 1 (ID and rating)";
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(168, 323);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(43, 13);
+            this.label38.TabIndex = 36;
+            this.label38.Text = "Combat";
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(168, 296);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(69, 13);
+            this.label37.TabIndex = 35;
+            this.label37.Text = "Management";
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(168, 270);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(33, 13);
+            this.label36.TabIndex = 34;
+            this.label36.Text = "Virility";
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(168, 244);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(85, 13);
+            this.label35.TabIndex = 33;
+            this.label35.Text = "Maximum Health";
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(168, 218);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(81, 13);
+            this.label34.TabIndex = 32;
+            this.label34.Text = "Stature Modifier";
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(168, 192);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(84, 13);
+            this.label33.TabIndex = 31;
+            this.label33.Text = "Days Remaining";
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(168, 166);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(75, 13);
+            this.label32.TabIndex = 30;
+            this.label32.Text = "Language (ID)";
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(168, 140);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(76, 13);
+            this.label31.TabIndex = 29;
+            this.label31.Text = "Nationality (ID)";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(168, 114);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(25, 13);
+            this.label30.TabIndex = 28;
+            this.label30.Text = "Sex";
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(168, 88);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(113, 13);
+            this.label29.TabIndex = 27;
+            this.label29.Text = "Birth Year and Season";
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(168, 62);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(67, 13);
+            this.label27.TabIndex = 26;
+            this.label27.Text = "Family Name";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(168, 37);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(57, 13);
+            this.label26.TabIndex = 25;
+            this.label26.Text = "First Name";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(168, 13);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(18, 13);
+            this.label25.TabIndex = 24;
+            this.label25.Text = "ID";
+            // 
+            // adminEditCharInKpCheckBox
+            // 
+            this.adminEditCharInKpCheckBox.AutoSize = true;
+            this.adminEditCharInKpCheckBox.Location = new System.Drawing.Point(14, 451);
+            this.adminEditCharInKpCheckBox.Name = "adminEditCharInKpCheckBox";
+            this.adminEditCharInKpCheckBox.Size = new System.Drawing.Size(63, 17);
+            this.adminEditCharInKpCheckBox.TabIndex = 23;
+            this.adminEditCharInKpCheckBox.Text = "In Keep";
+            this.adminEditCharInKpCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // adminEditCharLocTextBox
+            // 
+            this.adminEditCharLocTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharLocTextBox.Location = new System.Drawing.Point(14, 424);
+            this.adminEditCharLocTextBox.Name = "adminEditCharLocTextBox";
+            this.adminEditCharLocTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharLocTextBox.TabIndex = 22;
+            // 
+            // adminEditCharSkLvlTextBox2
+            // 
+            this.adminEditCharSkLvlTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharSkLvlTextBox2.Location = new System.Drawing.Point(130, 372);
+            this.adminEditCharSkLvlTextBox2.Name = "adminEditCharSkLvlTextBox2";
+            this.adminEditCharSkLvlTextBox2.Size = new System.Drawing.Size(20, 20);
+            this.adminEditCharSkLvlTextBox2.TabIndex = 21;
+            // 
+            // adminEditCharSkLvlTextBox3
+            // 
+            this.adminEditCharSkLvlTextBox3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharSkLvlTextBox3.Location = new System.Drawing.Point(130, 398);
+            this.adminEditCharSkLvlTextBox3.Name = "adminEditCharSkLvlTextBox3";
+            this.adminEditCharSkLvlTextBox3.Size = new System.Drawing.Size(20, 20);
+            this.adminEditCharSkLvlTextBox3.TabIndex = 20;
+            // 
+            // adminEditCharSkLvlTextBox1
+            // 
+            this.adminEditCharSkLvlTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharSkLvlTextBox1.Location = new System.Drawing.Point(131, 346);
+            this.adminEditCharSkLvlTextBox1.Name = "adminEditCharSkLvlTextBox1";
+            this.adminEditCharSkLvlTextBox1.Size = new System.Drawing.Size(20, 20);
+            this.adminEditCharSkLvlTextBox1.TabIndex = 19;
+            // 
+            // adminEditCharSkNameTextBox3
+            // 
+            this.adminEditCharSkNameTextBox3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharSkNameTextBox3.Location = new System.Drawing.Point(14, 398);
+            this.adminEditCharSkNameTextBox3.Name = "adminEditCharSkNameTextBox3";
+            this.adminEditCharSkNameTextBox3.Size = new System.Drawing.Size(110, 20);
+            this.adminEditCharSkNameTextBox3.TabIndex = 16;
+            // 
+            // adminEditCharSkNameTextBox2
+            // 
+            this.adminEditCharSkNameTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharSkNameTextBox2.Location = new System.Drawing.Point(14, 372);
+            this.adminEditCharSkNameTextBox2.Name = "adminEditCharSkNameTextBox2";
+            this.adminEditCharSkNameTextBox2.Size = new System.Drawing.Size(110, 20);
+            this.adminEditCharSkNameTextBox2.TabIndex = 15;
+            // 
+            // adminEditCharSkNameTextBox1
+            // 
+            this.adminEditCharSkNameTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharSkNameTextBox1.Location = new System.Drawing.Point(14, 346);
+            this.adminEditCharSkNameTextBox1.Name = "adminEditCharSkNameTextBox1";
+            this.adminEditCharSkNameTextBox1.Size = new System.Drawing.Size(110, 20);
+            this.adminEditCharSkNameTextBox1.TabIndex = 14;
+            // 
+            // admineditCharManTextBox
+            // 
+            this.admineditCharManTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.admineditCharManTextBox.Location = new System.Drawing.Point(14, 294);
+            this.admineditCharManTextBox.Name = "admineditCharManTextBox";
+            this.admineditCharManTextBox.Size = new System.Drawing.Size(137, 20);
+            this.admineditCharManTextBox.TabIndex = 13;
+            // 
+            // admineditCharComTextBox
+            // 
+            this.admineditCharComTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.admineditCharComTextBox.Location = new System.Drawing.Point(14, 320);
+            this.admineditCharComTextBox.Name = "admineditCharComTextBox";
+            this.admineditCharComTextBox.Size = new System.Drawing.Size(137, 20);
+            this.admineditCharComTextBox.TabIndex = 12;
+            // 
+            // adminEditCharStatTextBox
+            // 
+            this.adminEditCharStatTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharStatTextBox.Location = new System.Drawing.Point(14, 216);
+            this.adminEditCharStatTextBox.Name = "adminEditCharStatTextBox";
+            this.adminEditCharStatTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharStatTextBox.TabIndex = 11;
+            // 
+            // adminEditCharHeaTextBox
+            // 
+            this.adminEditCharHeaTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharHeaTextBox.Location = new System.Drawing.Point(14, 242);
+            this.adminEditCharHeaTextBox.Name = "adminEditCharHeaTextBox";
+            this.adminEditCharHeaTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharHeaTextBox.TabIndex = 10;
+            // 
+            // adminEditCharVirTextBox
+            // 
+            this.adminEditCharVirTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharVirTextBox.Location = new System.Drawing.Point(14, 268);
+            this.adminEditCharVirTextBox.Name = "adminEditCharVirTextBox";
+            this.adminEditCharVirTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharVirTextBox.TabIndex = 9;
+            // 
+            // adminEditCharDaysTextBox
+            // 
+            this.adminEditCharDaysTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharDaysTextBox.Location = new System.Drawing.Point(14, 190);
+            this.adminEditCharDaysTextBox.Name = "adminEditCharDaysTextBox";
+            this.adminEditCharDaysTextBox.Size = new System.Drawing.Size(31, 20);
+            this.adminEditCharDaysTextBox.TabIndex = 8;
+            // 
+            // adminEditCharLangTextBox
+            // 
+            this.adminEditCharLangTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharLangTextBox.Location = new System.Drawing.Point(14, 164);
+            this.adminEditCharLangTextBox.Name = "adminEditCharLangTextBox";
+            this.adminEditCharLangTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharLangTextBox.TabIndex = 7;
+            // 
+            // adminEditCharNatTextBox
+            // 
+            this.adminEditCharNatTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharNatTextBox.Location = new System.Drawing.Point(14, 138);
+            this.adminEditCharNatTextBox.Name = "adminEditCharNatTextBox";
+            this.adminEditCharNatTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharNatTextBox.TabIndex = 6;
+            // 
+            // adminEditCharByearTextBox
+            // 
+            this.adminEditCharByearTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharByearTextBox.Location = new System.Drawing.Point(14, 86);
+            this.adminEditCharByearTextBox.Name = "adminEditCharByearTextBox";
+            this.adminEditCharByearTextBox.Size = new System.Drawing.Size(48, 20);
+            this.adminEditCharByearTextBox.TabIndex = 4;
+            // 
+            // adminEditCharBseasTextBox
+            // 
+            this.adminEditCharBseasTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharBseasTextBox.Location = new System.Drawing.Point(68, 86);
+            this.adminEditCharBseasTextBox.Name = "adminEditCharBseasTextBox";
+            this.adminEditCharBseasTextBox.Size = new System.Drawing.Size(17, 20);
+            this.adminEditCharBseasTextBox.TabIndex = 3;
+            // 
+            // adminEditChar1stnameTextBox
+            // 
+            this.adminEditChar1stnameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditChar1stnameTextBox.Location = new System.Drawing.Point(14, 34);
+            this.adminEditChar1stnameTextBox.Name = "adminEditChar1stnameTextBox";
+            this.adminEditChar1stnameTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditChar1stnameTextBox.TabIndex = 2;
+            // 
+            // adminEditCharSurnameTextBox
+            // 
+            this.adminEditCharSurnameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharSurnameTextBox.Location = new System.Drawing.Point(14, 60);
+            this.adminEditCharSurnameTextBox.Name = "adminEditCharSurnameTextBox";
+            this.adminEditCharSurnameTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharSurnameTextBox.TabIndex = 1;
+            // 
+            // adminEditCharIDTextBox
+            // 
+            this.adminEditCharIDTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharIDTextBox.Location = new System.Drawing.Point(14, 8);
+            this.adminEditCharIDTextBox.Name = "adminEditCharIDTextBox";
+            this.adminEditCharIDTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharIDTextBox.TabIndex = 0;
+            // 
+            // adminEditCharNpcPanel
+            // 
+            this.adminEditCharNpcPanel.Controls.Add(this.label47);
+            this.adminEditCharNpcPanel.Controls.Add(this.adminEditCharWageTextBox);
+            this.adminEditCharNpcPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.adminEditCharNpcPanel.Location = new System.Drawing.Point(0, 0);
+            this.adminEditCharNpcPanel.Name = "adminEditCharNpcPanel";
+            this.adminEditCharNpcPanel.Size = new System.Drawing.Size(620, 207);
+            this.adminEditCharNpcPanel.TabIndex = 1;
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(168, 17);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(36, 13);
+            this.label47.TabIndex = 41;
+            this.label47.Text = "Wage";
+            // 
+            // adminEditCharWageTextBox
+            // 
+            this.adminEditCharWageTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharWageTextBox.Location = new System.Drawing.Point(14, 15);
+            this.adminEditCharWageTextBox.Name = "adminEditCharWageTextBox";
+            this.adminEditCharWageTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharWageTextBox.TabIndex = 41;
+            // 
+            // adminEditCharPcPanel
+            // 
+            this.adminEditCharPcPanel.Controls.Add(this.adminEditCharOutlCheckBox);
+            this.adminEditCharPcPanel.Controls.Add(this.label46);
+            this.adminEditCharPcPanel.Controls.Add(this.adminEditCharPurseTextBox);
+            this.adminEditCharPcPanel.Controls.Add(this.label44);
+            this.adminEditCharPcPanel.Controls.Add(this.label45);
+            this.adminEditCharPcPanel.Controls.Add(this.adminEditCharAncHomeTextBox);
+            this.adminEditCharPcPanel.Controls.Add(this.adminEditCharHomeTextBox);
+            this.adminEditCharPcPanel.Controls.Add(this.label43);
+            this.adminEditCharPcPanel.Controls.Add(this.adminEditCharPIDTextBox);
+            this.adminEditCharPcPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.adminEditCharPcPanel.Location = new System.Drawing.Point(0, 0);
+            this.adminEditCharPcPanel.Name = "adminEditCharPcPanel";
+            this.adminEditCharPcPanel.Size = new System.Drawing.Size(620, 207);
+            this.adminEditCharPcPanel.TabIndex = 0;
+            // 
+            // adminEditCharOutlCheckBox
+            // 
+            this.adminEditCharOutlCheckBox.AutoSize = true;
+            this.adminEditCharOutlCheckBox.Location = new System.Drawing.Point(14, 119);
+            this.adminEditCharOutlCheckBox.Name = "adminEditCharOutlCheckBox";
+            this.adminEditCharOutlCheckBox.Size = new System.Drawing.Size(71, 17);
+            this.adminEditCharOutlCheckBox.TabIndex = 44;
+            this.adminEditCharOutlCheckBox.Text = "Outlawed";
+            this.adminEditCharOutlCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(168, 97);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(34, 13);
+            this.label46.TabIndex = 43;
+            this.label46.Text = "Purse";
+            // 
+            // adminEditCharPurseTextBox
+            // 
+            this.adminEditCharPurseTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharPurseTextBox.Location = new System.Drawing.Point(14, 93);
+            this.adminEditCharPurseTextBox.Name = "adminEditCharPurseTextBox";
+            this.adminEditCharPurseTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharPurseTextBox.TabIndex = 41;
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(168, 69);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(122, 13);
+            this.label44.TabIndex = 41;
+            this.label44.Text = "Ancestral Home (Fief ID)";
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(168, 43);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(75, 13);
+            this.label45.TabIndex = 42;
+            this.label45.Text = "Home (Fief ID)";
+            // 
+            // adminEditCharAncHomeTextBox
+            // 
+            this.adminEditCharAncHomeTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharAncHomeTextBox.Location = new System.Drawing.Point(14, 67);
+            this.adminEditCharAncHomeTextBox.Name = "adminEditCharAncHomeTextBox";
+            this.adminEditCharAncHomeTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharAncHomeTextBox.TabIndex = 41;
+            // 
+            // adminEditCharHomeTextBox
+            // 
+            this.adminEditCharHomeTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharHomeTextBox.Location = new System.Drawing.Point(13, 41);
+            this.adminEditCharHomeTextBox.Name = "adminEditCharHomeTextBox";
+            this.adminEditCharHomeTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharHomeTextBox.TabIndex = 42;
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(168, 17);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(50, 13);
+            this.label43.TabIndex = 41;
+            this.label43.Text = "Player ID";
+            // 
+            // adminEditCharPIDTextBox
+            // 
+            this.adminEditCharPIDTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharPIDTextBox.Location = new System.Drawing.Point(13, 15);
+            this.adminEditCharPIDTextBox.Name = "adminEditCharPIDTextBox";
+            this.adminEditCharPIDTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharPIDTextBox.TabIndex = 41;
             // 
             // Form1
             // 
@@ -4657,11 +4664,11 @@ namespace hist_mmorpg
             this.ClientSize = new System.Drawing.Size(935, 735);
             this.Controls.Add(this.adminEditContainer);
             this.Controls.Add(this.armyContainer);
+            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.royalGiftsContainer);
             this.Controls.Add(this.provinceContainer);
             this.Controls.Add(this.fiefContainer);
-            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.fiefsOwnedContainer);
@@ -4832,15 +4839,6 @@ namespace hist_mmorpg
             this.adminEditSkillPanel.PerformLayout();
             this.adminEditArmyPanel.ResumeLayout(false);
             this.adminEditArmyPanel.PerformLayout();
-            this.adminEditCharContainer.Panel1.ResumeLayout(false);
-            this.adminEditCharContainer.Panel1.PerformLayout();
-            this.adminEditCharContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.adminEditCharContainer)).EndInit();
-            this.adminEditCharContainer.ResumeLayout(false);
-            this.adminEditCharNpcPanel.ResumeLayout(false);
-            this.adminEditCharNpcPanel.PerformLayout();
-            this.adminEditCharPcPanel.ResumeLayout(false);
-            this.adminEditCharPcPanel.PerformLayout();
             this.adminEditPlaceContainer.Panel1.ResumeLayout(false);
             this.adminEditPlaceContainer.Panel1.PerformLayout();
             this.adminEditPlaceContainer.Panel2.ResumeLayout(false);
@@ -4852,6 +4850,15 @@ namespace hist_mmorpg
             this.adminEditProvPanel.PerformLayout();
             this.adminEditFiefPanel.ResumeLayout(false);
             this.adminEditFiefPanel.PerformLayout();
+            this.adminEditCharContainer.Panel1.ResumeLayout(false);
+            this.adminEditCharContainer.Panel1.PerformLayout();
+            this.adminEditCharContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.adminEditCharContainer)).EndInit();
+            this.adminEditCharContainer.ResumeLayout(false);
+            this.adminEditCharNpcPanel.ResumeLayout(false);
+            this.adminEditCharNpcPanel.PerformLayout();
+            this.adminEditCharPcPanel.ResumeLayout(false);
+            this.adminEditCharPcPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -5239,7 +5246,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.TextBox adminEditArmyOddsTextBox;
         private System.Windows.Forms.ToolStripMenuItem armyToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem skillToolStripMenuItem;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox adminEditSkillEfflvlTextBox;
         private System.Windows.Forms.Button adminEditSkillEffDelBtn;
         private System.Windows.Forms.Button adminEditSkillEffAddBtn;
         private System.Windows.Forms.Button adminEditSkillEffChngBtn;
