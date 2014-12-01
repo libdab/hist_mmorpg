@@ -100,6 +100,7 @@ namespace hist_mmorpg
             this.setUpJournalList();
             this.setUpRoyalGiftsLists();
             this.setUpProvinceLists();
+            this.setUpEditSkillEffectList();
 
             // set player's character to display
             Globals_Client.charToView = Globals_Client.myPlayerCharacter;
@@ -4198,6 +4199,16 @@ namespace hist_mmorpg
             this.houseCharListView.Columns.Add("Responsibilities", -2, HorizontalAlignment.Left);
             this.houseCharListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
             this.houseCharListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for list of skill effects in the edit skill screen
+        /// </summary>
+        public void setUpEditSkillEffectList()
+        {
+            // add necessary columns
+            this.adminEditSkillEffsListView.Columns.Add("Effect Name", -2, HorizontalAlignment.Left);
+            this.adminEditSkillEffsListView.Columns.Add("Level", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -17380,92 +17391,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of either of the 'edit character' MenuItems
-        /// displaying the appropriate screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void adminEditCharMenuItem_Click(object sender, EventArgs e)
-        {
-            // get MenuItem
-            ToolStripMenuItem thisItem = (sender as ToolStripMenuItem);
-            string whichCharType = thisItem.Tag.ToString();
-
-            // display edit object screen
-            Globals_Client.containerToView = this.adminEditContainer;
-            Globals_Client.containerToView.BringToFront();
-
-            // display edit character panel
-            this.adminEditCharContainer.BringToFront();
-
-            // change admin edit control properties to match object type
-            // and display appropriate panel
-            switch (whichCharType)
-            {
-                case "pc":
-                    this.adminEditGetBtn.Text = "Get PC";
-                    this.adminEditSaveBtn.Text = "Save PC";
-                    this.adminEditLabel.Text = "PC ID";
-                    this.adminEditCharPcPanel.BringToFront();
-                    break;
-                case "npc":
-                    this.adminEditGetBtn.Text = "Get NPC";
-                    this.adminEditSaveBtn.Text = "Save NPC";
-                    this.adminEditLabel.Text = "NPC ID";
-                    this.adminEditCharNpcPanel.BringToFront();
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of any of the 'edit place' MenuItems
-        /// displaying the appropriate screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void adminEditPlaceMenuItem_Click(object sender, EventArgs e)
-        {
-            // get MenuItem
-            ToolStripMenuItem thisItem = (sender as ToolStripMenuItem);
-            string whichPlaceType = thisItem.Tag.ToString();
-
-            // display edit object screen
-            Globals_Client.containerToView = this.adminEditContainer;
-            Globals_Client.containerToView.BringToFront();
-
-            // display edit place panel
-            this.adminEditPlaceContainer.BringToFront();
-
-            // change admin edit control properties to match object type
-            // and display appropriate panel
-            switch (whichPlaceType)
-            {
-                case "fief":
-                    this.adminEditGetBtn.Text = "Get Fief";
-                    this.adminEditSaveBtn.Text = "Save Fief";
-                    this.adminEditLabel.Text = "Fief ID";
-                    this.adminEditFiefPanel.BringToFront();
-                    break;
-                case "province":
-                    this.adminEditGetBtn.Text = "Get Province";
-                    this.adminEditSaveBtn.Text = "Save Province";
-                    this.adminEditLabel.Text = "Province ID";
-                    this.adminEditProvPanel.BringToFront();
-                    break;
-                case "kingdom":
-                    this.adminEditGetBtn.Text = "Get Kingdom";
-                    this.adminEditSaveBtn.Text = "Save Kingdom";
-                    this.adminEditLabel.Text = "Kingdom ID";
-                    this.adminEditKingPanel.BringToFront();
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        /// <summary>
         /// Responds to the click event of any of the 'edit object' MenuItems
         /// displaying the appropriate screen
         /// </summary>
@@ -17475,30 +17400,667 @@ namespace hist_mmorpg
         {
             // get MenuItem
             ToolStripMenuItem thisItem = (sender as ToolStripMenuItem);
-            string whichObjectType = thisItem.Tag.ToString();
+            string objectType = thisItem.Tag.ToString();
 
             // display edit object screen
             Globals_Client.containerToView = this.adminEditContainer;
             Globals_Client.containerToView.BringToFront();
 
+            // set tag to identify object type (for retrieving object)
+            this.adminEditGetBtn.Tag = objectType;
+
+            // clear previous object ID from TextBox
+            this.adminEditTextBox.Text = "";
+
             // change admin edit control properties to match object type
-            // and display appropriate panel
-            switch (whichObjectType)
+            this.adminEditGetBtn.Text = "Get " + objectType;
+            this.adminEditSaveBtn.Text = "Save " + objectType;
+            this.adminEditLabel.Text = objectType + " ID";
+
+            // display appropriate panel
+            switch (objectType)
             {
-                case "skill":
-                    this.adminEditGetBtn.Text = "Get Skill";
-                    this.adminEditSaveBtn.Text = "Save Skill";
-                    this.adminEditLabel.Text = "Skill ID";
+                case "PC":
+                    // clear previous data
+                    this.refreshCharEdit();
+                    // display edit character panel
+                    this.adminEditCharContainer.BringToFront();
+                    // display edit pc panel
+                    this.adminEditCharPcPanel.BringToFront();
+                    break;
+                case "NPC":
+                    // clear previous data
+                    this.refreshCharEdit();
+                    // display edit character panel
+                    this.adminEditCharContainer.BringToFront();
+                    // display edit npc panel
+                    this.adminEditCharNpcPanel.BringToFront();
+                    break;
+                case "Fief":
+                    // clear previous data
+                    this.refreshPlaceEdit();
+                    // display edit place panel
+                    this.adminEditPlaceContainer.BringToFront();
+                    // display edit fief panel
+                    this.adminEditFiefPanel.BringToFront();
+                    break;
+                case "Province":
+                    // clear previous data
+                    this.refreshPlaceEdit();
+                    // display edit place panel
+                    this.adminEditPlaceContainer.BringToFront();
+                    // display edit province panel
+                    this.adminEditProvPanel.BringToFront();
+                    break;
+                case "Kingdom":
+                    // clear previous data
+                    this.refreshPlaceEdit();
+                    // display edit place panel
+                    this.adminEditPlaceContainer.BringToFront();
+                    // display edit kingdom panel
+                    this.adminEditKingPanel.BringToFront();
+                    break;
+                case "Skill":
+                    // clear previous data
+                    this.refreshSkillEdit();
+                    // display edit skill panel
                     this.adminEditSkillPanel.BringToFront();
                     break;
-                case "army":
-                    this.adminEditGetBtn.Text = "Get Army";
-                    this.adminEditSaveBtn.Text = "Save Army";
-                    this.adminEditLabel.Text = "Army ID";
+                case "Army":
+                    // clear previous data
+                    this.refreshArmyEdit();
+                    // display edit army panel
                     this.adminEditArmyPanel.BringToFront();
                     break;
                 default:
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the adminEditGetBtn button
+        /// retrieving the specified object
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditGetBtn_Click(object sender, EventArgs e)
+        {
+            // get button
+            Button thisButton = (sender as Button);
+            string objectType = thisButton.Tag.ToString();
+
+            // get specified object
+            switch (objectType)
+            {
+                case "PC":
+                    // get PC
+                    PlayerCharacter thisPC = null;
+                    if (Globals_Game.pcMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thisPC = Globals_Game.pcMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display PC details
+                    if (thisPC != null)
+                    {
+                        this.refreshCharEdit(thisPC);
+                    }
+                    break;
+                case "NPC":
+                    // get NPC
+                    NonPlayerCharacter thisNPC = null;
+                    if (Globals_Game.npcMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thisNPC = Globals_Game.npcMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display NPC details
+                    if (thisNPC != null)
+                    {
+                        this.refreshCharEdit(thisNPC);
+                    }
+                    break;
+
+                case "Fief":
+                    // get fief
+                    Fief thisFief = null;
+                    if (Globals_Game.fiefMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thisFief = Globals_Game.fiefMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display fief details
+                    if (thisFief != null)
+                    {
+                        this.refreshPlaceEdit(thisFief);
+                    }
+                    break;
+
+                case "Province":
+                    // get province
+                    Province thisProv = null;
+                    if (Globals_Game.provinceMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thisProv = Globals_Game.provinceMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display province details
+                    if (thisProv != null)
+                    {
+                        this.refreshPlaceEdit(thisProv);
+                    }
+                    break;
+
+                case "Kingdom":
+                    // get kingdom
+                    Kingdom thiskingdom = null;
+                    if (Globals_Game.kingdomMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thiskingdom = Globals_Game.kingdomMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display kingdom details
+                    if (thiskingdom != null)
+                    {
+                        this.refreshPlaceEdit(thiskingdom);
+                    }
+                    break;
+
+                case "Skill":
+                    // get skill
+                    Skill thisSkill = null;
+                    if (Globals_Game.skillMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thisSkill = Globals_Game.skillMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display skill details
+                    if (thisSkill != null)
+                    {
+                        this.refreshSkillEdit(thisSkill);
+                    }
+                    break;
+
+                case "Army":
+                    // get army
+                    Army thisArmy = null;
+                    if (Globals_Game.armyMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thisArmy = Globals_Game.armyMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display army details
+                    if (thisArmy != null)
+                    {
+                        this.refreshArmyEdit(thisArmy);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Refreshes the edit Character display, displaying details of the specified Character
+        /// and clearing any previously displayed data
+        /// </summary>
+        /// <param name="ch">The Character to be displayed</param>
+        public void refreshCharEdit(Character ch = null)
+        {
+            // clear previous data
+            foreach (Control c in this.adminEditCharContainer.Panel1.Controls)
+            {
+                // clear TextBoxes
+                if (c is TextBox)
+                {
+                    (c as TextBox).Text = "";
+                }
+
+                // clear CheckBoxes
+                if (c is CheckBox)
+                {
+                    (c as CheckBox).Checked = false;
+                }
+
+                // clear ListViews
+                if (c is ListView)
+                {
+                    (c as ListView).Items.Clear();
+                }
+            }
+
+            foreach (Control c in this.adminEditCharPcPanel.Controls)
+            {
+                // clear TextBoxes
+                if (c is TextBox)
+                {
+                    (c as TextBox).Text = "";
+                }
+
+                // clear CheckBoxes
+                if (c is CheckBox)
+                {
+                    (c as CheckBox).Checked = false;
+                }
+
+                // clear ListViews
+                if (c is ListView)
+                {
+                    (c as ListView).Items.Clear();
+                }
+            }
+
+            foreach (Control c in this.adminEditCharNpcPanel.Controls)
+            {
+                // clear TextBoxes
+                if (c is TextBox)
+                {
+                    (c as TextBox).Text = "";
+                }
+
+                // clear CheckBoxes
+                if (c is CheckBox)
+                {
+                    (c as CheckBox).Checked = false;
+                }
+
+                // clear ListViews
+                if (c is ListView)
+                {
+                    (c as ListView).Items.Clear();
+                }
+            }
+
+            // display character data, if provided
+            if (ch != null)
+            {
+                // id
+                this.adminEditCharIDTextBox.Text = ch.charID;
+                // firstname
+                this.adminEditChar1stnameTextBox.Text = ch.firstName;
+                // surname
+                this.adminEditCharSurnameTextBox.Text = ch.familyName;
+                // birth yr
+                this.adminEditCharByearTextBox.Text = ch.birthDate.Item1.ToString();
+                // birth season
+                this.adminEditCharBseasTextBox.Text = ch.birthDate.Item2.ToString();
+                // sex
+                if (ch.isMale)
+                {
+                    this.adminEditCharSexCheckBox.Checked = true;
+                }
+                else
+                {
+                    this.adminEditCharSexCheckBox.Checked = false;
+                }
+                // nationality
+                this.adminEditCharNatTextBox.Text = ch.nationality.natID;
+                // language
+                this.adminEditCharLangTextBox.Text = ch.language.id;
+                // days
+                this.adminEditCharDaysTextBox.Text = ch.days.ToString();
+                // stature modifier
+                this.adminEditCharStatTextBox.Text = ch.statureModifier.ToString();
+                // maxHealth
+                this.adminEditCharHeaTextBox.Text = ch.maxHealth.ToString();
+                // virility
+                this.adminEditCharVirTextBox.Text = ch.virility.ToString();
+                // management
+                this.admineditCharManTextBox.Text = ch.management.ToString();
+                // combat
+                this.admineditCharComTextBox.Text = ch.combat.ToString();
+                // skills
+                this.adminEditCharSkNameTextBox1.Text = ch.skills[0].Item1.skillID;
+                this.adminEditCharSkLvlTextBox1.Text = ch.skills[0].Item2.ToString();
+                this.adminEditCharSkNameTextBox2.Text = ch.skills[1].Item1.skillID;
+                this.adminEditCharSkLvlTextBox2.Text = ch.skills[1].Item2.ToString();
+                if (ch.skills.Length > 2)
+                {
+                    this.adminEditCharSkNameTextBox3.Text = ch.skills[2].Item1.skillID;
+                    this.adminEditCharSkLvlTextBox3.Text = ch.skills[2].Item2.ToString();
+                }
+                // location
+                this.adminEditCharLocTextBox.Text = ch.location.id;
+                // inKeep
+                if (ch.inKeep)
+                {
+                    this.adminEditCharInKpCheckBox.Checked = true;
+                }
+                else
+                {
+                    this.adminEditCharInKpCheckBox.Checked = false;
+                }
+
+                // PC data
+                if (ch is PlayerCharacter)
+                {
+                    // playerID
+                    if (!String.IsNullOrWhiteSpace((ch as PlayerCharacter).playerID))
+                    {
+                        this.adminEditCharPIDTextBox.Text = (ch as PlayerCharacter).playerID;
+                    }
+                    // home fief
+                    this.adminEditCharHomeTextBox.Text = (ch as PlayerCharacter).homeFief;
+                    // ancestral home fief
+                    this.adminEditCharAncHomeTextBox.Text = (ch as PlayerCharacter).ancestralHomeFief;
+                    // purse
+                    this.adminEditCharPurseTextBox.Text = (ch as PlayerCharacter).purse.ToString();
+                    // outlawed
+                    if ((ch as PlayerCharacter).outlawed)
+                    {
+                        this.adminEditCharOutlCheckBox.Checked = true;
+                    }
+                    else
+                    {
+                        this.adminEditCharOutlCheckBox.Checked = false;
+                    }
+                }
+
+                // NPC data
+                else
+                {
+                    // wage
+                    this.adminEditCharWageTextBox.Text = (ch as NonPlayerCharacter).wage.ToString();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Refreshes the edit place display, displaying details of the specified place
+        /// and clearing any previously displayed data
+        /// </summary>
+        /// <param name="p">The Place to be displayed</param>
+        public void refreshPlaceEdit(Place p = null)
+        {
+            // clear previous data
+            foreach (Control c in this.adminEditPlaceContainer.Panel1.Controls)
+            {
+                // clear TextBoxes
+                if (c is TextBox)
+                {
+                    (c as TextBox).Text = "";
+                }
+
+                // clear CheckBoxes
+                if (c is CheckBox)
+                {
+                    (c as CheckBox).Checked = false;
+                }
+
+                // clear ListViews
+                if (c is ListView)
+                {
+                    (c as ListView).Items.Clear();
+                }
+            }
+
+            foreach (Control c in this.adminEditFiefPanel.Controls)
+            {
+                // clear TextBoxes
+                if (c is TextBox)
+                {
+                    (c as TextBox).Text = "";
+                }
+
+                // clear CheckBoxes
+                if (c is CheckBox)
+                {
+                    (c as CheckBox).Checked = false;
+                }
+
+                // clear ListViews
+                if (c is ListView)
+                {
+                    (c as ListView).Items.Clear();
+                }
+            }
+
+            foreach (Control c in this.adminEditProvPanel.Controls)
+            {
+                // clear TextBoxes
+                if (c is TextBox)
+                {
+                    (c as TextBox).Text = "";
+                }
+
+                // clear CheckBoxes
+                if (c is CheckBox)
+                {
+                    (c as CheckBox).Checked = false;
+                }
+
+                // clear ListViews
+                if (c is ListView)
+                {
+                    (c as ListView).Items.Clear();
+                }
+            }
+
+            foreach (Control c in this.adminEditKingPanel.Controls)
+            {
+                // clear TextBoxes
+                if (c is TextBox)
+                {
+                    (c as TextBox).Text = "";
+                }
+
+                // clear CheckBoxes
+                if (c is CheckBox)
+                {
+                    (c as CheckBox).Checked = false;
+                }
+
+                // clear ListViews
+                if (c is ListView)
+                {
+                    (c as ListView).Items.Clear();
+                }
+            }
+
+            // display place data, if provided
+            if (p != null)
+            {
+                // id
+                this.adminEditPlaceIdTextBox.Text = p.id;
+                // name
+                this.adminEditPlaceNameTextBox.Text = p.name;
+                // owner
+                this.adminEditPlaceOwnTextBox.Text = p.owner.charID;
+                // title holder
+                this.adminEditPlaceTiHoTextBox.Text = p.titleHolder;
+                // rank
+                this.adminEditPlaceRankTextBox.Text = p.rank.id.ToString();
+
+                // Fief data
+                if (p is Fief)
+                {
+                    // province ID
+                    this.adminEditFiefProvTextBox.Text = (p as Fief).province.id;
+                    // ancestral owner
+                    this.adminEditFiefAncownTextBox.Text = (p as Fief).ancestralOwner.charID;
+                    // bailiff
+                    this.adminEditFiefBailTextBox.Text = (p as Fief).bailiff.charID;
+                    // bailiff days
+                    this.adminEditFiefBaildaysTextBox1.Text = (p as Fief).bailiffDaysInFief.ToString();
+                    // population
+                    this.adminEditFiefPopTextBox.Text = (p as Fief).population.ToString();
+                    // fields
+                    this.adminEditFiefFldTextBox.Text = (p as Fief).fields.ToString();
+                    // industry
+                    this.adminEditFiefIndTextBox.Text = (p as Fief).industry.ToString();
+                    // tax rate
+                    this.adminEditFiefTaxTextBox.Text = (p as Fief).taxRate.ToString();
+                    // tax rate next
+                    this.adminEditFiefTaxnxtTextBox.Text = (p as Fief).taxRateNext.ToString();
+                    // next officials spend
+                    this.adminEditFiefOffnxtTextBox.Text = (p as Fief).officialsSpendNext.ToString();
+                    // next garrison spend
+                    this.adminEditFiefGarrnxtTextBox.Text = (p as Fief).garrisonSpendNext.ToString();
+                    // next infrastructure spend
+                    this.adminEditFiefInfnxtTextBox.Text = (p as Fief).infrastructureSpendNext.ToString();
+                    // next keep spend
+                    this.adminEditFiefKpnxtTextBox.Text = (p as Fief).keepSpendNext.ToString();
+                    // keep level
+                    this.adminEditFiefKplvlTextBox.Text = (p as Fief).keepLevel.ToString();
+                    // loyalty
+                    this.adminEditFiefLoyTextBox.Text = (p as Fief).loyalty.ToString();
+                    // status
+                    this.adminEditFiefStatTextBox.Text = (p as Fief).status.ToString();
+                    // language
+                    this.adminEditFiefLangTextBox.Text = (p as Fief).language.id;
+                    // treasury
+                    this.admineditFiefTreasTextBox.Text = (p as Fief).treasury.ToString();
+                    // hasRecruited
+                    if ((p as Fief).hasRecruited)
+                    {
+                        this.adminEditFiefRecrCheckBox.Checked = true;
+                    }
+                    else
+                    {
+                        this.adminEditFiefRecrCheckBox.Checked = false;
+                    }
+                    // isPillaged
+                    if ((p as Fief).isPillaged)
+                    {
+                        this.adminEditFiefPillCheckBox.Checked = true;
+                    }
+                    else
+                    {
+                        this.adminEditFiefPillCheckBox.Checked = false;
+                    }
+                }
+
+                // province data
+                else if (p is Province)
+                {
+                    // overlord tax rate
+                    this.adminEditProvTaxTextBox.Text = (p as Province).taxRate.ToString();
+                    // kingdom
+                    this.adminEditProvKgdmTextBox.Text = (p as Province).kingdom.id;
+                }
+
+                // kingdom data
+                else
+                {
+                    // nationality
+                    this.adminEditKingNatTextBox.Text = (p as Kingdom).nationality.natID;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Refreshes the edit Skill display, displaying details of the specified Skill
+        /// and clearing any previously displayed data
+        /// </summary>
+        /// <param name="s">The Skill to be displayed</param>
+        public void refreshSkillEdit(Skill s = null)
+        {
+            // clear previous data
+            foreach (Control c in this.adminEditSkillPanel.Controls)
+            {
+                // clear TextBoxes
+                if (c is TextBox)
+                {
+                    (c as TextBox).Text = "";
+                }
+
+                // clear CheckBoxes
+                if (c is CheckBox)
+                {
+                    (c as CheckBox).Checked = false;
+                }
+
+                // clear ListViews
+                if (c is ListView)
+                {
+                    (c as ListView).Items.Clear();
+                }
+            }
+
+            // display skill data, if provided
+            if (s != null)
+            {
+                // id
+                this.adminEditSkillIdTextBox.Text = s.skillID;
+                // name
+                this.adminEditSkillNameTextBox.Text = s.name;
+                // effects - iterates through skill effects adding information to ListView
+                foreach (KeyValuePair<string, double> effectEntry in s.effects)
+                {
+                    ListViewItem skillItem = null;
+
+                    // effect name
+                    skillItem = new ListViewItem(effectEntry.Key);
+
+                    // effect level
+                    skillItem.SubItems.Add(effectEntry.Value.ToString());
+
+                    if (skillItem != null)
+                    {
+                        // add item to fiefsListView
+                        this.adminEditSkillEffsListView.Items.Add(skillItem);
+                    }
+
+                }
+            }
+        }
+
+        /// <summary>
+        /// Refreshes the edit Army display, displaying details of the specified Army
+        /// and clearing any previously displayed data
+        /// </summary>
+        /// <param name="a">The Army to be displayed</param>
+        public void refreshArmyEdit(Army a = null)
+        {
+            // clear previous data
+            foreach (Control c in this.adminEditArmyPanel.Controls)
+            {
+                // clear TextBoxes
+                if (c is TextBox)
+                {
+                    (c as TextBox).Text = "";
+                }
+
+                // clear CheckBoxes
+                if (c is CheckBox)
+                {
+                    (c as CheckBox).Checked = false;
+                }
+
+                // clear ListViews
+                if (c is ListView)
+                {
+                    (c as ListView).Items.Clear();
+                }
+            }
+
+            // display army data, if provided
+            if (a != null)
+            {
+                // id
+                this.adminEditArmyIdTextBox.Text = a.armyID;
+                // owner
+                this.adminEditArmyOwnTextBox.Text = a.owner;
+                // leader
+                this.adminEditArmyLdrTextBox.Text = a.leader;
+                // location
+                this.adminEditArmyLocTextBox.Text = a.location;
+                // days
+                this.adminEditArmyDaysTextBox.Text = a.days.ToString();
+                // aggression
+                this.adminEditArmyAggrTextBox.Text = a.aggression.ToString();
+                // combat odds
+                this.adminEditArmyOddsTextBox.Text = a.combatOdds.ToString();
+                // isMaintained
+                if (a.isMaintained)
+                {
+                    this.adminEditArmyMaintCheckBox.Checked = true;
+                }
+                else
+                {
+                    this.adminEditArmyMaintCheckBox.Checked = false;
+                }
             }
         }
 
