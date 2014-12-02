@@ -28,7 +28,7 @@ namespace hist_mmorpg
         /// </summary>
 		/// <param name="id">String holding skill ID</param>
 		/// <param name="nam">String holding skill name</param>
-        /// <param name="effs">Dictionary<string name, int effect> holding skill effects</param>
+        /// <param name="effs">Dictionary(string, double) holding skill effects</param>
         public Skill(String id, String nam, Dictionary<string, double> effs)
         {
 

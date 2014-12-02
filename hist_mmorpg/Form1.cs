@@ -17409,6 +17409,7 @@ namespace hist_mmorpg
             // set get/save button tag to identify object type (for retrieving and saving object)
             this.adminEditGetBtn.Tag = objectType;
             this.adminEditSaveBtn.Tag = objectType;
+            this.adminEditCancelBtn.Tag = objectType;
 
             // clear previous object ID from TextBox
             this.adminEditTextBox.Text = "";
@@ -17424,6 +17425,7 @@ namespace hist_mmorpg
                 case "PC":
                     // clear previous data
                     this.refreshCharEdit();
+                    this.adminEditCharIDTextBox.ReadOnly = true;
                     // display edit character panel
                     this.adminEditCharContainer.BringToFront();
                     // display edit pc panel
@@ -17432,6 +17434,7 @@ namespace hist_mmorpg
                 case "NPC":
                     // clear previous data
                     this.refreshCharEdit();
+                    this.adminEditCharIDTextBox.ReadOnly = true;
                     // display edit character panel
                     this.adminEditCharContainer.BringToFront();
                     // display edit npc panel
@@ -17440,6 +17443,7 @@ namespace hist_mmorpg
                 case "Fief":
                     // clear previous data
                     this.refreshPlaceEdit();
+                    this.adminEditPlaceIdTextBox.ReadOnly = true;
                     // display edit place panel
                     this.adminEditPlaceContainer.BringToFront();
                     // display edit fief panel
@@ -17448,6 +17452,7 @@ namespace hist_mmorpg
                 case "Province":
                     // clear previous data
                     this.refreshPlaceEdit();
+                    this.adminEditPlaceIdTextBox.ReadOnly = true;
                     // display edit place panel
                     this.adminEditPlaceContainer.BringToFront();
                     // display edit province panel
@@ -17456,6 +17461,7 @@ namespace hist_mmorpg
                 case "Kingdom":
                     // clear previous data
                     this.refreshPlaceEdit();
+                    this.adminEditPlaceIdTextBox.ReadOnly = true;
                     // display edit place panel
                     this.adminEditPlaceContainer.BringToFront();
                     // display edit kingdom panel
@@ -17464,12 +17470,14 @@ namespace hist_mmorpg
                 case "Skill":
                     // clear previous data
                     this.refreshSkillEdit();
+                    this.adminEditSkillIdTextBox.ReadOnly = true;
                     // display edit skill panel
                     this.adminEditSkillPanel.BringToFront();
                     break;
                 case "Army":
                     // clear previous data
                     this.refreshArmyEdit();
+                    this.adminEditArmyIdTextBox.ReadOnly = true;
                     // display edit army panel
                     this.adminEditArmyPanel.BringToFront();
                     break;
@@ -18208,6 +18216,662 @@ namespace hist_mmorpg
                     System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
                 }
             }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the adminEditSaveBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditSaveBtn_Click(object sender, EventArgs e)
+        {
+            bool success = false;
+
+            // get button
+            Button thisButton = (sender as Button);
+            string objectType = thisButton.Tag.ToString();
+
+            // save specified object
+            switch (objectType)
+            {
+                case "PC":
+                    success = this.saveCharEdit(objectType);
+                    break;
+
+                case "NPC":
+                    success = this.saveCharEdit(objectType);
+                    break;
+
+                case "Fief":
+                    break;
+
+                case "Province":
+                    break;
+
+                case "Kingdom":
+                    break;
+
+                case "Skill":
+                    success = this.saveSkillEdit();
+                    break;
+
+                case "Army":
+                    success = this.saveArmyEdit();
+                    break;
+
+                default:
+                    break;
+            }
+
+            if (success)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Object saved.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Saves the Skill currently being edited in the SysAdmin interface
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        public bool saveSkillEdit()
+        {
+            bool success = false;
+
+            try
+            {
+                // get data from edit form
+                string id = this.adminEditSkillIdTextBox.Text;
+                string name = this.adminEditSkillNameTextBox.Text;
+                Dictionary<string, double> effects = new Dictionary<string, double>();
+
+                for (int i = 0; i < this.adminEditSkillEffsListView.Items.Count; i++)
+                {
+                    effects.Add(this.adminEditSkillEffsListView.Items[i].SubItems[0].Text,
+                        Convert.ToDouble(this.adminEditSkillEffsListView.Items[i].SubItems[1].Text));
+                }
+
+                // create new skill
+                Skill thisSkill = new Skill(id, name, effects);
+
+                // replace existing skill in skillMasterList
+                Globals_Game.skillMasterList[id] = thisSkill;
+
+                success = true;
+
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Saves the Army currently being edited in the SysAdmin interface
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        public bool saveArmyEdit()
+        {
+            bool success = false;
+            Army thisArmy = null;
+
+            try
+            {
+                // get data from edit form
+                string id = this.adminEditArmyIdTextBox.Text;
+                string owner = this.adminEditArmyOwnTextBox.Text;
+                string ldr = this.adminEditArmyLdrTextBox.Text;
+                string loc = this.adminEditArmyLocTextBox.Text;
+                double days = Convert.ToDouble(this.adminEditArmyDaysTextBox.Text);
+                byte aggr = Convert.ToByte(this.adminEditArmyAggrTextBox.Text);
+                byte odds = Convert.ToByte(this.adminEditArmyOddsTextBox.Text);
+                bool maint = false;
+                if (this.adminEditArmyMaintCheckBox.Checked)
+                {
+                    maint = true;
+                }
+
+                // get original object
+                if (Globals_Game.armyMasterList.ContainsKey(id))
+                {
+                    thisArmy = Globals_Game.armyMasterList[id];
+                }
+
+                // replace original object properties
+                if (thisArmy != null)
+                {
+                    thisArmy.owner = owner;
+                    thisArmy.leader = ldr;
+                    thisArmy.location = loc;
+                    thisArmy.days = days;
+                    thisArmy.aggression = aggr;
+                    thisArmy.combatOdds = odds;
+                    thisArmy.isMaintained = maint;
+                }
+
+                success = true;
+
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Saves the Character currently being edited in the SysAdmin interface
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="objectType">The type of Character to be saved</param>
+        public bool saveCharEdit(string objectType)
+        {
+            bool success = false;
+            PlayerCharacter thisPC = null;
+            NonPlayerCharacter thisNPC = null;
+            Character charToSave = null;
+            Nationality thisNat = null;
+            Language thisLang = null;
+            Skill thisSkill1 = null;
+            Skill thisSkill2 = null;
+            Skill thisSkill3 = null;
+            Fief thisFief = null;
+            string pID = null;
+            string home = null;
+            string ancHome = null;
+            uint pur = 0;
+            bool outl = false;
+            uint wa = 0;
+
+            try
+            {
+                // get data from edit form
+                // id
+                string id = this.adminEditCharIDTextBox.Text;
+                // firstname
+                string fname = this.adminEditChar1stnameTextBox.Text;
+                // surname
+                string lname = this.adminEditCharSurnameTextBox.Text;
+                // birthdate
+                Tuple<uint, byte> bDate = new Tuple<uint, byte>(Convert.ToUInt32(this.adminEditCharByearTextBox.Text),
+                    Convert.ToByte(this.adminEditCharBseasTextBox.Text));
+                // sex
+                bool male = false;
+                if (this.adminEditCharSexCheckBox.Checked)
+                {
+                    male = true;
+                }
+                // nationality
+                string natID = this.adminEditCharNatTextBox.Text;
+                if (Globals_Game.nationalityMasterList.ContainsKey(natID))
+                {
+                    thisNat = Globals_Game.nationalityMasterList[natID];
+                }
+                // language
+                string langID = this.adminEditCharLangTextBox.Text;
+                if (Globals_Game.languageMasterList.ContainsKey(langID))
+                {
+                    thisLang = Globals_Game.languageMasterList[langID];
+                }
+                // days
+                double days = Convert.ToDouble(this.adminEditCharDaysTextBox.Text);
+                // stature modifier
+                double stat = Convert.ToDouble(this.adminEditCharStatTextBox.Text);
+                // maxhealth
+                double hea = Convert.ToDouble(this.adminEditCharHeaTextBox.Text);
+                // virility
+                double vir = Convert.ToDouble(this.adminEditCharVirTextBox.Text);
+                // management
+                double man = Convert.ToDouble(this.admineditCharManTextBox.Text);
+                // combat
+                double com = Convert.ToDouble(this.admineditCharComTextBox.Text);
+                // skills
+                string skill1id = this.adminEditCharSkNameTextBox1.Text;
+                if (Globals_Game.skillMasterList.ContainsKey(skill1id))
+                {
+                    thisSkill1 = Globals_Game.skillMasterList[skill1id];
+                }
+                string skill2id = this.adminEditCharSkNameTextBox2.Text;
+                if (Globals_Game.skillMasterList.ContainsKey(skill2id))
+                {
+                    thisSkill2 = Globals_Game.skillMasterList[skill2id];
+                }
+                string skill3id = this.adminEditCharSkNameTextBox3.Text;
+                if (Globals_Game.skillMasterList.ContainsKey(skill3id))
+                {
+                    thisSkill3 = Globals_Game.skillMasterList[skill3id];
+                }
+                int skill1Lvl = Convert.ToInt32(this.adminEditCharSkLvlTextBox1.Text);
+                int skill2Lvl = Convert.ToInt32(this.adminEditCharSkLvlTextBox2.Text);
+                int skill3Lvl = Convert.ToInt32(this.adminEditCharSkLvlTextBox3.Text);
+                List<Tuple<Skill, int>> tempSkills = new List<Tuple<Skill, int>>();
+                if ((thisSkill1 != null) && ((skill1Lvl >= 1) && (skill1Lvl <= 9)))
+                {
+                    Tuple<Skill, int> thisTuple = new Tuple<Skill, int>(thisSkill1, skill1Lvl);
+                    tempSkills.Add(thisTuple);
+                }
+                if ((thisSkill2 != null) && ((skill2Lvl >= 1) && (skill2Lvl <= 9)))
+                {
+                    Tuple<Skill, int> thisTuple = new Tuple<Skill, int>(thisSkill2, skill2Lvl);
+                    tempSkills.Add(thisTuple);
+                }
+                if ((thisSkill3 != null) && ((skill3Lvl >= 1) && (skill3Lvl <= 9)))
+                {
+                    Tuple<Skill, int> thisTuple = new Tuple<Skill, int>(thisSkill3, skill3Lvl);
+                    tempSkills.Add(thisTuple);
+                }
+                // location
+                string locID = this.adminEditCharLocTextBox.Text;
+                if (Globals_Game.fiefMasterList.ContainsKey(locID))
+                {
+                    thisFief = Globals_Game.fiefMasterList[locID];
+                }
+                // inKeep
+                bool inK = false;
+                if (this.adminEditCharInKpCheckBox.Checked)
+                {
+                    inK = true;
+                }
+
+                // PC
+                if (objectType.Equals("PC"))
+                {
+                    // playerID
+                    pID = this.adminEditCharPIDTextBox.Text;
+                    // home fief
+                    home = this.adminEditCharHomeTextBox.Text;
+                    // ancestral home
+                    ancHome = this.adminEditCharAncHomeTextBox.Text;
+                    // purse
+                    pur = Convert.ToUInt32(this.adminEditCharPurseTextBox.Text);
+                    // outlawed
+                    if (this.adminEditCharOutlCheckBox.Checked)
+                    {
+                        outl = true;
+                    }
+
+                    // get original object
+                    if (Globals_Game.pcMasterList.ContainsKey(id))
+                    {
+                        thisPC = Globals_Game.pcMasterList[id];
+                    }
+                }
+
+                // NPC
+                else if (objectType.Equals("NPC"))
+                {
+                    // wage
+                    wa = Convert.ToUInt32(this.adminEditCharWageTextBox.Text);
+                }
+
+                if (thisPC != null)
+                {
+                    charToSave = thisPC;
+                }
+                else if (thisNPC != null)
+                {
+                    charToSave = thisNPC;
+                }
+
+                // replace original object properties
+                if (charToSave != null)
+                {
+                    charToSave.firstName = fname;
+                    charToSave.familyName = lname;
+                    charToSave.birthDate = bDate;
+                    charToSave.isMale = male;
+                    if (thisNat != null)
+                    {
+                        charToSave.nationality = thisNat;
+                    }
+                    if (thisLang != null)
+                    {
+                        charToSave.language = thisLang;
+                    }
+                    charToSave.days = days;
+                    charToSave.statureModifier = stat;
+                    charToSave.maxHealth = hea;
+                    charToSave.virility = vir;
+                    charToSave.management = man;
+                    charToSave.combat = com;
+                    if (tempSkills.Count >= 2)
+                    {
+                        charToSave.skills = tempSkills.ToArray();
+                    }
+                    if (thisFief != null)
+                    {
+                        charToSave.location = thisFief;
+                    }
+                    charToSave.inKeep = inK;
+                }
+
+                if (charToSave is PlayerCharacter)
+                {
+                    (charToSave as PlayerCharacter).playerID = pID;
+                    (charToSave as PlayerCharacter).homeFief = home;
+                    (charToSave as PlayerCharacter).ancestralHomeFief = ancHome;
+                    (charToSave as PlayerCharacter).purse = pur;
+                    (charToSave as PlayerCharacter).outlawed = outl;
+                }
+                else if (charToSave is NonPlayerCharacter)
+                {
+                    (charToSave as NonPlayerCharacter).wage = wa;
+                }
+
+                success = true;
+
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Saves the Place currently being edited in the SysAdmin interface
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="objectType">The type of Place to be saved</param>
+        public bool savePlaceEdit(string objectType)
+        {
+            bool success = false;
+            PlayerCharacter thisPC = null;
+            NonPlayerCharacter thisNPC = null;
+            Character charToSave = null;
+            Nationality thisNat = null;
+            Language thisLang = null;
+            Skill thisSkill1 = null;
+            Skill thisSkill2 = null;
+            Skill thisSkill3 = null;
+            Fief thisFief = null;
+            string pID = null;
+            string home = null;
+            string ancHome = null;
+            uint pur = 0;
+            bool outl = false;
+            uint wa = 0;
+
+            try
+            {
+                // get data from edit form
+                // id
+                string id = this.adminEditCharIDTextBox.Text;
+                // firstname
+                string fname = this.adminEditChar1stnameTextBox.Text;
+                // surname
+                string lname = this.adminEditCharSurnameTextBox.Text;
+                // birthdate
+                Tuple<uint, byte> bDate = new Tuple<uint, byte>(Convert.ToUInt32(this.adminEditCharByearTextBox.Text),
+                    Convert.ToByte(this.adminEditCharBseasTextBox.Text));
+                // sex
+                bool male = false;
+                if (this.adminEditCharSexCheckBox.Checked)
+                {
+                    male = true;
+                }
+                // nationality
+                string natID = this.adminEditCharNatTextBox.Text;
+                if (Globals_Game.nationalityMasterList.ContainsKey(natID))
+                {
+                    thisNat = Globals_Game.nationalityMasterList[natID];
+                }
+                // language
+                string langID = this.adminEditCharLangTextBox.Text;
+                if (Globals_Game.languageMasterList.ContainsKey(langID))
+                {
+                    thisLang = Globals_Game.languageMasterList[langID];
+                }
+                // days
+                double days = Convert.ToDouble(this.adminEditCharDaysTextBox.Text);
+                // stature modifier
+                double stat = Convert.ToDouble(this.adminEditCharStatTextBox.Text);
+                // maxhealth
+                double hea = Convert.ToDouble(this.adminEditCharHeaTextBox.Text);
+                // virility
+                double vir = Convert.ToDouble(this.adminEditCharVirTextBox.Text);
+                // management
+                double man = Convert.ToDouble(this.admineditCharManTextBox.Text);
+                // combat
+                double com = Convert.ToDouble(this.admineditCharComTextBox.Text);
+                // skills
+                string skill1id = this.adminEditCharSkNameTextBox1.Text;
+                if (Globals_Game.skillMasterList.ContainsKey(skill1id))
+                {
+                    thisSkill1 = Globals_Game.skillMasterList[skill1id];
+                }
+                string skill2id = this.adminEditCharSkNameTextBox2.Text;
+                if (Globals_Game.skillMasterList.ContainsKey(skill2id))
+                {
+                    thisSkill2 = Globals_Game.skillMasterList[skill2id];
+                }
+                string skill3id = this.adminEditCharSkNameTextBox3.Text;
+                if (Globals_Game.skillMasterList.ContainsKey(skill3id))
+                {
+                    thisSkill3 = Globals_Game.skillMasterList[skill3id];
+                }
+                int skill1Lvl = Convert.ToInt32(this.adminEditCharSkLvlTextBox1.Text);
+                int skill2Lvl = Convert.ToInt32(this.adminEditCharSkLvlTextBox2.Text);
+                int skill3Lvl = Convert.ToInt32(this.adminEditCharSkLvlTextBox3.Text);
+                List<Tuple<Skill, int>> tempSkills = new List<Tuple<Skill, int>>();
+                if ((thisSkill1 != null) && ((skill1Lvl >= 1) && (skill1Lvl <= 9)))
+                {
+                    Tuple<Skill, int> thisTuple = new Tuple<Skill, int>(thisSkill1, skill1Lvl);
+                    tempSkills.Add(thisTuple);
+                }
+                if ((thisSkill2 != null) && ((skill2Lvl >= 1) && (skill2Lvl <= 9)))
+                {
+                    Tuple<Skill, int> thisTuple = new Tuple<Skill, int>(thisSkill2, skill2Lvl);
+                    tempSkills.Add(thisTuple);
+                }
+                if ((thisSkill3 != null) && ((skill3Lvl >= 1) && (skill3Lvl <= 9)))
+                {
+                    Tuple<Skill, int> thisTuple = new Tuple<Skill, int>(thisSkill3, skill3Lvl);
+                    tempSkills.Add(thisTuple);
+                }
+                // location
+                string locID = this.adminEditCharLocTextBox.Text;
+                if (Globals_Game.fiefMasterList.ContainsKey(locID))
+                {
+                    thisFief = Globals_Game.fiefMasterList[locID];
+                }
+                // inKeep
+                bool inK = false;
+                if (this.adminEditCharInKpCheckBox.Checked)
+                {
+                    inK = true;
+                }
+
+                // PC
+                if (objectType.Equals("PC"))
+                {
+                    // playerID
+                    pID = this.adminEditCharPIDTextBox.Text;
+                    // home fief
+                    home = this.adminEditCharHomeTextBox.Text;
+                    // ancestral home
+                    ancHome = this.adminEditCharAncHomeTextBox.Text;
+                    // purse
+                    pur = Convert.ToUInt32(this.adminEditCharPurseTextBox.Text);
+                    // outlawed
+                    if (this.adminEditCharOutlCheckBox.Checked)
+                    {
+                        outl = true;
+                    }
+
+                    // get original object
+                    if (Globals_Game.pcMasterList.ContainsKey(id))
+                    {
+                        thisPC = Globals_Game.pcMasterList[id];
+                    }
+                }
+
+                // NPC
+                else if (objectType.Equals("NPC"))
+                {
+                    // wage
+                    wa = Convert.ToUInt32(this.adminEditCharWageTextBox.Text);
+                }
+
+                if (thisPC != null)
+                {
+                    charToSave = thisPC;
+                }
+                else if (thisNPC != null)
+                {
+                    charToSave = thisNPC;
+                }
+
+                // replace original object properties
+                if (charToSave != null)
+                {
+                    charToSave.firstName = fname;
+                    charToSave.familyName = lname;
+                    charToSave.birthDate = bDate;
+                    charToSave.isMale = male;
+                    if (thisNat != null)
+                    {
+                        charToSave.nationality = thisNat;
+                    }
+                    if (thisLang != null)
+                    {
+                        charToSave.language = thisLang;
+                    }
+                    charToSave.days = days;
+                    charToSave.statureModifier = stat;
+                    charToSave.maxHealth = hea;
+                    charToSave.virility = vir;
+                    charToSave.management = man;
+                    charToSave.combat = com;
+                    if (tempSkills.Count >= 2)
+                    {
+                        charToSave.skills = tempSkills.ToArray();
+                    }
+                    if (thisFief != null)
+                    {
+                        charToSave.location = thisFief;
+                    }
+                    charToSave.inKeep = inK;
+                }
+
+                if (charToSave is PlayerCharacter)
+                {
+                    (charToSave as PlayerCharacter).playerID = pID;
+                    (charToSave as PlayerCharacter).homeFief = home;
+                    (charToSave as PlayerCharacter).ancestralHomeFief = ancHome;
+                    (charToSave as PlayerCharacter).purse = pur;
+                    (charToSave as PlayerCharacter).outlawed = outl;
+                }
+                else if (charToSave is NonPlayerCharacter)
+                {
+                    (charToSave as NonPlayerCharacter).wage = wa;
+                }
+
+                success = true;
+
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Responds to the click event of the adminEditCancelBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditCancelBtn_Click(object sender, EventArgs e)
+        {
+            // get button
+            Button thisButton = (sender as Button);
+            string objectType = thisButton.Tag.ToString();
+
+            // save specified object
+            switch (objectType)
+            {
+                case "PC":
+                    this.refreshCharEdit();
+                    break;
+
+                case "NPC":
+                    this.refreshCharEdit();
+                    break;
+
+                case "Fief":
+                    this.refreshPlaceEdit();
+                    break;
+
+                case "Province":
+                    this.refreshPlaceEdit();
+                    break;
+
+                case "Kingdom":
+                    this.refreshPlaceEdit();
+                    break;
+
+                case "Skill":
+                    this.refreshSkillEdit();
+                    break;
+
+                case "Army":
+                    this.refreshArmyEdit();
+                    break;
+
+                default:
+                    break;
+            }
+
+            // clear ID box
+            this.adminEditTextBox.Clear();
         }
 
     }

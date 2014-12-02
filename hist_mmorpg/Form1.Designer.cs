@@ -422,6 +422,7 @@ namespace hist_mmorpg
             this.adminEditCharHomeTextBox = new System.Windows.Forms.TextBox();
             this.label43 = new System.Windows.Forms.Label();
             this.adminEditCharPIDTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCancelBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -674,7 +675,7 @@ namespace hist_mmorpg
             this.pCToolStripMenuItem,
             this.nPCToolStripMenuItem});
             this.characterToolStripMenuItem2.Name = "characterToolStripMenuItem2";
-            this.characterToolStripMenuItem2.Size = new System.Drawing.Size(125, 22);
+            this.characterToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
             this.characterToolStripMenuItem2.Text = "Character";
             // 
             // pCToolStripMenuItem
@@ -700,7 +701,7 @@ namespace hist_mmorpg
             this.provinceToolStripMenuItem,
             this.kingdomToolStripMenuItem});
             this.placeToolStripMenuItem.Name = "placeToolStripMenuItem";
-            this.placeToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.placeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.placeToolStripMenuItem.Text = "Place";
             // 
             // fiefToolStripMenuItem1
@@ -730,7 +731,7 @@ namespace hist_mmorpg
             // armyToolStripMenuItem1
             // 
             this.armyToolStripMenuItem1.Name = "armyToolStripMenuItem1";
-            this.armyToolStripMenuItem1.Size = new System.Drawing.Size(125, 22);
+            this.armyToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.armyToolStripMenuItem1.Tag = "Army";
             this.armyToolStripMenuItem1.Text = "Army";
             this.armyToolStripMenuItem1.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -738,7 +739,7 @@ namespace hist_mmorpg
             // skillToolStripMenuItem
             // 
             this.skillToolStripMenuItem.Name = "skillToolStripMenuItem";
-            this.skillToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.skillToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.skillToolStripMenuItem.Tag = "Skill";
             this.skillToolStripMenuItem.Text = "Skill";
             this.skillToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -3242,6 +3243,7 @@ namespace hist_mmorpg
             // 
             // adminEditContainer.Panel1
             // 
+            this.adminEditContainer.Panel1.Controls.Add(this.adminEditCancelBtn);
             this.adminEditContainer.Panel1.Controls.Add(this.adminEditSaveBtn);
             this.adminEditContainer.Panel1.Controls.Add(this.adminEditGetBtn);
             this.adminEditContainer.Panel1.Controls.Add(this.adminEditLabel);
@@ -3249,10 +3251,10 @@ namespace hist_mmorpg
             // 
             // adminEditContainer.Panel2
             // 
-            this.adminEditContainer.Panel2.Controls.Add(this.adminEditSkillPanel);
-            this.adminEditContainer.Panel2.Controls.Add(this.adminEditArmyPanel);
             this.adminEditContainer.Panel2.Controls.Add(this.adminEditPlaceContainer);
             this.adminEditContainer.Panel2.Controls.Add(this.adminEditCharContainer);
+            this.adminEditContainer.Panel2.Controls.Add(this.adminEditArmyPanel);
+            this.adminEditContainer.Panel2.Controls.Add(this.adminEditSkillPanel);
             this.adminEditContainer.Size = new System.Drawing.Size(935, 711);
             this.adminEditContainer.SplitterDistance = 311;
             this.adminEditContainer.TabIndex = 13;
@@ -3265,6 +3267,7 @@ namespace hist_mmorpg
             this.adminEditSaveBtn.TabIndex = 3;
             this.adminEditSaveBtn.Text = "Save Object";
             this.adminEditSaveBtn.UseVisualStyleBackColor = true;
+            this.adminEditSaveBtn.Click += new System.EventHandler(this.adminEditSaveBtn_Click);
             // 
             // adminEditGetBtn
             // 
@@ -3598,9 +3601,9 @@ namespace hist_mmorpg
             // 
             // adminEditPlaceContainer.Panel2
             // 
+            this.adminEditPlaceContainer.Panel2.Controls.Add(this.adminEditFiefPanel);
             this.adminEditPlaceContainer.Panel2.Controls.Add(this.adminEditKingPanel);
             this.adminEditPlaceContainer.Panel2.Controls.Add(this.adminEditProvPanel);
-            this.adminEditPlaceContainer.Panel2.Controls.Add(this.adminEditFiefPanel);
             this.adminEditPlaceContainer.Size = new System.Drawing.Size(620, 711);
             this.adminEditPlaceContainer.SplitterDistance = 154;
             this.adminEditPlaceContainer.TabIndex = 1;
@@ -4187,8 +4190,8 @@ namespace hist_mmorpg
             // 
             // adminEditCharContainer.Panel2
             // 
-            this.adminEditCharContainer.Panel2.Controls.Add(this.adminEditCharNpcPanel);
             this.adminEditCharContainer.Panel2.Controls.Add(this.adminEditCharPcPanel);
+            this.adminEditCharContainer.Panel2.Controls.Add(this.adminEditCharNpcPanel);
             this.adminEditCharContainer.Size = new System.Drawing.Size(620, 711);
             this.adminEditCharContainer.SplitterDistance = 500;
             this.adminEditCharContainer.TabIndex = 0;
@@ -4656,6 +4659,16 @@ namespace hist_mmorpg
             this.adminEditCharPIDTextBox.Name = "adminEditCharPIDTextBox";
             this.adminEditCharPIDTextBox.Size = new System.Drawing.Size(137, 20);
             this.adminEditCharPIDTextBox.TabIndex = 41;
+            // 
+            // adminEditCancelBtn
+            // 
+            this.adminEditCancelBtn.Location = new System.Drawing.Point(14, 142);
+            this.adminEditCancelBtn.Name = "adminEditCancelBtn";
+            this.adminEditCancelBtn.Size = new System.Drawing.Size(104, 25);
+            this.adminEditCancelBtn.TabIndex = 4;
+            this.adminEditCancelBtn.Text = "Cancel Edit";
+            this.adminEditCancelBtn.UseVisualStyleBackColor = true;
+            this.adminEditCancelBtn.Click += new System.EventHandler(this.adminEditCancelBtn_Click);
             // 
             // Form1
             // 
@@ -5258,6 +5271,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.ListView adminEditSkillEffsListView;
         private System.Windows.Forms.CheckBox adminEditCharSexCheckBox;
         private System.Windows.Forms.Label label85;
+        private System.Windows.Forms.Button adminEditCancelBtn;
 
     }
 }
