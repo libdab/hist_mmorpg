@@ -549,16 +549,6 @@ namespace hist_mmorpg
                 stature -= 6;
             }
 
-            // ensure doesn't exceed boundaries
-            if (stature < 0)
-            {
-                stature = 0;
-            }
-            else if (stature > 9)
-            {
-                stature = 9;
-            }
-
             // factor in character's current statureModifier if required
             if (currentStature)
             {
@@ -576,6 +566,29 @@ namespace hist_mmorpg
             }
 
             return stature;
+        }
+
+        /// <summary>
+        /// Adjusts the character's stature modifier
+        /// </summary>
+        /// <param name="amountToAdd">The amount of stature to add (can be negative)</param>
+        public void adjustStatureModifier(double amountToAdd)
+        {
+            // check if statureModifier cap is in force
+            if (Globals_Game.statureCapInForce)
+            {
+                // adjust amountToAdd if required
+                if (this.calculateStature() + amountToAdd > 9)
+                {
+                    amountToAdd = 9 - this.calculateStature();
+                }
+                else if (this.calculateStature() + amountToAdd < 1)
+                {
+                    amountToAdd = (this.calculateStature() - 1) * -1;
+                }
+            }
+
+            this.statureModifier += amountToAdd;
         }
 
         /// <summary>

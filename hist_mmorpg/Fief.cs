@@ -1562,7 +1562,7 @@ namespace hist_mmorpg
                 // if necessary, APPLY STATUS LOSS
                 if (this.status.Equals('R'))
                 {
-                    this.owner.statureModifier += -0.1;
+                    this.owner.adjustStatureModifier(-0.1);
                 }
 
                 // CREATE JOURNAL ENTRY

@@ -236,6 +236,10 @@ namespace hist_mmorpg
         /// Holds bool indicating whether or not to write current object data to database on exit
         /// </summary>
 		public static bool writeToDatabase = false;
+        /// <summary>
+        /// Holds bool indicating whether or not a cap on characters' stature modifier is in force
+        /// </summary>
+        public static bool statureCapInForce = true;
 
         /// <summary>
         /// Gets the game's end date (year)

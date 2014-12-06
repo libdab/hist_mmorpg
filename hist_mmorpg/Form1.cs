@@ -10531,11 +10531,11 @@ namespace hist_mmorpg
 
                 // calculate and apply winner's stature increase
                 statureChange = 0.8 * (loser.calcArmySize() / Convert.ToDouble(10000));
-                winner.getOwner().statureModifier += statureChange;
+                winner.getOwner().adjustStatureModifier(statureChange);
 
                 // calculate and apply loser's stature loss
                 statureChange = -0.5 * (winner.calcArmySize() / Convert.ToDouble(10000));
-                loser.getOwner().statureModifier += statureChange;
+                loser.getOwner().adjustStatureModifier(statureChange);
 
                 // CASUALTIES
                 // calculate troop casualties for both sides
@@ -11084,11 +11084,11 @@ namespace hist_mmorpg
             // apply loss of stature to army owner if fief has same language
             if (armyOwner.language.id == f.language.id)
             {
-                armyOwner.statureModifier += -0.3;
+                armyOwner.adjustStatureModifier(-0.3);
             }
             else if (armyOwner.language.baseLanguage.id == f.language.baseLanguage.id)
             {
-                armyOwner.statureModifier += -0.2;
+                armyOwner.adjustStatureModifier(-0.2);
             }
 
             // set isPillaged for fief
@@ -12092,7 +12092,7 @@ namespace hist_mmorpg
             System.Windows.Forms.MessageBox.Show(siegeDescription);
 
             // apply change to besieging player's stature
-            s.getBesiegingPlayer().statureModifier += statureChange;
+            s.getBesiegingPlayer().adjustStatureModifier(statureChange);
 
             // refresh screen
             this.refreshCurrentScreen();
@@ -12168,7 +12168,7 @@ namespace hist_mmorpg
             {
                 // add to winning player's stature
                 double statureIncrease = 0.2 * (s.getFief().population / Convert.ToDouble(10000));
-                s.getBesiegingPlayer().statureModifier += statureIncrease;
+                s.getBesiegingPlayer().adjustStatureModifier(statureIncrease);
 
                 // construct event description to be passed into siegeEnd
                 siegeDescription = "On this day of Our Lord the forces of ";
@@ -13746,7 +13746,7 @@ namespace hist_mmorpg
                 // compare ranks
                 if (groomHighestRank.id < brideHighestRank.id)
                 {
-                    headOfFamilyBride.statureModifier += ((brideHighestRank.id - groomHighestRank.id) * 0.4);
+                    headOfFamilyBride.adjustStatureModifier((brideHighestRank.id - groomHighestRank.id) * 0.4);
                 }
             }
 
@@ -13801,7 +13801,7 @@ namespace hist_mmorpg
                         else
                         {
                             // check is family member of player
-                            if (bride.familyID == null)
+                            if ((bride.getHeadOfFamily() == null) || (String.IsNullOrWhiteSpace(bride.getHeadOfFamily().playerID)))
                             {
                                 message = "The prospective bride is not of a suitable family.";
                                 proceed = false;
