@@ -758,5 +758,59 @@ namespace hist_mmorpg
             return hasDissolved;
         }
 
+        /// <summary>
+        /// Disbands the army
+        /// </summary>
+        public void disbandArmy()
+        {
+            // check for siege involvement
+            string siegeID = this.checkForSiegeRole();
+            Siege thisSiege = null;
+            if (siegeID != null)
+            {
+                thisSiege = Globals_Game.siegeMasterList[siegeID];
+            }
+
+            // remove from siege
+            if (thisSiege != null)
+            {
+                // check if are additional defending army
+                string whichRole = this.checkIfSiegeDefenderAdditional();
+                if (whichRole != null)
+                {
+                    thisSiege.defenderAdditional = null;
+                }
+
+                // check if are besieging army
+                else
+                {
+                    whichRole = this.checkIfBesieger();
+                    if (whichRole != null)
+                    {
+                        thisSiege.besiegerArmy = null;
+                    }
+                }
+            }
+
+            // remove from fief
+            Fief thisFief = this.getLocation();
+            thisFief.armies.Remove(this.armyID);
+
+            // remove from owner
+            PlayerCharacter thisOwner = this.getOwner();
+            thisOwner.myArmies.Remove(this);
+
+            // remove from leader
+            Character thisLeader = this.getLeader();
+            if (thisLeader != null)
+            {
+                thisLeader.armyID = null;
+            }
+
+            // remove from armyMasterList
+            Globals_Game.armyMasterList.Remove(this.armyID);
+        }
+
+
     }
 }

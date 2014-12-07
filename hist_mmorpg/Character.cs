@@ -674,7 +674,7 @@ namespace hist_mmorpg
         /// <param name="isBirth">bool indicating whether check is due to birth</param>
         /// <param name="isMother">bool indicating whether (if check is due to birth) character is mother</param>
         /// <param name="isStillborn">bool indicating whether (if check is due to birth) baby was stillborn</param>
-        public Boolean checkDeath(bool isBirth = false, bool isMother = false, bool isStillborn = false)
+        public Boolean checkForDeath(bool isBirth = false, bool isMother = false, bool isStillborn = false)
         {
             // Check if chance of death effected by character skills
             double deathSkillsModifier = this.calcSkillEffect("death");
@@ -999,7 +999,7 @@ namespace hist_mmorpg
                 this.respawnNPC(this as NonPlayerCharacter);
             }
 
-            // ============== 11. (Player) PROMOTE HEIR
+            // ============== 11. (Player) GET HEIR and PROCESS INHERITANCE
             else if (role.Equals("player"))
             {
                 // get heir
@@ -1013,7 +1013,13 @@ namespace hist_mmorpg
 
                 if (thisHeir != null)
                 {
-                    this.promoteNPC(thisHeir, (this as PlayerCharacter));
+                    this.processInheritance((this as PlayerCharacter), inheritor: thisHeir);
+                }
+
+                // if no heir, king inherits
+                else
+                {
+                    this.transferPropertyToKing((this as PlayerCharacter), (this as PlayerCharacter).getKing());
                 }
             }
 
@@ -1155,28 +1161,280 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Promotes a NonPlayerCharacter to a PlayerCharacter
+        /// Transfers property to the appropriate king upon the death of a PlayerCharacter with no heir
         /// </summary>
-        /// <param name="npc">NonPlayerCharacter to be promoted</param>
-        /// <param name="pc">Deceased PlayerCharacter</param>
-        public void promoteNPC(NonPlayerCharacter npc, PlayerCharacter pc)
+        /// <param name="deceased">Deceased PlayerCharacter</param>
+        /// <param name="king">The king</param>
+        public void transferPropertyToKing(PlayerCharacter deceased, PlayerCharacter king)
         {
-            // ============== 1. CREATE NEW PC from NPC (heir)
-            PlayerCharacter promotedNPC = new PlayerCharacter(npc, pc);
+            // END SIEGES
+            foreach (string siege in deceased.mySieges)
+            {
+                Siege thisSiege = null;
+                if (Globals_Game.siegeMasterList.ContainsKey(siege))
+                {
+                    thisSiege = Globals_Game.siegeMasterList[siege];
+                }
+
+                if (thisSiege != null)
+                {
+                    thisSiege.siegeEnd(null);
+                    thisSiege = null;
+                }
+            }
+
+            // DISBAND ARMIES
+            for (int i = 0; i < deceased.myArmies.Count; i++ )
+                {
+                    deceased.myArmies[i].disbandArmy();
+                    deceased.myArmies[i] = null;
+                }
+            
+            // EMPLOYEES/FAMILY
+            foreach (NonPlayerCharacter npc in deceased.myNPCs)
+            {
+
+                // remove from entourage
+                npc.inEntourage = false;
+
+                // clear goTo queue
+                npc.goTo.Clear();
+
+                // employees are taken on by king
+                if (npc.myBoss.Equals(deceased.charID))
+                {
+                    npc.myBoss = king.charID;
+                    king.myNPCs.Add(npc);
+                }
+
+                // family members are cast into the cruel world
+                else if (!String.IsNullOrWhiteSpace(npc.familyID))
+                {
+                    // familyID
+                    npc.familyID = null;
+
+                    // wage
+                    npc.wage = 0;
+
+                    // inKeep
+                    npc.inKeep = false;
+
+                    // titles
+                    foreach (string title in npc.myTitles)
+                    {
+                        // get place
+                        Place thisPlace = null;
+                        if (Globals_Game.fiefMasterList.ContainsKey(title))
+                        {
+                            thisPlace = Globals_Game.fiefMasterList[title];
+                        }
+                        else if (Globals_Game.provinceMasterList.ContainsKey(title))
+                        {
+                            thisPlace = Globals_Game.provinceMasterList[title];
+                        }
+
+                        // transfer title
+                        if (thisPlace != null)
+                        {
+                            if (thisPlace.owner == deceased)
+                            {
+                                thisPlace.titleHolder = king.charID;
+                                king.myTitles.Add(title);
+                            }
+                        }
+                    }
+
+                    npc.myTitles.Clear();
+
+                    // employment as bailiff
+                    foreach (Fief fief in deceased.ownedFiefs)
+                    {
+                        if (fief.bailiff == npc)
+                        {
+                            fief.bailiff = null;
+                        }
+                    }
+
+                    // pregnancy
+                    if (npc.isPregnant)
+                    {
+                        int birthEntry = -1;
+
+                        // iterate through scheduled events
+                        foreach (KeyValuePair<uint, JournalEntry> jEntry in Globals_Game.scheduledEvents.entries)
+                        {
+                            if ((jEntry.Value.type).ToLower().Equals("birth"))
+                            {
+                                // get mother
+                                NonPlayerCharacter mummy = null;
+                                for (int i = 0; i < jEntry.Value.personae.Length; i++)
+                                {
+                                    string thisPersonae = jEntry.Value.personae[i];
+                                    string[] thisPersonaeSplit = thisPersonae.Split('|');
+
+                                    switch (thisPersonaeSplit[1])
+                                    {
+                                        case "mother":
+                                            mummy = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+
+                                if (mummy == npc)
+                                {
+                                    birthEntry = Convert.ToInt32(jEntry.Key);
+                                    break;
+                                }
+                            }
+                        }
+
+                        // remove scheduled birth
+                        if (birthEntry != -1)
+                        {
+                            Globals_Game.scheduledEvents.entries.Remove(Convert.ToUInt32(birthEntry));
+                        }
+
+                        npc.isPregnant = false;
+                    }
+
+                    // forthcoming marriage
+                    if (!String.IsNullOrWhiteSpace(npc.fiancee))
+                    {
+                        // remove fiancee's fiancee
+                        Character thisFiancee = npc.getFiancee();
+                        thisFiancee.fiancee = null;
+
+                        // remove npc's fiancee
+                        npc.fiancee = null;
+
+                        int marriageEntry = -1;
+
+                        // iterate through scheduled events
+                        foreach (KeyValuePair<uint, JournalEntry> jEntry in Globals_Game.scheduledEvents.entries)
+                        {
+                            if ((jEntry.Value.type).ToLower().Equals("marriage"))
+                            {
+                                // get bride
+                                NonPlayerCharacter bride = null;
+                                for (int i = 0; i < jEntry.Value.personae.Length; i++)
+                                {
+                                    string thisPersonae = jEntry.Value.personae[i];
+                                    string[] thisPersonaeSplit = thisPersonae.Split('|');
+
+                                    switch (thisPersonaeSplit[1])
+                                    {
+                                        case "bride":
+                                            bride = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+
+                                if (bride == npc)
+                                {
+                                    marriageEntry = Convert.ToInt32(jEntry.Key);
+                                    break;
+                                }
+                            }
+                        }
+
+                        // remove scheduled marriage
+                        if (marriageEntry != -1)
+                        {
+                            Globals_Game.scheduledEvents.entries.Remove(Convert.ToUInt32(marriageEntry));
+                        }
+                    }
+
+                }
+            }
+
+            // TITLES
+            foreach (string title in deceased.myTitles)
+            {
+                // get place
+                Place thisPlace = null;
+                if (Globals_Game.fiefMasterList.ContainsKey(title))
+                {
+                    thisPlace = Globals_Game.fiefMasterList[title];
+                }
+                else if (Globals_Game.provinceMasterList.ContainsKey(title))
+                {
+                    thisPlace = Globals_Game.provinceMasterList[title];
+                }
+
+                // transfer title
+                if (thisPlace != null)
+                {
+                    if (thisPlace.owner == deceased)
+                    {
+                        thisPlace.titleHolder = king.charID;
+                        king.myTitles.Add(title);
+                    }
+
+                    else
+                    {
+                        thisPlace.titleHolder = thisPlace.owner.charID;
+                    }
+                }
+            }
+
+            deceased.myTitles.Clear();
+
+            // PLACES
+
+            // fiefs
+            foreach (Fief fief in deceased.ownedFiefs)
+            {
+                // ownership
+                fief.owner = king;
+                king.ownedFiefs.Add(fief);
+
+                // ancestral ownership
+                if (fief.ancestralOwner == deceased)
+                {
+                    fief.ancestralOwner = king;
+                }
+
+                // bailiff
+                if (fief.bailiff == deceased)
+                {
+                    fief.bailiff = null;
+                }
+            }
+
+            // provinces
+            foreach (Province prov in deceased.ownedProvinces)
+            {
+                prov.owner = king;
+            }
+        }
+
+        /// <summary>
+        /// Performs the functions associated with the inheritance of property upon the death of a PlayerCharacter
+        /// </summary>
+        /// <param name="inheritor">Inheriting Character</param>
+        /// <param name="deceased">Deceased PlayerCharacter</param>
+        public void processInheritance(PlayerCharacter deceased, NonPlayerCharacter inheritor = null)
+        {
+            // ============== 1. CREATE NEW PC from NPC (inheritor)
+            PlayerCharacter promotedNPC = new PlayerCharacter(inheritor, deceased);
 
             // remove from npcMasterList and add to pcMasterList
-            Globals_Game.npcMasterList.Remove(npc.charID);
+            Globals_Game.npcMasterList.Remove(inheritor.charID);
             Globals_Game.pcMasterList.Add(promotedNPC.charID, promotedNPC);
 
             // ============== 2. change all FAMILYID & MYBOSS of MYNPCS to promotedNPC's
             for (int i = 0; i < promotedNPC.myNPCs.Count; i++ )
             {
-                if (promotedNPC.myNPCs[i].familyID.Equals(pc.charID))
+                if (promotedNPC.myNPCs[i].familyID.Equals(deceased.charID))
                 {
                     promotedNPC.myNPCs[i].familyID = promotedNPC.charID;
                 }
 
-                if (promotedNPC.myNPCs[i].myBoss.Equals(pc.charID))
+                if (promotedNPC.myNPCs[i].myBoss.Equals(deceased.charID))
                 {
                     promotedNPC.myNPCs[i].myBoss = promotedNPC.charID;
                 }
@@ -1188,13 +1446,13 @@ namespace hist_mmorpg
             foreach (KeyValuePair<string, Fief> thisFiefEntry in Globals_Game.fiefMasterList)
             {
                 // get fiefs requiring change to ancestralOwner
-                if (thisFiefEntry.Value.ancestralOwner == pc)
+                if (thisFiefEntry.Value.ancestralOwner == deceased)
                 {
                     ancestOwnerChanges.Add(thisFiefEntry.Key);
                 }
 
                 // get fiefs requiring change to owner
-                if (thisFiefEntry.Value.owner == pc)
+                if (thisFiefEntry.Value.owner == deceased)
                 {
                     ownerChanges.Add(thisFiefEntry.Key);
                 }
@@ -1229,7 +1487,7 @@ namespace hist_mmorpg
             }
 
             // ============== 6. change GLOBALS_CLIENT.MYCHAR
-            if (Globals_Client.myPlayerCharacter == pc)
+            if (Globals_Client.myPlayerCharacter == deceased)
             {
                 Globals_Client.myPlayerCharacter = promotedNPC;
             }
@@ -1952,7 +2210,7 @@ namespace hist_mmorpg
         public void updateCharacter()
         {
             // check for character DEATH
-            bool characterDead = this.checkDeath();
+            bool characterDead = this.checkForDeath();
 
             // if character dead, process death
             if (characterDead)

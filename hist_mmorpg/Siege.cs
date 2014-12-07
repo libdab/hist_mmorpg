@@ -419,6 +419,115 @@ namespace hist_mmorpg
             return siegeEnded;
         }
 
+        /// <summary>
+        /// Ends the siege
+        /// </summary>
+        /// <param name="s">String containing circumstances under which the siege ended</param>
+        public void siegeEnd(string circumstance)
+        {
+            // get principle objects
+            PlayerCharacter defendingPlayer = this.getDefendingPlayer();
+            Army defenderGarrison = this.getDefenderGarrison();
+            Character defenderLeader = defenderGarrison.getLeader();
+            PlayerCharacter besiegingPlayer = this.getBesiegingPlayer();
+            Army defenderAdditional = this.getDefenderAdditional();
+            Character addDefendLeader = null;
+            if (defenderAdditional != null)
+            {
+                addDefendLeader = defenderAdditional.getLeader();
+            }
+            Fief besiegedFief = this.getFief();
+            Character besiegingArmyLeader = this.getBesiegingArmy().getLeader();
+
+            // =================== construct and send JOURNAL ENTRY
+            // ID
+            uint entryID = Globals_Game.getNextJournalEntryID();
+
+            // personae
+            List<string> tempPersonae = new List<string>();
+            tempPersonae.Add(defendingPlayer.charID + "|fiefOwner");
+            tempPersonae.Add(besiegingPlayer.charID + "|attackerOwner");
+            tempPersonae.Add(besiegingArmyLeader.charID + "|attackerLeader");
+            // get defenderLeader
+            if (defenderLeader != null)
+            {
+                tempPersonae.Add(defenderLeader.charID + "|defenderGarrisonLeader");
+            }
+            // get additional defending leader
+            if (addDefendLeader != null)
+            {
+                tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
+            }
+            string[] siegePersonae = tempPersonae.ToArray();
+
+            // location
+            string siegeLocation = besiegedFief.id;
+
+            // description
+            string siegeDescription = "";
+            if (circumstance == null)
+            {
+                siegeDescription = "On this day of Our Lord the forces of ";
+                siegeDescription += besiegingPlayer.firstName + " " + besiegingPlayer.familyName;
+                siegeDescription += " abandoned the siege of " + besiegedFief.name;
+                siegeDescription += ". The ownership of this fief is retained by ";
+                siegeDescription += defendingPlayer.firstName + " " + defendingPlayer.familyName + ".";
+            }
+            else
+            {
+                siegeDescription = circumstance;
+            }
+
+            // put together new journal entry
+            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siegeEnd", loc: siegeLocation, descr: siegeDescription);
+
+            // add new journal entry to pastEvents
+            Globals_Game.addPastEvent(siegeResult);
+
+            // disband garrison
+            defenderGarrison.disbandArmy();
+            defenderGarrison = null;
+
+            // disband additional defending army
+            if (defenderAdditional != null)
+            {
+                defenderAdditional.disbandArmy();
+                defenderAdditional = null;
+            }
+
+            // remove from PCs
+            besiegingPlayer.mySieges.Remove(this.siegeID);
+            defendingPlayer.mySieges.Remove(this.siegeID);
+
+            // remove from fief
+            besiegedFief.siege = null;
+
+            // sync days of all effected objects (to remove influence of attacking leader's skills)
+            // work out proportion of seasonal allowance remaining
+            double daysProportion = 0;
+            if (besiegingArmyLeader != null)
+            {
+                daysProportion = this.days / besiegingArmyLeader.getDaysAllowance();
+            }
+            else
+            {
+                daysProportion = this.days / 90;
+            }
+
+            // iterate through characters in fief keep
+            foreach (Character thisChar in besiegedFief.charactersInFief)
+            {
+                if (thisChar.inKeep)
+                {
+                    // reset character's days to reflect days spent in siege
+                    thisChar.days = thisChar.getDaysAllowance() * daysProportion;
+                }
+            }
+
+            // remove from master list
+            Globals_Game.siegeMasterList.Remove(this.siegeID);
+        }
+
 
     }
 }

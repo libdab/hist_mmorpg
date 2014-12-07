@@ -3802,7 +3802,7 @@ namespace hist_mmorpg
             List<JournalEntry> forRemoval = new List<JournalEntry>();
             bool proceed = true;
 
-            // iterate through clock's scheduled events
+            // iterate through scheduled events
             foreach (KeyValuePair<uint, JournalEntry> jEntry in Globals_Game.scheduledEvents.entries)
             {
                 proceed = true;
@@ -8348,7 +8348,7 @@ namespace hist_mmorpg
             Character mySpouse = Globals_Client.myPlayerCharacter.getSpouse();
 
             // perform standard checks
-            if (this.checkBeforePregnancyAttempt(Globals_Client.myPlayerCharacter))
+            if (this.checksBeforePregnancyAttempt(Globals_Client.myPlayerCharacter))
             {
                 // ensure are both in/out of keep
                 mySpouse.inKeep = Globals_Client.myPlayerCharacter.inKeep;
@@ -8739,7 +8739,7 @@ namespace hist_mmorpg
             NonPlayerCharacter weeBairn = this.generateNewNPC(mummy, daddy);
 
             // check for baby being stillborn
-            bool isStillborn = weeBairn.checkDeath(true, false, false);
+            bool isStillborn = weeBairn.checkForDeath(true, false, false);
 
             if (!isStillborn)
             {
@@ -8759,7 +8759,7 @@ namespace hist_mmorpg
             }
 
             // check for mother dying during childbirth
-            bool mummyDied = mummy.checkDeath(true, true, isStillborn);
+            bool mummyDied = mummy.checkForDeath(true, true, isStillborn);
 
             // construct and send JOURNAL ENTRY
 
@@ -9720,52 +9720,8 @@ namespace hist_mmorpg
         /// <param name="a">Army to be disbanded</param>
         public void disbandArmy(Army a)
         {
-            // check for siege involvement
-            string siegeID = a.checkForSiegeRole();
-            Siege thisSiege = null;
-            if (siegeID != null)
-            {
-                thisSiege = Globals_Game.siegeMasterList[siegeID];
-            }
-
-            // remove from siege
-            if (thisSiege != null)
-            {
-                // check if are additional defending army
-                string whichRole = a.checkIfSiegeDefenderAdditional();
-                if (whichRole != null)
-                {
-                    thisSiege.defenderAdditional = null;
-                }
-
-                // check if are besieging army
-                else
-                {
-                    whichRole = a.checkIfBesieger();
-                    if (whichRole != null)
-                    {
-                        thisSiege.besiegerArmy = null;
-                    }
-                }
-            }
-
-            // remove from fief
-            Fief thisFief = a.getLocation();
-            thisFief.armies.Remove(a.armyID);
-
-            // remove from owner
-            PlayerCharacter thisOwner = a.getOwner();
-            thisOwner.myArmies.Remove(a);
-
-            // remove from leader
-            Character thisLeader = a.getLeader();
-            if (thisLeader != null)
-            {
-                thisLeader.armyID = null;
-            }
-
-            // remove from armyMasterList
-            Globals_Game.armyMasterList.Remove(a.armyID);
+            // carry out functions associated with disband
+            a.disbandArmy();
 
             // set army to null
             a = null;
@@ -11636,105 +11592,8 @@ namespace hist_mmorpg
         /// <param name="s">String containing circumstances under which the siege ended</param>
         public void siegeEnd(Siege s, string circumstance)
         {
-            // get principle objects
-            PlayerCharacter defendingPlayer = s.getDefendingPlayer();
-            Army defenderGarrison = s.getDefenderGarrison();
-            Character defenderLeader = defenderGarrison.getLeader();
-            PlayerCharacter besiegingPlayer = s.getBesiegingPlayer();
-            Army defenderAdditional = s.getDefenderAdditional();
-            Character addDefendLeader = null;
-            if (defenderAdditional != null)
-            {
-                addDefendLeader = defenderAdditional.getLeader();
-            }
-            Fief besiegedFief = s.getFief();
-            Character besiegingArmyLeader = s.getBesiegingArmy().getLeader();
-
-            // =================== construct and send JOURNAL ENTRY
-            // ID
-            uint entryID = Globals_Game.getNextJournalEntryID();
-
-            // personae
-            List<string> tempPersonae = new List<string>();
-            tempPersonae.Add(defendingPlayer.charID + "|fiefOwner");
-            tempPersonae.Add(besiegingPlayer.charID + "|attackerOwner");
-            tempPersonae.Add(besiegingArmyLeader.charID + "|attackerLeader");
-            // get defenderLeader
-            if (defenderLeader != null)
-            {
-                tempPersonae.Add(defenderLeader.charID + "|defenderGarrisonLeader");
-            }
-            // get additional defending leader
-            if (addDefendLeader != null)
-            {
-                tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
-            }
-            string[] siegePersonae = tempPersonae.ToArray();
-
-            // location
-            string siegeLocation = besiegedFief.id;
-
-            // description
-            string siegeDescription = "";
-            if (circumstance == null)
-            {
-                siegeDescription = "On this day of Our Lord the forces of ";
-                siegeDescription += besiegingPlayer.firstName + " " + besiegingPlayer.familyName;
-                siegeDescription += " abandoned the siege of " + besiegedFief.name;
-                siegeDescription += ". The ownership of this fief is retained by ";
-                siegeDescription += defendingPlayer.firstName + " " + defendingPlayer.familyName + ".";
-            }
-            else
-            {
-                siegeDescription = circumstance;
-            }
-
-            // put together new journal entry
-            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siegeEnd", loc: siegeLocation, descr: siegeDescription);
-
-            // add new journal entry to pastEvents
-            Globals_Game.addPastEvent(siegeResult);
-
-            // disband garrison
-            this.disbandArmy(defenderGarrison);
-
-            // disband additional defending army
-            if (defenderAdditional != null)
-            {
-                this.disbandArmy(defenderAdditional);
-            }
-
-            // remove from PCs
-            besiegingPlayer.mySieges.Remove(s.siegeID);
-            defendingPlayer.mySieges.Remove(s.siegeID);
-
-            // remove from fief
-            besiegedFief.siege = null;
-
-            // sync days of all effected objects (to remove influence of attacking leader's skills)
-            // work out proportion of seasonal allowance remaining
-            double daysProportion = 0;
-            if (besiegingArmyLeader != null)
-            {
-                daysProportion = s.days / besiegingArmyLeader.getDaysAllowance();
-            }
-            else
-            {
-                daysProportion = s.days / 90;
-            }
-
-            // iterate through characters in fief keep
-            foreach (Character thisChar in besiegedFief.charactersInFief)
-            {
-                if (thisChar.inKeep)
-                {
-                    // reset character's days to reflect days spent in siege
-                    thisChar.days = thisChar.getDaysAllowance() * daysProportion;
-                }
-            }
-
-            // remove from master list
-            Globals_Game.siegeMasterList.Remove(s.siegeID);
+            // carry out functions associated with siege end
+            s.siegeEnd(circumstance);
 
             // set to null
             s = null;
@@ -12923,7 +12782,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating whether or not to proceed with pregnancy attempt</returns>
         /// <param name="husband">The husband</param>
-        public bool checkBeforePregnancyAttempt(Character husband)
+        public bool checksBeforePregnancyAttempt(Character husband)
         {
             bool proceed = true;
 
@@ -13029,7 +12888,7 @@ namespace hist_mmorpg
                 Character mySpouse = Globals_Client.charToView.getSpouse();
 
                 // perform standard checks
-                if (this.checkBeforePregnancyAttempt(Globals_Client.charToView))
+                if (this.checksBeforePregnancyAttempt(Globals_Client.charToView))
                 {
                     // ensure are both in/out of keep
                     mySpouse.inKeep = Globals_Client.charToView.inKeep;
