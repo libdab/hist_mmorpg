@@ -1601,19 +1601,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates effect of character's stats on fief loyalty
-        /// </summary>
-        /// <returns>double containing fief loyalty modifier</returns>
-        public double calcFiefLoyMod()
-        {
-            double loyModif = 0;
-            // 1.25% increase in loyalty per stature/management average above 1
-            loyModif = (((this.calculateStature() + this.management) / 2) - 1) * 1.25;
-            loyModif = loyModif / 100;
-            return loyModif;
-        }
-
-        /// <summary>
         /// Calculates effect of a particular skill effect
         /// </summary>
         /// <returns>double containing skill effect modifier</returns>

@@ -559,8 +559,14 @@ namespace hist_mmorpg
             // factor in effect of fief status on specified season's income
             int fiefIncome = Convert.ToInt32(this.calcNewIncome() * this.calcStatusIncmMod());
 
-            // calculate bottom line using specified season's income, expenses and overlord taxes
-            fiefBottomLine = ((fiefIncome - (int)this.calcNewExpenses()) - (int)this.calcNewOlordTaxes()) - this.calcFamilyExpenses();
+            // calculate bottom line using specified season's income, and expenses
+            fiefBottomLine = fiefIncome - (int)this.calcNewExpenses() - this.calcFamilyExpenses();
+
+            // check for occupation before deducting overlord taxes
+            if (!this.checkEnemyOccupation())
+            {
+                fiefBottomLine -= (int)this.calcNewOlordTaxes();
+            }
 
             return fiefBottomLine;
         }
@@ -930,10 +936,23 @@ namespace hist_mmorpg
             double loyModif = 0;
             double loySkillModif = 0;
 
-            // get base bailiff loyalty modifier
-            loyModif = this.calcBlfLoyMod(daysInFiefOK);
+            // get bailiff stats (set to auto-bailiff values by default)
+            double bailStature = 3;
+            double bailMgmt = 3;
+            Language bailLang = this.language;
 
-            // check for skill modifier, passing in daysInFiefOK
+            // if not auto-bailiff and if has served appropriate days in fief
+            if ((this.bailiff != null) && (daysInFiefOK))
+            {
+                bailStature = this.bailiff.calculateStature();
+                bailMgmt = this.bailiff.management;
+                bailLang = this.bailiff.language;
+            }
+
+            // get base bailiff loyalty modifier
+            loyModif = this.calcBaseFiefLoyMod(bailStature, bailMgmt, bailLang);
+
+            // check for skill modifier, passing in daysInFief
             loySkillModif = this.calcBailLoySkillMod(daysInFiefOK);
 
             loyModif = loyModif + (loyModif * loySkillModif);
@@ -941,25 +960,34 @@ namespace hist_mmorpg
             return loyModif;
         }
 
+
         /// <summary>
-        /// Calculates effect of bailiff on fief loyalty level
+        /// Calculates base effect of bailiff's stats on fief loyalty
+        /// Takes bailiff language into account
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
-        /// <param name="daysInFiefOK">bool specifying whether bailiff has sufficient days in fief</param>
-        public double calcBlfLoyMod(bool daysInFiefOK)
+        /// <param name="stature">Bailiff's stature</param>
+        /// <param name="mngt">Bailiff's management rating</param>
+        /// <param name="lang">Bailiff's language</param>
+        public double calcBaseFiefLoyMod(double stature, double mngt, Language lang)
         {
             double loyModif = 0;
+            double bailStats = 0;
 
-            if ((this.bailiff == null) || (! daysInFiefOK))
+            bailStats = (stature + mngt) / 2;
+
+            // check for language effects
+            if (this.language != lang)
             {
-                // modifer = 0.0125 per stature/management average above 1
-                // if auto-baliff, set modifier at equivalent of stature/management average of 3
-                loyModif = 0.025;
+                bailStats -= 3;
+                if (bailStats < 1)
+                {
+                    bailStats = 1;
+                }
             }
-            else
-            {
-                loyModif = this.bailiff.calcFiefLoyMod();
-            }
+
+            // 1.25% increase in fief loyalty per bailiff's stature/management average above 1
+            loyModif = (bailStats - 1) * 0.0125;
 
             return loyModif;
         }
@@ -1415,18 +1443,21 @@ namespace hist_mmorpg
             // update fief treasury with new bottom line
             this.treasury += Convert.ToInt32(this.keyStatsCurrent[13]);
 
-            // pay overlord taxes into overlord's treasury
-            // get overlord
-            PlayerCharacter thisOverlord = this.getOverlord();
-            if (thisOverlord != null)
+            // check for occupation before transfering overlord taxes into overlord's treasury
+            if (!this.checkEnemyOccupation())
             {
-                // get overlord's home fief
-                Fief overlordHome = thisOverlord.getHomeFief();
-
-                if (overlordHome != null)
+                // get overlord
+                PlayerCharacter thisOverlord = this.getOverlord();
+                if (thisOverlord != null)
                 {
-                    // pay in taxes
-                    overlordHome.treasury += Convert.ToInt32(this.calcNewOlordTaxes());
+                    // get overlord's home fief
+                    Fief overlordHome = thisOverlord.getHomeFief();
+
+                    if (overlordHome != null)
+                    {
+                        // pay in taxes
+                        overlordHome.treasury += Convert.ToInt32(this.calcNewOlordTaxes());
+                    }
                 }
             }
 

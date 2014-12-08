@@ -163,7 +163,7 @@ namespace hist_mmorpg
         /// </summary>
         public static List<byte> positionKeys = new List<byte>();
         /// <summary>
-        /// Holds Character_Riak objects with existing goTo queues (used during initial load)
+        /// Holds Character_Riak objects with existing goTo queues (used during load from database)
         /// </summary>
         public static List<Character_Riak> goToList = new List<Character_Riak>();
         /// <summary>
