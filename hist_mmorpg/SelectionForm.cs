@@ -287,11 +287,18 @@ namespace hist_mmorpg
                 {
 					addItem = true;
 
-                    // can only appoint males
+                    // don't display females
 					if (!Globals_Client.myPlayerCharacter.myNPCs [i].isMale)
 					{
 						addItem = false;
 					}
+
+                    // don't display characters not 'of age'
+                    else if (Globals_Client.myPlayerCharacter.myNPCs[i].calcCharAge() < 14)
+                    {
+                        addItem = false;
+                    }
+
 					else
                     {
                         // Create an item and subitems for each character

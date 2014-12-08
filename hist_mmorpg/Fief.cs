@@ -1717,7 +1717,7 @@ namespace hist_mmorpg
         public int callUpTroops(double minProportion = 0, double maxProportion = 1)
         {
             int numberTroops = 0;
-            int maxNumber = Convert.ToInt32(this.population / 100) * 5;
+            int maxNumber = this.calcMaxTroops();
 
             // generate random double between min and max
             double myRandomDouble = Globals_Game.GetRandomDouble(min: minProportion, max: maxProportion);
@@ -1726,6 +1726,15 @@ namespace hist_mmorpg
             numberTroops = Convert.ToInt32(maxNumber * myRandomDouble);
 
             return numberTroops;
+        }
+
+        /// <summary>
+        /// Calculates the maximum number of troops available for call up in the fief
+        /// </summary>
+        /// <returns>int containing maximum number of troops</returns>
+        public int calcMaxTroops()
+        {
+            return Convert.ToInt32(this.population * 0.05);
         }
 
         /// <summary>

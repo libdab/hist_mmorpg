@@ -386,9 +386,9 @@ namespace hist_mmorpg
             Dictionary<string, string[]> transfers006 = new Dictionary<string, string[]>();
             Dictionary<string, string[]> transfers007 = new Dictionary<string, string[]>();
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'R', c1, plains, fief1Chars, keep1BarChars, false, false, 0, 2000000, armies001, false, transfers001, false, r: myRank17);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', c1, plains, fief1Chars, keep1BarChars, false, false, 0, 2000000, armies001, false, transfers001, false, r: myRank17);
             Globals_Game.fiefMasterList.Add(myFief1.id, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'U',c1, hills, fief2Chars, keep2BarChars, false, false, 0, 4000, armies002, false, transfers002, false, r: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'C',c1, hills, fief2Chars, keep2BarChars, false, false, 0, 4000, armies002, false, transfers002, false, r: myRank15);
             Globals_Game.fiefMasterList.Add(myFief2.id, myFief2);
             Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', c1, plains, fief3Chars, keep3BarChars, false, false, 0, 100000, armies003, false, transfers003, false, r: myRank17);
             Globals_Game.fiefMasterList.Add(myFief3.id, myFief3);
@@ -785,11 +785,11 @@ namespace hist_mmorpg
             Army myArmy = new Army(Globals_Game.getNextArmyID(), null, null, 90, null, trp: myArmyTroops);
             Globals_Game.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
-            myArmy.leader = myChar1.charID;
-            myArmy.days = Globals_Game.pcMasterList[myArmy.leader].days;
+            // myArmy.leader = myChar1.charID;
+            myArmy.days = Globals_Game.pcMasterList[myArmy.owner].days;
             myChar1.myArmies.Add(myArmy);
-            myChar1.armyID = myArmy.armyID;
-            myArmy.location = Globals_Game.pcMasterList[myArmy.leader].location.id;
+            // myChar1.armyID = myArmy.armyID;
+            myArmy.location = Globals_Game.pcMasterList[myArmy.owner].location.id;
             myChar1.location.armies.Add(myArmy.armyID);
 
             // create another (enemy) army and add in appropriate places
@@ -5773,7 +5773,7 @@ namespace hist_mmorpg
             // no. of troops (only if owned)
             if (isOwner)
             {
-                fiefText += "Troops: " + f.troops + "\r\n";
+                fiefText += "Troops: Up to " + f.calcMaxTroops() + " troops are available for call up in this fief\r\n";
             }
 
             // fief status
@@ -5806,46 +5806,6 @@ namespace hist_mmorpg
 
             // terrain type
             fiefText += "Terrain: " + f.terrain.description + "\r\n";
-
-            /*
-            // characters present
-            fiefText += "Characters present:";
-            for (int i = 0; i < f.characters.Count; i++)
-            {
-                fiefText += " " + f.characters[i].firstName + " " + f.characters[i].familyName;
-                if (i < (f.characters.Count - 1))
-                {
-                    fiefText += ",";
-                }
-                else
-                {
-                    fiefText += "\r\n";
-                }
-            }
-
-            // characters barred
-            fiefText += "Characters barred from keep (IDs):\r\n";
-            for (int i = 0; i < f.barredCharacters.Count; i++)
-            {
-                fiefText += " " + f.barredCharacters[i] + "\r\n";
-            }
-
-            // if French barred
-            fiefText += "The French are ";
-            if (!f.frenchBarred)
-            {
-                fiefText += "not";
-            }
-            fiefText += " barred from the keep\r\n";
-
-            // if English barred
-            fiefText += "The English are ";
-            if (!f.englishBarred)
-            {
-                fiefText += "not";
-            }
-            fiefText += " barred from the keep\r\n\r\n";
-             * */
 
             return fiefText;
         }
@@ -6117,55 +6077,44 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Disables all controls within the parent container
+        /// </summary>
+        /// <param name="parentContainer">The parent container</param>
+        public void disableControls(Control parentContainer)
+        {
+            foreach (Control c in parentContainer.Controls)
+            {
+                // clear TextBoxes
+                if (c is TextBox)
+                {
+                    (c as TextBox).Text = "";
+                }
+
+                // disable controls
+                if ((c is CheckBox) || (c is Button))
+                {
+                    c.Enabled = false;
+                }
+            }
+        }
+        
+        /// <summary>
         /// Refreshes main Army display screen
         /// </summary>
         /// <param name="a">Army whose information is to be displayed</param>
         public void refreshArmyContainer(Army a = null)
         {
-            
-            // clear existing information
-            this.armyTextBox.Text = "";
-            this.armyRecruitTextBox.Text = "";
-            this.armyTransDropWhoTextBox.Text = "";
-            this.armyTransKnightTextBox.Text = "";
-            this.armyTransMAAtextBox.Text = "";
-            this.armyTransLCavTextBox.Text = "";
-            this.armyTransYeomenTextBox.Text = "";
-            this.armyTransFootTextBox.Text = "";
-            this.armyTransRabbleTextBox.Text = "";
-            this.armyAggroTextBox.Text = "";
-            this.armyOddsTextBox.Text = "";
-            this.armyCampTextBox.Text = "";
+            // disable controls until army selected
+            this.disableControls(this.armyManagementPanel);
+            this.disableControls(this.armyCombatPanel);
 
-            // ensure textboxes aren't interactive
+            // always enable switch between management and combat panels
+            this.armyDisplayCmbtBtn.Enabled = true;
+            this.armyDisplayMgtBtn.Enabled = true;
+            
+            // ensure main textbox isn't interactive
             this.armyTextBox.ReadOnly = true;
 
-            // disable controls until army selected
-            this.armyRecruitBtn.Enabled = false;
-            this.armyRecruitTextBox.Enabled = false;
-            this.armyMaintainBtn.Enabled = false;
-            this.armyAppointLeaderBtn.Enabled = false;
-            this.armyAppointSelfBtn.Enabled = false;
-            this.armyTransDropBtn.Enabled = false;
-            this.armyTransDropWhoTextBox.Enabled = false;
-            this.armyTransKnightTextBox.Enabled = false;
-            this.armyTransMAAtextBox.Enabled = false;
-            this.armyTransLCavTextBox.Enabled = false;
-            this.armyTransYeomenTextBox.Enabled = false;
-            this.armyTransFootTextBox.Enabled = false;
-            this.armyTransRabbleTextBox.Enabled = false;
-            this.armyTransPickupBtn.Enabled = false;
-            this.armyDisbandBtn.Enabled = false;
-            this.armyAutoCombatBtn.Enabled = false;
-            this.armyAggroTextBox.Enabled = false;
-            this.armyOddsTextBox.Enabled = false;
-            this.armyCampBtn.Enabled = false;
-            this.armyCampTextBox.Enabled = false;
-            this.armyExamineBtn.Enabled = false;
-            this.armyPillageBtn.Enabled = false;
-            this.armySiegeBtn.Enabled = false;
-            this.armyQuellRebellionBtn.Enabled = false;
-            
             // clear existing items in armies list
             this.armyListView.Items.Clear();
 
@@ -7195,11 +7144,15 @@ namespace hist_mmorpg
                             this.hireNPC_Btn.Text = "Hire NPC";
                             this.hireNPC_TextBox.Visible = true;
 
-                            // can only employ men
-                            if (charToDisplay.isMale)
+                            // can only employ men (non-PCs)
+                            if ((charToDisplay.isMale) && (!(charToDisplay is PlayerCharacter)))
                             {
-                                this.hireNPC_Btn.Enabled = true;
-                                this.hireNPC_TextBox.Enabled = true;
+                                // ensure is 'of age'
+                                if (charToDisplay.calcCharAge() >= 14)
+                                {
+                                    this.hireNPC_Btn.Enabled = true;
+                                    this.hireNPC_TextBox.Enabled = true;
+                                }
                             }
                             else
                             {
@@ -8113,34 +8066,18 @@ namespace hist_mmorpg
                     break;
                 }
 
-                // if there are any fiefs in the queue, overwrite the character's goTo queue
-                // then process by calling characterMultiMove
-                if (route.Count > 0)
-                {
-                    Globals_Client.charToView.goTo = route;
-                    proceed = this.characterMultiMove(Globals_Client.charToView);
-                    if (!proceed)
-                    {
-                        break;
-                    }
-                }
+            }
+
+            // if there are any fiefs in the queue, overwrite the character's goTo queue
+            // then process by calling characterMultiMove
+            if (route.Count > 0)
+            {
+                Globals_Client.charToView.goTo = route;
+                proceed = this.characterMultiMove(Globals_Client.charToView);
             }
 
             // refresh appropriate screen
             this.refreshCurrentScreen();
-            /*if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
-            {
-                this.refreshMeetingPlaceDisplay(whichScreen); ;
-            }
-            else if (whichScreen.Equals("house"))
-            {
-                this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
-            }
-            else if (whichScreen.Equals("travel"))
-            {
-                this.refreshTravelContainer();
-            }*/
-
         }
 
         /// <summary>
@@ -9314,47 +9251,18 @@ namespace hist_mmorpg
                 // if is defender in a siege, disable controls
                 if (siegeID != null)
                 {
-                    this.armyRecruitBtn.Enabled = false;
-                    this.armyRecruitTextBox.Enabled = false;
-                    this.armyMaintainBtn.Enabled = false;
-                    this.armyAppointLeaderBtn.Enabled = false;
-                    this.armyAppointSelfBtn.Enabled = false;
-                    this.armyTransDropBtn.Enabled = false;
-                    this.armyTransDropWhoTextBox.Enabled = false;
-                    this.armyTransKnightTextBox.Enabled = false;
-                    this.armyTransMAAtextBox.Enabled = false;
-                    this.armyTransLCavTextBox.Enabled = false;
-                    this.armyTransYeomenTextBox.Enabled = false;
-                    this.armyTransFootTextBox.Enabled = false;
-                    this.armyTransRabbleTextBox.Enabled = false;
-                    this.armyTransPickupBtn.Enabled = false;
-                    this.armyDisbandBtn.Enabled = false;
-                    this.armyAutoCombatBtn.Enabled = false;
-                    this.armyAggroTextBox.Enabled = false;
-                    this.armyOddsTextBox.Enabled = false;
-                    this.armyCampBtn.Enabled = false;
-                    this.armyCampTextBox.Enabled = false;
-                    this.armyExamineBtn.Enabled = false;
-                    this.armyPillageBtn.Enabled = false;
-                    this.armySiegeBtn.Enabled = false;
+                    this.disableControls(this.armyManagementPanel);
+                    this.disableControls(this.armyCombatPanel);
 
-                    // clear existing information
-                    this.armyRecruitTextBox.Text = "";
-                    this.armyTransDropWhoTextBox.Text = "";
-                    this.armyTransKnightTextBox.Text = "";
-                    this.armyTransMAAtextBox.Text = "";
-                    this.armyTransLCavTextBox.Text = "";
-                    this.armyTransYeomenTextBox.Text = "";
-                    this.armyTransFootTextBox.Text = "";
-                    this.armyTransRabbleTextBox.Text = "";
-                    this.armyAggroTextBox.Text = "";
-                    this.armyOddsTextBox.Text = "";
-                    this.armyCampTextBox.Text = "";
+                    // always enable switch between management and combat panels
+                    this.armyDisplayCmbtBtn.Enabled = true;
+                    this.armyDisplayMgtBtn.Enabled = true;
                 }
 
-                // if isn't defender in a siege, enable controls as usual
+                // if isn't defender in a siege, enable controls
                 else
                 {
+                    // recruit controls
                     // if player is leading an army but not the one on view, disable 'recruit' button
                     if ((!(Globals_Client.armyToView.leader == Globals_Client.myPlayerCharacter.charID))
                         && (!(Globals_Client.myPlayerCharacter.armyID == null)))
@@ -9382,8 +9290,36 @@ namespace hist_mmorpg
                         }
                     }
 
+                    // if has no leader
+                    if (String.IsNullOrWhiteSpace(Globals_Client.armyToView.leader))
+                    {
+                        // set army aggression to 0
+                        if (Globals_Client.armyToView.aggression > 0)
+                        {
+                            Globals_Client.armyToView.aggression = 0;
+                        }
 
-                    // re-enable controls
+                        // disable 'proactive' army functions
+                        this.armyExamineBtn.Enabled = false;
+                        this.armyPillageBtn.Enabled = false;
+                        this.armySiegeBtn.Enabled = false;
+                        this.armyAutoCombatBtn.Enabled = false;
+                        this.armyAggroTextBox.Enabled = false;
+                        this.armyOddsTextBox.Enabled = false;
+                    }
+
+                    // has leader
+                    else
+                    {
+                        this.armyExamineBtn.Enabled = true;
+                        this.armyPillageBtn.Enabled = true;
+                        this.armySiegeBtn.Enabled = true;
+                        this.armyAutoCombatBtn.Enabled = true;
+                        this.armyAggroTextBox.Enabled = true;
+                        this.armyOddsTextBox.Enabled = true;
+                    }
+
+                    // other controls
                     this.armyMaintainBtn.Enabled = true;
                     this.armyAppointLeaderBtn.Enabled = true;
                     this.armyAppointSelfBtn.Enabled = true;
@@ -9397,21 +9333,19 @@ namespace hist_mmorpg
                     this.armyTransDropWhoTextBox.Enabled = true;
                     this.armyTransPickupBtn.Enabled = true;
                     this.armyDisbandBtn.Enabled = true;
-                    this.armyAutoCombatBtn.Enabled = true;
-                    this.armyAggroTextBox.Enabled = true;
-                    this.armyOddsTextBox.Enabled = true;
                     this.armyCampBtn.Enabled = true;
                     this.armyCampTextBox.Enabled = true;
-                    this.armyExamineBtn.Enabled = true;
-                    this.armyPillageBtn.Enabled = true;
-                    this.armySiegeBtn.Enabled = true;
 
                     // check to see if current fief is in rebellion and enable control as appropriate
                     // get fief
                     Fief thisFief = Globals_Game.fiefMasterList[Globals_Client.armyToView.location];
                     if (thisFief.status.Equals('R'))
                     {
-                        this.armyQuellRebellionBtn.Enabled = true;
+                        // only enable if army has leader
+                        if (!String.IsNullOrWhiteSpace(Globals_Client.armyToView.leader))
+                        {
+                            this.armyQuellRebellionBtn.Enabled = true;
+                        }
                     }
                     else
                     {
