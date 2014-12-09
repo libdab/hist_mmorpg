@@ -1532,50 +1532,80 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         public virtual bool enterKeep()
         {
-            bool success = true;
+            bool proceed = true;
 
-            // if character is English and English barred, don't allow entry
-            if (location.englishBarred)                
-            {                    
-                if (this.nationality.Equals("E"))                    
-                {                       
-                    success = false;
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("Bailiff: The duplicitous English are barred from entering this keep, Good Sir!");
-                    }
-                }               
-            }
-
-            // if character is French and French barred, don't allow entry
-            else if (location.frenchBarred)
+            // check if character leading an army
+            if (!String.IsNullOrWhiteSpace(this.armyID))
             {
-                if (this.nationality.Equals("F"))
+                // no army of different nationality from fief allowed in keep
+                if (this.location.getCurrentKingdom() != this.getKingdom())
                 {
-                    success = false;
+                    proceed = false;
                     if (Globals_Client.showMessages)
                     {
-                        System.Windows.Forms.MessageBox.Show("Bailiff: The perfidious French are barred from entering this keep, Mon Seigneur!");
+                        System.Windows.Forms.MessageBox.Show("Bailiff: You are not permitted to enter the keep with your army, My Lord.");
+                    }
+                }
+
+                // only one friendly field army in keep at a time
+                else if (this.location.checkFieldArmyInKeep())
+                {
+                    proceed = false;
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Bailiff: There is already a friendly field army present in the keep, My Lord.\r\nOnly one is permitted.");
                     }
                 }
             }
 
-            // if character is specifically barred, don't allow entry
-            else 
+            if (proceed)
             {
-                if (location.barredCharacters.Contains(this.charID))
+                // if character is English and English barred, don't allow entry
+                if (location.englishBarred)
                 {
-                    success = false;
-                    if (Globals_Client.showMessages)
+                    if (this.nationality.Equals("E"))
                     {
-                        System.Windows.Forms.MessageBox.Show("Bailiff: Your person is barred from entering this keep, Good Sir!");
+                        proceed = false;
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Bailiff: The duplicitous English are barred from entering this keep, Good Sir!");
+                        }
                     }
                 }
 
+                if (proceed)
+                {
+                    // if character is French and French barred, don't allow entry
+                    if (location.frenchBarred)
+                    {
+                        if (this.nationality.Equals("F"))
+                        {
+                            proceed = false;
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Bailiff: The perfidious French are barred from entering this keep, Mon Seigneur!");
+                            }
+                        }
+                    }
+
+                    if (proceed)
+                    {
+                        // if character is specifically barred, don't allow entry
+                        if (location.barredCharacters.Contains(this.charID))
+                        {
+                            proceed = false;
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Bailiff: Your person is barred from entering this keep, Good Sir!");
+                            }
+                        }
+                    }
+                }
             }
 
-            this.inKeep = success;
-            return success;
+            this.inKeep = proceed;
+
+            return proceed;
         }
 
         /// <summary>
@@ -1710,15 +1740,21 @@ namespace hist_mmorpg
 
             if (this.familyID != null)
             {
+                // get kingdom
+                Kingdom myKingdom = this.getKingdom();
+
                 // get king
-                myKing = this.getHeadOfFamily().getHomeFief().province.kingdom.owner;
-                
-                // get queen
-                if (myKing.spouse != null)
+                if (myKingdom != null)
                 {
-                    if (Globals_Game.npcMasterList.ContainsKey(myKing.spouse))
+                    myKing = this.getHeadOfFamily().getHomeFief().province.kingdom.owner;
+
+                    // get queen
+                    if (myKing.spouse != null)
                     {
-                        myQueen = Globals_Game.npcMasterList[myKing.spouse];
+                        if (Globals_Game.npcMasterList.ContainsKey(myKing.spouse))
+                        {
+                            myQueen = Globals_Game.npcMasterList[myKing.spouse];
+                        }
                     }
                 }
             }
@@ -2474,6 +2510,27 @@ namespace hist_mmorpg
             }
 
             return myArmies;
+        }
+
+        /// <summary>
+        /// Gets character's kingdom
+        /// </summary>
+        /// <returns>The kingdom</returns>
+        public Kingdom getKingdom()
+        {
+            Kingdom myKingdom = null;
+
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Game.kingdomMasterList)
+            {
+                // get kingdom with matching nationality
+                if (kingdomEntry.Value.nationality == this.nationality)
+                {
+                    myKingdom = kingdomEntry.Value;
+                    break;
+                }
+            }
+
+            return myKingdom;
         }
 
     }
@@ -3310,44 +3367,19 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Gets character's kingdom
-        /// </summary>
-        /// <returns>The kingdom</returns>
-        public Kingdom getKingdom()
-        {
-            Kingdom myKingdom = null;
-
-            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Game.kingdomMasterList)
-            {
-                // get kingdom with matching nationality
-                if (kingdomEntry.Value.nationality == this.nationality)
-                {
-                    myKingdom = kingdomEntry.Value;
-                    break;
-                }
-            }
-
-            return myKingdom;
-        }
-
-        /// <summary>
-        /// Gets character's king
+        /// Gets PlayerCharacter's king
         /// </summary>
         /// <returns>The king</returns>
         public PlayerCharacter getKing()
         {
             PlayerCharacter myKing = null;
+            Kingdom myKingdom = this.getKingdom();
 
-            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Game.kingdomMasterList)
+            if (myKingdom != null)
             {
-                // get king with matching nationality
-                if (kingdomEntry.Value.nationality == this.nationality)
+                if (myKingdom.owner != null)
                 {
-                    if (kingdomEntry.Value.owner != null)
-                    {
-                        myKing = kingdomEntry.Value.owner;
-                    }
-                    break;
+                    myKing = myKingdom.owner;
                 }
             }
 
@@ -4128,25 +4160,19 @@ namespace hist_mmorpg
 
             // get nationality source
             // employer
-            if (this.familyID != null)
+            if (!String.IsNullOrWhiteSpace(this.familyID))
             {
-                if (Globals_Game.pcMasterList.ContainsKey(this.familyID))
-                {
-                    nationalitySource = Globals_Game.pcMasterList[this.familyID];
-                }
+                nationalitySource = this.getHeadOfFamily();
             }
 
             // head of family
-            else if (this.myBoss != null)
+            else if (!String.IsNullOrWhiteSpace(this.myBoss))
             {
-                if (Globals_Game.pcMasterList.ContainsKey(this.myBoss))
-                {
-                    nationalitySource = Globals_Game.pcMasterList[this.myBoss];
-                }
+                nationalitySource = this.getEmployer();
             }
 
             // self
-            else
+            if (nationalitySource == null)
             {
                 nationalitySource = this;
             }

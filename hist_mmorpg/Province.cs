@@ -79,6 +79,42 @@ namespace hist_mmorpg
             this.taxRate = tx;
         }
 
+        /// <summary>
+        /// Gets the province's rightful kingdom (i.e. the kingdom that it traditionally belongs to)
+        /// </summary>
+        /// <returns>The kingdom</returns>
+        public Kingdom getRightfulKingdom()
+        {
+            Kingdom thisKingdom = null;
+
+            if (this.kingdom != null)
+            {
+                thisKingdom = this.kingdom;
+            }
+
+            return thisKingdom;
+        }
+
+        /// <summary>
+        /// Gets the province's current kingdom (i.e. the kingdom of the current owner)
+        /// </summary>
+        /// <returns>The kingdom</returns>
+        public Kingdom getCurrentKingdom()
+        {
+            Kingdom thisKingdom = null;
+
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Game.kingdomMasterList)
+            {
+                if (kingdomEntry.Value.nationality == this.owner.nationality)
+                {
+                    thisKingdom = kingdomEntry.Value;
+                    break;
+                }
+            }
+
+            return thisKingdom;
+        }
+
     }
 
 	/// <summary>

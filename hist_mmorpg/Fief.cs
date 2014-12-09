@@ -1916,16 +1916,16 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Gets the fief's rightful kingdom (i.e. the kingdom that the fief traditionally belongs to)
+        /// Gets the fief's rightful kingdom (i.e. the kingdom that it traditionally belongs to)
         /// </summary>
         /// <returns>The kingdom</returns>
         public Kingdom getRightfulKingdom()
         {
             Kingdom thisKingdom = null;
 
-            if (this.province.kingdom != null)
+            if (this.province.getRightfulKingdom() != null)
             {
-                thisKingdom = this.province.kingdom;
+                thisKingdom = this.province.getRightfulKingdom();
             }
 
             return thisKingdom;
@@ -2162,6 +2162,26 @@ namespace hist_mmorpg
             }
 
             return success;
+        }
+
+        /// <summary>
+        /// Checks to see if there is currently a field army in the fief keep
+        /// </summary>
+        /// <returns>bool indicating presence of a field army</returns>
+        public bool checkFieldArmyInKeep()
+        {
+            bool armyInKeep = false;
+
+            foreach (Character thisChar in this.charactersInFief)
+            {
+                if (!String.IsNullOrWhiteSpace(thisChar.armyID))
+                {
+                    armyInKeep = true;
+                    break;
+                }
+            }
+
+            return armyInKeep;
         }
     }
 

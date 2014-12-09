@@ -1387,7 +1387,7 @@ namespace hist_mmorpg
             // travelContainer
             // 
             this.travelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.travelContainer.Location = new System.Drawing.Point(0, 0);
+            this.travelContainer.Location = new System.Drawing.Point(0, 24);
             this.travelContainer.Name = "travelContainer";
             // 
             // travelContainer.Panel1
@@ -1409,7 +1409,7 @@ namespace hist_mmorpg
             // travelContainer.Panel2
             // 
             this.travelContainer.Panel2.Controls.Add(this.travelNavigationPanel);
-            this.travelContainer.Size = new System.Drawing.Size(935, 735);
+            this.travelContainer.Size = new System.Drawing.Size(935, 711);
             this.travelContainer.SplitterDistance = 310;
             this.travelContainer.TabIndex = 4;
             // 
@@ -1501,6 +1501,7 @@ namespace hist_mmorpg
             this.listOutsideKeepBtn.Name = "listOutsideKeepBtn";
             this.listOutsideKeepBtn.Size = new System.Drawing.Size(122, 35);
             this.listOutsideKeepBtn.TabIndex = 3;
+            this.listOutsideKeepBtn.Tag = "outsideKeep";
             this.listOutsideKeepBtn.Text = "List Those Outside The Keep";
             this.listOutsideKeepBtn.UseVisualStyleBackColor = true;
             this.listOutsideKeepBtn.Click += new System.EventHandler(this.listOutsideKeepBtn_Click);
@@ -1511,6 +1512,7 @@ namespace hist_mmorpg
             this.visitTavernBtn.Name = "visitTavernBtn";
             this.visitTavernBtn.Size = new System.Drawing.Size(122, 23);
             this.visitTavernBtn.TabIndex = 2;
+            this.visitTavernBtn.Tag = "tavern";
             this.visitTavernBtn.Text = "Visit Tavern";
             this.visitTavernBtn.UseVisualStyleBackColor = true;
             this.visitTavernBtn.Click += new System.EventHandler(this.visitTavernBtn_Click_1);
@@ -1521,6 +1523,7 @@ namespace hist_mmorpg
             this.visitCourtBtn1.Name = "visitCourtBtn1";
             this.visitCourtBtn1.Size = new System.Drawing.Size(122, 23);
             this.visitCourtBtn1.TabIndex = 1;
+            this.visitCourtBtn1.Tag = "court";
             this.visitCourtBtn1.Text = "Visit Court";
             this.visitCourtBtn1.UseVisualStyleBackColor = true;
             this.visitCourtBtn1.Click += new System.EventHandler(this.visitCourtBtn1_Click);
@@ -1925,7 +1928,7 @@ namespace hist_mmorpg
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(126, 371);
+            this.label18.Location = new System.Drawing.Point(128, 408);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(123, 13);
             this.label18.TabIndex = 51;
@@ -1934,14 +1937,14 @@ namespace hist_mmorpg
             // houseProposeBrideTextBox
             // 
             this.houseProposeBrideTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.houseProposeBrideTextBox.Location = new System.Drawing.Point(126, 391);
+            this.houseProposeBrideTextBox.Location = new System.Drawing.Point(128, 428);
             this.houseProposeBrideTextBox.Name = "houseProposeBrideTextBox";
             this.houseProposeBrideTextBox.Size = new System.Drawing.Size(100, 20);
             this.houseProposeBrideTextBox.TabIndex = 50;
             // 
             // label17
             // 
-            this.label17.Location = new System.Drawing.Point(131, 291);
+            this.label17.Location = new System.Drawing.Point(133, 328);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(104, 36);
             this.label17.TabIndex = 49;
@@ -1950,14 +1953,14 @@ namespace hist_mmorpg
             // houseProposeGroomTextBox
             // 
             this.houseProposeGroomTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.houseProposeGroomTextBox.Location = new System.Drawing.Point(126, 330);
+            this.houseProposeGroomTextBox.Location = new System.Drawing.Point(128, 367);
             this.houseProposeGroomTextBox.Name = "houseProposeGroomTextBox";
             this.houseProposeGroomTextBox.Size = new System.Drawing.Size(100, 20);
             this.houseProposeGroomTextBox.TabIndex = 48;
             // 
             // houseProposeBtn
             // 
-            this.houseProposeBtn.Location = new System.Drawing.Point(10, 288);
+            this.houseProposeBtn.Location = new System.Drawing.Point(12, 325);
             this.houseProposeBtn.Name = "houseProposeBtn";
             this.houseProposeBtn.Size = new System.Drawing.Size(111, 125);
             this.houseProposeBtn.TabIndex = 47;
@@ -1968,7 +1971,7 @@ namespace hist_mmorpg
             // 
             // familyNpcSpousePregBtn
             // 
-            this.familyNpcSpousePregBtn.Location = new System.Drawing.Point(53, 449);
+            this.familyNpcSpousePregBtn.Location = new System.Drawing.Point(55, 486);
             this.familyNpcSpousePregBtn.Name = "familyNpcSpousePregBtn";
             this.familyNpcSpousePregBtn.Size = new System.Drawing.Size(139, 51);
             this.familyNpcSpousePregBtn.TabIndex = 45;
@@ -2046,7 +2049,7 @@ namespace hist_mmorpg
             // 
             // houseHeirBtn
             // 
-            this.houseHeirBtn.Location = new System.Drawing.Point(60, 578);
+            this.houseHeirBtn.Location = new System.Drawing.Point(62, 615);
             this.houseHeirBtn.Name = "houseHeirBtn";
             this.houseHeirBtn.Size = new System.Drawing.Size(106, 23);
             this.houseHeirBtn.TabIndex = 37;
@@ -2057,14 +2060,14 @@ namespace hist_mmorpg
             // 
             // familyNameChildTextBox
             // 
-            this.familyNameChildTextBox.Location = new System.Drawing.Point(105, 547);
+            this.familyNameChildTextBox.Location = new System.Drawing.Point(107, 584);
             this.familyNameChildTextBox.Name = "familyNameChildTextBox";
             this.familyNameChildTextBox.Size = new System.Drawing.Size(103, 20);
             this.familyNameChildTextBox.TabIndex = 36;
             // 
             // familyNameChildButton
             // 
-            this.familyNameChildButton.Location = new System.Drawing.Point(9, 545);
+            this.familyNameChildButton.Location = new System.Drawing.Point(11, 582);
             this.familyNameChildButton.Name = "familyNameChildButton";
             this.familyNameChildButton.Size = new System.Drawing.Size(76, 22);
             this.familyNameChildButton.TabIndex = 35;
@@ -2074,7 +2077,7 @@ namespace hist_mmorpg
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(48, 611);
+            this.button1.Location = new System.Drawing.Point(50, 648);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(139, 22);
             this.button1.TabIndex = 34;
@@ -2084,7 +2087,7 @@ namespace hist_mmorpg
             // 
             // familyGetSpousePregBtn
             // 
-            this.familyGetSpousePregBtn.Location = new System.Drawing.Point(51, 512);
+            this.familyGetSpousePregBtn.Location = new System.Drawing.Point(53, 549);
             this.familyGetSpousePregBtn.Name = "familyGetSpousePregBtn";
             this.familyGetSpousePregBtn.Size = new System.Drawing.Size(139, 22);
             this.familyGetSpousePregBtn.TabIndex = 33;
@@ -2096,7 +2099,7 @@ namespace hist_mmorpg
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(30, 266);
+            this.label3.Location = new System.Drawing.Point(32, 303);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(184, 13);
             this.label3.TabIndex = 32;
@@ -2212,8 +2215,8 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel1
             // 
-            this.armyContainer.Panel1.Controls.Add(this.armyCombatPanel);
             this.armyContainer.Panel1.Controls.Add(this.armyManagementPanel);
+            this.armyContainer.Panel1.Controls.Add(this.armyCombatPanel);
             // 
             // armyContainer.Panel2
             // 
@@ -2380,7 +2383,7 @@ namespace hist_mmorpg
             // 
             // armyDisplayCmbtBtn
             // 
-            this.armyDisplayCmbtBtn.Location = new System.Drawing.Point(12, 587);
+            this.armyDisplayCmbtBtn.Location = new System.Drawing.Point(12, 639);
             this.armyDisplayCmbtBtn.Name = "armyDisplayCmbtBtn";
             this.armyDisplayCmbtBtn.Size = new System.Drawing.Size(138, 40);
             this.armyDisplayCmbtBtn.TabIndex = 55;
@@ -4676,18 +4679,18 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
+            this.Controls.Add(this.armyContainer);
+            this.Controls.Add(this.houseContainer);
+            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.provinceContainer);
             this.Controls.Add(this.royalGiftsContainer);
-            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.meetingPlaceContainer);
-            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.adminEditContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.siegeContainer);
-            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.journalContainer);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";

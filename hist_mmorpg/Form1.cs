@@ -7077,13 +7077,15 @@ namespace hist_mmorpg
                 // refresh display
                 this.refreshTravelContainer();
             }
+
             // if player not in keep
             else
             {
                 // attempt to enter keep
-                bool entered = Globals_Client.myPlayerCharacter.enterKeep();
+                Globals_Client.myPlayerCharacter.enterKeep();
+
                 // if successful
-                if (entered)
+                if (Globals_Client.myPlayerCharacter.inKeep)
                 {
                     // change button text
                     this.enterKeepBtn.Text = "Exit Keep";
@@ -7102,31 +7104,28 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void visitCourtBtn1_Click(object sender, EventArgs e)
         {
-            string place = "court";
+            // get button
+            Button thisButton = (sender as Button);
+            string place = thisButton.Tag.ToString();
 
-            bool enteredKeep = false;
-
-            // if player not in keep
+            // if player not in keep, attempt to enter
             if (!Globals_Client.myPlayerCharacter.inKeep)
             {
-                // attempt to enter keep
-                enteredKeep = Globals_Client.myPlayerCharacter.enterKeep();
-            }
-            else
-            {
-                enteredKeep = true;
+                Globals_Client.myPlayerCharacter.enterKeep();
             }
 
             // if in keep
-            if (enteredKeep)
+            if (Globals_Client.myPlayerCharacter.inKeep)
             {
                 // set button tags to reflect which meeting place
                 this.hireNPC_Btn.Tag = place;
                 this.meetingPlaceMoveToBtn.Tag = place;
                 this.meetingPlaceRouteBtn.Tag = place;
                 this.meetingPlaceEntourageBtn.Tag = place;
+
                 // refresh court screen 
                 this.refreshMeetingPlaceDisplay(place);
+
                 // display court screen
                 Globals_Client.containerToView = this.meetingPlaceContainer;
                 Globals_Client.containerToView.BringToFront();
@@ -7143,20 +7142,25 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void visitTavernBtn_Click_1(object sender, EventArgs e)
         {
-            string place = "tavern";
+            // get button
+            Button thisButton = (sender as Button);
+            string place = thisButton.Tag.ToString();
 
             // exit keep if required
             if (Globals_Client.myPlayerCharacter.inKeep)
             {
                 Globals_Client.myPlayerCharacter.exitKeep();
             }
+
             // set button tags to reflect which meeting place
             this.hireNPC_Btn.Tag = place;
             this.meetingPlaceMoveToBtn.Tag = place;
             this.meetingPlaceRouteBtn.Tag = place;
             this.meetingPlaceEntourageBtn.Tag = place;
+
             // refresh tavern screen 
             this.refreshMeetingPlaceDisplay(place);
+
             // display tavern screen
             Globals_Client.containerToView = this.meetingPlaceContainer;
             Globals_Client.containerToView.BringToFront();
@@ -7683,20 +7687,25 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void listOutsideKeepBtn_Click(object sender, EventArgs e)
         {
-            string place = "outsideKeep";
+            // get button
+            Button thisButton = (sender as Button);
+            string place = thisButton.Tag.ToString();
 
             // exit keep if required
             if (Globals_Client.myPlayerCharacter.inKeep)
             {
                 Globals_Client.myPlayerCharacter.exitKeep();
             }
+
             // set button tags to reflect which meeting place
             this.hireNPC_Btn.Tag = place;
             this.meetingPlaceMoveToBtn.Tag = place;
             this.meetingPlaceRouteBtn.Tag = place;
             this.meetingPlaceEntourageBtn.Tag = place;
+
             // refresh outside keep screen 
             this.refreshMeetingPlaceDisplay(place);
+
             // display tavern screen
             Globals_Client.containerToView = this.meetingPlaceContainer;
             Globals_Client.containerToView.BringToFront();
@@ -7712,8 +7721,10 @@ namespace hist_mmorpg
         private void dealWithHouseholdAffairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Globals_Client.charToView = null;
+
             // refresh household affairs screen 
             this.refreshHouseholdDisplay();
+
             // display household affairs screen
             Globals_Client.containerToView = this.houseContainer;
             Globals_Client.containerToView.BringToFront();
@@ -9158,6 +9169,12 @@ namespace hist_mmorpg
                     // if no existing army, create one
                     if (operation.Equals("new"))
                     {
+                        // if necessary, exit keep (new armies are created outside keep)
+                        if (Globals_Client.myPlayerCharacter.inKeep)
+                        {
+                            Globals_Client.myPlayerCharacter.exitKeep();
+                        }
+
                         Army newArmy = new Army(Globals_Game.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
                         this.addArmy(newArmy);
                     }
