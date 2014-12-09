@@ -1537,8 +1537,19 @@ namespace hist_mmorpg
             // check if character leading an army
             if (!String.IsNullOrWhiteSpace(this.armyID))
             {
+                // get kingdom
+                Kingdom myKingdom = null;
+                if (this is PlayerCharacter)
+                {
+                    myKingdom = (this as PlayerCharacter).getKingdom();
+                }
+                else
+                {
+                    myKingdom = (this as NonPlayerCharacter).getKingdom();
+                }
+
                 // no army of different nationality from fief allowed in keep
-                if (this.location.getCurrentKingdom() != this.getKingdom())
+                if (this.location.getCurrentKingdom() != myKingdom)
                 {
                     proceed = false;
                     if (Globals_Client.showMessages)
@@ -1727,39 +1738,6 @@ namespace hist_mmorpg
             }
 
             return mother;
-        }
-
-        /// <summary>
-        /// Gets character's queen
-        /// </summary>
-        /// <returns>The queen</returns>
-        public NonPlayerCharacter getQueen()
-        {
-            PlayerCharacter myKing = null;
-            NonPlayerCharacter myQueen = null;
-
-            if (this.familyID != null)
-            {
-                // get kingdom
-                Kingdom myKingdom = this.getKingdom();
-
-                // get king
-                if (myKingdom != null)
-                {
-                    myKing = this.getHeadOfFamily().getHomeFief().province.kingdom.owner;
-
-                    // get queen
-                    if (myKing.spouse != null)
-                    {
-                        if (Globals_Game.npcMasterList.ContainsKey(myKing.spouse))
-                        {
-                            myQueen = Globals_Game.npcMasterList[myKing.spouse];
-                        }
-                    }
-                }
-            }
-
-            return myQueen;
         }
 
         /// <summary>
@@ -2276,29 +2254,8 @@ namespace hist_mmorpg
                 // automatic BABY NAMING
                 if (this is NonPlayerCharacter)
                 {
-                    // if (age >= 1) && (firstName.Equals("Baby")), character firstname = king's
-                    if (this.familyID != null)
-                    {
-                        if ((this as NonPlayerCharacter).checkForName(1))
-                        {
-                            // boys = try to get king's firstName 
-                            if (this.isMale)
-                            {
-                                if ((this as NonPlayerCharacter).getKing() != null)
-                                {
-                                    this.firstName = (this as NonPlayerCharacter).getKing().firstName;
-                                }
-                            }
-                            else
-                            {
-                                // girls = try to get queen's firstName 
-                                if (this.getQueen() != null)
-                                {
-                                    this.firstName = this.getQueen().firstName;
-                                }
-                            }
-                        }
-                    }
+                    // check for naming requirement and, if so, assign regent's first name
+                    (this as NonPlayerCharacter).checkNeedsNaming();
                 }
 
                 // reset DAYS
@@ -2510,27 +2467,6 @@ namespace hist_mmorpg
             }
 
             return myArmies;
-        }
-
-        /// <summary>
-        /// Gets character's kingdom
-        /// </summary>
-        /// <returns>The kingdom</returns>
-        public Kingdom getKingdom()
-        {
-            Kingdom myKingdom = null;
-
-            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Game.kingdomMasterList)
-            {
-                // get kingdom with matching nationality
-                if (kingdomEntry.Value.nationality == this.nationality)
-                {
-                    myKingdom = kingdomEntry.Value;
-                    break;
-                }
-            }
-
-            return myKingdom;
         }
 
     }
@@ -3367,6 +3303,27 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Gets character's kingdom
+        /// </summary>
+        /// <returns>The kingdom</returns>
+        public Kingdom getKingdom()
+        {
+            Kingdom myKingdom = null;
+
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Game.kingdomMasterList)
+            {
+                // get kingdom with matching nationality
+                if (kingdomEntry.Value.nationality == this.nationality)
+                {
+                    myKingdom = kingdomEntry.Value;
+                    break;
+                }
+            }
+
+            return myKingdom;
+        }
+
+        /// <summary>
         /// Gets PlayerCharacter's king
         /// </summary>
         /// <returns>The king</returns>
@@ -3384,6 +3341,32 @@ namespace hist_mmorpg
             }
 
             return myKing;
+        }
+
+        /// <summary>
+        /// Gets character's queen
+        /// </summary>
+        /// <returns>The queen</returns>
+        public NonPlayerCharacter getQueen()
+        {
+            NonPlayerCharacter myQueen = null;
+
+            // get king
+            PlayerCharacter myKing = this.getKing();
+
+            if (myKing != null)
+            {
+                // get queen
+                if (!String.IsNullOrWhiteSpace(myKing.spouse))
+                {
+                    if (Globals_Game.npcMasterList.ContainsKey(myKing.spouse))
+                    {
+                        myQueen = Globals_Game.npcMasterList[myKing.spouse];
+                    }
+                }
+            }
+
+            return myQueen;
         }
 
         /// <summary>
@@ -4025,17 +4008,17 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating whether NPC needs naming</returns>
         /// <param name="age">NPC age to check for</param>
-        public bool checkForName(byte age)
+        public bool hasBabyName(byte age)
         {
-            bool needsName = false;
+            bool hasBabyName = false;
 
             // look for NPC with age < 1 who has firstname of 'baby'
             if ((this.calcCharAge() == age) && ((this.firstName).ToLower().Equals("baby")))
             {
-                needsName = true;
+                hasBabyName = true;
             }
 
-            return needsName;
+            return hasBabyName;
         }
 
         /// <summary>
@@ -4112,26 +4095,20 @@ namespace hist_mmorpg
             Character nationalitySource = null;
 
             // get nationality source
-            // employer
-            if (this.familyID != null)
+            // head of family
+            if (!String.IsNullOrWhiteSpace(this.familyID))
             {
-                if (Globals_Game.pcMasterList.ContainsKey(this.familyID))
-                {
-                    nationalitySource = Globals_Game.pcMasterList[this.familyID];
-                }
+                nationalitySource = this.getHeadOfFamily();
             }
 
-            // head of family
-            else if (this.myBoss != null)
+            // employer
+            else if (!String.IsNullOrWhiteSpace(this.myBoss))
             {
-                if (Globals_Game.pcMasterList.ContainsKey(this.myBoss))
-                {
-                    nationalitySource = Globals_Game.pcMasterList[this.myBoss];
-                }
+                nationalitySource = this.getEmployer();
             }
 
             // self
-            else
+            if (nationalitySource == null)
             {
                 nationalitySource = this;
             }
@@ -4156,42 +4133,46 @@ namespace hist_mmorpg
         public PlayerCharacter getKing()
         {
             PlayerCharacter myKing = null;
-            Character nationalitySource = null;
 
-            // get nationality source
-            // employer
-            if (!String.IsNullOrWhiteSpace(this.familyID))
-            {
-                nationalitySource = this.getHeadOfFamily();
-            }
+            // get kingdom
+            Kingdom myKingdom = this.getKingdom();
 
-            // head of family
-            else if (!String.IsNullOrWhiteSpace(this.myBoss))
+            // get king with matching nationality
+            if (myKingdom != null)
             {
-                nationalitySource = this.getEmployer();
-            }
-
-            // self
-            if (nationalitySource == null)
-            {
-                nationalitySource = this;
-            }
-
-            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Game.kingdomMasterList)
-            {
-                // get king with matching nationality
-                if (kingdomEntry.Value.nationality == nationalitySource.nationality)
+                if (myKingdom.owner != null)
                 {
-                    if (kingdomEntry.Value.owner != null)
-                    {
-                        myKing = kingdomEntry.Value.owner;
-                    }
-
-                    break;
+                    myKing = myKingdom.owner;
                 }
             }
 
             return myKing;
+        }
+
+        /// <summary>
+        /// Gets character's queen
+        /// </summary>
+        /// <returns>The queen</returns>
+        public NonPlayerCharacter getQueen()
+        {
+            NonPlayerCharacter myQueen = null;
+
+            // get king
+            PlayerCharacter myKing = this.getKing();
+
+            if (myKing != null)
+            {
+                // get queen
+                if (!String.IsNullOrWhiteSpace(myKing.spouse))
+                {
+                    if (Globals_Game.npcMasterList.ContainsKey(myKing.spouse))
+                    {
+                        myQueen = Globals_Game.npcMasterList[myKing.spouse];
+                    }
+                }
+            }
+
+            return myQueen;
         }
 
         /// <summary>
@@ -4211,6 +4192,36 @@ namespace hist_mmorpg
             }
 
             return myEmployer;
+        }
+
+        /// <summary>
+        /// Checks to see if the character needs to be named and, if so, assigns regent's first name
+        /// </summary>
+        public void checkNeedsNaming()
+        {
+            // if (age >= 1) && (firstName.Equals("Baby")), character firstname = king's/queen's
+            if (this.familyID != null)
+            {
+                if (this.hasBabyName(1))
+                {
+                    // boys = try to get king's firstName 
+                    if (this.isMale)
+                    {
+                        if (this.getKing() != null)
+                        {
+                            this.firstName = this.getKing().firstName;
+                        }
+                    }
+                    else
+                    {
+                        // girls = try to get queen's firstName 
+                        if (this.getQueen() != null)
+                        {
+                            this.firstName = this.getQueen().firstName;
+                        }
+                    }
+                }
+            }
         }
 
     }

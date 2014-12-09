@@ -11,6 +11,10 @@ namespace hist_mmorpg
     public static class Globals_Game
     {
         /// <summary>
+        /// Holds current challenges for ownership of provinces or kingdoms
+        /// </summary>
+        public static Dictionary<string, OwnershipChallenge> ownershipChallenges = new Dictionary<string, OwnershipChallenge>();
+        /// <summary>
         /// Holds data for all players required for the calculation of individual victory
         /// </summary>
         public static Dictionary<string, VictoryData> victoryData = new Dictionary<string,VictoryData>();
@@ -195,6 +199,10 @@ namespace hist_mmorpg
         /// </summary>
         public static uint newJournalEntryID = 1;
         /// <summary>
+        /// Holds next value for OwnershipChallenge ID
+        /// </summary>
+        public static uint newOwnChallengeID = 1;
+        /// <summary>
         /// Holds HexMapGraph for this game
         /// </summary>
         public static HexMapGraph gameMap;
@@ -366,12 +374,22 @@ namespace hist_mmorpg
 
             // get newJournalEntryID
             newID = Globals_Game.newJournalEntryID;
-            // System.Windows.Forms.MessageBox.Show("jEntryID: " + newID.ToString());
 
             // increment newJournalEntryID
             Globals_Game.newJournalEntryID++;
 
             return newID;
+        }
+
+        /// <summary>
+        /// Gets the next available newOwnChallengeID, then increments it
+        /// </summary>
+        /// <returns>string containing newOwnChallengeID</returns>
+        public static string getNextOwnChallengeID()
+        {
+            string challengeID = "Challenge_" + Globals_Game.newOwnChallengeID;
+            Globals_Game.newOwnChallengeID++;
+            return challengeID;
         }
 
         /// <summary>
@@ -597,4 +615,46 @@ namespace hist_mmorpg
             return fiefScore;
         }
     }
+
+    /// <summary>
+    /// Struct storing data on ownership challenges (for Province or Kingdom)
+    /// </summary>
+    public struct OwnershipChallenge
+    {
+        /// <summary>
+        /// Holds ID of challenge
+        /// </summary>
+        public string challengeID;
+        /// <summary>
+        /// Holds ID of challenger
+        /// </summary>
+        public string characterID;
+        /// <summary>
+        /// Holds type of place
+        /// </summary>
+        public string placeType;
+        /// <summary>
+        /// Holds ID of place
+        /// </summary>
+        public string placeID;
+        /// <summary>
+        /// Holds number of seasons so far that challenger has met ownership conditions
+        /// </summary>
+        public int counter;
+
+        /// <summary>
+        /// Constructor for TitleName
+        /// </summary>
+        /// <param name="chID">string holding Language ID</param>
+        /// <param name="type">string holding title name associated with specific language</param>
+        public OwnershipChallenge(string chalID, string chID, string type, string place)
+        {
+            this.challengeID = chalID;
+            this.characterID = chID;
+            this.placeType = type;
+            this.placeID = place;
+            this.counter = 0;
+        }
+    }
+
 }

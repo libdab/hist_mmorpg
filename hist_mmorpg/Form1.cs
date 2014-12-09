@@ -4258,6 +4258,8 @@ namespace hist_mmorpg
             this.fiefsListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
             this.fiefsListView.Columns.Add("Where am I?", -2, HorizontalAlignment.Left);
             this.fiefsListView.Columns.Add("Home Fief?", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Province Name", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -4341,6 +4343,9 @@ namespace hist_mmorpg
             // clear existing items in list
             this.fiefsListView.Items.Clear();
 
+            // disable controls until fief selected
+            this.disableControls(this.fiefsOwnedContainer.Panel1);
+
             ListViewItem[] fiefsOwned = new ListViewItem[Globals_Client.myPlayerCharacter.ownedFiefs.Count];
             // iterates through fiefsOwned
             for (int i = 0; i < Globals_Client.myPlayerCharacter.ownedFiefs.Count; i++)
@@ -4371,6 +4376,12 @@ namespace hist_mmorpg
                 {
                     fiefsOwned[i].SubItems.Add("");
                 }
+
+                // province name
+                fiefsOwned[i].SubItems.Add(Globals_Client.myPlayerCharacter.ownedFiefs[i].province.name);
+
+                // province ID
+                fiefsOwned[i].SubItems.Add(Globals_Client.myPlayerCharacter.ownedFiefs[i].province.id);
 
                 // add item to fiefsListView
                 this.fiefsListView.Items.Add(fiefsOwned[i]);
@@ -4686,7 +4697,7 @@ namespace hist_mmorpg
                 // check if needs to be named
                 if (Globals_Client.myPlayerCharacter.myNPCs[i].familyID != null)
                 {
-                    bool nameRequired = Globals_Client.myPlayerCharacter.myNPCs[i].checkForName(0);
+                    bool nameRequired = Globals_Client.myPlayerCharacter.myNPCs[i].hasBabyName(0);
 
                     if (nameRequired)
                     {
@@ -7036,25 +7047,11 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void fiefsListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            Fief fiefToDisplay = null;
-
-            // loop through player's owned fiefs until correct fief is found
-            for (int i = 0; i < Globals_Client.myPlayerCharacter.ownedFiefs.Count; i++)
+            // enable controls
+            if (this.fiefsListView.SelectedItems.Count > 0)
             {
-                if (Globals_Client.myPlayerCharacter.ownedFiefs[i].id.Equals(this.fiefsListView.SelectedItems[0].SubItems[1].Text))
-                {
-                    fiefToDisplay = Globals_Client.myPlayerCharacter.ownedFiefs[i];
-                }
-
-            }
-
-            // display fief details
-            if (fiefToDisplay != null)
-            {
-                this.refreshFiefContainer(fiefToDisplay);
-                //this.fiefTextBox.Text = this.displayFief(fiefToView);
-                Globals_Client.containerToView = this.fiefContainer;
-                Globals_Client.containerToView.BringToFront();
+                this.fiefsChallengeBtn.Enabled = true;
+                this.fiefsViewBtn.Enabled = true;
             }
         }
 
@@ -18861,6 +18858,25 @@ namespace hist_mmorpg
 
             // clear ID box
             this.adminEditTextBox.Clear();
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the fiefsViewBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefsViewBtn_Click(object sender, EventArgs e)
+        {
+            if (this.fiefsListView.SelectedItems.Count > 0)
+            {
+                // get fief to view
+                Globals_Client.fiefToView = Globals_Game.fiefMasterList[this.fiefsListView.SelectedItems[0].SubItems[1].Text];
+
+                // go to fief display screen
+                this.refreshFiefContainer(Globals_Client.fiefToView);
+                Globals_Client.containerToView = this.fiefContainer;
+                Globals_Client.containerToView.BringToFront();
+            }
         }
 
     }
