@@ -3827,6 +3827,9 @@ namespace hist_mmorpg
                 }
             }
 
+            // CHECK OWNERSHIP CHALLENGES
+            Globals_Game.processOwnershipChallenges();
+
             // SWITCH ON MESSAGES
             Globals_Client.showMessages = true;
 
@@ -4259,6 +4262,8 @@ namespace hist_mmorpg
             this.provinceProvListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
             this.provinceProvListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
             this.provinceProvListView.Columns.Add("Last season tax rate", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Kingdom ID", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Kingdom Name", -2, HorizontalAlignment.Left);
             // fiefs
             this.provinceFiefListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
             this.provinceFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
@@ -4986,11 +4991,7 @@ namespace hist_mmorpg
         public void refreshProvinceContainer(Province province = null)
         {
             // disable controls until place selected in ListView
-            this.provinceTaxBtn.Enabled = false;
-            this.provinceTaxTextBox.Enabled = false;
-
-            // remove any previously displayed text
-            this.provinceTaxTextBox.Text = "";
+            this.disableControls(this.provinceContainer.Panel1);
 
             // clear existing items in places lists
             this.provinceProvListView.Items.Clear();
@@ -5051,6 +5052,12 @@ namespace hist_mmorpg
                     {
                         provItem.SubItems.Add(thisFief.keyStatsCurrent[12].ToString());
                     }
+
+                    // kingdom ID
+                    provItem.SubItems.Add(thisProvince.getCurrentKingdom().id);
+
+                    // kingdom name
+                    provItem.SubItems.Add(thisProvince.getCurrentKingdom().name);
 
                     // see if province to view has been passed in
                     if (province != null)
@@ -14391,6 +14398,7 @@ namespace hist_mmorpg
                     // enable controls
                     this.provinceTaxBtn.Enabled = true;
                     this.provinceTaxTextBox.Enabled = true;
+                    this.provinceChallengeBtn.Enabled = true;
 
                     // set provinceToView
                     Globals_Client.provinceToView = thisProvince;
@@ -18960,6 +18968,70 @@ namespace hist_mmorpg
                 }
 
                 this.fiefsListView.Focus();
+            }
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the provinceChallengeBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void provinceChallengeBtn_Click(object sender, EventArgs e)
+        {
+            if (this.provinceProvListView.SelectedItems.Count > 0)
+            {
+                // get kingdom
+                Kingdom targetKingdom = Globals_Game.kingdomMasterList[this.provinceProvListView.SelectedItems[0].SubItems[4].Text];
+
+                // ensure aren't current owner
+                if (Globals_Client.myPlayerCharacter == targetKingdom.owner)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You are already the King of " + targetKingdom.name + "!");
+                    }
+                }
+
+                // legitimate challenge
+                else
+                {
+                    // create and send new OwnershipChallenge
+                    OwnershipChallenge newChallenge = new OwnershipChallenge(Globals_Game.getNextOwnChallengeID(), Globals_Client.myPlayerCharacter.charID, "kingdom", targetKingdom.id);
+                    Globals_Game.addOwnershipChallenge(newChallenge);
+
+                    // create and send journal entry
+                    // get interested parties
+                    PlayerCharacter currentOwner = targetKingdom.owner;
+
+                    // ID
+                    uint entryID = Globals_Game.getNextJournalEntryID();
+
+                    // date
+                    uint year = Globals_Game.clock.currentYear;
+                    byte season = Globals_Game.clock.currentSeason;
+
+                    // location
+                    string entryLoc = targetKingdom.id;
+
+                    // journal entry personae
+                    string currentOwnerEntry = currentOwner.charID + "|king";
+                    string challengerEntry = Globals_Client.myPlayerCharacter.charID + "|pretender";
+                    string[] entryPersonae = new string[] { currentOwnerEntry, challengerEntry };
+
+                    // entry type
+                    string entryType = "depose_new";
+
+                    // journal entry description
+                    string description = "On this day of Our Lord a challenge for the crown of " + targetKingdom.name + " (" + targetKingdom.id + ")";
+                    description += " has COMMENCED.  " + Globals_Client.myPlayerCharacter.firstName + " " + Globals_Client.myPlayerCharacter.familyName + " seeks to press his claim ";
+                    description += "and depose the current king, His Highness " + currentOwner.firstName + " " + currentOwner.familyName + ", King of " + targetKingdom.name + ".";
+
+                    // create and send a proposal (journal entry)
+                    JournalEntry myEntry = new JournalEntry(entryID, year, season, entryPersonae, entryType, descr: description, loc: entryLoc);
+                    Globals_Game.addPastEvent(myEntry);
+                }
+
+                this.provinceProvListView.Focus();
             }
         }
 

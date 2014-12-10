@@ -425,6 +425,7 @@ namespace hist_mmorpg
             this.adminEditSkillNameTextBox = new System.Windows.Forms.TextBox();
             this.label81 = new System.Windows.Forms.Label();
             this.adminEditSkillIdTextBox = new System.Windows.Forms.TextBox();
+            this.provinceChallengeBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -3133,6 +3134,7 @@ namespace hist_mmorpg
             // 
             // provinceContainer.Panel1
             // 
+            this.provinceContainer.Panel1.Controls.Add(this.provinceChallengeBtn);
             this.provinceContainer.Panel1.Controls.Add(this.label28);
             this.provinceContainer.Panel1.Controls.Add(this.provinceTaxTextBox);
             this.provinceContainer.Panel1.Controls.Add(this.provinceTaxBtn);
@@ -4702,17 +4704,27 @@ namespace hist_mmorpg
             this.adminEditSkillIdTextBox.Size = new System.Drawing.Size(159, 20);
             this.adminEditSkillIdTextBox.TabIndex = 27;
             // 
+            // provinceChallengeBtn
+            // 
+            this.provinceChallengeBtn.Location = new System.Drawing.Point(30, 100);
+            this.provinceChallengeBtn.Name = "provinceChallengeBtn";
+            this.provinceChallengeBtn.Size = new System.Drawing.Size(165, 43);
+            this.provinceChallengeBtn.TabIndex = 44;
+            this.provinceChallengeBtn.Text = "Challenge for Kingship of Kingdom";
+            this.provinceChallengeBtn.UseVisualStyleBackColor = true;
+            this.provinceChallengeBtn.Click += new System.EventHandler(this.provinceChallengeBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
+            this.Controls.Add(this.provinceContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.travelContainer);
-            this.Controls.Add(this.provinceContainer);
             this.Controls.Add(this.royalGiftsContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.adminEditContainer);
@@ -5307,6 +5319,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button adminEditCancelBtn;
         private System.Windows.Forms.Button fiefsChallengeBtn;
         private System.Windows.Forms.Button fiefsViewBtn;
+        private System.Windows.Forms.Button provinceChallengeBtn;
 
     }
 }
