@@ -115,6 +115,34 @@ namespace hist_mmorpg
             return thisKingdom;
         }
 
+        /// <summary>
+        /// Transfers ownership of the province to the specified PlayerCharacter
+        /// </summary>
+        /// <param name="newOwner">The new owner</param>
+        public void transferOwnership(PlayerCharacter newOwner)
+        {
+            // get current title holder
+            Character titleHolder = this.getTitleHolder();
+
+            // remove from current title holder's titles
+            titleHolder.myTitles.Remove(this.id);
+
+            // add to newOwner's titles
+            newOwner.myTitles.Add(this.id);
+
+            // update province titleHolder property
+            this.titleHolder = newOwner.charID;
+
+            // remove from current owner's ownedProvinces
+            this.owner.ownedProvinces.Remove(this);
+
+            // add to newOwner's ownedProvinces
+            newOwner.ownedProvinces.Add(this);
+
+            // update province owner property
+            this.owner = newOwner;
+        }
+
     }
 
 	/// <summary>

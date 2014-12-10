@@ -448,6 +448,151 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Adds a new OwnershipChallenge to the ownershipChallenges collection
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="challenge">OwnershipChallenge to be added</param>
+        public static bool addOwnershipChallenge(OwnershipChallenge challenge)
+        {
+            bool success = true;
+
+            if (Globals_Game.ownershipChallenges.ContainsKey(challenge.id))
+            {
+                success = false;
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("There is already a challenge for the ownership of " + challenge.getPlace().name + ".");
+                }
+            }
+
+            else
+            {
+                Globals_Game.ownershipChallenges.Add(challenge.id, challenge);
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Processes all challenges in the ownershipChallenges collection
+        /// </summary>
+        public static void processOwnershipChallenges()
+        {
+            List<OwnershipChallenge> toBeRemoved = new List<OwnershipChallenge>();
+            PlayerCharacter challenger = null;
+            Place contestedPlace = null;
+
+            foreach (KeyValuePair<string, OwnershipChallenge> challenge in Globals_Game.ownershipChallenges)
+            {
+                // get challenger and place
+                challenger = challenge.Value.getChallenger();
+                contestedPlace = challenge.Value.getPlace();
+                int challengerTally = 0;
+                int totalParts = 0;
+                double successThreshold = 0;
+
+                // get challenger's ownership tally
+                if ((contestedPlace != null) && (challenger != null))
+                {
+                    if (challenge.Value.placeType.Equals("province"))
+                    {
+                        // iterate through all fiefs
+                        foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
+                        {
+                            if (fiefEntry.Value.province.id.Equals(contestedPlace.id))
+                            {
+                                // update total fiefs in province
+                                totalParts++;
+
+                                // update challenger's ownership tally
+                                if (fiefEntry.Value.owner == challenger)
+                                {
+                                    challengerTally++;
+                                }
+                            }
+                        }
+
+                        // work out success threshold
+                        successThreshold = totalParts / 2.0;
+                    }
+
+                    if (challenge.Value.placeType.Equals("kingdom"))
+                    {
+                        // iterate through all provinces
+                        foreach (KeyValuePair<string, Province> provEntry in Globals_Game.provinceMasterList)
+                        {
+                            if (provEntry.Value.getCurrentKingdom().id.Equals(contestedPlace.id))
+                            {
+                                // update total provinces in kingdom
+                                totalParts++;
+
+                                // update challenger's ownership tally
+                                if (provEntry.Value.owner == challenger)
+                                {
+                                    challengerTally++;
+                                }
+                            }
+                        }
+
+                        // work out success threshold
+                        successThreshold = totalParts / 2.0;
+                    }
+
+                    // check to see if ownership condition has been met
+                    // ownership condition MET
+                    if (challengerTally > successThreshold)
+                    {
+                        // increment challenge counter
+                        challenge.Value.incrementCounter();
+
+                        // check to see if challenge has succeeded
+                        if (challenge.Value.counter == 4)
+                        {
+                            // province
+                            if (challenge.Value.placeType.Equals("province"))
+                            {
+                                // process success
+                                (contestedPlace as Province).transferOwnership(challenger);
+
+                                // create journal entry
+                            }
+
+                            // kingdom
+                            else if (challenge.Value.placeType.Equals("kingdom"))
+                            {
+                                // process success
+                                (contestedPlace as Kingdom).transferOwnership(challenger);
+
+                                // create journal entry
+                            }
+
+                            // mark challenge for removal
+                            toBeRemoved.Add(challenge.Value);
+                        }
+                    }
+
+                    // ownership condition NOT met
+                    else
+                    {
+                        // mark challenge for removal
+                        toBeRemoved.Add(challenge.Value);
+
+                        // create journal entry
+                    }
+                }
+            }
+
+            // clear challenges
+            if (toBeRemoved.Count > 0)
+            {
+                foreach (OwnershipChallenge thisChallenge in toBeRemoved)
+                {
+                    Globals_Game.ownershipChallenges.Remove(thisChallenge.id);
+                }
+            }
+        }
+
+        /// <summary>
         /// Adds an observer (Form1 object) to the list of registered observers
         /// </summary>
         /// <param name="obs">Observer to be added</param>
@@ -624,11 +769,11 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds ID of challenge
         /// </summary>
-        public string challengeID;
+        public string id;
         /// <summary>
         /// Holds ID of challenger
         /// </summary>
-        public string characterID;
+        public string challengerID;
         /// <summary>
         /// Holds type of place
         /// </summary>
@@ -643,17 +788,75 @@ namespace hist_mmorpg
         public int counter;
 
         /// <summary>
-        /// Constructor for TitleName
+        /// Constructor for OwnershipChallenge
         /// </summary>
-        /// <param name="chID">string holding Language ID</param>
-        /// <param name="type">string holding title name associated with specific language</param>
+        /// <param name="chalID">string holding challenge ID</param>
+        /// <param name="chID">string holding ID of challenger</param>
+        /// <param name="type">string holding type of place</param>
+        /// <param name="place">string holding ID of place</param>
         public OwnershipChallenge(string chalID, string chID, string type, string place)
         {
-            this.challengeID = chalID;
-            this.characterID = chID;
+            this.id = chalID;
+            this.challengerID = chID;
             this.placeType = type;
             this.placeID = place;
             this.counter = 0;
+        }
+
+        /// <summary>
+        /// Gets the PlayerCharacter who has issued the challenge
+        /// </summary>
+        /// <returns>The challenger (PlayerCharacter)</returns>
+        public PlayerCharacter getChallenger()
+        {
+            PlayerCharacter challenger = null;
+
+            if (!String.IsNullOrWhiteSpace(this.challengerID))
+            {
+                if (Globals_Game.pcMasterList.ContainsKey(this.challengerID))
+                {
+                    challenger = Globals_Game.pcMasterList[this.challengerID];
+                }
+            }
+
+            return challenger;
+        }
+
+        /// <summary>
+        /// Gets the Place being contested
+        /// </summary>
+        /// <returns>The Place</returns>
+        public Place getPlace()
+        {
+            Place contestedPlace = null;
+
+            // get province
+            if (this.placeType.Equals("province"))
+            {
+                if (Globals_Game.provinceMasterList.ContainsKey(this.placeID))
+                {
+                    contestedPlace = Globals_Game.provinceMasterList[this.placeID];
+                }
+            }
+
+            // get kingdom
+            else if (this.placeType.Equals("kingdom"))
+            {
+                if (Globals_Game.kingdomMasterList.ContainsKey(this.placeID))
+                {
+                    contestedPlace = Globals_Game.kingdomMasterList[this.placeID];
+                }
+            }
+
+            return contestedPlace;
+        }
+
+        /// <summary>
+        /// Increments the season counter
+        /// </summary>
+        public void incrementCounter()
+        {
+            this.counter++;
         }
     }
 

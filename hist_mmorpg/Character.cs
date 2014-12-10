@@ -1537,34 +1537,29 @@ namespace hist_mmorpg
             // check if character leading an army
             if (!String.IsNullOrWhiteSpace(this.armyID))
             {
-                // get kingdom
-                Kingdom myKingdom = null;
-                if (this is PlayerCharacter)
-                {
-                    myKingdom = (this as PlayerCharacter).getKingdom();
-                }
-                else
-                {
-                    myKingdom = (this as NonPlayerCharacter).getKingdom();
-                }
+                // get army
+                Army thisArmy = this.getArmy();
 
-                // no army of different nationality from fief allowed in keep
-                if (this.location.getCurrentKingdom() != myKingdom)
+                if (thisArmy != null)
                 {
-                    proceed = false;
-                    if (Globals_Client.showMessages)
+                    // armies not owned by fief owner not allowed in keep
+                    if (thisArmy.getOwner() != location.owner)
                     {
-                        System.Windows.Forms.MessageBox.Show("Bailiff: You are not permitted to enter the keep with your army, My Lord.");
+                        proceed = false;
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Bailiff: You are not permitted to enter the keep with your army, My Lord.");
+                        }
                     }
-                }
 
-                // only one friendly field army in keep at a time
-                else if (this.location.checkFieldArmyInKeep())
-                {
-                    proceed = false;
-                    if (Globals_Client.showMessages)
+                    // only one friendly field army in keep at a time
+                    else if (this.location.checkFieldArmyInKeep())
                     {
-                        System.Windows.Forms.MessageBox.Show("Bailiff: There is already a friendly field army present in the keep, My Lord.\r\nOnly one is permitted.");
+                        proceed = false;
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Bailiff: There is already a friendly field army present in the keep, My Lord.\r\nOnly one is permitted.");
+                        }
                     }
                 }
             }
@@ -1683,7 +1678,7 @@ namespace hist_mmorpg
         {
             Army thisArmy = null;
 
-            if (this.armyID != null)
+            if (!String.IsNullOrWhiteSpace(this.armyID))
             {
                 if (Globals_Game.armyMasterList.ContainsKey(this.armyID))
                 {

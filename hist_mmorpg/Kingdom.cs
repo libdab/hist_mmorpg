@@ -44,6 +44,38 @@ namespace hist_mmorpg
             // nationality to be inserted later
             this.nationality = null;
         }
+
+        /// <summary>
+        /// Transfers ownership of the kingdom (and the kingship) to the specified PlayerCharacter
+        /// </summary>
+        /// <param name="newOwner">The new owner</param>
+        public void transferOwnership(PlayerCharacter newOwner)
+        {
+            // get current title holder
+            Character titleHolder = this.getTitleHolder();
+
+            // remove from current title holder's titles
+            titleHolder.myTitles.Remove(this.id);
+
+            // add to newOwner's titles
+            newOwner.myTitles.Add(this.id);
+
+            // update kingdom titleHolder property
+            this.titleHolder = newOwner.charID;
+
+            // update Globals_Game king variable
+            if (Globals_Game.kingOne == this.owner)
+            {
+                Globals_Game.kingOne = newOwner;
+            }
+            else if (Globals_Game.kingTwo == this.owner)
+            {
+                Globals_Game.kingTwo = newOwner;
+            }
+
+            // update kingdom owner property
+            this.owner = newOwner;
+        }
     }
 
     /// <summary>
