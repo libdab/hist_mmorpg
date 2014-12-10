@@ -139,6 +139,8 @@ namespace hist_mmorpg
             this.travel_NE_btn = new System.Windows.Forms.Button();
             this.travel_NW_btn = new System.Windows.Forms.Button();
             this.fiefsOwnedContainer = new System.Windows.Forms.SplitContainer();
+            this.fiefsChallengeBtn = new System.Windows.Forms.Button();
+            this.fiefsViewBtn = new System.Windows.Forms.Button();
             this.fiefsListView = new System.Windows.Forms.ListView();
             this.meetingPlaceContainer = new System.Windows.Forms.SplitContainer();
             this.label16 = new System.Windows.Forms.Label();
@@ -423,8 +425,6 @@ namespace hist_mmorpg
             this.adminEditSkillNameTextBox = new System.Windows.Forms.TextBox();
             this.label81 = new System.Windows.Forms.Label();
             this.adminEditSkillIdTextBox = new System.Windows.Forms.TextBox();
-            this.fiefsViewBtn = new System.Windows.Forms.Button();
-            this.fiefsChallengeBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -1669,6 +1669,26 @@ namespace hist_mmorpg
             this.fiefsOwnedContainer.Size = new System.Drawing.Size(935, 711);
             this.fiefsOwnedContainer.SplitterDistance = 310;
             this.fiefsOwnedContainer.TabIndex = 5;
+            // 
+            // fiefsChallengeBtn
+            // 
+            this.fiefsChallengeBtn.Location = new System.Drawing.Point(50, 50);
+            this.fiefsChallengeBtn.Name = "fiefsChallengeBtn";
+            this.fiefsChallengeBtn.Size = new System.Drawing.Size(132, 43);
+            this.fiefsChallengeBtn.TabIndex = 1;
+            this.fiefsChallengeBtn.Text = "Challenge for Ownership of Province";
+            this.fiefsChallengeBtn.UseVisualStyleBackColor = true;
+            this.fiefsChallengeBtn.Click += new System.EventHandler(this.fiefsChallengeBtn_Click);
+            // 
+            // fiefsViewBtn
+            // 
+            this.fiefsViewBtn.Location = new System.Drawing.Point(50, 17);
+            this.fiefsViewBtn.Name = "fiefsViewBtn";
+            this.fiefsViewBtn.Size = new System.Drawing.Size(132, 21);
+            this.fiefsViewBtn.TabIndex = 0;
+            this.fiefsViewBtn.Text = "View Fief";
+            this.fiefsViewBtn.UseVisualStyleBackColor = true;
+            this.fiefsViewBtn.Click += new System.EventHandler(this.fiefsViewBtn_Click);
             // 
             // fiefsListView
             // 
@@ -4681,25 +4701,6 @@ namespace hist_mmorpg
             this.adminEditSkillIdTextBox.Name = "adminEditSkillIdTextBox";
             this.adminEditSkillIdTextBox.Size = new System.Drawing.Size(159, 20);
             this.adminEditSkillIdTextBox.TabIndex = 27;
-            // 
-            // fiefsViewBtn
-            // 
-            this.fiefsViewBtn.Location = new System.Drawing.Point(50, 17);
-            this.fiefsViewBtn.Name = "fiefsViewBtn";
-            this.fiefsViewBtn.Size = new System.Drawing.Size(132, 21);
-            this.fiefsViewBtn.TabIndex = 0;
-            this.fiefsViewBtn.Text = "View Fief";
-            this.fiefsViewBtn.UseVisualStyleBackColor = true;
-            this.fiefsViewBtn.Click += new System.EventHandler(this.fiefsViewBtn_Click);
-            // 
-            // fiefsChallengeBtn
-            // 
-            this.fiefsChallengeBtn.Location = new System.Drawing.Point(50, 50);
-            this.fiefsChallengeBtn.Name = "fiefsChallengeBtn";
-            this.fiefsChallengeBtn.Size = new System.Drawing.Size(132, 43);
-            this.fiefsChallengeBtn.TabIndex = 1;
-            this.fiefsChallengeBtn.Text = "Challenge for Ownership of Province";
-            this.fiefsChallengeBtn.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 

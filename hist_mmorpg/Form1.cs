@@ -777,8 +777,28 @@ namespace hist_mmorpg
             Globals_Game.jEntryPriorities.Add(thisPriorityKey037, 2);
             string[] thisPriorityKey038 = { "fiefOwnership_Gift", "newOwner" };
             Globals_Game.jEntryPriorities.Add(thisPriorityKey038, 2);
-            // next available key = thisPriorityKey039
-
+            // ownership/kingship challenges
+            string[] thisPriorityKey039 = { "ownershipChallenge_new", "owner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey039, 2);
+            string[] thisPriorityKey040 = { "ownershipChallenge_success", "newOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey040, 2);
+            string[] thisPriorityKey041 = { "ownershipChallenge_success", "oldOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey041, 2);
+            string[] thisPriorityKey042 = { "ownershipChallenge_failure", "owner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey042, 2);
+            string[] thisPriorityKey043 = { "ownershipChallenge_failure", "challenger" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey043, 2);
+            string[] thisPriorityKey044 = { "depose_success", "newKing" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey044, 2);
+            string[] thisPriorityKey045 = { "depose_success", "oldKing" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey045, 2);
+            string[] thisPriorityKey046 = { "depose_failure", "king" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey046, 2);
+            string[] thisPriorityKey047 = { "depose_failure", "pretender" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey047, 2);
+            string[] thisPriorityKey048 = { "depose_new", "king" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey048, 2);
+            // next available key = thisPriorityKey049
 
             // create an army and add in appropriate places
             uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 200, 400};
@@ -18876,6 +18896,70 @@ namespace hist_mmorpg
                 this.refreshFiefContainer(Globals_Client.fiefToView);
                 Globals_Client.containerToView = this.fiefContainer;
                 Globals_Client.containerToView.BringToFront();
+            }
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the fiefsChallengeBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefsChallengeBtn_Click(object sender, EventArgs e)
+        {
+            if (this.fiefsListView.SelectedItems.Count > 0)
+            {
+                // get province
+                Province targetProv = Globals_Game.provinceMasterList[this.fiefsListView.SelectedItems[0].SubItems[5].Text];
+
+                // ensure aren't current owner
+                if (Globals_Client.myPlayerCharacter == targetProv.owner)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You already own " + targetProv.name + "!");
+                    }
+                }
+
+                // legitimate challenge
+                else
+                {
+                    // create and send new OwnershipChallenge
+                    OwnershipChallenge newChallenge = new OwnershipChallenge(Globals_Game.getNextOwnChallengeID(), Globals_Client.myPlayerCharacter.charID, "province", targetProv.id);
+                    Globals_Game.addOwnershipChallenge(newChallenge);
+
+                    // create and send journal entry
+                    // get interested parties
+                    PlayerCharacter currentOwner = targetProv.owner;
+
+                    // ID
+                    uint entryID = Globals_Game.getNextJournalEntryID();
+
+                    // date
+                    uint year = Globals_Game.clock.currentYear;
+                    byte season = Globals_Game.clock.currentSeason;
+
+                    // location
+                    string entryLoc = targetProv.id;
+
+                    // journal entry personae
+                    string currentOwnerEntry = currentOwner.charID + "|owner";
+                    string challengerEntry = Globals_Client.myPlayerCharacter.charID + "|challenger";
+                    string[] entryPersonae = new string[] { currentOwnerEntry, challengerEntry };
+
+                    // entry type
+                    string entryType = "ownershipChallenge_new";
+
+                    // journal entry description
+                    string description = "On this day of Our Lord a challenge for the ownership of " + targetProv.name + " (" + targetProv.id + ")";
+                    description += " has COMMENCED.  " + Globals_Client.myPlayerCharacter.firstName + " " + Globals_Client.myPlayerCharacter.familyName + " seeks to rest ownership from ";
+                    description += "the current owner, " + currentOwner.firstName + " " + currentOwner.familyName + ".";
+
+                    // create and send a proposal (journal entry)
+                    JournalEntry myEntry = new JournalEntry(entryID, year, season, entryPersonae, entryType, descr: description, loc: entryLoc);
+                    Globals_Game.addPastEvent(myEntry);
+                }
+
+                this.fiefsListView.Focus();
             }
         }
 

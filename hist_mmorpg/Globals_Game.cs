@@ -481,12 +481,41 @@ namespace hist_mmorpg
             List<OwnershipChallenge> toBeRemoved = new List<OwnershipChallenge>();
             PlayerCharacter challenger = null;
             Place contestedPlace = null;
+            PlayerCharacter currentOwner = null;
 
             foreach (KeyValuePair<string, OwnershipChallenge> challenge in Globals_Game.ownershipChallenges)
             {
                 // get challenger and place
                 challenger = challenge.Value.getChallenger();
                 contestedPlace = challenge.Value.getPlace();
+
+                // prepare JOURNAL ENTRY
+                // get interested parties
+                currentOwner = contestedPlace.owner;
+
+                // ID
+                uint entryID = Globals_Game.getNextJournalEntryID();
+
+                // date
+                uint year = Globals_Game.clock.currentYear;
+                byte season = Globals_Game.clock.currentSeason;
+
+                // location
+                string entryLoc = contestedPlace.id;
+
+                // personae
+                string currentOwnerEntry = "";
+                string challengerEntry = "";
+                string[] entryPersonae = new string[2];
+
+                // description
+                string description = "";
+
+                // entry type
+                string entryType = "";
+
+                // CALCULATE SUCCESS
+                // variables needed for calculation
                 int challengerTally = 0;
                 int totalParts = 0;
                 double successThreshold = 0;
@@ -554,7 +583,18 @@ namespace hist_mmorpg
                                 // process success
                                 (contestedPlace as Province).transferOwnership(challenger);
 
-                                // create journal entry
+                                // journal entry personae
+                                currentOwnerEntry = currentOwner.charID + "|oldOwner";
+                                challengerEntry = challenger.charID + "|newOwner";
+                                entryPersonae = new string[] { currentOwnerEntry, challengerEntry };
+
+                                // entry type
+                                entryType = "ownershipChallenge_success";
+
+                                // journal entry description
+                                description = "On this day of Our Lord a challenge for the ownership of " + contestedPlace.name + " (" + contestedPlace.id + ")";
+                                description += " was SUCCESSFUL.  " + challenger.firstName + " " + challenger.familyName + " succeeds ";
+                                description += currentOwner.firstName + " " + currentOwner.familyName + " as owner.";
                             }
 
                             // kingdom
@@ -563,7 +603,18 @@ namespace hist_mmorpg
                                 // process success
                                 (contestedPlace as Kingdom).transferOwnership(challenger);
 
-                                // create journal entry
+                                // journal entry personae
+                                currentOwnerEntry = currentOwner.charID + "|oldKing";
+                                challengerEntry = challenger.charID + "|newKing";
+                                entryPersonae = new string[] { currentOwnerEntry, challengerEntry };
+
+                                // entry type
+                                entryType = "depose_success";
+
+                                // journal entry description
+                                description = "On this day of Our Lord a challenge for the crown of " + contestedPlace.name + " (" + contestedPlace.id + ")";
+                                description += " was SUCCESSFUL.  His highness " + challenger.firstName + " " + challenger.familyName + " succeeds ";
+                                description += currentOwner.firstName + " " + currentOwner.familyName + " as King of " + contestedPlace.name + ".  Long may he reign.";
                             }
 
                             // mark challenge for removal
@@ -577,8 +628,43 @@ namespace hist_mmorpg
                         // mark challenge for removal
                         toBeRemoved.Add(challenge.Value);
 
-                        // create journal entry
+                        // province
+                        if (challenge.Value.placeType.Equals("province"))
+                        {
+                            // journal entry personae
+                            currentOwnerEntry = currentOwner.charID + "|owner";
+                            challengerEntry = challenger.charID + "|challenger";
+                            entryPersonae = new string[] { currentOwnerEntry, challengerEntry };
+
+                            // entry type
+                            entryType = "ownershipChallenge_failure";
+
+                            // journal entry description
+                            description = "On this day of Our Lord a challenge for the ownership of " + contestedPlace.name + " (" + contestedPlace.id + ")";
+                            description += " was UNSUCCESSFUL.  " + challenger.firstName + " " + challenger.familyName + " was unable to rest ownership from ";
+                            description += currentOwner.firstName + " " + currentOwner.familyName + ".";
+                        }
+
+                        else if (challenge.Value.placeType.Equals("kingdom"))
+                        {
+                            // journal entry personae
+                            currentOwnerEntry = currentOwner.charID + "|king";
+                            challengerEntry = challenger.charID + "|pretender";
+                            entryPersonae = new string[] { currentOwnerEntry, challengerEntry };
+
+                            // entry type
+                            entryType = "depose_failure";
+
+                            // journal entry description
+                            description = "On this day of Our Lord a challenge for the crown of " + contestedPlace.name + " (" + contestedPlace.id + ")";
+                            description += " was UNSUCCESSFUL.  The pretender " + challenger.firstName + " " + challenger.familyName + " was unable to press his claim and ";
+                            description += "His Highness " + currentOwner.firstName + " " + currentOwner.familyName + " remains King of " + contestedPlace.name + "; long may he reign.";
+                        }
                     }
+
+                    // create and send a proposal (journal entry)
+                    JournalEntry myEntry = new JournalEntry(entryID, year, season, entryPersonae, entryType, descr: description, loc: entryLoc);
+                    Globals_Game.addPastEvent(myEntry);
                 }
             }
 
