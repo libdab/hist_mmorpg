@@ -16,12 +16,12 @@ namespace hist_mmorpg
         public static uint newGameID = 1;
         /// <summary>
         /// Holds combat values for different troop types and nationalities
-        /// Key = nationality & Value = combat value for knights, menAtArms, lightCavalry, yeomen, foot, rabble
+        /// Key = nationality & Value = combat value for knights, menAtArms, lightCavalry, longbowmen, crossbowmen, foot, rabble
         /// </summary>
         public static Dictionary<string, uint[]> combatValues = new Dictionary<string, uint[]>();
         /// <summary>
         /// Holds recruitment ratios for different troop types and nationalities
-        /// Key = nationality & Value = % ratio for knights, menAtArms, lightCavalry, yeomen, foot, rabble
+        /// Key = nationality & Value = % ratio for knights, menAtArms, lightCavalry, longbowmen, crossbowmen, foot, rabble
         /// </summary>
         public static Dictionary<string, double[]> recruitRatios = new Dictionary<string, double[]>();
         /// <summary>

@@ -19,11 +19,12 @@ namespace hist_mmorpg
         /// 0 = knights
         /// 1 = menAtArms
         /// 2 = lightCav
-        /// 3 = yeomen
-        /// 4 = foot
-        /// 5 = rabble
+        /// 3 = longbowmen
+        /// 4 = crossbowmen
+        /// 5 = foot
+        /// 6 = rabble
         /// </summary>
-        public uint[] troops = new uint[6] {0, 0, 0, 0, 0, 0};
+        public uint[] troops = new uint[7] {0, 0, 0, 0, 0, 0, 0};
         /// <summary>
         /// Holds army leader (ID)
         /// </summary>
@@ -380,7 +381,8 @@ namespace hist_mmorpg
             PlayerCharacter myOwner = this.getOwner();
 
             // get nationality (effects combat values)
-            string troopNationality = "";
+            string troopNationality = myOwner.nationality.natID;
+            /*
             if (myOwner.nationality.natID.ToUpper().Equals("E"))
             {
                 troopNationality = "E";
@@ -388,7 +390,7 @@ namespace hist_mmorpg
             else
             {
                 troopNationality = "O";
-            }
+            } */
 
             // get combat values for that nationality
             uint[] thisCombatValues = Globals_Server.combatValues[troopNationality];

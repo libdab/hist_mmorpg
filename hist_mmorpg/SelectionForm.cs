@@ -501,7 +501,7 @@ namespace hist_mmorpg
             armyText += ":\r\n";
 
             // labels for troop types
-            string[] troopTypeLabels = new string[] { " - Knights: ", " - Men-at-Arms: ", " - Light Cavalry: ", " - Yeomen: ", " - Foot: ", " - Rabble: " };
+            string[] troopTypeLabels = new string[] { " - Knights: ", " - Men-at-Arms: ", " - Light Cavalry: ", " - Longbowmen: ", " - Crossbowmen: ", " - Foot: ", " - Rabble: " };
 
             // display numbers for each troop type
             for (int i = 0; i < troopNumbers.Length; i++ )
@@ -847,7 +847,8 @@ namespace hist_mmorpg
             this.transferListView.Columns.Add("Knights", -2, HorizontalAlignment.Left);
             this.transferListView.Columns.Add("M-A-A", -2, HorizontalAlignment.Left);
             this.transferListView.Columns.Add("LightCav", -2, HorizontalAlignment.Left);
-            this.transferListView.Columns.Add("Yeomen", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("Longbowmen", -2, HorizontalAlignment.Left);
+            this.transferListView.Columns.Add("Crossbowmen", -2, HorizontalAlignment.Left);
             this.transferListView.Columns.Add("Foot", -2, HorizontalAlignment.Left);
             this.transferListView.Columns.Add("Rabble", -2, HorizontalAlignment.Left);
             this.transferListView.Columns.Add("Days", -2, HorizontalAlignment.Left);
@@ -897,15 +898,17 @@ namespace hist_mmorpg
                     thisDetachment.SubItems.Add(troopDetachment.Value[3]);
                     // lightCav
                     thisDetachment.SubItems.Add(troopDetachment.Value[4]);
-                    // yeomen
+                    // longbowmen
                     thisDetachment.SubItems.Add(troopDetachment.Value[5]);
-                    // foot
+                    // crossbowmen
                     thisDetachment.SubItems.Add(troopDetachment.Value[6]);
-                    // rabble
+                    // foot
                     thisDetachment.SubItems.Add(troopDetachment.Value[7]);
+                    // rabble
+                    thisDetachment.SubItems.Add(troopDetachment.Value[8]);
 
                     // days
-                    thisDetachment.SubItems.Add(troopDetachment.Value[8]);
+                    thisDetachment.SubItems.Add(troopDetachment.Value[9]);
 
                     // owner
                     thisDetachment.SubItems.Add(troopDetachment.Value[0]);
@@ -1101,7 +1104,7 @@ namespace hist_mmorpg
             double daysTaken = 0;
             double minDays = 0;
             bool displayNotAllMsg = false;
-            uint[] totTroopsToAdd = new uint[] {0, 0, 0, 0, 0, 0};
+            uint[] totTroopsToAdd = new uint[] {0, 0, 0, 0, 0, 0, 0};
             string toDisplay = "";
 
             // get army
@@ -1163,7 +1166,7 @@ namespace hist_mmorpg
                     // check for minimum days
                     foreach (ListViewItem item in checkedItems)
                     {
-                        double thisDays = Convert.ToDouble(item.SubItems[7].Text);
+                        double thisDays = Convert.ToDouble(item.SubItems[8].Text);
 
                         // check if detachment has enough days for transfer in this instance
                         // if not, flag display of message at end of process, but do nothing else
@@ -1183,10 +1186,10 @@ namespace hist_mmorpg
 
                     foreach (ListViewItem item in checkedItems)
                     {
-                        double thisDays = Convert.ToDouble(item.SubItems[7].Text);
+                        double thisDays = Convert.ToDouble(item.SubItems[8].Text);
 
                         // get numbers of each type to add
-                        uint[] thisTroops = new uint[] { 0, 0, 0, 0, 0, 0 };
+                        uint[] thisTroops = new uint[] { 0, 0, 0, 0, 0, 0, 0 };
                         uint thisTotal = 0;
                         for (int i = 0; i < thisTroops.Length; i++)
                         {

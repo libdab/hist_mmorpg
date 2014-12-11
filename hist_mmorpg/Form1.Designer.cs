@@ -200,7 +200,7 @@ namespace hist_mmorpg
             this.armyTransFootTextBox = new System.Windows.Forms.TextBox();
             this.armyCampTextBox = new System.Windows.Forms.TextBox();
             this.armyDisbandBtn = new System.Windows.Forms.Button();
-            this.armyTransYeomenTextBox = new System.Windows.Forms.TextBox();
+            this.armyTransLongbowTextBox = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.armyMaintainBtn = new System.Windows.Forms.Button();
             this.armyTransPickupBtn = new System.Windows.Forms.Button();
@@ -268,6 +268,7 @@ namespace hist_mmorpg
             this.label21 = new System.Windows.Forms.Label();
             this.royalGiftsFiefListView = new System.Windows.Forms.ListView();
             this.provinceContainer = new System.Windows.Forms.SplitContainer();
+            this.provinceChallengeBtn = new System.Windows.Forms.Button();
             this.label28 = new System.Windows.Forms.Label();
             this.provinceTaxTextBox = new System.Windows.Forms.TextBox();
             this.provinceTaxBtn = new System.Windows.Forms.Button();
@@ -425,7 +426,8 @@ namespace hist_mmorpg
             this.adminEditSkillNameTextBox = new System.Windows.Forms.TextBox();
             this.label81 = new System.Windows.Forms.Label();
             this.adminEditSkillIdTextBox = new System.Windows.Forms.TextBox();
-            this.provinceChallengeBtn = new System.Windows.Forms.Button();
+            this.armyTransCrossbowTextBox = new System.Windows.Forms.TextBox();
+            this.label86 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -2244,8 +2246,8 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel1
             // 
-            this.armyContainer.Panel1.Controls.Add(this.armyManagementPanel);
             this.armyContainer.Panel1.Controls.Add(this.armyCombatPanel);
+            this.armyContainer.Panel1.Controls.Add(this.armyManagementPanel);
             // 
             // armyContainer.Panel2
             // 
@@ -2256,6 +2258,8 @@ namespace hist_mmorpg
             // 
             // armyManagementPanel
             // 
+            this.armyManagementPanel.Controls.Add(this.armyTransCrossbowTextBox);
+            this.armyManagementPanel.Controls.Add(this.label86);
             this.armyManagementPanel.Controls.Add(this.armyDisplayCmbtBtn);
             this.armyManagementPanel.Controls.Add(this.armyRecruitBtn);
             this.armyManagementPanel.Controls.Add(this.armyTransRabbleTextBox);
@@ -2265,7 +2269,7 @@ namespace hist_mmorpg
             this.armyManagementPanel.Controls.Add(this.armyTransFootTextBox);
             this.armyManagementPanel.Controls.Add(this.armyCampTextBox);
             this.armyManagementPanel.Controls.Add(this.armyDisbandBtn);
-            this.armyManagementPanel.Controls.Add(this.armyTransYeomenTextBox);
+            this.armyManagementPanel.Controls.Add(this.armyTransLongbowTextBox);
             this.armyManagementPanel.Controls.Add(this.label9);
             this.armyManagementPanel.Controls.Add(this.armyMaintainBtn);
             this.armyManagementPanel.Controls.Add(this.armyTransPickupBtn);
@@ -2291,7 +2295,7 @@ namespace hist_mmorpg
             // 
             // armyDisplayCmbtBtn
             // 
-            this.armyDisplayCmbtBtn.Location = new System.Drawing.Point(12, 639);
+            this.armyDisplayCmbtBtn.Location = new System.Drawing.Point(12, 659);
             this.armyDisplayCmbtBtn.Name = "armyDisplayCmbtBtn";
             this.armyDisplayCmbtBtn.Size = new System.Drawing.Size(138, 40);
             this.armyDisplayCmbtBtn.TabIndex = 55;
@@ -2311,7 +2315,7 @@ namespace hist_mmorpg
             // 
             // armyTransRabbleTextBox
             // 
-            this.armyTransRabbleTextBox.Location = new System.Drawing.Point(203, 424);
+            this.armyTransRabbleTextBox.Location = new System.Drawing.Point(203, 449);
             this.armyTransRabbleTextBox.Name = "armyTransRabbleTextBox";
             this.armyTransRabbleTextBox.Size = new System.Drawing.Size(62, 20);
             this.armyTransRabbleTextBox.TabIndex = 52;
@@ -2348,7 +2352,7 @@ namespace hist_mmorpg
             // 
             // armyTransFootTextBox
             // 
-            this.armyTransFootTextBox.Location = new System.Drawing.Point(202, 398);
+            this.armyTransFootTextBox.Location = new System.Drawing.Point(202, 423);
             this.armyTransFootTextBox.Name = "armyTransFootTextBox";
             this.armyTransFootTextBox.Size = new System.Drawing.Size(62, 20);
             this.armyTransFootTextBox.TabIndex = 51;
@@ -2362,7 +2366,7 @@ namespace hist_mmorpg
             // 
             // armyDisbandBtn
             // 
-            this.armyDisbandBtn.Location = new System.Drawing.Point(12, 535);
+            this.armyDisbandBtn.Location = new System.Drawing.Point(12, 573);
             this.armyDisbandBtn.Name = "armyDisbandBtn";
             this.armyDisbandBtn.Size = new System.Drawing.Size(138, 23);
             this.armyDisbandBtn.TabIndex = 11;
@@ -2370,12 +2374,12 @@ namespace hist_mmorpg
             this.armyDisbandBtn.UseVisualStyleBackColor = true;
             this.armyDisbandBtn.Click += new System.EventHandler(this.armyDisbandBtn_Click);
             // 
-            // armyTransYeomenTextBox
+            // armyTransLongbowTextBox
             // 
-            this.armyTransYeomenTextBox.Location = new System.Drawing.Point(203, 372);
-            this.armyTransYeomenTextBox.Name = "armyTransYeomenTextBox";
-            this.armyTransYeomenTextBox.Size = new System.Drawing.Size(62, 20);
-            this.armyTransYeomenTextBox.TabIndex = 50;
+            this.armyTransLongbowTextBox.Location = new System.Drawing.Point(203, 372);
+            this.armyTransLongbowTextBox.Name = "armyTransLongbowTextBox";
+            this.armyTransLongbowTextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransLongbowTextBox.TabIndex = 50;
             // 
             // label9
             // 
@@ -2398,7 +2402,7 @@ namespace hist_mmorpg
             // 
             // armyTransPickupBtn
             // 
-            this.armyTransPickupBtn.Location = new System.Drawing.Point(12, 465);
+            this.armyTransPickupBtn.Location = new System.Drawing.Point(12, 503);
             this.armyTransPickupBtn.Name = "armyTransPickupBtn";
             this.armyTransPickupBtn.Size = new System.Drawing.Size(138, 48);
             this.armyTransPickupBtn.TabIndex = 10;
@@ -2432,7 +2436,7 @@ namespace hist_mmorpg
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(150, 427);
+            this.label11.Location = new System.Drawing.Point(150, 452);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(47, 13);
             this.label11.TabIndex = 43;
@@ -2467,7 +2471,7 @@ namespace hist_mmorpg
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(163, 401);
+            this.label12.Location = new System.Drawing.Point(163, 426);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(34, 13);
             this.label12.TabIndex = 44;
@@ -2502,11 +2506,11 @@ namespace hist_mmorpg
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(147, 375);
+            this.label13.Location = new System.Drawing.Point(120, 375);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(52, 13);
+            this.label13.Size = new System.Drawing.Size(77, 13);
             this.label13.TabIndex = 45;
-            this.label13.Text = "Yeomen: ";
+            this.label13.Text = "Longbowmen: ";
             // 
             // label14
             // 
@@ -3145,6 +3149,16 @@ namespace hist_mmorpg
             this.provinceContainer.Size = new System.Drawing.Size(935, 711);
             this.provinceContainer.SplitterDistance = 442;
             this.provinceContainer.TabIndex = 12;
+            // 
+            // provinceChallengeBtn
+            // 
+            this.provinceChallengeBtn.Location = new System.Drawing.Point(30, 100);
+            this.provinceChallengeBtn.Name = "provinceChallengeBtn";
+            this.provinceChallengeBtn.Size = new System.Drawing.Size(165, 43);
+            this.provinceChallengeBtn.TabIndex = 44;
+            this.provinceChallengeBtn.Text = "Challenge for Kingship of Kingdom";
+            this.provinceChallengeBtn.UseVisualStyleBackColor = true;
+            this.provinceChallengeBtn.Click += new System.EventHandler(this.provinceChallengeBtn_Click);
             // 
             // label28
             // 
@@ -4704,25 +4718,31 @@ namespace hist_mmorpg
             this.adminEditSkillIdTextBox.Size = new System.Drawing.Size(159, 20);
             this.adminEditSkillIdTextBox.TabIndex = 27;
             // 
-            // provinceChallengeBtn
+            // armyTransCrossbowTextBox
             // 
-            this.provinceChallengeBtn.Location = new System.Drawing.Point(30, 100);
-            this.provinceChallengeBtn.Name = "provinceChallengeBtn";
-            this.provinceChallengeBtn.Size = new System.Drawing.Size(165, 43);
-            this.provinceChallengeBtn.TabIndex = 44;
-            this.provinceChallengeBtn.Text = "Challenge for Kingship of Kingdom";
-            this.provinceChallengeBtn.UseVisualStyleBackColor = true;
-            this.provinceChallengeBtn.Click += new System.EventHandler(this.provinceChallengeBtn_Click);
+            this.armyTransCrossbowTextBox.Location = new System.Drawing.Point(202, 398);
+            this.armyTransCrossbowTextBox.Name = "armyTransCrossbowTextBox";
+            this.armyTransCrossbowTextBox.Size = new System.Drawing.Size(62, 20);
+            this.armyTransCrossbowTextBox.TabIndex = 57;
+            // 
+            // label86
+            // 
+            this.label86.AutoSize = true;
+            this.label86.Location = new System.Drawing.Point(118, 401);
+            this.label86.Name = "label86";
+            this.label86.Size = new System.Drawing.Size(79, 13);
+            this.label86.TabIndex = 56;
+            this.label86.Text = "Crossbowmen: ";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
+            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.provinceContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.fiefContainer);
-            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.royalGiftsContainer);
@@ -5079,7 +5099,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox armyTransRabbleTextBox;
         private System.Windows.Forms.TextBox armyTransFootTextBox;
-        private System.Windows.Forms.TextBox armyTransYeomenTextBox;
+        private System.Windows.Forms.TextBox armyTransLongbowTextBox;
         private System.Windows.Forms.TextBox armyTransLCavTextBox;
         private System.Windows.Forms.TextBox armyTransMAAtextBox;
         private System.Windows.Forms.Button armyPillageBtn;
@@ -5320,6 +5340,8 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button fiefsChallengeBtn;
         private System.Windows.Forms.Button fiefsViewBtn;
         private System.Windows.Forms.Button provinceChallengeBtn;
+        private System.Windows.Forms.TextBox armyTransCrossbowTextBox;
+        private System.Windows.Forms.Label label86;
 
     }
 }

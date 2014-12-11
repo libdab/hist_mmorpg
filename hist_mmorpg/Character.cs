@@ -1569,7 +1569,7 @@ namespace hist_mmorpg
                 // if character is English and English barred, don't allow entry
                 if (location.englishBarred)
                 {
-                    if (this.nationality.Equals("E"))
+                    if (this.nationality.Equals("Eng"))
                     {
                         proceed = false;
                         if (Globals_Client.showMessages)
@@ -1584,7 +1584,7 @@ namespace hist_mmorpg
                     // if character is French and French barred, don't allow entry
                     if (location.frenchBarred)
                     {
-                        if (this.nationality.Equals("F"))
+                        if (this.nationality.Equals("Fr"))
                         {
                             proceed = false;
                             if (Globals_Client.showMessages)
@@ -2128,7 +2128,7 @@ namespace hist_mmorpg
             cv += 5;
 
             // factor in nationality
-            if (this.nationality.Equals("E"))
+            if (this.nationality.Equals("Eng"))
             {
                 cv += 5;
             }
@@ -3254,7 +3254,7 @@ namespace hist_mmorpg
                     homeFief.treasury = homeFief.treasury - troopCost;
 
                     // work out how many of each type recruited
-                    uint[] typesRecruited = new uint[] {0, 0, 0, 0, 0, 0};
+                    uint[] typesRecruited = new uint[] {0, 0, 0, 0, 0, 0, 0};
                     uint totalSoFar = 0;
                     for (int i = 0; i < typesRecruited.Length; i++ )
                     {
@@ -3262,11 +3262,14 @@ namespace hist_mmorpg
                         if (i < typesRecruited.Length - 1)
                         {
                             // get army nationality
+                            string thisNationality = this.nationality.natID;
+
+                            /*
                             string thisNationality = this.nationality.natID.ToUpper();
                             if (!thisNationality.Equals("E"))
                             {
                                 thisNationality = "O";
-                            }
+                            } */
                             typesRecruited[i] = Convert.ToUInt32(troopsRecruited * Globals_Server.recruitRatios[thisNationality][i]);
                             totalSoFar += typesRecruited[i];
                         }

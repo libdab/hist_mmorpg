@@ -670,16 +670,16 @@ namespace hist_mmorpg
             Globals_Server.gameTypes.Add(2, "Team historical");
 
             // populate Globals_Server.combatValues
-            uint[] eCombatValues = new uint[] {9, 9, 1, 9, 3, 1};
-            Globals_Server.combatValues.Add("E", eCombatValues);
-            uint[] oCombatValues = new uint[] {7, 7, 3, 2, 2, 1};
-            Globals_Server.combatValues.Add("O", oCombatValues);
+            uint[] eCombatValues = new uint[] {9, 9, 1, 9, 5, 3, 1};
+            Globals_Server.combatValues.Add("Eng", eCombatValues);
+            uint[] fCombatValues = new uint[] {7, 7, 3, 2, 4, 2, 1};
+            Globals_Server.combatValues.Add("Fr", fCombatValues);
 
             // populate Globals_Server.recruitRatios
-            double[] eRecruitRatios = new double[] { 0.01, 0.02, 0, 0.15, 0.33, 0.49 };
-            Globals_Server.recruitRatios.Add("E", eRecruitRatios);
-            double[] oRecruitRatios = new double[] { 0.01, 0.02, 0.03, 0, 0.45, 0.49 };
-            Globals_Server.recruitRatios.Add("O", oRecruitRatios);
+            double[] eRecruitRatios = new double[] { 0.01, 0.02, 0, 0.12, 0.03, 0.32, 0.49 };
+            Globals_Server.recruitRatios.Add("Eng", eRecruitRatios);
+            double[] fRecruitRatios = new double[] { 0.01, 0.02, 0.03, 0, 0.04, 0.41, 0.49 };
+            Globals_Server.recruitRatios.Add("Fr", fRecruitRatios);
 
             // populate Globals_Server.battleProbabilities
             double[] odds = new double[] { 2, 3, 4, 5, 6, 99 };
@@ -801,19 +801,19 @@ namespace hist_mmorpg
             // next available key = thisPriorityKey049
 
             // create an army and add in appropriate places
-            uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 200, 400};
+            uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 100, 200, 400};
             Army myArmy = new Army(Globals_Game.getNextArmyID(), null, null, 90, null, trp: myArmyTroops);
             Globals_Game.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
-            // myArmy.leader = myChar1.charID;
+            myArmy.leader = myChar1.charID;
             myArmy.days = Globals_Game.pcMasterList[myArmy.owner].days;
             myChar1.myArmies.Add(myArmy);
-            // myChar1.armyID = myArmy.armyID;
+            myChar1.armyID = myArmy.armyID;
             myArmy.location = Globals_Game.pcMasterList[myArmy.owner].location.id;
             myChar1.location.armies.Add(myArmy.armyID);
 
             // create another (enemy) army and add in appropriate places
-            uint[] myArmyTroops2 = new uint[] { 10, 10, 30, 0, 200, 0 };
+            uint[] myArmyTroops2 = new uint[] { 10, 10, 30, 0, 40, 200, 0 };
             Army myArmy2 = new Army(Globals_Game.getNextArmyID(), null, null, 90, null, trp: myArmyTroops2, aggr: 1);
             Globals_Game.armyMasterList.Add(myArmy2.armyID, myArmy2);
             myArmy2.owner = myChar2.charID;
@@ -887,7 +887,8 @@ namespace hist_mmorpg
             this.writeDictionary(gameID, "combatValues", Globals_Server.combatValues);
             this.writeDictionary(gameID, "recruitRatios", Globals_Server.recruitRatios);
             this.writeDictionary(gameID, "battleProbabilities", Globals_Server.battleProbabilities);
-            this.writeDictionary(gameID, "victoryConditionTypes", Globals_Server.gameTypes);
+            this.writeDictionary(gameID, "gameTypes", Globals_Server.gameTypes);
+            this.writeDictionary(gameID, "ownershipChallenges", Globals_Game.ownershipChallenges);
             // convert jEntryPriorities prior to writing
 			Dictionary<string, byte> jEntryPrioritiesRiak = this.jEntryPrioritiesToRiak (Globals_Game.jEntryPriorities);
 			this.writeDictionary(gameID, "jEntryPriorities", jEntryPrioritiesRiak);
@@ -958,8 +959,10 @@ namespace hist_mmorpg
             this.writeNewIDvar(gameID, "duration", Globals_Game.duration);
             // startYear
             this.writeNewIDvar(gameID, "startYear", Globals_Game.startYear);
-            // newJournalEntryID
+            // newGameID
             this.writeNewIDvar(gameID, "newGameID", Globals_Server.newGameID);
+            // newOwnChallengeID
+            this.writeNewIDvar(gameID, "newOwnChallengeID", Globals_Game.newOwnChallengeID);
 
             // ========= write GLOBALS_GAME/CLIENT/SERVER BOOL VARIABLES
             // Globals_Game.loadFromDatabase
@@ -1297,6 +1300,7 @@ namespace hist_mmorpg
             Globals_Server.battleProbabilities = this.initialDBload_dictStringDouble(gameID, "battleProbabilities");
             Globals_Server.gameTypes = this.initialDBload_dictIntString(gameID, "gameTypes");
             Globals_Game.jEntryPriorities = this.initialDBload_dictStringByte(gameID, "jEntryPriorities");
+            Globals_Game.ownershipChallenges = this.initialDBload_dictStringOwnCh(gameID, "ownershipChallenges");
 
 			// ========= load GLOBAL_GAME/SERVER newID VARIABLES
 			// newCharID
@@ -1319,6 +1323,8 @@ namespace hist_mmorpg
             Globals_Game.startYear = this.initialDBload_newIDs(gameID, "startYear");
             // newGameID
             Globals_Server.newGameID = this.initialDBload_newIDs(gameID, "newGameID");
+            // newOwnChallengeID
+            Globals_Game.newOwnChallengeID = this.initialDBload_newIDs(gameID, "newOwnChallengeID");
 
 			// ========= load JOURNALS
             Globals_Game.scheduledEvents = this.initialDBload_journal(gameID, "serverScheduledEvents");
@@ -1874,6 +1880,32 @@ namespace hist_mmorpg
             {
 				tempDict = dictResult.Value.GetObject<Dictionary<string, byte>>();
 				dictOut = this.jEntryPrioritiesFromRiak (tempDict);
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve Dictionary " + dictID);
+                }
+            }
+
+            return dictOut;
+        }
+
+        /// <summary>
+        /// Loads Dictionary(string, OwnershipChallenge) from database
+        /// </summary>
+        /// <returns>Dictionary(string, OwnershipChallenge) object</returns>
+        /// <param name="gameID">Game for which Dictionary to be retrieved</param>
+        /// <param name="dictID">ID of Dictionary to be retrieved</param>
+        public Dictionary<string, OwnershipChallenge> initialDBload_dictStringOwnCh(string gameID, string dictID)
+        {
+            Dictionary<string, OwnershipChallenge> dictOut = new Dictionary<string, OwnershipChallenge>();
+            var dictResult = rClient.Get(gameID, dictID);
+
+            if (dictResult.IsSuccess)
+            {
+                dictOut = dictResult.Value.GetObject<Dictionary<string, OwnershipChallenge>>();
             }
             else
             {
@@ -5665,7 +5697,7 @@ namespace hist_mmorpg
             armyText += "\r\n\r\n";
 
             // labels for troop types
-            string[] troopTypeLabels = new string[] { " - Knights: ", " - Men-at-Arms: ", " - Light Cavalry: ", " - Yeomen: ", " - Foot: ", " - Rabble: " };
+            string[] troopTypeLabels = new string[] { " - Knights: ", " - Men-at-Arms: ", " - Light Cavalry: ", " - Longbowmen: ", " - Crossbowmen: ", " - Foot: ", " - Rabble: " };
 
             // display numbers for each troop type
             for (int i = 0; i < troopNumbers.Length; i++)
@@ -5759,8 +5791,9 @@ namespace hist_mmorpg
                 }
                 siegeText += "\r\n";
                 siegeText += "- [Kn: " + defenderGarrison.troops[0] + ";  MAA: " + defenderGarrison.troops[1]
-                    + ";  LCav: " + defenderGarrison.troops[2] + ";  Yeo: " + defenderGarrison.troops[3]
-                    + ";  Ft: " + defenderGarrison.troops[4] + ";  Rbl: " + defenderGarrison.troops[5] + "]";
+                    + ";  LCav: " + defenderGarrison.troops[2] + ";  Lng: " + defenderGarrison.troops[3]
+                    + ";  Crss: " + defenderGarrison.troops[4] + ";  Ft: " + defenderGarrison.troops[5]
+                    + ";  Rbl: " + defenderGarrison.troops[6] + "]";
 
                 // additional army details
                 if (defenderAdditional != null)
@@ -5777,8 +5810,9 @@ namespace hist_mmorpg
                     }
                     siegeText += "\r\n";
                     siegeText += "- [Kn: " + defenderAdditional.troops[0] + ";  MAA: " + defenderAdditional.troops[1]
-                        + ";  LCav: " + defenderAdditional.troops[2] + ";  Yeo: " + defenderAdditional.troops[3]
-                        + ";  Ft: " + defenderAdditional.troops[4] + ";  Rbl: " + defenderAdditional.troops[5] + "]";
+                        + ";  LCav: " + defenderAdditional.troops[2] + ";  Lng: " + defenderAdditional.troops[3]
+                        + ";  Crss: " + defenderAdditional.troops[4] + ";  Ft: " + defenderAdditional.troops[5]
+                        + ";  Rbl: " + defenderAdditional.troops[6] + "]";
                 }
 
                 siegeText += "\r\n\r\nTotal defender casualties so far (including attrition): " + s.totalCasualtiesDefender;
@@ -5809,8 +5843,8 @@ namespace hist_mmorpg
                 }
                 siegeText += "\r\n";
                 siegeText += "- [Kn: " + besieger.troops[0] + ";  MAA: " + besieger.troops[1]
-                    + ";  LCav: " + besieger.troops[2] + ";  Yeo: " + besieger.troops[3]
-                    + ";  Ft: " + besieger.troops[4] + ";  Rbl: " + besieger.troops[5] + "]";
+                    + ";  LCav: " + besieger.troops[2] + ";  Lng: " + besieger.troops[3] + ";  Crss: " + besieger.troops[4]
+                    + ";  Ft: " + besieger.troops[5] + ";  Rbl: " + besieger.troops[6] + "]";
 
                 siegeText += "\r\n\r\nTotal attacker casualties so far (including attrition): " + s.totalCasualtiesAttacker;
             }
@@ -9455,7 +9489,7 @@ namespace hist_mmorpg
                     this.armyTransKnightTextBox.Enabled = true;
                     this.armyTransMAAtextBox.Enabled = true;
                     this.armyTransLCavTextBox.Enabled = true;
-                    this.armyTransYeomenTextBox.Enabled = true;
+                    this.armyTransLongbowTextBox.Enabled = true;
                     this.armyTransFootTextBox.Enabled = true;
                     this.armyTransRabbleTextBox.Enabled = true;
                     this.armyTransDropWhoTextBox.Enabled = true;
@@ -9490,7 +9524,8 @@ namespace hist_mmorpg
                     this.armyTransKnightTextBox.Text = "0";
                     this.armyTransMAAtextBox.Text = "0";
                     this.armyTransLCavTextBox.Text = "0";
-                    this.armyTransYeomenTextBox.Text = "0";
+                    this.armyTransLongbowTextBox.Text = "0";
+                    this.armyTransCrossbowTextBox.Text = "0";
                     this.armyTransFootTextBox.Text = "0";
                     this.armyTransRabbleTextBox.Text = "0";
                 }
@@ -9584,16 +9619,17 @@ namespace hist_mmorpg
                 try
                 {
                     // labels for troop types
-                    string[] troopTypeLabels = new string[] { "knights", "men-at-arms", "light cavalry", "yeomen", "foot", "rabble" };
+                    string[] troopTypeLabels = new string[] { "knights", "men-at-arms", "light cavalry", "longbowmen", "crossbowmen", "foot", "rabble" };
 
                     // get number of troops to transfer
-                    uint[] troopsToTransfer = new uint[] {0, 0, 0, 0, 0, 0};
+                    uint[] troopsToTransfer = new uint[] {0, 0, 0, 0, 0, 0, 0};
                     troopsToTransfer[0] = Convert.ToUInt32(this.armyTransKnightTextBox.Text);
                     troopsToTransfer[1] = Convert.ToUInt32(this.armyTransMAAtextBox.Text);
                     troopsToTransfer[2] = Convert.ToUInt32(this.armyTransLCavTextBox.Text);
-                    troopsToTransfer[3] = Convert.ToUInt32(this.armyTransYeomenTextBox.Text);
-                    troopsToTransfer[4] = Convert.ToUInt32(this.armyTransFootTextBox.Text);
-                    troopsToTransfer[5] = Convert.ToUInt32(this.armyTransRabbleTextBox.Text);
+                    troopsToTransfer[3] = Convert.ToUInt32(this.armyTransLongbowTextBox.Text);
+                    troopsToTransfer[4] = Convert.ToUInt32(this.armyTransCrossbowTextBox.Text);
+                    troopsToTransfer[5] = Convert.ToUInt32(this.armyTransFootTextBox.Text);
+                    troopsToTransfer[6] = Convert.ToUInt32(this.armyTransRabbleTextBox.Text);
 
                     // check each troop type; if not enough in army, cancel
                     for (int i = 0; i < troopsToTransfer.Length; i++)
@@ -9689,10 +9725,10 @@ namespace hist_mmorpg
                         Fief thisFief = Globals_Game.fiefMasterList[Globals_Client.armyToView.location];
 
                         // create transfer entry
-                        string[] thisTransfer = new string[9] { Globals_Client.myPlayerCharacter.charID, this.armyTransDropWhoTextBox.Text,
+                        string[] thisTransfer = new string[10] { Globals_Client.myPlayerCharacter.charID, this.armyTransDropWhoTextBox.Text,
                             troopsToTransfer[0].ToString(), troopsToTransfer[1].ToString(), troopsToTransfer[2].ToString(),
                             troopsToTransfer[3].ToString(), troopsToTransfer[4].ToString(), troopsToTransfer[5].ToString(),
-                            (Globals_Client.armyToView.days - daysTaken).ToString() };
+                            troopsToTransfer[6].ToString(), (Globals_Client.armyToView.days - daysTaken).ToString() };
 
                         // add to fief's troopTransfers list
                         thisFief.troopTransfers.Add(Globals_Game.getNextDetachmentID(), thisTransfer);
@@ -11237,19 +11273,20 @@ namespace hist_mmorpg
                 }
             }
 
-            // gather troops to creat army
+            // gather troops to create army
             uint garrisonSize = 0;
             uint militiaSize = 0;
-            uint[] troopsForArmy = new uint[] { 0, 0, 0, 0, 0, 0 };
-            uint[] tempTroops = new uint[] { 0, 0, 0, 0, 0, 0 };
+            uint[] troopsForArmy = new uint[] { 0, 0, 0, 0, 0, 0, 0 };
+            uint[] tempTroops = new uint[] { 0, 0, 0, 0, 0, 0, 0 };
             uint totalSoFar = 0;
 
             // get army nationality
-            string thisNationality = f.owner.nationality.natID.ToUpper();
+            string thisNationality = f.owner.nationality.natID;
+            /* string thisNationality = f.owner.nationality.natID.ToUpper();
             if (!thisNationality.Equals("E"))
             {
                 thisNationality = "O";
-            }
+            } */
 
             // get size of fief garrison
             garrisonSize = Convert.ToUInt32(f.getGarrisonSize());
