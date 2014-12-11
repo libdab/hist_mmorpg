@@ -1569,7 +1569,7 @@ namespace hist_mmorpg
                 // if character is English and English barred, don't allow entry
                 if (location.englishBarred)
                 {
-                    if (this.nationality.Equals("Eng"))
+                    if (this.nationality.natID.Equals("Eng"))
                     {
                         proceed = false;
                         if (Globals_Client.showMessages)
@@ -1584,7 +1584,7 @@ namespace hist_mmorpg
                     // if character is French and French barred, don't allow entry
                     if (location.frenchBarred)
                     {
-                        if (this.nationality.Equals("Fr"))
+                        if (this.nationality.natID.Equals("Fr"))
                         {
                             proceed = false;
                             if (Globals_Client.showMessages)
@@ -2128,7 +2128,7 @@ namespace hist_mmorpg
             cv += 5;
 
             // factor in nationality
-            if (this.nationality.Equals("Eng"))
+            if (this.nationality.natID.Equals("Eng"))
             {
                 cv += 5;
             }

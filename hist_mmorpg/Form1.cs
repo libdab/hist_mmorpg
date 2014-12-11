@@ -805,10 +805,10 @@ namespace hist_mmorpg
             Army myArmy = new Army(Globals_Game.getNextArmyID(), null, null, 90, null, trp: myArmyTroops);
             Globals_Game.armyMasterList.Add(myArmy.armyID, myArmy);
             myArmy.owner = myChar1.charID;
-            myArmy.leader = myChar1.charID;
+            // myArmy.leader = myChar1.charID;
             myArmy.days = Globals_Game.pcMasterList[myArmy.owner].days;
             myChar1.myArmies.Add(myArmy);
-            myChar1.armyID = myArmy.armyID;
+            // myChar1.armyID = myArmy.armyID;
             myArmy.location = Globals_Game.pcMasterList[myArmy.owner].location.id;
             myChar1.location.armies.Add(myArmy.armyID);
 
@@ -9468,6 +9468,15 @@ namespace hist_mmorpg
                         this.armyAutoCombatBtn.Enabled = false;
                         this.armyAggroTextBox.Enabled = false;
                         this.armyOddsTextBox.Enabled = false;
+                        this.armyTransDropBtn.Enabled = false;
+                        this.armyTransKnightTextBox.Enabled = false;
+                        this.armyTransMAAtextBox.Enabled = false;
+                        this.armyTransLCavTextBox.Enabled = false;
+                        this.armyTransLongbowTextBox.Enabled = false;
+                        this.armyTransFootTextBox.Enabled = false;
+                        this.armyTransRabbleTextBox.Enabled = false;
+                        this.armyTransDropWhoTextBox.Enabled = false;
+                        this.armyTransPickupBtn.Enabled = false;
                     }
 
                     // has leader
@@ -9479,21 +9488,21 @@ namespace hist_mmorpg
                         this.armyAutoCombatBtn.Enabled = true;
                         this.armyAggroTextBox.Enabled = true;
                         this.armyOddsTextBox.Enabled = true;
+                        this.armyTransDropBtn.Enabled = true;
+                        this.armyTransKnightTextBox.Enabled = true;
+                        this.armyTransMAAtextBox.Enabled = true;
+                        this.armyTransLCavTextBox.Enabled = true;
+                        this.armyTransLongbowTextBox.Enabled = true;
+                        this.armyTransFootTextBox.Enabled = true;
+                        this.armyTransRabbleTextBox.Enabled = true;
+                        this.armyTransDropWhoTextBox.Enabled = true;
+                        this.armyTransPickupBtn.Enabled = true;
                     }
 
                     // other controls
                     this.armyMaintainBtn.Enabled = true;
                     this.armyAppointLeaderBtn.Enabled = true;
                     this.armyAppointSelfBtn.Enabled = true;
-                    this.armyTransDropBtn.Enabled = true;
-                    this.armyTransKnightTextBox.Enabled = true;
-                    this.armyTransMAAtextBox.Enabled = true;
-                    this.armyTransLCavTextBox.Enabled = true;
-                    this.armyTransLongbowTextBox.Enabled = true;
-                    this.armyTransFootTextBox.Enabled = true;
-                    this.armyTransRabbleTextBox.Enabled = true;
-                    this.armyTransDropWhoTextBox.Enabled = true;
-                    this.armyTransPickupBtn.Enabled = true;
                     this.armyDisbandBtn.Enabled = true;
                     this.armyCampBtn.Enabled = true;
                     this.armyCampTextBox.Enabled = true;
@@ -15071,7 +15080,7 @@ namespace hist_mmorpg
                 {
                     Army thisArmy = null;
 
-                    if (lineParts.Length != 15)
+                    if (lineParts.Length != 16)
                     {
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
@@ -16267,7 +16276,7 @@ namespace hist_mmorpg
                 // create troops array
                 uint[] troops = new uint[] { Convert.ToUInt32(armyData[9]), Convert.ToUInt32(armyData[10]),
                     Convert.ToUInt32(armyData[11]), Convert.ToUInt32(armyData[12]), Convert.ToUInt32(armyData[13]),
-                    Convert.ToUInt32(armyData[14])};
+                    Convert.ToUInt32(armyData[14]), Convert.ToUInt32(armyData[15])};
 
                 // check for presence of conditional values
                 string maint, aggr, odds;

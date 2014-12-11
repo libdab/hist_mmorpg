@@ -2174,7 +2174,7 @@ namespace hist_mmorpg
 
             foreach (Character thisChar in this.charactersInFief)
             {
-                if (!String.IsNullOrWhiteSpace(thisChar.armyID))
+                if ((!String.IsNullOrWhiteSpace(thisChar.armyID)) && (thisChar.inKeep))
                 {
                     armyInKeep = true;
                     break;
