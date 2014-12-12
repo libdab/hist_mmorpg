@@ -490,6 +490,8 @@ namespace hist_mmorpg
                 contestedPlace = challenge.Value.getPlace();
 
                 // prepare JOURNAL ENTRY
+                bool createJournalEntry = false;
+
                 // get interested parties
                 currentOwner = contestedPlace.owner;
 
@@ -582,6 +584,7 @@ namespace hist_mmorpg
                             {
                                 // process success
                                 (contestedPlace as Province).transferOwnership(challenger);
+                                createJournalEntry = true;
 
                                 // journal entry personae
                                 currentOwnerEntry = currentOwner.charID + "|oldOwner";
@@ -602,6 +605,7 @@ namespace hist_mmorpg
                             {
                                 // process success
                                 (contestedPlace as Kingdom).transferOwnership(challenger);
+                                createJournalEntry = true;
 
                                 // journal entry personae
                                 currentOwnerEntry = currentOwner.charID + "|oldKing";
@@ -631,6 +635,8 @@ namespace hist_mmorpg
                         // province
                         if (challenge.Value.placeType.Equals("province"))
                         {
+                            createJournalEntry = true;
+
                             // journal entry personae
                             currentOwnerEntry = currentOwner.charID + "|owner";
                             challengerEntry = challenger.charID + "|challenger";
@@ -647,6 +653,8 @@ namespace hist_mmorpg
 
                         else if (challenge.Value.placeType.Equals("kingdom"))
                         {
+                            createJournalEntry = true;
+
                             // journal entry personae
                             currentOwnerEntry = currentOwner.charID + "|king";
                             challengerEntry = challenger.charID + "|pretender";
@@ -663,8 +671,11 @@ namespace hist_mmorpg
                     }
 
                     // create and send a proposal (journal entry)
-                    JournalEntry myEntry = new JournalEntry(entryID, year, season, entryPersonae, entryType, descr: description, loc: entryLoc);
-                    Globals_Game.addPastEvent(myEntry);
+                    if (createJournalEntry)
+                    {
+                        JournalEntry myEntry = new JournalEntry(entryID, year, season, entryPersonae, entryType, descr: description, loc: entryLoc);
+                        Globals_Game.addPastEvent(myEntry);
+                    }
                 }
             }
 

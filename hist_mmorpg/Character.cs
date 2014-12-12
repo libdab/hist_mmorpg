@@ -1201,10 +1201,13 @@ namespace hist_mmorpg
                 npc.goTo.Clear();
 
                 // employees are taken on by king
-                if (npc.myBoss.Equals(deceased.charID))
+                if (!String.IsNullOrWhiteSpace(npc.myBoss))
                 {
-                    npc.myBoss = king.charID;
-                    king.myNPCs.Add(npc);
+                    if (npc.myBoss.Equals(deceased.charID))
+                    {
+                        npc.myBoss = king.charID;
+                        king.myNPCs.Add(npc);
+                    }
                 }
 
                 // family members are cast into the cruel world
@@ -1429,14 +1432,20 @@ namespace hist_mmorpg
             // ============== 2. change all FAMILYID & MYBOSS of MYNPCS to promotedNPC's
             for (int i = 0; i < promotedNPC.myNPCs.Count; i++ )
             {
-                if (promotedNPC.myNPCs[i].familyID.Equals(deceased.charID))
+                if (!String.IsNullOrWhiteSpace(promotedNPC.myNPCs[i].familyID))
                 {
-                    promotedNPC.myNPCs[i].familyID = promotedNPC.charID;
+                    if (promotedNPC.myNPCs[i].familyID.Equals(deceased.charID))
+                    {
+                        promotedNPC.myNPCs[i].familyID = promotedNPC.charID;
+                    }
                 }
 
-                if (promotedNPC.myNPCs[i].myBoss.Equals(deceased.charID))
+                if (!String.IsNullOrWhiteSpace(promotedNPC.myNPCs[i].myBoss))
                 {
-                    promotedNPC.myNPCs[i].myBoss = promotedNPC.charID;
+                    if (promotedNPC.myNPCs[i].myBoss.Equals(deceased.charID))
+                    {
+                        promotedNPC.myNPCs[i].myBoss = promotedNPC.charID;
+                    }
                 }
             }
 

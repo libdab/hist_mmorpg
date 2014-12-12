@@ -561,11 +561,11 @@ namespace hist_mmorpg
             Globals_Game.heraldTwo = myChar2;
 
             // set province owners
-            myProv.owner = myChar1;
+            myProv.owner = myChar2;
             myProv2.owner = myChar2;
 
             // Add provinces to list of provinces owned 
-            myChar1.addToOwnedProvinces(myProv);
+            myChar2.addToOwnedProvinces(myProv);
             myChar2.addToOwnedProvinces(myProv2);
 
             // set fief owners
