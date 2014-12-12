@@ -3658,6 +3658,18 @@ namespace hist_mmorpg
                 }
             }
 
+            // add any newly promoted NPCs to Globals_Game.pcMasterList
+            if (Globals_Game.promotedNPCs.Count > 0)
+            {
+                foreach (PlayerCharacter pc in Globals_Game.promotedNPCs)
+                {
+                    Globals_Game.pcMasterList.Add(pc.charID, pc);
+                }
+            }
+
+            // clear Globals_Game.promotedNPCs
+            Globals_Game.promotedNPCs.Clear();
+
             // ARMIES
 
             // keep track of any armies requiring removal (if hav fallen below 100 men)
@@ -5050,17 +5062,10 @@ namespace hist_mmorpg
                     provItem.SubItems.Add(thisProvince.name);
 
                     // owner
-                    // get character
-                    PlayerCharacter thisOwner = null;
-                    if (Globals_Game.pcMasterList.ContainsKey(thisProvince.titleHolder))
-                    {
-                        thisOwner = Globals_Game.pcMasterList[thisProvince.titleHolder];
-                    }
-
-                    // title holder name & id
+                    PlayerCharacter thisOwner = thisProvince.owner;
                     if (thisOwner != null)
                     {
-                        provItem.SubItems.Add(thisOwner.firstName + " " + thisOwner.familyName + "(" + thisOwner.charID + ")");
+                        provItem.SubItems.Add(thisOwner.firstName + " " + thisOwner.familyName + " (" + thisOwner.charID + ")");
                     }
                     else
                     {

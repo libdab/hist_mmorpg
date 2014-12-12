@@ -1427,7 +1427,7 @@ namespace hist_mmorpg
 
             // remove from npcMasterList and add to pcMasterList
             Globals_Game.npcMasterList.Remove(inheritor.charID);
-            Globals_Game.pcMasterList.Add(promotedNPC.charID, promotedNPC);
+            Globals_Game.promotedNPCs.Add(promotedNPC);
 
             // ============== 2. change all FAMILYID & MYBOSS of MYNPCS to promotedNPC's
             for (int i = 0; i < promotedNPC.myNPCs.Count; i++ )

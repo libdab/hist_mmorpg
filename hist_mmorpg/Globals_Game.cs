@@ -225,7 +225,11 @@ namespace hist_mmorpg
         /// </summary>
         public static Dictionary<string[], byte> jEntryPriorities = new Dictionary<string[], byte>();
         /// <summary>
-        /// Holds type of game  (sets victory conditions)
+        /// Holds newly promoted NPCs to be added to pcMasterList (during seasonUpdate)
+        /// </summary>
+        public static List<PlayerCharacter> promotedNPCs = new List<PlayerCharacter>();
+        /// <summary>
+        /// Holds type of game (sets victory conditions)
         /// </summary>
         public static uint gameType = 0;
         /// <summary>
@@ -495,9 +499,6 @@ namespace hist_mmorpg
                 // get interested parties
                 currentOwner = contestedPlace.owner;
 
-                // ID
-                uint entryID = Globals_Game.getNextJournalEntryID();
-
                 // date
                 uint year = Globals_Game.clock.currentYear;
                 byte season = Globals_Game.clock.currentSeason;
@@ -574,7 +575,7 @@ namespace hist_mmorpg
                     if (challengerTally > successThreshold)
                     {
                         // increment challenge counter
-                        challenge.Value.incrementCounter();
+                        challenge.Value.counter++;
 
                         // check to see if challenge has succeeded
                         if (challenge.Value.counter == 4)
@@ -673,6 +674,9 @@ namespace hist_mmorpg
                     // create and send a proposal (journal entry)
                     if (createJournalEntry)
                     {
+                        // entry ID
+                        uint entryID = Globals_Game.getNextJournalEntryID();
+
                         JournalEntry myEntry = new JournalEntry(entryID, year, season, entryPersonae, entryType, descr: description, loc: entryLoc);
                         Globals_Game.addPastEvent(myEntry);
                     }
@@ -861,7 +865,7 @@ namespace hist_mmorpg
     /// <summary>
     /// Struct storing data on ownership challenges (for Province or Kingdom)
     /// </summary>
-    public struct OwnershipChallenge
+    public class OwnershipChallenge
     {
         /// <summary>
         /// Holds ID of challenge
