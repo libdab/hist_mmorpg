@@ -428,6 +428,7 @@ namespace hist_mmorpg
             this.adminEditSkillNameTextBox = new System.Windows.Forms.TextBox();
             this.label81 = new System.Windows.Forms.Label();
             this.adminEditSkillIdTextBox = new System.Windows.Forms.TextBox();
+            this.viewMyEntriesunreadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -883,16 +884,18 @@ namespace hist_mmorpg
             // journalToolStripMenuItem
             // 
             this.journalToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.viewMyEntriesunreadToolStripMenuItem,
             this.viewEntriesToolStripMenuItem});
             this.journalToolStripMenuItem.Name = "journalToolStripMenuItem";
             this.journalToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
             this.journalToolStripMenuItem.Text = "Journal";
+            this.journalToolStripMenuItem.Click += new System.EventHandler(this.journalToolStripMenuItem_Click);
             // 
             // viewEntriesToolStripMenuItem
             // 
             this.viewEntriesToolStripMenuItem.Name = "viewEntriesToolStripMenuItem";
-            this.viewEntriesToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.viewEntriesToolStripMenuItem.Text = "View my entries";
+            this.viewEntriesToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.viewEntriesToolStripMenuItem.Text = "View entries (current season)";
             this.viewEntriesToolStripMenuItem.Click += new System.EventHandler(this.viewEntriesToolStripMenuItem_Click);
             // 
             // characterContainer
@@ -2808,7 +2811,7 @@ namespace hist_mmorpg
             // journalContainer
             // 
             this.journalContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.journalContainer.Location = new System.Drawing.Point(0, 0);
+            this.journalContainer.Location = new System.Drawing.Point(0, 24);
             this.journalContainer.Name = "journalContainer";
             // 
             // journalContainer.Panel1
@@ -2820,7 +2823,7 @@ namespace hist_mmorpg
             // journalContainer.Panel2
             // 
             this.journalContainer.Panel2.Controls.Add(this.journalListContainer);
-            this.journalContainer.Size = new System.Drawing.Size(935, 735);
+            this.journalContainer.Size = new System.Drawing.Size(935, 711);
             this.journalContainer.SplitterDistance = 208;
             this.journalContainer.TabIndex = 10;
             // 
@@ -2869,7 +2872,7 @@ namespace hist_mmorpg
             // journalListContainer.Panel2
             // 
             this.journalListContainer.Panel2.Controls.Add(this.journalListView);
-            this.journalListContainer.Size = new System.Drawing.Size(723, 735);
+            this.journalListContainer.Size = new System.Drawing.Size(723, 711);
             this.journalListContainer.SplitterDistance = 405;
             this.journalListContainer.TabIndex = 0;
             // 
@@ -2888,8 +2891,8 @@ namespace hist_mmorpg
             // journalTextContainer.Panel2
             // 
             this.journalTextContainer.Panel2.Controls.Add(this.journalTextBox);
-            this.journalTextContainer.Size = new System.Drawing.Size(405, 735);
-            this.journalTextContainer.SplitterDistance = 74;
+            this.journalTextContainer.Size = new System.Drawing.Size(405, 711);
+            this.journalTextContainer.SplitterDistance = 71;
             this.journalTextContainer.TabIndex = 0;
             // 
             // journalNextBtn
@@ -2918,7 +2921,7 @@ namespace hist_mmorpg
             this.journalTextBox.Location = new System.Drawing.Point(0, 0);
             this.journalTextBox.Multiline = true;
             this.journalTextBox.Name = "journalTextBox";
-            this.journalTextBox.Size = new System.Drawing.Size(405, 657);
+            this.journalTextBox.Size = new System.Drawing.Size(405, 636);
             this.journalTextBox.TabIndex = 0;
             // 
             // journalListView
@@ -2927,7 +2930,7 @@ namespace hist_mmorpg
             this.journalListView.FullRowSelect = true;
             this.journalListView.Location = new System.Drawing.Point(0, 0);
             this.journalListView.Name = "journalListView";
-            this.journalListView.Size = new System.Drawing.Size(314, 735);
+            this.journalListView.Size = new System.Drawing.Size(314, 711);
             this.journalListView.TabIndex = 0;
             this.journalListView.UseCompatibleStateImageBehavior = false;
             this.journalListView.View = System.Windows.Forms.View.Details;
@@ -4734,13 +4737,21 @@ namespace hist_mmorpg
             this.adminEditSkillIdTextBox.Size = new System.Drawing.Size(159, 20);
             this.adminEditSkillIdTextBox.TabIndex = 27;
             // 
+            // viewMyEntriesunreadToolStripMenuItem
+            // 
+            this.viewMyEntriesunreadToolStripMenuItem.Name = "viewMyEntriesunreadToolStripMenuItem";
+            this.viewMyEntriesunreadToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.viewMyEntriesunreadToolStripMenuItem.Text = "View my UNREAD entries";
+            this.viewMyEntriesunreadToolStripMenuItem.Click += new System.EventHandler(this.viewMyEntriesunreadToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
-            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.armyContainer);
+            this.Controls.Add(this.journalContainer);
+            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.provinceContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.fiefContainer);
@@ -4751,7 +4762,6 @@ namespace hist_mmorpg
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.siegeContainer);
-            this.Controls.Add(this.journalContainer);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
@@ -5342,6 +5352,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button provinceChallengeBtn;
         private System.Windows.Forms.TextBox armyTransCrossbowTextBox;
         private System.Windows.Forms.Label label86;
+        private System.Windows.Forms.ToolStripMenuItem viewMyEntriesunreadToolStripMenuItem;
 
     }
 }

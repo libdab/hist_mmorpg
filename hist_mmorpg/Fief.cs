@@ -1637,7 +1637,13 @@ namespace hist_mmorpg
                 byte season = Globals_Game.clock.currentSeason;
 
                 // personae
-                string[] thisPersonae = new string[] { fiefOwner.charID + "|fiefOwner" };
+                List<string> tempPersonae = new List<string>();
+                tempPersonae.Add(fiefOwner.charID + "|fiefOwner");
+                if ((this.status.Equals('R')) || (oldStatus.Equals("R")))
+                {
+                    tempPersonae.Add("all|all");
+                }
+                string[] thisPersonae = tempPersonae.ToArray();
 
                 // type
                 string type = "";

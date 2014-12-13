@@ -206,6 +206,7 @@ namespace hist_mmorpg
 
             // personae
             List<string> tempPersonae = new List<string>();
+            tempPersonae.Add("all|all");
             tempPersonae.Add(king.charID + "|king");
             tempPersonae.Add(newPositionHolder.charID + "|newPositionHolder");
             if (oldPositionHolder != null)

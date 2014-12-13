@@ -445,6 +445,7 @@ namespace hist_mmorpg
 
             // personae
             List<string> tempPersonae = new List<string>();
+            tempPersonae.Add("all|all");
             tempPersonae.Add(defendingPlayer.charID + "|fiefOwner");
             tempPersonae.Add(besiegingPlayer.charID + "|attackerOwner");
             tempPersonae.Add(besiegingArmyLeader.charID + "|attackerLeader");

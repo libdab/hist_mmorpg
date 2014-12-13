@@ -34,6 +34,26 @@ namespace hist_mmorpg
                 this.entries = entList;
             }
         }
+
+        /// <summary>
+        /// Checks to see if there are any unviewed entries in the journal
+        /// </summary>
+        /// <returns>bool indicating presence of unviewed entries</returns>
+        public bool checkForUnviewedEntries()
+        {
+            bool areUnviewed = false;
+
+            foreach (KeyValuePair <uint, JournalEntry> thisEntry in this.entries)
+            {
+                if (!thisEntry.Value.viewed)
+                {
+                    areUnviewed = true;
+                    break;
+                }
+            }
+
+            return areUnviewed;
+        }
         
         /// <summary>
         /// Returns any entries matching search criteria (year, season)
@@ -102,6 +122,25 @@ namespace hist_mmorpg
             }
 
             return matchingEntries;
+        }
+
+        /// <summary>
+        /// Retrieves all unviewed JournalEntrys
+        /// </summary>
+        /// <returns>SortedList(uint, JournalEntry) containing relevant entries</returns>
+        public SortedList<uint, JournalEntry> getUnviewedEntries()
+        {
+            SortedList<uint, JournalEntry> foundEntries = new SortedList<uint,JournalEntry>();
+
+            foreach (KeyValuePair<uint, JournalEntry> jEntry in this.entries)
+            {
+                if (!jEntry.Value.viewed)
+                {
+                    foundEntries.Add(jEntry.Key, jEntry.Value);
+                }
+            }
+
+            return foundEntries;
         }
 
         /// <summary>
@@ -220,6 +259,10 @@ namespace hist_mmorpg
         /// Holds description of event
         /// </summary>
         public String description { get; set; }
+        /// <summary>
+        /// Indicates whether entry has been viewed
+        /// </summary>
+        public bool viewed { get; set; }
 
         /// <summary>
         /// Constructor for JournalEntry
@@ -246,6 +289,7 @@ namespace hist_mmorpg
             {
                 this.description = descr;
             }
+            this.viewed = false;
         }
 
         /// <summary>
@@ -329,7 +373,11 @@ namespace hist_mmorpg
             for (int i = 0; i < this.personae.Length; i++)
             {
                 string[] personaeSplit = this.personae[i].Split('|');
-                if (personaeSplit[0].Equals(Globals_Client.myPlayerCharacter.charID))
+                if (personaeSplit[0].Equals("all"))
+                {
+                    thisRole = personaeSplit[1];
+                }
+                else if (personaeSplit[0].Equals(Globals_Client.myPlayerCharacter.charID))
                 {
                     thisRole = personaeSplit[1];
                     break;
@@ -362,9 +410,12 @@ namespace hist_mmorpg
 
             for (int i = 0; i < this.personae.Length; i++)
             {
+                // get personae ID
                 string thisPersonae = this.personae[i];
                 string[] thisPersonaeSplit = thisPersonae.Split('|');
-                if (thisPersonaeSplit[0].Equals(Globals_Client.myPlayerCharacter.charID))
+
+                if (thisPersonaeSplit[0].Equals(Globals_Client.myPlayerCharacter.charID)
+                    || (thisPersonaeSplit[0].Equals("all")))
                 {
                     isOfInterest = true;
                     break;

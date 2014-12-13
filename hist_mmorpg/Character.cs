@@ -752,7 +752,7 @@ namespace hist_mmorpg
             // NPCs
             else
             {
-                if ((this as NonPlayerCharacter).familyID != null)
+                if (!String.IsNullOrWhiteSpace((this as NonPlayerCharacter).familyID))
                 {
                     if ((this as NonPlayerCharacter).isHeir)
                     {
@@ -763,7 +763,7 @@ namespace hist_mmorpg
                         role = "family";
                     }
                 }
-                else if ((this as NonPlayerCharacter).employer != null)
+                else if (!String.IsNullOrWhiteSpace((this as NonPlayerCharacter).employer))
                 {
                     role = "employee";
                 }
@@ -886,7 +886,8 @@ namespace hist_mmorpg
                         string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
                         string thisBrideEntry = bride.charID + "|bride";
                         string thisGroomEntry = groom.charID + "|groom";
-                        string[] newEntryPersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, thisBrideEntry, thisGroomEntry };
+                        string allEntry = "all|all";
+                        string[] newEntryPersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, thisBrideEntry, thisGroomEntry, allEntry };
 
                         // type
                         string type = "marriageCancelled";
@@ -1036,6 +1037,8 @@ namespace hist_mmorpg
                 byte season = Globals_Game.clock.currentSeason;
 
                 // personae, type, description
+                List<string> tempPersonae = new List<string>();
+                string allEntry = "";
                 string interestedPlayerEntry = "";
                 string deceasedCharacterEntry = "";
                 string type = "";
@@ -1088,6 +1091,7 @@ namespace hist_mmorpg
                 else if (role.Equals("player"))
                 {
                     // personae
+                    allEntry = "all|all";
                     interestedPlayerEntry = thisHeir.charID + "|newHeadOfFamily";
                     deceasedCharacterEntry += this.charID + "|deceasedHeadOfFamily";
 
@@ -1099,7 +1103,13 @@ namespace hist_mmorpg
                 }
 
                 // personae
-                string[] deathPersonae = new string[] { interestedPlayerEntry, deceasedCharacterEntry };
+                tempPersonae.Add(interestedPlayerEntry);
+                tempPersonae.Add(deceasedCharacterEntry);
+                if (String.IsNullOrWhiteSpace(allEntry))
+                {
+                    tempPersonae.Add(allEntry);
+                }
+                string[] deathPersonae = tempPersonae.ToArray();
 
                 // description
                 description += ", passed away due to ";
@@ -1117,15 +1127,20 @@ namespace hist_mmorpg
                 }
 
                 // player death additional description
-                if ((role.Equals("player")) && (thisHeir != null))
+                if (role.Equals("player"))
                 {
-                    description += " He is succeeded by his " + thisHeir.getFunction(this as PlayerCharacter);
-                    description += " " + thisHeir.firstName + " " + thisHeir.familyName + ".";
-                }
-                // no heir
-                else
-                {
-                    description += " As he left no heirs, this once great family is no more.";
+                    // have an heir
+                    if (thisHeir != null)
+                    {
+                        description += " He is succeeded by his " + thisHeir.getFunction(this as PlayerCharacter);
+                        description += " " + thisHeir.firstName + " " + thisHeir.familyName + ".";
+                    }
+
+                    // no heir
+                    else
+                    {
+                        description += " As he left no heirs, this once great family is no more.";
+                    }
                 }
                 description += " Sympathies are extended to family and friends of the deceased.";
 
@@ -1184,12 +1199,19 @@ namespace hist_mmorpg
             }
 
             // DISBAND ARMIES
+            List<Army> tempArmyList = new List<Army>(); 
             for (int i = 0; i < deceased.myArmies.Count; i++ )
                 {
-                    deceased.myArmies[i].disbandArmy();
-                    deceased.myArmies[i] = null;
+                    tempArmyList.Add(deceased.myArmies[i]);
                 }
-            
+
+            for (int i = 0; i < tempArmyList.Count; i++ )
+            {
+                tempArmyList[i].disbandArmy();
+                tempArmyList[i] = null;
+            }
+            tempArmyList.Clear();
+
             // EMPLOYEES/FAMILY
             foreach (NonPlayerCharacter npc in deceased.myNPCs)
             {
@@ -3551,6 +3573,10 @@ namespace hist_mmorpg
             if ((oldTitleHolder != null) && (oldTitleHolder != placeOwner))
             {
                 tempPersonae.Add(oldTitleHolder.charID + "|oldTitleHolder");
+            }
+            if (titlePlace is Province)
+            {
+                tempPersonae.Add("all|all");
             }
             string[] thisPersonae = tempPersonae.ToArray();
 

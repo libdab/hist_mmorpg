@@ -775,7 +775,7 @@ namespace hist_mmorpg
             string[] thisPriorityKey032 = { "grantTitleFief", "oldTitleHolder" };
             Globals_Game.jEntryPriorities.Add(thisPriorityKey032, 1);
             string[] thisPriorityKey033 = { "grantTitleProvince", "newTitleHolder" };
-            Globals_Game.jEntryPriorities.Add(thisPriorityKey033, 1);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey032, 1);
             string[] thisPriorityKey034 = { "grantTitleProvince", "oldTitleHolder" };
             Globals_Game.jEntryPriorities.Add(thisPriorityKey034, 1);
             string[] thisPriorityKey035 = { "grantPosition", "newPositionHolder" };
@@ -802,13 +802,19 @@ namespace hist_mmorpg
             Globals_Game.jEntryPriorities.Add(thisPriorityKey044, 2);
             string[] thisPriorityKey045 = { "depose_success", "oldKing" };
             Globals_Game.jEntryPriorities.Add(thisPriorityKey045, 2);
+            string[] thisPriorityKey049 = { "depose_success", "all" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey049, 2);
             string[] thisPriorityKey046 = { "depose_failure", "king" };
             Globals_Game.jEntryPriorities.Add(thisPriorityKey046, 2);
             string[] thisPriorityKey047 = { "depose_failure", "pretender" };
-            Globals_Game.jEntryPriorities.Add(thisPriorityKey047, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey046, 2);
+            string[] thisPriorityKey050 = { "depose_failure", "all" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey050, 1);
             string[] thisPriorityKey048 = { "depose_new", "king" };
             Globals_Game.jEntryPriorities.Add(thisPriorityKey048, 2);
-            // next available key = thisPriorityKey049
+            string[] thisPriorityKey051 = { "depose_new", "all" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey051, 2);
+            // next available key = thisPriorityKey052
 
             // create an army and add in appropriate places
             uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 100, 200, 400};
@@ -10991,6 +10997,10 @@ namespace hist_mmorpg
             }
             tempPersonae.Add(attacker.getOwner().charID + attackOwnTag);
             tempPersonae.Add(attacker.getLocation().owner.charID + "|fiefOwner");
+            if ((!circumstance.Equals("pillage")) && (!circumstance.Equals("siege")))
+            {
+                tempPersonae.Add("all|all");
+            }
             string[] battlePersonae = tempPersonae.ToArray();
             
             // location
@@ -11191,6 +11201,10 @@ namespace hist_mmorpg
             if ((defenderLeader != null) && (!circumstance.Equals("quellRebellion")))
             {
                 tempPersonae.Add(defenderLeader.charID + "|defenderLeader");
+            }
+            if (circumstance.Equals("quellRebellion"))
+            {
+                tempPersonae.Add("all|all");
             }
             string[] pillagePersonae = tempPersonae.ToArray();
 
@@ -12568,6 +12582,7 @@ namespace hist_mmorpg
 
             // personae
             List<string> tempPersonae = new List<string>();
+            tempPersonae.Add("all|all");
             tempPersonae.Add(mySiege.getDefendingPlayer().charID + "|fiefOwner");
             tempPersonae.Add(mySiege.getBesiegingPlayer().charID + "|attackerOwner");
             tempPersonae.Add(attacker.getLeader().charID + "|attackerLeader");
@@ -13167,7 +13182,7 @@ namespace hist_mmorpg
             {
                 case "newEvent":
                     // get jEntry ID and retrieve from Globals_Game
-                    if (infoSplit[1] != null)
+                    if (!String.IsNullOrWhiteSpace(infoSplit[1]))
                     {
                         uint newJentryID = Convert.ToUInt32(infoSplit[1]);
                         JournalEntry newJentry = Globals_Game.pastEvents.entries[newJentryID];
@@ -13214,22 +13229,24 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void journalListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            
             // get entry
             if (this.journalListView.SelectedItems.Count > 0)
             {
                 uint jEntryID = Convert.ToUInt32(this.journalListView.SelectedItems[0].SubItems[0].Text);
                 Globals_Client.jEntryToView = Globals_Client.eventSetToView.IndexOfKey(jEntryID);
+
+                // retrieve and display character information
+                this.journalTextBox.Text = this.displayJournalEntry(Globals_Client.jEntryToView);
+
+                // check if marriage proposal controls should be enabled
+                JournalEntry thisJentry = Globals_Client.eventSetToView.ElementAt(Globals_Client.jEntryToView).Value;
+                bool enableProposalControls = thisJentry.checkForProposalControlsEnabled();
+                this.journalProposalAcceptBtn.Enabled = enableProposalControls;
+                this.journalProposalRejectBtn.Enabled = enableProposalControls;
+
+                // mark entry as viewed
+                Globals_Client.myPastEvents.entries[jEntryID].viewed = true;
             }
-
-            // retrieve and display character information
-            this.journalTextBox.Text = this.displayJournalEntry(Globals_Client.jEntryToView);            
-
-            // check if marriage proposal controls should be enabled
-            JournalEntry thisJentry = Globals_Client.eventSetToView.ElementAt(Globals_Client.jEntryToView).Value;
-            bool enableProposalControls = thisJentry.checkForProposalControlsEnabled();
-            this.journalProposalAcceptBtn.Enabled = enableProposalControls;
-            this.journalProposalRejectBtn.Enabled = enableProposalControls;
         }
 
         /// <summary>
@@ -13478,11 +13495,16 @@ namespace hist_mmorpg
             byte season = Globals_Game.clock.currentSeason;
 
             // personae
-            string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
-            string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
-            string thisBrideEntry = bride.charID + "|bride";
-            string thisGroomEntry = groom.charID + "|groom";
-            string[] myReplyPersonae = new string[] { headOfFamilyBrideEntry, headOfFamilyGroomEntry, thisBrideEntry, thisGroomEntry };
+            List<string> tempPersonae = new List<string>();
+            tempPersonae.Add(headOfFamilyBride.charID + "|headOfFamilyBride");
+            tempPersonae.Add(headOfFamilyGroom.charID + "|headOfFamilyGroom");
+            tempPersonae.Add(bride.charID + "|bride");
+            tempPersonae.Add(groom.charID + "|groom");
+            if (proposalAccepted)
+            {
+                tempPersonae.Add("all|all");
+            }
+            string[] myReplyPersonae = tempPersonae.ToArray();
 
             // type
             string type = "";
@@ -13688,7 +13710,8 @@ namespace hist_mmorpg
             string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
             string thisBrideEntry = bride.charID + "|bride";
             string thisGroomEntry = groom.charID + "|groom";
-            string[] marriagePersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, thisBrideEntry, thisGroomEntry };
+            string allEntry = "all|all";
+            string[] marriagePersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, thisBrideEntry, thisGroomEntry, allEntry };
 
             // type
             string type = "marriage";
@@ -19015,9 +19038,10 @@ namespace hist_mmorpg
                     string entryLoc = targetProv.id;
 
                     // journal entry personae
+                    string allEntry = "all|all";
                     string currentOwnerEntry = currentOwner.charID + "|owner";
                     string challengerEntry = Globals_Client.myPlayerCharacter.charID + "|challenger";
-                    string[] entryPersonae = new string[] { currentOwnerEntry, challengerEntry };
+                    string[] entryPersonae = new string[] { currentOwnerEntry, challengerEntry, allEntry };
 
                     // entry type
                     string entryType = "ownershipChallenge_new";
@@ -19079,9 +19103,10 @@ namespace hist_mmorpg
                     string entryLoc = targetKingdom.id;
 
                     // journal entry personae
+                    string allEntry = "all|all";
                     string currentOwnerEntry = currentOwner.charID + "|king";
                     string challengerEntry = Globals_Client.myPlayerCharacter.charID + "|pretender";
-                    string[] entryPersonae = new string[] { currentOwnerEntry, challengerEntry };
+                    string[] entryPersonae = new string[] { currentOwnerEntry, challengerEntry, allEntry };
 
                     // entry type
                     string entryType = "depose_new";
@@ -19098,6 +19123,40 @@ namespace hist_mmorpg
 
                 this.provinceProvListView.Focus();
             }
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the viewMyEntriesunreadToolStripMenuItem
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void viewMyEntriesunreadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // get unread entries
+            Globals_Client.eventSetToView = Globals_Client.myPastEvents.getUnviewedEntries();
+
+            // get max index position
+            Globals_Client.jEntryMax = Globals_Client.eventSetToView.Count - 1;
+            // set default index position
+            Globals_Client.jEntryToView = -1;
+
+            // display journal screen
+            this.refreshJournalContainer();
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the journalToolStripMenuItem
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void journalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // get and tally unread entries
+            Globals_Client.eventSetToView = Globals_Client.myPastEvents.getUnviewedEntries();
+            int unreadEntries = Globals_Client.eventSetToView.Count;
+
+            // indicate no. of unread entries in menu item text
+            this.viewMyEntriesunreadToolStripMenuItem.Text = "View UNREAD entries (" + unreadEntries + ")";
         }
 
     }

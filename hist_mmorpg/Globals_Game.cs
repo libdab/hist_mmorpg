@@ -588,9 +588,10 @@ namespace hist_mmorpg
                                 createJournalEntry = true;
 
                                 // journal entry personae
+                                string allEntry = "all|all";
                                 currentOwnerEntry = currentOwner.charID + "|oldOwner";
                                 challengerEntry = challenger.charID + "|newOwner";
-                                entryPersonae = new string[] { currentOwnerEntry, challengerEntry };
+                                entryPersonae = new string[] { currentOwnerEntry, challengerEntry, allEntry };
 
                                 // entry type
                                 entryType = "ownershipChallenge_success";
@@ -609,9 +610,10 @@ namespace hist_mmorpg
                                 createJournalEntry = true;
 
                                 // journal entry personae
+                                string allEntry = "all|all";
                                 currentOwnerEntry = currentOwner.charID + "|oldKing";
                                 challengerEntry = challenger.charID + "|newKing";
-                                entryPersonae = new string[] { currentOwnerEntry, challengerEntry };
+                                entryPersonae = new string[] { currentOwnerEntry, challengerEntry, allEntry };
 
                                 // entry type
                                 entryType = "depose_success";
@@ -657,9 +659,10 @@ namespace hist_mmorpg
                             createJournalEntry = true;
 
                             // journal entry personae
+                            string allEntry = "all|all";
                             currentOwnerEntry = currentOwner.charID + "|king";
                             challengerEntry = challenger.charID + "|pretender";
-                            entryPersonae = new string[] { currentOwnerEntry, challengerEntry };
+                            entryPersonae = new string[] { currentOwnerEntry, challengerEntry, allEntry };
 
                             // entry type
                             entryType = "depose_failure";
