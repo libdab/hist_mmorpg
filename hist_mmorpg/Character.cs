@@ -763,7 +763,7 @@ namespace hist_mmorpg
                         role = "family";
                     }
                 }
-                else if ((this as NonPlayerCharacter).myBoss != null)
+                else if ((this as NonPlayerCharacter).employer != null)
                 {
                     role = "employee";
                 }
@@ -932,7 +932,7 @@ namespace hist_mmorpg
             else
             {
                 // if is an employee
-                if ((this as NonPlayerCharacter).myBoss != null)
+                if ((this as NonPlayerCharacter).employer != null)
                 {
                     // get boss
                     employer = (this as NonPlayerCharacter).getEmployer();
@@ -1201,11 +1201,11 @@ namespace hist_mmorpg
                 npc.goTo.Clear();
 
                 // employees are taken on by king
-                if (!String.IsNullOrWhiteSpace(npc.myBoss))
+                if (!String.IsNullOrWhiteSpace(npc.employer))
                 {
-                    if (npc.myBoss.Equals(deceased.charID))
+                    if (npc.employer.Equals(deceased.charID))
                     {
-                        npc.myBoss = king.charID;
+                        npc.employer = king.charID;
                         king.myNPCs.Add(npc);
                     }
                 }
@@ -1217,7 +1217,7 @@ namespace hist_mmorpg
                     npc.familyID = null;
 
                     // wage
-                    npc.wage = 0;
+                    npc.salary = 0;
 
                     // inKeep
                     npc.inKeep = false;
@@ -1429,7 +1429,7 @@ namespace hist_mmorpg
             Globals_Game.npcMasterList.Remove(inheritor.charID);
             Globals_Game.promotedNPCs.Add(promotedNPC);
 
-            // ============== 2. change all FAMILYID & MYBOSS of MYNPCS to promotedNPC's
+            // ============== 2. change all FAMILYID & EMPLOYER of MYNPCS to promotedNPC's
             for (int i = 0; i < promotedNPC.myNPCs.Count; i++ )
             {
                 if (!String.IsNullOrWhiteSpace(promotedNPC.myNPCs[i].familyID))
@@ -1440,11 +1440,11 @@ namespace hist_mmorpg
                     }
                 }
 
-                if (!String.IsNullOrWhiteSpace(promotedNPC.myNPCs[i].myBoss))
+                if (!String.IsNullOrWhiteSpace(promotedNPC.myNPCs[i].employer))
                 {
-                    if (promotedNPC.myNPCs[i].myBoss.Equals(deceased.charID))
+                    if (promotedNPC.myNPCs[i].employer.Equals(deceased.charID))
                     {
-                        promotedNPC.myNPCs[i].myBoss = promotedNPC.charID;
+                        promotedNPC.myNPCs[i].employer = promotedNPC.charID;
                     }
                 }
             }
@@ -2398,7 +2398,7 @@ namespace hist_mmorpg
                         }
                     }
 
-                    else if ((this as NonPlayerCharacter).myBoss != null)
+                    else if ((this as NonPlayerCharacter).employer != null)
                     {
                         concernedPlayer = (this as NonPlayerCharacter).getEmployer();
                         if (concernedPlayer != null)
@@ -2441,12 +2441,26 @@ namespace hist_mmorpg
         {
             List<Fief> myFiefs = new List<Fief>();
 
-            // iterate through owned fiefs, searching for character as bailiff
-            foreach (Fief thisFief in Globals_Client.myPlayerCharacter.ownedFiefs)
+            // get employer
+            PlayerCharacter employer = null;
+            if (this is PlayerCharacter)
             {
-                if (thisFief.bailiff == this)
+                employer = (this as PlayerCharacter);
+            }
+            else
+            {
+                employer = (this as NonPlayerCharacter).getEmployer();
+            }
+
+            if (employer != null)
+            {
+                // iterate through fiefs, searching for character as bailiff
+                foreach (Fief thisFief in employer.ownedFiefs)
                 {
-                    myFiefs.Add(thisFief);
+                    if (thisFief.bailiff == this)
+                    {
+                        myFiefs.Add(thisFief);
+                    }
                 }
             }
 
@@ -2461,12 +2475,26 @@ namespace hist_mmorpg
         {
             List<Army> myArmies = new List<Army>();
 
-            // iterate through armies, searching for character as leader
-            foreach (Army thisArmy in Globals_Client.myPlayerCharacter.myArmies)
+            // get employer
+            PlayerCharacter employer = null;
+            if (this is PlayerCharacter)
             {
-                if (thisArmy.getLeader() == this)
+                employer = (this as PlayerCharacter);
+            }
+            else
+            {
+                employer = (this as NonPlayerCharacter).getEmployer();
+            }
+
+            if (employer != null)
+            {
+                // iterate through armies, searching for character as leader
+                foreach (Army thisArmy in employer.myArmies)
                 {
-                    myArmies.Add(thisArmy);
+                    if (thisArmy.getLeader() == this)
+                    {
+                        myArmies.Add(thisArmy);
+                    }
                 }
             }
 
@@ -2672,7 +2700,7 @@ namespace hist_mmorpg
             bool accepted = false;
 
             // get NPC's potential salary
-            double potentialSalary = npc.calcWage(this);
+            double potentialSalary = npc.calcSalary(this);
 
             // generate random (0 - 100) to see if accepts offer
             double chance = Globals_Game.GetRandomDouble(100);
@@ -2790,12 +2818,27 @@ namespace hist_mmorpg
         /// <param name="wage">NPC's wage</param>
         public void hireNPC(NonPlayerCharacter npc, uint wage)
         {
+            // if was in employ of another PC, fire from that position
+            if (!String.IsNullOrWhiteSpace(npc.employer))
+            {
+                if (!npc.employer.Equals(this.charID))
+                {
+                    // get previous employer
+                    PlayerCharacter oldBoss = npc.getEmployer();
+
+                    if (oldBoss != null)
+                    {
+                        oldBoss.fireNPC(npc);
+                    }
+                }
+            }
+
             // add to employee list
             this.myNPCs.Add(npc);
             // set NPC wage
-            npc.wage = wage;
+            npc.salary = wage;
             // set this PC as NPC's boss
-            npc.myBoss = this.charID;
+            npc.employer = this.charID;
             // remove any offers by this PC from NPCs lastOffer list
             npc.lastOffer.Clear();
         }
@@ -2824,22 +2867,20 @@ namespace hist_mmorpg
                 {
                     armiesLeader[i].leader = null;
                 }
+                npc.armyID = null;
             }
 
             // remove from employee list
             this.myNPCs.Remove(npc);
 
             // set NPC wage to 0
-            npc.wage = 0;
+            npc.salary = 0;
 
             // remove this PC as NPC's boss
-            npc.myBoss = null;
+            npc.employer = null;
 
             // remove NPC from entourage
             npc.inEntourage = false;
-
-            // eject from keep
-            npc.inKeep = false;
 
             // if NPC has entries in goTo, clear
             if (npc.goTo.Count > 0)
@@ -3687,11 +3728,11 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds NPC's employer (charID)
         /// </summary>
-        public String myBoss { get; set; }
+        public String employer { get; set; }
         /// <summary>
-        /// Holds NPC's wage
+        /// Holds NPC's salary
         /// </summary>
-        public uint wage { get; set; }
+        public uint salary { get; set; }
         /// <summary>
         /// Holds last wage offer from individual PCs
         /// </summary>
@@ -3721,8 +3762,8 @@ namespace hist_mmorpg
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
             // TODO: validate wa = uint
 
-            this.myBoss = mb;
-            this.wage = wa;
+            this.employer = mb;
+            this.salary = wa;
             this.inEntourage = inEnt;
             this.lastOffer = new Dictionary<string, uint>();
             this.isHeir = isH;
@@ -3744,11 +3785,11 @@ namespace hist_mmorpg
 		public NonPlayerCharacter(NonPlayerCharacter_Riak npcr)
 			: base(npcr: npcr)
 		{
-			if ((npcr.myBoss != null) && (npcr.myBoss.Length > 0))
+			if ((npcr.employer != null) && (npcr.employer.Length > 0))
 			{
-				this.myBoss = npcr.myBoss;
+				this.employer = npcr.employer;
 			}
-			this.wage = npcr.wage;
+			this.salary = npcr.wage;
 			this.inEntourage = npcr.inEntourage;
 			this.lastOffer = npcr.lastOffer;
             this.isHeir = npcr.isHeir;
@@ -3762,8 +3803,8 @@ namespace hist_mmorpg
         public NonPlayerCharacter(NonPlayerCharacter npc)
             : base(npc, "respawn")
         {
-            this.myBoss =null;
-            this.wage = 0;
+            this.employer =null;
+            this.salary = 0;
             this.inEntourage = false;
             this.lastOffer = new Dictionary<string,uint>();
             this.isHeir = false;
@@ -3834,7 +3875,7 @@ namespace hist_mmorpg
             String myFunction = "";
 
             // check for employees
-            if ((this.myBoss != null) && (this.myBoss.Equals(pc.charID)))
+            if ((this.employer != null) && (this.employer.Equals(pc.charID)))
             {
                 myFunction = "Employee";
             }
@@ -3960,7 +4001,7 @@ namespace hist_mmorpg
             List<Fief> bailiffDuties = new List<Fief>();
 
             // check for employment function
-            if (((this.myBoss != null) && (this.myBoss.Equals(pc.charID)))
+            if (((this.employer != null) && (this.employer.Equals(pc.charID)))
                 || ((this.familyID != null) && (this.familyID.Equals(pc.charID))))
             {
                 // check PC's fiefs for bailiff
@@ -4000,7 +4041,7 @@ namespace hist_mmorpg
                 // if employee who isn't bailiff or army leader = 'Unspecified'
                 if (myResponsibilities.Equals(""))
                 {
-                    if ((this.myBoss != null) && (this.myBoss.Equals(pc.charID)))
+                    if ((this.employer != null) && (this.employer.Equals(pc.charID)))
                     {
                         myResponsibilities = "Unspecified";
                     }
@@ -4029,12 +4070,27 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates the potential salary (per season) for the NonPlayerCharacter,
-        /// taking into account the stature of the hiring PlayerCharacter
+        /// Calculates the potential salary (per season) for the NonPlayerCharacter, based on his current salary
+        /// </summary>
+        /// <returns>double containing salary</returns>
+        public double calcSalary_BaseOnCurrent()
+        {
+            double salary = 0;
+
+            // NPC will only accept a minimum offer od 5% above his current salary
+            salary = this.salary + (this.salary * 0.05);
+
+            // use this to calculate median salary to use as basis for negotiations
+            salary = salary + (salary * 0.11);
+
+            return salary;
+        }
+
+        /// <summary>
+        /// Calculates the potential salary (per season) for the NonPlayerCharacter, based on his skills
         /// </summary>
         /// <returns>uint containing salary</returns>
-        /// <param name="hiringPlayer">Hiring player</param>
-        public uint calcWage(PlayerCharacter hiringPlayer)
+        public double calcSalary_BaseOnSkills()
         {
             double salary = 0;
             double basicSalary = 1500;
@@ -4061,6 +4117,30 @@ namespace hist_mmorpg
             {
                 salary += (basicSalary * (minRating / 2));
             }
+
+            return salary;
+        }
+
+        /// <summary>
+        /// Gets the potential salary (per season) for the NonPlayerCharacter,
+        /// taking into account the stature of the hiring PlayerCharacter
+        /// </summary>
+        /// <returns>uint containing salary</returns>
+        /// <param name="hiringPlayer">Hiring player</param>
+        public uint calcSalary(PlayerCharacter hiringPlayer)
+        {
+            // get potential salary based on NPC's skills
+            double salary_skills = this.calcSalary_BaseOnSkills();
+
+            // get potential salary based on NPC's current salary
+            double salary_current = 0;
+            if (this.salary > 0)
+            {
+                salary_current = this.calcSalary_BaseOnCurrent();
+            }
+
+            // use maximum of the two salary calculations
+            double salary = Math.Max(salary_skills, salary_current);
 
             // factor in hiring player's stature
             // (4% reduction in NPC's salary for each stature rank above 4)
@@ -4109,7 +4189,7 @@ namespace hist_mmorpg
             }
 
             // employer
-            else if (!String.IsNullOrWhiteSpace(this.myBoss))
+            else if (!String.IsNullOrWhiteSpace(this.employer))
             {
                 nationalitySource = this.getEmployer();
             }
@@ -4190,11 +4270,11 @@ namespace hist_mmorpg
         {
             PlayerCharacter myEmployer = null;
 
-            if (this.myBoss != null)
+            if (this.employer != null)
             {
-                if (Globals_Game.pcMasterList.ContainsKey(this.myBoss))
+                if (Globals_Game.pcMasterList.ContainsKey(this.employer))
                 {
-                    myEmployer = Globals_Game.pcMasterList[this.myBoss];
+                    myEmployer = Globals_Game.pcMasterList[this.employer];
                 }
             }
 
@@ -4690,7 +4770,7 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Holds NPC's employer (charID)
 		/// </summary>
-		public String myBoss { get; set; }
+		public String employer { get; set; }
 		/// <summary>
 		/// Holds NPC's wage
 		/// </summary>
@@ -4717,11 +4797,11 @@ namespace hist_mmorpg
 			: base(npc: npc)
 		{
 
-			if (npc.myBoss != null)
+			if (npc.employer != null)
 			{
-				this.myBoss = npc.myBoss;
+				this.employer = npc.employer;
 			}
-			this.wage = npc.wage;
+			this.wage = npc.salary;
 			this.inEntourage = npc.inEntourage;
 			this.lastOffer = npc.lastOffer;
             this.isHeir = npc.isHeir;
@@ -4744,7 +4824,7 @@ namespace hist_mmorpg
             // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
             // TODO: validate wa = uint
 
-            this.myBoss = mb;
+            this.employer = mb;
             this.wage = wa;
             this.inEntourage = inEnt;
             this.lastOffer = new Dictionary<string, uint>();

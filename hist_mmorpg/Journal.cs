@@ -26,7 +26,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Constructor for Journal
         /// </summary>
-        /// <param name="entList">SortedList<double, JournalEntry> holding entries</param>
+        /// <param name="entList">SortedList(uint, JournalEntry) holding entries</param>
         public Journal(SortedList<uint, JournalEntry> entList = null)
         {
             if (entList != null)

@@ -605,7 +605,7 @@ namespace hist_mmorpg
             string npcText = "";
 
             // current salary
-            npcText += "Current salary: " + npc.wage + "\r\n";
+            npcText += "Current salary: " + npc.salary + "\r\n";
 
             return npcText;
         }

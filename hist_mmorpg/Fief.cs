@@ -585,7 +585,7 @@ namespace hist_mmorpg
             {
                 if (this.bailiff != this.owner)
                 {
-                    famExpenses += Convert.ToInt32((this.bailiff as NonPlayerCharacter).wage);
+                    famExpenses += Convert.ToInt32((this.bailiff as NonPlayerCharacter).salary);
                 }
             }
 
@@ -600,7 +600,7 @@ namespace hist_mmorpg
                         // add wage of non-bailiff employees
                         if (element.familyID == null)
                         {
-                            famExpenses += Convert.ToInt32(element.wage);
+                            famExpenses += Convert.ToInt32(element.salary);
                         }
                         // add family allowance of family NPCs
                         else

@@ -140,6 +140,16 @@ namespace hist_mmorpg
                 this.royalFunctionsToolStripMenuItem.Enabled = false;
             }
 
+            // enable sysAdmin menu, if appropriate
+            if (Globals_Client.myPlayerCharacter.checkIsSysAdmin())
+            {
+                this.adminToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                this.adminToolStripMenuItem.Enabled = false;
+            }
+
             // initialise player's character display in UI
             this.refreshCharacterContainer();
 
@@ -3620,7 +3630,7 @@ namespace hist_mmorpg
                     if (npcEntry.Value.isAlive)
                     {
                         // random move if has no boss and is not family member
-                        if ((npcEntry.Value.myBoss == null) && (npcEntry.Value.familyID == null))
+                        if ((npcEntry.Value.employer == null) && (npcEntry.Value.familyID == null))
                         {
                             this.randomMoveNPC(npcEntry.Value);
                         }
@@ -4559,7 +4569,7 @@ namespace hist_mmorpg
                                 if (Globals_Client.myPlayerCharacter.location.charactersInFief[i] is NonPlayerCharacter)
                                 {
                                     // only show unemployed
-                                    if ((Globals_Client.myPlayerCharacter.location.charactersInFief[i] as NonPlayerCharacter).wage == 0)
+                                    if ((Globals_Client.myPlayerCharacter.location.charactersInFief[i] as NonPlayerCharacter).salary == 0)
                                     {
                                         // Create an item and subitems for character
                                         charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
@@ -4622,9 +4632,9 @@ namespace hist_mmorpg
                     isFamily = true;
                 }
             }
-            else if ((ch as NonPlayerCharacter).myBoss != null)
+            else if ((ch as NonPlayerCharacter).employer != null)
             {
-                myHousehold = (ch as NonPlayerCharacter).getEmployer().familyName + " (ID: " + (ch as NonPlayerCharacter).myBoss + ")";
+                myHousehold = (ch as NonPlayerCharacter).getEmployer().familyName + " (ID: " + (ch as NonPlayerCharacter).employer + ")";
             }
 
             myItem.SubItems.Add(myHousehold);
@@ -4646,7 +4656,7 @@ namespace hist_mmorpg
             else
             {
                 // check for employees
-                if (((ch as NonPlayerCharacter).myBoss != null) && (ch as NonPlayerCharacter).myBoss.Equals(Globals_Client.myPlayerCharacter.charID))
+                if (((ch as NonPlayerCharacter).employer != null) && (ch as NonPlayerCharacter).employer.Equals(Globals_Client.myPlayerCharacter.charID))
                 {
                     isEmployee = true;
                 }
@@ -5586,15 +5596,15 @@ namespace hist_mmorpg
             string npcText = "";
 
             // boss
-            if (npc.myBoss != null)
+            if (npc.employer != null)
             {
-                npcText += "Hired by (ID): " + npc.myBoss + "\r\n";
+                npcText += "Hired by (ID): " + npc.employer + "\r\n";
             }
 
             // estimated salary level (if character is male)
             if (npc.isMale)
             {
-                npcText += "Potential salary: " + npc.calcWage(Globals_Client.myPlayerCharacter) + "\r\n";
+                npcText += "Potential salary: " + npc.calcSalary(Globals_Client.myPlayerCharacter) + "\r\n";
 
                 // most recent salary offer from player (if any)
                 npcText += "Last offer from this PC: ";
@@ -5609,7 +5619,7 @@ namespace hist_mmorpg
                 npcText += "\r\n";
 
                 // current salary
-                npcText += "Current salary: " + npc.wage + "\r\n";
+                npcText += "Current salary: " + npc.salary + "\r\n";
             }
 
             /*
@@ -7249,7 +7259,7 @@ namespace hist_mmorpg
                     {
                         charToDisplay = Globals_Client.fiefToView.charactersInFief[i];
 
-                        // check whether is employee or family
+                        // check whether is this PC's employee or family
                         if (Globals_Client.myPlayerCharacter.myNPCs.Contains(Globals_Client.fiefToView.charactersInFief[i]))
                         {
                             // see if is in entourage to set text of entourage button
@@ -7275,8 +7285,8 @@ namespace hist_mmorpg
                             this.meetingPlaceProposeTextBox.Enabled = false;
 
                             // if is employee
-                            if (((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).myBoss != null)
-                                && ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).myBoss.Equals(Globals_Client.myPlayerCharacter.charID)))
+                            if (((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).employer != null)
+                                && ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).employer.Equals(Globals_Client.myPlayerCharacter.charID)))
                             {
                                 // set appropriate text for hire/fire button, and enable it
                                 this.hireNPC_Btn.Text = "Fire NPC";
@@ -7304,8 +7314,12 @@ namespace hist_mmorpg
                                 // ensure is 'of age'
                                 if (charToDisplay.calcCharAge() >= 14)
                                 {
-                                    this.hireNPC_Btn.Enabled = true;
-                                    this.hireNPC_TextBox.Enabled = true;
+                                    // can't hire members of any PC's family
+                                    if (String.IsNullOrWhiteSpace(charToDisplay.familyID))
+                                    {
+                                        this.hireNPC_Btn.Enabled = true;
+                                        this.hireNPC_TextBox.Enabled = true;
+                                    }
                                 }
                             }
                             else
@@ -8535,10 +8549,10 @@ namespace hist_mmorpg
             newNPC.armyID = null;
             // ailments
             newNPC.ailments = new Dictionary<string, Ailment>();
-            // employer (myBoss)
-            newNPC.myBoss = null;
+            // employer
+            newNPC.employer = null;
             // salary/allowance
-            newNPC.wage = 0;
+            newNPC.salary = 0;
             // lastOffer (will remain empty for family members)
             newNPC.lastOffer = new Dictionary<string, uint>();
             // inEntourage
@@ -16984,12 +16998,12 @@ namespace hist_mmorpg
                     }
 
                     // get employer
-					if (!String.IsNullOrWhiteSpace(npcEntry.Value.myBoss))
+					if (!String.IsNullOrWhiteSpace(npcEntry.Value.employer))
                     {
 						PlayerCharacter_Riak thisBoss = null;
-						if (pcMasterList.ContainsKey(npcEntry.Value.myBoss))
+						if (pcMasterList.ContainsKey(npcEntry.Value.employer))
 						{
-							thisBoss = pcMasterList[npcEntry.Value.myBoss];
+							thisBoss = pcMasterList[npcEntry.Value.employer];
 						}
 
                         if (thisBoss != null)
@@ -17743,7 +17757,7 @@ namespace hist_mmorpg
                 else
                 {
                     // wage
-                    this.adminEditCharWageTextBox.Text = (ch as NonPlayerCharacter).wage.ToString();
+                    this.adminEditCharWageTextBox.Text = (ch as NonPlayerCharacter).salary.ToString();
                 }
             }
         }
@@ -18430,7 +18444,7 @@ namespace hist_mmorpg
                         // get data from edit form and replace original data
                         // wage
                         uint wa = Convert.ToUInt32(this.adminEditCharWageTextBox.Text);
-                        thisNPC.wage = wa;
+                        thisNPC.salary = wa;
                     }
 
                 }
