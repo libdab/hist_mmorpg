@@ -35,14 +35,12 @@
             this.npcListView = new System.Windows.Forms.ListView();
             this.lockOutContainer = new System.Windows.Forms.SplitContainer();
             this.closeBtn = new System.Windows.Forms.Button();
-            this.barEnglishCheckBox = new System.Windows.Forms.CheckBox();
-            this.barFrenchCheckBox = new System.Windows.Forms.CheckBox();
             this.unbarCharBtn = new System.Windows.Forms.Button();
             this.barThisCharTextBox = new System.Windows.Forms.TextBox();
             this.barThisCharBtn = new System.Windows.Forms.Button();
             this.barredListContainer = new System.Windows.Forms.SplitContainer();
             this.barredListLabel = new System.Windows.Forms.Label();
-            this.barredListView = new System.Windows.Forms.ListView();
+            this.barredCharsListView = new System.Windows.Forms.ListView();
             this.transferContainer = new System.Windows.Forms.SplitContainer();
             this.transferCancelBtn = new System.Windows.Forms.Button();
             this.transferPickupBtn = new System.Windows.Forms.Button();
@@ -60,6 +58,11 @@
             this.transferFundsLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.transferFundsListView = new System.Windows.Forms.ListView();
+            this.barredCharsContainer = new System.Windows.Forms.SplitContainer();
+            this.barredNatsContainer = new System.Windows.Forms.SplitContainer();
+            this.label3 = new System.Windows.Forms.Label();
+            this.barredNatsListView = new System.Windows.Forms.ListView();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.npcContainer)).BeginInit();
             this.npcContainer.Panel1.SuspendLayout();
             this.npcContainer.Panel2.SuspendLayout();
@@ -92,6 +95,14 @@
             this.transferFundsContainer.Panel1.SuspendLayout();
             this.transferFundsContainer.Panel2.SuspendLayout();
             this.transferFundsContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.barredCharsContainer)).BeginInit();
+            this.barredCharsContainer.Panel1.SuspendLayout();
+            this.barredCharsContainer.Panel2.SuspendLayout();
+            this.barredCharsContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.barredNatsContainer)).BeginInit();
+            this.barredNatsContainer.Panel1.SuspendLayout();
+            this.barredNatsContainer.Panel2.SuspendLayout();
+            this.barredNatsContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // npcContainer
@@ -169,9 +180,8 @@
             // 
             // lockOutContainer.Panel1
             // 
+            this.lockOutContainer.Panel1.Controls.Add(this.label4);
             this.lockOutContainer.Panel1.Controls.Add(this.closeBtn);
-            this.lockOutContainer.Panel1.Controls.Add(this.barEnglishCheckBox);
-            this.lockOutContainer.Panel1.Controls.Add(this.barFrenchCheckBox);
             this.lockOutContainer.Panel1.Controls.Add(this.unbarCharBtn);
             this.lockOutContainer.Panel1.Controls.Add(this.barThisCharTextBox);
             this.lockOutContainer.Panel1.Controls.Add(this.barThisCharBtn);
@@ -192,28 +202,6 @@
             this.closeBtn.Text = "Close Lock Out Options";
             this.closeBtn.UseVisualStyleBackColor = true;
             this.closeBtn.Click += new System.EventHandler(this.closeBtn_Click);
-            // 
-            // barEnglishCheckBox
-            // 
-            this.barEnglishCheckBox.AutoSize = true;
-            this.barEnglishCheckBox.Location = new System.Drawing.Point(151, 170);
-            this.barEnglishCheckBox.Name = "barEnglishCheckBox";
-            this.barEnglishCheckBox.Size = new System.Drawing.Size(101, 17);
-            this.barEnglishCheckBox.TabIndex = 5;
-            this.barEnglishCheckBox.Text = "Bar The English";
-            this.barEnglishCheckBox.UseVisualStyleBackColor = true;
-            this.barEnglishCheckBox.CheckedChanged += new System.EventHandler(this.barEnglishCheckBox_CheckedChanged);
-            // 
-            // barFrenchCheckBox
-            // 
-            this.barFrenchCheckBox.AutoSize = true;
-            this.barFrenchCheckBox.Location = new System.Drawing.Point(151, 143);
-            this.barFrenchCheckBox.Name = "barFrenchCheckBox";
-            this.barFrenchCheckBox.Size = new System.Drawing.Size(100, 17);
-            this.barFrenchCheckBox.TabIndex = 3;
-            this.barFrenchCheckBox.Text = "Bar The French";
-            this.barFrenchCheckBox.UseVisualStyleBackColor = true;
-            this.barFrenchCheckBox.CheckedChanged += new System.EventHandler(this.barFrenchCheckBox_CheckedChanged);
             // 
             // unbarCharBtn
             // 
@@ -251,36 +239,36 @@
             // 
             // barredListContainer.Panel1
             // 
-            this.barredListContainer.Panel1.Controls.Add(this.barredListLabel);
+            this.barredListContainer.Panel1.Controls.Add(this.barredCharsContainer);
             // 
             // barredListContainer.Panel2
             // 
-            this.barredListContainer.Panel2.Controls.Add(this.barredListView);
+            this.barredListContainer.Panel2.Controls.Add(this.barredNatsContainer);
             this.barredListContainer.Size = new System.Drawing.Size(359, 547);
-            this.barredListContainer.SplitterDistance = 45;
+            this.barredListContainer.SplitterDistance = 378;
             this.barredListContainer.TabIndex = 0;
             // 
             // barredListLabel
             // 
             this.barredListLabel.AutoSize = true;
             this.barredListLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.barredListLabel.Location = new System.Drawing.Point(18, 9);
+            this.barredListLabel.Location = new System.Drawing.Point(19, 9);
             this.barredListLabel.Name = "barredListLabel";
             this.barredListLabel.Size = new System.Drawing.Size(320, 24);
             this.barredListLabel.TabIndex = 0;
             this.barredListLabel.Text = "Characters Barred From This Fief";
             // 
-            // barredListView
+            // barredCharsListView
             // 
-            this.barredListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.barredListView.FullRowSelect = true;
-            this.barredListView.Location = new System.Drawing.Point(0, 0);
-            this.barredListView.Name = "barredListView";
-            this.barredListView.Size = new System.Drawing.Size(359, 498);
-            this.barredListView.TabIndex = 0;
-            this.barredListView.UseCompatibleStateImageBehavior = false;
-            this.barredListView.View = System.Windows.Forms.View.Details;
-            this.barredListView.SelectedIndexChanged += new System.EventHandler(this.barredListView_SelectedIndexChanged);
+            this.barredCharsListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.barredCharsListView.FullRowSelect = true;
+            this.barredCharsListView.Location = new System.Drawing.Point(0, 0);
+            this.barredCharsListView.Name = "barredCharsListView";
+            this.barredCharsListView.Size = new System.Drawing.Size(359, 334);
+            this.barredCharsListView.TabIndex = 0;
+            this.barredCharsListView.UseCompatibleStateImageBehavior = false;
+            this.barredCharsListView.View = System.Windows.Forms.View.Details;
+            this.barredCharsListView.SelectedIndexChanged += new System.EventHandler(this.barredListView_SelectedIndexChanged);
             // 
             // transferContainer
             // 
@@ -488,15 +476,83 @@
             this.transferFundsListView.View = System.Windows.Forms.View.Details;
             this.transferFundsListView.SelectedIndexChanged += new System.EventHandler(this.transferFundsListView_SelectedIndexChanged);
             // 
+            // barredCharsContainer
+            // 
+            this.barredCharsContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.barredCharsContainer.Location = new System.Drawing.Point(0, 0);
+            this.barredCharsContainer.Name = "barredCharsContainer";
+            this.barredCharsContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // barredCharsContainer.Panel1
+            // 
+            this.barredCharsContainer.Panel1.Controls.Add(this.barredListLabel);
+            // 
+            // barredCharsContainer.Panel2
+            // 
+            this.barredCharsContainer.Panel2.Controls.Add(this.barredCharsListView);
+            this.barredCharsContainer.Size = new System.Drawing.Size(359, 378);
+            this.barredCharsContainer.SplitterDistance = 40;
+            this.barredCharsContainer.TabIndex = 0;
+            // 
+            // barredNatsContainer
+            // 
+            this.barredNatsContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.barredNatsContainer.Location = new System.Drawing.Point(0, 0);
+            this.barredNatsContainer.Name = "barredNatsContainer";
+            this.barredNatsContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // barredNatsContainer.Panel1
+            // 
+            this.barredNatsContainer.Panel1.Controls.Add(this.label3);
+            // 
+            // barredNatsContainer.Panel2
+            // 
+            this.barredNatsContainer.Panel2.Controls.Add(this.barredNatsListView);
+            this.barredNatsContainer.Size = new System.Drawing.Size(359, 165);
+            this.barredNatsContainer.SplitterDistance = 44;
+            this.barredNatsContainer.TabIndex = 0;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(19, 10);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(123, 24);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Nationalities";
+            // 
+            // barredNatsListView
+            // 
+            this.barredNatsListView.CheckBoxes = true;
+            this.barredNatsListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.barredNatsListView.FullRowSelect = true;
+            this.barredNatsListView.Location = new System.Drawing.Point(0, 0);
+            this.barredNatsListView.Name = "barredNatsListView";
+            this.barredNatsListView.Size = new System.Drawing.Size(359, 117);
+            this.barredNatsListView.TabIndex = 0;
+            this.barredNatsListView.UseCompatibleStateImageBehavior = false;
+            this.barredNatsListView.View = System.Windows.Forms.View.Details;
+            this.barredNatsListView.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.barredNatsListView_ItemCheck);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(21, 460);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(225, 13);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "Use checkboxes to bar/unbar nationalities  -->";
+            // 
             // SelectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(620, 547);
+            this.Controls.Add(this.lockOutContainer);
             this.Controls.Add(this.transferContainer);
             this.Controls.Add(this.npcContainer);
             this.Controls.Add(this.transferFundsContainer);
-            this.Controls.Add(this.lockOutContainer);
             this.Controls.Add(this.armiesContainer);
             this.Name = "SelectionForm";
             this.Text = "SelectionForm";
@@ -515,7 +571,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.lockOutContainer)).EndInit();
             this.lockOutContainer.ResumeLayout(false);
             this.barredListContainer.Panel1.ResumeLayout(false);
-            this.barredListContainer.Panel1.PerformLayout();
             this.barredListContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.barredListContainer)).EndInit();
             this.barredListContainer.ResumeLayout(false);
@@ -537,6 +592,16 @@
             this.transferFundsContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.transferFundsContainer)).EndInit();
             this.transferFundsContainer.ResumeLayout(false);
+            this.barredCharsContainer.Panel1.ResumeLayout(false);
+            this.barredCharsContainer.Panel1.PerformLayout();
+            this.barredCharsContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.barredCharsContainer)).EndInit();
+            this.barredCharsContainer.ResumeLayout(false);
+            this.barredNatsContainer.Panel1.ResumeLayout(false);
+            this.barredNatsContainer.Panel1.PerformLayout();
+            this.barredNatsContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.barredNatsContainer)).EndInit();
+            this.barredNatsContainer.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -551,12 +616,10 @@
         private System.Windows.Forms.SplitContainer lockOutContainer;
         private System.Windows.Forms.SplitContainer barredListContainer;
         private System.Windows.Forms.Label barredListLabel;
-        private System.Windows.Forms.ListView barredListView;
+        private System.Windows.Forms.ListView barredCharsListView;
         private System.Windows.Forms.TextBox barThisCharTextBox;
         private System.Windows.Forms.Button barThisCharBtn;
         private System.Windows.Forms.Button unbarCharBtn;
-        private System.Windows.Forms.CheckBox barEnglishCheckBox;
-        private System.Windows.Forms.CheckBox barFrenchCheckBox;
         private System.Windows.Forms.Button closeBtn;
         private System.Windows.Forms.SplitContainer transferContainer;
         private System.Windows.Forms.ListView transferListView;
@@ -575,6 +638,11 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ListView transferFundsListView;
         private System.Windows.Forms.Button transferFundsBtn;
+        private System.Windows.Forms.SplitContainer barredCharsContainer;
+        private System.Windows.Forms.SplitContainer barredNatsContainer;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ListView barredNatsListView;
+        private System.Windows.Forms.Label label4;
 
     }
 }

@@ -105,13 +105,9 @@ namespace hist_mmorpg
         /// </summary>
         public List<string> barredCharacters = new List<string>();
         /// <summary>
-        /// Indicates whether English nationality barred from keep
+        /// Holds nationalitie banned from keep (IDs)
         /// </summary>
-        public bool englishBarred { get; set; }
-        /// <summary>
-        /// Indicates whether French nationality barred from keep
-        /// </summary>
-        public bool frenchBarred { get; set; }
+        public List<string> barredNationalities = new List<string>();
         /// <summary>
         /// Holds fief ancestral owner (PlayerCharacter object)
         /// </summary>
@@ -178,9 +174,8 @@ namespace hist_mmorpg
         /// <param name="terr">Terrain object for fief</param>
         /// <param name="chars">List holding characters present in fief</param>
         /// <param name="barChars">List holding IDs of characters barred from keep</param>
-        /// <param name="engBarr">bool indicating whether English nationality barred from keep</param>
-        /// <param name="frBarr">bool indicating whether French nationality barred from keep</param>
-		/// <param name="ancOwn">PlayerCharacter holding fief ancestral owner</param>
+        /// <param name="barNats">List holding IDs of nationalities barred from keep</param>
+        /// <param name="ancOwn">PlayerCharacter holding fief ancestral owner</param>
         /// <param name="bail">Character holding fief bailiff</param>
         /// <param name="bailInF">byte holding days bailiff in fief</param>
         /// <param name="treas">int containing fief treasury</param>
@@ -191,7 +186,7 @@ namespace hist_mmorpg
         /// <param name="sge">String holding siegeID of active siege</param>
         public Fief(String id, String nam, Province prov, int pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
-            Double kpLvl, Double loy, char stat, Language lang, Terrain terr, List<Character> chars, List<string> barChars, bool engBarr, bool frBarr,
+            Double kpLvl, Double loy, char stat, Language lang, Terrain terr, List<Character> chars, List<string> barChars, List<string> barNats,
             byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, String tiHo = null,
             PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank r = null, string sge = null)
             : base(id, nam, own: own, r: r, tiHo: tiHo)
@@ -299,8 +294,7 @@ namespace hist_mmorpg
             this.terrain = terr;
             this.charactersInFief = chars;
             this.barredCharacters = barChars;
-            this.englishBarred = engBarr;
-            this.frenchBarred = frBarr;
+            this.barredNationalities = barNats;
             this.bailiffDaysInFief = bailInF;
             this.treasury = treas;
             this.armies = arms;
@@ -345,8 +339,7 @@ namespace hist_mmorpg
             // create empty list to be populated later
 			this.charactersInFief = new List<Character>();
 			this.barredCharacters = fr.barredCharacters;
-			this.englishBarred = fr.englishBarred;
-			this.frenchBarred = fr.frenchBarred;
+			this.barredNationalities = fr.barredNationalities;
             this.bailiffDaysInFief = fr.bailiffDaysInFief;
             this.treasury = fr.treasury;
             this.armies = fr.armies;
@@ -2110,6 +2103,7 @@ namespace hist_mmorpg
                 {
                     this.barredCharacters.Remove(newOwner.charID);
                 }
+
                 // new owner's NPCs
                 for (int i = 0; i < newOwner.myNPCs.Count; i++)
                 {
@@ -2117,6 +2111,12 @@ namespace hist_mmorpg
                     {
                         this.barredCharacters.Remove(newOwner.myNPCs[i].charID);
                     }
+                }
+
+                // new owner's nationality
+                if (this.barredNationalities.Contains(newOwner.nationality.natID))
+                {
+                    this.barredNationalities.Remove(newOwner.nationality.natID);
                 }
 
                 // CREATE JOURNAL ENTRY
@@ -2290,15 +2290,11 @@ namespace hist_mmorpg
 		/// Holds list of characters banned from keep (charIDs)
 		/// </summary>
 		public List<string> barredCharacters = new List<string>();
-		/// <summary>
-		/// Indicates whether English nationality barred from keep
-		/// </summary>
-		public bool englishBarred { get; set; }
-		/// <summary>
-		/// Indicates whether French nationality barred from keep
-		/// </summary>
-		public bool frenchBarred { get; set; }
-		/// <summary>
+        /// <summary>
+        /// Holds nationalitie banned from keep (IDs)
+        /// </summary>
+        public List<string> barredNationalities = new List<string>();
+        /// <summary>
 		/// Holds fief ancestral owner (charID)
 		/// </summary>
 		public String ancestralOwner { get; set; }
@@ -2375,8 +2371,7 @@ namespace hist_mmorpg
 				}
 			}
 			this.barredCharacters = f.barredCharacters;
-			this.englishBarred = f.englishBarred;
-			this.frenchBarred = f.frenchBarred;
+			this.barredNationalities = f.barredNationalities;
             this.bailiffDaysInFief = f.bailiffDaysInFief;
             this.treasury = f.treasury;
             this.armies = f.armies;
@@ -2410,8 +2405,7 @@ namespace hist_mmorpg
         /// <param name="terr">String holding Terrain object (id)</param>
         /// <param name="chars">List holding characters present (id)</param>
         /// <param name="barChars">List holding IDs of characters barred from keep</param>
-        /// <param name="engBarr">bool indicating whether English nationality barred from keep</param>
-        /// <param name="frBarr">bool indicating whether French nationality barred from keep</param>
+        /// <param name="barNats">List holding IDs of nationalities barred from keep</param>
         /// <param name="ancOwn">String holding ancestral owner (id)</param>
         /// <param name="bail">String holding fief bailiff (id)</param>
         /// <param name="bailInF">byte holding days bailiff in fief</param>
@@ -2423,7 +2417,7 @@ namespace hist_mmorpg
         /// <param name="sge">String holding siegeID of active siege</param>
         public Fief_Riak(String id, String nam, string prov, int pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
-            Double kpLvl, Double loy, char stat, string lang, string terr, List<string> chars, List<string> barChars, bool engBarr, bool frBarr,
+            Double kpLvl, Double loy, char stat, string lang, string terr, List<string> chars, List<string> barChars, List<string> barNats,
             byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, byte r, String tiHo = null,
             string own = null, string ancOwn = null, string bail = null, string sge = null)
             : base(id, nam, own: own, r: r, tiHo: tiHo)
@@ -2525,8 +2519,7 @@ namespace hist_mmorpg
             this.terrain = terr;
             this.charactersInFief = chars;
             this.barredCharacters = barChars;
-            this.englishBarred = engBarr;
-            this.frenchBarred = frBarr;
+            this.barredNationalities = barNats;
             this.bailiffDaysInFief = bailInF;
             this.treasury = treas;
             this.armies = arms;

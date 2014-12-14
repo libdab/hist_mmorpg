@@ -778,10 +778,14 @@ namespace hist_mmorpg
         /// </summary>
         public void setUpBarredList()
         {
-            // add necessary columns
-            this.barredListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.barredListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.barredListView.Columns.Add("Nationality", -2, HorizontalAlignment.Left);
+            // add necessary columns (barred characters)
+            this.barredCharsListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.barredCharsListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.barredCharsListView.Columns.Add("Nationality", -2, HorizontalAlignment.Left);
+
+            // add necessary columns (nationalities)
+            this.barredNatsListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.barredNatsListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -789,17 +793,15 @@ namespace hist_mmorpg
         /// </summary>
         public void refreshBarredDisplay()
         {
-            // clear existing items in list
-            this.barredListView.Items.Clear();
+            // clear existing items in lists
+            this.barredCharsListView.Items.Clear();
+            this.barredNatsListView.Items.Clear();
 
-            ListViewItem[] barredChars = new ListViewItem[Globals_Client.fiefToView.barredCharacters.Count];
-
+            // CHARACTERS
             // iterates through employees
             for (int i = 0; i < Globals_Client.fiefToView.barredCharacters.Count; i++)
             {
                 // retrieve character
-                //PlayerCharacter myBarredpc = null;
-                //NonPlayerCharacter myBarrednpc = null;
                 Character myBarredChar = null;
 
                 if (Globals_Game.pcMasterList.ContainsKey(Globals_Client.fiefToView.barredCharacters[i]))
@@ -816,25 +818,44 @@ namespace hist_mmorpg
                     // Create an item and subitems for each character
 
                     // name
-                    barredChars[i] = new ListViewItem(myBarredChar.firstName + " " + myBarredChar.familyName);
+                    ListViewItem charItem = new ListViewItem(myBarredChar.firstName + " " + myBarredChar.familyName);
 
                     // charID
-                    barredChars[i].SubItems.Add(myBarredChar.charID);
+                    charItem.SubItems.Add(myBarredChar.charID);
 
                     // if is in player's nationality
-                    barredChars[i].SubItems.Add(myBarredChar.nationality.name);
+                    charItem.SubItems.Add(myBarredChar.nationality.name);
 
                     // add item to fiefsListView
-                    this.barredListView.Items.Add(barredChars[i]);
+                    this.barredCharsListView.Items.Add(charItem);
                 }
+
+            }
+
+            // NATIONALITIES
+            // iterates through nationalities
+            foreach (KeyValuePair<string, Nationality> thisNat in Globals_Game.nationalityMasterList)
+            {
+                // Create an item and subitems for each nationality
+                // ID
+                ListViewItem natItem = new ListViewItem(thisNat.Value.natID);
+
+                // name
+                natItem.SubItems.Add(thisNat.Value.name);
+
+                // ensure item is checked if appropriate
+                if (Globals_Client.fiefToView.barredNationalities.Contains(thisNat.Value.natID))
+                {
+                    natItem.Checked = true;
+                }
+
+                // add item to fiefsListView
+                this.barredNatsListView.Items.Add(natItem);
 
             }
 
             // disable 'UnBar Character' button until a list item is selected
             this.unbarCharBtn.Enabled = false;
-            // ensure the nationality bar CheckBoxes are displaying correctly
-            this.barEnglishCheckBox.Checked = Globals_Client.fiefToView.englishBarred;
-            this.barFrenchCheckBox.Checked = Globals_Client.fiefToView.frenchBarred;
         }
 
         /// <summary>
@@ -982,8 +1003,8 @@ namespace hist_mmorpg
                 // add ID to barred characters
                 Globals_Client.fiefToView.barredCharacters.Add(thisCharacter.charID);
 
-                // check if is currently in keep, and remove if necessary
-                if (thisCharacter.inKeep)
+                // check if is currently in keep of barring fief, and remove if necessary
+                if ((thisCharacter.inKeep) && (thisCharacter.location == Globals_Client.fiefToView))
                 {
                     thisCharacter.inKeep = false;
                     if (Globals_Client.showMessages)
@@ -995,6 +1016,9 @@ namespace hist_mmorpg
 
                 // refresh display
                 this.refreshBarredDisplay();
+
+                // refresh the parent's fief container
+                this.parent.refreshFiefContainer(Globals_Client.fiefToView);
             }
         }
 
@@ -1006,21 +1030,21 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void unbarCharBtn_Click(object sender, EventArgs e)
         {
-            if (barredListView.SelectedItems.Count > 0)
+            if (barredCharsListView.SelectedItems.Count > 0)
             {
                 // if selected character is in pcMasterList
-                if (Globals_Game.pcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
+                if (Globals_Game.pcMasterList.ContainsKey(this.barredCharsListView.SelectedItems[0].SubItems[1].Text))
                 {
                     // remove ID from barred characters
-                    Globals_Client.fiefToView.barredCharacters.Remove(this.barredListView.SelectedItems[0].SubItems[1].Text);
+                    Globals_Client.fiefToView.barredCharacters.Remove(this.barredCharsListView.SelectedItems[0].SubItems[1].Text);
                     // refresh display
                     this.refreshBarredDisplay();
                 }
                 // if selected character is in pcMasterList
-                else if (Globals_Game.npcMasterList.ContainsKey(this.barredListView.SelectedItems[0].SubItems[1].Text))
+                else if (Globals_Game.npcMasterList.ContainsKey(this.barredCharsListView.SelectedItems[0].SubItems[1].Text))
                 {
                     // remove ID from barred characters
-                    Globals_Client.fiefToView.barredCharacters.Remove(this.barredListView.SelectedItems[0].SubItems[1].Text);
+                    Globals_Client.fiefToView.barredCharacters.Remove(this.barredCharsListView.SelectedItems[0].SubItems[1].Text);
                     // refresh display
                     this.refreshBarredDisplay();
                 }
@@ -1045,39 +1069,11 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void barredListView_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (barredListView.SelectedItems.Count > 0)
+            if (barredCharsListView.SelectedItems.Count > 0)
             {
                 // enable 'unBar Character' button
                 this.unbarCharBtn.Enabled = true;
             }
-        }
-
-        /// <summary>
-        /// Responds to the CheckedChanged event of the barFrenchCheckBox,
-        /// either barring or unbarring all French characters
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void barFrenchCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            // bar/unbar French, depending on whether CheckBox is checked
-            Globals_Client.fiefToView.frenchBarred = this.barFrenchCheckBox.Checked;
-            // refresh the parent's fief container
-            this.parent.refreshFiefContainer(Globals_Client.fiefToView);
-        }
-
-        /// <summary>
-        /// Responds to the CheckedChanged event of the barEnglishCheckBox,
-        /// either barring or unbarring all English characters
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void barEnglishCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            // bar/unbar English, depending on whether CheckBox is checked
-            Globals_Client.fiefToView.englishBarred = this.barEnglishCheckBox.Checked;
-            // refresh the parent's fief container
-            this.parent.refreshFiefContainer(Globals_Client.fiefToView);
         }
 
         /// <summary>
@@ -1588,6 +1584,45 @@ namespace hist_mmorpg
                     System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
                 }
             }
+        }
+
+        private void barredNatsListView_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            // get nationality ID
+            string natID = this.barredNatsListView.Items[e.Index].SubItems[0].Text;
+
+            // if item original state is UNCHECKED, add nationality to barredNationalities
+            if (e.CurrentValue == CheckState.Unchecked)
+            {
+                // check to make sure aren't barring the fief's own nataionality
+                if (!(Globals_Client.fiefToView.owner.nationality.natID == natID))
+                {
+                    if (!Globals_Client.fiefToView.barredNationalities.Contains(natID))
+                    {
+                        Globals_Client.fiefToView.barredNationalities.Add(natID);
+                    }
+                }
+                else
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You cannot bar the fief's own nationality!");
+                    }
+                    e.NewValue = CheckState.Unchecked;
+                }
+            }
+
+            // if item original state is CHECKED, remove nationality from barredNationalities
+            else
+            {
+                if (Globals_Client.fiefToView.barredNationalities.Contains(natID))
+                {
+                    Globals_Client.fiefToView.barredNationalities.Remove(natID);
+                }
+            }
+
+            // refresh the parent's fief container
+            this.parent.refreshFiefContainer(Globals_Client.fiefToView);
         }
     }
 

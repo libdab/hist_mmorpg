@@ -396,19 +396,28 @@ namespace hist_mmorpg
             Dictionary<string, string[]> transfers006 = new Dictionary<string, string[]>();
             Dictionary<string, string[]> transfers007 = new Dictionary<string, string[]>();
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', c1, plains, fief1Chars, keep1BarChars, false, false, 0, 2000000, armies001, false, transfers001, false, r: myRank17);
+            // create barredNationalities for fiefs
+            List<string> barredNats01 = new List<string>();
+            List<string> barredNats02 = new List<string>();
+            List<string> barredNats03 = new List<string>();
+            List<string> barredNats04 = new List<string>();
+            List<string> barredNats05 = new List<string>();
+            List<string> barredNats06 = new List<string>();
+            List<string> barredNats07 = new List<string>();
+
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', c1, plains, fief1Chars, keep1BarChars, barredNats01, 0, 2000000, armies001, false, transfers001, false, r: myRank17);
             Globals_Game.fiefMasterList.Add(myFief1.id, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'C',c1, hills, fief2Chars, keep2BarChars, false, false, 0, 4000, armies002, false, transfers002, false, r: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'C', c1, hills, fief2Chars, keep2BarChars, barredNats02, 0, 4000, armies002, false, transfers002, false, r: myRank15);
             Globals_Game.fiefMasterList.Add(myFief2.id, myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', c1, plains, fief3Chars, keep3BarChars, false, false, 0, 100000, armies003, false, transfers003, false, r: myRank17);
+            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', c1, plains, fief3Chars, keep3BarChars, barredNats03, 0, 100000, armies003, false, transfers003, false, r: myRank17);
             Globals_Game.fiefMasterList.Add(myFief3.id, myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', c1, plains, fief4Chars, keep4BarChars, false, false, 0, 100000, armies004, false, transfers004, false, r: myRank17);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', c1, plains, fief4Chars, keep4BarChars, barredNats04, 0, 100000, armies004, false, transfers004, false, r: myRank17);
             Globals_Game.fiefMasterList.Add(myFief4.id, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', f1, plains, fief5Chars, keep5BarChars, false, false, 0, 100000, armies005, false, transfers005, false, r: myRank15);
+            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', f1, plains, fief5Chars, keep5BarChars, barredNats05, 0, 100000, armies005, false, transfers005, false, r: myRank15);
             Globals_Game.fiefMasterList.Add(myFief5.id, myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', f1, plains, fief6Chars, keep6BarChars, false, false, 0, 100000, armies006, false, transfers006, false, r: myRank17);
+            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', f1, plains, fief6Chars, keep6BarChars, barredNats06, 0, 100000, armies006, false, transfers006, false, r: myRank17);
             Globals_Game.fiefMasterList.Add(myFief6.id, myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', f1, forrest, fief7Chars, keep7BarChars, false, false, 0, 100000, armies007, false, transfers007, false, r: myRank15);
+            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', f1, forrest, fief7Chars, keep7BarChars, barredNats07, 0, 100000, armies007, false, transfers007, false, r: myRank15);
             Globals_Game.fiefMasterList.Add(myFief7.id, myFief7);
 
 			// create QuickGraph undirected graph
@@ -684,12 +693,20 @@ namespace hist_mmorpg
             Globals_Server.combatValues.Add("Eng", eCombatValues);
             uint[] fCombatValues = new uint[] {7, 7, 3, 2, 4, 2, 1};
             Globals_Server.combatValues.Add("Fr", fCombatValues);
+            uint[] sCombatValues = new uint[] { 8, 8, 1, 2, 4, 4, 1 };
+            Globals_Server.combatValues.Add("Sco", sCombatValues);
+            uint[] oCombatValues = new uint[] { 7, 7, 3, 2, 4, 2, 1 };
+            Globals_Server.combatValues.Add("Oth", oCombatValues);
 
             // populate Globals_Server.recruitRatios
             double[] eRecruitRatios = new double[] { 0.01, 0.02, 0, 0.12, 0.03, 0.32, 0.49 };
             Globals_Server.recruitRatios.Add("Eng", eRecruitRatios);
-            double[] fRecruitRatios = new double[] { 0.01, 0.02, 0.03, 0, 0.04, 0.41, 0.49 };
+            double[] fRecruitRatios = new double[] { 0.01, 0.02, 0.03, 0, 0.04, 0.40, 0.49 };
             Globals_Server.recruitRatios.Add("Fr", fRecruitRatios);
+            double[] sRecruitRatios = new double[] { 0.01, 0.02, 0, 0, 0.04, 0.43, 0.49 };
+            Globals_Server.recruitRatios.Add("Sco", sRecruitRatios);
+            double[] oRecruitRatios = new double[] { 0.01, 0.02, 0.03, 0, 0.04, 0.40, 0.49 };
+            Globals_Server.recruitRatios.Add("Oth", oRecruitRatios);
 
             // populate Globals_Server.battleProbabilities
             double[] odds = new double[] { 2, 3, 4, 5, 6, 99 };
@@ -775,7 +792,7 @@ namespace hist_mmorpg
             string[] thisPriorityKey032 = { "grantTitleFief", "oldTitleHolder" };
             Globals_Game.jEntryPriorities.Add(thisPriorityKey032, 1);
             string[] thisPriorityKey033 = { "grantTitleProvince", "newTitleHolder" };
-            Globals_Game.jEntryPriorities.Add(thisPriorityKey032, 1);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey033, 1);
             string[] thisPriorityKey034 = { "grantTitleProvince", "oldTitleHolder" };
             Globals_Game.jEntryPriorities.Add(thisPriorityKey034, 1);
             string[] thisPriorityKey035 = { "grantPosition", "newPositionHolder" };
@@ -807,7 +824,7 @@ namespace hist_mmorpg
             string[] thisPriorityKey046 = { "depose_failure", "king" };
             Globals_Game.jEntryPriorities.Add(thisPriorityKey046, 2);
             string[] thisPriorityKey047 = { "depose_failure", "pretender" };
-            Globals_Game.jEntryPriorities.Add(thisPriorityKey046, 2);
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey047, 2);
             string[] thisPriorityKey050 = { "depose_failure", "all" };
             Globals_Game.jEntryPriorities.Add(thisPriorityKey050, 1);
             string[] thisPriorityKey048 = { "depose_new", "king" };
@@ -5909,7 +5926,7 @@ namespace hist_mmorpg
         /// <returns>String containing information to display</returns>
         /// <param name="f">Fief for which information is to be displayed</param>
         /// <param name="isOwner">bool indicating if fief owned by player</param>
-        public string displayGeneralFiefData(Fief f, bool isOwner)
+        public string displayFiefGeneralData(Fief f, bool isOwner)
         {
             string fiefText = "";
 
@@ -5986,6 +6003,76 @@ namespace hist_mmorpg
 
             // terrain type
             fiefText += "Terrain: " + f.terrain.description + "\r\n";
+
+            // barred nationalities
+            fiefText += "Barred nationalities: ";
+            if (f.barredNationalities.Count > 0)
+            {
+                // get last entry
+                string lastNatID = f.barredNationalities.Last();
+
+                foreach (string natID in f.barredNationalities)
+                {
+                    // get nationality
+                    Nationality thisNat = null;
+                    if (Globals_Game.nationalityMasterList.ContainsKey(natID))
+                    {
+                        thisNat = Globals_Game.nationalityMasterList[natID];
+                    }
+
+                    if (thisNat != null)
+                    {
+                        fiefText += thisNat.name;
+
+                        if (!natID.Equals(lastNatID))
+                        {
+                            fiefText += ", ";
+                        }
+                    }
+                }
+            }
+            else
+            {
+                fiefText += "None";
+            }
+            fiefText += "\r\n";
+
+            // barred characters
+            fiefText += "Barred characters: ";
+            if (f.barredCharacters.Count > 0)
+            {
+                // get last entry
+                string lastCharID = f.barredCharacters.Last();
+
+                foreach (string charID in f.barredCharacters)
+                {
+                    // get nationality
+                    Character thisChar = null;
+                    if (Globals_Game.npcMasterList.ContainsKey(charID))
+                    {
+                        thisChar = Globals_Game.npcMasterList[charID];
+                    }
+                    else if (Globals_Game.pcMasterList.ContainsKey(charID))
+                    {
+                        thisChar = Globals_Game.pcMasterList[charID];
+                    }
+
+                    if (thisChar != null)
+                    {
+                        fiefText += thisChar.firstName + " " + thisChar.familyName;
+
+                        if (!charID.Equals(lastCharID))
+                        {
+                            fiefText += ", ";
+                        }
+                    }
+                }
+            }
+            else
+            {
+                fiefText += "None";
+            }
+            fiefText += "\r\n";
 
             return fiefText;
         }
@@ -6522,7 +6609,7 @@ namespace hist_mmorpg
             }
 
             // refresh main fief TextBox with updated info
-            this.fiefTextBox.Text = this.displayGeneralFiefData(Globals_Client.fiefToView, isOwner);
+            this.fiefTextBox.Text = this.displayFiefGeneralData(Globals_Client.fiefToView, isOwner);
 
             // ensure textboxes aren't interactive
             this.fiefTextBox.ReadOnly = true;
@@ -15522,14 +15609,15 @@ namespace hist_mmorpg
                 // (characters, barredChars, armies)
                 List<string> characters = new List<string>();
                 List<string> barredChars = new List<string>();
+                List<string> barredNats = new List<string>();
                 List<string> armies = new List<string>();
 
                 // check to see if any data present for variable length collections
-                if (fiefData.Length > 59)
+                if (fiefData.Length > 57)
                 {
                     // create variables to hold start/end index positions
-                    int chStart, chEnd, barChStart, barChEnd, arStart, arEnd;
-                    chStart = chEnd = barChStart = barChEnd = arStart = arEnd = -1;
+                    int chStart, chEnd, barChStart, barChEnd, barNatStart, barNatEnd, arStart, arEnd;
+                    chStart = chEnd = barChStart = barChEnd = barNatStart = barNatEnd = arStart = arEnd = -1;
 
                     // iterate through main list STORING START/END INDEX POSITIONS
 					for (int i = 59; i < fiefData.Length; i++)
@@ -15549,6 +15637,14 @@ namespace hist_mmorpg
                         else if (fiefData[i].Equals("barChEnd"))
                         {
                             barChEnd = i;
+                        }
+                        else if (fiefData[i].Equals("barNatStart"))
+                        {
+                            barNatStart = i;
+                        }
+                        else if (fiefData[i].Equals("barNatEnd"))
+                        {
+                            barNatEnd = i;
                         }
                         else if (fiefData[i].Equals("arStart"))
                         {
@@ -15576,6 +15672,15 @@ namespace hist_mmorpg
                         for (int i = barChStart + 1; i < barChEnd; i++)
                         {
                             barredChars.Add(fiefData[i]);
+                        }
+                    }
+
+                    // barredNats
+                    if ((barNatStart > -1) && (barNatEnd > -1))
+                    {
+                        for (int i = barChStart + 1; i < barChEnd; i++)
+                        {
+                            barredNats.Add(fiefData[i]);
                         }
                     }
 
@@ -15608,25 +15713,25 @@ namespace hist_mmorpg
                 string tiHo, own, ancOwn, bail, sge;
                 tiHo = own = ancOwn = bail = sge = null;
 
+                if (!String.IsNullOrWhiteSpace(fiefData[52]))
+                {
+                    tiHo = fiefData[52];
+                }
+                if (!String.IsNullOrWhiteSpace(fiefData[53]))
+                {
+                    own = fiefData[53];
+                }
                 if (!String.IsNullOrWhiteSpace(fiefData[54]))
                 {
-                    tiHo = fiefData[54];
+                    ancOwn = fiefData[54];
                 }
                 if (!String.IsNullOrWhiteSpace(fiefData[55]))
                 {
-                    own = fiefData[55];
+                    bail = fiefData[55];
                 }
                 if (!String.IsNullOrWhiteSpace(fiefData[56]))
                 {
-                    ancOwn = fiefData[56];
-                }
-                if (!String.IsNullOrWhiteSpace(fiefData[57]))
-                {
-                    bail = fiefData[57];
-                }
-                if (!String.IsNullOrWhiteSpace(fiefData[58]))
-                {
-                    sge = fiefData[58];
+                    sge = fiefData[56];
                 }
 
                 // create Fife_Riak object
@@ -15636,10 +15741,9 @@ namespace hist_mmorpg
                     Convert.ToUInt32(fiefData[11]), Convert.ToUInt32(fiefData[12]), Convert.ToUInt32(fiefData[13]),
                     finCurr, finPrev, Convert.ToDouble(fiefData[42]), Convert.ToDouble(fiefData[43]),
                     Convert.ToChar(fiefData[44]), fiefData[45], fiefData[46], characters, barredChars,
-                    Convert.ToBoolean(fiefData[47]), Convert.ToBoolean(fiefData[48]), Convert.ToByte(fiefData[49]),
-                    Convert.ToInt32(fiefData[50]), armies, Convert.ToBoolean(fiefData[51]),
-                    new Dictionary<string, string[]>(), Convert.ToBoolean(fiefData[52]), Convert.ToByte(fiefData[53]),
-                    tiHo: tiHo, own: own, ancOwn: ancOwn, bail: bail, sge: sge);
+                    barredNats, Convert.ToByte(fiefData[47]), Convert.ToInt32(fiefData[48]), armies,
+                    Convert.ToBoolean(fiefData[49]), new Dictionary<string, string[]>(), Convert.ToBoolean(fiefData[50]),
+                    Convert.ToByte(fiefData[51]), tiHo: tiHo, own: own, ancOwn: ancOwn, bail: bail, sge: sge);
             }
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)

@@ -1597,44 +1597,25 @@ namespace hist_mmorpg
 
             if (proceed)
             {
-                // if character is English and English barred, don't allow entry
-                if (location.englishBarred)
+                // if character is of a barred nationality, don't allow entry
+                if (location.barredNationalities.Contains(this.nationality.natID))
                 {
-                    if (this.nationality.natID.Equals("Eng"))
+                    proceed = false;
+                    if (Globals_Client.showMessages)
                     {
-                        proceed = false;
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Bailiff: The duplicitous English are barred from entering this keep, Good Sir!");
-                        }
+                        System.Windows.Forms.MessageBox.Show("Bailiff: The perfidious " + this.nationality.name + " are barred from entering this keep, Mon Seigneur!");
                     }
                 }
 
                 if (proceed)
                 {
-                    // if character is French and French barred, don't allow entry
-                    if (location.frenchBarred)
+                    // if this character is specifically barred, don't allow entry
+                    if (location.barredCharacters.Contains(this.charID))
                     {
-                        if (this.nationality.natID.Equals("Fr"))
+                        proceed = false;
+                        if (Globals_Client.showMessages)
                         {
-                            proceed = false;
-                            if (Globals_Client.showMessages)
-                            {
-                                System.Windows.Forms.MessageBox.Show("Bailiff: The perfidious French are barred from entering this keep, Mon Seigneur!");
-                            }
-                        }
-                    }
-
-                    if (proceed)
-                    {
-                        // if character is specifically barred, don't allow entry
-                        if (location.barredCharacters.Contains(this.charID))
-                        {
-                            proceed = false;
-                            if (Globals_Client.showMessages)
-                            {
-                                System.Windows.Forms.MessageBox.Show("Bailiff: Your person is barred from entering this keep, Good Sir!");
-                            }
+                            System.Windows.Forms.MessageBox.Show("Bailiff: Your person is barred from entering this keep, Good Sir!");
                         }
                     }
                 }
