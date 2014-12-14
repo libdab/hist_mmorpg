@@ -10672,12 +10672,38 @@ namespace hist_mmorpg
             battleValues = this.calculateBattleValue(attacker, defender);
 
             // check if attacker has managed to bring defender to battle
-            // NOTE 1: defender aggression isn't a factor in pillage battles
-            // NOTE 2: battle always occurs if defending army sallies during siege
-            if (((defender.aggression != 0) && (!circumstance.Equals("pillage"))) || (circumstance.Equals("siege")))
+            // case 1: defending army sallies during siege to attack besieger = battle always occurs
+            if (circumstance.Equals("siege"))
             {
                 battleHasCommenced = true;
             }
+            // case 2: defending militia attacks pillaging army during pollage = battle always occurs
+            else if (circumstance.Equals("pillage"))
+            {
+                battleHasCommenced = true;
+            }
+            // case 3: defender aggression and combatOdds allows battle
+            else if (defender.aggression != 0)
+            {
+                if (defender.aggression == 1)
+                {
+                    // get odds
+                    int battleOdds = this.getBattleOdds(attacker, defender);
+
+                    // if odds OK, give battle
+                    if (battleOdds <= defender.combatOdds)
+                    {
+                        battleHasCommenced = true;
+                    }
+                }
+
+                else
+                {
+                    battleHasCommenced = true;
+                }
+            }
+
+            // otherwise, check to see if the attacker can bring the defender to battle
             else
             {
                 battleHasCommenced = this.bringToBattle(battleValues[0], battleValues[1], circumstance);
@@ -12330,7 +12356,7 @@ namespace hist_mmorpg
             {
                 defenderAdditional = s.getDefenderAdditional();
 
-                if (defenderAdditional.aggression > 1)
+                if (defenderAdditional.aggression > 0)
                 {
                     // get odds
                     int battleOdds = this.getBattleOdds(defenderAdditional, besieger);

@@ -792,6 +792,10 @@ namespace hist_mmorpg
                     if (thisArmy != null)
                     {
                         thisArmy.leader = null;
+
+                        // set default aggression and combatOdds levels
+                        thisArmy.aggression = 1;
+                        thisArmy.combatOdds = 2;
                     }
                 }
 
@@ -1564,12 +1568,13 @@ namespace hist_mmorpg
         public virtual bool enterKeep()
         {
             bool proceed = true;
+            Army thisArmy = null;
 
             // check if character leading an army
             if (!String.IsNullOrWhiteSpace(this.armyID))
             {
                 // get army
-                Army thisArmy = this.getArmy();
+                thisArmy = this.getArmy();
 
                 if (thisArmy != null)
                 {
@@ -1622,6 +1627,18 @@ namespace hist_mmorpg
             }
 
             this.inKeep = proceed;
+
+            // if have entered keep with an army, ensure aggression level set to at least 1 (to allow siege defence)
+            if (proceed)
+            {
+                if (thisArmy != null)
+                {
+                    if (thisArmy.aggression == 0)
+                    {
+                        thisArmy.aggression = 1;
+                    }
+                }
+            }
 
             return proceed;
         }
