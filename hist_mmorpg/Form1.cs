@@ -45,11 +45,11 @@ namespace hist_mmorpg
 			rClient = (RiakClient)rCluster.CreateClient();
 
             // initialise game objects
-			this.initGameObjects("Char_47", "testGame");
+			this.initGameObjects("Char_47", "fromCSV");
 
 			//this.SynchGameObjectCollections ();
 
-			//this.ImportFromCSV("gameObjects.csv", "fromCSV");
+			//this.ImportFromCSV("gameObjects.csv", "fromCSV", true);
 			//this.CreateMapArrayFromCSV ("map.csv", "fromCSV");
 
 			// this.ArrayFromCSV ("/home/libdab/Dissertation_data/11-07-14/hacked-player.csv", true, "testGame", "skeletonPlayers1194");
@@ -607,7 +607,7 @@ namespace hist_mmorpg
 
             // set kingdom title holders
             myKingdom1.titleHolder = myChar1.charID;
-            myKingdom2.titleHolder = myChar1.charID;
+			myKingdom2.titleHolder = myChar2.charID;
 
             // set province title holders
             myProv.titleHolder = myChar1.charID;
@@ -9151,7 +9151,7 @@ namespace hist_mmorpg
 				// write to database if necessary
                     if (Globals_Game.writeToDatabase)
 				{
-					this.writeToDB ("testGame");
+					this.writeToDB ("fromCSV");
 				}
 				break;
 
