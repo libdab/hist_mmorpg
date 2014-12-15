@@ -357,7 +357,28 @@ namespace hist_mmorpg
                     {
                         foreach (string thisTitle in pcTitles)
                         {
-                            this.myTitles.Add(thisTitle);
+							// add to myTitles
+							this.myTitles.Add(thisTitle);
+
+							// change titleHolder in Place
+							Place thisPlace = null;
+							if (Globals_Game.fiefMasterList.ContainsKey(thisTitle))
+							{
+								thisPlace = Globals_Game.fiefMasterList[thisTitle];
+							}
+							else if (Globals_Game.provinceMasterList.ContainsKey(thisTitle))
+							{
+								thisPlace = Globals_Game.provinceMasterList[thisTitle];
+							}
+							else if (Globals_Game.kingdomMasterList.ContainsKey(thisTitle))
+							{
+								thisPlace = Globals_Game.kingdomMasterList[thisTitle];
+							}
+
+							if (thisPlace != null)
+							{
+								thisPlace.titleHolder = this.charID;
+							}
                         }
                     }
                     this.armyID = npc.armyID;
@@ -1439,6 +1460,27 @@ namespace hist_mmorpg
             {
                 prov.owner = king;
             }
+
+			// OWNERSHIPCHALLENGES
+			List<OwnershipChallenge> toRemove = new List<OwnershipChallenge> ();
+			foreach (KeyValuePair<string, OwnershipChallenge> challengeEntry in Globals_Game.ownershipChallenges)
+			{
+				if (challengeEntry.Value.getChallenger() == deceased)
+				{
+					toRemove.Add(challengeEntry.Value);
+				}
+			}
+
+			// process toRemove
+			if (toRemove.Count > 0)
+			{
+				foreach (OwnershipChallenge thisChallenge in toRemove)
+				{
+					Globals_Game.ownershipChallenges.Remove (thisChallenge.id);
+				}
+
+				toRemove.Clear ();
+			}
         }
 
         /// <summary>
@@ -1449,9 +1491,16 @@ namespace hist_mmorpg
         public void processInheritance(PlayerCharacter deceased, NonPlayerCharacter inheritor = null)
         {
             // ============== 1. CREATE NEW PC from NPC (inheritor)
+			// remove inheritor from deceased's myNPCs
+			if (deceased.myNPCs.Contains(inheritor))
+			{
+				deceased.myNPCs.Remove(inheritor);
+			}
+
+			// promote inheritor
             PlayerCharacter promotedNPC = new PlayerCharacter(inheritor, deceased);
 
-            // remove from npcMasterList and add to pcMasterList
+			// remove from npcMasterList and mark for addition to pcMasterList
             Globals_Game.npcMasterList.Remove(inheritor.charID);
             Globals_Game.promotedNPCs.Add(promotedNPC);
 
@@ -1475,7 +1524,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // ============== 3. change OWNER & ANCESTRALOWNER for FIEFS
+			// ============== 3. change OWNER & ANCESTRALOWNER for FIEFS and REMOVE inheritor
             List<string> ancestOwnerChanges = new List<string>();
             List<string> ownerChanges = new List<string>();
             foreach (KeyValuePair<string, Fief> thisFiefEntry in Globals_Game.fiefMasterList)
@@ -1491,6 +1540,12 @@ namespace hist_mmorpg
                 {
                     ownerChanges.Add(thisFiefEntry.Key);
                 }
+
+				// remove inheritor from fief
+				if (thisFiefEntry.Value.charactersInFief.Contains(inheritor))
+				{
+					thisFiefEntry.Value.charactersInFief.Remove(inheritor);
+				}
             }
 
             // make necessary changes
@@ -1507,13 +1562,22 @@ namespace hist_mmorpg
                 }
             }
 
-            // ============== 4. change OWNER for ARMIES
+			// ============== 4. change OWNERSHIPCHALLENGES
+			foreach (KeyValuePair<string, OwnershipChallenge> challengeEntry in Globals_Game.ownershipChallenges)
+			{
+				if (challengeEntry.Value.getChallenger() == deceased)
+				{
+					challengeEntry.Value.challengerID = promotedNPC.charID;
+				}
+			}
+
+			// ============== 5. change OWNER for ARMIES
             for (int i = 0; i < promotedNPC.myArmies.Count; i++ )
             {
                 promotedNPC.myArmies[i].owner = promotedNPC.charID;
             }
 
-            // ============== 5. change BESIEGINGPLAYER for SIEGES
+			// ============== 6. change BESIEGINGPLAYER for SIEGES
             for (int i = 0; i < promotedNPC.mySieges.Count; i++)
             {
                 // get siege
@@ -1521,7 +1585,7 @@ namespace hist_mmorpg
                 thisSiege.besiegingPlayer = promotedNPC.charID;
             }
 
-            // ============== 6. change GLOBALS_CLIENT.MYCHAR
+			// ============== 7. change GLOBALS_CLIENT.MYPLAYERCHARACTER
             if (Globals_Client.myPlayerCharacter == deceased)
             {
                 Globals_Client.myPlayerCharacter = promotedNPC;
@@ -2639,6 +2703,7 @@ namespace hist_mmorpg
         /// for use when promoting a deceased PC's heir
         /// </summary>
         /// <param name="npc">NonPlayerCharacter object to use as source</param>
+		/// <param name="pc">PlayerCharacter object to use as source</param>
         public PlayerCharacter(NonPlayerCharacter npc, PlayerCharacter pc)
             : base(npc, "promote", pc.myTitles)
         {
