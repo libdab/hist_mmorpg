@@ -320,18 +320,25 @@ namespace hist_mmorpg
                 // get character
                 if (thisPersonaeSplit[0] != null)
                 {
-                    if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                    // filter out any "all|all" entries
+                    if (!thisPersonaeSplit[0].Equals("all"))
                     {
-                        thisCharacter = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
-                    }
-                    else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
-                    {
-                        thisCharacter = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
+                        if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        {
+                            thisCharacter = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
+                        }
+                        else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                        {
+                            thisCharacter = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
+                        }
                     }
                 }
 
-                entryText += thisCharacter.firstName + " " + thisCharacter.familyName
-                    + " (" + thisPersonaeSplit[1] + ")\r\n";
+                if (thisCharacter != null)
+                {
+                    entryText += thisCharacter.firstName + " " + thisCharacter.familyName
+                        + " (" + thisPersonaeSplit[1] + ")\r\n";
+                }
             }
             entryText += "\r\n";
 
