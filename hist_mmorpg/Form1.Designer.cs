@@ -682,13 +682,13 @@ namespace hist_mmorpg
             this.pCToolStripMenuItem,
             this.nPCToolStripMenuItem});
             this.characterToolStripMenuItem2.Name = "characterToolStripMenuItem2";
-            this.characterToolStripMenuItem2.Size = new System.Drawing.Size(125, 22);
+            this.characterToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
             this.characterToolStripMenuItem2.Text = "Character";
             // 
             // pCToolStripMenuItem
             // 
             this.pCToolStripMenuItem.Name = "pCToolStripMenuItem";
-            this.pCToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+            this.pCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.pCToolStripMenuItem.Tag = "PC";
             this.pCToolStripMenuItem.Text = "PC";
             this.pCToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -696,7 +696,7 @@ namespace hist_mmorpg
             // nPCToolStripMenuItem
             // 
             this.nPCToolStripMenuItem.Name = "nPCToolStripMenuItem";
-            this.nPCToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+            this.nPCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.nPCToolStripMenuItem.Tag = "NPC";
             this.nPCToolStripMenuItem.Text = "NPC";
             this.nPCToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -708,13 +708,13 @@ namespace hist_mmorpg
             this.provinceToolStripMenuItem,
             this.kingdomToolStripMenuItem});
             this.placeToolStripMenuItem.Name = "placeToolStripMenuItem";
-            this.placeToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.placeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.placeToolStripMenuItem.Text = "Place";
             // 
             // fiefToolStripMenuItem1
             // 
             this.fiefToolStripMenuItem1.Name = "fiefToolStripMenuItem1";
-            this.fiefToolStripMenuItem1.Size = new System.Drawing.Size(123, 22);
+            this.fiefToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.fiefToolStripMenuItem1.Tag = "Fief";
             this.fiefToolStripMenuItem1.Text = "Fief";
             this.fiefToolStripMenuItem1.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -722,7 +722,7 @@ namespace hist_mmorpg
             // provinceToolStripMenuItem
             // 
             this.provinceToolStripMenuItem.Name = "provinceToolStripMenuItem";
-            this.provinceToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.provinceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.provinceToolStripMenuItem.Tag = "Province";
             this.provinceToolStripMenuItem.Text = "Province";
             this.provinceToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -730,7 +730,7 @@ namespace hist_mmorpg
             // kingdomToolStripMenuItem
             // 
             this.kingdomToolStripMenuItem.Name = "kingdomToolStripMenuItem";
-            this.kingdomToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.kingdomToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.kingdomToolStripMenuItem.Tag = "Kingdom";
             this.kingdomToolStripMenuItem.Text = "Kingdom";
             this.kingdomToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -738,7 +738,7 @@ namespace hist_mmorpg
             // armyToolStripMenuItem1
             // 
             this.armyToolStripMenuItem1.Name = "armyToolStripMenuItem1";
-            this.armyToolStripMenuItem1.Size = new System.Drawing.Size(125, 22);
+            this.armyToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.armyToolStripMenuItem1.Tag = "Army";
             this.armyToolStripMenuItem1.Text = "Army";
             this.armyToolStripMenuItem1.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -746,7 +746,7 @@ namespace hist_mmorpg
             // skillToolStripMenuItem
             // 
             this.skillToolStripMenuItem.Name = "skillToolStripMenuItem";
-            this.skillToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.skillToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.skillToolStripMenuItem.Tag = "Skill";
             this.skillToolStripMenuItem.Text = "Skill";
             this.skillToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -1089,6 +1089,7 @@ namespace hist_mmorpg
             // 
             // fiefTransferAmountTextBox
             // 
+            this.fiefTransferAmountTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.fiefTransferAmountTextBox.Location = new System.Drawing.Point(124, 599);
             this.fiefTransferAmountTextBox.Name = "fiefTransferAmountTextBox";
             this.fiefTransferAmountTextBox.Size = new System.Drawing.Size(94, 20);
@@ -1118,6 +1119,7 @@ namespace hist_mmorpg
             // 
             // fiefHomeTreasTextBox
             // 
+            this.fiefHomeTreasTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.fiefHomeTreasTextBox.Location = new System.Drawing.Point(216, 565);
             this.fiefHomeTreasTextBox.Name = "fiefHomeTreasTextBox";
             this.fiefHomeTreasTextBox.Size = new System.Drawing.Size(122, 20);
@@ -1125,6 +1127,7 @@ namespace hist_mmorpg
             // 
             // FiefTreasTextBox
             // 
+            this.FiefTreasTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.FiefTreasTextBox.Location = new System.Drawing.Point(15, 565);
             this.FiefTreasTextBox.Name = "FiefTreasTextBox";
             this.FiefTreasTextBox.Size = new System.Drawing.Size(111, 20);
@@ -1265,6 +1268,7 @@ namespace hist_mmorpg
             // 
             // adjustKeepSpendTextBox
             // 
+            this.adjustKeepSpendTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.adjustKeepSpendTextBox.Location = new System.Drawing.Point(186, 429);
             this.adjustKeepSpendTextBox.Name = "adjustKeepSpendTextBox";
             this.adjustKeepSpendTextBox.Size = new System.Drawing.Size(56, 20);
@@ -1272,6 +1276,7 @@ namespace hist_mmorpg
             // 
             // adjInfrSpendTextBox
             // 
+            this.adjInfrSpendTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.adjInfrSpendTextBox.Location = new System.Drawing.Point(185, 397);
             this.adjInfrSpendTextBox.Name = "adjInfrSpendTextBox";
             this.adjInfrSpendTextBox.Size = new System.Drawing.Size(57, 20);
@@ -1279,6 +1284,7 @@ namespace hist_mmorpg
             // 
             // adjGarrSpendTextBox
             // 
+            this.adjGarrSpendTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.adjGarrSpendTextBox.Location = new System.Drawing.Point(186, 367);
             this.adjGarrSpendTextBox.Name = "adjGarrSpendTextBox";
             this.adjGarrSpendTextBox.Size = new System.Drawing.Size(56, 20);
@@ -1286,6 +1292,7 @@ namespace hist_mmorpg
             // 
             // adjOffSpendTextBox
             // 
+            this.adjOffSpendTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.adjOffSpendTextBox.Location = new System.Drawing.Point(186, 337);
             this.adjOffSpendTextBox.Name = "adjOffSpendTextBox";
             this.adjOffSpendTextBox.Size = new System.Drawing.Size(56, 20);
@@ -1293,6 +1300,7 @@ namespace hist_mmorpg
             // 
             // adjustTaxTextBox
             // 
+            this.adjustTaxTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.adjustTaxTextBox.Location = new System.Drawing.Point(185, 311);
             this.adjustTaxTextBox.Name = "adjustTaxTextBox";
             this.adjustTaxTextBox.Size = new System.Drawing.Size(57, 20);
@@ -1441,6 +1449,7 @@ namespace hist_mmorpg
             // 
             // travelRouteTextBox
             // 
+            this.travelRouteTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.travelRouteTextBox.Location = new System.Drawing.Point(152, 173);
             this.travelRouteTextBox.Name = "travelRouteTextBox";
             this.travelRouteTextBox.Size = new System.Drawing.Size(101, 20);
@@ -1468,6 +1477,7 @@ namespace hist_mmorpg
             // 
             // travelCampDaysTextBox
             // 
+            this.travelCampDaysTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.travelCampDaysTextBox.Location = new System.Drawing.Point(168, 215);
             this.travelCampDaysTextBox.Name = "travelCampDaysTextBox";
             this.travelCampDaysTextBox.Size = new System.Drawing.Size(29, 20);
@@ -1495,6 +1505,7 @@ namespace hist_mmorpg
             // 
             // travelMoveToTextBox
             // 
+            this.travelMoveToTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.travelMoveToTextBox.Location = new System.Drawing.Point(152, 144);
             this.travelMoveToTextBox.Name = "travelMoveToTextBox";
             this.travelMoveToTextBox.Size = new System.Drawing.Size(101, 20);
@@ -2054,6 +2065,7 @@ namespace hist_mmorpg
             // 
             // houseRouteTextBox
             // 
+            this.houseRouteTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.houseRouteTextBox.Location = new System.Drawing.Point(126, 73);
             this.houseRouteTextBox.Name = "houseRouteTextBox";
             this.houseRouteTextBox.Size = new System.Drawing.Size(101, 20);
@@ -2072,6 +2084,7 @@ namespace hist_mmorpg
             // 
             // houseMoveToTextBox
             // 
+            this.houseMoveToTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.houseMoveToTextBox.Location = new System.Drawing.Point(126, 44);
             this.houseMoveToTextBox.Name = "houseMoveToTextBox";
             this.houseMoveToTextBox.Size = new System.Drawing.Size(101, 20);
@@ -2101,6 +2114,7 @@ namespace hist_mmorpg
             // 
             // familyNameChildTextBox
             // 
+            this.familyNameChildTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.familyNameChildTextBox.Location = new System.Drawing.Point(107, 584);
             this.familyNameChildTextBox.Name = "familyNameChildTextBox";
             this.familyNameChildTextBox.Size = new System.Drawing.Size(103, 20);
@@ -2157,6 +2171,7 @@ namespace hist_mmorpg
             // 
             // houseCampDaysTextBox
             // 
+            this.houseCampDaysTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.houseCampDaysTextBox.Location = new System.Drawing.Point(148, 14);
             this.houseCampDaysTextBox.Name = "houseCampDaysTextBox";
             this.houseCampDaysTextBox.Size = new System.Drawing.Size(29, 20);
@@ -2426,6 +2441,7 @@ namespace hist_mmorpg
             // 
             // armyTransCrossbowTextBox
             // 
+            this.armyTransCrossbowTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.armyTransCrossbowTextBox.Location = new System.Drawing.Point(202, 398);
             this.armyTransCrossbowTextBox.Name = "armyTransCrossbowTextBox";
             this.armyTransCrossbowTextBox.Size = new System.Drawing.Size(62, 20);
@@ -2462,7 +2478,8 @@ namespace hist_mmorpg
             // 
             // armyTransRabbleTextBox
             // 
-            this.armyTransRabbleTextBox.Location = new System.Drawing.Point(203, 449);
+            this.armyTransRabbleTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.armyTransRabbleTextBox.Location = new System.Drawing.Point(202, 449);
             this.armyTransRabbleTextBox.Name = "armyTransRabbleTextBox";
             this.armyTransRabbleTextBox.Size = new System.Drawing.Size(62, 20);
             this.armyTransRabbleTextBox.TabIndex = 52;
@@ -2499,6 +2516,7 @@ namespace hist_mmorpg
             // 
             // armyTransFootTextBox
             // 
+            this.armyTransFootTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.armyTransFootTextBox.Location = new System.Drawing.Point(202, 423);
             this.armyTransFootTextBox.Name = "armyTransFootTextBox";
             this.armyTransFootTextBox.Size = new System.Drawing.Size(62, 20);
@@ -2506,6 +2524,7 @@ namespace hist_mmorpg
             // 
             // armyCampTextBox
             // 
+            this.armyCampTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.armyCampTextBox.Location = new System.Drawing.Point(202, 202);
             this.armyCampTextBox.Name = "armyCampTextBox";
             this.armyCampTextBox.Size = new System.Drawing.Size(29, 20);
@@ -2523,7 +2542,8 @@ namespace hist_mmorpg
             // 
             // armyTransLongbowTextBox
             // 
-            this.armyTransLongbowTextBox.Location = new System.Drawing.Point(203, 372);
+            this.armyTransLongbowTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.armyTransLongbowTextBox.Location = new System.Drawing.Point(202, 373);
             this.armyTransLongbowTextBox.Name = "armyTransLongbowTextBox";
             this.armyTransLongbowTextBox.Size = new System.Drawing.Size(62, 20);
             this.armyTransLongbowTextBox.TabIndex = 50;
@@ -2559,6 +2579,7 @@ namespace hist_mmorpg
             // 
             // armyTransLCavTextBox
             // 
+            this.armyTransLCavTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.armyTransLCavTextBox.Location = new System.Drawing.Point(202, 346);
             this.armyTransLCavTextBox.Name = "armyTransLCavTextBox";
             this.armyTransLCavTextBox.Size = new System.Drawing.Size(62, 20);
@@ -2575,6 +2596,7 @@ namespace hist_mmorpg
             // 
             // armyRecruitTextBox
             // 
+            this.armyRecruitTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.armyRecruitTextBox.Location = new System.Drawing.Point(169, 14);
             this.armyRecruitTextBox.Name = "armyRecruitTextBox";
             this.armyRecruitTextBox.Size = new System.Drawing.Size(96, 20);
@@ -2591,6 +2613,7 @@ namespace hist_mmorpg
             // 
             // armyTransMAAtextBox
             // 
+            this.armyTransMAAtextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.armyTransMAAtextBox.Location = new System.Drawing.Point(202, 320);
             this.armyTransMAAtextBox.Name = "armyTransMAAtextBox";
             this.armyTransMAAtextBox.Size = new System.Drawing.Size(62, 20);
@@ -2635,6 +2658,7 @@ namespace hist_mmorpg
             // 
             // armyTransKnightTextBox
             // 
+            this.armyTransKnightTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.armyTransKnightTextBox.Location = new System.Drawing.Point(202, 295);
             this.armyTransKnightTextBox.Name = "armyTransKnightTextBox";
             this.armyTransKnightTextBox.Size = new System.Drawing.Size(62, 20);
@@ -2670,6 +2694,7 @@ namespace hist_mmorpg
             // 
             // armyTransDropWhoTextBox
             // 
+            this.armyTransDropWhoTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.armyTransDropWhoTextBox.Location = new System.Drawing.Point(202, 250);
             this.armyTransDropWhoTextBox.Name = "armyTransDropWhoTextBox";
             this.armyTransDropWhoTextBox.Size = new System.Drawing.Size(61, 20);
@@ -2717,7 +2742,7 @@ namespace hist_mmorpg
             // siegeContainer
             // 
             this.siegeContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.siegeContainer.Location = new System.Drawing.Point(0, 0);
+            this.siegeContainer.Location = new System.Drawing.Point(0, 24);
             this.siegeContainer.Name = "siegeContainer";
             // 
             // siegeContainer.Panel1
@@ -2730,7 +2755,7 @@ namespace hist_mmorpg
             // siegeContainer.Panel2
             // 
             this.siegeContainer.Panel2.Controls.Add(this.siegeListContainer);
-            this.siegeContainer.Size = new System.Drawing.Size(935, 735);
+            this.siegeContainer.Size = new System.Drawing.Size(935, 711);
             this.siegeContainer.SplitterDistance = 311;
             this.siegeContainer.TabIndex = 9;
             // 
@@ -2790,7 +2815,7 @@ namespace hist_mmorpg
             // siegeListContainer.Panel2
             // 
             this.siegeListContainer.Panel2.Controls.Add(this.siegeListView);
-            this.siegeListContainer.Size = new System.Drawing.Size(620, 735);
+            this.siegeListContainer.Size = new System.Drawing.Size(620, 711);
             this.siegeListContainer.SplitterDistance = 315;
             this.siegeListContainer.TabIndex = 0;
             // 
@@ -2800,7 +2825,7 @@ namespace hist_mmorpg
             this.siegeTextBox.Location = new System.Drawing.Point(0, 0);
             this.siegeTextBox.Multiline = true;
             this.siegeTextBox.Name = "siegeTextBox";
-            this.siegeTextBox.Size = new System.Drawing.Size(315, 735);
+            this.siegeTextBox.Size = new System.Drawing.Size(315, 711);
             this.siegeTextBox.TabIndex = 0;
             // 
             // siegeListView
@@ -2809,7 +2834,7 @@ namespace hist_mmorpg
             this.siegeListView.FullRowSelect = true;
             this.siegeListView.Location = new System.Drawing.Point(0, 0);
             this.siegeListView.Name = "siegeListView";
-            this.siegeListView.Size = new System.Drawing.Size(301, 735);
+            this.siegeListView.Size = new System.Drawing.Size(301, 711);
             this.siegeListView.TabIndex = 0;
             this.siegeListView.UseCompatibleStateImageBehavior = false;
             this.siegeListView.View = System.Windows.Forms.View.Details;
@@ -3197,6 +3222,7 @@ namespace hist_mmorpg
             // 
             // provinceTaxTextBox
             // 
+            this.provinceTaxTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.provinceTaxTextBox.Location = new System.Drawing.Point(135, 34);
             this.provinceTaxTextBox.Name = "provinceTaxTextBox";
             this.provinceTaxTextBox.Size = new System.Drawing.Size(57, 20);
@@ -3374,6 +3400,7 @@ namespace hist_mmorpg
             // 
             // adminEditTextBox
             // 
+            this.adminEditTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.adminEditTextBox.Location = new System.Drawing.Point(14, 9);
             this.adminEditTextBox.Name = "adminEditTextBox";
             this.adminEditTextBox.Size = new System.Drawing.Size(102, 20);
@@ -3401,9 +3428,9 @@ namespace hist_mmorpg
             // 
             // adminEditPlaceContainer.Panel2
             // 
-            this.adminEditPlaceContainer.Panel2.Controls.Add(this.adminEditProvPanel);
             this.adminEditPlaceContainer.Panel2.Controls.Add(this.adminEditFiefPanel);
             this.adminEditPlaceContainer.Panel2.Controls.Add(this.adminEditKingPanel);
+            this.adminEditPlaceContainer.Panel2.Controls.Add(this.adminEditProvPanel);
             this.adminEditPlaceContainer.Size = new System.Drawing.Size(620, 711);
             this.adminEditPlaceContainer.SplitterDistance = 154;
             this.adminEditPlaceContainer.TabIndex = 1;
@@ -3990,8 +4017,8 @@ namespace hist_mmorpg
             // 
             // adminEditCharContainer.Panel2
             // 
-            this.adminEditCharContainer.Panel2.Controls.Add(this.adminEditCharPcPanel);
             this.adminEditCharContainer.Panel2.Controls.Add(this.adminEditCharNpcPanel);
+            this.adminEditCharContainer.Panel2.Controls.Add(this.adminEditCharPcPanel);
             this.adminEditCharContainer.Size = new System.Drawing.Size(620, 711);
             this.adminEditCharContainer.SplitterDistance = 500;
             this.adminEditCharContainer.TabIndex = 0;
@@ -4749,19 +4776,19 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
-            this.Controls.Add(this.meetingPlaceContainer);
-            this.Controls.Add(this.armyContainer);
+            this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.journalContainer);
             this.Controls.Add(this.provinceContainer);
-            this.Controls.Add(this.fiefsOwnedContainer);
-            this.Controls.Add(this.fiefContainer);
+            this.Controls.Add(this.royalGiftsContainer);
+            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.travelContainer);
-            this.Controls.Add(this.royalGiftsContainer);
-            this.Controls.Add(this.adminEditContainer);
+            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.characterContainer);
+            this.Controls.Add(this.adminEditContainer);
+            this.Controls.Add(this.meetingPlaceContainer);
+            this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.siegeContainer);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";

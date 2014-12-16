@@ -4208,6 +4208,38 @@ namespace hist_mmorpg
                 this.refreshProvinceContainer(Globals_Client.provinceToView);
             }
 
+            // adminEdit
+            else if (Globals_Client.containerToView == this.adminEditContainer)
+            {
+                // get objectType
+                string objectType = this.adminEditGetBtn.Tag.ToString();
+
+                switch (objectType)
+                {
+                    case "PC":
+                        this.refreshCharEdit();
+                        break;
+                    case "NPC":
+                        this.refreshCharEdit();
+                        break;
+                    case "Fief":
+                        this.refreshPlaceEdit();
+                        break;
+                    case "Province":
+                        this.refreshPlaceEdit();
+                        break;
+                    case "Kingdom":
+                        this.refreshPlaceEdit();
+                        break;
+                    case "Army":
+                        this.refreshArmyEdit();
+                        break;
+                    case "Skill":
+                        this.refreshSkillEdit();
+                        break;
+                }
+            }
+
         }
 
         /// <summary>
@@ -7398,18 +7430,10 @@ namespace hist_mmorpg
                             this.hireNPC_TextBox.Visible = true;
 
                             // can only employ men (non-PCs)
-                            if ((charToDisplay.isMale) && (!(charToDisplay is PlayerCharacter)))
+                            if (charToDisplay.checkCanHire(Globals_Client.myPlayerCharacter))
                             {
-                                // ensure is 'of age'
-                                if (charToDisplay.calcAge() >= 14)
-                                {
-                                    // can't hire members of any PC's family
-                                    if (String.IsNullOrWhiteSpace(charToDisplay.familyID))
-                                    {
-                                        this.hireNPC_Btn.Enabled = true;
-                                        this.hireNPC_TextBox.Enabled = true;
-                                    }
-                                }
+                                this.hireNPC_Btn.Enabled = true;
+                                this.hireNPC_TextBox.Enabled = true;
                             }
                             else
                             {
