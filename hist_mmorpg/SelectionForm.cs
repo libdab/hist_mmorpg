@@ -222,7 +222,7 @@ namespace hist_mmorpg
             Army myArmy = null;
             if (this.function.Equals("leader"))
             {
-                if (this.armyID != null)
+                if (!String.IsNullOrWhiteSpace(this.armyID))
                 {
                     myArmy = Globals_Game.armyMasterList[this.armyID];
                 }
@@ -238,7 +238,7 @@ namespace hist_mmorpg
 					addItem = true;
 
                     // only show 'played' PCs
-					if (thisPlayer.Value.playerID == null)
+                    if (String.IsNullOrWhiteSpace(thisPlayer.Value.playerID))
 					{
 						addItem = false;
 					}
@@ -294,7 +294,7 @@ namespace hist_mmorpg
 					}
 
                     // don't display characters not 'of age'
-                    else if (Globals_Client.myPlayerCharacter.myNPCs[i].calcCharAge() < 14)
+                    else if (Globals_Client.myPlayerCharacter.myNPCs[i].calcAge() < 14)
                     {
                         addItem = false;
                     }
@@ -364,7 +364,7 @@ namespace hist_mmorpg
             foreach (KeyValuePair<string, PlayerCharacter> thisPlayer in Globals_Game.pcMasterList)
             {
                 // only show 'played' PCs
-                if (thisPlayer.Value.playerID != null)
+                if (!String.IsNullOrWhiteSpace(thisPlayer.Value.playerID))
                 {
                     // don't show this player
                     if (thisPlayer.Value != Globals_Client.myPlayerCharacter)
@@ -534,7 +534,7 @@ namespace hist_mmorpg
             charText += "Name: " + thisChar.firstName + " " + thisChar.familyName + "\r\n";
 
             // age
-            charText += "Age: " + thisChar.calcCharAge() + "\r\n";
+            charText += "Age: " + thisChar.calcAge() + "\r\n";
 
             // nationality
             charText += "Nationality: " + thisChar.nationality + "\r\n";
@@ -750,14 +750,17 @@ namespace hist_mmorpg
                 else
                 {
                     // get army
-                    if (this.armyID != null)
+                    if (!String.IsNullOrWhiteSpace(this.armyID))
                     {
-                        Army thisArmy = Globals_Game.armyMasterList[this.armyID];
+                        if (Globals_Game.armyMasterList.ContainsKey(this.armyID))
+                        {
+                            Army thisArmy = Globals_Game.armyMasterList[this.armyID];
 
-                        thisArmy.assignNewLeader(selectedCharacter);
+                            thisArmy.assignNewLeader(selectedCharacter);
 
-                        // refresh the army information (in the main form)
-                        this.parent.refreshArmyContainer(thisArmy);
+                            // refresh the army information (in the main form)
+                            this.parent.refreshArmyContainer(thisArmy);
+                        }
                     }
                     else
                     {
@@ -901,7 +904,7 @@ namespace hist_mmorpg
             Army thisArmy = Globals_Game.armyMasterList[this.armyID];
 
             // get fief
-            Fief thisFief = Globals_Game.fiefMasterList[thisArmy.location];
+            Fief thisFief = thisArmy.getLocation();
 
             // add troop detachments to list
             foreach (KeyValuePair<string, string[]> troopDetachment in thisFief.troopTransfers)
@@ -1157,7 +1160,7 @@ namespace hist_mmorpg
                 if (proceed)
                 {
                     // get fief
-                    Fief thisFief = Globals_Game.fiefMasterList[thisArmy.location];
+                    Fief thisFief = thisArmy.getLocation();
 
                     // check for minimum days
                     foreach (ListViewItem item in checkedItems)
@@ -1359,7 +1362,7 @@ namespace hist_mmorpg
                 PlayerCharacter otherArmyOwner = otherArmy.getOwner();
 
                 // if selected army is not owned by player && observer is an army leader, enable attack button
-                if ((otherArmyOwner != Globals_Client.myPlayerCharacter) && (this.observer.armyID != null))
+                if ((otherArmyOwner != Globals_Client.myPlayerCharacter) && (!String.IsNullOrWhiteSpace(this.observer.armyID)))
                 {
                     this.armiesAttackBtn.Enabled = true;
                 }
@@ -1410,7 +1413,7 @@ namespace hist_mmorpg
                 // SIEGE INVOLVEMENT
                 // check if defending army is the garrison in a siege
                 string siegeID = defender.checkIfSiegeDefenderGarrison();
-                if (siegeID != null)
+                if (!String.IsNullOrWhiteSpace(siegeID))
                 {
                     if (Globals_Client.showMessages)
                     {
@@ -1423,7 +1426,7 @@ namespace hist_mmorpg
                 {
                     // check if defending army is the additional defender in a siege
                     siegeID = defender.checkIfSiegeDefenderAdditional();
-                    if (siegeID != null)
+                    if (!String.IsNullOrWhiteSpace(siegeID))
                     {
                         if (Globals_Client.showMessages)
                         {
@@ -1436,7 +1439,7 @@ namespace hist_mmorpg
                     {
                         // check if attacking army is besieging a keep
                         siegeID = attacker.checkIfBesieger();
-                        if (siegeID != null)
+                        if (!String.IsNullOrWhiteSpace(siegeID))
                         {
                             // display warning and get decision
                             DialogResult dialogResult = MessageBox.Show("Your army is besieging a keep and this action would end the siege.\r\nClick 'OK' to proceed.", "Proceed with attack?", MessageBoxButtons.OKCancel);

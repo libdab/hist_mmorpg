@@ -126,7 +126,7 @@ namespace hist_mmorpg
         {
             Fief besiegedFief = null;
 
-            if (this.besiegedFief != null)
+            if (!String.IsNullOrWhiteSpace(this.besiegedFief))
             {
                 if (Globals_Game.fiefMasterList.ContainsKey(this.besiegedFief))
                 {
@@ -145,7 +145,7 @@ namespace hist_mmorpg
         {
             Army besieger = null;
 
-            if (this.besiegerArmy != null)
+            if (!String.IsNullOrWhiteSpace(this.besiegerArmy))
             {
                 if (Globals_Game.armyMasterList.ContainsKey(this.besiegerArmy))
                 {
@@ -164,7 +164,7 @@ namespace hist_mmorpg
         {
             Army defenderGarrison = null;
 
-            if (this.defenderGarrison != null)
+            if (!String.IsNullOrWhiteSpace(this.defenderGarrison))
             {
                 if (Globals_Game.armyMasterList.ContainsKey(this.defenderGarrison))
                 {
@@ -183,7 +183,7 @@ namespace hist_mmorpg
         {
             Army thisDefenderAdditional = null;
 
-            if (this.defenderAdditional != null)
+            if (!String.IsNullOrWhiteSpace(this.defenderAdditional))
             {
                 if (Globals_Game.armyMasterList.ContainsKey(this.defenderAdditional))
                 {
@@ -202,7 +202,7 @@ namespace hist_mmorpg
         {
             PlayerCharacter defendingPlyr = null;
 
-            if (this.defendingPlayer != null)
+            if (!String.IsNullOrWhiteSpace(this.defendingPlayer))
             {
                 if (Globals_Game.pcMasterList.ContainsKey(this.defendingPlayer))
                 {
@@ -221,7 +221,7 @@ namespace hist_mmorpg
         {
             PlayerCharacter besiegingPlyr = null;
 
-            if (this.besiegingPlayer != null)
+            if (!String.IsNullOrWhiteSpace(this.besiegingPlayer))
             {
                 if (Globals_Game.pcMasterList.ContainsKey(this.besiegingPlayer))
                 {
@@ -395,7 +395,7 @@ namespace hist_mmorpg
             Character besiegerLeader = this.getBesiegingArmy().getLeader();
 
             // check if besieger still in field (i.e. has not been disbanded)
-            if (this.besiegerArmy == null)
+            if (String.IsNullOrWhiteSpace(this.besiegerArmy))
             {
                 siegeEnded = true;
             }

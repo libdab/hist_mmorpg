@@ -106,7 +106,7 @@ namespace hist_mmorpg
             // check if army is involved in a siege
             Siege mySiege = null;
             string siegeID = this.checkForSiegeRole();
-            if (siegeID != null)
+            if (!String.IsNullOrWhiteSpace(siegeID))
             {
                 mySiege = this.getSiege(siegeID);
             }
@@ -283,7 +283,7 @@ namespace hist_mmorpg
             }
 
             // get fief
-            Fief currentFief = Globals_Game.fiefMasterList[this.location];
+            Fief currentFief = this.getLocation();
 
             // get leader
             Character myLeader = this.getLeader();
@@ -477,7 +477,17 @@ namespace hist_mmorpg
         /// <returns>the fief</returns>
         public Fief getLocation()
         {
-            return Globals_Game.fiefMasterList[this.location];
+            Fief thisFief = null;
+
+            if (String.IsNullOrWhiteSpace(this.location))
+            {
+                if (Globals_Game.fiefMasterList.ContainsKey(this.location))
+                {
+                    thisFief = Globals_Game.fiefMasterList[this.location];
+                }
+            }
+
+            return thisFief;
         }
 
         /// <summary>
@@ -489,7 +499,13 @@ namespace hist_mmorpg
             PlayerCharacter myOwner = null;
 
             // get leader from PC master list
-            myOwner = Globals_Game.pcMasterList[this.owner];
+            if (String.IsNullOrWhiteSpace(this.owner))
+            {
+                if (Globals_Game.pcMasterList.ContainsKey(this.owner))
+                {
+                    myOwner = Globals_Game.pcMasterList[this.owner];
+                }
+            }
 
             return myOwner;
         }
@@ -502,7 +518,7 @@ namespace hist_mmorpg
         {
             Character myLeader = null;
 
-            if (this.leader != null)
+            if (!String.IsNullOrWhiteSpace(this.leader))
             {
                 // get leader from appropriate master list
                 if (Globals_Game.npcMasterList.ContainsKey(this.leader))
@@ -557,7 +573,7 @@ namespace hist_mmorpg
             // get fief
             Fief thisFief = this.getLocation();
 
-            if (thisFief.siege != null)
+            if (!String.IsNullOrWhiteSpace(thisFief.siege))
             {
                 Siege thisSiege = thisFief.getSiege();
 
@@ -582,7 +598,7 @@ namespace hist_mmorpg
             // get fief
             Fief thisFief = this.getLocation();
 
-            if (thisFief.siege != null)
+            if (!String.IsNullOrWhiteSpace(thisFief.siege))
             {
                 Siege thisSiege = thisFief.getSiege();
                 if (thisSiege.getDefenderGarrison() == this)
@@ -605,7 +621,7 @@ namespace hist_mmorpg
             // get fief
             Fief thisFief = this.getLocation();
 
-            if (thisFief.siege != null)
+            if (!String.IsNullOrWhiteSpace(thisFief.siege))
             {
                 Siege thisSiege = thisFief.getSiege();
                 if (thisSiege.defenderAdditional != null)
@@ -631,12 +647,12 @@ namespace hist_mmorpg
             // check if army is a defending garrison in a siege
             thisSiegeID = this.checkIfSiegeDefenderGarrison();
 
-            if (thisSiegeID == null)
+            if (String.IsNullOrWhiteSpace(thisSiegeID))
             {
                 // check if army is an additional defending army in a siege
                 thisSiegeID = this.checkIfSiegeDefenderAdditional();
 
-                if (thisSiegeID == null)
+                if (String.IsNullOrWhiteSpace(thisSiegeID))
                 {
                     // check if army is besieger in a siege
                     thisSiegeID = this.checkIfBesieger();
@@ -679,7 +695,7 @@ namespace hist_mmorpg
             // check for SIEGE INVOLVEMENT
             // check that army is a defending garrison in a siege
             siegeID = this.checkIfSiegeDefenderGarrison();
-            if (siegeID != null)
+            if (!String.IsNullOrWhiteSpace(siegeID))
             {
                 isSiegeDefGarr = true;
                 thisSiege = this.getSiege(siegeID);
@@ -688,7 +704,7 @@ namespace hist_mmorpg
             {
                 siegeID = this.checkIfSiegeDefenderAdditional();
                 // check that army is an additional defending army in a siege
-                if (siegeID != null)
+                if (!String.IsNullOrWhiteSpace(siegeID))
                 {
                     isSiegeDefAdd = true;
                     thisSiege = this.getSiege(siegeID);
@@ -768,7 +784,7 @@ namespace hist_mmorpg
             // check for siege involvement
             string siegeID = this.checkForSiegeRole();
             Siege thisSiege = null;
-            if (siegeID != null)
+            if (!String.IsNullOrWhiteSpace(siegeID))
             {
                 thisSiege = Globals_Game.siegeMasterList[siegeID];
             }
@@ -778,7 +794,7 @@ namespace hist_mmorpg
             {
                 // check if are additional defending army
                 string whichRole = this.checkIfSiegeDefenderAdditional();
-                if (whichRole != null)
+                if (!String.IsNullOrWhiteSpace(whichRole))
                 {
                     thisSiege.defenderAdditional = null;
                 }
@@ -787,7 +803,7 @@ namespace hist_mmorpg
                 else
                 {
                     whichRole = this.checkIfBesieger();
-                    if (whichRole != null)
+                    if (!String.IsNullOrWhiteSpace(whichRole))
                     {
                         thisSiege.besiegerArmy = null;
                     }

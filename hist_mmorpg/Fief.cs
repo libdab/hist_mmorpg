@@ -401,7 +401,7 @@ namespace hist_mmorpg
             int fiefIncome = 0;
 
             // check for siege
-            if (this.siege == null)
+            if (String.IsNullOrWhiteSpace(this.siege))
             {
                 // no siege = use next season's expenditure and tax rate
                 fiefBaseIncome = Convert.ToInt32(this.calcNewGDP() * (this.taxRateNext / 100));
@@ -591,7 +591,7 @@ namespace hist_mmorpg
                     if (!((element.getFunction(this.owner).ToLower()).Contains("bailiff")))
                     {
                         // add wage of non-bailiff employees
-                        if (element.familyID == null)
+                        if (String.IsNullOrWhiteSpace(element.familyID))
                         {
                             famExpenses += Convert.ToInt32(element.salary);
                         }
@@ -599,7 +599,7 @@ namespace hist_mmorpg
                         else
                         {
                             // check for siege
-                            if (this.siege == null)
+                            if (String.IsNullOrWhiteSpace(this.siege))
                             {
                                 // no siege = normal allowance
                                 famExpenses += Convert.ToInt32(element.calcFamilyAllowance(element.getFunction(this.owner)));
@@ -617,7 +617,7 @@ namespace hist_mmorpg
                 double famSkillsModifier = 0;
 
                 // get famExpense rating of whoever has highest management rating
-                if ((this.owner.spouse != null) && (this.owner.management < this.owner.getSpouse().management))
+                if ((!String.IsNullOrWhiteSpace(this.owner.spouse)) && (this.owner.management < this.owner.getSpouse().management))
                 {
                     famSkillsModifier = this.owner.getSpouse().calcSkillEffect("famExpense");
                 }
@@ -1813,7 +1813,7 @@ namespace hist_mmorpg
         {
             PlayerCharacter myOverlord = null;
 
-            if (this.province.titleHolder != null)
+            if (!String.IsNullOrWhiteSpace(this.province.titleHolder))
             {
                 if (Globals_Game.pcMasterList.ContainsKey(this.province.titleHolder))
                 {
@@ -1832,7 +1832,7 @@ namespace hist_mmorpg
         {
             Siege mySiege = null;
 
-            if (this.siege != null)
+            if (!String.IsNullOrWhiteSpace(this.siege))
             {
                 // get siege
                 if (Globals_Game.siegeMasterList.ContainsKey(this.siege))

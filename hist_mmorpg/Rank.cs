@@ -174,7 +174,7 @@ namespace hist_mmorpg
             PlayerCharacter oldPositionHolder = null;
 
             // remove existing holder if necessary
-            if (this.officeHolder != null)
+            if (!String.IsNullOrWhiteSpace(this.officeHolder))
             {
                 // get current holder
                 if (Globals_Game.pcMasterList.ContainsKey(this.officeHolder))
@@ -274,7 +274,7 @@ namespace hist_mmorpg
     public class Position_Riak
     {
         /// <summary>
-        /// Holds rank ID
+        /// Holds ID
         /// </summary>
         public byte id { get; set; }
         /// <summary>

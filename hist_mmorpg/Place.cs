@@ -108,7 +108,7 @@ namespace hist_mmorpg
         {
             Character myTitleHolder = null;
 
-            if (this.titleHolder != null)
+            if (!String.IsNullOrWhiteSpace(this.titleHolder))
             {
                 // get title holder from appropriate master list
                 if (Globals_Game.npcMasterList.ContainsKey(this.titleHolder))

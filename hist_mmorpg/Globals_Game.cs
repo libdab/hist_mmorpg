@@ -243,7 +243,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds bool indicating whether or not to load initial object data from database on startup
         /// </summary>
-		public static bool loadFromDatabase = true;
+		public static bool loadFromDatabase = false;
         /// <summary>
         /// Holds bool indicating whether or not to write current object data to database on exit
         /// </summary>
@@ -934,21 +934,24 @@ namespace hist_mmorpg
         {
             Place contestedPlace = null;
 
-            // get province
-            if (this.placeType.Equals("province"))
+            if (!String.IsNullOrWhiteSpace(this.placeID))
             {
-                if (Globals_Game.provinceMasterList.ContainsKey(this.placeID))
+                // get province
+                if (this.placeType.Equals("province"))
                 {
-                    contestedPlace = Globals_Game.provinceMasterList[this.placeID];
+                    if (Globals_Game.provinceMasterList.ContainsKey(this.placeID))
+                    {
+                        contestedPlace = Globals_Game.provinceMasterList[this.placeID];
+                    }
                 }
-            }
 
-            // get kingdom
-            else if (this.placeType.Equals("kingdom"))
-            {
-                if (Globals_Game.kingdomMasterList.ContainsKey(this.placeID))
+                // get kingdom
+                else if (this.placeType.Equals("kingdom"))
                 {
-                    contestedPlace = Globals_Game.kingdomMasterList[this.placeID];
+                    if (Globals_Game.kingdomMasterList.ContainsKey(this.placeID))
+                    {
+                        contestedPlace = Globals_Game.kingdomMasterList[this.placeID];
+                    }
                 }
             }
 

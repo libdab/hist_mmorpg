@@ -68,6 +68,7 @@ namespace hist_mmorpg
             this.royalGiftsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manageProvincesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.journalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewMyEntriesunreadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewEntriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterContainer = new System.Windows.Forms.SplitContainer();
             this.characterTitlesCheckBox = new System.Windows.Forms.CheckBox();
@@ -428,7 +429,6 @@ namespace hist_mmorpg
             this.adminEditSkillNameTextBox = new System.Windows.Forms.TextBox();
             this.label81 = new System.Windows.Forms.Label();
             this.adminEditSkillIdTextBox = new System.Windows.Forms.TextBox();
-            this.viewMyEntriesunreadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -890,6 +890,13 @@ namespace hist_mmorpg
             this.journalToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
             this.journalToolStripMenuItem.Text = "Journal";
             this.journalToolStripMenuItem.Click += new System.EventHandler(this.journalToolStripMenuItem_Click);
+            // 
+            // viewMyEntriesunreadToolStripMenuItem
+            // 
+            this.viewMyEntriesunreadToolStripMenuItem.Name = "viewMyEntriesunreadToolStripMenuItem";
+            this.viewMyEntriesunreadToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.viewMyEntriesunreadToolStripMenuItem.Text = "View my UNREAD entries";
+            this.viewMyEntriesunreadToolStripMenuItem.Click += new System.EventHandler(this.viewMyEntriesunreadToolStripMenuItem_Click);
             // 
             // viewEntriesToolStripMenuItem
             // 
@@ -4737,21 +4744,14 @@ namespace hist_mmorpg
             this.adminEditSkillIdTextBox.Size = new System.Drawing.Size(159, 20);
             this.adminEditSkillIdTextBox.TabIndex = 27;
             // 
-            // viewMyEntriesunreadToolStripMenuItem
-            // 
-            this.viewMyEntriesunreadToolStripMenuItem.Name = "viewMyEntriesunreadToolStripMenuItem";
-            this.viewMyEntriesunreadToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-            this.viewMyEntriesunreadToolStripMenuItem.Text = "View my UNREAD entries";
-            this.viewMyEntriesunreadToolStripMenuItem.Click += new System.EventHandler(this.viewMyEntriesunreadToolStripMenuItem_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
+            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.journalContainer);
-            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.provinceContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.fiefContainer);

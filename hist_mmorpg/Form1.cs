@@ -2531,7 +2531,7 @@ namespace hist_mmorpg
             fOut.ancestralOwner = Globals_Game.pcMasterList[fr.ancestralOwner];
 
 			// insert bailiff (PC or NPC)
-			if (fr.bailiff != null)
+            if (!String.IsNullOrWhiteSpace(fr.bailiff))
 			{
                 if (Globals_Game.npcMasterList.ContainsKey(fr.bailiff))
                 {
@@ -2902,7 +2902,7 @@ namespace hist_mmorpg
             kOut = new Kingdom(kr);
 
             // insert king
-            if (kr.owner != null)
+            if (!String.IsNullOrWhiteSpace(kr.owner))
             {
                 if (Globals_Game.pcMasterList.ContainsKey(kr.owner))
                 {
@@ -2934,7 +2934,7 @@ namespace hist_mmorpg
             }
 
             // insert nationality
-            if (kr.nationality != null)
+            if (!String.IsNullOrWhiteSpace(kr.nationality))
             {
                 if (Globals_Game.nationalityMasterList.ContainsKey(kr.nationality))
                 {
@@ -2963,7 +2963,7 @@ namespace hist_mmorpg
 			oOut = new Province (pr);
 
             // insert overlord using overlordID
-			if (pr.owner != null)
+            if (!String.IsNullOrWhiteSpace(pr.owner))
 			{
                 if (Globals_Game.pcMasterList.ContainsKey(pr.owner))
                 {
@@ -2987,7 +2987,7 @@ namespace hist_mmorpg
 			}
 				
             // insert kingdom using kingdomID
-            if (pr.kingdom != null)
+            if (!String.IsNullOrWhiteSpace(pr.kingdom))
             {
                 if (Globals_Game.kingdomMasterList.ContainsKey(pr.kingdom))
                 {
@@ -3653,7 +3653,7 @@ namespace hist_mmorpg
                     if (npcEntry.Value.isAlive)
                     {
                         // random move if has no boss and is not family member
-                        if ((npcEntry.Value.employer == null) && (npcEntry.Value.familyID == null))
+                        if ((String.IsNullOrWhiteSpace(npcEntry.Value.employer)) && (String.IsNullOrWhiteSpace(npcEntry.Value.familyID)))
                         {
                             this.randomMoveNPC(npcEntry.Value);
                         }
@@ -4095,8 +4095,8 @@ namespace hist_mmorpg
                                 || ((bride.location == groom.location) && (bride.inKeep != groom.inKeep)))
                             {
                                 // if there's a siege in the fief where the character is in the keep
-                                if (((bride.location.siege != null) && (bride.inKeep))
-                                    || ((groom.location.siege != null) && (groom.inKeep)))
+                                if (((!String.IsNullOrWhiteSpace(bride.location.siege)) && (bride.inKeep))
+                                    || ((!String.IsNullOrWhiteSpace(groom.location.siege)) && (groom.inKeep)))
                                 {
                                     proceed = false;
 
@@ -4227,7 +4227,7 @@ namespace hist_mmorpg
             if (myArmy != null)
             {
                 string thisSiegeID = myArmy.checkIfBesieger();
-                if (thisSiegeID != null)
+                if (!String.IsNullOrWhiteSpace(thisSiegeID))
                 {
                     // give player fair warning of consequences to siege
                     DialogResult dialogResult = MessageBox.Show("Your army is currently besieging this fief.  Moving will end the siege.\r\nClick 'OK' to proceed.", "Proceed with move?", MessageBoxButtons.OKCancel);
@@ -4646,7 +4646,7 @@ namespace hist_mmorpg
             bool isFamily = false;
 
             // household
-            if (ch.familyID != null)
+            if (!String.IsNullOrWhiteSpace(ch.familyID))
             {
                 myHousehold = ch.getHeadOfFamily().familyName + " (ID: " + ch.familyID + ")";
 
@@ -4655,7 +4655,7 @@ namespace hist_mmorpg
                     isFamily = true;
                 }
             }
-            else if ((ch as NonPlayerCharacter).employer != null)
+            else if (!String.IsNullOrWhiteSpace((ch as NonPlayerCharacter).employer))
             {
                 myHousehold = (ch as NonPlayerCharacter).getEmployer().familyName + " (ID: " + (ch as NonPlayerCharacter).employer + ")";
             }
@@ -4667,7 +4667,7 @@ namespace hist_mmorpg
             // check for players and PCs
             if (ch is PlayerCharacter)
             {
-                if ((ch as PlayerCharacter).playerID != null)
+                if (!String.IsNullOrWhiteSpace((ch as PlayerCharacter).playerID))
                 {
                     myType = "PC (player)";
                 }
@@ -4679,7 +4679,7 @@ namespace hist_mmorpg
             else
             {
                 // check for employees
-                if (((ch as NonPlayerCharacter).employer != null) && (ch as NonPlayerCharacter).employer.Equals(Globals_Client.myPlayerCharacter.charID))
+                if ((!String.IsNullOrWhiteSpace((ch as NonPlayerCharacter).employer)) && (ch as NonPlayerCharacter).employer.Equals(Globals_Client.myPlayerCharacter.charID))
                 {
                     isEmployee = true;
                 }
@@ -4797,7 +4797,7 @@ namespace hist_mmorpg
                 }
 
                 // check if needs to be named
-                if (Globals_Client.myPlayerCharacter.myNPCs[i].familyID != null)
+                if (!String.IsNullOrWhiteSpace(Globals_Client.myPlayerCharacter.myNPCs[i].familyID))
                 {
                     bool nameRequired = Globals_Client.myPlayerCharacter.myNPCs[i].hasBabyName(0);
 
@@ -5029,7 +5029,7 @@ namespace hist_mmorpg
                         // holder
                         // get character
                         Character thisHolder = null;
-                        if (thisPos.Value.officeHolder != null)
+                        if (!String.IsNullOrWhiteSpace(thisPos.Value.officeHolder))
                         {
                             if (Globals_Game.pcMasterList.ContainsKey(thisPos.Value.officeHolder))
                             {
@@ -5258,13 +5258,13 @@ namespace hist_mmorpg
             }
 
             // check to see if is army leader
-            if (ch.armyID != null)
+            if (!String.IsNullOrWhiteSpace(ch.armyID))
             {
                 charText += "NOTE: This character is currently LEADING AN ARMY (" + ch.armyID + ")\r\n\r\n";
             }
 
             // check to see if is under siege
-            if (ch.location.siege != null)
+            if (!String.IsNullOrWhiteSpace(ch.location.siege))
             {
                 if (ch.inKeep)
                 {
@@ -5278,7 +5278,7 @@ namespace hist_mmorpg
             // player ID
             if (ch is PlayerCharacter)
             {
-                if ((ch as PlayerCharacter).playerID != null)
+                if (!String.IsNullOrWhiteSpace((ch as PlayerCharacter).playerID))
                 {
                     charText += "Player ID: " + (ch as PlayerCharacter).playerID + "\r\n";
                 }
@@ -5288,7 +5288,7 @@ namespace hist_mmorpg
             charText += "Name: " + ch.firstName + " " + ch.familyName + "\r\n";
 
             // age
-            charText += "Age: " + ch.calcCharAge() + "\r\n";
+            charText += "Age: " + ch.calcAge() + "\r\n";
 
             // sex
             charText += "Sex: ";
@@ -5380,7 +5380,7 @@ namespace hist_mmorpg
 
             // marital status
             charText += "You are ";
-            if (ch.spouse != null)
+            if (!String.IsNullOrWhiteSpace(ch.spouse))
             {
                 charText += "happily married\r\n";
                 // spouse ID
@@ -5406,7 +5406,7 @@ namespace hist_mmorpg
             // if spouse pregnant
             else
             {
-                if (ch.spouse != null)
+                if (!String.IsNullOrWhiteSpace(ch.spouse))
                 {
                     NonPlayerCharacter thisSpouse = Globals_Game.npcMasterList[ch.spouse];
                     if (thisSpouse.isPregnant)
@@ -5422,7 +5422,7 @@ namespace hist_mmorpg
 
             // engaged
             charText += "You are ";
-            if (ch.fiancee != null)
+            if (!String.IsNullOrWhiteSpace(ch.fiancee))
             {
                 charText += "engaged to be married to ID " + ch.fiancee;
             }
@@ -5434,7 +5434,7 @@ namespace hist_mmorpg
 
             // father
             charText += "Father's ID: ";
-            if (ch.father != null)
+            if (!String.IsNullOrWhiteSpace(ch.father))
             {
                 charText += ch.father;
             }
@@ -5446,7 +5446,7 @@ namespace hist_mmorpg
 
             // mother
             charText += "Mother's ID: ";
-            if (ch.mother != null)
+            if (!String.IsNullOrWhiteSpace(ch.mother))
             {
                 charText += ch.mother;
             }
@@ -5458,7 +5458,7 @@ namespace hist_mmorpg
 
             // head of family
             charText += "Head of family's ID: ";
-            if (ch.familyID != null)
+            if (!String.IsNullOrWhiteSpace(ch.familyID))
             {
                 charText += ch.familyID;
             }
@@ -5611,7 +5611,7 @@ namespace hist_mmorpg
             string npcText = "";
 
             // boss
-            if (npc.employer != null)
+            if (!String.IsNullOrWhiteSpace(npc.employer))
             {
                 npcText += "Hired by (ID): " + npc.employer + "\r\n";
             }
@@ -5662,18 +5662,18 @@ namespace hist_mmorpg
         {
             string armyText = "";
             uint[] troopNumbers = a.troops;
-            Fief armyLocation = Globals_Game.fiefMasterList[a.location];
+            Fief armyLocation = a.getLocation();
 
             // check if is garrison in a siege
             string siegeID = a.checkIfSiegeDefenderGarrison();
-            if (siegeID == null)
+            if (String.IsNullOrWhiteSpace(siegeID))
             {
                 // check if is additional defender in a siege
                 siegeID = a.checkIfSiegeDefenderAdditional();
             }
 
             // if is defender in a siege, indicate
-            if (siegeID != null)
+            if (!String.IsNullOrWhiteSpace(siegeID))
             {
                 armyText += "NOTE: This army is currently UNDER SIEGE\r\n\r\n";
             }
@@ -5684,7 +5684,7 @@ namespace hist_mmorpg
                 siegeID = a.checkIfBesieger();
 
                 // if is besieger in a siege, indicate
-                if (siegeID != null)
+                if (!String.IsNullOrWhiteSpace(siegeID))
                 {
                     armyText += "NOTE: This army is currently BESIEGING THIS FIEF\r\n\r\n";
                 }
@@ -5692,7 +5692,7 @@ namespace hist_mmorpg
                 // check if is siege in fief (but army not involved)
                 else
                 {
-                    if (armyLocation.siege != null)
+                    if (!String.IsNullOrWhiteSpace(armyLocation.siege))
                     {
                         armyText += "NOTE: This fief is currently UNDER SIEGE\r\n\r\n";
                     }
@@ -5969,7 +5969,7 @@ namespace hist_mmorpg
             // fief status
             fiefText += "Status: ";
             // if under siege, replace status with siege
-            if (f.siege != null)
+            if (!String.IsNullOrWhiteSpace(f.siege))
             {
                 fiefText += "UNDER SIEGE!";
             }
@@ -6082,7 +6082,7 @@ namespace hist_mmorpg
             string fiefText = "PREVIOUS SEASON\r\n=================\r\n\r\n";
 
             // if under siege, check to see if display data (based on siege start date)
-            if (f.siege != null)
+            if (!String.IsNullOrWhiteSpace(f.siege))
             {
                 Siege thisSiege = f.getSiege();
                 displayData = this.checkToShowFinancialData(-1, thisSiege);
@@ -6152,7 +6152,7 @@ namespace hist_mmorpg
             string fiefText = "CURRENT SEASON\r\n=================\r\n\r\n";
 
             // if under siege, check to see if display data (based on siege start date)
-            if (f.siege != null)
+            if (!String.IsNullOrWhiteSpace(f.siege))
             {
                 Siege thisSiege = f.getSiege();
                 displayData = this.checkToShowFinancialData(0, thisSiege);
@@ -6220,7 +6220,7 @@ namespace hist_mmorpg
             string fiefText = "NEXT SEASON (ESTIMATE)\r\n========================\r\n\r\n";
 
             // if under siege, don't display data
-            if (f.siege != null)
+            if (!String.IsNullOrWhiteSpace(f.siege))
             {
                 fiefText += "CURRENTLY UNAVAILABLE - due to siege\r\n";
             }
@@ -6265,9 +6265,12 @@ namespace hist_mmorpg
                 // family expenses
                 fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
                 // famExpenses modifier for player/spouse
-                if ((f.owner.spouse != null) && (Globals_Game.npcMasterList[f.owner.spouse].management > f.owner.management))
+                if (!String.IsNullOrWhiteSpace(f.owner.spouse))
                 {
-                    fiefText += "  (which may include a famExpense skills modifier: " + Globals_Game.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")";
+                    if (f.owner.getSpouse().management > f.owner.management)
+                    {
+                        fiefText += "  (which may include a famExpense skills modifier: " + Globals_Game.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")";
+                    }
                 }
                 else
                 {
@@ -6398,7 +6401,7 @@ namespace hist_mmorpg
                 }
 
                 // location
-                Fief armyLocation = Globals_Game.fiefMasterList[Globals_Client.myPlayerCharacter.myArmies[i].location];
+                Fief armyLocation = Globals_Client.myPlayerCharacter.myArmies[i].getLocation();
                 thisArmy.SubItems.Add(armyLocation.name + " (" + armyLocation.id + ")");
 
                 // size
@@ -6421,7 +6424,7 @@ namespace hist_mmorpg
             if (a == null)
             {
                 // if player is not leading any armies, set button text to 'recruit new' and enable
-                if (Globals_Client.myPlayerCharacter.armyID == null)
+                if (String.IsNullOrWhiteSpace(Globals_Client.myPlayerCharacter.armyID))
                 {
                     this.armyRecruitBtn.Text = "Recruit a New Army In Current Fief";
                     this.armyRecruitBtn.Tag = "new";
@@ -6592,7 +6595,7 @@ namespace hist_mmorpg
             // set name label text
             this.fiefLabel.Text = Globals_Client.fiefToView.name + " (" + Globals_Client.fiefToView.id + ")";
             // set siege label text
-            if (f.siege != null)
+            if (!String.IsNullOrWhiteSpace(f.siege))
             {
                 this.fiefSiegeLabel.Text = "Fief under siege";
             }
@@ -6675,7 +6678,7 @@ namespace hist_mmorpg
                 int fiefTreasury = f.getAvailableTreasury(); ;
 
                 // if fief UNDER SIEGE, leave most controls disabled
-                if (f.siege != null)
+                if (!String.IsNullOrWhiteSpace(f.siege))
                 {
                     // allow view bailiff
                     this.viewBailiffBtn.Enabled = true;
@@ -7001,7 +7004,7 @@ namespace hist_mmorpg
             cost = cost * Globals_Game.clock.calcSeasonTravMod();
 
             // if necessary, apply army modifier
-            if (armyID != null)
+            if (!String.IsNullOrWhiteSpace(armyID))
             {
                 cost = cost * Globals_Game.armyMasterList[armyID].calcMovementModifier();
             }
@@ -7083,7 +7086,7 @@ namespace hist_mmorpg
             this.travelRouteTextBox.Text = "";
 
             // check to see if fief is besieged and, if so, disable various controls
-            if (thisFief.siege != null)
+            if (!String.IsNullOrWhiteSpace(thisFief.siege))
             {
                 // check to see if are inside/outside keep
                 if (Globals_Client.myPlayerCharacter.inKeep)
@@ -7371,7 +7374,7 @@ namespace hist_mmorpg
                             this.meetingPlaceProposeTextBox.Enabled = false;
 
                             // if is employee
-                            if (((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).employer != null)
+                            if ((!String.IsNullOrWhiteSpace((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).employer))
                                 && ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).employer.Equals(Globals_Client.myPlayerCharacter.charID)))
                             {
                                 // set appropriate text for hire/fire button, and enable it
@@ -7398,7 +7401,7 @@ namespace hist_mmorpg
                             if ((charToDisplay.isMale) && (!(charToDisplay is PlayerCharacter)))
                             {
                                 // ensure is 'of age'
-                                if (charToDisplay.calcCharAge() >= 14)
+                                if (charToDisplay.calcAge() >= 14)
                                 {
                                     // can't hire members of any PC's family
                                     if (String.IsNullOrWhiteSpace(charToDisplay.familyID))
@@ -7422,7 +7425,7 @@ namespace hist_mmorpg
                             this.meetingPlaceEntourageBtn.Enabled = false;
 
                             // checks for enabling marriage proposals
-                            if (((charToDisplay.spouse != null) || (charToDisplay.isMale)) || (charToDisplay.fiancee != null))
+                            if (((!String.IsNullOrWhiteSpace(charToDisplay.spouse)) || (charToDisplay.isMale)) || (!String.IsNullOrWhiteSpace(charToDisplay.fiancee)))
                             {
                                 // disable marriage proposals
                                 this.meetingPlaceProposeBtn.Enabled = false;
@@ -7938,13 +7941,13 @@ namespace hist_mmorpg
 
                 // FAMILY MATTERS CONTROLS
                 // if family selected, enable 'choose heir' button, disbale 'fire' button
-                if ((Globals_Client.charToView.familyID != null) && (Globals_Client.charToView.familyID.Equals(Globals_Client.myPlayerCharacter.charID)))
+                if ((!String.IsNullOrWhiteSpace(Globals_Client.charToView.familyID)) && (Globals_Client.charToView.familyID.Equals(Globals_Client.myPlayerCharacter.charID)))
                 {
                     this.houseHeirBtn.Enabled = true;
                     this.houseFireBtn.Enabled = false;
 
                     // if is male and married, enable NPC 'get wife with child' control
-                    if ((Globals_Client.charToView.isMale) && (Globals_Client.charToView.spouse != null))
+                    if ((Globals_Client.charToView.isMale) && (!String.IsNullOrWhiteSpace(Globals_Client.charToView.spouse)))
                     {
                         this.familyNpcSpousePregBtn.Enabled = true;
                     }
@@ -7978,7 +7981,7 @@ namespace hist_mmorpg
 
                 // SIEGE CHECKS
                 // check to see if is inside besieged keep
-                if ((Globals_Client.charToView.inKeep) && (Globals_Client.charToView.location.siege != null))
+                if ((Globals_Client.charToView.inKeep) && (!String.IsNullOrWhiteSpace(Globals_Client.charToView.location.siege)))
                 {
                     // if is inside besieged keep, disable most of controls
                     this.houseCampBtn.Enabled = false;
@@ -8154,7 +8157,7 @@ namespace hist_mmorpg
                 }
 
                 // check if character is army leader, if so check for army attrition
-                if (ch.armyID != null)
+                if (!String.IsNullOrWhiteSpace(ch.armyID))
                 {
                     // get army
                     Army thisArmy = ch.getArmy();
@@ -9202,7 +9205,7 @@ namespace hist_mmorpg
             // get new player ID
             string playerID = this.switchPlayerMenuTextBox.Text;
 
-            if ((playerID.Trim() == "") || (playerID == null))
+            if (String.IsNullOrWhiteSpace(playerID))
             {
                 if (Globals_Client.showMessages)
                 {
@@ -9278,7 +9281,7 @@ namespace hist_mmorpg
             PlayerCharacter armyOwner = a.getOwner();
 
             // get location
-            Fief armyLocation = Globals_Game.fiefMasterList[a.location];
+            Fief armyLocation = a.getLocation();
 
             // add to armyMasterList
             Globals_Game.armyMasterList.Add(a.armyID, a);
@@ -9313,7 +9316,7 @@ namespace hist_mmorpg
             Fief thisFief = Globals_Client.myPlayerCharacter.location;
 
             // check for siege
-            if (thisFief.siege != null)
+            if (!String.IsNullOrWhiteSpace(thisFief.siege))
             {
                 if (Globals_Client.showMessages)
                 {
@@ -9459,7 +9462,7 @@ namespace hist_mmorpg
             {
                 // check to see if NPC is army leader
                 // if not leader, proceed
-                if (Globals_Client.charToView.armyID == null)
+                if (String.IsNullOrWhiteSpace(Globals_Client.charToView.armyID))
                 {
                     // add to entourage
                     Globals_Client.myPlayerCharacter.addToEntourage((Globals_Client.charToView as NonPlayerCharacter));
@@ -9510,13 +9513,13 @@ namespace hist_mmorpg
 
                 // check if is defender in a siege
                 string siegeID = Globals_Client.armyToView.checkIfSiegeDefenderGarrison();
-                if (siegeID == null)
+                if (String.IsNullOrWhiteSpace(siegeID))
                 {
                     siegeID = Globals_Client.armyToView.checkIfSiegeDefenderAdditional();
                 }
 
                 // if is defender in a siege, disable controls
-                if (siegeID != null)
+                if (!String.IsNullOrWhiteSpace(siegeID))
                 {
                     this.disableControls(this.armyManagementPanel);
                     this.disableControls(this.armyCombatPanel);
@@ -9531,8 +9534,8 @@ namespace hist_mmorpg
                 {
                     // recruit controls
                     // if player is leading an army but not the one on view, disable 'recruit' button
-                    if ((!(Globals_Client.armyToView.leader == Globals_Client.myPlayerCharacter.charID))
-                        && (!(Globals_Client.myPlayerCharacter.armyID == null)))
+                    if ((!(Globals_Client.armyToView.leader.Equals(Globals_Client.myPlayerCharacter.charID)))
+                        && (!String.IsNullOrWhiteSpace(Globals_Client.charToView.armyID)))
                     {
                         this.armyRecruitBtn.Enabled = false;
                         this.armyRecruitTextBox.Enabled = false;
@@ -9550,7 +9553,7 @@ namespace hist_mmorpg
                             this.armyRecruitBtn.Tag = "add";
                         }
                         // if player is not leading any armies, set button text to 'recruit new'
-                        else if (Globals_Client.myPlayerCharacter.armyID == null)
+                        else if (String.IsNullOrWhiteSpace(Globals_Client.myPlayerCharacter.armyID))
                         {
                             this.armyRecruitBtn.Text = "Recruit a New Army In Current Fief";
                             this.armyRecruitBtn.Tag = "new";
@@ -9614,7 +9617,7 @@ namespace hist_mmorpg
 
                     // check to see if current fief is in rebellion and enable control as appropriate
                     // get fief
-                    Fief thisFief = Globals_Game.fiefMasterList[Globals_Client.armyToView.location];
+                    Fief thisFief = Globals_Client.armyToView.getLocation();
                     if (thisFief.status.Equals('R'))
                     {
                         // only enable if army has leader
@@ -9836,7 +9839,7 @@ namespace hist_mmorpg
                         }
 
                         // get fief
-                        Fief thisFief = Globals_Game.fiefMasterList[Globals_Client.armyToView.location];
+                        Fief thisFief = Globals_Client.armyToView.getLocation();
 
                         // create transfer entry
                         string[] thisTransfer = new string[10] { Globals_Client.myPlayerCharacter.charID, this.armyTransDropWhoTextBox.Text,
@@ -10607,7 +10610,7 @@ namespace hist_mmorpg
             // if applicable, get siege
             Siege thisSiege = null;
             string thisSiegeID = defender.checkIfBesieger();
-            if (thisSiegeID != null)
+            if (!String.IsNullOrWhiteSpace(thisSiegeID))
             {
                 // get siege
                 thisSiege = Globals_Game.siegeMasterList[thisSiegeID];
@@ -11601,7 +11604,7 @@ namespace hist_mmorpg
             // note: not necessary for quell rebellion
             if (!circumstance.Equals("quellRebellion"))
             {
-                if ((f.siege != null) && (proceed))
+                if ((!String.IsNullOrWhiteSpace(f.siege)) && (proceed))
                 {
                     proceed = false;
                     if (circumstance.Equals("pillage"))
@@ -12085,7 +12088,7 @@ namespace hist_mmorpg
                     if (thisCharacter.inKeep)
                     {
                         // fief owner and his family
-                        if (thisCharacter.familyID != null)
+                        if (!String.IsNullOrWhiteSpace(thisCharacter.familyID))
                         {
                             if (thisCharacter.familyID.Equals(s.getDefendingPlayer().charID))
                             {
@@ -12345,7 +12348,7 @@ namespace hist_mmorpg
             Character attackerLeader = besieger.getLeader();
 
             // check for sallying army
-            if (s.defenderAdditional != null)
+            if (!String.IsNullOrWhiteSpace(s.defenderAdditional))
             {
                 defenderAdditional = s.getDefenderAdditional();
 
@@ -12770,7 +12773,7 @@ namespace hist_mmorpg
                     this.siegeEndBtn.Enabled = true;
 
                     // if besieging army has a leader
-                    if (besiegingArmy.leader != null)
+                    if (!String.IsNullOrWhiteSpace(besiegingArmy.leader))
                     {
                         // enable proactive controls (storm, negotiate)
                         this.siegeNegotiateBtn.Enabled = true;
@@ -13035,10 +13038,10 @@ namespace hist_mmorpg
             bool proceed = true;
 
             // check is married
-            if (husband.spouse != null)
+            if (!String.IsNullOrWhiteSpace(husband.spouse))
             {
                 // get spouse
-                NonPlayerCharacter wife = Globals_Game.npcMasterList[husband.spouse];
+                Character wife = husband.getSpouse();
 
                 // check to make sure is in same fief
                 if (!(wife.location == husband.location))
@@ -13065,7 +13068,7 @@ namespace hist_mmorpg
                     // check if are kept apart by siege
                     else
                     {
-                        if ((husband.location.siege != null) && (husband.inKeep != wife.inKeep))
+                        if ((!String.IsNullOrWhiteSpace(husband.location.siege)) && (husband.inKeep != wife.inKeep))
                         {
                             if (Globals_Client.showMessages)
                             {
@@ -13890,7 +13893,7 @@ namespace hist_mmorpg
             // check is of age
             else
             {
-                if (bride.calcCharAge() < 14)
+                if (bride.calcAge() < 14)
                 {
                     message = "The prospective bride has yet to come of age.";
                     proceed = false;
@@ -13899,7 +13902,7 @@ namespace hist_mmorpg
                 else
                 {
                     // check isn't engaged
-                    if (bride.fiancee != null)
+                    if (!String.IsNullOrWhiteSpace(bride.fiancee))
                     {
                         message = "The prospective bride is already engaged.";
                         proceed = false;
@@ -13908,7 +13911,7 @@ namespace hist_mmorpg
                     else
                     {
                         // check isn't married
-                        if (bride.spouse != null)
+                        if (!String.IsNullOrWhiteSpace(bride.spouse))
                         {
                             message = "The prospective bride is already married.";
                             proceed = false;
@@ -13933,7 +13936,7 @@ namespace hist_mmorpg
                                 else
                                 {
                                     // check is of age
-                                    if (groom.calcCharAge() < 14)
+                                    if (groom.calcAge() < 14)
                                     {
                                         message = "The prospective groom has yet to come of age.";
                                         proceed = false;
@@ -13941,7 +13944,7 @@ namespace hist_mmorpg
                                     else
                                     {
                                         // check is unmarried
-                                        if (groom.spouse != null)
+                                        if (!String.IsNullOrWhiteSpace(groom.spouse))
                                         {
                                             message = "The prospective groom is already married.";
                                             proceed = false;
@@ -13949,7 +13952,7 @@ namespace hist_mmorpg
                                         else
                                         {
                                             // check isn't engaged
-                                            if (groom.fiancee != null)
+                                            if (!String.IsNullOrWhiteSpace(groom.fiancee))
                                             {
                                                 message = "The prospective groom is already engaged.";
                                                 proceed = false;
@@ -13957,7 +13960,7 @@ namespace hist_mmorpg
                                             else
                                             {
                                                 // check is family member of player OR is player themself
-                                                if (groom.familyID == null)
+                                                if (String.IsNullOrWhiteSpace(groom.familyID))
                                                 {
                                                     message = "The prospective groom is not of a suitable family.";
                                                     proceed = false;
@@ -14450,7 +14453,7 @@ namespace hist_mmorpg
                             this.royalGiftsPositionBtn.Enabled = true;
 
                             // remove position button, enabled if there is a current holder
-                            if (thisPos.officeHolder != null)
+                            if (!String.IsNullOrWhiteSpace(thisPos.officeHolder))
                             {
                                 this.royalGiftsPositionRemoveBtn.Enabled = true;
                             }
@@ -14521,7 +14524,7 @@ namespace hist_mmorpg
                 giftType = "royalGiftPosition";
             }
 
-            if (giftType != null)
+            if (!String.IsNullOrWhiteSpace(giftType))
             {
                 // check for previously opened SelectionForm and close if necessary
                 if (Application.OpenForms.OfType<SelectionForm>().Any())
@@ -17010,7 +17013,7 @@ namespace hist_mmorpg
                 }
 
                 // get owner
-                if (fiefEntry.Value.owner != null)
+                if (!String.IsNullOrWhiteSpace(fiefEntry.Value.owner))
                 {
 					PlayerCharacter_Riak thisOwner = null;
 					if (pcMasterList.ContainsKey(fiefEntry.Value.owner))
@@ -17053,7 +17056,7 @@ namespace hist_mmorpg
                 }
 
                 // get owner
-                if (provEntry.Value.owner != null)
+                if (!String.IsNullOrWhiteSpace(provEntry.Value.owner))
                 {
 					PlayerCharacter_Riak thisOwner = null;
 					if (pcMasterList.ContainsKey(provEntry.Value.owner))

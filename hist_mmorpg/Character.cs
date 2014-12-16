@@ -410,7 +410,7 @@ namespace hist_mmorpg
         /// Calculates character's age
         /// </summary>
         /// <returns>int containing character's age</returns>
-        public int calcCharAge()
+        public int calcAge()
         {
             int myAge = 0;
 
@@ -535,27 +535,27 @@ namespace hist_mmorpg
             }
 
             // factor in age
-            if (this.calcCharAge() <= 10)
+            if (this.calcAge() <= 10)
             {
                 stature += 0;
             }
-            else if ((this.calcCharAge() > 10) && (this.calcCharAge() < 21))
+            else if ((this.calcAge() > 10) && (this.calcAge() < 21))
             {
                 stature += 0.5;
             }
-            else if (this.calcCharAge() < 31)
+            else if (this.calcAge() < 31)
             {
                 stature += 1;
             }
-            else if (this.calcCharAge() < 41)
+            else if (this.calcAge() < 41)
             {
                 stature += 2;
             }
-            else if (this.calcCharAge() < 51)
+            else if (this.calcAge() < 51)
             {
                 stature += 3;
             }
-            else if (this.calcCharAge() < 61)
+            else if (this.calcAge() < 61)
             {
                 stature += 4;
             }
@@ -624,47 +624,47 @@ namespace hist_mmorpg
             double ageModifier = 0;
 
             // calculate health age modifier, based on age
-            if (this.calcCharAge() < 1)
+            if (this.calcAge() < 1)
             {
                 ageModifier = 0.25;
             }
-            else if (this.calcCharAge() < 5)
+            else if (this.calcAge() < 5)
             {
                 ageModifier = 0.5;
             }
-            else if (this.calcCharAge() < 10)
+            else if (this.calcAge() < 10)
             {
                 ageModifier = 0.8;
             }
-            else if (this.calcCharAge() < 20)
+            else if (this.calcAge() < 20)
             {
                 ageModifier = 0.9;
             }
-            else if (this.calcCharAge() < 35)
+            else if (this.calcAge() < 35)
             {
                 ageModifier = 1;
             }
-            else if (this.calcCharAge() < 40)
+            else if (this.calcAge() < 40)
             {
                 ageModifier = 0.95;
             }
-            else if (this.calcCharAge() < 45)
+            else if (this.calcAge() < 45)
             {
                 ageModifier = 0.9;
             }
-            else if (this.calcCharAge() < 50)
+            else if (this.calcAge() < 50)
             {
                 ageModifier = 0.85;
             }
-            else if (this.calcCharAge() < 55)
+            else if (this.calcAge() < 55)
             {
                 ageModifier = 0.75;
             }
-            else if (this.calcCharAge() < 60)
+            else if (this.calcAge() < 60)
             {
                 ageModifier = 0.65;
             }
-            else if (this.calcCharAge() < 70)
+            else if (this.calcAge() < 70)
             {
                 ageModifier = 0.55;
             }
@@ -760,7 +760,7 @@ namespace hist_mmorpg
             // PCs
             if (this is PlayerCharacter)
             {
-                if ((this as PlayerCharacter).playerID != null)
+                if (!String.IsNullOrWhiteSpace((this as PlayerCharacter).playerID))
                 {
                     role = "player";
                 }
@@ -801,7 +801,7 @@ namespace hist_mmorpg
             this.location.charactersInFief.Remove(this);
 
             // ============== 3. remove from ARMY LEADERSHIP
-            if (this.armyID != null)
+            if (!String.IsNullOrWhiteSpace(this.armyID))
             {
                 // get army
                 Army thisArmy = null;
@@ -823,7 +823,7 @@ namespace hist_mmorpg
             }
 
             // ============== 4. if married, remove from SPOUSE
-            if (this.spouse != null)
+            if (!String.IsNullOrWhiteSpace(this.spouse))
             {
                 Character mySpouse = this.getSpouse();
 
@@ -835,7 +835,7 @@ namespace hist_mmorpg
             }
 
             // ============== 5. if engaged, remove from FIANCEE and CANCEL MARRIAGE
-            if (this.fiancee != null)
+            if (!String.IsNullOrWhiteSpace(this.fiancee))
             {
                 Character myFiancee = this.getFiancee();
 
@@ -958,7 +958,7 @@ namespace hist_mmorpg
             else
             {
                 // if is an employee
-                if ((this as NonPlayerCharacter).employer != null)
+                if (!String.IsNullOrWhiteSpace((this as NonPlayerCharacter).employer))
                 {
                     // get boss
                     employer = (this as NonPlayerCharacter).getEmployer();
@@ -1717,6 +1717,51 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Checks to see if the Character can be hired by the specified PlayerCharacter
+        /// </summary>
+        /// <returns>bool indicating hire-able status</returns>
+        /// <param name="hiringPC">The potential employer (PlayerCharacter)</param>
+        public bool checkCanHire(PlayerCharacter hiringPC)
+        {
+            bool canHire = true;
+
+            // must be an NPC
+            if (this is PlayerCharacter)
+            {
+                canHire = false;
+            }
+
+                // cannot be current employee
+            else
+            {
+                if (hiringPC.myNPCs.Contains(this as NonPlayerCharacter))
+                {
+                    canHire = false;
+                }
+            }
+
+            // cannot be member of any family
+            if (!String.IsNullOrWhiteSpace(this.familyID))
+            {
+                canHire = false;
+            }
+
+            // must be over 13 years of age
+            if (this.calcAge() < 14)
+            {
+                canHire = false;
+            }
+
+            // must be male
+            if (!this.isMale)
+            {
+                canHire = false;
+            }
+
+            return canHire;
+        }
+
+        /// <summary>
         /// Calculates effect of character's management rating on fief income
         /// </summary>
         /// <returns>double containing fief income modifier</returns>
@@ -1790,7 +1835,7 @@ namespace hist_mmorpg
         {
             Character father = null;
 
-            if (this.father != null)
+            if (!String.IsNullOrWhiteSpace(this.father))
             {
                 if (Globals_Game.pcMasterList.ContainsKey(this.father))
                 {
@@ -1813,7 +1858,7 @@ namespace hist_mmorpg
         {
             Character mother = null;
 
-            if (this.mother != null)
+            if (!String.IsNullOrWhiteSpace(this.mother))
             {
                 if (Globals_Game.pcMasterList.ContainsKey(this.mother))
                 {
@@ -1836,7 +1881,7 @@ namespace hist_mmorpg
         {
             PlayerCharacter myOverlord = null;
 
-            if (this.familyID != null)
+            if (!String.IsNullOrWhiteSpace(this.familyID))
             {
                 myOverlord = this.getHeadOfFamily().getHomeFief().province.owner;
             }
@@ -1852,7 +1897,7 @@ namespace hist_mmorpg
         {
             PlayerCharacter headFamily = null;
 
-            if (this.familyID != null)
+            if (!String.IsNullOrWhiteSpace(this.familyID))
             {
                 if (Globals_Game.pcMasterList.ContainsKey(this.familyID))
                 {
@@ -1924,7 +1969,7 @@ namespace hist_mmorpg
                     this.adjustDays(cost);
                 }
                 // check if has accompanying army, if so move it
-                if (this.armyID != null)
+                if (!String.IsNullOrWhiteSpace(this.armyID))
                 {
                     this.getArmy().moveArmy();
                 }
@@ -1984,7 +2029,7 @@ namespace hist_mmorpg
             }
 
             // if army leader, synchronise army days
-            if (this.armyID != null)
+            if (!String.IsNullOrWhiteSpace(this.armyID))
             {
                 // get army
                 Army thisArmy = this.getArmy();
@@ -2062,7 +2107,7 @@ namespace hist_mmorpg
                     double pregModifier = 0;
 
                     // spouse's age
-                    int spouseAge = wife.calcCharAge();
+                    int spouseAge = wife.calcAge();
 
                     // calculate base chance of pregnancy, based on age of spouse
                     if ((!(spouseAge < 14)) && (!(spouseAge > 55)))
@@ -2255,7 +2300,7 @@ namespace hist_mmorpg
         {
             Character mySpouse = null;
 
-            if (this.spouse != null)
+            if (!String.IsNullOrWhiteSpace(this.spouse))
             {
                 if (Globals_Game.pcMasterList.ContainsKey(this.spouse))
                 {
@@ -2278,7 +2323,7 @@ namespace hist_mmorpg
         {
             Character myFiancee = null;
 
-            if (this.fiancee != null)
+            if (!String.IsNullOrWhiteSpace(this.fiancee))
             {
                 if (Globals_Game.pcMasterList.ContainsKey(this.fiancee))
                 {
@@ -2473,7 +2518,7 @@ namespace hist_mmorpg
                 tempPersonae.Add(this.charID + "|injuredCharacter");
                 if (this is NonPlayerCharacter)
                 {
-                    if (this.familyID != null)
+                    if (!String.IsNullOrWhiteSpace(this.familyID))
                     {
                         concernedPlayer = (this as NonPlayerCharacter).getHeadOfFamily();
                         if (concernedPlayer != null)
@@ -2482,7 +2527,7 @@ namespace hist_mmorpg
                         }
                     }
 
-                    else if ((this as NonPlayerCharacter).employer != null)
+                    else if (!String.IsNullOrWhiteSpace((this as NonPlayerCharacter).employer))
                     {
                         concernedPlayer = (this as NonPlayerCharacter).getEmployer();
                         if (concernedPlayer != null)
@@ -3567,7 +3612,7 @@ namespace hist_mmorpg
         {
             Fief thisHomeFief = null;
 
-            if (this.homeFief != null)
+            if (!String.IsNullOrWhiteSpace(this.homeFief))
             {
                 if (Globals_Game.fiefMasterList.ContainsKey(this.homeFief))
                 {
@@ -3586,7 +3631,7 @@ namespace hist_mmorpg
         {
             Fief ancestralHome = null;
 
-            if (this.ancestralHomeFief != null)
+            if (!String.IsNullOrWhiteSpace(this.ancestralHomeFief))
             {
                 if (Globals_Game.fiefMasterList.ContainsKey(this.ancestralHomeFief))
                 {
@@ -3874,7 +3919,7 @@ namespace hist_mmorpg
 		public NonPlayerCharacter(NonPlayerCharacter_Riak npcr)
 			: base(npcr: npcr)
 		{
-			if ((npcr.employer != null) && (npcr.employer.Length > 0))
+            if ((!String.IsNullOrWhiteSpace(npcr.employer)) && (npcr.employer.Length > 0))
 			{
 				this.employer = npcr.employer;
 			}
@@ -3934,15 +3979,15 @@ namespace hist_mmorpg
                 }
 
                 // calculate age modifier
-                if ((this.calcCharAge() <= 7))
+                if ((this.calcAge() <= 7))
                 {
                     ageModifier = 0.25;
                 }
-                else if ((this.calcCharAge() > 7) && (this.calcCharAge() <= 14))
+                else if ((this.calcAge() > 7) && (this.calcAge() <= 14))
                 {
                     ageModifier = 0.5;
                 }
-                else if ((this.calcCharAge() > 14) && (this.calcCharAge() <= 21))
+                else if ((this.calcAge() > 14) && (this.calcAge() <= 21))
                 {
                     ageModifier = 0.75;
                 }
@@ -3964,13 +4009,16 @@ namespace hist_mmorpg
             String myFunction = "";
 
             // check for employees
-            if ((this.employer != null) && (this.employer.Equals(pc.charID)))
+            if (!String.IsNullOrWhiteSpace(this.employer))
             {
-                myFunction = "Employee";
-            }
+                if (this.employer.Equals(pc.charID))
+                {
+                    myFunction = "Employee";
+                }
+           }
 
             // check for family function
-            else if ((this.familyID != null) && (this.familyID.Equals(pc.familyID)))
+            else if ((!String.IsNullOrWhiteSpace(this.familyID)) && (this.familyID.Equals(pc.familyID)))
             {
                 // default value
                 myFunction = "Family Member";
@@ -3980,7 +4028,7 @@ namespace hist_mmorpg
                 // get PC's father
                 Character pcFather = pc.getFather();
 
-                if (this.father != null)
+                if (!String.IsNullOrWhiteSpace(this.father))
                 {
                     // sons & daughters
                     if (this.father == pc.charID)
@@ -4009,7 +4057,7 @@ namespace hist_mmorpg
                     }
 
                     // uncles and aunts
-                    if ((pcFather != null) && (pcFather.father != null))
+                    if ((pcFather != null) && (!String.IsNullOrWhiteSpace(pcFather.father)))
                     {
                         if (this.father == pcFather.father)
                         {
@@ -4024,10 +4072,10 @@ namespace hist_mmorpg
                         }
                     }
 
-                    if (thisFather.father != null)
+                    if (!String.IsNullOrWhiteSpace(thisFather.father))
                     {
                         // grandsons & granddaughters
-                        if (thisFather.father == pc.charID)
+                        if (thisFather.father.Equals(pc.charID))
                         {
                             if (this.isMale)
                             {
@@ -4044,20 +4092,20 @@ namespace hist_mmorpg
                 // grandmother
                 if (pcFather != null)
                 {
-                    if ((pcFather.mother != null) && (pcFather.mother.Equals(this.charID)))
+                    if ((!String.IsNullOrWhiteSpace(pcFather.mother)) && (pcFather.mother.Equals(this.charID)))
                     {
                         myFunction = "Grandmother";
                     }
                 }
 
-                if ((pc.mother != null) && (pc.mother == this.charID))
+                if ((!String.IsNullOrWhiteSpace(pc.mother)) && (pc.mother.Equals(this.charID)))
                 {
                     // mother
                     myFunction = "Mother";
                 }
 
                 // wife
-                if ((this.spouse != null) && (this.spouse == pc.charID))
+                if ((!String.IsNullOrWhiteSpace(this.spouse)) && (this.spouse == pc.charID))
                 {
                     if (this.isMale)
                     {
@@ -4090,8 +4138,8 @@ namespace hist_mmorpg
             List<Fief> bailiffDuties = new List<Fief>();
 
             // check for employment function
-            if (((this.employer != null) && (this.employer.Equals(pc.charID)))
-                || ((this.familyID != null) && (this.familyID.Equals(pc.charID))))
+            if (((!String.IsNullOrWhiteSpace(this.employer)) && (this.employer.Equals(pc.charID)))
+                || ((!String.IsNullOrWhiteSpace(this.familyID)) && (this.familyID.Equals(pc.charID))))
             {
                 // check PC's fiefs for bailiff
                 foreach (Fief thisFief in pc.ownedFiefs)
@@ -4118,7 +4166,7 @@ namespace hist_mmorpg
                 }
 
                 // check for army leadership
-                if (this.armyID != null)
+                if (!String.IsNullOrWhiteSpace(this.armyID))
                 {
                     if (!myResponsibilities.Equals(""))
                     {
@@ -4130,9 +4178,12 @@ namespace hist_mmorpg
                 // if employee who isn't bailiff or army leader = 'Unspecified'
                 if (myResponsibilities.Equals(""))
                 {
-                    if ((this.employer != null) && (this.employer.Equals(pc.charID)))
+                    if (!String.IsNullOrWhiteSpace(this.employer))
                     {
-                        myResponsibilities = "Unspecified";
+                        if (this.employer.Equals(pc.charID))
+                        {
+                            myResponsibilities = "Unspecified";
+                        }
                     }
                 }
             }
@@ -4150,7 +4201,7 @@ namespace hist_mmorpg
             bool hasBabyName = false;
 
             // look for NPC with age < 1 who has firstname of 'baby'
-            if ((this.calcCharAge() == age) && ((this.firstName).ToLower().Equals("baby")))
+            if ((this.calcAge() == age) && ((this.firstName).ToLower().Equals("baby")))
             {
                 hasBabyName = true;
             }
@@ -4250,7 +4301,7 @@ namespace hist_mmorpg
         {
             PlayerCharacter myHeadOfFamily = null;
 
-            if (this.familyID != null)
+            if (!String.IsNullOrWhiteSpace(this.familyID))
             {
                 if (Globals_Game.pcMasterList.ContainsKey(this.familyID))
                 {
@@ -4359,7 +4410,7 @@ namespace hist_mmorpg
         {
             PlayerCharacter myEmployer = null;
 
-            if (this.employer != null)
+            if (!String.IsNullOrWhiteSpace(this.employer))
             {
                 if (Globals_Game.pcMasterList.ContainsKey(this.employer))
                 {
@@ -4376,7 +4427,7 @@ namespace hist_mmorpg
         public void checkNeedsNaming()
         {
             // if (age >= 1) && (firstName.Equals("Baby")), character firstname = king's/queen's
-            if (this.familyID != null)
+            if (!String.IsNullOrWhiteSpace(this.familyID))
             {
                 if (this.hasBabyName(1))
                 {
@@ -4886,7 +4937,7 @@ namespace hist_mmorpg
 			: base(npc: npc)
 		{
 
-			if (npc.employer != null)
+            if (!String.IsNullOrWhiteSpace(npc.employer))
 			{
 				this.employer = npc.employer;
 			}

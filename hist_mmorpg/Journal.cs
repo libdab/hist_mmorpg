@@ -343,7 +343,7 @@ namespace hist_mmorpg
             entryText += "\r\n";
 
             // location
-            if (this.location != null)
+            if (!String.IsNullOrWhiteSpace(this.location))
             {
                 Place thisPlace = null;
                 if (Globals_Game.fiefMasterList.ContainsKey(this.location))
@@ -358,7 +358,7 @@ namespace hist_mmorpg
             }
 
             // description
-            if (this.description != null)
+            if (!String.IsNullOrWhiteSpace(this.description))
             {
                 entryText += "Description:\r\n" + this.description + "\r\n\r\n";
             }
