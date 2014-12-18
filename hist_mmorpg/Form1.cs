@@ -6388,6 +6388,12 @@ namespace hist_mmorpg
                     (c as TextBox).Text = "";
                 }
 
+				// clear CheckBoxes
+				if (c is CheckBox)
+				{
+					(c as CheckBox).Checked = false;
+				}
+
                 // disable controls
                 if ((c is CheckBox) || (c is Button))
                 {
@@ -17909,89 +17915,10 @@ namespace hist_mmorpg
         public void refreshPlaceEdit(Place p = null)
         {
             // clear previous data
-            foreach (Control c in this.adminEditPlaceContainer.Panel1.Controls)
-            {
-                // clear TextBoxes
-                if (c is TextBox)
-                {
-                    (c as TextBox).Text = "";
-                }
-
-                // clear CheckBoxes
-                if (c is CheckBox)
-                {
-                    (c as CheckBox).Checked = false;
-                }
-
-                // clear ListViews
-                if (c is ListView)
-                {
-                    (c as ListView).Items.Clear();
-                }
-            }
-
-            foreach (Control c in this.adminEditFiefPanel.Controls)
-            {
-                // clear TextBoxes
-                if (c is TextBox)
-                {
-                    (c as TextBox).Text = "";
-                }
-
-                // clear CheckBoxes
-                if (c is CheckBox)
-                {
-                    (c as CheckBox).Checked = false;
-                }
-
-                // clear ListViews
-                if (c is ListView)
-                {
-                    (c as ListView).Items.Clear();
-                }
-            }
-
-            foreach (Control c in this.adminEditProvPanel.Controls)
-            {
-                // clear TextBoxes
-                if (c is TextBox)
-                {
-                    (c as TextBox).Text = "";
-                }
-
-                // clear CheckBoxes
-                if (c is CheckBox)
-                {
-                    (c as CheckBox).Checked = false;
-                }
-
-                // clear ListViews
-                if (c is ListView)
-                {
-                    (c as ListView).Items.Clear();
-                }
-            }
-
-            foreach (Control c in this.adminEditKingPanel.Controls)
-            {
-                // clear TextBoxes
-                if (c is TextBox)
-                {
-                    (c as TextBox).Text = "";
-                }
-
-                // clear CheckBoxes
-                if (c is CheckBox)
-                {
-                    (c as CheckBox).Checked = false;
-                }
-
-                // clear ListViews
-                if (c is ListView)
-                {
-                    (c as ListView).Items.Clear();
-                }
-            }
+			this.disableControls (this.adminEditPlaceContainer.Panel1);
+			this.disableControls (this.adminEditFiefPanel);
+			this.disableControls (this.adminEditProvPanel);
+			this.disableControls (this.adminEditKingPanel);
 
             // display place data, if provided
             if (p != null)
@@ -18015,7 +17942,10 @@ namespace hist_mmorpg
                     // ancestral owner
                     this.adminEditFiefAncownTextBox.Text = (p as Fief).ancestralOwner.charID;
                     // bailiff
-                    this.adminEditFiefBailTextBox.Text = (p as Fief).bailiff.charID;
+					if ((p as Fief).bailiff != null)
+					{
+						this.adminEditFiefBailTextBox.Text = (p as Fief).bailiff.charID;
+					}
                     // bailiff days
                     this.adminEditFiefBaildaysTextBox.Text = (p as Fief).bailiffDaysInFief.ToString();
                     // population
@@ -18092,26 +18022,7 @@ namespace hist_mmorpg
         public void refreshSkillEdit(Skill s = null)
         {
             // clear previous data
-            foreach (Control c in this.adminEditSkillPanel.Controls)
-            {
-                // clear TextBoxes
-                if (c is TextBox)
-                {
-                    (c as TextBox).Text = "";
-                }
-
-                // clear CheckBoxes
-                if (c is CheckBox)
-                {
-                    (c as CheckBox).Checked = false;
-                }
-
-                // clear ListViews
-                if (c is ListView)
-                {
-                    (c as ListView).Items.Clear();
-                }
-            }
+			this.disableControls (this.adminEditSkillPanel);
 
             // display skill data, if provided
             if (s != null)
@@ -18175,7 +18086,10 @@ namespace hist_mmorpg
                 // owner
                 this.adminEditArmyOwnTextBox.Text = a.owner;
                 // leader
-                this.adminEditArmyLdrTextBox.Text = a.leader;
+				if (!String.IsNullOrWhiteSpace(a.leader))
+				{
+					this.adminEditArmyLdrTextBox.Text = a.leader;
+				}
                 // location
                 this.adminEditArmyLocTextBox.Text = a.location;
                 // days
