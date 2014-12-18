@@ -579,6 +579,9 @@ namespace hist_mmorpg
             // Globals_Game.heraldOne = myChar1;
             Globals_Game.heraldTwo = myChar2;
 
+            // set sysAdmin
+            Globals_Game.sysAdmin = myChar1;
+
             // set province owners
             myProv.owner = myChar2;
             myProv2.owner = myChar2;
@@ -6390,6 +6393,28 @@ namespace hist_mmorpg
                 {
                     c.Enabled = false;
                 }
+
+                // clear ListViews
+                if (c is ListView)
+                {
+                    (c as ListView).Items.Clear();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Enables all controls within the parent container
+        /// </summary>
+        /// <param name="parentContainer">The parent container</param>
+        public void enableControls(Control parentContainer)
+        {
+            foreach (Control c in parentContainer.Controls)
+            {
+                // disable controls
+                if ((c is CheckBox) || (c is Button))
+                {
+                    c.Enabled = true;
+                }
             }
         }
         
@@ -6825,7 +6850,7 @@ namespace hist_mmorpg
             {
                 if (Globals_Client.showMessages)
                 {
-                    System.Windows.Forms.MessageBox.Show(toDisplay, "WARNING: EXPENDITURE TOO HIGH");
+                    System.Windows.Forms.MessageBox.Show(toDisplay, "WARNING: CANNOT SUPPORT PROPOSED EXPENDITURE");
                 }
             }
         }
@@ -13992,7 +14017,7 @@ namespace hist_mmorpg
                                                 else
                                                 {
                                                     // check isn't in family same family as bride
-                                                    if (groom.familyID == bride.familyID)
+                                                    if (groom.familyID.Equals(bride.familyID))
                                                     {
                                                         message = "The prospective bride and groom are in the same family!";
                                                         proceed = false;
@@ -17778,68 +17803,9 @@ namespace hist_mmorpg
         public void refreshCharEdit(Character ch = null)
         {
             // clear previous data
-            foreach (Control c in this.adminEditCharContainer.Panel1.Controls)
-            {
-                // clear TextBoxes
-                if (c is TextBox)
-                {
-                    (c as TextBox).Text = "";
-                }
-
-                // clear CheckBoxes
-                if (c is CheckBox)
-                {
-                    (c as CheckBox).Checked = false;
-                }
-
-                // clear ListViews
-                if (c is ListView)
-                {
-                    (c as ListView).Items.Clear();
-                }
-            }
-
-            foreach (Control c in this.adminEditCharPcPanel.Controls)
-            {
-                // clear TextBoxes
-                if (c is TextBox)
-                {
-                    (c as TextBox).Text = "";
-                }
-
-                // clear CheckBoxes
-                if (c is CheckBox)
-                {
-                    (c as CheckBox).Checked = false;
-                }
-
-                // clear ListViews
-                if (c is ListView)
-                {
-                    (c as ListView).Items.Clear();
-                }
-            }
-
-            foreach (Control c in this.adminEditCharNpcPanel.Controls)
-            {
-                // clear TextBoxes
-                if (c is TextBox)
-                {
-                    (c as TextBox).Text = "";
-                }
-
-                // clear CheckBoxes
-                if (c is CheckBox)
-                {
-                    (c as CheckBox).Checked = false;
-                }
-
-                // clear ListViews
-                if (c is ListView)
-                {
-                    (c as ListView).Items.Clear();
-                }
-            }
+            this.disableControls(this.adminEditCharContainer.Panel1);
+            this.disableControls(this.adminEditCharPcPanel);
+            this.disableControls(this.adminEditCharNpcPanel);
 
             // display character data, if provided
             if (ch != null)
@@ -18199,26 +18165,7 @@ namespace hist_mmorpg
         public void refreshArmyEdit(Army a = null)
         {
             // clear previous data
-            foreach (Control c in this.adminEditArmyPanel.Controls)
-            {
-                // clear TextBoxes
-                if (c is TextBox)
-                {
-                    (c as TextBox).Text = "";
-                }
-
-                // clear CheckBoxes
-                if (c is CheckBox)
-                {
-                    (c as CheckBox).Checked = false;
-                }
-
-                // clear ListViews
-                if (c is ListView)
-                {
-                    (c as ListView).Items.Clear();
-                }
-            }
+            this.disableControls(this.adminEditArmyPanel);
 
             // display army data, if provided
             if (a != null)

@@ -299,11 +299,6 @@ namespace hist_mmorpg
             this.adminEditPlaceRankTextBox = new System.Windows.Forms.TextBox();
             this.label48 = new System.Windows.Forms.Label();
             this.adminEditPlaceIdTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditProvPanel = new System.Windows.Forms.Panel();
-            this.label71 = new System.Windows.Forms.Label();
-            this.label72 = new System.Windows.Forms.Label();
-            this.adminEditProvTaxTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditProvKgdmTextBox = new System.Windows.Forms.TextBox();
             this.adminEditFiefPanel = new System.Windows.Forms.Panel();
             this.adminEditFiefPillCheckBox = new System.Windows.Forms.CheckBox();
             this.adminEditFiefRecrCheckBox = new System.Windows.Forms.CheckBox();
@@ -346,6 +341,11 @@ namespace hist_mmorpg
             this.adminEditKingPanel = new System.Windows.Forms.Panel();
             this.label73 = new System.Windows.Forms.Label();
             this.adminEditKingNatTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditProvPanel = new System.Windows.Forms.Panel();
+            this.label71 = new System.Windows.Forms.Label();
+            this.label72 = new System.Windows.Forms.Label();
+            this.adminEditProvTaxTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditProvKgdmTextBox = new System.Windows.Forms.TextBox();
             this.adminEditCharContainer = new System.Windows.Forms.SplitContainer();
             this.label85 = new System.Windows.Forms.Label();
             this.adminEditCharSexCheckBox = new System.Windows.Forms.CheckBox();
@@ -387,6 +387,9 @@ namespace hist_mmorpg
             this.adminEditChar1stnameTextBox = new System.Windows.Forms.TextBox();
             this.adminEditCharSurnameTextBox = new System.Windows.Forms.TextBox();
             this.adminEditCharIDTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditCharNpcPanel = new System.Windows.Forms.Panel();
+            this.label47 = new System.Windows.Forms.Label();
+            this.adminEditCharWageTextBox = new System.Windows.Forms.TextBox();
             this.adminEditCharPcPanel = new System.Windows.Forms.Panel();
             this.adminEditCharOutlCheckBox = new System.Windows.Forms.CheckBox();
             this.label46 = new System.Windows.Forms.Label();
@@ -397,9 +400,6 @@ namespace hist_mmorpg
             this.adminEditCharHomeTextBox = new System.Windows.Forms.TextBox();
             this.label43 = new System.Windows.Forms.Label();
             this.adminEditCharPIDTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditCharNpcPanel = new System.Windows.Forms.Panel();
-            this.label47 = new System.Windows.Forms.Label();
-            this.adminEditCharWageTextBox = new System.Windows.Forms.TextBox();
             this.adminEditArmyPanel = new System.Windows.Forms.Panel();
             this.adminEditArmyMaintCheckBox = new System.Windows.Forms.CheckBox();
             this.label80 = new System.Windows.Forms.Label();
@@ -561,15 +561,15 @@ namespace hist_mmorpg
             this.adminEditPlaceContainer.Panel1.SuspendLayout();
             this.adminEditPlaceContainer.Panel2.SuspendLayout();
             this.adminEditPlaceContainer.SuspendLayout();
-            this.adminEditProvPanel.SuspendLayout();
             this.adminEditFiefPanel.SuspendLayout();
             this.adminEditKingPanel.SuspendLayout();
+            this.adminEditProvPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.adminEditCharContainer)).BeginInit();
             this.adminEditCharContainer.Panel1.SuspendLayout();
             this.adminEditCharContainer.Panel2.SuspendLayout();
             this.adminEditCharContainer.SuspendLayout();
-            this.adminEditCharPcPanel.SuspendLayout();
             this.adminEditCharNpcPanel.SuspendLayout();
+            this.adminEditCharPcPanel.SuspendLayout();
             this.adminEditArmyPanel.SuspendLayout();
             this.adminEditSkillPanel.SuspendLayout();
             this.SuspendLayout();
@@ -682,13 +682,13 @@ namespace hist_mmorpg
             this.pCToolStripMenuItem,
             this.nPCToolStripMenuItem});
             this.characterToolStripMenuItem2.Name = "characterToolStripMenuItem2";
-            this.characterToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
+            this.characterToolStripMenuItem2.Size = new System.Drawing.Size(125, 22);
             this.characterToolStripMenuItem2.Text = "Character";
             // 
             // pCToolStripMenuItem
             // 
             this.pCToolStripMenuItem.Name = "pCToolStripMenuItem";
-            this.pCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.pCToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
             this.pCToolStripMenuItem.Tag = "PC";
             this.pCToolStripMenuItem.Text = "PC";
             this.pCToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -696,7 +696,7 @@ namespace hist_mmorpg
             // nPCToolStripMenuItem
             // 
             this.nPCToolStripMenuItem.Name = "nPCToolStripMenuItem";
-            this.nPCToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.nPCToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
             this.nPCToolStripMenuItem.Tag = "NPC";
             this.nPCToolStripMenuItem.Text = "NPC";
             this.nPCToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -708,13 +708,13 @@ namespace hist_mmorpg
             this.provinceToolStripMenuItem,
             this.kingdomToolStripMenuItem});
             this.placeToolStripMenuItem.Name = "placeToolStripMenuItem";
-            this.placeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.placeToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.placeToolStripMenuItem.Text = "Place";
             // 
             // fiefToolStripMenuItem1
             // 
             this.fiefToolStripMenuItem1.Name = "fiefToolStripMenuItem1";
-            this.fiefToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.fiefToolStripMenuItem1.Size = new System.Drawing.Size(123, 22);
             this.fiefToolStripMenuItem1.Tag = "Fief";
             this.fiefToolStripMenuItem1.Text = "Fief";
             this.fiefToolStripMenuItem1.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -722,7 +722,7 @@ namespace hist_mmorpg
             // provinceToolStripMenuItem
             // 
             this.provinceToolStripMenuItem.Name = "provinceToolStripMenuItem";
-            this.provinceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.provinceToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.provinceToolStripMenuItem.Tag = "Province";
             this.provinceToolStripMenuItem.Text = "Province";
             this.provinceToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -730,7 +730,7 @@ namespace hist_mmorpg
             // kingdomToolStripMenuItem
             // 
             this.kingdomToolStripMenuItem.Name = "kingdomToolStripMenuItem";
-            this.kingdomToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.kingdomToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.kingdomToolStripMenuItem.Tag = "Kingdom";
             this.kingdomToolStripMenuItem.Text = "Kingdom";
             this.kingdomToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -738,7 +738,7 @@ namespace hist_mmorpg
             // armyToolStripMenuItem1
             // 
             this.armyToolStripMenuItem1.Name = "armyToolStripMenuItem1";
-            this.armyToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.armyToolStripMenuItem1.Size = new System.Drawing.Size(125, 22);
             this.armyToolStripMenuItem1.Tag = "Army";
             this.armyToolStripMenuItem1.Text = "Army";
             this.armyToolStripMenuItem1.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -746,7 +746,7 @@ namespace hist_mmorpg
             // skillToolStripMenuItem
             // 
             this.skillToolStripMenuItem.Name = "skillToolStripMenuItem";
-            this.skillToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.skillToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.skillToolStripMenuItem.Tag = "Skill";
             this.skillToolStripMenuItem.Text = "Skill";
             this.skillToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
@@ -3520,52 +3520,6 @@ namespace hist_mmorpg
             this.adminEditPlaceIdTextBox.Size = new System.Drawing.Size(92, 20);
             this.adminEditPlaceIdTextBox.TabIndex = 0;
             // 
-            // adminEditProvPanel
-            // 
-            this.adminEditProvPanel.Controls.Add(this.label71);
-            this.adminEditProvPanel.Controls.Add(this.label72);
-            this.adminEditProvPanel.Controls.Add(this.adminEditProvTaxTextBox);
-            this.adminEditProvPanel.Controls.Add(this.adminEditProvKgdmTextBox);
-            this.adminEditProvPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.adminEditProvPanel.Location = new System.Drawing.Point(0, 0);
-            this.adminEditProvPanel.Name = "adminEditProvPanel";
-            this.adminEditProvPanel.Size = new System.Drawing.Size(620, 553);
-            this.adminEditProvPanel.TabIndex = 1;
-            // 
-            // label71
-            // 
-            this.label71.AutoSize = true;
-            this.label71.Location = new System.Drawing.Point(121, 35);
-            this.label71.Name = "label71";
-            this.label71.Size = new System.Drawing.Size(68, 13);
-            this.label71.TabIndex = 10;
-            this.label71.Text = "Kingdom (ID)";
-            // 
-            // label72
-            // 
-            this.label72.AutoSize = true;
-            this.label72.Location = new System.Drawing.Point(121, 9);
-            this.label72.Name = "label72";
-            this.label72.Size = new System.Drawing.Size(94, 13);
-            this.label72.TabIndex = 11;
-            this.label72.Text = "Overlord Tax Rate";
-            // 
-            // adminEditProvTaxTextBox
-            // 
-            this.adminEditProvTaxTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditProvTaxTextBox.Location = new System.Drawing.Point(17, 7);
-            this.adminEditProvTaxTextBox.Name = "adminEditProvTaxTextBox";
-            this.adminEditProvTaxTextBox.Size = new System.Drawing.Size(92, 20);
-            this.adminEditProvTaxTextBox.TabIndex = 4;
-            // 
-            // adminEditProvKgdmTextBox
-            // 
-            this.adminEditProvKgdmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditProvKgdmTextBox.Location = new System.Drawing.Point(17, 33);
-            this.adminEditProvKgdmTextBox.Name = "adminEditProvKgdmTextBox";
-            this.adminEditProvKgdmTextBox.Size = new System.Drawing.Size(92, 20);
-            this.adminEditProvKgdmTextBox.TabIndex = 3;
-            // 
             // adminEditFiefPanel
             // 
             this.adminEditFiefPanel.Controls.Add(this.adminEditFiefPillCheckBox);
@@ -3964,6 +3918,52 @@ namespace hist_mmorpg
             this.adminEditKingNatTextBox.Name = "adminEditKingNatTextBox";
             this.adminEditKingNatTextBox.Size = new System.Drawing.Size(92, 20);
             this.adminEditKingNatTextBox.TabIndex = 7;
+            // 
+            // adminEditProvPanel
+            // 
+            this.adminEditProvPanel.Controls.Add(this.label71);
+            this.adminEditProvPanel.Controls.Add(this.label72);
+            this.adminEditProvPanel.Controls.Add(this.adminEditProvTaxTextBox);
+            this.adminEditProvPanel.Controls.Add(this.adminEditProvKgdmTextBox);
+            this.adminEditProvPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.adminEditProvPanel.Location = new System.Drawing.Point(0, 0);
+            this.adminEditProvPanel.Name = "adminEditProvPanel";
+            this.adminEditProvPanel.Size = new System.Drawing.Size(620, 553);
+            this.adminEditProvPanel.TabIndex = 1;
+            // 
+            // label71
+            // 
+            this.label71.AutoSize = true;
+            this.label71.Location = new System.Drawing.Point(121, 35);
+            this.label71.Name = "label71";
+            this.label71.Size = new System.Drawing.Size(68, 13);
+            this.label71.TabIndex = 10;
+            this.label71.Text = "Kingdom (ID)";
+            // 
+            // label72
+            // 
+            this.label72.AutoSize = true;
+            this.label72.Location = new System.Drawing.Point(121, 9);
+            this.label72.Name = "label72";
+            this.label72.Size = new System.Drawing.Size(94, 13);
+            this.label72.TabIndex = 11;
+            this.label72.Text = "Overlord Tax Rate";
+            // 
+            // adminEditProvTaxTextBox
+            // 
+            this.adminEditProvTaxTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditProvTaxTextBox.Location = new System.Drawing.Point(17, 7);
+            this.adminEditProvTaxTextBox.Name = "adminEditProvTaxTextBox";
+            this.adminEditProvTaxTextBox.Size = new System.Drawing.Size(92, 20);
+            this.adminEditProvTaxTextBox.TabIndex = 4;
+            // 
+            // adminEditProvKgdmTextBox
+            // 
+            this.adminEditProvKgdmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditProvKgdmTextBox.Location = new System.Drawing.Point(17, 33);
+            this.adminEditProvKgdmTextBox.Name = "adminEditProvKgdmTextBox";
+            this.adminEditProvKgdmTextBox.Size = new System.Drawing.Size(92, 20);
+            this.adminEditProvKgdmTextBox.TabIndex = 3;
             // 
             // adminEditCharContainer
             // 
@@ -4365,6 +4365,33 @@ namespace hist_mmorpg
             this.adminEditCharIDTextBox.Size = new System.Drawing.Size(137, 20);
             this.adminEditCharIDTextBox.TabIndex = 0;
             // 
+            // adminEditCharNpcPanel
+            // 
+            this.adminEditCharNpcPanel.Controls.Add(this.label47);
+            this.adminEditCharNpcPanel.Controls.Add(this.adminEditCharWageTextBox);
+            this.adminEditCharNpcPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.adminEditCharNpcPanel.Location = new System.Drawing.Point(0, 0);
+            this.adminEditCharNpcPanel.Name = "adminEditCharNpcPanel";
+            this.adminEditCharNpcPanel.Size = new System.Drawing.Size(620, 207);
+            this.adminEditCharNpcPanel.TabIndex = 1;
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(168, 17);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(36, 13);
+            this.label47.TabIndex = 41;
+            this.label47.Text = "Wage";
+            // 
+            // adminEditCharWageTextBox
+            // 
+            this.adminEditCharWageTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditCharWageTextBox.Location = new System.Drawing.Point(14, 15);
+            this.adminEditCharWageTextBox.Name = "adminEditCharWageTextBox";
+            this.adminEditCharWageTextBox.Size = new System.Drawing.Size(137, 20);
+            this.adminEditCharWageTextBox.TabIndex = 41;
+            // 
             // adminEditCharPcPanel
             // 
             this.adminEditCharPcPanel.Controls.Add(this.adminEditCharOutlCheckBox);
@@ -4459,33 +4486,6 @@ namespace hist_mmorpg
             this.adminEditCharPIDTextBox.Name = "adminEditCharPIDTextBox";
             this.adminEditCharPIDTextBox.Size = new System.Drawing.Size(137, 20);
             this.adminEditCharPIDTextBox.TabIndex = 41;
-            // 
-            // adminEditCharNpcPanel
-            // 
-            this.adminEditCharNpcPanel.Controls.Add(this.label47);
-            this.adminEditCharNpcPanel.Controls.Add(this.adminEditCharWageTextBox);
-            this.adminEditCharNpcPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.adminEditCharNpcPanel.Location = new System.Drawing.Point(0, 0);
-            this.adminEditCharNpcPanel.Name = "adminEditCharNpcPanel";
-            this.adminEditCharNpcPanel.Size = new System.Drawing.Size(620, 207);
-            this.adminEditCharNpcPanel.TabIndex = 1;
-            // 
-            // label47
-            // 
-            this.label47.AutoSize = true;
-            this.label47.Location = new System.Drawing.Point(168, 17);
-            this.label47.Name = "label47";
-            this.label47.Size = new System.Drawing.Size(36, 13);
-            this.label47.TabIndex = 41;
-            this.label47.Text = "Wage";
-            // 
-            // adminEditCharWageTextBox
-            // 
-            this.adminEditCharWageTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditCharWageTextBox.Location = new System.Drawing.Point(14, 15);
-            this.adminEditCharWageTextBox.Name = "adminEditCharWageTextBox";
-            this.adminEditCharWageTextBox.Size = new System.Drawing.Size(137, 20);
-            this.adminEditCharWageTextBox.TabIndex = 41;
             // 
             // adminEditArmyPanel
             // 
@@ -4776,6 +4776,8 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
+            this.Controls.Add(this.fiefContainer);
+            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.journalContainer);
             this.Controls.Add(this.provinceContainer);
@@ -4783,10 +4785,8 @@ namespace hist_mmorpg
             this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.travelContainer);
-            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.adminEditContainer);
-            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -4955,21 +4955,21 @@ namespace hist_mmorpg
             this.adminEditPlaceContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.adminEditPlaceContainer)).EndInit();
             this.adminEditPlaceContainer.ResumeLayout(false);
-            this.adminEditProvPanel.ResumeLayout(false);
-            this.adminEditProvPanel.PerformLayout();
             this.adminEditFiefPanel.ResumeLayout(false);
             this.adminEditFiefPanel.PerformLayout();
             this.adminEditKingPanel.ResumeLayout(false);
             this.adminEditKingPanel.PerformLayout();
+            this.adminEditProvPanel.ResumeLayout(false);
+            this.adminEditProvPanel.PerformLayout();
             this.adminEditCharContainer.Panel1.ResumeLayout(false);
             this.adminEditCharContainer.Panel1.PerformLayout();
             this.adminEditCharContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.adminEditCharContainer)).EndInit();
             this.adminEditCharContainer.ResumeLayout(false);
-            this.adminEditCharPcPanel.ResumeLayout(false);
-            this.adminEditCharPcPanel.PerformLayout();
             this.adminEditCharNpcPanel.ResumeLayout(false);
             this.adminEditCharNpcPanel.PerformLayout();
+            this.adminEditCharPcPanel.ResumeLayout(false);
+            this.adminEditCharPcPanel.PerformLayout();
             this.adminEditArmyPanel.ResumeLayout(false);
             this.adminEditArmyPanel.PerformLayout();
             this.adminEditSkillPanel.ResumeLayout(false);
