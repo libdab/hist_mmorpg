@@ -11213,7 +11213,11 @@ namespace hist_mmorpg
             PlayerCharacter armyOwner = a.getOwner();
 
             // get garrison leader (to add to journal entry)
-            Character defenderLeader = f.bailiff;
+            Character defenderLeader = null;
+            if (f.bailiff != null)
+            {
+                defenderLeader = f.bailiff;
+            }
 
             // calculate pillageMultiplier (based on no. pillagers per 1000 population)
             pillageMultiplier = a.calcArmySize() / (f.population / 1000);
@@ -18711,14 +18715,17 @@ namespace hist_mmorpg
                         }
 
                         // bailiff
-                        string bailID = this.adminEditFiefBailTextBox.Text;
-                        if (Globals_Game.pcMasterList.ContainsKey(bailID))
+                        if (!String.IsNullOrWhiteSpace(this.adminEditFiefBailTextBox.Text))
                         {
-                            bail = Globals_Game.pcMasterList[bailID];
-                        }
-                        else if (Globals_Game.npcMasterList.ContainsKey(bailID))
-                        {
-                            bail = Globals_Game.npcMasterList[bailID];
+                            string bailID = this.adminEditFiefBailTextBox.Text;
+                            if (Globals_Game.pcMasterList.ContainsKey(bailID))
+                            {
+                                bail = Globals_Game.pcMasterList[bailID];
+                            }
+                            else if (Globals_Game.npcMasterList.ContainsKey(bailID))
+                            {
+                                bail = Globals_Game.npcMasterList[bailID];
+                            }
                         }
                         if (bail != null)
                         {

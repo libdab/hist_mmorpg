@@ -439,7 +439,7 @@ namespace hist_mmorpg
                 // if auto-baliff set modifier at equivalent of management rating of 3
                 incomeModif = 0.05;
             }
-            else
+            else if (this.bailiff != null)
             {
                 incomeModif = this.bailiff.calcFiefIncMod();
             }

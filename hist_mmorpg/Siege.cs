@@ -363,13 +363,13 @@ namespace hist_mmorpg
         public bool checkAttritionApplies()
         {
             bool attritionApplies = false;
-            Character bailiff = this.getFief().bailiff;
+            Character thisBailiff = this.getFief().bailiff;
             double bailiffManagement = 0;
 
             // get bailiff's management rating
-            if (bailiff != null)
+            if (thisBailiff != null)
             {
-                bailiffManagement = bailiff.management;
+                bailiffManagement = thisBailiff.management;
             }
             else
             {
