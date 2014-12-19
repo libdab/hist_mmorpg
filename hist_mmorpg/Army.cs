@@ -479,7 +479,7 @@ namespace hist_mmorpg
         {
             Fief thisFief = null;
 
-            if (String.IsNullOrWhiteSpace(this.location))
+            if (!String.IsNullOrWhiteSpace(this.location))
             {
                 if (Globals_Game.fiefMasterList.ContainsKey(this.location))
                 {
@@ -499,7 +499,7 @@ namespace hist_mmorpg
             PlayerCharacter myOwner = null;
 
             // get leader from PC master list
-            if (String.IsNullOrWhiteSpace(this.owner))
+            if (!String.IsNullOrWhiteSpace(this.owner))
             {
                 if (Globals_Game.pcMasterList.ContainsKey(this.owner))
                 {

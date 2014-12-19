@@ -1874,22 +1874,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Gets character's overlord
-        /// </summary>
-        /// <returns>The overlord</returns>
-        public PlayerCharacter getOverlord()
-        {
-            PlayerCharacter myOverlord = null;
-
-            if (!String.IsNullOrWhiteSpace(this.familyID))
-            {
-                myOverlord = this.getHeadOfFamily().getHomeFief().province.owner;
-            }
-
-            return myOverlord;
-        }
-
-        /// <summary>
         /// Gets character's head of family
         /// </summary>
         /// <returns>The head of the family</returns>
@@ -2770,7 +2754,14 @@ namespace hist_mmorpg
         /// <param name="id">The siegeID of the siege</param>
         public Siege getSiege(string id)
         {
-            return Globals_Game.siegeMasterList[id];
+            Siege thisSiege = null;
+
+            if (Globals_Game.siegeMasterList.ContainsKey(id))
+            {
+                thisSiege = Globals_Game.siegeMasterList[id];
+            }
+
+            return thisSiege;
         }
 
         /// <summary>
@@ -4105,7 +4096,7 @@ namespace hist_mmorpg
                 }
 
                 // wife
-                if ((!String.IsNullOrWhiteSpace(this.spouse)) && (this.spouse == pc.charID))
+                if ((!String.IsNullOrWhiteSpace(this.spouse)) && (this.spouse.Equals(pc.charID)))
                 {
                     if (this.isMale)
                     {

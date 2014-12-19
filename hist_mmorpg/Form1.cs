@@ -5414,12 +5414,25 @@ namespace hist_mmorpg
             charText += " the keep\r\n";
 
             // marital status
+            NonPlayerCharacter thisSpouse = null;
             charText += "You are ";
             if (!String.IsNullOrWhiteSpace(ch.spouse))
             {
-                charText += "happily married\r\n";
-                // spouse ID
-                charText += "Your spouse's ID is: " + ch.spouse;
+                // get spouse
+                if (Globals_Game.npcMasterList.ContainsKey(ch.spouse))
+                {
+                    thisSpouse = Globals_Game.npcMasterList[ch.spouse];
+                }
+
+                if (thisSpouse != null)
+                {
+                    charText += "happily married to " + thisSpouse.firstName + " " + thisSpouse.familyName;
+                    charText += " (ID: " + ch.spouse + ").";
+                }
+                else
+                {
+                    charText += "apparently married (but your spouse cannot be identified).";
+                }
             }
             else
             {
@@ -5441,9 +5454,8 @@ namespace hist_mmorpg
             // if spouse pregnant
             else
             {
-                if (!String.IsNullOrWhiteSpace(ch.spouse))
+                if (thisSpouse != null)
                 {
-                    NonPlayerCharacter thisSpouse = Globals_Game.npcMasterList[ch.spouse];
                     if (thisSpouse.isPregnant)
                     {
                         charText += "Your spouse is pregnant (congratulations!)\r\n";
@@ -6602,32 +6614,35 @@ namespace hist_mmorpg
                 ListViewItem thisSiegeItem = null;
                 Siege thisSiege = Globals_Client.myPlayerCharacter.getSiege(Globals_Client.myPlayerCharacter.mySieges[i]);
 
-                // armyID
-                thisSiegeItem = new ListViewItem(thisSiege.siegeID);
-
-                // fief
-                Fief siegeLocation = thisSiege.getFief();
-                thisSiegeItem.SubItems.Add(siegeLocation.name + " (" + siegeLocation.id + ")");
-
-                // defender
-                PlayerCharacter defendingPlayer = thisSiege.getDefendingPlayer();
-                thisSiegeItem.SubItems.Add(defendingPlayer.firstName + " " + defendingPlayer.familyName + " (" + defendingPlayer.charID + ")");
-
-                // besieger
-                Army besiegingArmy = thisSiege.getBesiegingArmy();
-                PlayerCharacter besieger = thisSiege.getBesiegingPlayer();
-                thisSiegeItem.SubItems.Add(besieger.firstName + " " + besieger.familyName + " (" + besieger.charID + ")");
-
-                if (thisSiegeItem != null)
+                if (thisSiege != null)
                 {
-                    // if siege passed in as parameter, show as selected
-                    if (thisSiege == s)
-                    {
-                        thisSiegeItem.Selected = true;
-                    }
+                    // siegeID
+                    thisSiegeItem = new ListViewItem(thisSiege.siegeID);
 
-                    // add item to siegeListView
-                    this.siegeListView.Items.Add(thisSiegeItem);
+                    // fief
+                    Fief siegeLocation = thisSiege.getFief();
+                    thisSiegeItem.SubItems.Add(siegeLocation.name + " (" + siegeLocation.id + ")");
+
+                    // defender
+                    PlayerCharacter defendingPlayer = thisSiege.getDefendingPlayer();
+                    thisSiegeItem.SubItems.Add(defendingPlayer.firstName + " " + defendingPlayer.familyName + " (" + defendingPlayer.charID + ")");
+
+                    // besieger
+                    Army besiegingArmy = thisSiege.getBesiegingArmy();
+                    PlayerCharacter besieger = thisSiege.getBesiegingPlayer();
+                    thisSiegeItem.SubItems.Add(besieger.firstName + " " + besieger.familyName + " (" + besieger.charID + ")");
+
+                    if (thisSiegeItem != null)
+                    {
+                        // if siege passed in as parameter, show as selected
+                        if (thisSiege == s)
+                        {
+                            thisSiegeItem.Selected = true;
+                        }
+
+                        // add item to siegeListView
+                        this.siegeListView.Items.Add(thisSiegeItem);
+                    }
                 }
 
             }
@@ -9589,7 +9604,8 @@ namespace hist_mmorpg
                 {
                     // recruit controls
                     // if player is leading an army but not the one on view, disable 'recruit' button
-                    if ((!(Globals_Client.armyToView.leader.Equals(Globals_Client.myPlayerCharacter.charID)))
+                    if (((!String.IsNullOrWhiteSpace(Globals_Client.armyToView.leader))
+                        && (!(Globals_Client.armyToView.leader.Equals(Globals_Client.myPlayerCharacter.charID))))
                         && (!String.IsNullOrWhiteSpace(Globals_Client.charToView.armyID)))
                     {
                         this.armyRecruitBtn.Enabled = false;
@@ -13485,14 +13501,14 @@ namespace hist_mmorpg
             string brideID = "";
             string groomID = "";
 
-            if (this.houseProposeBrideTextBox.Text.Trim() == "")
+            if (String.IsNullOrWhiteSpace(this.houseProposeBrideTextBox.Text))
             {
                 if (Globals_Client.showMessages)
                 {
                     System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
                 }
             }
-            else if (this.houseProposeGroomTextBox.Text.Trim() == "")
+            else if (String.IsNullOrWhiteSpace(this.houseProposeGroomTextBox.Text))
             {
                 if (Globals_Client.showMessages)
                 {
