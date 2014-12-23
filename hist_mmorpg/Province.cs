@@ -33,21 +33,21 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Constructor for Province taking no parameters.
-        /// For use when de-serialising from Riak
+        /// For use when de-serialising.
         /// </summary>
         public Province()
 		{
 		}
 
 		/// <summary>
-		/// Constructor for Province using Province_Riak object
-        /// For use when de-serialising from Riak
+        /// Constructor for Province using Province_Serialised object.
+        /// For use when de-serialising.
         /// </summary>
-		/// <param name="pr">Province_Riak object to use as source</param>
-		public Province(Province_Riak pr)
-			: base(pr: pr)
+        /// <param name="ps">Province_Serialised object to use as source</param>
+		public Province(Province_Serialised ps)
+			: base(ps: ps)
 		{
-			this.taxRate = pr.taxRate;
+			this.taxRate = ps.taxRate;
             // kingdom to be inserted later
             this.kingdom = null;
         }
@@ -146,9 +146,9 @@ namespace hist_mmorpg
     }
 
 	/// <summary>
-	/// Class converting province data into format suitable for Riak (JSON) storage
+	/// Class converting province data into serialised format suitable (JSON)
 	/// </summary>
-	public class Province_Riak : Place_Riak
+	public class Province_Serialised : Place_Serialised
 	{
         /// <summary>
 		/// Holds province tax rate
@@ -160,11 +160,11 @@ namespace hist_mmorpg
         public String kingdom { get; set; }
 
 		/// <summary>
-		/// Constructor for Province_Riak.
-        /// For use when serialising to Riak
+        /// Constructor for Province_Serialised.
+        /// For use when serialising.
         /// </summary>
 		/// <param name="prov">Province object to be used as source</param>
-		public Province_Riak(Province prov)
+		public Province_Serialised(Province prov)
             : base(p: prov)
 		{
             this.taxRate = prov.taxRate;
@@ -172,12 +172,12 @@ namespace hist_mmorpg
 		}
 
         /// <summary>
-        /// Constructor for Province_Riak taking seperate values.
-        /// For creating Province_Riak from CSV file.
+        /// Constructor for Province_Serialised taking seperate values.
+        /// For creating Province_Serialised from CSV file.
         /// </summary>
         /// <param name="otax">Double holding province tax rate</param>
         /// <param name="king">string holding Province's Kingdom (id)</param>
-        public Province_Riak(String id, String nam, byte r, Double otax, String tiHo = null, string own = null, string king = null)
+        public Province_Serialised(String id, String nam, byte r, Double otax, String tiHo = null, string own = null, string king = null)
             : base(id, nam, r, own: own, tiHo: tiHo)
         {
             this.taxRate = otax;
@@ -185,10 +185,10 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Constructor for Province_Riak taking no parameters.
-        /// For use when de-serialising from Riak
+        /// Constructor for Province_Serialised taking no parameters.
+        /// For use when de-serialising.
         /// </summary>
-        public Province_Riak()
+        public Province_Serialised()
 		{
 		}
 	}

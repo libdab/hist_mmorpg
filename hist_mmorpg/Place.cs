@@ -57,26 +57,26 @@ namespace hist_mmorpg
         }
 
 		/// <summary>
-		/// Constructor for Place using Fief_Riak, Province_Riak or Kingdom_Riak object.
-		/// For use when de-serialising from Riak
+        /// Constructor for Place using Fief_Serialised, Province_Serialised or Kingdom_Serialised object.
+		/// For use when de-serialising.
 		/// </summary>
-		/// <param name="fr">Fief_Riak object to use as source</param>
-		/// <param name="pr">Province_Riak object to use as source</param>
-		/// <param name="kr">Kingdom_Riak object to use as source</param>
-		public Place(Fief_Riak fr = null, Province_Riak pr = null, Kingdom_Riak kr = null)
+        /// <param name="fs">Fief_Serialised object to use as source</param>
+        /// <param name="ps">Province_Serialised object to use as source</param>
+        /// <param name="ks">Kingdom_Serialised object to use as source</param>
+		public Place(Fief_Serialised fs = null, Province_Serialised ps = null, Kingdom_Serialised ks = null)
 		{
-			Place_Riak placeToUse = null;
-			if (fr != null)
+			Place_Serialised placeToUse = null;
+			if (fs != null)
 			{
-				placeToUse = fr;
+				placeToUse = fs;
 			}
-			else if (pr != null)
+			else if (ps != null)
 			{
-				placeToUse = pr;
+				placeToUse = ps;
 			}
-			else if (kr != null)
+			else if (ks != null)
 			{
-				placeToUse = kr;
+				placeToUse = ks;
 			}
 
 			if (placeToUse != null)
@@ -94,7 +94,7 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Constructor for Place taking no parameters.
-        /// For use when de-serialising from Riak
+        /// For use when de-serialising.
         /// </summary>
         public Place()
         {
@@ -127,9 +127,9 @@ namespace hist_mmorpg
     }
 
     /// <summary>
-    /// Class converting Place data into format suitable for Riak (JSON) storage
+    /// Class converting Place data into serialised format (JSON)
     /// </summary>
-    public abstract class Place_Riak
+    public abstract class Place_Serialised
     {
         /// <summary>
         /// Holds place ID
@@ -153,11 +153,11 @@ namespace hist_mmorpg
         public byte rank { get; set; }
 
         /// <summary>
-        /// Constructor for Place_Riak.
-        /// For use when serialising to Riak
+        /// Constructor for Place_Serialised.
+        /// For use when serialising.
         /// </summary>
         /// <param name="k">Kingdom object to be used as source</param>
-        public Place_Riak(Kingdom k = null, Province p = null, Fief f = null)
+        public Place_Serialised(Kingdom k = null, Province p = null, Fief f = null)
         {
             Place placeToUse = null;
 
@@ -185,15 +185,15 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Constructor for Place_Riak taking seperate values.
-        /// For creating Place_Riak from CSV file.
+        /// Constructor for Place_Serialised taking seperate values.
+        /// For creating Place_Serialised from CSV file.
         /// </summary>
         /// <param name="id">String holding place ID</param>
         /// <param name="nam">String holding place name</param>
         /// <param name="own">Place owner (PlayerCharacter)</param>
         /// <param name="tiHo">String holding place title holder (charID)</param>
         /// <param name="rnk">Place rank (Rank object)</param>
-        public Place_Riak(String id, String nam, byte r, String tiHo = null, string own = null)
+        public Place_Serialised(String id, String nam, byte r, String tiHo = null, string own = null)
         {
 
             // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,

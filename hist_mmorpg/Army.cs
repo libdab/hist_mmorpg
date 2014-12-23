@@ -90,7 +90,7 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Constructor for Army taking no parameters.
-        /// For use when de-serialising from Riak
+        /// For use when de-serialising.
         /// </summary>
         public Army()
 		{

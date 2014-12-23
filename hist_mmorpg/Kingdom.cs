@@ -27,19 +27,19 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Constructor for Kingdom taking no parameters.
-        /// For use when de-serialising from Riak
+        /// For use when de-serialising.
         /// </summary>
         public Kingdom()
 		{
 		}
 
 		/// <summary>
-        /// Constructor for Kingdom using Kingdom_Riak object
-        /// For use when de-serialising from Riak
+        /// Constructor for Kingdom using Kingdom_Serialised object.
+        /// For use when de-serialising.
         /// </summary>
-        /// <param name="kr">Kingdom_Riak object to use as source</param>
-        public Kingdom(Kingdom_Riak kr)
-			: base(kr: kr)
+        /// <param name="ks">Kingdom_Serialised object to use as source</param>
+        public Kingdom(Kingdom_Serialised ks)
+			: base(ks: ks)
 		{
             // nationality to be inserted later
             this.nationality = null;
@@ -79,40 +79,40 @@ namespace hist_mmorpg
     }
 
     /// <summary>
-    /// Class converting kingdom data into format suitable for Riak (JSON) storage
+    /// Class converting kingdom data into serialised format (JSON)
     /// </summary>
-    public class Kingdom_Riak : Place_Riak
+    public class Kingdom_Serialised : Place_Serialised
     {
         /// <summary>
-        /// Holds Kingdom_Riak nationality (ID)
+        /// Holds nationality (ID)
         /// </summary>
         public String nationality { get; set; }
 
 		/// <summary>
-        /// Constructor for Kingdom_Riak.
-        /// For use when serialising to Riak
+        /// Constructor for Kingdom_Serialised.
+        /// For use when serialising.
         /// </summary>
         /// <param name="king">Kingdom object to be used as source</param>
-        public Kingdom_Riak(Kingdom king)
+        public Kingdom_Serialised(Kingdom king)
             : base(k: king)
 		{
             this.nationality = king.nationality.natID;
 		}
 
         /// <summary>
-        /// Constructor for Kingdom_Riak taking no parameters.
-        /// For use when de-serialising from Riak
+        /// Constructor for Kingdom_Serialised taking no parameters.
+        /// For use when de-serialising.
         /// </summary>
-        public Kingdom_Riak()
+        public Kingdom_Serialised()
 		{
 		}
 
         /// <summary>
-        /// Constructor for Kingdom_Riak taking seperate values.
-        /// For creating Kingdom_Riak from CSV file.
+        /// Constructor for Kingdom_Serialised taking seperate values.
+        /// For creating Kingdom_Serialised from CSV file.
         /// </summary>
         /// <param name="nat">Kingdom's Nationality object</param>
-        public Kingdom_Riak(String id, String nam, byte r, string nat, String tiHo = null, string own = null)
+        public Kingdom_Serialised(String id, String nam, byte r, string nat, String tiHo = null, string own = null)
             : base(id, nam, r, own: own, tiHo: tiHo)
         {
             this.nationality = nat;

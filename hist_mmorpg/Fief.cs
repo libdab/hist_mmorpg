@@ -305,53 +305,53 @@ namespace hist_mmorpg
         }
 
 		/// <summary>
-		/// Constructor for Fief using Fief_Riak object.
-        /// For use when de-serialising from Riak
+        /// Constructor for Fief using Fief_Serialised object.
+        /// For use when de-serialising.
         /// </summary>
-		/// <param name="fr">Fief_Riak object to use as source</param>
-		public Fief(Fief_Riak fr)
-			: base(fr: fr)
+        /// <param name="fs">Fief_Serialised object to use as source</param>
+		public Fief(Fief_Serialised fs)
+			: base(fs: fs)
 		{
 		
             // province to be added later
 			this.province = null;
-			this.population = fr.population;
+			this.population = fs.population;
             // ancestral owner to be added later
             this.ancestralOwner = null;
             // bailiff to be added later
             this.bailiff = null;
-			this.fields = fr.fields;
-			this.industry = fr.industry;
-			this.troops = fr.troops;
-			this.taxRate = fr.taxRate;
-			this.taxRateNext = fr.taxRateNext;
-			this.officialsSpendNext = fr.officialsSpendNext;
-			this.garrisonSpendNext = fr.garrisonSpendNext;
-			this.infrastructureSpendNext = fr.infrastructureSpendNext;
-			this.keepSpendNext = fr.keepSpendNext;
-            this.keyStatsCurrent = fr.keyStatsCurrent;
-            this.keyStatsPrevious = fr.keyStatsPrevious;
-			this.keepLevel = fr.keepLevel;
-			this.loyalty = fr.loyalty;
-			this.status = fr.status;
+			this.fields = fs.fields;
+			this.industry = fs.industry;
+			this.troops = fs.troops;
+			this.taxRate = fs.taxRate;
+			this.taxRateNext = fs.taxRateNext;
+			this.officialsSpendNext = fs.officialsSpendNext;
+			this.garrisonSpendNext = fs.garrisonSpendNext;
+			this.infrastructureSpendNext = fs.infrastructureSpendNext;
+			this.keepSpendNext = fs.keepSpendNext;
+            this.keyStatsCurrent = fs.keyStatsCurrent;
+            this.keyStatsPrevious = fs.keyStatsPrevious;
+			this.keepLevel = fs.keepLevel;
+			this.loyalty = fs.loyalty;
+			this.status = fs.status;
             this.language = null;
 			this.terrain = null;
             // create empty list to be populated later
 			this.charactersInFief = new List<Character>();
-			this.barredCharacters = fr.barredCharacters;
-			this.barredNationalities = fr.barredNationalities;
-            this.bailiffDaysInFief = fr.bailiffDaysInFief;
-            this.treasury = fr.treasury;
-            this.armies = fr.armies;
-            this.hasRecruited = fr.hasRecruited;
-            this.troopTransfers = fr.troopTransfers;
-            this.isPillaged = fr.isPillaged;
-            this.siege = fr.siege;
+			this.barredCharacters = fs.barredCharacters;
+			this.barredNationalities = fs.barredNationalities;
+            this.bailiffDaysInFief = fs.bailiffDaysInFief;
+            this.treasury = fs.treasury;
+            this.armies = fs.armies;
+            this.hasRecruited = fs.hasRecruited;
+            this.troopTransfers = fs.troopTransfers;
+            this.isPillaged = fs.isPillaged;
+            this.siege = fs.siege;
         }
 
         /// <summary>
         /// Constructor for Fief taking no parameters.
-        /// For use when de-serialising from Riak
+        /// For use when de-serialising.
         /// </summary>
         public Fief()
 		{
@@ -2192,9 +2192,9 @@ namespace hist_mmorpg
     }
 
 	/// <summary>
-	/// Class used to convert Fief to/from format suitable for Riak (JSON)
+    /// Class used to convert Fief to/from serialised format (JSON)
 	/// </summary>
-	public class Fief_Riak : Place_Riak
+	public class Fief_Serialised : Place_Serialised
 	{
         /// <summary>
 		/// Holds fief's Province object (provinceID)
@@ -2333,10 +2333,10 @@ namespace hist_mmorpg
         public String siege { get; set; }
 
 		/// <summary>
-		/// Constructor for Fief_Riak
+        /// Constructor for Fief_Serialised
 		/// </summary>
 		/// <param name="f">Fief object to use as source</param>
-		public Fief_Riak(Fief f)
+		public Fief_Serialised(Fief f)
             : base(f: f)
 		{
             this.province = f.province.id;
@@ -2382,8 +2382,8 @@ namespace hist_mmorpg
 		}
 
         /// <summary>
-        /// Constructor for Fief_Riak taking seperate values.
-        /// For creating Fief_Riak from CSV file.
+        /// Constructor for Fief_Serialised taking seperate values.
+        /// For creating Fief_Serialised from CSV file.
         /// </summary>
         /// <param name="prov">String holding Fief's Province object (id)</param>
         /// <param name="pop">uint holding fief population</param>
@@ -2415,7 +2415,7 @@ namespace hist_mmorpg
         /// <param name="pil">bool indicating whether pillage has occurred in the fief (current season)</param>
         /// <param name="trans">Dictionary<string, string[]> containing troop detachments in the fief awaiting transfer</param>
         /// <param name="sge">String holding siegeID of active siege</param>
-        public Fief_Riak(String id, String nam, string prov, int pop, Double fld, Double ind, uint trp, Double tx,
+        public Fief_Serialised(String id, String nam, string prov, int pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
             Double kpLvl, Double loy, char stat, string lang, string terr, List<string> chars, List<string> barChars, List<string> barNats,
             byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, byte r, String tiHo = null,
@@ -2529,10 +2529,10 @@ namespace hist_mmorpg
             this.siege = sge;
         }
         /// <summary>
-        /// Constructor for Fief_Riak taking no parameters.
-        /// For use when de-serialising from Riak
+        /// Constructor for Fief_Serialised taking no parameters.
+        /// For use when de-serialising.
         /// </summary>
-        public Fief_Riak()
+        public Fief_Serialised()
 		{
 		}
 	}

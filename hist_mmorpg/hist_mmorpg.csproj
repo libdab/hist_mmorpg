@@ -80,6 +80,15 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form1_CSVimport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_databaseRead.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_databaseWrite.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GameClock.cs" />
     <Compile Include="Globals_Client.cs" />
     <Compile Include="Globals_Game.cs" />

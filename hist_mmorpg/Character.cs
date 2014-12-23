@@ -259,22 +259,22 @@ namespace hist_mmorpg
         }
 
 		/// <summary>
-		/// Constructor for Character using PlayerCharacter_Riak or NonPlayerCharacter_Riak object.
-        /// For use when de-serialising from Riak
+        /// Constructor for Character using PlayerCharacter_Serialised or NonPlayerCharacter_Serialised object.
+        /// For use when de-serialising.
 		/// </summary>
-		/// <param name="pcr">PlayerCharacter_Riak object to use as source</param>
-		/// <param name="npcr">NonPlayerCharacter_Riak object to use as source</param>
-		public Character(PlayerCharacter_Riak pcr = null, NonPlayerCharacter_Riak npcr = null)
+        /// <param name="pcs">PlayerCharacter_Serialised object to use as source</param>
+        /// <param name="npcs">NonPlayerCharacter_Serialised object to use as source</param>
+		public Character(PlayerCharacter_Serialised pcs = null, NonPlayerCharacter_Serialised npcs = null)
 		{
-			Character_Riak charToUse = null;
+			Character_Serialised charToUse = null;
 
-			if (pcr != null)
+			if (pcs != null)
 			{
-				charToUse = pcr;
+				charToUse = pcs;
 			}
-			else if (npcr != null)
+			else if (npcs != null)
 			{
-				charToUse = npcr;
+				charToUse = npcs;
 			}
 
 			if (charToUse != null)
@@ -2695,36 +2695,36 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Constructor for PlayerCharacter taking no parameters
-        /// For use when de-serialising from Riak
+        /// Constructor for PlayerCharacter taking no parameters.
+        /// For use when de-serialising.
         /// </summary>
         public PlayerCharacter()
 		{
 		}
 
 		/// <summary>
-		/// Constructor for PlayerCharacter using PlayerCharacter_Riak object
-        /// For use when de-serialising from Riak
+        /// Constructor for PlayerCharacter using PlayerCharacter_Serialised object.
+        /// For use when de-serialising.
         /// </summary>
-		/// <param name="pcr">PlayerCharacter_Riak object to use as source</param>
-		public PlayerCharacter(PlayerCharacter_Riak pcr)
-			: base(pcr: pcr)
+        /// <param name="pcs">PlayerCharacter_Serialised object to use as source</param>
+		public PlayerCharacter(PlayerCharacter_Serialised pcs)
+			: base(pcs: pcs)
 		{
 
-			this.outlawed = pcr.outlawed;
-			this.purse = pcr.purse;
+			this.outlawed = pcs.outlawed;
+			this.purse = pcs.purse;
             // create empty NPC List, to be populated later
 			this.myNPCs = new List<NonPlayerCharacter> ();
             // create empty Fief List, to be populated later
             this.ownedFiefs = new List<Fief>();
             // create empty Province List, to be populated later
             this.ownedProvinces = new List<Province>();
-            this.homeFief = pcr.homeFief;
-            this.ancestralHomeFief = pcr.ancestralHomeFief;
-            this.playerID = pcr.playerID;
+            this.homeFief = pcs.homeFief;
+            this.ancestralHomeFief = pcs.ancestralHomeFief;
+            this.playerID = pcs.playerID;
             // create empty Army List, to be populated later
             this.myArmies = new List<Army>();
-            this.mySieges = pcr.mySieges;
+            this.mySieges = pcs.mySieges;
 		}
 
         /// <summary>
@@ -3896,28 +3896,28 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Constructor for NonPlayerCharacter taking no parameters.
-        /// For use when de-serialising from Riak
+        /// For use when de-serialising.
         /// </summary>
         public NonPlayerCharacter()
 		{
 		}
 
 		/// <summary>
-		/// Constructor for NonPlayerCharacter using NonPlayerCharacter_Riak object
-        /// For use when de-serialising from Riak
+        /// Constructor for NonPlayerCharacter using NonPlayerCharacter_Serialised object.
+        /// For use when de-serialising.
         /// </summary>
-		/// <param name="npcr">NonPlayerCharacter_Riak object to use as source</param>
-		public NonPlayerCharacter(NonPlayerCharacter_Riak npcr)
-			: base(npcr: npcr)
+        /// <param name="npcs">NonPlayerCharacter_Serialised object to use as source</param>
+		public NonPlayerCharacter(NonPlayerCharacter_Serialised npcs)
+			: base(npcs: npcs)
 		{
-            if ((!String.IsNullOrWhiteSpace(npcr.employer)) && (npcr.employer.Length > 0))
+            if ((!String.IsNullOrWhiteSpace(npcs.employer)) && (npcs.employer.Length > 0))
 			{
-				this.employer = npcr.employer;
+				this.employer = npcs.employer;
 			}
-			this.salary = npcr.wage;
-			this.inEntourage = npcr.inEntourage;
-			this.lastOffer = npcr.lastOffer;
-            this.isHeir = npcr.isHeir;
+			this.salary = npcs.wage;
+			this.inEntourage = npcs.inEntourage;
+			this.lastOffer = npcs.lastOffer;
+            this.isHeir = npcs.isHeir;
 		}
 
         /// <summary>
@@ -4445,9 +4445,9 @@ namespace hist_mmorpg
     }
 
 	/// <summary>
-	/// Class used to convert Character to/from format suitable for Riak (JSON)
+	/// Class used to convert Character to/from serialised format (JSON)
 	/// </summary>
-	public abstract class Character_Riak
+	public abstract class Character_Serialised
 	{
 
 		/// <summary>
@@ -4560,11 +4560,11 @@ namespace hist_mmorpg
         public Dictionary<string, Ailment> ailments = new Dictionary<string, Ailment>();
 
 		/// <summary>
-		/// Constructor for Character_Riak
+        /// Constructor for Character_Serialised
 		/// </summary>
 		/// <param name="pc">PlayerCharacter object to use as source</param>
 		/// <param name="npc">NonPlayerCharacter object to use as source</param>
-		public Character_Riak(PlayerCharacter pc = null, NonPlayerCharacter npc = null)
+		public Character_Serialised(PlayerCharacter pc = null, NonPlayerCharacter npc = null)
 		{
 			Character charToUse = null;
 
@@ -4621,8 +4621,8 @@ namespace hist_mmorpg
 		}
 
         /// <summary>
-        /// Constructor for Character_Riak taking seperate values.
-        /// For creating Character_Riak from CSV file.
+        /// Constructor for Character_Serialised taking seperate values.
+        /// For creating Character_Serialised from CSV file.
         /// </summary>
         /// <param name="id">string holding character ID</param>
         /// <param name="firstNam">String holding character's first name</param>
@@ -4651,7 +4651,7 @@ namespace hist_mmorpg
         /// <param name="myTi">List holding character's titles (fiefIDs)</param>
         /// <param name="aID">String holding armyID of army character is leading</param>
         /// <param name="ails">Dictionary (string, Ailment) holding ailments effecting character's health</param>
-        public Character_Riak(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, string nat, bool alive, Double mxHea, Double vir,
+        public Character_Serialised(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, string nat, bool alive, Double mxHea, Double vir,
             List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] skl, bool inK, bool preg,
             String famID, String sp, String fath, String moth, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, string loc = null, String aID = null)
         {
@@ -4761,9 +4761,9 @@ namespace hist_mmorpg
 	}
 
 	/// <summary>
-	/// Class used to convert PlayerCharacter to/from format suitable for Riak (JSON)
+	/// Class used to convert PlayerCharacter to/from serialised format (JSON)
 	/// </summary>
-	public class PlayerCharacter_Riak : Character_Riak
+	public class PlayerCharacter_Serialised : Character_Serialised
 	{
 
 		/// <summary>
@@ -4808,10 +4808,10 @@ namespace hist_mmorpg
         public List<string> mySieges = new List<string>();
 
 		/// <summary>
-		/// Constructor for PlayerCharacter_Riak
+        /// Constructor for PlayerCharacter_Serialised
 		/// </summary>
 		/// <param name="pc">PlayerCharacter object to use as source</param>
-		public PlayerCharacter_Riak(PlayerCharacter pc)
+		public PlayerCharacter_Serialised(PlayerCharacter pc)
 			: base(pc: pc)
 		{
 
@@ -4852,8 +4852,8 @@ namespace hist_mmorpg
 		}
 
         /// <summary>
-        /// Constructor for PlayerCharacter_Riak taking seperate values.
-        /// For creating PlayerCharacter_Riak from CSV file.
+        /// Constructor for PlayerCharacter_Serialised taking seperate values.
+        /// For creating PlayerCharacter_Serialised from CSV file.
         /// </summary>
         /// <param name="outl">bool holding character outlawed status</param>
         /// <param name="pur">uint holding character purse</param>
@@ -4865,7 +4865,7 @@ namespace hist_mmorpg
         /// <param name="pID">String holding ID of player who is currently playing this PlayerCharacter</param>
         /// <param name="myA">List (string) holding character's armies (id)</param>
         /// <param name="myS">List<string> holding character's sieges (id)</param>
-        public PlayerCharacter_Riak(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, string nat, bool alive, Double mxHea, Double vir,
+        public PlayerCharacter_Serialised(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, string nat, bool alive, Double mxHea, Double vir,
             List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] skl, bool inK, bool preg, String famID,
             String sp, String fath, String moth, List<String> myTi, string fia, bool outl, uint pur, List<string> npcs, List<string> ownedF, List<string> ownedP, String home, String ancHome, List<string> myA,
             List<string> myS, Dictionary<string, Ailment> ails = null, string loc = null, String aID = null, String pID = null)
@@ -4884,18 +4884,18 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Constructor for PlayerCharacter_Riak taking no parameters.
-        /// For use when de-serialising from Riak
+        /// Constructor for PlayerCharacter_Serialised taking no parameters.
+        /// For use when de-serialising.
         /// </summary>
-        public PlayerCharacter_Riak()
+        public PlayerCharacter_Serialised()
 		{
 		}
 	}
 
 	/// <summary>
-	/// Class used to convert NonPlayerCharacter to/from format suitable for Riak (JSON)
+	/// Class used to convert NonPlayerCharacter to/from serialised format (JSON)
 	/// </summary>
-	public class NonPlayerCharacter_Riak : Character_Riak
+	public class NonPlayerCharacter_Serialised : Character_Serialised
 	{
 
 		/// <summary>
@@ -4921,10 +4921,10 @@ namespace hist_mmorpg
 
 
 		/// <summary>
-		/// Constructor for NonPlayerCharacter_Riak
+        /// Constructor for NonPlayerCharacter_Serialised
 		/// </summary>
 		/// <param name="npc">NonPlayerCharacter object to use as source</param>
-		public NonPlayerCharacter_Riak(NonPlayerCharacter npc)
+		public NonPlayerCharacter_Serialised(NonPlayerCharacter npc)
 			: base(npc: npc)
 		{
 
@@ -4939,14 +4939,14 @@ namespace hist_mmorpg
 		}
 
         /// <summary>
-        /// Constructor for NonPlayerCharacter_Riak taking seperate values.
-        /// For creating NonPlayerCharacter_Riak from CSV file.
+        /// Constructor for NonPlayerCharacter_Serialised taking seperate values.
+        /// For creating NonPlayerCharacter_Serialised from CSV file.
         /// </summary>
         /// <param name="mb">String holding NPC's employer (charID)</param>
         /// <param name="wa">string holding NPC's wage</param>
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
         /// <param name="isH">bool denoting if is player's heir</param>
-        public NonPlayerCharacter_Riak(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, string nat, bool alive, Double mxHea, Double vir,
+        public NonPlayerCharacter_Serialised(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, string nat, bool alive, Double mxHea, Double vir,
             List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] skl, bool inK, bool preg, String famID,
             String sp, String fath, String moth, List<String> myTi, string fia, uint wa, bool inEnt, bool isH, Dictionary<string, Ailment> ails = null, string loc = null, String aID = null, String mb = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc, aID)
@@ -4963,10 +4963,10 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Constructor for NonPlayerCharacter_Riak taking no parameters.
-        /// For use when de-serialising from Riak
+        /// Constructor for NonPlayerCharacter_Serialised taking no parameters.
+        /// For use when de-serialising.
         /// </summary>
-        public NonPlayerCharacter_Riak()
+        public NonPlayerCharacter_Serialised()
 		{
 		}
 

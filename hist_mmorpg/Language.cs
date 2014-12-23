@@ -37,21 +37,21 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Constructor for Language taking no parameters.
-        /// For use when de-serialising from Riak
+        /// For use when de-serialising.
         /// </summary>
         public Language()
         {
         }
 
         /// <summary>
-        /// Constructor for Language using Language_Riak.
-        /// For use when de-serialising from Riak
+        /// Constructor for Language using Language_Serialised.
+        /// For use when de-serialising.
         /// </summary>
-        /// <param name="lr">Language_Riak object to use as source</param>
-        public Language(Language_Riak lr)
+        /// <param name="ls">Language_Serialised object to use as source</param>
+        public Language(Language_Serialised ls)
         {
-            this.id = lr.id;
-            this.dialect = lr.dialect;
+            this.id = ls.id;
+            this.dialect = ls.dialect;
             // baseLanguage to be inserted later
             this.baseLanguage = null;
         }
@@ -99,7 +99,7 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Constructor for BaseLanguage taking no parameters.
-        /// For use when de-serialising from Riak
+        /// For use when de-serialising.
         /// </summary>
         public BaseLanguage()
         {
@@ -107,9 +107,9 @@ namespace hist_mmorpg
     }
 
     /// <summary>
-    /// Class used to convert Language to/from format suitable for Riak (JSON)
+    /// Class used to convert Language to/from serialised format (JSON)
     /// </summary>
-    public class Language_Riak
+    public class Language_Serialised
     {
         /// <summary>
         /// Holds language ID
@@ -125,10 +125,10 @@ namespace hist_mmorpg
         public int dialect { get; set; }
 
         /// <summary>
-        /// Constructor for Language_Riak
+        /// Constructor for Language_Serialised
         /// </summary>
         /// <param name="pc">PlayerCharacter object to use as source</param>
-        public Language_Riak(Language l)
+        public Language_Serialised(Language l)
         {
             this.id = l.id;
             this.dialect = l.dialect;
@@ -136,21 +136,21 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Constructor for Language_Riak taking no parameters.
-        /// For use when de-serialising from Riak
+        /// Constructor for Language_Serialised taking no parameters.
+        /// For use when de-serialising.
         /// </summary>
-        public Language_Riak()
+        public Language_Serialised()
         {
         }
 
         /// <summary>
-        /// Constructor for Language_Riak taking seperate values.
-        /// For creating Language_Riak from CSV file.
+        /// Constructor for Language_Serialised taking seperate values.
+        /// For creating Language_Serialised from CSV file.
         /// </summary>
         /// <param name="id">string holding Language ID</param>
         /// <param name="bLang">string holding BaseLanguage (ID)</param>
         /// <param name="dial">int holding language dialect code</param>
-        public Language_Riak(string id, string bLang, int dial)
+        public Language_Serialised(string id, string bLang, int dial)
         {
             this.id = id;
             this.baseLanguage = bLang;

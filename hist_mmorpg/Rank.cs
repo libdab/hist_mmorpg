@@ -51,20 +51,20 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Constructor for Rank using Position_Riak object
-        /// For use when de-serialising from Riak
+        /// Constructor for Rank using Position_Serialised object
+        /// For use when de-serialising
         /// </summary>
-        /// <param name="pr">Position_Riak object to use as source</param>
-        public Rank(Position_Riak pr)
+        /// <param name="ps">Position_Serialised object to use as source</param>
+        public Rank(Position_Serialised ps)
         {
-            this.id = pr.id;
-            this.title = pr.title;
-            this.stature = pr.stature;
+            this.id = ps.id;
+            this.title = ps.title;
+            this.stature = ps.stature;
         }
 
         /// <summary>
         /// Constructor for Rank taking no parameters.
-        /// For use when de-serialising from Riak
+        /// For use when de-serialising.
         /// </summary>
         public Rank()
         {
@@ -145,21 +145,21 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Constructor for Position using Position_Riak object
-        /// For use when de-serialising from Riak
+        /// Constructor for Position using Position_Serialised object.
+        /// For use when de-serialising.
         /// </summary>
-        /// <param name="pr">Position_Riak object to use as source</param>
-        public Position(Position_Riak pr)
-            : base(pr: pr)
+        /// <param name="ps">Position_Serialised object to use as source</param>
+        public Position(Position_Serialised ps)
+            : base(ps: ps)
         {
-            this.officeHolder = pr.officeHolder;
+            this.officeHolder = ps.officeHolder;
             // nationality to be inserted later
             this.nationality = null;
         }
 
         /// <summary>
         /// Constructor for Position taking no parameters.
-        /// For use when de-serialising from Riak
+        /// For use when de-serialising.
         /// </summary>
         public Position()
         {
@@ -269,9 +269,9 @@ namespace hist_mmorpg
     }
 
     /// <summary>
-    /// Class used to convert Position to/from format suitable for Riak (JSON)
+    /// Class used to convert Position to/from serialised format (JSON)
     /// </summary>
-    public class Position_Riak
+    public class Position_Serialised
     {
         /// <summary>
         /// Holds ID
@@ -295,10 +295,10 @@ namespace hist_mmorpg
         public string nationality { get; set; }
 
         /// <summary>
-        /// Constructor for Position_Riak
+        /// Constructor for Position_Serialised
         /// </summary>
         /// <param name="pos">Position object to use as source</param>
-        public Position_Riak(Position pos)
+        public Position_Serialised(Position pos)
         {
             this.id = pos.id;
             this.title = pos.title;
@@ -308,15 +308,15 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Constructor for Position_Riak taking seperate values.
-        /// For creating Position_Riak from CSV file.
+        /// Constructor for Position_Serialised taking seperate values.
+        /// For creating Position_Serialised from CSV file.
         /// </summary>
         /// <param name="id">byte holding Position ID</param>
         /// <param name="ti">title name in various languages</param>
         /// <param name="stat">byte holding stature for this position</param>
         /// <param name="holder">string ID of the office holder</param>
         /// <param name="nat">string holding ID of Nationality associated with the position</param>
-        public Position_Riak(byte id, TitleName[] ti, byte stat, string holder, string nat)
+        public Position_Serialised(byte id, TitleName[] ti, byte stat, string holder, string nat)
         {
             this.id = id;
             this.title = ti;
@@ -326,10 +326,10 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Constructor for Position_Riak taking no parameters.
-        /// For use when de-serialising from Riak
+        /// Constructor for Position_Serialised taking no parameters.
+        /// For use when de-serialising.
         /// </summary>
-        public Position_Riak()
+        public Position_Serialised()
         {
         }
     }

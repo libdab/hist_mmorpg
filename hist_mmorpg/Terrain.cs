@@ -38,7 +38,7 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Constructor for Terrain taking no parameters.
-        /// For use when de-serialising from Riak
+        /// For use when de-serialising.
         /// </summary>
         public Terrain()
 		{

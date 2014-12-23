@@ -167,9 +167,9 @@ namespace hist_mmorpg
         /// </summary>
         public static List<byte> positionKeys = new List<byte>();
         /// <summary>
-        /// Holds Character_Riak objects with existing goTo queues (used during load from database)
+        /// Holds Character_Serialised objects with existing goTo queues (used during load from database)
         /// </summary>
-        public static List<Character_Riak> goToList = new List<Character_Riak>();
+        public static List<Character_Serialised> goToList = new List<Character_Serialised>();
         /// <summary>
         /// Holds random for use with various methods
         /// </summary>
@@ -793,7 +793,7 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Constructor for VictoryData taking no parameters.
-        /// For use when de-serialising from Riak
+        /// For use when de-serialising.
         /// </summary>
         public VictoryData()
         {
