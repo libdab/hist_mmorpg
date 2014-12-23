@@ -1589,6 +1589,11 @@ namespace hist_mmorpg
             }
         }
 
+        /// <summary>
+        /// Responds to the ItemCheck event of the barredNatsListView
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
         private void barredNatsListView_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             // get nationality ID

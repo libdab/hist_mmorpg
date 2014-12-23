@@ -62,6 +62,8 @@ namespace hist_mmorpg
         {
         }
 
+        // ------------------- GAME START/INITIALISATION
+
 		/// <summary>
         /// Initialises all game objects
 		/// </summary>
@@ -149,13 +151,6 @@ namespace hist_mmorpg
             // initialise player's character display in UI
             this.refreshCharacterContainer();
 
-        }
-
-        /// <summary>
-        /// Creates new game
-        /// </summary>
-        public void startNewGame()
-        {
         }
 
 		/// <summary>
@@ -872,39 +867,7 @@ namespace hist_mmorpg
 
 		}
 
-		/// <summary>
-		/// Generates a random skill set for a Character
-		/// </summary>
-        /// <returns>Tuple<Skill, int>[] for use with a Character object</returns>
-        public Tuple<Skill, int>[] generateSkillSet()
-        {
-
-            // create array of skills between 2-3 in length
-            Tuple<Skill, int>[] skillSet = new Tuple<Skill, int>[Globals_Game.myRand.Next(2, 4)];
-
-            // populate array of skills with randomly chosen skills
-            // 1) make temporary copy of skillKeys
-            List<string> skillKeysCopy = new List<string>(Globals_Game.skillKeys);
-
-            // 2) choose random skill, and assign random skill level
-            for (int i = 0; i < skillSet.Length; i++)
-            {
-                // choose random skill
-                int randSkill = Globals_Game.myRand.Next(0, skillKeysCopy.Count - 1);
-
-                // assign random skill level
-                int randSkillLevel = Globals_Game.myRand.Next(1, 10);
-
-                // create Skill tuple
-                skillSet[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[skillKeysCopy[randSkill]], randSkillLevel);
-
-                // remove skill from skillKeysCopy to ensure isn't chosen again
-                skillKeysCopy.RemoveAt(randSkill);
-            }
-
-            return skillSet;
-
-        }
+        // ------------------- SEASONAL UPDATE
 
         /// <summary>
 		/// Updates game objects at end/start of season
@@ -1417,1147 +1380,7 @@ namespace hist_mmorpg
 
         }
 
-        /// <summary>
-        /// Refreshes whichever screen is currently being displayed in the UI
-        /// </summary>
-        public void refreshCurrentScreen()
-        {
-            // fief
-            if (Globals_Client.containerToView == this.fiefContainer)
-            {
-                this.refreshFiefContainer(Globals_Client.fiefToView);
-            }
-
-            // character
-            else if (Globals_Client.containerToView == this.characterContainer)
-            {
-                this.refreshCharacterContainer(Globals_Client.charToView);
-            }
-
-            // household affairs
-            else if (Globals_Client.containerToView == this.houseContainer)
-            {
-                this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
-            }
-
-            // travel
-            else if (Globals_Client.containerToView == this.travelContainer)
-            {
-                this.refreshTravelContainer();
-            }
-
-            // meeting place
-            else if (Globals_Client.containerToView == this.meetingPlaceContainer)
-            {
-                if ((this.meetingPlaceLabel.Text).ToLower().Contains("tavern"))
-                {
-                    this.refreshMeetingPlaceDisplay("tavern");
-                }
-                else if ((this.meetingPlaceLabel.Text).ToLower().Contains("outwith"))
-                {
-                    this.refreshMeetingPlaceDisplay("outside");
-                }
-                else if ((this.meetingPlaceLabel.Text).ToLower().Contains("court"))
-                {
-                    this.refreshMeetingPlaceDisplay("court");
-                }
-
-            }
-
-            // armies
-            else if (Globals_Client.containerToView == this.armyContainer)
-            {
-                this.refreshArmyContainer(Globals_Client.armyToView);
-            }
-
-            // sieges
-            else if (Globals_Client.containerToView == this.siegeContainer)
-            {
-                this.refreshSiegeContainer(Globals_Client.siegeToView);
-            }
-
-            // journal
-            else if (Globals_Client.containerToView == this.journalContainer)
-            {
-                this.refreshJournalContainer(Globals_Client.jEntryToView);
-            }
-
-            // royal gifts
-            else if (Globals_Client.containerToView == this.royalGiftsContainer)
-            {
-                this.refreshRoyalGiftsContainer();
-            }
-
-            // overlord provinces
-            else if (Globals_Client.containerToView == this.provinceContainer)
-            {
-                this.refreshProvinceContainer(Globals_Client.provinceToView);
-            }
-
-            // adminEdit
-            else if (Globals_Client.containerToView == this.adminEditContainer)
-            {
-                // get objectType
-                string objectType = this.adminEditGetBtn.Tag.ToString();
-
-                switch (objectType)
-                {
-                    case "PC":
-                        this.refreshCharEdit();
-                        break;
-                    case "NPC":
-                        this.refreshCharEdit();
-                        break;
-                    case "Fief":
-                        this.refreshPlaceEdit();
-                        break;
-                    case "Province":
-                        this.refreshPlaceEdit();
-                        break;
-                    case "Kingdom":
-                        this.refreshPlaceEdit();
-                        break;
-                    case "Army":
-                        this.refreshArmyEdit();
-                        break;
-                    case "Skill":
-                        this.refreshSkillEdit();
-                        break;
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Moves character to target fief
-        /// </summary>
-        /// <returns>bool indicating success</returns>
-        /// <param name="ch">Character to move</param>
-        /// <param name="target">Target fief</param>
-        /// <param name="cost">Travel cost (days)</param>
-        public bool moveCharacter(Character ch, Fief target, double cost)
-        {
-            bool success = false;
-            bool proceedWithMove = true;
-
-            // check to see if character is leading a besieging army
-            Army myArmy = ch.getArmy();
-            if (myArmy != null)
-            {
-                string thisSiegeID = myArmy.checkIfBesieger();
-                if (!String.IsNullOrWhiteSpace(thisSiegeID))
-                {
-                    // give player fair warning of consequences to siege
-                    DialogResult dialogResult = MessageBox.Show("Your army is currently besieging this fief.  Moving will end the siege.\r\nClick 'OK' to proceed.", "Proceed with move?", MessageBoxButtons.OKCancel);
-
-                    // if choose to cancel
-                    if (dialogResult == DialogResult.Cancel)
-                    {
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Move cancelled.");
-                        }
-                        proceedWithMove = false;
-                    }
-
-                    // if choose to proceed
-                    else
-                    {
-                        // end the siege
-                        Siege thisSiege = Globals_Game.siegeMasterList[thisSiegeID];
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Siege (" + thisSiegeID + ") ended.");
-                        }
-
-                        // construct event description to be passed into siegeEnd
-                        string siegeDescription = "On this day of Our Lord the forces of ";
-                        siegeDescription += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
-                        siegeDescription += " have chosen to abandon the siege of " + thisSiege.getFief().name;
-                        siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
-                        siegeDescription += " retains ownership of the fief.";
-
-                        this.siegeEnd(thisSiege, siegeDescription);
-                    }
-
-                }
-            }
-
-            if (proceedWithMove)
-            {
-                // move character
-                success = ch.moveCharacter(target, cost);
-            }
-
-            return success;
-        }
-        
-        /// <summary>
-        /// Moves an NPC without a boss one hex in a random direction
-        /// </summary>
-        /// <returns>bool indicating success</returns>
-        /// <param name="npc">NPC to move</param>
-        public bool randomMoveNPC(NonPlayerCharacter npc)
-        {
-            bool success = false;
-
-            // generate random int 0-6 to see if moves
-            int randomInt = Globals_Game.myRand.Next(7);
-
-            if (randomInt > 0)
-            {
-                // get a destination
-                Fief target = Globals_Game.gameMap.chooseRandomHex(npc.location);
-
-                // get travel cost
-                double travelCost = this.getTravelCost(npc.location, target);
-
-                // perform move
-                success = this.moveCharacter(npc, target, travelCost);
-            }
-
-            return success;
-        }
-
-        /// <summary>
-        /// Creates UI display for king's lists of provinces and fiefs
-        /// </summary>
-        public void setUpRoyalGiftsLists()
-        {
-            // add necessary columns
-            // provinces
-            this.royalGiftsProvListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
-            this.royalGiftsProvListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.royalGiftsProvListView.Columns.Add("Title Holder", -2, HorizontalAlignment.Left);
-            this.royalGiftsProvListView.Columns.Add("Last Tax Rate", -2, HorizontalAlignment.Left);
-            this.royalGiftsProvListView.Columns.Add("Last Tax Income", -2, HorizontalAlignment.Left);
-            // fiefs
-            this.royalGiftsFiefListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
-            this.royalGiftsFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.royalGiftsFiefListView.Columns.Add("Province", -2, HorizontalAlignment.Left);
-            this.royalGiftsFiefListView.Columns.Add("Title Holder", -2, HorizontalAlignment.Left);
-            this.royalGiftsFiefListView.Columns.Add("Last GDP", -2, HorizontalAlignment.Left);
-            this.royalGiftsFiefListView.Columns.Add("Last Tax Income", -2, HorizontalAlignment.Left);
-            this.royalGiftsFiefListView.Columns.Add("Current Treasury", -2, HorizontalAlignment.Left);
-            // positions
-            this.royalGiftsPositionListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.royalGiftsPositionListView.Columns.Add("Position", -2, HorizontalAlignment.Left);
-            this.royalGiftsPositionListView.Columns.Add("Stature", -2, HorizontalAlignment.Left);
-            this.royalGiftsPositionListView.Columns.Add("Holder", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
-        /// Creates UI display for overlord's lists of provinces (and associated fiefs)
-        /// </summary>
-        public void setUpProvinceLists()
-        {
-            // add necessary columns
-            // provinces
-            this.provinceProvListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
-            this.provinceProvListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.provinceProvListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
-            this.provinceProvListView.Columns.Add("Last season tax rate", -2, HorizontalAlignment.Left);
-            this.provinceProvListView.Columns.Add("Kingdom ID", -2, HorizontalAlignment.Left);
-            this.provinceProvListView.Columns.Add("Kingdom Name", -2, HorizontalAlignment.Left);
-            // fiefs
-            this.provinceFiefListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
-            this.provinceFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.provinceFiefListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
-            this.provinceFiefListView.Columns.Add("Current GDP", -2, HorizontalAlignment.Left);
-            this.provinceFiefListView.Columns.Add("Last season tax income", -2, HorizontalAlignment.Left);
-            this.provinceFiefListView.Columns.Add("", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
-        /// Creates UI display for PlayerCharacter's list of owned Fiefs
-        /// </summary>
-        public void setUpFiefsList()
-        {
-            // add necessary columns
-            this.fiefsListView.Columns.Add("Fief Name", -2, HorizontalAlignment.Left);
-            this.fiefsListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
-            this.fiefsListView.Columns.Add("Where am I?", -2, HorizontalAlignment.Left);
-            this.fiefsListView.Columns.Add("Home Fief?", -2, HorizontalAlignment.Left);
-            this.fiefsListView.Columns.Add("Province Name", -2, HorizontalAlignment.Left);
-            this.fiefsListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
-        /// Creates UI display for list of characters present in Court, Tavern, outside keep
-        /// </summary>
-        public void setUpMeetingPLaceCharsList()
-        {
-            // add necessary columns
-            this.meetingPlaceCharsListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.meetingPlaceCharsListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.meetingPlaceCharsListView.Columns.Add("Sex", -2, HorizontalAlignment.Left);
-            this.meetingPlaceCharsListView.Columns.Add("Household", -2, HorizontalAlignment.Left);
-            this.meetingPlaceCharsListView.Columns.Add("Type", -2, HorizontalAlignment.Left);
-            this.meetingPlaceCharsListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
-        /// Creates UI display for list of characters in the Household screen
-        /// </summary>
-        public void setUpHouseholdCharsList()
-        {
-            // add necessary columns
-            this.houseCharListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.houseCharListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.houseCharListView.Columns.Add("Function", -2, HorizontalAlignment.Left);
-            this.houseCharListView.Columns.Add("Responsibilities", -2, HorizontalAlignment.Left);
-            this.houseCharListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
-            this.houseCharListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
-        /// Creates UI display for list of skill effects in the edit skill screen
-        /// </summary>
-        public void setUpEditSkillEffectList()
-        {
-            // add necessary columns
-            this.adminEditSkillEffsListView.Columns.Add("Effect Name", -2, HorizontalAlignment.Left);
-            this.adminEditSkillEffsListView.Columns.Add("Level", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
-        /// Creates UI display for list of armies owned by player
-        /// </summary>
-        public void setUpArmyList()
-        {
-            // add necessary columns
-            this.armyListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.armyListView.Columns.Add("Leader", -2, HorizontalAlignment.Left);
-            this.armyListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
-            this.armyListView.Columns.Add("Size", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
-        /// Creates UI display for list of armies owned by player
-        /// </summary>
-        public void setUpSiegeList()
-        {
-            // add necessary columns
-            this.siegeListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.siegeListView.Columns.Add("Fief", -2, HorizontalAlignment.Left);
-            this.siegeListView.Columns.Add("Defender", -2, HorizontalAlignment.Left);
-            this.siegeListView.Columns.Add("Besieger", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
-        /// Creates UI display for list of journal entries
-        /// </summary>
-        public void setUpJournalList()
-        {
-            // add necessary columns
-            this.journalListView.Columns.Add("Entry ID", -2, HorizontalAlignment.Left);
-            this.journalListView.Columns.Add("Date", -2, HorizontalAlignment.Left);
-            this.journalListView.Columns.Add("Type", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
-        /// Refreshes display of PlayerCharacter's list of owned Fiefs
-        /// </summary>
-        public void refreshMyFiefs()
-        {
-            // clear existing items in list
-            this.fiefsListView.Items.Clear();
-
-            // disable controls until fief selected
-            this.disableControls(this.fiefsOwnedContainer.Panel1);
-
-            ListViewItem[] fiefsOwned = new ListViewItem[Globals_Client.myPlayerCharacter.ownedFiefs.Count];
-            // iterates through fiefsOwned
-            for (int i = 0; i < Globals_Client.myPlayerCharacter.ownedFiefs.Count; i++)
-            {
-                // Create an item and subitem for each fief
-                // name
-                fiefsOwned[i] = new ListViewItem(Globals_Client.myPlayerCharacter.ownedFiefs[i].name);
-
-                // ID
-                fiefsOwned[i].SubItems.Add(Globals_Client.myPlayerCharacter.ownedFiefs[i].id);
-
-                // current location
-                if (Globals_Client.myPlayerCharacter.ownedFiefs[i] == Globals_Client.myPlayerCharacter.location)
-                {
-                    fiefsOwned[i].SubItems.Add("You are here");
-                }
-                else
-                {
-                    fiefsOwned[i].SubItems.Add("");
-                }
-
-                // home fief
-                if (Globals_Client.myPlayerCharacter.ownedFiefs[i].id.Equals(Globals_Client.myPlayerCharacter.homeFief))
-                {
-                    fiefsOwned[i].SubItems.Add("Home");
-                }
-                else
-                {
-                    fiefsOwned[i].SubItems.Add("");
-                }
-
-                // province name
-                fiefsOwned[i].SubItems.Add(Globals_Client.myPlayerCharacter.ownedFiefs[i].province.name);
-
-                // province ID
-                fiefsOwned[i].SubItems.Add(Globals_Client.myPlayerCharacter.ownedFiefs[i].province.id);
-
-                // add item to fiefsListView
-                this.fiefsListView.Items.Add(fiefsOwned[i]);
-            }
-        }
-
-        /// <summary>
-        /// Refreshes UI Court, Tavern, outside keep display
-        /// </summary>
-        /// <param name="place">string specifying whether court, tavern, outside keep</param>
-        public void refreshMeetingPlaceDisplay(string place)
-        {
-            // refresh general information
-            this.meetingPlaceDisplayText();
-
-            // remove any previously displayed characters
-            this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
-            this.meetingPlaceCharDisplayTextBox.Text = "";
-
-            // disable controls until character selected in list
-            this.hireNPC_Btn.Enabled = false;
-            this.hireNPC_TextBox.Text = "";
-            this.hireNPC_TextBox.Enabled = false;
-            this.meetingPlaceMoveToBtn.Enabled = false;
-            this.meetingPlaceMoveToTextBox.Text = "";
-            this.meetingPlaceMoveToTextBox.Enabled = false;
-            this.meetingPlaceRouteBtn.Enabled = false;
-            this.meetingPlaceRouteTextBox.Text = "";
-            this.meetingPlaceRouteTextBox.Enabled = false;
-            this.meetingPlaceEntourageBtn.Enabled = false;
-            this.meetingPlaceProposeBtn.Enabled = false;
-            this.meetingPlaceProposeTextBox.Text = "";
-            this.meetingPlaceProposeTextBox.Enabled = false;
-
-            // set label
-            switch (place)
-            {
-                case "tavern":
-                    this.meetingPlaceLabel.Text = "Ye Olde Tavern Of " + Globals_Client.fiefToView.name;
-                    break;
-                case "court":
-                    this.meetingPlaceLabel.Text = "The Esteemed Court Of " + Globals_Client.fiefToView.name;
-                    break;
-                case "outsideKeep":
-                    this.meetingPlaceLabel.Text = "Persons Present Outwith\r\nThe Keep Of " + Globals_Client.fiefToView.name;
-                    break;
-                default:
-                    this.meetingPlaceLabel.Text = "A Generic Meeting Place";
-                    break;
-            }
-            // refresh list of characters
-            this.meetingPlaceDisplayList(place);
-        }
-
-        /// <summary>
-        /// Refreshes general information displayed in Court, Tavern, outside keep
-        /// </summary>
-        public void meetingPlaceDisplayText()
-        {
-            string textToDisplay = "";
-            // date/season and main character's days left
-            textToDisplay += Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear + ".  Your days left: " + Globals_Client.myPlayerCharacter.days + "\r\n\r\n";
-            // Fief name/ID and province name
-            textToDisplay += "Fief: " + Globals_Client.myPlayerCharacter.location.name + " (" + Globals_Client.myPlayerCharacter.location.id + ")  in " + Globals_Client.myPlayerCharacter.location.province.name + ", " + Globals_Client.myPlayerCharacter.location.province.kingdom.name + "\r\n\r\n";
-            // Fief owner
-            textToDisplay += "Owner: " + Globals_Client.myPlayerCharacter.location.owner.firstName + " " + Globals_Client.myPlayerCharacter.location.owner.familyName + "\r\n";
-            // Fief overlord
-            textToDisplay += "Overlord: " + Globals_Client.myPlayerCharacter.location.getOverlord().firstName + " " + Globals_Client.myPlayerCharacter.location.getOverlord().familyName + "\r\n";
-
-            this.meetingPlaceTextBox.ReadOnly = true;
-            this.meetingPlaceTextBox.Text = textToDisplay;
-        }
-
-        /// <summary>
-        /// Refreshes display of Character list in Court, Tavern, outside keep
-        /// </summary>
-        /// <param name="place">String specifying whether court, tavern, outside keep</param>
-        public void meetingPlaceDisplayList(string place)
-        {
-            // clear existing items in list
-            this.meetingPlaceCharsListView.Items.Clear();
-
-            // select which characters to display - i.e. in the keep (court) or not (tavern)
-            bool ifInKeep = false;
-            if (place.Equals("court"))
-            {
-                ifInKeep = true;
-            }
-
-            // iterates through characters
-            for (int i = 0; i < Globals_Client.myPlayerCharacter.location.charactersInFief.Count; i++)
-            {
-                ListViewItem charsInCourt = null;
-
-                // only display characters in relevant location (in keep, or not)
-                if (Globals_Client.myPlayerCharacter.location.charactersInFief[i].inKeep == ifInKeep)
-                {
-                    // don't show the player
-                    if (Globals_Client.myPlayerCharacter.location.charactersInFief[i] != Globals_Client.myPlayerCharacter)
-                    {
-
-                        switch (place)
-                        {
-                            case "tavern":
-                                // only show NPCs
-                                if (Globals_Client.myPlayerCharacter.location.charactersInFief[i] is NonPlayerCharacter)
-                                {
-                                    // only show unemployed
-                                    if ((Globals_Client.myPlayerCharacter.location.charactersInFief[i] as NonPlayerCharacter).salary == 0)
-                                    {
-                                        // Create an item and subitems for character
-                                        charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
-                                    }
-                                }
-                                break;
-                            default:
-                                // Create an item and subitems for character
-                                charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
-                                break;
-                        }
-
-                    }
-                }
-
-                // add item to fiefsListView
-                if (charsInCourt != null)
-                {
-                    this.meetingPlaceCharsListView.Items.Add(charsInCourt);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Creates item for Character list in Court, Tavern, outside keep
-        /// </summary>
-        /// <param name="ch">Character whose information is to be displayed</param>
-        /// <returns>ListViewItem containing character details</returns>
-        public ListViewItem createMeetingPlaceListItem(Character ch)
-        {
-            // name
-            ListViewItem myItem = new ListViewItem(ch.firstName + " " + ch.familyName);
-
-            // charID
-            myItem.SubItems.Add(ch.charID);
-
-            // sex
-            if (ch.isMale)
-            {
-                myItem.SubItems.Add("Male");
-            }
-            else
-            {
-                myItem.SubItems.Add("Female");
-            }
-
-            // to store household and type data
-            string myHousehold = "";
-            string myType = "";
-            bool isEmployee = false;
-            bool isFamily = false;
-
-            // household
-            if (!String.IsNullOrWhiteSpace(ch.familyID))
-            {
-                myHousehold = ch.getHeadOfFamily().familyName + " (ID: " + ch.familyID + ")";
-
-                if (ch.familyID.Equals(Globals_Client.myPlayerCharacter.charID))
-                {
-                    isFamily = true;
-                }
-            }
-            else if (!String.IsNullOrWhiteSpace((ch as NonPlayerCharacter).employer))
-            {
-                myHousehold = (ch as NonPlayerCharacter).getEmployer().familyName + " (ID: " + (ch as NonPlayerCharacter).employer + ")";
-            }
-
-            myItem.SubItems.Add(myHousehold);
-
-            // type (e.g. family, NPC, player)
-
-            // check for players and PCs
-            if (ch is PlayerCharacter)
-            {
-                if (!String.IsNullOrWhiteSpace((ch as PlayerCharacter).playerID))
-                {
-                    myType = "PC (player)";
-                }
-                else
-                {
-                    myType = "PC (inactive)";
-                }
-            }
-            else
-            {
-                // check for employees
-                if ((!String.IsNullOrWhiteSpace((ch as NonPlayerCharacter).employer)) && (ch as NonPlayerCharacter).employer.Equals(Globals_Client.myPlayerCharacter.charID))
-                {
-                    isEmployee = true;
-                }
-
-                // allocate NPC type
-                if ((isFamily) || (isEmployee))
-                {
-                    myType = "My ";
-                }
-                if (isFamily)
-                {
-                    myType += "Family";
-                }
-                else if (isEmployee)
-                {
-                    myType += "Employee";
-                }
-                else
-                {
-                    myType = "NPC";
-                }
-            }
-
-            myItem.SubItems.Add(myType);
-
-            // show whether is in player's entourage
-            bool isCompanion = false;
-
-            if (ch is NonPlayerCharacter)
-            {
-                // iterate through employees checking for character
-                for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
-                {
-                    if (Globals_Client.myPlayerCharacter.myNPCs[i] == ch)
-                    {
-                        if (Globals_Client.myPlayerCharacter.myNPCs[i].inEntourage)
-                        {
-                            isCompanion = true;
-                        }
-                    }
-                }
-            }
-
-            if (isCompanion)
-            {
-                myItem.SubItems.Add("Yes");
-            }
-
-            return myItem;
-        }
-
-        /// <summary>
-        /// Refreshes Household display
-        /// </summary>
-        /// <param name="npc">NonPlayerCharacter to display</param>
-        public void refreshHouseholdDisplay(NonPlayerCharacter npc = null)
-        {
-            // set main character display as read only
-            this.houseCharTextBox.ReadOnly = true;
-
-            // disable controls until NPC selected in ListView
-            this.houseCampBtn.Enabled = false;
-            this.houseCampDaysTextBox.Enabled = false;
-            this.familyNameChildButton.Enabled = false;
-            this.familyNameChildTextBox.Enabled = false;
-            this.familyNpcSpousePregBtn.Enabled = false;
-            this.houseHeirBtn.Enabled = false;
-            this.houseMoveToBtn.Enabled = false;
-            this.houseMoveToTextBox.Enabled = false;
-            this.houseRouteBtn.Enabled = false;
-            this.houseEntourageBtn.Enabled = false;
-            this.houseFireBtn.Enabled = false;
-            this.houseExamineArmiesBtn.Enabled = false;
-
-            // remove any previously displayed text
-            this.houseCharTextBox.Text = "";
-            this.houseCampDaysTextBox.Text = "";
-            this.familyNameChildTextBox.Text = "";
-            this.houseMoveToTextBox.Text = "";
-            this.houseRouteTextBox.Text = "";
-            this.houseProposeBrideTextBox.Text = "";
-            
-            // clear existing items in characters list
-            this.houseCharListView.Items.Clear();
-
-            // variables needed for name check (to see if NPC needs naming)
-            string nameWarning = "The following offspring need to be named:\r\n\r\n";
-            bool showNameWarning = false;
-
-            // iterates through household characters adding information to ListView
-            // and checking if naming is required
-            for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
-            {
-                ListViewItem houseChar = null;
-
-                // name
-                houseChar = new ListViewItem(Globals_Client.myPlayerCharacter.myNPCs[i].firstName + " " + Globals_Client.myPlayerCharacter.myNPCs[i].familyName);
-
-                // charID
-                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].charID);
-
-                // function (e.g. employee, son, wife, etc.)
-                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].getFunction(Globals_Client.myPlayerCharacter));
-
-                // responsibilities (i.e. jobs)
-                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].getResponsibilities(Globals_Client.myPlayerCharacter));
-
-                // location
-                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].location.id + " (" + Globals_Client.myPlayerCharacter.myNPCs[i].location.name + ")");
-
-                // show whether is in player's entourage
-                if (Globals_Client.myPlayerCharacter.myNPCs[i].inEntourage)
-                {
-                    houseChar.SubItems.Add("Yes");
-                }
-
-                // check if needs to be named
-                if (!String.IsNullOrWhiteSpace(Globals_Client.myPlayerCharacter.myNPCs[i].familyID))
-                {
-                    bool nameRequired = Globals_Client.myPlayerCharacter.myNPCs[i].hasBabyName(0);
-
-                    if (nameRequired)
-                    {
-                        showNameWarning = true;
-                        nameWarning += " - " + Globals_Client.myPlayerCharacter.myNPCs[i].charID + " (" + Globals_Client.myPlayerCharacter.myNPCs[i].firstName + " " + Globals_Client.myPlayerCharacter.myNPCs[i].familyName + ")\r\n";
-                    }
-                }
-
-                if (houseChar != null)
-                {
-                    // if NPC passed in as parameter, show as selected
-                    if (Globals_Client.myPlayerCharacter.myNPCs[i] == npc)
-                    {
-                        houseChar.Selected = true;
-                    }
-
-                    // add item to fiefsListView
-                    this.houseCharListView.Items.Add(houseChar);
-                }
-
-            }
-
-            // always enable marriage proposal controls
-            this.houseProposeBtn.Enabled = true;
-            this.houseProposeBrideTextBox.Enabled = true;
-            this.houseProposeGroomTextBox.Enabled = true;
-            this.houseProposeGroomTextBox.Text = Globals_Client.myPlayerCharacter.charID;
-
-            this.houseCharListView.HideSelection = false;
-            this.houseCharListView.Focus();
-
-            if (showNameWarning)
-            {
-                nameWarning += "\r\nAny children who are not named by the age of one will,\r\nwhere possible, be named after their royal highnesses the king and queen.";
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(nameWarning);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Refreshes royal gifts display
-        /// </summary>
-        public void refreshRoyalGiftsContainer()
-        {
-            // get PlayerCharacter (to allow for herald viewing king's finances)
-            PlayerCharacter thisKing = null;
-            if (Globals_Client.myPlayerCharacter.checkIsKing())
-            {
-                thisKing = Globals_Client.myPlayerCharacter;
-            }
-            else if (Globals_Client.myPlayerCharacter.checkIsHerald())
-            {
-                thisKing = Globals_Client.myPlayerCharacter.getKing();
-            }
-
-            if (thisKing != null)
-            {
-                // to store financial data
-                int totGDP = 0;
-                int provTaxInc = 0;
-                int totTaxInc = 0;
-                int totTreas = 0;
-                double taxRate = 0;
-
-                // disable controls until place selected in ListView
-                this.royalGiftsGiftFiefBtn.Enabled = false;
-                this.royalGiftsGrantTitleBtn.Enabled = false;
-                this.royalGiftsRevokeTitleBtn.Enabled = false;
-                this.royalGiftsPositionBtn.Enabled = false;
-                this.royalGiftsPositionRemoveBtn.Enabled = false;
-
-                // remove any previously displayed text
-
-                // clear existing items in places lists
-                this.royalGiftsProvListView.Items.Clear();
-                this.royalGiftsFiefListView.Items.Clear();
-                this.royalGiftsPositionListView.Items.Clear();
-
-                // iterates through owned provinces and fiefs, adding information to appropriate ListView
-                // PROVINCES
-                foreach (Province thisProvince in thisKing.ownedProvinces)
-                {
-                    ListViewItem provItem = null;
-
-                    // id
-                    provItem = new ListViewItem(thisProvince.id);
-
-                    // name
-                    provItem.SubItems.Add(thisProvince.name);
-
-                    // title holder
-                    // get character
-                    PlayerCharacter thisHolder = null;
-					//System.Windows.Forms.MessageBox.Show("Got here!");
-                    if (Globals_Game.pcMasterList.ContainsKey(thisProvince.titleHolder))
-                    {
-                        thisHolder = Globals_Game.pcMasterList[thisProvince.titleHolder];
-                    }
-
-                    // title holder name & id
-                    if (thisHolder != null)
-                    {
-                        provItem.SubItems.Add(thisHolder.firstName + " " + thisHolder.familyName + "(" + thisHolder.charID + ")");
-                    }
-                    else
-                    {
-                        provItem.SubItems.Add("");
-                    }
-
-                    // last season tax rate and total tax income
-                    foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
-                    {
-                        if (fiefEntry.Value.province == thisProvince)
-                        {
-                            taxRate = fiefEntry.Value.keyStatsCurrent[12];
-                            // update tax income total for province
-                            provTaxInc += Convert.ToInt32(fiefEntry.Value.keyStatsCurrent[11]);
-                        }
-                    }
-
-                    // add tax rate subitem
-                    provItem.SubItems.Add(taxRate.ToString());
-
-                    // add tax income subitem
-                    provItem.SubItems.Add("£" + provTaxInc);
-
-                    // update total tax income for all provinces
-                    totTaxInc += provTaxInc;
-
-                    if (provItem != null)
-                    {
-                        // add item to fiefsListView
-                        this.royalGiftsProvListView.Items.Add(provItem);
-                    }
-
-                }
-
-                // add listviewitem with total tax income (all provinces)
-                string[] provItemTotalSubs = new string[] { "", "", "", "", "£" + totTaxInc };
-                ListViewItem provItemTotal = new ListViewItem(provItemTotalSubs);
-                this.royalGiftsProvListView.Items.Add(provItemTotal);
-
-                // FIEFS
-                totTaxInc = 0;
-                foreach (Fief thisFief in thisKing.ownedFiefs)
-                {
-                    ListViewItem fiefItem = null;
-
-                    // id
-                    fiefItem = new ListViewItem(thisFief.id);
-
-                    // name
-                    fiefItem.SubItems.Add(thisFief.name);
-
-                    // province name
-                    fiefItem.SubItems.Add(thisFief.province.name);
-
-                    // title holder
-                    // get character
-                    Character thisHolder = null;
-                    if (Globals_Game.pcMasterList.ContainsKey(thisFief.titleHolder))
-                    {
-                        thisHolder = Globals_Game.pcMasterList[thisFief.titleHolder];
-                    }
-                    else if (Globals_Game.npcMasterList.ContainsKey(thisFief.titleHolder))
-                    {
-                        thisHolder = Globals_Game.npcMasterList[thisFief.titleHolder];
-                    }
-
-                    // title holder name & id
-                    if (thisHolder != null)
-                    {
-                        fiefItem.SubItems.Add(thisHolder.firstName + " " + thisHolder.familyName + "(" + thisHolder.charID + ")");
-                    }
-                    else
-                    {
-                        fiefItem.SubItems.Add("");
-                    }
-
-                    // gdp
-                    fiefItem.SubItems.Add("£" + thisFief.keyStatsCurrent[1]);
-                    // update GDP total
-                    totGDP += Convert.ToInt32(thisFief.keyStatsCurrent[1]);
-
-                    // last tax income
-                    fiefItem.SubItems.Add("£" + thisFief.keyStatsCurrent[11]);
-                    // update tax income total
-                    totTaxInc += Convert.ToInt32(thisFief.keyStatsCurrent[11]);
-
-                    // treasury
-                    fiefItem.SubItems.Add("£" + thisFief.treasury);
-                    // update treasury total
-                    totTreas += thisFief.treasury;
-
-                    if (fiefItem != null)
-                    {
-                        // add item to fiefsListView
-                        this.royalGiftsFiefListView.Items.Add(fiefItem);
-                    }
-
-                }
-
-                // add listviewitem with total GDP and tax income (all fiefs)
-                string[] fiefItemTotalSubs = new string[] { "", "", "", "", "£" + totGDP, "£" + totTaxInc, "£" + totTreas };
-                ListViewItem fiefItemTotal = new ListViewItem(fiefItemTotalSubs);
-                this.royalGiftsFiefListView.Items.Add(fiefItemTotal);
-
-                // POSITIONS
-                foreach (KeyValuePair<byte, Position> thisPos in Globals_Game.positionMasterList)
-                {
-                    // only list posistions for this nationality
-                    if (thisPos.Value.nationality == thisKing.nationality)
-                    {
-                        ListViewItem posItem = null;
-
-                        // id
-                        posItem = new ListViewItem(thisPos.Value.id.ToString());
-
-                        // name
-                        posItem.SubItems.Add(thisPos.Value.getName(thisKing.language));
-
-                        // stature
-                        posItem.SubItems.Add(thisPos.Value.stature.ToString());
-
-                        // holder
-                        // get character
-                        Character thisHolder = null;
-                        if (!String.IsNullOrWhiteSpace(thisPos.Value.officeHolder))
-                        {
-                            if (Globals_Game.pcMasterList.ContainsKey(thisPos.Value.officeHolder))
-                            {
-                                thisHolder = Globals_Game.pcMasterList[thisPos.Value.officeHolder];
-                            }
-                        }
-
-                        // title holder name & id
-                        if (thisHolder != null)
-                        {
-                            posItem.SubItems.Add(thisHolder.firstName + " " + thisHolder.familyName + "(" + thisHolder.charID + ")");
-                        }
-                        else
-                        {
-                            posItem.SubItems.Add(" - ");
-                        }
-
-                        if (posItem != null)
-                        {
-                            // add item to royalGiftsPositionListView
-                            this.royalGiftsPositionListView.Items.Add(posItem);
-                        }
-                    }
-                }
-
-                Globals_Client.containerToView = this.royalGiftsContainer;
-                Globals_Client.containerToView.BringToFront();
-            }
-
-        }
-
-        /// <summary>
-        /// Refreshes overlord province management display
-        /// </summary>
-        /// <param name="province">Province to display</param>
-        public void refreshProvinceContainer(Province province = null)
-        {
-            // disable controls until place selected in ListView
-            this.disableControls(this.provinceContainer.Panel1);
-
-            // clear existing items in places lists
-            this.provinceProvListView.Items.Clear();
-            this.provinceFiefListView.Items.Clear();
-
-            // iterates through provinces where the character holds the title, adding information to ListView
-            foreach (string placeID in Globals_Client.myPlayerCharacter.myTitles)
-            {
-                ListViewItem provItem = null;
-
-                // get province
-                Province thisProvince = null;
-                if (Globals_Game.provinceMasterList.ContainsKey(placeID))
-                {
-                    thisProvince = Globals_Game.provinceMasterList[placeID];
-                }
-
-                if (thisProvince != null)
-                {
-                    // id
-                    provItem = new ListViewItem(thisProvince.id);
-
-                    // name
-                    provItem.SubItems.Add(thisProvince.name);
-
-                    // owner
-                    PlayerCharacter thisOwner = thisProvince.owner;
-                    if (thisOwner != null)
-                    {
-                        provItem.SubItems.Add(thisOwner.firstName + " " + thisOwner.familyName + " (" + thisOwner.charID + ")");
-                    }
-                    else
-                    {
-                        provItem.SubItems.Add("");
-                    }
-
-                    // last season tax rate
-                    // get a fief
-                    Fief thisFief = null;
-                    foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
-                    {
-                        if (fiefEntry.Value.province == thisProvince)
-                        {
-                            thisFief = fiefEntry.Value;
-                            break;
-                        }
-                    }
-
-                    // get tax rate from fief
-                    if (thisFief != null)
-                    {
-                        provItem.SubItems.Add(thisFief.keyStatsCurrent[12].ToString());
-                    }
-
-                    // kingdom ID
-                    provItem.SubItems.Add(thisProvince.getCurrentKingdom().id);
-
-                    // kingdom name
-                    provItem.SubItems.Add(thisProvince.getCurrentKingdom().name);
-
-                    // see if province to view has been passed in
-                    if (province != null)
-                    {
-                        if (province == thisProvince)
-                        {
-                            provItem.Selected = true;
-                        }
-                    }
-                    
-                    if (provItem != null)
-                    {
-                        // add item to fiefsListView
-                        this.provinceProvListView.Items.Add(provItem);
-                    }
-                }
-
-            }
-
-            Globals_Client.containerToView = this.provinceContainer;
-            Globals_Client.containerToView.BringToFront();
-        }
-
-        /// <summary>
-        /// Refreshes information the fief list in the overlord's province management display
-        /// </summary>
-        public void refreshProvinceFiefList(Province p)
-        {
-            bool underOccupation = false;
-
-            // clear existing items in list
-            this.provinceFiefListView.Items.Clear();
-
-            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
-            {
-                ListViewItem fiefItem = null;
-
-                if (fiefEntry.Value.province == p)
-                {
-                    // check for enemy occupation
-                    underOccupation = fiefEntry.Value.checkEnemyOccupation();
-
-                    // id
-                    fiefItem = new ListViewItem(fiefEntry.Value.id);
-
-                    // name
-                    fiefItem.SubItems.Add(fiefEntry.Value.name);
-
-                    // owner name & id
-					if (fiefEntry.Value.owner != null)
-                    {
-						fiefItem.SubItems.Add(fiefEntry.Value.owner.firstName + " " + fiefEntry.Value.owner.familyName + " (" + fiefEntry.Value.owner.charID + ")");
-                    }
-                    else
-                    {
-                        fiefItem.SubItems.Add("");
-                    }
-
-                    // GDP
-                    if (!underOccupation)
-                    {
-                        fiefItem.SubItems.Add("£" + fiefEntry.Value.keyStatsCurrent[1]);
-                    }
-                    else
-                    {
-                        fiefItem.SubItems.Add("-");
-                    }
-
-                    // last tax income
-                    if (!underOccupation)
-                    {
-                        fiefItem.SubItems.Add("£" + fiefEntry.Value.keyStatsCurrent[11]);
-                    }
-                    else
-                    {
-                        fiefItem.SubItems.Add("-");
-                    }
-
-                    // check if underOccupation message needed
-                    if (underOccupation)
-                    {
-                        fiefItem.SubItems.Add("Under enemy occupation!");
-                        fiefItem.ForeColor = Color.Red;
-                    }
-
-                    if (fiefItem != null)
-                    {
-                        // add item to fiefsListView
-                        this.provinceFiefListView.Items.Add(fiefItem);
-                    }
-                }
-
-            }
-        }
-
-        /// <summary>
-        /// Retrieves information for journal display screen
-        /// </summary>
-        /// <returns>String containing information to display</returns>
-        /// <param name="indexPosition">The index position of the journal entry to be displayed</param>
-        public string displayJournalEntry(int indexPosition)
-        {
-            string jentryText = "";
-
-            // get journal entry
-            JournalEntry thisJentry = Globals_Client.eventSetToView.ElementAt(indexPosition).Value;
-
-            // get text
-            jentryText = thisJentry.getJournalEntryDetails();
-
-            return jentryText;
-        }
+        // ------------------- CHARACTER DISPLAY
 
         /// <summary>
         /// Retrieves information for Character display screen
@@ -2601,7 +1424,7 @@ namespace hist_mmorpg
                     charText += "Player ID: " + (ch as PlayerCharacter).playerID + "\r\n";
                 }
             }
-            
+
             // name
             charText += "Name: " + ch.firstName + " " + ch.familyName + "\r\n";
 
@@ -2621,7 +1444,7 @@ namespace hist_mmorpg
             charText += "\r\n";
 
             // nationality
-			charText += "Nationality: " + ch.nationality.name + "\r\n";
+            charText += "Nationality: " + ch.nationality.name + "\r\n";
 
             if (ch is PlayerCharacter)
             {
@@ -2657,7 +1480,7 @@ namespace hist_mmorpg
 
             // location
             charText += "Current location: " + ch.location.name + " (" + ch.location.province.name + ")\r\n";
-            
+
             // language
             charText += "Language: " + ch.language.getName() + "\r\n";
 
@@ -2921,12 +1744,12 @@ namespace hist_mmorpg
                 pcText += "  - " + pc.ownedFiefs[i].name + "\r\n";
             }
 
-			// owned provinces
-			pcText += "Provinces owned:\r\n";
-			for (int i = 0; i < pc.ownedProvinces.Count; i++)
-			{
-				pcText += "  - " + pc.ownedProvinces[i].name + "\r\n";
-			}
+            // owned provinces
+            pcText += "Provinces owned:\r\n";
+            for (int i = 0; i < pc.ownedProvinces.Count; i++)
+            {
+                pcText += "  - " + pc.ownedProvinces[i].name + "\r\n";
+            }
 
             return pcText;
         }
@@ -2967,662 +1790,7 @@ namespace hist_mmorpg
                 npcText += "Current salary: " + npc.salary + "\r\n";
             }
 
-            /*
-            // function
-            if (npc.function != null)
-            {
-                npcText += "Function: " + npc.function;
-            }
-            else
-            {
-                npcText += "Function: N/A";
-            }
-            npcText += "\r\n";
-            */
-
             return npcText;
-        }
-
-        /// <summary>
-        /// Retrieves information for Army display screen
-        /// </summary>
-        /// <returns>String containing information to display</returns>
-        /// <param name="a">Army for which information is to be displayed</param>
-        public string displayArmyData(Army a)
-        {
-            string armyText = "";
-            uint[] troopNumbers = a.troops;
-            Fief armyLocation = a.getLocation();
-
-            // check if is garrison in a siege
-            string siegeID = a.checkIfSiegeDefenderGarrison();
-            if (String.IsNullOrWhiteSpace(siegeID))
-            {
-                // check if is additional defender in a siege
-                siegeID = a.checkIfSiegeDefenderAdditional();
-            }
-
-            // if is defender in a siege, indicate
-            if (!String.IsNullOrWhiteSpace(siegeID))
-            {
-                armyText += "NOTE: This army is currently UNDER SIEGE\r\n\r\n";
-            }
-
-            else
-            {
-                // check if is besieger in a siege
-                siegeID = a.checkIfBesieger();
-
-                // if is besieger in a siege, indicate
-                if (!String.IsNullOrWhiteSpace(siegeID))
-                {
-                    armyText += "NOTE: This army is currently BESIEGING THIS FIEF\r\n\r\n";
-                }
-
-                // check if is siege in fief (but army not involved)
-                else
-                {
-                    if (!String.IsNullOrWhiteSpace(armyLocation.siege))
-                    {
-                        armyText += "NOTE: This fief is currently UNDER SIEGE\r\n\r\n";
-                    }
-                }
-            }
-
-            // ID
-            armyText += "ID: " + a.armyID + "\r\n\r\n";
-
-            // nationality
-            armyText += "Nationality: " + a.getOwner().nationality.name + "\r\n\r\n";
-
-            // days left
-            armyText += "Days left: " + a.days + "\r\n\r\n";
-
-            // location
-            armyText += "Location: " + armyLocation.name + " (Province: " + armyLocation.province.name + ".  Kingdom: " + armyLocation.province.kingdom.name + ")\r\n\r\n";
-
-            // leader
-            Character armyLeader = a.getLeader();
-
-            armyText += "Leader: ";
-
-            if (armyLeader == null)
-            {
-                armyText += "THIS ARMY HAS NO LEADER!  You should appoint one as soon as possible.";
-            }
-            else
-            {
-                armyText += armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")";
-            }
-            armyText += "\r\n\r\n";
-
-            // labels for troop types
-            string[] troopTypeLabels = new string[] { " - Knights: ", " - Men-at-Arms: ", " - Light Cavalry: ", " - Longbowmen: ", " - Crossbowmen: ", " - Foot: ", " - Rabble: " };
-
-            // display numbers for each troop type
-            for (int i = 0; i < troopNumbers.Length; i++)
-            {
-                armyText += troopTypeLabels[i] + troopNumbers[i];
-                armyText += "\r\n";
-            }
-            armyText += "   ==================\r\n";
-            armyText += " - TOTAL: " + a.calcArmySize() + "\r\n\r\n";
-
-            // whether is maintained (and at what cost)
-            if (a.isMaintained)
-            {
-                uint armyCost = a.calcArmySize() * 500;
-
-                armyText += "This army is currently being maintained (at a cost of £" + armyCost + ")\r\n\r\n";
-            }
-            else
-            {
-                armyText += "This army is NOT currently being maintained\r\n\r\n";
-            }
-
-            // aggression level
-            armyText += "Aggression level: " + a.aggression + "\r\n\r\n";
-
-            // sally value
-            armyText += "Sally value: " + a.combatOdds + "\r\n\r\n";
-
-            return armyText;
-        }
-
-        /// <summary>
-        /// Retrieves information for Siege display screen
-        /// </summary>
-        /// <returns>String containing information to display</returns>
-        /// <param name="s">Siege for which information is to be displayed</param>
-        public string displaySiegeData(Siege s)
-        {
-            string siegeText = "";
-            Fief siegeLocation = s.getFief();
-            PlayerCharacter fiefOwner = siegeLocation.owner;
-            bool isDefender = (fiefOwner == Globals_Client.myPlayerCharacter);
-            Army besieger = s.getBesiegingArmy();
-            PlayerCharacter besiegingPlayer = s.getBesiegingPlayer();
-            Army defenderGarrison = s.getDefenderGarrison();
-            Army defenderAdditional = s.getDefenderAdditional();
-            Character besiegerLeader = besieger.getLeader();
-            Character defGarrLeader = defenderGarrison.getLeader();
-            Character defAddLeader = null;
-            if (defenderAdditional != null)
-            {
-                defAddLeader = defenderAdditional.getLeader();
-            }
-
-            // ID
-            siegeText += "ID: " + s.siegeID + "\r\n\r\n";
-
-            // fief
-            siegeText += "Fief: " + siegeLocation.name + " (Province: " + siegeLocation.province.name + ".  Kingdom: " + siegeLocation.province.kingdom.name + ")\r\n\r\n";
-
-            // fief owner
-            siegeText += "Fief owner: " + fiefOwner.firstName + " " + fiefOwner.familyName + " (ID: " + fiefOwner.charID + ")\r\n\r\n";
-
-            // besieging player
-            siegeText += "Besieging player: " + besiegingPlayer.firstName + " " + besiegingPlayer.familyName + " (ID: " + besiegingPlayer.charID + ")\r\n\r\n";
-
-            // start date
-            siegeText += "Start date: " + s.startYear + ", " + Globals_Game.clock.seasons[s.startSeason] + "\r\n\r\n";
-
-            // duration so far
-            siegeText += "Days used so far: " + s.totalDays + "\r\n\r\n";
-
-            // days left in current season
-            siegeText += "Days remaining in current season: " + s.days + "\r\n\r\n";
-
-            // defending forces
-            siegeText += "Defending forces: ";
-            // only show details if player is defender
-            if (isDefender)
-            {
-                // garrison details
-                siegeText += "\r\nGarrison: " + defenderGarrison.armyID + "\r\n";
-                siegeText += "- Leader: ";
-                if (defGarrLeader != null)
-                {
-                    siegeText += defGarrLeader.firstName + " " + defGarrLeader.familyName + " (ID: " + defGarrLeader.charID + ")";
-                }
-                else
-                {
-                    siegeText += "None";
-                }
-                siegeText += "\r\n";
-                siegeText += "- [Kn: " + defenderGarrison.troops[0] + ";  MAA: " + defenderGarrison.troops[1]
-                    + ";  LCav: " + defenderGarrison.troops[2] + ";  Lng: " + defenderGarrison.troops[3]
-                    + ";  Crss: " + defenderGarrison.troops[4] + ";  Ft: " + defenderGarrison.troops[5]
-                    + ";  Rbl: " + defenderGarrison.troops[6] + "]";
-
-                // additional army details
-                if (defenderAdditional != null)
-                {
-                    siegeText += "\r\n\r\nField army: " + defenderAdditional.armyID + "\r\n";
-                    siegeText += "- Leader: ";
-                    if (defAddLeader != null)
-                    {
-                        siegeText += defAddLeader.firstName + " " + defAddLeader.familyName + " (ID: " + defAddLeader.charID + ")";
-                    }
-                    else
-                    {
-                        siegeText += "None";
-                    }
-                    siegeText += "\r\n";
-                    siegeText += "- [Kn: " + defenderAdditional.troops[0] + ";  MAA: " + defenderAdditional.troops[1]
-                        + ";  LCav: " + defenderAdditional.troops[2] + ";  Lng: " + defenderAdditional.troops[3]
-                        + ";  Crss: " + defenderAdditional.troops[4] + ";  Ft: " + defenderAdditional.troops[5]
-                        + ";  Rbl: " + defenderAdditional.troops[6] + "]";
-                }
-
-                siegeText += "\r\n\r\nTotal defender casualties so far (including attrition): " + s.totalCasualtiesDefender;
-            }
-
-            // if player not defending, hide defending forces details
-            else
-            {
-                siegeText += "Unknown";
-            }
-            siegeText += "\r\n\r\n";
-
-            // besieging forces
-            siegeText += "Besieging forces: ";
-            // only show details if player is besieger
-            if (!isDefender)
-            {
-                // besieging forces details
-                siegeText += "\r\nField army: " + besieger.armyID + "\r\n";
-                siegeText += "- Leader: ";
-                if (besiegerLeader != null)
-                {
-                    siegeText += besiegerLeader.firstName + " " + besiegerLeader.familyName + " (ID: " + besiegerLeader.charID + ")";
-                }
-                else
-                {
-                    siegeText += "None";
-                }
-                siegeText += "\r\n";
-                siegeText += "- [Kn: " + besieger.troops[0] + ";  MAA: " + besieger.troops[1]
-                    + ";  LCav: " + besieger.troops[2] + ";  Lng: " + besieger.troops[3] + ";  Crss: " + besieger.troops[4]
-                    + ";  Ft: " + besieger.troops[5] + ";  Rbl: " + besieger.troops[6] + "]";
-
-                siegeText += "\r\n\r\nTotal attacker casualties so far (including attrition): " + s.totalCasualtiesAttacker;
-            }
-
-            // if player not besieger, hide besieging forces details
-            else
-            {
-                siegeText += "Unknown";
-            }
-            siegeText += "\r\n\r\n";
-
-            // keep level
-            siegeText += "Keep level:\r\n";
-            // keep level at start
-            siegeText += "- at start of siege: " + s.startKeepLevel + "\r\n";
-
-            // current keep level
-            siegeText += "- current: " + siegeLocation.keepLevel + "\r\n\r\n";
-
-            if (!isDefender)
-            {
-                siegeText += "Chance of success in next round:\r\n";
-                // chance of storm success
-                /* double keepLvl = this.calcStormKeepLevel(s);
-                double successChance = this.calcStormSuccess(keepLvl); */
-                // get battle values for both armies
-                uint[] battleValues = this.calculateBattleValue(besieger, defenderGarrison, Convert.ToInt32(siegeLocation.keepLevel));
-                double successChance = this.calcVictoryChance(battleValues[0], battleValues[1]);
-                siegeText += "- storm: " + successChance + "\r\n";
-
-                // chance of negotiated success
-                siegeText += "- negotiated: " + successChance / 2 + "\r\n\r\n";
-            }
-
-            return siegeText;
-        }
-
-        /// <summary>
-        /// Retrieves general information for Fief display screen
-        /// </summary>
-        /// <returns>String containing information to display</returns>
-        /// <param name="f">Fief for which information is to be displayed</param>
-        /// <param name="isOwner">bool indicating if fief owned by player</param>
-        public string displayFiefGeneralData(Fief f, bool isOwner)
-        {
-            string fiefText = "";
-
-            // ID
-            fiefText += "ID: " + f.id + "\r\n";
-
-            // name (& province name)
-            fiefText += "Name: " + f.name + " (Province: " + f.province.name + ".  Kingdom: " + f.province.kingdom.name + ")\r\n";
-
-            // rank
-            fiefText += "Title (rank): ";
-            fiefText += f.rank.getName(f.language) + " (" + f.rank.id + ")\r\n";
-
-            // population
-            fiefText += "Population: " + f.population + "\r\n";
-
-            // fields
-            fiefText += "Fields level: " + f.fields + "\r\n";
-
-            // industry
-            fiefText += "Industry level: " + f.industry + "\r\n";
-
-            // owner's ID
-            fiefText += "Owner (ID): " + f.owner.charID + "\r\n";
-
-            // ancestral owner's ID
-            fiefText += "Ancestral owner (ID): " + f.ancestralOwner.charID + "\r\n";
-
-            // bailiff's ID
-            fiefText += "Bailiff (ID): ";
-            if (f.bailiff != null)
-            {
-                fiefText += f.bailiff.charID;
-            }
-            else
-            {
-                fiefText += "auto-bailiff";
-            }
-            fiefText += "\r\n";
-
-            // no. of troops (only if owned)
-            if (isOwner)
-            {
-				fiefText += "Garrison: " + Convert.ToInt32(f.keyStatsCurrent[4] / 1000) + " troops\r\n";
-				fiefText += "Militia: Up to " + f.calcMaxTroops() + " troops are available for call up in this fief\r\n";
-            }
-
-            // fief status
-            fiefText += "Status: ";
-            // if under siege, replace status with siege
-            if (!String.IsNullOrWhiteSpace(f.siege))
-            {
-                fiefText += "UNDER SIEGE!";
-            }
-            else
-            {
-                switch (f.status)
-                {
-                    case 'U':
-                        fiefText += "Unrest";
-                        break;
-                    case 'R':
-                        fiefText += "Rebellion!";
-                        break;
-                    default:
-                        fiefText += "Calm";
-                        break;
-                }
-            }
-
-            fiefText += "\r\n";
-
-            // language
-            fiefText += "Language: " + f.language.getName() + "\r\n";
-
-            // terrain type
-            fiefText += "Terrain: " + f.terrain.description + "\r\n";
-
-            // barred nationalities
-            fiefText += "Barred nationalities: ";
-            if (f.barredNationalities.Count > 0)
-            {
-                // get last entry
-                string lastNatID = f.barredNationalities.Last();
-
-                foreach (string natID in f.barredNationalities)
-                {
-                    // get nationality
-                    Nationality thisNat = null;
-                    if (Globals_Game.nationalityMasterList.ContainsKey(natID))
-                    {
-                        thisNat = Globals_Game.nationalityMasterList[natID];
-                    }
-
-                    if (thisNat != null)
-                    {
-                        fiefText += thisNat.name;
-
-                        if (!natID.Equals(lastNatID))
-                        {
-                            fiefText += ", ";
-                        }
-                    }
-                }
-            }
-            else
-            {
-                fiefText += "None";
-            }
-            fiefText += "\r\n";
-
-            // barred characters
-            fiefText += "Barred characters: ";
-            if (f.barredCharacters.Count > 0)
-            {
-                // get last entry
-                string lastCharID = f.barredCharacters.Last();
-
-                foreach (string charID in f.barredCharacters)
-                {
-                    // get nationality
-                    Character thisChar = null;
-                    if (Globals_Game.npcMasterList.ContainsKey(charID))
-                    {
-                        thisChar = Globals_Game.npcMasterList[charID];
-                    }
-                    else if (Globals_Game.pcMasterList.ContainsKey(charID))
-                    {
-                        thisChar = Globals_Game.pcMasterList[charID];
-                    }
-
-                    if (thisChar != null)
-                    {
-                        fiefText += thisChar.firstName + " " + thisChar.familyName;
-
-                        if (!charID.Equals(lastCharID))
-                        {
-                            fiefText += ", ";
-                        }
-                    }
-                }
-            }
-            else
-            {
-                fiefText += "None";
-            }
-            fiefText += "\r\n";
-
-            return fiefText;
-        }
-
-        /// <summary>
-        /// Retrieves previous season's key information for Fief display screen
-        /// </summary>
-        /// <returns>String containing information to display</returns>
-        /// <param name="f">Fief for which information is to be displayed</param>
-        public string displayFiefKeyStatsPrev(Fief f)
-        {
-            bool displayData = true;
-
-            string fiefText = "PREVIOUS SEASON\r\n=================\r\n\r\n";
-
-            // if under siege, check to see if display data (based on siege start date)
-            if (!String.IsNullOrWhiteSpace(f.siege))
-            {
-                Siege thisSiege = f.getSiege();
-                displayData = this.checkToShowFinancialData(-1, thisSiege);
-            }
-
-            // if not OK to display data, show message
-            if (!displayData)
-            {
-                fiefText += "CURRENTLY UNAVAILABLE - due to siege\r\n";
-            }
-            // if is OK, display as normal
-            else
-            {
-                // loyalty
-                fiefText += "Loyalty: " + f.keyStatsPrevious[0] + "\r\n\r\n";
-
-                // GDP
-                fiefText += "GDP: " + f.keyStatsPrevious[1] + "\r\n\r\n";
-
-                // tax rate
-                fiefText += "Tax rate: " + f.keyStatsPrevious[2] + "%\r\n\r\n";
-
-                // officials spend
-                fiefText += "Officials expenditure: " + f.keyStatsPrevious[3] + "\r\n\r\n";
-
-                // garrison spend
-                fiefText += "Garrison expenditure: " + f.keyStatsPrevious[4] + "\r\n\r\n";
-
-                // infrastructure spend
-                fiefText += "Infrastructure expenditure: " + f.keyStatsPrevious[5] + "\r\n\r\n";
-
-                // keep spend
-                fiefText += "Keep expenditure: " + f.keyStatsPrevious[6] + "\r\n";
-                // keep level
-                fiefText += "   (Keep level: " + f.keyStatsPrevious[7] + ")\r\n\r\n";
-
-                // income
-                fiefText += "Income: " + f.keyStatsPrevious[8] + "\r\n\r\n";
-
-                // family expenses
-                fiefText += "Family expenses: " + f.keyStatsPrevious[9] + "\r\n\r\n";
-
-                // total expenses
-                fiefText += "Total fief expenses: " + f.keyStatsPrevious[10] + "\r\n\r\n";
-
-                // overlord taxes
-                fiefText += "Overlord taxes: " + f.keyStatsPrevious[11] + "\r\n";
-                // overlord tax rate
-                fiefText += "   (tax rate: " + f.keyStatsPrevious[12] + "%)\r\n\r\n";
-
-                // surplus
-                fiefText += "Bottom line: " + f.keyStatsPrevious[13];
-            }
-
-            return fiefText;
-        }
-
-        /// <summary>
-        /// Retrieves current season's key information for Fief display screen
-        /// </summary>
-        /// <returns>String containing information to display</returns>
-        /// <param name="f">Fief for which information is to be displayed</param>
-        public string displayFiefKeyStatsCurr(Fief f)
-        {
-            bool displayData = true;
-
-            string fiefText = "CURRENT SEASON\r\n=================\r\n\r\n";
-
-            // if under siege, check to see if display data (based on siege start date)
-            if (!String.IsNullOrWhiteSpace(f.siege))
-            {
-                Siege thisSiege = f.getSiege();
-                displayData = this.checkToShowFinancialData(0, thisSiege);
-            }
-
-            // if not OK to display data, show message
-            if (!displayData)
-            {
-                fiefText += "CURRENTLY UNAVAILABLE - due to siege\r\n";
-            }
-            // if is OK, display as normal
-            else
-            {
-                // loyalty
-                fiefText += "Loyalty: " + f.keyStatsCurrent[0] + "\r\n\r\n";
-
-                // GDP
-                fiefText += "GDP: " + f.keyStatsCurrent[1] + "\r\n\r\n";
-
-                // tax rate
-                fiefText += "Tax rate: " + f.keyStatsCurrent[2] + "%\r\n\r\n";
-
-                // officials spend
-                fiefText += "Officials expenditure: " + f.keyStatsCurrent[3] + "\r\n\r\n";
-
-                // garrison spend
-                fiefText += "Garrison expenditure: " + f.keyStatsCurrent[4] + "\r\n\r\n";
-
-                // infrastructure spend
-                fiefText += "Infrastructure expenditure: " + f.keyStatsCurrent[5] + "\r\n\r\n";
-
-                // keep spend
-                fiefText += "Keep expenditure: " + f.keyStatsCurrent[6] + "\r\n";
-                // keep level
-                fiefText += "   (Keep level: " + f.keyStatsCurrent[7] + ")\r\n\r\n";
-
-                // income
-                fiefText += "Income: " + f.keyStatsCurrent[8] + "\r\n\r\n";
-
-                // family expenses
-                fiefText += "Family expenses: " + f.keyStatsCurrent[9] + "\r\n\r\n";
-
-                // total expenses
-                fiefText += "Total fief expenses: " + f.keyStatsCurrent[10] + "\r\n\r\n";
-
-                // overlord taxes
-                fiefText += "Overlord taxes: " + f.keyStatsCurrent[11] + "\r\n";
-                // overlord tax rate
-                fiefText += "   (tax rate: " + f.keyStatsCurrent[12] + "%)\r\n\r\n";
-
-                // surplus
-                fiefText += "Bottom line: " + f.keyStatsCurrent[13];
-            }
-            
-            return fiefText;
-        }
-
-        /// <summary>
-        /// Retrieves next season's key information for Fief display screen
-        /// </summary>
-        /// <returns>String containing information to display</returns>
-        /// <param name="f">Fief for which information is to be displayed</param>
-        public string displayFiefKeyStatsNext(Fief f)
-        {
-            string fiefText = "NEXT SEASON (ESTIMATE)\r\n========================\r\n\r\n";
-
-            // if under siege, don't display data
-            if (!String.IsNullOrWhiteSpace(f.siege))
-            {
-                fiefText += "CURRENTLY UNAVAILABLE - due to siege\r\n";
-            }
-
-            // if NOT under siege
-            else
-            {
-                // loyalty
-                fiefText += "Loyalty: " + f.calcNewLoyalty() + "\r\n";
-                // various loyalty modifiers
-                fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod() + ")\r\n";
-                fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod() + ")\r\n";
-                fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyAdjusted(f.bailiffDaysInFief >= 30) + ")\r\n";
-                fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod(f.bailiffDaysInFief >= 30) + ")\r\n\r\n";
-
-                // GDP
-                fiefText += "GDP: " + f.calcNewGDP() + "\r\n\r\n";
-
-                // tax rate
-                fiefText += "Tax rate: " + f.taxRateNext + "%\r\n\r\n";
-
-                // officials expenditure
-                fiefText += "Officials expenditure: " + f.officialsSpendNext + "\r\n\r\n";
-
-                // Garrison expenditure
-                fiefText += "Garrison expenditure: " + f.garrisonSpendNext + "\r\n\r\n";
-
-                // Infrastructure expenditure
-                fiefText += "Infrastructure expenditure: " + f.infrastructureSpendNext + "\r\n\r\n";
-
-                // keep expenditure
-                fiefText += "Keep expenditure: " + f.keepSpendNext + "\r\n";
-                // keep level
-                fiefText += "   (keep level: " + f.calcNewKeepLevel() + ")\r\n\r\n";
-
-                // income
-                fiefText += "Income: " + f.calcNewIncome() + "\r\n";
-                // various income modifiers
-                fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod(f.bailiffDaysInFief >= 30) + ")\r\n";
-                fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod() + ")\r\n\r\n";
-
-                // family expenses
-                fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
-                // famExpenses modifier for player/spouse
-                if (!String.IsNullOrWhiteSpace(f.owner.spouse))
-                {
-                    if (f.owner.getSpouse().management > f.owner.management)
-                    {
-                        fiefText += "  (which may include a famExpense skills modifier: " + Globals_Game.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")";
-                    }
-                }
-                else
-                {
-                    fiefText += "  (which may include a famExpense skills modifier: " + f.owner.calcSkillEffect("famExpense") + ")";
-                }
-                fiefText += "\r\n\r\n";
-
-                // total expenses (fief and family)
-                fiefText += "Total fief expenses: " + (f.calcNewExpenses() + f.calcFamilyExpenses()) + "\r\n";
-                // bailiff fief expenses modifier
-                fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif(f.bailiffDaysInFief >= 30) + ")\r\n\r\n";
-
-                // overlord taxes
-                fiefText += "Overlord taxes: " + f.calcNewOlordTaxes() + "\r\n";
-                // overlord tax rate
-                fiefText += "   (tax rate: " + f.province.taxRate + "%)\r\n\r\n";
-
-                // bottom line
-                fiefText += "Bottom line: " + f.calcNewBottomLine();
-            }
-
-            return fiefText;
         }
 
         /// <summary>
@@ -3670,1457 +1838,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Disables all controls within the parent container
-        /// </summary>
-        /// <param name="parentContainer">The parent container</param>
-        public void disableControls(Control parentContainer)
-        {
-            foreach (Control c in parentContainer.Controls)
-            {
-                // clear TextBoxes
-                if (c is TextBox)
-                {
-                    (c as TextBox).Text = "";
-                }
-
-				// clear CheckBoxes
-				if (c is CheckBox)
-				{
-					(c as CheckBox).Checked = false;
-				}
-
-                // disable controls
-                if ((c is CheckBox) || (c is Button))
-                {
-                    c.Enabled = false;
-                }
-
-                // clear ListViews
-                if (c is ListView)
-                {
-                    (c as ListView).Items.Clear();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Enables all controls within the parent container
-        /// </summary>
-        /// <param name="parentContainer">The parent container</param>
-        public void enableControls(Control parentContainer)
-        {
-            foreach (Control c in parentContainer.Controls)
-            {
-                // disable controls
-                if ((c is CheckBox) || (c is Button))
-                {
-                    c.Enabled = true;
-                }
-            }
-        }
-        
-        /// <summary>
-        /// Refreshes main Army display screen
-        /// </summary>
-        /// <param name="a">Army whose information is to be displayed</param>
-        public void refreshArmyContainer(Army a = null)
-        {
-            // disable controls until army selected
-            this.disableControls(this.armyManagementPanel);
-            this.disableControls(this.armyCombatPanel);
-
-            // always enable switch between management and combat panels
-            this.armyDisplayCmbtBtn.Enabled = true;
-            this.armyDisplayMgtBtn.Enabled = true;
-            
-            // ensure main textbox isn't interactive
-            this.armyTextBox.ReadOnly = true;
-
-            // clear existing items in armies list
-            this.armyListView.Items.Clear();
-
-            // iterates through player's armies adding information to ListView
-            for (int i = 0; i < Globals_Client.myPlayerCharacter.myArmies.Count; i++)
-            {
-                ListViewItem thisArmy = null;
-
-                // armyID
-                thisArmy = new ListViewItem(Globals_Client.myPlayerCharacter.myArmies[i].armyID);
-
-                // leader
-                Character armyLeader = Globals_Client.myPlayerCharacter.myArmies[i].getLeader();
-                if (armyLeader != null)
-                {
-                    thisArmy.SubItems.Add(armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")");
-                }
-                else
-                {
-                    thisArmy.SubItems.Add("No leader");
-                }
-
-                // location
-                Fief armyLocation = Globals_Client.myPlayerCharacter.myArmies[i].getLocation();
-                thisArmy.SubItems.Add(armyLocation.name + " (" + armyLocation.id + ")");
-
-                // size
-                thisArmy.SubItems.Add(Globals_Client.myPlayerCharacter.myArmies[i].calcArmySize().ToString());
-
-                if (thisArmy != null)
-                {
-                    // if army passed in as parameter, show as selected
-                    if (Globals_Client.myPlayerCharacter.myArmies[i] == a)
-                    {
-                        thisArmy.Selected = true;
-                    }
-
-                    // add item to armyListView
-                    this.armyListView.Items.Add(thisArmy);
-                }
-
-            }
-
-            if (a == null)
-            {
-                // if player is not leading any armies, set button text to 'recruit new' and enable
-                if (String.IsNullOrWhiteSpace(Globals_Client.myPlayerCharacter.armyID))
-                {
-                    this.armyRecruitBtn.Text = "Recruit a New Army In Current Fief";
-                    this.armyRecruitBtn.Tag = "new";
-                    this.armyRecruitBtn.Enabled = true;
-                    this.armyRecruitTextBox.Enabled = true;
-                }
-            }
-
-            Globals_Client.containerToView = this.armyContainer;
-            Globals_Client.containerToView.BringToFront();
-
-            // check which panel to display
-            string armyPanelTag = this.armyContainer.Panel1.Tag.ToString();
-            if (armyPanelTag.Equals("combat"))
-            {
-                this.armyCombatPanel.BringToFront();
-            }
-            else
-            {
-                this.armyManagementPanel.BringToFront();
-            }
-
-            this.armyListView.Focus();
-        }
-
-        /// <summary>
-        /// Refreshes main journal display screen
-        /// </summary>
-        /// <param name="a">JournalEntry to be displayed</param>
-        public void refreshJournalContainer(int jEntryIndex = -1)
-        {
-            // get JournalEntry
-            JournalEntry jEntryPassedIn = null;
-            if ((jEntryIndex >= 0) && (!(jEntryIndex > Globals_Client.jEntryMax)))
-            {
-                jEntryPassedIn = Globals_Client.eventSetToView.ElementAt(jEntryIndex).Value;
-            }
-
-            // clear existing information
-            this.journalTextBox.Text = "";
-
-            // ensure textboxes aren't interactive
-            this.journalTextBox.ReadOnly = true;
-
-            // disable controls until JournalEntry selected
-
-            // clear existing items in journal list
-            this.journalListView.Items.Clear();
-
-            // iterates through journal entries adding information to ListView
-            foreach (KeyValuePair<uint, JournalEntry> thisJentry in Globals_Client.eventSetToView)
-            {
-                ListViewItem thisEntry = null;
-
-                // jEntryID
-                thisEntry = new ListViewItem(Convert.ToString(thisJentry.Value.jEntryID));
-
-                // date
-                string entrySeason = Globals_Game.clock.seasons[thisJentry.Value.season];
-                thisEntry.SubItems.Add(entrySeason + ", " + thisJentry.Value.year);
-
-                // type
-                thisEntry.SubItems.Add(thisJentry.Value.type);
-
-                if (thisEntry != null)
-                {
-                    // if journal entry passed in as parameter, show as selected
-                    if (thisJentry.Value == jEntryPassedIn)
-                    {
-                        thisEntry.Selected = true;
-                    }
-
-                    // add item to journalListView
-                    this.journalListView.Items.Add(thisEntry);
-                }
-
-            }
-
-            // switch off 'unread entries' alert
-            this.setJournalAlert(false);
-
-            Globals_Client.containerToView = this.journalContainer;
-            Globals_Client.containerToView.BringToFront();
-            this.journalListView.Focus();
-        }
-
-        /// <summary>
-        /// Refreshes main Siege display screen
-        /// </summary>
-        /// <param name="s">Siege whose information is to be displayed</param>
-        public void refreshSiegeContainer(Siege s = null)
-        {
-
-            // clear existing information
-            this.siegeTextBox.Text = "";
-
-            // ensure textboxes aren't interactive
-            this.siegeTextBox.ReadOnly = true;
-
-            // disable controls until siege selected
-            this.siegeNegotiateBtn.Enabled = false;
-            this.siegeStormBtn.Enabled = false;
-            this.siegeReduceBtn.Enabled = false;
-            this.siegeEndBtn.Enabled = false;
-
-            // clear existing items in siege list
-            this.siegeListView.Items.Clear();
-
-            // iterates through player's sieges adding information to ListView
-            for (int i = 0; i < Globals_Client.myPlayerCharacter.mySieges.Count; i++)
-            {
-                ListViewItem thisSiegeItem = null;
-                Siege thisSiege = Globals_Client.myPlayerCharacter.getSiege(Globals_Client.myPlayerCharacter.mySieges[i]);
-
-                if (thisSiege != null)
-                {
-                    // siegeID
-                    thisSiegeItem = new ListViewItem(thisSiege.siegeID);
-
-                    // fief
-                    Fief siegeLocation = thisSiege.getFief();
-                    thisSiegeItem.SubItems.Add(siegeLocation.name + " (" + siegeLocation.id + ")");
-
-                    // defender
-                    PlayerCharacter defendingPlayer = thisSiege.getDefendingPlayer();
-                    thisSiegeItem.SubItems.Add(defendingPlayer.firstName + " " + defendingPlayer.familyName + " (" + defendingPlayer.charID + ")");
-
-                    // besieger
-                    Army besiegingArmy = thisSiege.getBesiegingArmy();
-                    PlayerCharacter besieger = thisSiege.getBesiegingPlayer();
-                    thisSiegeItem.SubItems.Add(besieger.firstName + " " + besieger.familyName + " (" + besieger.charID + ")");
-
-                    if (thisSiegeItem != null)
-                    {
-                        // if siege passed in as parameter, show as selected
-                        if (thisSiege == s)
-                        {
-                            thisSiegeItem.Selected = true;
-                        }
-
-                        // add item to siegeListView
-                        this.siegeListView.Items.Add(thisSiegeItem);
-                    }
-                }
-
-            }
-
-            Globals_Client.containerToView = this.siegeContainer;
-            Globals_Client.containerToView.BringToFront();
-            this.siegeListView.Focus();
-        }
-
-        /// <summary>
-        /// Refreshes main Fief display screen
-        /// </summary>
-        /// <param name="f">Fief whose information is to be displayed</param>
-        public void refreshFiefContainer(Fief f = null)
-        {
-            // if fief not specified, default to player's current location
-            if (f == null)
-            {
-                f = Globals_Client.myPlayerCharacter.location;
-            }
-
-            Globals_Client.fiefToView = f;
-
-            bool isOwner = Globals_Client.myPlayerCharacter.ownedFiefs.Contains(Globals_Client.fiefToView);
-            bool displayWarning = false;
-            string toDisplay = "";
-
-            // set name label text
-            this.fiefLabel.Text = Globals_Client.fiefToView.name + " (" + Globals_Client.fiefToView.id + ")";
-            // set siege label text
-            if (!String.IsNullOrWhiteSpace(f.siege))
-            {
-                this.fiefSiegeLabel.Text = "Fief under siege";
-            }
-            else
-            {
-                this.fiefSiegeLabel.Text = "";
-            }
-
-            // refresh main fief TextBox with updated info
-            this.fiefTextBox.Text = this.displayFiefGeneralData(Globals_Client.fiefToView, isOwner);
-
-            // ensure textboxes aren't interactive
-            this.fiefTextBox.ReadOnly = true;
-            this.fiefPrevKeyStatsTextBox.ReadOnly = true;
-            this.fiefCurrKeyStatsTextBox.ReadOnly = true;
-            this.fiefNextKeyStatsTextBox.ReadOnly = true;
-            this.fiefTransferAmountTextBox.Text = "";
-
-            // if fief is NOT owned by player, disable fief management buttons and TextBoxes 
-            if (! isOwner)
-            {
-                this.adjustSpendBtn.Enabled = false;
-                this.taxRateLabel.Enabled = false;
-                this.garrSpendLabel.Enabled = false;
-                this.offSpendLabel.Enabled = false;
-                this.infraSpendLabel.Enabled = false;
-                this.keepSpendLabel.Enabled = false;
-                this.adjGarrSpendTextBox.Enabled = false;
-                this.adjInfrSpendTextBox.Enabled = false;
-                this.adjOffSpendTextBox.Enabled = false;
-                this.adjustKeepSpendTextBox.Enabled = false;
-                this.adjustTaxTextBox.Enabled = false;
-                this.fiefGarrExpMaxBtn.Enabled = false;
-                this.fiefInfraExpMaxBtn.Enabled = false;
-                this.fiefKeepExpMaxBtn.Enabled = false;
-                this.fiefOffExpMaxBtn.Enabled = false;
-                this.viewBailiffBtn.Enabled = false;
-                this.lockoutBtn.Enabled = false;
-                this.selfBailiffBtn.Enabled = false;
-                this.setBailiffBtn.Enabled = false;
-                this.removeBaliffBtn.Enabled = false;
-                this.fiefTransferToFiefBtn.Enabled = false;
-                this.fiefTransferToHomeBtn.Enabled = false;
-                this.fiefHomeTreasTextBox.Enabled = false;
-                this.fiefTransferAmountTextBox.Enabled = false;
-                this.FiefTreasTextBox.Enabled = false;
-                this.fiefGrantTitleBtn.Enabled = false;
-
-                // set TextBoxes to nowt
-                this.adjGarrSpendTextBox.Text = "";
-                this.adjInfrSpendTextBox.Text = "";
-                this.adjOffSpendTextBox.Text = "";
-                this.adjustKeepSpendTextBox.Text = "";
-                this.adjustTaxTextBox.Text = "";
-                this.fiefHomeTreasTextBox.Text = "";
-                this.FiefTreasTextBox.Text = "";
-                this.fiefPrevKeyStatsTextBox.Text = "";
-                this.fiefCurrKeyStatsTextBox.Text = "";
-                this.fiefNextKeyStatsTextBox.Text = "";
-            }
-
-            // if fief IS owned by player, enable fief management buttons and TextBoxes 
-            else
-            {
-                // get home fief
-                Fief home = Globals_Client.myPlayerCharacter.getHomeFief();
-
-                // get home treasury
-                int homeTreasury = 0;
-                if (f == home)
-                {
-                    homeTreasury = home.getAvailableTreasury();
-                }
-                else
-                {
-                    homeTreasury = home.getAvailableTreasury(true);
-                }
-
-                // get this fief's treasury
-                int fiefTreasury = f.getAvailableTreasury(); ;
-
-                // if fief UNDER SIEGE, leave most controls disabled
-                if (!String.IsNullOrWhiteSpace(f.siege))
-                {
-                    // allow view bailiff
-                    this.viewBailiffBtn.Enabled = true;
-
-                    // allow financial data TextBoxes to show appropriate data
-                    this.fiefPrevKeyStatsTextBox.Text = this.displayFiefKeyStatsPrev(Globals_Client.fiefToView);
-                    this.fiefCurrKeyStatsTextBox.Text = this.displayFiefKeyStatsCurr(Globals_Client.fiefToView);
-                    this.fiefNextKeyStatsTextBox.Text = this.displayFiefKeyStatsNext(Globals_Client.fiefToView);
-                }
-
-                // if NOT under siege, enable usual controls
-                else
-                {
-                    this.adjustSpendBtn.Enabled = true;
-                    this.taxRateLabel.Enabled = true;
-                    this.garrSpendLabel.Enabled = true;
-                    this.offSpendLabel.Enabled = true;
-                    this.infraSpendLabel.Enabled = true;
-                    this.keepSpendLabel.Enabled = true;
-                    this.adjGarrSpendTextBox.Enabled = true;
-                    this.adjInfrSpendTextBox.Enabled = true;
-                    this.adjOffSpendTextBox.Enabled = true;
-                    this.adjustKeepSpendTextBox.Enabled = true;
-                    this.adjustTaxTextBox.Enabled = true;
-                    this.fiefGarrExpMaxBtn.Enabled = true;
-                    this.fiefInfraExpMaxBtn.Enabled = true;
-                    this.fiefKeepExpMaxBtn.Enabled = true;
-                    this.fiefOffExpMaxBtn.Enabled = true;
-                    this.viewBailiffBtn.Enabled = true;
-                    this.lockoutBtn.Enabled = true;
-                    this.setBailiffBtn.Enabled = true;
-                    this.removeBaliffBtn.Enabled = true;
-                    this.fiefHomeTreasTextBox.Enabled = true;
-                    this.fiefHomeTreasTextBox.ReadOnly = true;
-                    this.FiefTreasTextBox.ReadOnly = true;
-                    this.fiefGrantTitleBtn.Enabled = true;
-
-                    // don't enable 'appoint self' button if you're already the bailiff
-                    if (f.bailiff == Globals_Client.myPlayerCharacter)
-                    {
-                        this.selfBailiffBtn.Enabled = false;
-                    }
-                    else
-                    {
-                        this.selfBailiffBtn.Enabled = true;
-                    }
-
-                    // don't enable treasury transfer controls if in Home Fief (can't transfer to self)
-                    if (f == Globals_Client.myPlayerCharacter.getHomeFief())
-                    {
-                        this.fiefTransferToFiefBtn.Enabled = false;
-                        this.fiefTransferToHomeBtn.Enabled = false;
-                        this.fiefTransferAmountTextBox.Enabled = false;
-                        this.FiefTreasTextBox.Enabled = false;
-                    }
-                    else
-                    {
-                        this.fiefTransferToFiefBtn.Enabled = true;
-                        this.fiefTransferToHomeBtn.Enabled = true;
-                        this.fiefTransferAmountTextBox.Enabled = true;
-                        this.fiefHomeTreasTextBox.Enabled = true;
-                        this.FiefTreasTextBox.Enabled = true;
-                    }
-
-                    // set TextBoxes to show appropriate data
-                    this.adjGarrSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.garrisonSpendNext);
-                    this.adjInfrSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.infrastructureSpendNext);
-                    this.adjOffSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.officialsSpendNext);
-                    this.adjustKeepSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.keepSpendNext);
-                    this.adjustTaxTextBox.Text = Convert.ToString(Globals_Client.fiefToView.taxRateNext);
-                    this.fiefPrevKeyStatsTextBox.Text = this.displayFiefKeyStatsPrev(Globals_Client.fiefToView);
-                    this.fiefCurrKeyStatsTextBox.Text = this.displayFiefKeyStatsCurr(Globals_Client.fiefToView);
-                    this.fiefNextKeyStatsTextBox.Text = this.displayFiefKeyStatsNext(Globals_Client.fiefToView);
-
-                    // check if in home fief
-                    if (f == home)
-                    {
-                        // don't show fief treasury
-                        this.FiefTreasTextBox.Text = "";
-                    }
-                    else
-                    {
-                        // display fief treasury
-                        this.FiefTreasTextBox.Text = fiefTreasury.ToString();
-                    }
-
-                    // display home treasury
-                    this.fiefHomeTreasTextBox.Text = homeTreasury.ToString();
-
-                    // check to see if proposed expenditure level doesn't exceed fief treasury
-                    // get fief expenses (includes bailiff modifiers)
-                    uint totalSpend = Convert.ToUInt32(Globals_Client.fiefToView.calcNewExpenses());
-
-                    // make sure expenditure can be supported by the treasury
-                    // if it can't, display a message and cancel the commit
-                    if (!Globals_Client.fiefToView.checkExpenditureOK(totalSpend))
-                    {
-                        int difference = Convert.ToInt32(totalSpend - fiefTreasury);
-                        toDisplay = "Your proposed expenditure exceeds the " + Globals_Client.fiefToView.name + " treasury by " + difference;
-                        toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
-                        toDisplay += "\r\n\r\nAny unsupportable expenditure levels will be automatically adjusted during the seasonal update.";
-                        displayWarning = true;
-                    }
-                }
-
-            }
-
-            Globals_Client.containerToView = this.fiefContainer;
-            Globals_Client.containerToView.BringToFront();
-
-            if (displayWarning)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(toDisplay, "WARNING: CANNOT SUPPORT PROPOSED EXPENDITURE");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of the fiefManagementToolStripMenuItem
-        /// which displays main Fief information screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void fiefManagementToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            this.refreshFiefContainer(Globals_Client.myPlayerCharacter.location);
-        }
-
-        /// <summary>
-        /// Responds to the click event of the updateCharacter button
-        /// which performs end/start of seasonal updates for character on display (testing)
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void updateCharacter_Click(object sender, EventArgs e)
-        {
-            // something
-        }
-
-        /// <summary>
-        /// Responds to the click event of the adjustSpendBtn button
-        /// which commits the expenditures and tax rate for the coming year
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void adjustSpendBtn_Click(object sender, EventArgs e)
-        {
-            // keep track of whether any spends ahve changed
-            bool spendChanged = false;
-
-            try
-            {
-                // get new amounts
-                Double newTax = Convert.ToDouble(this.adjustTaxTextBox.Text);
-                UInt32 newOff = Convert.ToUInt32(this.adjOffSpendTextBox.Text);
-                UInt32 newGarr = Convert.ToUInt32(this.adjGarrSpendTextBox.Text);
-                UInt32 newInfra = Convert.ToUInt32(this.adjInfrSpendTextBox.Text);
-                UInt32 newKeep = Convert.ToUInt32(this.adjustKeepSpendTextBox.Text);
-
-                // get total spend
-                uint totalSpend = newOff + newGarr + newInfra + newKeep;
-
-                // factor in bailiff skills modifier for fief expenses
-                double bailiffModif = 0;
-
-                // get bailiff modifier (passing in whether bailiffDaysInFief is sufficient)
-                bailiffModif = Globals_Client.fiefToView.calcBailExpModif(Globals_Client.fiefToView.bailiffDaysInFief >= 30);
-
-                if (bailiffModif != 0)
-                {
-                    totalSpend = totalSpend + Convert.ToUInt32(totalSpend * bailiffModif);
-                }
-
-                // check that expenditure can be supported by the treasury
-                // if it can't, display a message and cancel the commit
-                if (!Globals_Client.fiefToView.checkExpenditureOK(totalSpend))
-                {
-                    int difference = Convert.ToInt32(totalSpend - Globals_Client.fiefToView.getAvailableTreasury());
-                    string toDisplay = "Your spending exceeds the " + Globals_Client.fiefToView.name + " treasury by " + difference;
-                    toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(toDisplay, "TRANSACTION CANCELLED");
-                    }
-                }
-                // if treasury funds are sufficient to cover expenditure, do the commit
-                else
-                {                    
-                    // tax rate
-                    // check if amount/rate changed
-                    if (newTax != Globals_Client.fiefToView.taxRateNext)
-                    {
-                        // adjust tax rate
-                        Globals_Client.fiefToView.adjustTaxRate(newTax);
-                        spendChanged = true;
-                    }
-
-                    // officials spend
-                    // check if amount/rate changed
-                    if (newOff != Globals_Client.fiefToView.officialsSpendNext)
-                    {
-                        // adjust officials spend
-                        Globals_Client.fiefToView.adjustOfficialsSpend(Convert.ToUInt32(this.adjOffSpendTextBox.Text));
-                        spendChanged = true;
-                    }
-
-                    // garrison spend
-                    // check if amount/rate changed
-                    if (newGarr != Globals_Client.fiefToView.garrisonSpendNext)
-                    {
-                        // adjust garrison spend
-                        Globals_Client.fiefToView.adjustGarrisonSpend(Convert.ToUInt32(this.adjGarrSpendTextBox.Text));
-                        spendChanged = true;
-                    }
-
-                    // infrastructure spend
-                    // check if amount/rate changed
-                    if (newInfra != Globals_Client.fiefToView.infrastructureSpendNext)
-                    {
-                        // adjust infrastructure spend
-                        Globals_Client.fiefToView.adjustInfraSpend(Convert.ToUInt32(this.adjInfrSpendTextBox.Text));
-                        spendChanged = true;
-                    }
-
-                    // adjust keep spend
-                    // check if amount/rate changed
-                    if (newKeep != Globals_Client.fiefToView.keepSpendNext)
-                    {
-                        // adjust keep spend
-                        Globals_Client.fiefToView.adjustKeepSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
-                        spendChanged = true;
-                    }
-
-                    // display appropriate message
-                    string toDisplay = "";
-                    if (spendChanged)
-                    {
-                        toDisplay += "Expenditure adjusted";
-                    }
-                    else
-                    {
-                        toDisplay += "Expenditure unchanged";
-                    }
-
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(toDisplay);
-                    }
-                }
-            }
-            catch (System.FormatException fe)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
-                }
-            }
-            catch (System.OverflowException ofe)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
-                }
-            }
-            finally
-            {
-                // refresh screen if expenditure changed
-                if (spendChanged)
-                {
-                    // refresh display
-                    this.refreshCurrentScreen();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of the updateFiefBtn button
-        /// which performs end/start of seasonal updates for Fief on display (testing)
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void updateFiefBtn_Click(object sender, EventArgs e)
-        {
-            Globals_Client.fiefToView.validateFiefExpenditure();
-            this.refreshFiefContainer();
-        }
-
-        /// <summary>
-        /// Responds to the click event of the navigateToolStripMenuItem
-        /// which refreshes and displays the navigation screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void navigateToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // ensure reflects player's location
-            Globals_Client.charToView = Globals_Client.myPlayerCharacter;
-
-            // refresh navigation data
-            Globals_Client.fiefToView = Globals_Client.myPlayerCharacter.location;
-            this.refreshTravelContainer();
-
-            // show navigation screen
-            Globals_Client.containerToView = this.travelContainer;
-            Globals_Client.containerToView.BringToFront();
-        }
-
-        /// <summary>
-        /// Gets travel cost (in days) to move to a fief
-        /// </summary>
-        /// <returns>double containing travel cost</returns>
-        /// <param name="source">Source fief</param>
-        /// <param name="target">Target fief</param>
-        private double getTravelCost(Fief source, Fief target, string armyID = null)
-        {
-            double cost = 0;
-            // calculate base travel cost based on terrain for both fiefs
-            cost = (source.terrain.travelCost + target.terrain.travelCost) / 2;
-
-            // apply season modifier
-            cost = cost * Globals_Game.clock.calcSeasonTravMod();
-
-            // if necessary, apply army modifier
-            if (!String.IsNullOrWhiteSpace(armyID))
-            {
-                cost = cost * Globals_Game.armyMasterList[armyID].calcMovementModifier();
-            }
-
-            return cost;
-        }
-
-        /// <summary>
-        /// Refreshes travel display screen
-        /// </summary>
-        private void refreshTravelContainer()
-        {
-            // get current fief
-            Fief thisFief = Globals_Client.myPlayerCharacter.location;
-
-            // string[] to hold direction text
-            string[] directions = new string[] { "NE", "E", "SE", "SW", "W", "NW" };
-            // Button[] to hold corresponding travel buttons
-            Button[] travelBtns = new Button[] { travel_NE_btn, travel_E_btn, travel_SE_btn, travel_SW_btn, travel_W_btn, travel_NW_btn };
-
-            // get text for home button
-            this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + thisFief.name + " (" + Globals_Client.myPlayerCharacter.location.id + ")" + "\r\n" + Globals_Client.myPlayerCharacter.location.province.name + ", " + Globals_Client.myPlayerCharacter.location.province.kingdom.name;
-
-            for (int i = 0; i < directions.Length; i++ )
-            {
-                // retrieve target fief for that direction
-                Fief target = Globals_Game.gameMap.getFief(thisFief, directions[i]);
-                // display fief details and travel cost
-                if (target != null)
-                {
-                    travelBtns[i].Text = directions[i] + " FIEF:\r\n\r\n";
-                    travelBtns[i].Text += target.name + " (" + target.id + ")\r\n";
-                    travelBtns[i].Text += target.province.name + ", " + target.province.kingdom.name + "\r\n\r\n";
-                    travelBtns[i].Text += "Cost: " + this.getTravelCost(thisFief, target);
-                }
-                else
-                {
-                    travelBtns[i].Text = directions[i] + " FIEF:\r\n\r\nNo fief present";
-                }
-            }
-
-            // set text for informational labels
-            this.travelLocationLabel.Text = "You are here: " + thisFief.name + " (" + thisFief.id + ")";
-            this.travelDaysLabel.Text = "Your remaining days: " + Globals_Client.myPlayerCharacter.days;
-            
-            // set text for 'enter/exit keep' button, depending on whether player in/out of keep
-            if (Globals_Client.myPlayerCharacter.inKeep)
-            {
-                this.enterKeepBtn.Text = "Exit Keep";
-            }
-            else
-            {
-                this.enterKeepBtn.Text = "Enter Keep";
-            }
-
-            // enable all controls
-            this.travel_E_btn.Enabled = true;
-            this.travel_Home_btn.Enabled = true;
-            this.travel_NE_btn.Enabled = true;
-            this.travel_NW_btn.Enabled = true;
-            this.travel_SE_btn.Enabled = true;
-            this.travel_SW_btn.Enabled = true;
-            this.travel_W_btn.Enabled = true;
-            this.travelCampBtn.Enabled = true;
-            this.travelCampDaysTextBox.Enabled = true;
-            this.travelExamineArmiesBtn.Enabled = true;
-            this.travelMoveToBtn.Enabled = true;
-            this.travelMoveToTextBox.Enabled = true;
-            this.travelRouteBtn.Enabled = true;
-            this.travelRouteTextBox.Enabled = true;
-            this.enterKeepBtn.Enabled = true;
-            this.listOutsideKeepBtn.Enabled = true;
-            this.visitCourtBtn1.Enabled = true;
-            this.visitTavernBtn.Enabled = true;
-
-            // clear existing data in TextBoxes
-            this.travelMoveToTextBox.Text = "";
-            this.travelCampDaysTextBox.Text = "";
-            this.travelRouteTextBox.Text = "";
-
-            // check to see if fief is besieged and, if so, disable various controls
-            if (!String.IsNullOrWhiteSpace(thisFief.siege))
-            {
-                // check to see if are inside/outside keep
-                if (Globals_Client.myPlayerCharacter.inKeep)
-                {
-                    // if inside keep, disable all controls except tavern and court
-                    this.travel_E_btn.Enabled = false;
-                    this.travel_Home_btn.Enabled = false;
-                    this.travel_NE_btn.Enabled = false;
-                    this.travel_NW_btn.Enabled = false;
-                    this.travel_SE_btn.Enabled = false;
-                    this.travel_SW_btn.Enabled = false;
-                    this.travel_W_btn.Enabled = false;
-                    this.travelCampBtn.Enabled = false;
-                    this.travelCampDaysTextBox.Enabled = false;
-                    this.travelExamineArmiesBtn.Enabled = false;
-                    this.travelMoveToBtn.Enabled = false;
-                    this.travelMoveToTextBox.Enabled = false;
-                    this.travelRouteBtn.Enabled = false;
-                    this.travelRouteTextBox.Enabled = false;
-                    this.enterKeepBtn.Enabled = false;
-                    this.listOutsideKeepBtn.Enabled = false;
-                }
-
-                else
-                {
-                    // if outside keep, disable tavern, court and 'enter keep' but leave all others enabled
-                    this.enterKeepBtn.Enabled = false;
-                    this.visitCourtBtn1.Enabled = false;
-                    this.visitTavernBtn.Enabled = false;
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of any of the travel buttons
-        /// which attempts to move the player to the target fief
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void travelBtnClick(object sender, EventArgs e)
-        {
-            bool success = false;
-            // necessary in order to be able to access button tag
-            Button button = sender as Button;
-            // get target fief using travel button tag (contains direction string)
-            Fief targetFief = Globals_Game.gameMap.getFief(Globals_Client.myPlayerCharacter.location, button.Tag.ToString());
-
-            if (targetFief != null)
-            {
-                // get travel cost
-                double travelCost = this.getTravelCost(Globals_Client.myPlayerCharacter.location, targetFief, Globals_Client.myPlayerCharacter.armyID);
-                // attempt to move player to target fief
-                success = this.moveCharacter(Globals_Client.myPlayerCharacter, targetFief, travelCost);
-                // if move successfull, refresh travel display
-                if (success)
-                {
-                    Globals_Client.fiefToView = targetFief;
-                    this.refreshTravelContainer();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of myFiefsToolStripMenuItem
-        /// which refreshes and displays the owned fiefs screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void myFiefsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Globals_Client.fiefToView = null;
-            this.refreshMyFiefs();
-            Globals_Client.containerToView = this.fiefsOwnedContainer;
-            Globals_Client.containerToView.BringToFront();
-        }
-
-        /// <summary>
-        /// Responds to the click event of the viewBailiffBtn button
-        /// which refreshes and displays the character screen, showing details of the
-        /// bailiff for the selected fief
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void viewBailiffBtn_Click(object sender, EventArgs e)
-        {
-            if (Globals_Client.fiefToView.bailiff != null)
-            {
-                // if player is bailiff, show in personal characteristics screen
-                if (Globals_Client.fiefToView.bailiff == Globals_Client.myPlayerCharacter)
-                {
-                    Globals_Client.charToView = Globals_Client.myPlayerCharacter;
-                    this.refreshCharacterContainer(Globals_Client.charToView);
-                }
-
-                // if NPC is bailiff, show in household affairs screen
-                else if (Globals_Client.fiefToView.bailiff is NonPlayerCharacter)
-                {
-                    Globals_Client.charToView = Globals_Client.fiefToView.bailiff;
-                    // refresh household affairs screen 
-                    this.refreshHouseholdDisplay(Globals_Client.charToView as NonPlayerCharacter);
-                    // display household affairs screen
-                    Globals_Client.containerToView = this.houseContainer;
-                    Globals_Client.containerToView.BringToFront();
-                }
-            }
-
-            // display message that is no bailiff
-            else
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("This fief currently has no bailiff.");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Responds to the ItemSelectionChanged event of the fiefsListView object,
-        /// invoking the displayFief method, passing a Fief to display
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void fiefsListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
-        {
-            // enable controls
-            if (this.fiefsListView.SelectedItems.Count > 0)
-            {
-                this.fiefsChallengeBtn.Enabled = true;
-                this.fiefsViewBtn.Enabled = true;
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of the enterKeepBtn button
-        /// which causes the player (and entourage) to enter/exit the keep and
-        /// refreshes the travel screen, setting appropriate text for the enterKeepBtn button
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void enterKeepBtn_Click(object sender, EventArgs e)
-        {
-            // if player in keep
-            if (Globals_Client.myPlayerCharacter.inKeep)
-            {
-                // exit keep
-                Globals_Client.myPlayerCharacter.exitKeep();
-                // change button text
-                this.enterKeepBtn.Text = "Enter Keep";
-                // refresh display
-                this.refreshTravelContainer();
-            }
-
-            // if player not in keep
-            else
-            {
-                // attempt to enter keep
-                Globals_Client.myPlayerCharacter.enterKeep();
-
-                // if successful
-                if (Globals_Client.myPlayerCharacter.inKeep)
-                {
-                    // change button text
-                    this.enterKeepBtn.Text = "Exit Keep";
-                    // refresh display
-                    this.refreshTravelContainer();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of the visitCourtBtn1 button
-        /// which causes the player (and entourage) to enter the keep and
-        /// refreshes and displays the court screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void visitCourtBtn1_Click(object sender, EventArgs e)
-        {
-            // get button
-            Button thisButton = (sender as Button);
-            string place = thisButton.Tag.ToString();
-
-            // if player not in keep, attempt to enter
-            if (!Globals_Client.myPlayerCharacter.inKeep)
-            {
-                Globals_Client.myPlayerCharacter.enterKeep();
-            }
-
-            // if in keep
-            if (Globals_Client.myPlayerCharacter.inKeep)
-            {
-                // set button tags to reflect which meeting place
-                this.hireNPC_Btn.Tag = place;
-                this.meetingPlaceMoveToBtn.Tag = place;
-                this.meetingPlaceRouteBtn.Tag = place;
-                this.meetingPlaceEntourageBtn.Tag = place;
-
-                // refresh court screen 
-                this.refreshMeetingPlaceDisplay(place);
-
-                // display court screen
-                Globals_Client.containerToView = this.meetingPlaceContainer;
-                Globals_Client.containerToView.BringToFront();
-            }
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of the visitTavernBtn button
-        /// which causes the player (and entourage) to exit the keep (if necessary)
-        /// and refreshes and displays the tavern screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void visitTavernBtn_Click_1(object sender, EventArgs e)
-        {
-            // get button
-            Button thisButton = (sender as Button);
-            string place = thisButton.Tag.ToString();
-
-            // exit keep if required
-            if (Globals_Client.myPlayerCharacter.inKeep)
-            {
-                Globals_Client.myPlayerCharacter.exitKeep();
-            }
-
-            // set button tags to reflect which meeting place
-            this.hireNPC_Btn.Tag = place;
-            this.meetingPlaceMoveToBtn.Tag = place;
-            this.meetingPlaceRouteBtn.Tag = place;
-            this.meetingPlaceEntourageBtn.Tag = place;
-
-            // refresh tavern screen 
-            this.refreshMeetingPlaceDisplay(place);
-
-            // display tavern screen
-            Globals_Client.containerToView = this.meetingPlaceContainer;
-            Globals_Client.containerToView.BringToFront();
-        }
-
-        /// <summary>
-        /// Responds to the ItemSelectionChanged event of the meetingPlaceCharsListView object,
-        /// invoking the displayCharacter method, passing a Character to display
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void meetingPlaceCharsListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
-        {
-            Character charToDisplay = null;
-
-            // loop through the characters in the fief
-            for (int i = 0; i < Globals_Client.fiefToView.charactersInFief.Count; i++)
-            {
-                if (meetingPlaceCharsListView.SelectedItems.Count > 0)
-                {
-                    // find matching character
-                    if (Globals_Client.fiefToView.charactersInFief[i].charID.Equals(this.meetingPlaceCharsListView.SelectedItems[0].SubItems[1].Text))
-                    {
-                        charToDisplay = Globals_Client.fiefToView.charactersInFief[i];
-
-                        // check whether is this PC's employee or family
-                        if (Globals_Client.myPlayerCharacter.myNPCs.Contains(Globals_Client.fiefToView.charactersInFief[i]))
-                        {
-                            // see if is in entourage to set text of entourage button
-                            if ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).inEntourage)
-                            {
-                                this.meetingPlaceEntourageBtn.Text = "Remove From Entourage";
-                            }
-                            else
-                            {
-                                this.meetingPlaceEntourageBtn.Text = "Add To Entourage";
-                            }
-                            
-                            // enable 'move to' controls
-                            this.meetingPlaceMoveToBtn.Enabled = true;
-                            this.meetingPlaceMoveToTextBox.Enabled = true;
-                            this.meetingPlaceRouteBtn.Enabled = true;
-                            this.meetingPlaceRouteTextBox.Enabled = true;
-                            this.meetingPlaceEntourageBtn.Enabled = true;
-
-                            // disable marriage proposals
-                            this.meetingPlaceProposeBtn.Enabled = false;
-                            this.meetingPlaceProposeTextBox.Text = "";
-                            this.meetingPlaceProposeTextBox.Enabled = false;
-
-                            // if is employee
-                            if ((!String.IsNullOrWhiteSpace((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).employer))
-                                && ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).employer.Equals(Globals_Client.myPlayerCharacter.charID)))
-                            {
-                                // set appropriate text for hire/fire button, and enable it
-                                this.hireNPC_Btn.Text = "Fire NPC";
-                                this.hireNPC_Btn.Enabled = true;
-                                // disable 'salary offer' text box
-                                this.hireNPC_TextBox.Visible = false;
-                            }
-                            else
-                            {
-                                this.hireNPC_Btn.Enabled = false;
-                                this.hireNPC_TextBox.Enabled = false;
-                            }
-                        }
-
-                        // if is not employee or family
-                        else
-                        {
-                            // set appropriate text for hire/fire controls, and enable them
-                            this.hireNPC_Btn.Text = "Hire NPC";
-                            this.hireNPC_TextBox.Visible = true;
-
-                            // can only employ men (non-PCs)
-                            if (charToDisplay.checkCanHire(Globals_Client.myPlayerCharacter))
-                            {
-                                this.hireNPC_Btn.Enabled = true;
-                                this.hireNPC_TextBox.Enabled = true;
-                            }
-                            else
-                            {
-                                this.hireNPC_Btn.Enabled = false;
-                                this.hireNPC_TextBox.Enabled = false;
-                            }
-
-                            // disable 'move to' and entourage controls
-                            this.meetingPlaceMoveToBtn.Enabled = false;
-                            this.meetingPlaceMoveToTextBox.Enabled = false;
-                            this.meetingPlaceRouteBtn.Enabled = false;
-                            this.meetingPlaceRouteTextBox.Enabled = false;
-                            this.meetingPlaceEntourageBtn.Enabled = false;
-
-                            // checks for enabling marriage proposals
-                            if (((!String.IsNullOrWhiteSpace(charToDisplay.spouse)) || (charToDisplay.isMale)) || (!String.IsNullOrWhiteSpace(charToDisplay.fiancee)))
-                            {
-                                // disable marriage proposals
-                                this.meetingPlaceProposeBtn.Enabled = false;
-                                this.meetingPlaceProposeTextBox.Text = "";
-                                this.meetingPlaceProposeTextBox.Enabled = false;
-                            }
-                            else
-                            {
-                                // enable marriage proposals
-                                this.meetingPlaceProposeBtn.Enabled = true;
-                                this.meetingPlaceProposeTextBox.Text = Globals_Client.myPlayerCharacter.charID;
-                                this.meetingPlaceProposeTextBox.Enabled = true;
-                            }
-                        }
-                    }
-
-                }
-
-            }
-
-            // retrieve and display character information
-            if (charToDisplay != null)
-            {
-                Globals_Client.charToView = charToDisplay;
-                string textToDisplay = "";
-                textToDisplay += this.displayCharacter(charToDisplay);
-                this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
-                this.meetingPlaceCharDisplayTextBox.Text = textToDisplay;
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of any hireNPC button
-        /// invoking either processEmployOffer or fireNPC
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void hireNPC_Btn_Click(object sender, EventArgs e)
-        {
-            bool amHiring = false;
-            bool isHired = false;
-
-            // get hireNPC_Btn tag (shows which meeting place are in)
-            string place = Convert.ToString(((Button)sender).Tag);
-
-            // if selected NPC is not a current employee
-            if (!Globals_Client.myPlayerCharacter.myNPCs.Contains(Globals_Client.charToView))
-            {
-                amHiring = true;
-
-                try
-                {
-                    // get offer amount
-                    UInt32 newOffer = Convert.ToUInt32(this.hireNPC_TextBox.Text);
-                    // submit offer
-                    isHired = Globals_Client.myPlayerCharacter.processEmployOffer((Globals_Client.charToView as NonPlayerCharacter), newOffer);
-
-                }
-                catch (System.FormatException fe)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
-                    }
-                }
-                catch (System.OverflowException ofe)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
-                    }
-                }
-
-            }
-
-            // if selected NPC is already an employee
-            else
-            {
-                // fire NPC
-                Globals_Client.myPlayerCharacter.fireNPC(Globals_Client.charToView as NonPlayerCharacter);
-            }
-
-            // refresh appropriate screen
-            // if firing an NPC
-            if (!amHiring)
-            {
-                if (place.Equals("house"))
-                {
-                    this.refreshHouseholdDisplay();
-                }
-                else
-                {
-                    this.refreshMeetingPlaceDisplay(place);
-                }
-            }
-            // if hiring an NPC
-            else
-            {
-                // if in the tavern and NPC is hired, refresh whole screen (NPC removed from list)
-                if (isHired)
-                {
-                    this.refreshMeetingPlaceDisplay(place);
-                }
-                else
-                {
-                    this.meetingPlaceCharDisplayTextBox.Text = this.displayCharacter(Globals_Client.charToView);
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Moves character to the target fief, through intervening fiefs (stored in goTo queue)
-        /// </summary>
-        /// <returns>bool indicating success</returns>
-        /// <param name="ch">Character to be moved</param>
-        private bool characterMultiMove(Character ch)
-        {
-            bool success = false;
-            double travelCost = 0;
-            int steps = ch.goTo.Count;
-
-            for (int i = 0; i < steps; i++)
-            {
-                // get travel cost
-                travelCost = this.getTravelCost(ch.location, ch.goTo.Peek(), ch.armyID);
-                // attempt to move character
-                success = this.moveCharacter(ch, ch.goTo.Peek(), travelCost);
-                // if move successfull, remove fief from goTo queue
-                if (success)
-                {
-                    ch.goTo.Dequeue();
-                }
-                // if not successfull, exit loop
-                else
-                {
-                    break;
-                }
-            }
-
-            if (ch == Globals_Client.myPlayerCharacter)
-            {
-                // if player has moved, indicate success
-                if (ch.goTo.Count < steps)
-                {
-                    success = true;
-                }
-            }
-
-            return success;
-
-        }
-
-        /// <summary>
-        /// Moves a character to a specified fief using the shortest path
-        /// </summary>
-        /// <param name="whichScreen">String indicating on which screen the movement command occurred</param>
-        public void moveTo(string whichScreen)
-        {
-            // get appropriate TextBox and remove from entourage, if necessary
-            TextBox myTextBox = null;
-            if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
-            {
-                myTextBox = this.meetingPlaceMoveToTextBox;
-                if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
-                {
-                    Globals_Client.myPlayerCharacter.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
-                }                
-            }
-            else if (whichScreen.Equals("house"))
-            {
-                myTextBox = this.houseMoveToTextBox;
-                if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
-                {
-                    Globals_Client.myPlayerCharacter.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
-                }
-            }
-            else if (whichScreen.Equals("travel"))
-            {
-                myTextBox = this.travelMoveToTextBox;
-            }
-
-            // check for existence of fief
-            if (Globals_Game.fiefMasterList.ContainsKey(myTextBox.Text.ToUpper()))
-            {
-                // retrieves target fief
-                Fief target = Globals_Game.fiefMasterList[myTextBox.Text.ToUpper()];
-
-                // obtains goTo queue for shortest path to target
-                Globals_Client.charToView.goTo = Globals_Game.gameMap.getShortestPath(Globals_Client.charToView.location, target);
-
-                // if retrieve valid path
-                if (Globals_Client.charToView.goTo.Count > 0)
-                {
-                    // if character is NPC, check entourage and remove if necessary
-                    if (!whichScreen.Equals("travel"))
-                    {
-                        if (Globals_Client.myPlayerCharacter.myNPCs.Contains(Globals_Client.charToView))
-                        {
-                            (Globals_Client.charToView as NonPlayerCharacter).inEntourage = false;
-                        }
-                    }
-
-                    // perform move
-                    this.characterMultiMove(Globals_Client.charToView);
-                }
-
-                // refresh appropriate screen
-                if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
-                {
-                    this.refreshMeetingPlaceDisplay(whichScreen); ;
-                }
-                else if (whichScreen.Equals("house"))
-                {
-                    this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
-                }
-                else if (whichScreen.Equals("travel"))
-                {
-                    this.refreshTravelContainer();
-                }
-
-            }
-            else
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("Target fief ID not found.  Please ensure fiefID is valid.");
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of any moveTo buttons invoking the moveTo method
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void moveToBtn_Click(object sender, EventArgs e)
-        {
-            // get button
-            Button button = sender as Button;
-
-            // check button tag to see on which screen the movement command occurred
-            string whichScreen = button.Tag.ToString();
-
-            // perform move
-            this.moveTo(whichScreen);
-        }
-
-        /// <summary>
-        /// Responds to the click event of the setBailiffBtn button
-        ///invoking and displaying the character selection screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void setBailiffBtn_Click(object sender, EventArgs e)
-        {
-            // check for previously opened SelectionForm and close if necessary
-            if (Application.OpenForms.OfType<SelectionForm>().Any())
-            {
-                Application.OpenForms.OfType<SelectionForm>().First().Close();
-            }
-
-            SelectionForm chooseBailiff = new SelectionForm(this, "bailiff");
-            chooseBailiff.Show();
-        }
-
-        /// <summary>
-        /// Responds to the click event of the lockoutBtn button
-        /// invoking and displaying the lockout screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void lockoutBtn_Click(object sender, EventArgs e)
-        {
-            // check for previously opened SelectionForm and close if necessary
-            if (Application.OpenForms.OfType<SelectionForm>().Any())
-            {
-                Application.OpenForms.OfType<SelectionForm>().First().Close();
-            }
-
-            SelectionForm lockOutOptions = new SelectionForm(this, "lockout");
-            lockOutOptions.Show();
-        }
-
-        /// <summary>
-        /// Responds to the click event of the removeBaliffBtn button,
-        /// relieving the current bailiff of his duties
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void removeBaliffBtn_Click(object sender, EventArgs e)
-        {
-            // if the fief has an existing bailiff
-            if (Globals_Client.fiefToView.bailiff != null)
-            {
-                // relieve him of his duties
-                Globals_Client.fiefToView.bailiff = null;
-                // refresh fief display
-                this.refreshFiefContainer(Globals_Client.fiefToView);
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of the selfBailiffBtn button,
-        /// appointing the player as bailiff of the displayed fief
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void selfBailiffBtn_Click(object sender, EventArgs e)
-        {
-            // give player fair warning of bailiff commitments
-            DialogResult dialogResult = MessageBox.Show("Being a bailiff will restrict your movement.  Click 'OK' to proceed.", "Proceed with appointment?", MessageBoxButtons.OKCancel);
-
-            // if choose to cancel
-            if (dialogResult == DialogResult.Cancel)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("Appointment cancelled.");
-                }
-            }
-
-            // if choose to proceed
-            else
-            {
-                // if the fief has an existing bailiff
-                if (Globals_Client.fiefToView.bailiff != null)
-                {
-                    // relieve him of his duties
-                    Globals_Client.fiefToView.bailiff = null;
-                }
-
-                // set player as bailiff
-                Globals_Client.fiefToView.bailiff = Globals_Client.myPlayerCharacter;
-            }
-
-            // refresh fief display
-            this.refreshFiefContainer(Globals_Client.fiefToView);
-        }
-
-        /// <summary>
         /// Responds to the CheckedChanged event of the characterTitlesCheckBox,
         /// displaying the player's titles/ranks
         /// </summary>
@@ -5131,37 +1848,130 @@ namespace hist_mmorpg
             this.refreshCharacterContainer(Globals_Client.charToView);
         }
 
-        /// <summary>
-        /// Responds to the click event of the listOutsideKeepBtn button
-        /// which causes the player (and entourage) to exit the keep (if necessary)
-        /// and refreshes and displays the 'outside keep' screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void listOutsideKeepBtn_Click(object sender, EventArgs e)
-        {
-            // get button
-            Button thisButton = (sender as Button);
-            string place = thisButton.Tag.ToString();
+        // ------------------- HOUSEHOLD MANAGEMENT
 
-            // exit keep if required
-            if (Globals_Client.myPlayerCharacter.inKeep)
+        /// <summary>
+        /// Creates UI display for list of characters in the Household screen
+        /// </summary>
+        public void setUpHouseholdCharsList()
+        {
+            // add necessary columns
+            this.houseCharListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("Function", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("Responsibilities", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Refreshes Household display
+        /// </summary>
+        /// <param name="npc">NonPlayerCharacter to display</param>
+        public void refreshHouseholdDisplay(NonPlayerCharacter npc = null)
+        {
+            // set main character display as read only
+            this.houseCharTextBox.ReadOnly = true;
+
+            // disable controls until NPC selected in ListView
+            this.houseCampBtn.Enabled = false;
+            this.houseCampDaysTextBox.Enabled = false;
+            this.familyNameChildButton.Enabled = false;
+            this.familyNameChildTextBox.Enabled = false;
+            this.familyNpcSpousePregBtn.Enabled = false;
+            this.houseHeirBtn.Enabled = false;
+            this.houseMoveToBtn.Enabled = false;
+            this.houseMoveToTextBox.Enabled = false;
+            this.houseRouteBtn.Enabled = false;
+            this.houseEntourageBtn.Enabled = false;
+            this.houseFireBtn.Enabled = false;
+            this.houseExamineArmiesBtn.Enabled = false;
+
+            // remove any previously displayed text
+            this.houseCharTextBox.Text = "";
+            this.houseCampDaysTextBox.Text = "";
+            this.familyNameChildTextBox.Text = "";
+            this.houseMoveToTextBox.Text = "";
+            this.houseRouteTextBox.Text = "";
+            this.houseProposeBrideTextBox.Text = "";
+
+            // clear existing items in characters list
+            this.houseCharListView.Items.Clear();
+
+            // variables needed for name check (to see if NPC needs naming)
+            string nameWarning = "The following offspring need to be named:\r\n\r\n";
+            bool showNameWarning = false;
+
+            // iterates through household characters adding information to ListView
+            // and checking if naming is required
+            for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
             {
-                Globals_Client.myPlayerCharacter.exitKeep();
+                ListViewItem houseChar = null;
+
+                // name
+                houseChar = new ListViewItem(Globals_Client.myPlayerCharacter.myNPCs[i].firstName + " " + Globals_Client.myPlayerCharacter.myNPCs[i].familyName);
+
+                // charID
+                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].charID);
+
+                // function (e.g. employee, son, wife, etc.)
+                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].getFunction(Globals_Client.myPlayerCharacter));
+
+                // responsibilities (i.e. jobs)
+                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].getResponsibilities(Globals_Client.myPlayerCharacter));
+
+                // location
+                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].location.id + " (" + Globals_Client.myPlayerCharacter.myNPCs[i].location.name + ")");
+
+                // show whether is in player's entourage
+                if (Globals_Client.myPlayerCharacter.myNPCs[i].inEntourage)
+                {
+                    houseChar.SubItems.Add("Yes");
+                }
+
+                // check if needs to be named
+                if (!String.IsNullOrWhiteSpace(Globals_Client.myPlayerCharacter.myNPCs[i].familyID))
+                {
+                    bool nameRequired = Globals_Client.myPlayerCharacter.myNPCs[i].hasBabyName(0);
+
+                    if (nameRequired)
+                    {
+                        showNameWarning = true;
+                        nameWarning += " - " + Globals_Client.myPlayerCharacter.myNPCs[i].charID + " (" + Globals_Client.myPlayerCharacter.myNPCs[i].firstName + " " + Globals_Client.myPlayerCharacter.myNPCs[i].familyName + ")\r\n";
+                    }
+                }
+
+                if (houseChar != null)
+                {
+                    // if NPC passed in as parameter, show as selected
+                    if (Globals_Client.myPlayerCharacter.myNPCs[i] == npc)
+                    {
+                        houseChar.Selected = true;
+                    }
+
+                    // add item to fiefsListView
+                    this.houseCharListView.Items.Add(houseChar);
+                }
+
             }
 
-            // set button tags to reflect which meeting place
-            this.hireNPC_Btn.Tag = place;
-            this.meetingPlaceMoveToBtn.Tag = place;
-            this.meetingPlaceRouteBtn.Tag = place;
-            this.meetingPlaceEntourageBtn.Tag = place;
+            // always enable marriage proposal controls
+            this.houseProposeBtn.Enabled = true;
+            this.houseProposeBrideTextBox.Enabled = true;
+            this.houseProposeGroomTextBox.Enabled = true;
+            this.houseProposeGroomTextBox.Text = Globals_Client.myPlayerCharacter.charID;
 
-            // refresh outside keep screen 
-            this.refreshMeetingPlaceDisplay(place);
+            this.houseCharListView.HideSelection = false;
+            this.houseCharListView.Focus();
 
-            // display tavern screen
-            Globals_Client.containerToView = this.meetingPlaceContainer;
-            Globals_Client.containerToView.BringToFront();
+            if (showNameWarning)
+            {
+                nameWarning += "\r\nAny children who are not named by the age of one will,\r\nwhere possible, be named after their royal highnesses the king and queen.";
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(nameWarning);
+                }
+            }
         }
 
         /// <summary>
@@ -5335,6 +2145,1237 @@ namespace hist_mmorpg
                 this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
             }
 
+        }
+
+        /// <summary>
+        /// Responds to the click event of the familyNameChildButton
+        /// allowing the player to name the selected child
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void familyNameChildButton_Click(object sender, EventArgs e)
+        {
+            NonPlayerCharacter child = null;
+
+            if (this.houseCharListView.SelectedItems.Count > 0)
+            {
+                // get NPC to name
+                for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
+                {
+                    if (Globals_Client.myPlayerCharacter.myNPCs[i].charID.Equals(this.houseCharListView.SelectedItems[0].SubItems[1].Text))
+                    {
+                        child = Globals_Client.myPlayerCharacter.myNPCs[i];
+                        break;
+                    }
+                }
+
+                if (child != null)
+                {
+                    if (Regex.IsMatch(this.familyNameChildTextBox.Text.Trim(), @"^[a-zA-Z- ]+$"))
+                    {
+                        child.firstName = this.familyNameChildTextBox.Text;
+                        this.refreshHouseholdDisplay(child);
+                    }
+                    else
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("'" + this.familyNameChildTextBox.Text + "' is an unsuitable name, milord.");
+                        }
+                    }
+                }
+                else
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Could not retrieve details of NonPlayerCharacter.");
+                    }
+                }
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Please select a character from the list.");
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the houseHeirBtn button
+        /// allowing the switch to another player (for testing)
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void houseHeirBtn_Click(object sender, EventArgs e)
+        {
+            if (this.houseCharListView.SelectedItems.Count > 0)
+            {
+                // get selected NPC
+                NonPlayerCharacter selectedNPC = Globals_Game.npcMasterList[this.houseCharListView.SelectedItems[0].SubItems[1].Text];
+
+                // check for an existing heir and remove
+                foreach (NonPlayerCharacter npc in Globals_Client.myPlayerCharacter.myNPCs)
+                {
+                    if (npc.isHeir)
+                    {
+                        npc.isHeir = false;
+                    }
+                }
+
+                // appoint NPC as heir
+                selectedNPC.isHeir = true;
+
+                // refresh the household screen (in the main form)
+                this.refreshHouseholdDisplay(selectedNPC);
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the houseExamineArmiesBtn button
+        /// displaying a list of all armies in the current NPC's fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void houseExamineArmiesBtn_Click(object sender, EventArgs e)
+        {
+            // NPC
+            Character thisObserver = Globals_Client.charToView;
+
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            // if no NPC selected
+            if (this.houseCharListView.SelectedItems.Count < 1)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No NPC selected!");
+                }
+            }
+
+            // if NPC selected
+            else
+            {
+                // check if has minimum days
+                if (Globals_Client.charToView.days < 1)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
+                    }
+                }
+
+                // has minimum days
+                else
+                {
+                    // see how long reconnaissance takes
+                    int reconDays = Globals_Game.myRand.Next(1, 4);
+
+                    // check if runs out of time
+                    if (Globals_Client.charToView.days < reconDays)
+                    {
+                        // set days to 0
+                        Globals_Client.charToView.adjustDays(Globals_Client.armyToView.days);
+                        this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
+                        }
+                    }
+
+                    // doesn't run out of time
+                    else
+                    {
+                        // adjust days
+                        Globals_Client.charToView.adjustDays(reconDays);
+                        this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
+
+                        // display armies list
+                        SelectionForm examineArmies = new SelectionForm(this, "armies", obs: thisObserver);
+                        examineArmies.Show();
+                    }
+
+                }
+
+            }
+
+        }
+
+        // ------------------- MEETING PLACE
+
+        /// <summary>
+        /// Creates UI display for list of characters present in Court, Tavern, outside keep
+        /// </summary>
+        public void setUpMeetingPLaceCharsList()
+        {
+            // add necessary columns
+            this.meetingPlaceCharsListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.meetingPlaceCharsListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.meetingPlaceCharsListView.Columns.Add("Sex", -2, HorizontalAlignment.Left);
+            this.meetingPlaceCharsListView.Columns.Add("Household", -2, HorizontalAlignment.Left);
+            this.meetingPlaceCharsListView.Columns.Add("Type", -2, HorizontalAlignment.Left);
+            this.meetingPlaceCharsListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Refreshes UI Court, Tavern, outside keep display
+        /// </summary>
+        /// <param name="place">string specifying whether court, tavern, outside keep</param>
+        public void refreshMeetingPlaceDisplay(string place)
+        {
+            // refresh general information
+            this.meetingPlaceDisplayText();
+
+            // remove any previously displayed characters
+            this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
+            this.meetingPlaceCharDisplayTextBox.Text = "";
+
+            // disable controls until character selected in list
+            this.hireNPC_Btn.Enabled = false;
+            this.hireNPC_TextBox.Text = "";
+            this.hireNPC_TextBox.Enabled = false;
+            this.meetingPlaceMoveToBtn.Enabled = false;
+            this.meetingPlaceMoveToTextBox.Text = "";
+            this.meetingPlaceMoveToTextBox.Enabled = false;
+            this.meetingPlaceRouteBtn.Enabled = false;
+            this.meetingPlaceRouteTextBox.Text = "";
+            this.meetingPlaceRouteTextBox.Enabled = false;
+            this.meetingPlaceEntourageBtn.Enabled = false;
+            this.meetingPlaceProposeBtn.Enabled = false;
+            this.meetingPlaceProposeTextBox.Text = "";
+            this.meetingPlaceProposeTextBox.Enabled = false;
+
+            // set label
+            switch (place)
+            {
+                case "tavern":
+                    this.meetingPlaceLabel.Text = "Ye Olde Tavern Of " + Globals_Client.fiefToView.name;
+                    break;
+                case "court":
+                    this.meetingPlaceLabel.Text = "The Esteemed Court Of " + Globals_Client.fiefToView.name;
+                    break;
+                case "outsideKeep":
+                    this.meetingPlaceLabel.Text = "Persons Present Outwith\r\nThe Keep Of " + Globals_Client.fiefToView.name;
+                    break;
+                default:
+                    this.meetingPlaceLabel.Text = "A Generic Meeting Place";
+                    break;
+            }
+            // refresh list of characters
+            this.meetingPlaceDisplayList(place);
+        }
+
+        /// <summary>
+        /// Refreshes general information displayed in Court, Tavern, outside keep
+        /// </summary>
+        public void meetingPlaceDisplayText()
+        {
+            string textToDisplay = "";
+            // date/season and main character's days left
+            textToDisplay += Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear + ".  Your days left: " + Globals_Client.myPlayerCharacter.days + "\r\n\r\n";
+            // Fief name/ID and province name
+            textToDisplay += "Fief: " + Globals_Client.myPlayerCharacter.location.name + " (" + Globals_Client.myPlayerCharacter.location.id + ")  in " + Globals_Client.myPlayerCharacter.location.province.name + ", " + Globals_Client.myPlayerCharacter.location.province.kingdom.name + "\r\n\r\n";
+            // Fief owner
+            textToDisplay += "Owner: " + Globals_Client.myPlayerCharacter.location.owner.firstName + " " + Globals_Client.myPlayerCharacter.location.owner.familyName + "\r\n";
+            // Fief overlord
+            textToDisplay += "Overlord: " + Globals_Client.myPlayerCharacter.location.getOverlord().firstName + " " + Globals_Client.myPlayerCharacter.location.getOverlord().familyName + "\r\n";
+
+            this.meetingPlaceTextBox.ReadOnly = true;
+            this.meetingPlaceTextBox.Text = textToDisplay;
+        }
+
+        /// <summary>
+        /// Refreshes display of Character list in Court, Tavern, outside keep
+        /// </summary>
+        /// <param name="place">String specifying whether court, tavern, outside keep</param>
+        public void meetingPlaceDisplayList(string place)
+        {
+            // clear existing items in list
+            this.meetingPlaceCharsListView.Items.Clear();
+
+            // select which characters to display - i.e. in the keep (court) or not (tavern)
+            bool ifInKeep = false;
+            if (place.Equals("court"))
+            {
+                ifInKeep = true;
+            }
+
+            // iterates through characters
+            for (int i = 0; i < Globals_Client.myPlayerCharacter.location.charactersInFief.Count; i++)
+            {
+                ListViewItem charsInCourt = null;
+
+                // only display characters in relevant location (in keep, or not)
+                if (Globals_Client.myPlayerCharacter.location.charactersInFief[i].inKeep == ifInKeep)
+                {
+                    // don't show the player
+                    if (Globals_Client.myPlayerCharacter.location.charactersInFief[i] != Globals_Client.myPlayerCharacter)
+                    {
+
+                        switch (place)
+                        {
+                            case "tavern":
+                                // only show NPCs
+                                if (Globals_Client.myPlayerCharacter.location.charactersInFief[i] is NonPlayerCharacter)
+                                {
+                                    // only show unemployed
+                                    if ((Globals_Client.myPlayerCharacter.location.charactersInFief[i] as NonPlayerCharacter).salary == 0)
+                                    {
+                                        // Create an item and subitems for character
+                                        charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
+                                    }
+                                }
+                                break;
+                            default:
+                                // Create an item and subitems for character
+                                charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
+                                break;
+                        }
+
+                    }
+                }
+
+                // add item to fiefsListView
+                if (charsInCourt != null)
+                {
+                    this.meetingPlaceCharsListView.Items.Add(charsInCourt);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates item for Character list in Court, Tavern, outside keep
+        /// </summary>
+        /// <param name="ch">Character whose information is to be displayed</param>
+        /// <returns>ListViewItem containing character details</returns>
+        public ListViewItem createMeetingPlaceListItem(Character ch)
+        {
+            // name
+            ListViewItem myItem = new ListViewItem(ch.firstName + " " + ch.familyName);
+
+            // charID
+            myItem.SubItems.Add(ch.charID);
+
+            // sex
+            if (ch.isMale)
+            {
+                myItem.SubItems.Add("Male");
+            }
+            else
+            {
+                myItem.SubItems.Add("Female");
+            }
+
+            // to store household and type data
+            string myHousehold = "";
+            string myType = "";
+            bool isEmployee = false;
+            bool isFamily = false;
+
+            // household
+            if (!String.IsNullOrWhiteSpace(ch.familyID))
+            {
+                myHousehold = ch.getHeadOfFamily().familyName + " (ID: " + ch.familyID + ")";
+
+                if (ch.familyID.Equals(Globals_Client.myPlayerCharacter.charID))
+                {
+                    isFamily = true;
+                }
+            }
+            else if (!String.IsNullOrWhiteSpace((ch as NonPlayerCharacter).employer))
+            {
+                myHousehold = (ch as NonPlayerCharacter).getEmployer().familyName + " (ID: " + (ch as NonPlayerCharacter).employer + ")";
+            }
+
+            myItem.SubItems.Add(myHousehold);
+
+            // type (e.g. family, NPC, player)
+
+            // check for players and PCs
+            if (ch is PlayerCharacter)
+            {
+                if (!String.IsNullOrWhiteSpace((ch as PlayerCharacter).playerID))
+                {
+                    myType = "PC (player)";
+                }
+                else
+                {
+                    myType = "PC (inactive)";
+                }
+            }
+            else
+            {
+                // check for employees
+                if ((!String.IsNullOrWhiteSpace((ch as NonPlayerCharacter).employer)) && (ch as NonPlayerCharacter).employer.Equals(Globals_Client.myPlayerCharacter.charID))
+                {
+                    isEmployee = true;
+                }
+
+                // allocate NPC type
+                if ((isFamily) || (isEmployee))
+                {
+                    myType = "My ";
+                }
+                if (isFamily)
+                {
+                    myType += "Family";
+                }
+                else if (isEmployee)
+                {
+                    myType += "Employee";
+                }
+                else
+                {
+                    myType = "NPC";
+                }
+            }
+
+            myItem.SubItems.Add(myType);
+
+            // show whether is in player's entourage
+            bool isCompanion = false;
+
+            if (ch is NonPlayerCharacter)
+            {
+                // iterate through employees checking for character
+                for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
+                {
+                    if (Globals_Client.myPlayerCharacter.myNPCs[i] == ch)
+                    {
+                        if (Globals_Client.myPlayerCharacter.myNPCs[i].inEntourage)
+                        {
+                            isCompanion = true;
+                        }
+                    }
+                }
+            }
+
+            if (isCompanion)
+            {
+                myItem.SubItems.Add("Yes");
+            }
+
+            return myItem;
+        }
+
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of the meetingPlaceCharsListView object,
+        /// invoking the displayCharacter method, passing a Character to display
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void meetingPlaceCharsListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            Character charToDisplay = null;
+
+            // loop through the characters in the fief
+            for (int i = 0; i < Globals_Client.fiefToView.charactersInFief.Count; i++)
+            {
+                if (meetingPlaceCharsListView.SelectedItems.Count > 0)
+                {
+                    // find matching character
+                    if (Globals_Client.fiefToView.charactersInFief[i].charID.Equals(this.meetingPlaceCharsListView.SelectedItems[0].SubItems[1].Text))
+                    {
+                        charToDisplay = Globals_Client.fiefToView.charactersInFief[i];
+
+                        // check whether is this PC's employee or family
+                        if (Globals_Client.myPlayerCharacter.myNPCs.Contains(Globals_Client.fiefToView.charactersInFief[i]))
+                        {
+                            // see if is in entourage to set text of entourage button
+                            if ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).inEntourage)
+                            {
+                                this.meetingPlaceEntourageBtn.Text = "Remove From Entourage";
+                            }
+                            else
+                            {
+                                this.meetingPlaceEntourageBtn.Text = "Add To Entourage";
+                            }
+
+                            // enable 'move to' controls
+                            this.meetingPlaceMoveToBtn.Enabled = true;
+                            this.meetingPlaceMoveToTextBox.Enabled = true;
+                            this.meetingPlaceRouteBtn.Enabled = true;
+                            this.meetingPlaceRouteTextBox.Enabled = true;
+                            this.meetingPlaceEntourageBtn.Enabled = true;
+
+                            // disable marriage proposals
+                            this.meetingPlaceProposeBtn.Enabled = false;
+                            this.meetingPlaceProposeTextBox.Text = "";
+                            this.meetingPlaceProposeTextBox.Enabled = false;
+
+                            // if is employee
+                            if ((!String.IsNullOrWhiteSpace((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).employer))
+                                && ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).employer.Equals(Globals_Client.myPlayerCharacter.charID)))
+                            {
+                                // set appropriate text for hire/fire button, and enable it
+                                this.hireNPC_Btn.Text = "Fire NPC";
+                                this.hireNPC_Btn.Enabled = true;
+                                // disable 'salary offer' text box
+                                this.hireNPC_TextBox.Visible = false;
+                            }
+                            else
+                            {
+                                this.hireNPC_Btn.Enabled = false;
+                                this.hireNPC_TextBox.Enabled = false;
+                            }
+                        }
+
+                        // if is not employee or family
+                        else
+                        {
+                            // set appropriate text for hire/fire controls, and enable them
+                            this.hireNPC_Btn.Text = "Hire NPC";
+                            this.hireNPC_TextBox.Visible = true;
+
+                            // can only employ men (non-PCs)
+                            if (charToDisplay.checkCanHire(Globals_Client.myPlayerCharacter))
+                            {
+                                this.hireNPC_Btn.Enabled = true;
+                                this.hireNPC_TextBox.Enabled = true;
+                            }
+                            else
+                            {
+                                this.hireNPC_Btn.Enabled = false;
+                                this.hireNPC_TextBox.Enabled = false;
+                            }
+
+                            // disable 'move to' and entourage controls
+                            this.meetingPlaceMoveToBtn.Enabled = false;
+                            this.meetingPlaceMoveToTextBox.Enabled = false;
+                            this.meetingPlaceRouteBtn.Enabled = false;
+                            this.meetingPlaceRouteTextBox.Enabled = false;
+                            this.meetingPlaceEntourageBtn.Enabled = false;
+
+                            // checks for enabling marriage proposals
+                            if (((!String.IsNullOrWhiteSpace(charToDisplay.spouse)) || (charToDisplay.isMale)) || (!String.IsNullOrWhiteSpace(charToDisplay.fiancee)))
+                            {
+                                // disable marriage proposals
+                                this.meetingPlaceProposeBtn.Enabled = false;
+                                this.meetingPlaceProposeTextBox.Text = "";
+                                this.meetingPlaceProposeTextBox.Enabled = false;
+                            }
+                            else
+                            {
+                                // enable marriage proposals
+                                this.meetingPlaceProposeBtn.Enabled = true;
+                                this.meetingPlaceProposeTextBox.Text = Globals_Client.myPlayerCharacter.charID;
+                                this.meetingPlaceProposeTextBox.Enabled = true;
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+            // retrieve and display character information
+            if (charToDisplay != null)
+            {
+                Globals_Client.charToView = charToDisplay;
+                string textToDisplay = "";
+                textToDisplay += this.displayCharacter(charToDisplay);
+                this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
+                this.meetingPlaceCharDisplayTextBox.Text = textToDisplay;
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of any hireNPC button
+        /// invoking either processEmployOffer or fireNPC
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void hireNPC_Btn_Click(object sender, EventArgs e)
+        {
+            bool amHiring = false;
+            bool isHired = false;
+
+            // get hireNPC_Btn tag (shows which meeting place are in)
+            string place = Convert.ToString(((Button)sender).Tag);
+
+            // if selected NPC is not a current employee
+            if (!Globals_Client.myPlayerCharacter.myNPCs.Contains(Globals_Client.charToView))
+            {
+                amHiring = true;
+
+                try
+                {
+                    // get offer amount
+                    UInt32 newOffer = Convert.ToUInt32(this.hireNPC_TextBox.Text);
+                    // submit offer
+                    isHired = Globals_Client.myPlayerCharacter.processEmployOffer((Globals_Client.charToView as NonPlayerCharacter), newOffer);
+
+                }
+                catch (System.FormatException fe)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    }
+                }
+                catch (System.OverflowException ofe)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    }
+                }
+
+            }
+
+            // if selected NPC is already an employee
+            else
+            {
+                // fire NPC
+                Globals_Client.myPlayerCharacter.fireNPC(Globals_Client.charToView as NonPlayerCharacter);
+            }
+
+            // refresh appropriate screen
+            // if firing an NPC
+            if (!amHiring)
+            {
+                if (place.Equals("house"))
+                {
+                    this.refreshHouseholdDisplay();
+                }
+                else
+                {
+                    this.refreshMeetingPlaceDisplay(place);
+                }
+            }
+            // if hiring an NPC
+            else
+            {
+                // if in the tavern and NPC is hired, refresh whole screen (NPC removed from list)
+                if (isHired)
+                {
+                    this.refreshMeetingPlaceDisplay(place);
+                }
+                else
+                {
+                    this.meetingPlaceCharDisplayTextBox.Text = this.displayCharacter(Globals_Client.charToView);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of any entourage button
+        /// invoking either addToEntourage or removeFromEntourage
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void entourageBtn_Click(object sender, EventArgs e)
+        {
+            // for messages
+            string toDisplay = "";
+
+            // get button
+            Button button = sender as Button;
+
+            // check button tag to see on which screen the command occurred
+            string whichScreen = button.Tag.ToString();
+
+            // check which action to perform
+            // if is in entourage, remove
+            if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
+            {
+                Globals_Client.myPlayerCharacter.removeFromEntourage((Globals_Client.charToView as NonPlayerCharacter));
+            }
+
+            // if is not in entourage, add
+            else
+            {
+                // check to see if NPC is army leader
+                // if not leader, proceed
+                if (String.IsNullOrWhiteSpace(Globals_Client.charToView.armyID))
+                {
+                    // add to entourage
+                    Globals_Client.myPlayerCharacter.addToEntourage((Globals_Client.charToView as NonPlayerCharacter));
+
+                }
+
+                // if is army leader, can't add to entourage
+                else
+                {
+                    toDisplay += "Sorry, milord, this person is an army leader\r\n";
+                    toDisplay += "and, therefore, cannot be added to your entourage.";
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                    }
+                }
+            }
+
+            // refresh appropriate screen
+            if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
+            {
+                this.refreshMeetingPlaceDisplay(whichScreen); ;
+            }
+            else if (whichScreen.Equals("house"))
+            {
+                this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
+            }
+        }
+
+        // ------------------- TRAVEL SCREEN & MOVE METHODS
+
+        /// <summary>
+        /// Moves character to target fief
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="ch">Character to move</param>
+        /// <param name="target">Target fief</param>
+        /// <param name="cost">Travel cost (days)</param>
+        public bool moveCharacter(Character ch, Fief target, double cost)
+        {
+            bool success = false;
+            bool proceedWithMove = true;
+
+            // check to see if character is leading a besieging army
+            Army myArmy = ch.getArmy();
+            if (myArmy != null)
+            {
+                string thisSiegeID = myArmy.checkIfBesieger();
+                if (!String.IsNullOrWhiteSpace(thisSiegeID))
+                {
+                    // give player fair warning of consequences to siege
+                    DialogResult dialogResult = MessageBox.Show("Your army is currently besieging this fief.  Moving will end the siege.\r\nClick 'OK' to proceed.", "Proceed with move?", MessageBoxButtons.OKCancel);
+
+                    // if choose to cancel
+                    if (dialogResult == DialogResult.Cancel)
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Move cancelled.");
+                        }
+                        proceedWithMove = false;
+                    }
+
+                    // if choose to proceed
+                    else
+                    {
+                        // end the siege
+                        Siege thisSiege = Globals_Game.siegeMasterList[thisSiegeID];
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Siege (" + thisSiegeID + ") ended.");
+                        }
+
+                        // construct event description to be passed into siegeEnd
+                        string siegeDescription = "On this day of Our Lord the forces of ";
+                        siegeDescription += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
+                        siegeDescription += " have chosen to abandon the siege of " + thisSiege.getFief().name;
+                        siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
+                        siegeDescription += " retains ownership of the fief.";
+
+                        this.siegeEnd(thisSiege, siegeDescription);
+                    }
+
+                }
+            }
+
+            if (proceedWithMove)
+            {
+                // move character
+                success = ch.moveCharacter(target, cost);
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Moves an NPC without a boss one hex in a random direction
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="npc">NPC to move</param>
+        public bool randomMoveNPC(NonPlayerCharacter npc)
+        {
+            bool success = false;
+
+            // generate random int 0-6 to see if moves
+            int randomInt = Globals_Game.myRand.Next(7);
+
+            if (randomInt > 0)
+            {
+                // get a destination
+                Fief target = Globals_Game.gameMap.chooseRandomHex(npc.location);
+
+                // get travel cost
+                double travelCost = this.getTravelCost(npc.location, target);
+
+                // perform move
+                success = this.moveCharacter(npc, target, travelCost);
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Responds to the click event of the navigateToolStripMenuItem
+        /// which refreshes and displays the navigation screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void navigateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // ensure reflects player's location
+            Globals_Client.charToView = Globals_Client.myPlayerCharacter;
+
+            // refresh navigation data
+            Globals_Client.fiefToView = Globals_Client.myPlayerCharacter.location;
+            this.refreshTravelContainer();
+
+            // show navigation screen
+            Globals_Client.containerToView = this.travelContainer;
+            Globals_Client.containerToView.BringToFront();
+        }
+
+        /// <summary>
+        /// Gets travel cost (in days) to move to a fief
+        /// </summary>
+        /// <returns>double containing travel cost</returns>
+        /// <param name="source">Source fief</param>
+        /// <param name="target">Target fief</param>
+        private double getTravelCost(Fief source, Fief target, string armyID = null)
+        {
+            double cost = 0;
+            // calculate base travel cost based on terrain for both fiefs
+            cost = (source.terrain.travelCost + target.terrain.travelCost) / 2;
+
+            // apply season modifier
+            cost = cost * Globals_Game.clock.calcSeasonTravMod();
+
+            // if necessary, apply army modifier
+            if (!String.IsNullOrWhiteSpace(armyID))
+            {
+                cost = cost * Globals_Game.armyMasterList[armyID].calcMovementModifier();
+            }
+
+            return cost;
+        }
+
+        /// <summary>
+        /// Refreshes travel display screen
+        /// </summary>
+        private void refreshTravelContainer()
+        {
+            // get current fief
+            Fief thisFief = Globals_Client.myPlayerCharacter.location;
+
+            // string[] to hold direction text
+            string[] directions = new string[] { "NE", "E", "SE", "SW", "W", "NW" };
+            // Button[] to hold corresponding travel buttons
+            Button[] travelBtns = new Button[] { travel_NE_btn, travel_E_btn, travel_SE_btn, travel_SW_btn, travel_W_btn, travel_NW_btn };
+
+            // get text for home button
+            this.travel_Home_btn.Text = "CURRENT FIEF:\r\n\r\n" + thisFief.name + " (" + Globals_Client.myPlayerCharacter.location.id + ")" + "\r\n" + Globals_Client.myPlayerCharacter.location.province.name + ", " + Globals_Client.myPlayerCharacter.location.province.kingdom.name;
+
+            for (int i = 0; i < directions.Length; i++)
+            {
+                // retrieve target fief for that direction
+                Fief target = Globals_Game.gameMap.getFief(thisFief, directions[i]);
+                // display fief details and travel cost
+                if (target != null)
+                {
+                    travelBtns[i].Text = directions[i] + " FIEF:\r\n\r\n";
+                    travelBtns[i].Text += target.name + " (" + target.id + ")\r\n";
+                    travelBtns[i].Text += target.province.name + ", " + target.province.kingdom.name + "\r\n\r\n";
+                    travelBtns[i].Text += "Cost: " + this.getTravelCost(thisFief, target);
+                }
+                else
+                {
+                    travelBtns[i].Text = directions[i] + " FIEF:\r\n\r\nNo fief present";
+                }
+            }
+
+            // set text for informational labels
+            this.travelLocationLabel.Text = "You are here: " + thisFief.name + " (" + thisFief.id + ")";
+            this.travelDaysLabel.Text = "Your remaining days: " + Globals_Client.myPlayerCharacter.days;
+
+            // set text for 'enter/exit keep' button, depending on whether player in/out of keep
+            if (Globals_Client.myPlayerCharacter.inKeep)
+            {
+                this.enterKeepBtn.Text = "Exit Keep";
+            }
+            else
+            {
+                this.enterKeepBtn.Text = "Enter Keep";
+            }
+
+            // enable all controls
+            this.travel_E_btn.Enabled = true;
+            this.travel_Home_btn.Enabled = true;
+            this.travel_NE_btn.Enabled = true;
+            this.travel_NW_btn.Enabled = true;
+            this.travel_SE_btn.Enabled = true;
+            this.travel_SW_btn.Enabled = true;
+            this.travel_W_btn.Enabled = true;
+            this.travelCampBtn.Enabled = true;
+            this.travelCampDaysTextBox.Enabled = true;
+            this.travelExamineArmiesBtn.Enabled = true;
+            this.travelMoveToBtn.Enabled = true;
+            this.travelMoveToTextBox.Enabled = true;
+            this.travelRouteBtn.Enabled = true;
+            this.travelRouteTextBox.Enabled = true;
+            this.enterKeepBtn.Enabled = true;
+            this.listOutsideKeepBtn.Enabled = true;
+            this.visitCourtBtn1.Enabled = true;
+            this.visitTavernBtn.Enabled = true;
+
+            // clear existing data in TextBoxes
+            this.travelMoveToTextBox.Text = "";
+            this.travelCampDaysTextBox.Text = "";
+            this.travelRouteTextBox.Text = "";
+
+            // check to see if fief is besieged and, if so, disable various controls
+            if (!String.IsNullOrWhiteSpace(thisFief.siege))
+            {
+                // check to see if are inside/outside keep
+                if (Globals_Client.myPlayerCharacter.inKeep)
+                {
+                    // if inside keep, disable all controls except tavern and court
+                    this.travel_E_btn.Enabled = false;
+                    this.travel_Home_btn.Enabled = false;
+                    this.travel_NE_btn.Enabled = false;
+                    this.travel_NW_btn.Enabled = false;
+                    this.travel_SE_btn.Enabled = false;
+                    this.travel_SW_btn.Enabled = false;
+                    this.travel_W_btn.Enabled = false;
+                    this.travelCampBtn.Enabled = false;
+                    this.travelCampDaysTextBox.Enabled = false;
+                    this.travelExamineArmiesBtn.Enabled = false;
+                    this.travelMoveToBtn.Enabled = false;
+                    this.travelMoveToTextBox.Enabled = false;
+                    this.travelRouteBtn.Enabled = false;
+                    this.travelRouteTextBox.Enabled = false;
+                    this.enterKeepBtn.Enabled = false;
+                    this.listOutsideKeepBtn.Enabled = false;
+                }
+
+                else
+                {
+                    // if outside keep, disable tavern, court and 'enter keep' but leave all others enabled
+                    this.enterKeepBtn.Enabled = false;
+                    this.visitCourtBtn1.Enabled = false;
+                    this.visitTavernBtn.Enabled = false;
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the travel buttons
+        /// which attempts to move the player to the target fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void travelBtnClick(object sender, EventArgs e)
+        {
+            bool success = false;
+            // necessary in order to be able to access button tag
+            Button button = sender as Button;
+            // get target fief using travel button tag (contains direction string)
+            Fief targetFief = Globals_Game.gameMap.getFief(Globals_Client.myPlayerCharacter.location, button.Tag.ToString());
+
+            if (targetFief != null)
+            {
+                // get travel cost
+                double travelCost = this.getTravelCost(Globals_Client.myPlayerCharacter.location, targetFief, Globals_Client.myPlayerCharacter.armyID);
+                // attempt to move player to target fief
+                success = this.moveCharacter(Globals_Client.myPlayerCharacter, targetFief, travelCost);
+                // if move successfull, refresh travel display
+                if (success)
+                {
+                    Globals_Client.fiefToView = targetFief;
+                    this.refreshTravelContainer();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the enterKeepBtn button
+        /// which causes the player (and entourage) to enter/exit the keep and
+        /// refreshes the travel screen, setting appropriate text for the enterKeepBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void enterKeepBtn_Click(object sender, EventArgs e)
+        {
+            // if player in keep
+            if (Globals_Client.myPlayerCharacter.inKeep)
+            {
+                // exit keep
+                Globals_Client.myPlayerCharacter.exitKeep();
+                // change button text
+                this.enterKeepBtn.Text = "Enter Keep";
+                // refresh display
+                this.refreshTravelContainer();
+            }
+
+            // if player not in keep
+            else
+            {
+                // attempt to enter keep
+                Globals_Client.myPlayerCharacter.enterKeep();
+
+                // if successful
+                if (Globals_Client.myPlayerCharacter.inKeep)
+                {
+                    // change button text
+                    this.enterKeepBtn.Text = "Exit Keep";
+                    // refresh display
+                    this.refreshTravelContainer();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the visitCourtBtn1 button
+        /// which causes the player (and entourage) to enter the keep and
+        /// refreshes and displays the court screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void visitCourtBtn1_Click(object sender, EventArgs e)
+        {
+            // get button
+            Button thisButton = (sender as Button);
+            string place = thisButton.Tag.ToString();
+
+            // if player not in keep, attempt to enter
+            if (!Globals_Client.myPlayerCharacter.inKeep)
+            {
+                Globals_Client.myPlayerCharacter.enterKeep();
+            }
+
+            // if in keep
+            if (Globals_Client.myPlayerCharacter.inKeep)
+            {
+                // set button tags to reflect which meeting place
+                this.hireNPC_Btn.Tag = place;
+                this.meetingPlaceMoveToBtn.Tag = place;
+                this.meetingPlaceRouteBtn.Tag = place;
+                this.meetingPlaceEntourageBtn.Tag = place;
+
+                // refresh court screen 
+                this.refreshMeetingPlaceDisplay(place);
+
+                // display court screen
+                Globals_Client.containerToView = this.meetingPlaceContainer;
+                Globals_Client.containerToView.BringToFront();
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the visitTavernBtn button
+        /// which causes the player (and entourage) to exit the keep (if necessary)
+        /// and refreshes and displays the tavern screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void visitTavernBtn_Click_1(object sender, EventArgs e)
+        {
+            // get button
+            Button thisButton = (sender as Button);
+            string place = thisButton.Tag.ToString();
+
+            // exit keep if required
+            if (Globals_Client.myPlayerCharacter.inKeep)
+            {
+                Globals_Client.myPlayerCharacter.exitKeep();
+            }
+
+            // set button tags to reflect which meeting place
+            this.hireNPC_Btn.Tag = place;
+            this.meetingPlaceMoveToBtn.Tag = place;
+            this.meetingPlaceRouteBtn.Tag = place;
+            this.meetingPlaceEntourageBtn.Tag = place;
+
+            // refresh tavern screen 
+            this.refreshMeetingPlaceDisplay(place);
+
+            // display tavern screen
+            Globals_Client.containerToView = this.meetingPlaceContainer;
+            Globals_Client.containerToView.BringToFront();
+        }
+
+        /// <summary>
+        /// Moves character to the target fief, through intervening fiefs (stored in goTo queue)
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="ch">Character to be moved</param>
+        private bool characterMultiMove(Character ch)
+        {
+            bool success = false;
+            double travelCost = 0;
+            int steps = ch.goTo.Count;
+
+            for (int i = 0; i < steps; i++)
+            {
+                // get travel cost
+                travelCost = this.getTravelCost(ch.location, ch.goTo.Peek(), ch.armyID);
+                // attempt to move character
+                success = this.moveCharacter(ch, ch.goTo.Peek(), travelCost);
+                // if move successfull, remove fief from goTo queue
+                if (success)
+                {
+                    ch.goTo.Dequeue();
+                }
+                // if not successfull, exit loop
+                else
+                {
+                    break;
+                }
+            }
+
+            if (ch == Globals_Client.myPlayerCharacter)
+            {
+                // if player has moved, indicate success
+                if (ch.goTo.Count < steps)
+                {
+                    success = true;
+                }
+            }
+
+            return success;
+
+        }
+
+        /// <summary>
+        /// Moves a character to a specified fief using the shortest path
+        /// </summary>
+        /// <param name="whichScreen">String indicating on which screen the movement command occurred</param>
+        public void moveTo(string whichScreen)
+        {
+            // get appropriate TextBox and remove from entourage, if necessary
+            TextBox myTextBox = null;
+            if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
+            {
+                myTextBox = this.meetingPlaceMoveToTextBox;
+                if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
+                {
+                    Globals_Client.myPlayerCharacter.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
+                }
+            }
+            else if (whichScreen.Equals("house"))
+            {
+                myTextBox = this.houseMoveToTextBox;
+                if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
+                {
+                    Globals_Client.myPlayerCharacter.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
+                }
+            }
+            else if (whichScreen.Equals("travel"))
+            {
+                myTextBox = this.travelMoveToTextBox;
+            }
+
+            // check for existence of fief
+            if (Globals_Game.fiefMasterList.ContainsKey(myTextBox.Text.ToUpper()))
+            {
+                // retrieves target fief
+                Fief target = Globals_Game.fiefMasterList[myTextBox.Text.ToUpper()];
+
+                // obtains goTo queue for shortest path to target
+                Globals_Client.charToView.goTo = Globals_Game.gameMap.getShortestPath(Globals_Client.charToView.location, target);
+
+                // if retrieve valid path
+                if (Globals_Client.charToView.goTo.Count > 0)
+                {
+                    // if character is NPC, check entourage and remove if necessary
+                    if (!whichScreen.Equals("travel"))
+                    {
+                        if (Globals_Client.myPlayerCharacter.myNPCs.Contains(Globals_Client.charToView))
+                        {
+                            (Globals_Client.charToView as NonPlayerCharacter).inEntourage = false;
+                        }
+                    }
+
+                    // perform move
+                    this.characterMultiMove(Globals_Client.charToView);
+                }
+
+                // refresh appropriate screen
+                if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
+                {
+                    this.refreshMeetingPlaceDisplay(whichScreen); ;
+                }
+                else if (whichScreen.Equals("house"))
+                {
+                    this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
+                }
+                else if (whichScreen.Equals("travel"))
+                {
+                    this.refreshTravelContainer();
+                }
+
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Target fief ID not found.  Please ensure fiefID is valid.");
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of any moveTo buttons invoking the moveTo method
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void moveToBtn_Click(object sender, EventArgs e)
+        {
+            // get button
+            Button button = sender as Button;
+
+            // check button tag to see on which screen the movement command occurred
+            string whichScreen = button.Tag.ToString();
+
+            // perform move
+            this.moveTo(whichScreen);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the listOutsideKeepBtn button
+        /// which causes the player (and entourage) to exit the keep (if necessary)
+        /// and refreshes and displays the 'outside keep' screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void listOutsideKeepBtn_Click(object sender, EventArgs e)
+        {
+            // get button
+            Button thisButton = (sender as Button);
+            string place = thisButton.Tag.ToString();
+
+            // exit keep if required
+            if (Globals_Client.myPlayerCharacter.inKeep)
+            {
+                Globals_Client.myPlayerCharacter.exitKeep();
+            }
+
+            // set button tags to reflect which meeting place
+            this.hireNPC_Btn.Tag = place;
+            this.meetingPlaceMoveToBtn.Tag = place;
+            this.meetingPlaceRouteBtn.Tag = place;
+            this.meetingPlaceEntourageBtn.Tag = place;
+
+            // refresh outside keep screen 
+            this.refreshMeetingPlaceDisplay(place);
+
+            // display tavern screen
+            Globals_Client.containerToView = this.meetingPlaceContainer;
+            Globals_Client.containerToView.BringToFront();
         }
 
         /// <summary>
@@ -5649,1862 +3690,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of any of the 'transfer funds' buttons
-        /// allowing players to transfer funds between treasuries
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void transferFundsBtn_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                // get button
-                Button button = sender as Button;
-                // get transfer parameters from tag
-                string transferType = button.Tag.ToString();
-
-                Fief fiefFrom = null;
-                Fief fiefTo = null;
-                int amount = 0;
-
-                switch (transferType)
-                {
-                    case "toFief":
-                        fiefFrom = Globals_Client.myPlayerCharacter.getHomeFief();
-                        fiefTo = Globals_Client.fiefToView;
-                        amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
-                        break;
-                    case "toHome":
-                        fiefFrom = Globals_Client.fiefToView;
-                        fiefTo = Globals_Client.myPlayerCharacter.getHomeFief();
-                        amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
-                        break;
-                    default:
-                        break;
-                }
-
-                if (((fiefFrom != null) && (fiefTo != null)) && (amount > 0))
-                {
-                    // make sure are enough funds to cover transfer
-                    if (amount > fiefFrom.getAvailableTreasury(true))
-                    {
-                        // if not, inform player and adjust amount downwards
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Too few funds available for this transfer.");
-                        }
-                    }
-
-                    else
-                    {
-                        // make the transfer
-                        this.treasuryTransfer(fiefFrom, fiefTo, amount);
-                    }
-
-                }
-
-            }
-            catch (System.FormatException fe)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
-                }
-            }
-            catch (System.OverflowException ofe)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
-                }
-            }
-        }
-
-        /*
-        /// <summary>
-        /// Responds to the click event of the fiefTransferToFiefBtn button
-        /// allowing players to transfer funds from the fief treasury to the home treasury
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void fiefTransferToFiefBtn_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Fief fiefFrom = Globals_Client.myChar.getHomeFief();
-                Fief fiefTo = Globals_Client.fiefToView;
-                int amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
-
-                // make sure are enough funds to cover transfer
-                if (amount > fiefFrom.getAvailableTreasury(true))
-                {
-                    // if not, inform player and adjust amount downwards
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("Too few funds available in Home Treasury; amount adjusted.");
-                    }
-                    amount = fiefFrom.getAvailableTreasury(true);
-                }
-
-                // make the transfer
-                this.treasuryTransfer(fiefFrom, fiefTo, amount);
-            }
-            catch (System.FormatException fe)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
-                }
-            }
-            catch (System.OverflowException ofe)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of the fiefTransferToHomeBtn button
-        /// allowing players to transfer funds from the home treasury to the fief treasury
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void fiefTransferToHomeBtn_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Fief fiefFrom = Globals_Client.fiefToView;
-                Fief fiefTo = Globals_Game.fiefMasterList[Globals_Client.myChar.homeFief];
-                int amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
-
-                // make sure are enough funds to cover transfer
-                if (amount > fiefFrom.getAvailableTreasury())
-                {
-                    // if not, inform player and adjust amount downwards
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("Too few funds available in " + fiefFrom.name + " Treasury; amount adjusted.");
-                    }
-                    amount = fiefFrom.getAvailableTreasury();
-                }
-
-                // make the transfer
-                this.treasuryTransfer(fiefFrom, fiefTo, amount);
-            }
-            catch (System.FormatException fe)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
-                }
-            }
-            catch (System.OverflowException ofe)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
-                }
-            }
-        } */
-
-        /// <summary>
-        /// Transfers funds between the home treasury and the fief treasury
-        /// </summary>
-        /// <param name="from">The Fief from which funds are to be transferred</param>
-        /// <param name="to">The Fief to which funds are to be transferred</param>
-        /// <param name="amount">How much to be transferred</param>
-        public void treasuryTransfer(Fief from, Fief to, int amount)
-        {
-            // subtract from source treasury
-            from.treasury = from.treasury - amount;
-            // add to target treasury
-            to.treasury = to.treasury + amount;
-            // refresh fief display
-            this.refreshCurrentScreen();
-        }
-
-        /// <summary>
-        /// Responds to the click event of the familyGetSpousePregBt button
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void familyGetSpousePregBtn_Click(object sender, EventArgs e)
-        {
-            // get spouse
-            Character mySpouse = Globals_Client.myPlayerCharacter.getSpouse();
-
-            // perform standard checks
-            if (this.checksBeforePregnancyAttempt(Globals_Client.myPlayerCharacter))
-            {
-                // ensure are both in/out of keep
-                mySpouse.inKeep = Globals_Client.myPlayerCharacter.inKeep;
-
-                // attempt pregnancy
-                bool pregnant = Globals_Client.myPlayerCharacter.getSpousePregnant(mySpouse);
-            }
-
-            // refresh screen
-            this.refreshCurrentScreen();
-
-            /*
-            // test event scheduled in clock
-            List<JournalEntry> myEvents = new List<JournalEntry>();
-            myEvents = Globals_Client.clock.scheduledEvents.getEventsOnDate();
-            if (myEvents.Count > 0)
-            {
-                foreach (JournalEntry jEvent in myEvents)
-                {
-                    System.Windows.Forms.MessageBox.Show("Year: " + jEvent.year + " | Season: " + jEvent.season + " | Who: " + jEvent.personae + " | What: " + jEvent.type);
-                }
-            } */
-        }
-
-        /// <summary>
-        /// Generates a new NPC based on parents' statistics
-        /// </summary>
-        /// <returns>NonPlayerCharacter or null</returns>
-        /// <param name="mummy">The new NPC's mother</param>
-        /// <param name="daddy">The new NPC's father</param>
-        public NonPlayerCharacter generateNewNPC(NonPlayerCharacter mummy, Character daddy)
-        {
-            NonPlayerCharacter newNPC = new NonPlayerCharacter();
-
-            // charID
-            newNPC.charID = Globals_Game.getNextCharID();
-            // first name
-            newNPC.firstName = "Baby";
-            // family name
-            newNPC.familyName = daddy.familyName;
-            // date of birth
-            newNPC.birthDate = new Tuple<uint, byte>(Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason);
-            // sex
-            newNPC.isMale = this.generateSex();
-            // nationality
-            newNPC.nationality = daddy.nationality;
-            // whether is alive
-            newNPC.isAlive = true;
-            // maxHealth
-            newNPC.maxHealth = this.generateKeyCharacteristics(mummy.maxHealth, daddy.maxHealth);
-            // virility
-            newNPC.virility = this.generateKeyCharacteristics(mummy.virility, daddy.virility);
-            // goTo queue
-            newNPC.goTo = new Queue<Fief>();
-            // language
-            newNPC.language = daddy.language;
-            // days left
-            newNPC.days = 90;
-            // stature modifier
-            newNPC.statureModifier = 0;
-            // management
-            newNPC.management = this.generateKeyCharacteristics(mummy.management, daddy.management);
-            // combat
-            newNPC.combat = this.generateKeyCharacteristics(mummy.combat, daddy.combat);
-            // skills
-            newNPC.skills = this.generateSkillSetFromParents(mummy.skills, daddy.skills, newNPC.isMale);
-            // if in keep
-            newNPC.inKeep = mummy.inKeep;
-            // if pregnant
-            newNPC.isPregnant = false;
-            // familyID
-            newNPC.familyID = daddy.familyID;
-            // spouse
-            newNPC.spouse = null;
-            // father
-            newNPC.father = daddy.charID;
-            // mother
-            newNPC.mother = mummy.charID;
-            // fiancee
-            newNPC.fiancee = null;
-            // location
-            newNPC.location = null;
-            // titles
-            newNPC.myTitles = new List<string>();
-            // armyID
-            newNPC.armyID = null;
-            // ailments
-            newNPC.ailments = new Dictionary<string, Ailment>();
-            // employer
-            newNPC.employer = null;
-            // salary/allowance
-            newNPC.salary = 0;
-            // lastOffer (will remain empty for family members)
-            newNPC.lastOffer = new Dictionary<string, uint>();
-            // inEntourage
-            newNPC.inEntourage = false;
-            // isHeir
-            newNPC.isHeir = false;
-
-            return newNPC;
-        }
-
-        /// <summary>
-        /// Generates a random sex for a Character
-        /// </summary>
-        /// <returns>bool indicating whether is male</returns>
-        public bool generateSex()
-        {
-            bool isMale = false;
-
-            // generate random (0-1) to see if male or female
-            if (Globals_Game.myRand.Next(0, 2) == 0)
-            {
-                isMale = true;
-            }
-
-            return isMale;
-        }
-
-        /// <summary>
-        /// Generates a characteristic stat for a Character, based on parent stats
-        /// </summary>
-        /// <returns>Double containing characteristic stat</returns>
-        /// <param name="mummyStat">The mother's characteristic stat</param>
-        /// <param name="daddyStat">The father's characteristic stat</param>
-        public Double generateKeyCharacteristics(Double mummyStat, Double daddyStat)
-        {
-            Double newStat = 0;
-
-            // get average of parents' stats
-            Double parentalAverage = (mummyStat + daddyStat) / 2;
-
-            // generate random (0 - 100) to determine relationship of new stat to parentalAverage
-            double randPercentage = Globals_Game.GetRandomDouble(100);
-
-            // calculate new stat
-            if (randPercentage <= 35)
-            {
-                newStat = parentalAverage;
-            }
-            else if (randPercentage <= 52.5)
-            {
-                newStat = parentalAverage - 1;
-            }
-            else if (randPercentage <= 70)
-            {
-                newStat = parentalAverage + 1;
-            }
-            else if (randPercentage <= 80)
-            {
-                newStat = parentalAverage - 2;
-            }
-            else if (randPercentage <= 90)
-            {
-                newStat = parentalAverage + 2;
-            }
-            else if (randPercentage <= 95)
-            {
-                newStat = parentalAverage - 3;
-            }
-            else
-            {
-                newStat = parentalAverage + 3;
-            }
-
-            // make sure new stat falls within acceptable range
-            if (newStat < 1)
-            {
-                newStat = 1;
-            }
-            else if (newStat > 9)
-            {
-                newStat = 9;
-            }
-
-            return newStat;
-        }
-
-        /// <summary>
-        /// Generates a skill set for a Character, based on parent skills
-        /// </summary>
-        /// <returns>Array containing skill set</returns>
-        /// <param name="mummySkills">The mother's skills</param>
-        /// <param name="daddySkills">The father's skills</param>
-        /// <param name="isMale">Whether character is a male</param>
-        public Tuple<Skill, int>[] generateSkillSetFromParents(Tuple<Skill, int>[] mummySkills, Tuple<Skill, int>[] daddySkills, bool isMale)
-        {
-            // create a List to temporarily hold skills
-            // will convert to array at end of method
-            List<Tuple<Skill, int>> newSkillsList = new List<Tuple<Skill, int>>();
-
-            // number of skills to return
-            int numSkills = 0;
-
-            // need to compare parent's skills to see how many match (could effect no. of child skills)
-            int matchingSkills = 0;
-            int totalSkillsAvail = 0;
-
-            // iterate through parents' skills identifying matches
-            for (int i = 0; i < mummySkills.Length; i++ )
-            {
-                for (int ii = 0; ii < daddySkills.Length; ii++ )
-                {
-                    if (mummySkills[i].Item1.skillID.Equals(daddySkills[ii].Item1.skillID))
-                    {
-                        matchingSkills++;
-                    }
-                }
-            }
-
-            // get total skill pool available from both parents
-            totalSkillsAvail = (mummySkills.Length + daddySkills.Length) - matchingSkills;
-
-            // if are only 2 skills in total, can only be 2 child skills
-            if (totalSkillsAvail == 2)
-            {
-                numSkills = 2;
-            }
-            else
-            {
-                // generate random (2-3) to see how many skills child will have
-                numSkills = Globals_Game.myRand.Next(2, 4);
-            }
-
-            // if are only 2 skills in parents' skill pool (i.e. both parents have same skills)
-            // then use highest level skills (enhanced)
-            if (totalSkillsAvail == 2)
-            {
-                for (int i = 0; i < mummySkills.Length; i++)
-                {
-                    for (int j = 0; j < daddySkills.Length; j++ )
-                    {
-                        if (mummySkills[i].Item1.skillID.Equals(daddySkills[j].Item1.skillID))
-                        {
-                            // get highest of duplicate skills' level
-                            int maxLevel = Math.Max(mummySkills[i].Item2, daddySkills[j].Item2);
-
-                            // adjust the skill level upwards
-                            int newSkillLevel = 0;
-                            if (maxLevel > 6)
-                            {
-                                newSkillLevel = 9;
-                            }
-                            else
-                            {
-                                newSkillLevel = maxLevel + 2;
-                            }
-
-                            // creat new skill item
-                            Tuple<Skill, int> mySkill = new Tuple<Skill, int>(mummySkills[i].Item1, newSkillLevel);
-                            
-                            // add to temporary list
-                            newSkillsList.Add(mySkill);
-
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // if are more than 2 skills in parents' skill pool
-            else
-            {
-                Tuple<Skill, int> mySkill;
-
-                // decide which parent to use first (in case have to choose 2 skills from one parent)
-                Tuple<Skill, int>[] firstSkillSet = null;
-                Tuple<Skill, int>[] lastSkillSet = null;
-
-                // use same sex parent first
-                if (isMale)
-                {
-                    firstSkillSet = daddySkills;
-                    lastSkillSet = mummySkills;
-                }
-                else
-                {
-                    firstSkillSet = mummySkills;
-                    lastSkillSet = daddySkills;
-                }
-
-                // to hold chosen skill
-                int chosenSkill = 0;
-                // to hold previous chosen skill, to allow comparison
-                int PrevChosenSkill = 0;
-
-                // get a skill from the first parent
-                chosenSkill = Globals_Game.myRand.Next(0, firstSkillSet.Length);
-
-                // creat new skill item
-                mySkill = new Tuple<Skill, int>(firstSkillSet[chosenSkill].Item1, firstSkillSet[chosenSkill].Item2);
-                // add to temporary list
-                newSkillsList.Add(mySkill);
-                // record which skill was chosen in case comparison needed
-                PrevChosenSkill = chosenSkill;
-
-                // if child is to have 3 skills
-                if (numSkills == 3)
-                {
-                    do {
-                        // get another skill from the first parent
-                        chosenSkill = Globals_Game.myRand.Next(0, firstSkillSet.Length);
-
-                        // creat new skill item
-                        mySkill = new Tuple<Skill, int>(firstSkillSet[chosenSkill].Item1, firstSkillSet[chosenSkill].Item2);
-                        // add to temporary list
-                        newSkillsList.Add(mySkill);
-
-                    // do chosen skill doesn't match the first
-                    } while (chosenSkill == PrevChosenSkill);
-
-                }
-
-                // get a skill from the other parent
-                chosenSkill = Globals_Game.myRand.Next(0, lastSkillSet.Length);
-
-                // check to see if already have skill in newSkillsList
-                bool duplicate = false;
-                // to hold any duplicate skill items
-                Tuple<Skill, int> duplicateItem = null;
-
-                // iterate through existing skills list checking for duplicates
-                foreach (Tuple<Skill, int> element in newSkillsList)
-                {
-                    if (lastSkillSet[chosenSkill].Item1.skillID.Equals(element.Item1.skillID))
-                    {
-                        duplicate = true;
-                        // record duplicate skill item
-                        duplicateItem = element;
-                    }
-                }
-
-                // if the last chosen skill was a duplicate
-                if (duplicate)
-                {
-                    // get highest of duplicate skills' level
-                    int maxLevel = Math.Max(duplicateItem.Item2, lastSkillSet[chosenSkill].Item2);
-
-                    // adjust the skill level upwards
-                    int newSkillLevel = 0;
-                    if (maxLevel > 6)
-                    {
-                        newSkillLevel = 9;
-                    }
-                    else
-                    {
-                        newSkillLevel = maxLevel + 2;
-                    }
-
-                    // remove the duplicate item from the list
-                    newSkillsList.Remove(duplicateItem);
-
-                    // create a new skill item with enhanced skill level
-                    mySkill = new Tuple<Skill, int>(duplicateItem.Item1, newSkillLevel);
-                }
-
-                // if the last chosen skill was not a duplicate
-                else
-                {
-                    // copy chosen skill into new skill item
-                    mySkill = new Tuple<Skill, int>(lastSkillSet[chosenSkill].Item1, lastSkillSet[chosenSkill].Item2);
-                }
-
-                // add to temporary list
-                newSkillsList.Add(mySkill);
-            }
-
-            // create new skills array from temporary list
-            Tuple<Skill, int>[] newSkills = newSkillsList.ToArray();
-
-            return newSkills;
-        }
-
-        /// <summary>
-        /// Performs childbirth procedure
-        /// </summary>
-        /// <returns>Boolean indicating character death occurrence</returns>
-        /// <param name="mummy">The new NPC's mother</param>
-        /// <param name="daddy">The new NPC's father</param>
-        public void giveBirth(NonPlayerCharacter mummy, Character daddy)
-        {
-            string description = "";
-
-            // get head of family
-            PlayerCharacter thisHeadOfFamily = daddy.getHeadOfFamily();
-
-            // generate new NPC (baby)
-            NonPlayerCharacter weeBairn = this.generateNewNPC(mummy, daddy);
-
-            // check for baby being stillborn
-            bool isStillborn = weeBairn.checkForDeath(true, false, false);
-
-            if (!isStillborn)
-            {
-                // add baby to npcMasterList
-                Globals_Game.npcMasterList.Add(weeBairn.charID, weeBairn);
-
-                // set baby's location
-                weeBairn.location = mummy.location;
-                weeBairn.location.charactersInFief.Add(weeBairn);
-
-                // add baby to family
-                Globals_Client.myPlayerCharacter.myNPCs.Add(weeBairn);
-            }
-            else
-            {
-                weeBairn.isAlive = false;
-            }
-
-            // check for mother dying during childbirth
-            bool mummyDied = mummy.checkForDeath(true, true, isStillborn);
-
-            // construct and send JOURNAL ENTRY
-
-            // personae
-            string[] childbirthPersonae = new string[] { thisHeadOfFamily.charID + "|headOfFamily", mummy.charID + "|mother", daddy.charID + "|father", weeBairn.charID + "|child" };
-
-            // description
-            description += "On this day of Our Lord " + mummy.firstName + " " + mummy.familyName;
-            description += ", wife of " + daddy.firstName + " " + daddy.familyName + ", went into labour.";
-
-            // mother and baby alive
-            if ((!isStillborn) && (!mummyDied))
-            {
-                description += " Both the mother and her newborn ";
-                if (weeBairn.isMale)
-                {
-                    description += "son";
-                }
-                else
-                {
-                    description += "daughter";
-                }
-                description += " are doing well and " + thisHeadOfFamily.firstName + " " + thisHeadOfFamily.familyName;
-                description += " is delighted to welcome a new member into his family.";
-            }
-
-            // baby OK, mother dead
-            if ((!isStillborn) && (mummyDied))
-            {
-                description += " The baby ";
-                if (weeBairn.isMale)
-                {
-                    description += "boy";
-                }
-                else
-                {
-                    description += "girl";
-                }
-                description += " is doing well but sadly the mother died during childbirth. ";
-                description += thisHeadOfFamily.firstName + " " + thisHeadOfFamily.familyName;
-                description += " welcomes the new member into his family.";
-            }
-
-            // mother OK, baby dead
-            if ((isStillborn) && (!mummyDied))
-            {
-                description += " The mother is doing well but sadly her newborn ";
-                if (weeBairn.isMale)
-                {
-                    description += "son";
-                }
-                else
-                {
-                    description += "daughter";
-                }
-                description += " died during childbirth.";
-            }
-
-            // both mother and baby died
-            if ((isStillborn) && (mummyDied))
-            {
-                description += " Tragically, both the mother and her newborn ";
-                if (weeBairn.isMale)
-                {
-                    description += "son";
-                }
-                else
-                {
-                    description += "daughter";
-                }
-                description += " died of complications during the childbirth.";
-            }
-
-            // put together new journal entry
-            JournalEntry childbirth = new JournalEntry(Globals_Game.getNextJournalEntryID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, childbirthPersonae, "birth", descr: description);
-
-            // add new journal entry to pastEvents
-            Globals_Game.addPastEvent(childbirth);
-
-            // if appropriate, process mother's death
-            if (mummyDied)
-            {
-                mummy.processDeath("childbirth");
-            }
-
-            
-            // display message
-            if (Globals_Client.showMessages)
-            {
-                System.Windows.Forms.MessageBox.Show(description);
-            }
-
-            this.refreshHouseholdDisplay();
-        }
-
-        /// <summary>
-        /// Responds to the click event of button1
-        /// calling any method I see fit
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void button1_Click(object sender, EventArgs e)
-        {
-            this.giveBirth(Globals_Game.npcMasterList[Globals_Client.myPlayerCharacter.spouse], Globals_Client.myPlayerCharacter);
-        }
-
-        /// <summary>
-        /// Responds to the click event of the familyNameChildButton
-        /// allowing the player to name the selected child
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void familyNameChildButton_Click(object sender, EventArgs e)
-        {
-            NonPlayerCharacter child = null;
-
-            if (this.houseCharListView.SelectedItems.Count > 0)
-            {
-                // get NPC to name
-                for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
-                {
-                    if (Globals_Client.myPlayerCharacter.myNPCs[i].charID.Equals(this.houseCharListView.SelectedItems[0].SubItems[1].Text))
-                    {
-                        child = Globals_Client.myPlayerCharacter.myNPCs[i];
-                        break;
-                    }
-                }
-
-                if (child != null)
-                {
-                    if (Regex.IsMatch(this.familyNameChildTextBox.Text.Trim(), @"^[a-zA-Z- ]+$"))
-                    {
-                        child.firstName = this.familyNameChildTextBox.Text;
-                        this.refreshHouseholdDisplay(child);
-                    }
-                    else
-                    {
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("'" + this.familyNameChildTextBox.Text + "' is an unsuitable name, milord.");
-                        }
-                    }
-                }
-                else
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("Could not retrieve details of NonPlayerCharacter.");
-                    }
-                }
-            }
-            else
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("Please select a character from the list.");
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of the exitToolStripMenuItem
-        /// closing the application
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // closes application
-            Application.Exit();
-        }
-
-        /// <summary>
-        /// Overrides System.Windows.Forms.OnFormClosing to allow for more controlled
-        /// closing sequence whether exiting via File menu or X button.  Allows closing
-        /// to proceed unhindered if Windows shutting down
-        /// </summary>
-        /// <param name="e">The event args</param>
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            base.OnFormClosing(e);
-
-            // allows immediate closing if Windows shutting down
-            if (e.CloseReason == CloseReason.WindowsShutDown) return;
-
-            // Confirm user wants to close
-            switch (MessageBox.Show("Really Quit?", "Exit", MessageBoxButtons.OKCancel))
-            {
-			case DialogResult.OK:
-				// write to database if necessary
-                    if (Globals_Game.writeToDatabase)
-				{
-					this.databaseWrite ("fromCSV");
-				}
-				break;
-
-			// if cancel pressed, do nothing (don't close)
-			case DialogResult.Cancel:
-				e.Cancel = true;
-				break;
-			default:
-				break;
-            }
-        }
-
-        /// <summary>
-        /// Test
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void testRefreshScreen(object sender, EventArgs e)
-        {
-            this.refreshCurrentScreen();
-        }
-
-        /// <summary>
-        /// Responds to the click event of the testUpdateMenuItem
-        /// performing a full seasonal update
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void testUpdateMenuItem_Click(object sender, EventArgs e)
-        {
-            // necessary in order to be able to access button tag
-            ToolStripItem menuItem = sender as ToolStripItem;
-
-            // get type of update from button tag
-            string updateType = menuItem.Tag.ToString();
-
-            this.seasonUpdate(updateType);
-        }
-
-        /// <summary>
-        /// Responds to the click event of the switchPlayerMenuItem
-        /// allowing the switch to another player (for testing)
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void switchPlayerMenuItem_Click(object sender, EventArgs e)
-        {
-            // get new player ID
-            string playerID = this.switchPlayerMenuTextBox.Text;
-
-            if (String.IsNullOrWhiteSpace(playerID))
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("No PlayerCharacter ID entered.  Operation cancelled.");
-                }
-            }
-            else if (!Globals_Game.pcMasterList.ContainsKey(playerID))
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("PlayerCharacter could not be identified.  Operation cancelled.");
-                }
-            }
-            else
-            {
-                Globals_Client.myPlayerCharacter = Globals_Game.pcMasterList[playerID];
-                Globals_Client.charToView = Globals_Client.myPlayerCharacter;
-                this.refreshCharacterContainer(Globals_Client.charToView);
-            }
-        }
-
-        private void houseHeirBtn_Click(object sender, EventArgs e)
-        {
-            if (this.houseCharListView.SelectedItems.Count > 0)
-            {
-                // get selected NPC
-                NonPlayerCharacter selectedNPC = Globals_Game.npcMasterList[this.houseCharListView.SelectedItems[0].SubItems[1].Text];
-
-                // check for an existing heir and remove
-                foreach (NonPlayerCharacter npc in Globals_Client.myPlayerCharacter.myNPCs)
-                {
-                    if (npc.isHeir)
-                    {
-                        npc.isHeir = false;
-                    }
-                }
-
-                // appoint NPC as heir
-                selectedNPC.isHeir = true;
-
-                // refresh the household screen (in the main form)
-                this.refreshHouseholdDisplay(selectedNPC);
-            }
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of the armyManagementToolStripMenuItem
-        /// which displays main Army information screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyManagementToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // get player's army
-            Army thisArmy = Globals_Client.myPlayerCharacter.getArmy();
-
-            // display army mangement screen
-            this.armyContainer.Panel1.Tag = "management";
-            this.refreshArmyContainer(thisArmy);
-        }
-
-        /// <summary>
-        /// Performs functions associated with creating a new army
-        /// </summary>
-        /// <param name="a">The army to be added to the game</param>
-        public void addArmy(Army a)
-        {
-            // get leader
-            Character armyLeader = a.getLeader();
-
-            // get owner
-            PlayerCharacter armyOwner = a.getOwner();
-
-            // get location
-            Fief armyLocation = a.getLocation();
-
-            // add to armyMasterList
-            Globals_Game.armyMasterList.Add(a.armyID, a);
-
-            // add to owner's myArmies
-            armyOwner.myArmies.Add(a);
-
-            // add to leader
-            if (armyLeader != null)
-            {
-                armyLeader.armyID = a.armyID;
-            }
-
-            // add to fief's armies
-            armyLocation.armies.Add(a.armyID);
-
-        }
-        
-        /// <summary>
-        /// Responds to the click event of the armyRecruitBtn button, allowing the player 
-        /// to create a new army and/or recruit additional troops in the current fief
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyRecruitBtn_Click(object sender, EventArgs e)
-        {
-            // get tag from button
-            Button button = sender as Button;
-            string operation = button.Tag.ToString();
-
-            // get fief
-            Fief thisFief = Globals_Client.myPlayerCharacter.location;
-
-            // check for siege
-            if (!String.IsNullOrWhiteSpace(thisFief.siege))
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("You cannot recruit from a fief under siege.  Recruitment cancelled.");
-                }
-            }
-
-            // if not under siege, proceed
-            else
-            {
-                try
-                {
-                    // get number of troops specified
-                    UInt32 numberWanted = Convert.ToUInt32(this.armyRecruitTextBox.Text);
-
-                    // if no existing army, create one
-                    if (operation.Equals("new"))
-                    {
-                        // if necessary, exit keep (new armies are created outside keep)
-                        if (Globals_Client.myPlayerCharacter.inKeep)
-                        {
-                            Globals_Client.myPlayerCharacter.exitKeep();
-                        }
-
-                        Army newArmy = new Army(Globals_Game.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
-                        this.addArmy(newArmy);
-                    }
-
-                    // recruit troops
-                    Globals_Client.myPlayerCharacter.recruitTroops(numberWanted);
-
-                    // get army
-                    Army myArmy = Globals_Client.myPlayerCharacter.getArmy();
-
-                    // refresh display
-                    this.refreshArmyContainer(myArmy);
-                }
-                catch (System.FormatException fe)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
-                    }
-                }
-                catch (System.OverflowException ofe)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
-                    }
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of the armyMaintainBtn button
-        /// allowing the player to maintain the army in the field
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyMaintainBtn_Click(object sender, EventArgs e)
-        {
-            if (Globals_Client.armyToView != null)
-            {
-                // maintain army
-                this.mantainArmy(Globals_Client.armyToView);
-
-                // refresh display
-                this.refreshArmyContainer(Globals_Client.armyToView);
-            }
-        }
-
-        public void mantainArmy(Army a)
-        {
-            string toDisplay = "";
-
-            // get cost
-            uint maintCost = a.calcArmySize() * 500;
-
-            // get available treasury
-            Fief homeFief = Globals_Client.myPlayerCharacter.getHomeFief();
-            int availTreas = homeFief.getAvailableTreasury();
-
-            // check if army is already maintained
-            if (!a.isMaintained)
-            {
-                // check if can afford maintenance
-                if (maintCost > availTreas)
-                {
-                    // display 'no' message
-                    toDisplay += "Sorry, milord, to maintain this army would cost £" + maintCost + "\r\n";
-                    toDisplay += "and you only have £" + availTreas + " available in the home treasury.";
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(toDisplay);
-                    }
-                }
-                else
-                {
-                    // set isMaintained
-                    a.isMaintained = true;
-
-                    // deduct funds from treasury
-                    homeFief.treasury -= Convert.ToInt32(maintCost);
-
-                    // display confirmation message
-                    toDisplay += "Army maintained at a cost of £" + maintCost + ".";
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(toDisplay);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of any entourage button
-        /// invoking either addToEntourage or removeFromEntourage
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void entourageBtn_Click(object sender, EventArgs e)
-        {
-            // for messages
-            string toDisplay = "";
-
-            // get button
-            Button button = sender as Button;
-
-            // check button tag to see on which screen the command occurred
-            string whichScreen = button.Tag.ToString();
-
-            // check which action to perform
-            // if is in entourage, remove
-            if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
-            {
-                Globals_Client.myPlayerCharacter.removeFromEntourage((Globals_Client.charToView as NonPlayerCharacter));
-            }
-
-            // if is not in entourage, add
-            else
-            {
-                // check to see if NPC is army leader
-                // if not leader, proceed
-                if (String.IsNullOrWhiteSpace(Globals_Client.charToView.armyID))
-                {
-                    // add to entourage
-                    Globals_Client.myPlayerCharacter.addToEntourage((Globals_Client.charToView as NonPlayerCharacter));
-
-                }
-
-                // if is army leader, can't add to entourage
-                else
-                {
-                    toDisplay += "Sorry, milord, this person is an army leader\r\n";
-                    toDisplay += "and, therefore, cannot be added to your entourage.";
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(toDisplay);
-                    }
-                }
-            }
-
-            // refresh appropriate screen
-            if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
-            {
-                this.refreshMeetingPlaceDisplay(whichScreen); ;
-            }
-            else if (whichScreen.Equals("house"))
-            {
-                this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
-            }
-        }
-
-        /// <summary>
-        /// Responds to the ItemSelectionChanged event of the armyListView object,
-        /// invoking the displayArmyData method and passing an Army to display
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
-        {
-            // get army to view
-            if (this.armyListView.SelectedItems.Count > 0)
-            {
-                Globals_Client.armyToView = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
-            }
-
-            if (Globals_Client.armyToView != null)
-            {
-                // display data for selected army
-                this.armyTextBox.Text = this.displayArmyData(Globals_Client.armyToView);
-
-                // check if is defender in a siege
-                string siegeID = Globals_Client.armyToView.checkIfSiegeDefenderGarrison();
-                if (String.IsNullOrWhiteSpace(siegeID))
-                {
-                    siegeID = Globals_Client.armyToView.checkIfSiegeDefenderAdditional();
-                }
-
-                // if is defender in a siege, disable controls
-                if (!String.IsNullOrWhiteSpace(siegeID))
-                {
-                    this.disableControls(this.armyManagementPanel);
-                    this.disableControls(this.armyCombatPanel);
-
-                    // always enable switch between management and combat panels
-                    this.armyDisplayCmbtBtn.Enabled = true;
-                    this.armyDisplayMgtBtn.Enabled = true;
-                }
-
-                // if isn't defender in a siege, enable controls
-                else
-                {
-                    // recruit controls
-                    // if player is leading an army but not the one on view, disable 'recruit' button
-                    if (((!String.IsNullOrWhiteSpace(Globals_Client.armyToView.leader))
-                        && (!(Globals_Client.armyToView.leader.Equals(Globals_Client.myPlayerCharacter.charID))))
-                        && (!String.IsNullOrWhiteSpace(Globals_Client.charToView.armyID)))
-                    {
-                        this.armyRecruitBtn.Enabled = false;
-                        this.armyRecruitTextBox.Enabled = false;
-                    }
-                    // otherwise, enable 'recruit' button
-                    else
-                    {
-                        this.armyRecruitBtn.Enabled = true;
-                        this.armyRecruitTextBox.Enabled = true;
-
-                        // if army on view is led by player, set button text to 'recruit additional'
-                        if (Globals_Client.armyToView.leader == Globals_Client.myPlayerCharacter.charID)
-                        {
-                            this.armyRecruitBtn.Text = "Recruit Additional Troops From Current Fief";
-                            this.armyRecruitBtn.Tag = "add";
-                        }
-                        // if player is not leading any armies, set button text to 'recruit new'
-                        else if (String.IsNullOrWhiteSpace(Globals_Client.myPlayerCharacter.armyID))
-                        {
-                            this.armyRecruitBtn.Text = "Recruit a New Army In Current Fief";
-                            this.armyRecruitBtn.Tag = "new";
-                        }
-                    }
-
-                    // if has no leader
-                    if (String.IsNullOrWhiteSpace(Globals_Client.armyToView.leader))
-                    {
-                        // set army aggression to 0
-                        if (Globals_Client.armyToView.aggression > 0)
-                        {
-                            Globals_Client.armyToView.aggression = 0;
-                        }
-
-                        // disable 'proactive' army functions
-                        this.armyExamineBtn.Enabled = false;
-                        this.armyPillageBtn.Enabled = false;
-                        this.armySiegeBtn.Enabled = false;
-                        this.armyAutoCombatBtn.Enabled = false;
-                        this.armyAggroTextBox.Enabled = false;
-                        this.armyOddsTextBox.Enabled = false;
-                        this.armyTransDropBtn.Enabled = false;
-                        this.armyTransKnightTextBox.Enabled = false;
-                        this.armyTransMAAtextBox.Enabled = false;
-                        this.armyTransLCavTextBox.Enabled = false;
-                        this.armyTransLongbowTextBox.Enabled = false;
-                        this.armyTransFootTextBox.Enabled = false;
-                        this.armyTransRabbleTextBox.Enabled = false;
-                        this.armyTransDropWhoTextBox.Enabled = false;
-                        this.armyTransPickupBtn.Enabled = false;
-                    }
-
-                    // has leader
-                    else
-                    {
-                        this.armyExamineBtn.Enabled = true;
-                        this.armyPillageBtn.Enabled = true;
-                        this.armySiegeBtn.Enabled = true;
-                        this.armyAutoCombatBtn.Enabled = true;
-                        this.armyAggroTextBox.Enabled = true;
-                        this.armyOddsTextBox.Enabled = true;
-                        this.armyTransDropBtn.Enabled = true;
-                        this.armyTransKnightTextBox.Enabled = true;
-                        this.armyTransMAAtextBox.Enabled = true;
-                        this.armyTransLCavTextBox.Enabled = true;
-                        this.armyTransLongbowTextBox.Enabled = true;
-                        this.armyTransFootTextBox.Enabled = true;
-                        this.armyTransRabbleTextBox.Enabled = true;
-                        this.armyTransDropWhoTextBox.Enabled = true;
-                        this.armyTransPickupBtn.Enabled = true;
-                    }
-
-                    // other controls
-                    this.armyMaintainBtn.Enabled = true;
-                    this.armyAppointLeaderBtn.Enabled = true;
-                    this.armyAppointSelfBtn.Enabled = true;
-                    this.armyDisbandBtn.Enabled = true;
-                    this.armyCampBtn.Enabled = true;
-                    this.armyCampTextBox.Enabled = true;
-
-                    // check to see if current fief is in rebellion and enable control as appropriate
-                    // get fief
-                    Fief thisFief = Globals_Client.armyToView.getLocation();
-                    if (thisFief.status.Equals('R'))
-                    {
-                        // only enable if army has leader
-                        if (!String.IsNullOrWhiteSpace(Globals_Client.armyToView.leader))
-                        {
-                            this.armyQuellRebellionBtn.Enabled = true;
-                        }
-                    }
-                    else
-                    {
-                        this.armyQuellRebellionBtn.Enabled = false;
-                    }
-
-                    // set auto combat values
-                    this.armyAggroTextBox.Text = Globals_Client.armyToView.aggression.ToString();
-                    this.armyOddsTextBox.Text = Globals_Client.armyToView.combatOdds.ToString();
-
-                    // preload own ID in 'drop off to' textbox (assumes transferring between own armies)
-                    this.armyTransDropWhoTextBox.Text = Globals_Client.myPlayerCharacter.charID;
-                    // and set all troop transfer numbers to 0
-                    this.armyTransKnightTextBox.Text = "0";
-                    this.armyTransMAAtextBox.Text = "0";
-                    this.armyTransLCavTextBox.Text = "0";
-                    this.armyTransLongbowTextBox.Text = "0";
-                    this.armyTransCrossbowTextBox.Text = "0";
-                    this.armyTransFootTextBox.Text = "0";
-                    this.armyTransRabbleTextBox.Text = "0";
-                }
-
-            }
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of the listMToolStripMenuItem
-        /// displaying the army management screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void listMToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            this.armyContainer.Panel1.Tag = "management";
-            Globals_Client.armyToView = null;
-            this.refreshArmyContainer();
-        }
-
-        /// <summary>
-        /// Responds to the click event of the armyAppointLeaderBtn button
-        /// invoking and displaying the character selection screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyAppointLeaderBtn_Click(object sender, EventArgs e)
-        {
-            // check for previously opened SelectionForm and close if necessary
-            if (Application.OpenForms.OfType<SelectionForm>().Any())
-            {
-                Application.OpenForms.OfType<SelectionForm>().First().Close();
-            }
-
-            string thisArmyID = null;
-            if (this.armyListView.SelectedItems.Count > 0)
-            {
-                // get armyID and army
-                thisArmyID = this.armyListView.SelectedItems[0].SubItems[0].Text;
-
-                // display selection form
-                SelectionForm chooseLeader = new SelectionForm(this, "leader", armID: thisArmyID);
-                chooseLeader.Show();
-            }
-
-            // if no army selected
-            else
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("No army selected!");
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of the armyAppointSelfBtn button
-        /// allowing the player to appoint themselves as army leader
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyAppointSelfBtn_Click(object sender, EventArgs e)
-        {
-            // get army
-            Army thisArmy = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
-
-            thisArmy.assignNewLeader(Globals_Client.myPlayerCharacter);
-
-            // refresh the army information (in the main form)
-            this.refreshArmyContainer(thisArmy);
-        }
-
-        /// <summary>
-        /// Responds to the click event of the armyTransDropBtn button
-        /// allowing the player to leave troops in the fief for transfer to other armies
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyTransDropBtn_Click(object sender, EventArgs e)
-        {
-            bool proceed = true;
-            bool adjustDays = true;
-            int daysTaken = 0;
-            uint totalTroopsToTransfer = 0;
-
-            if (Globals_Client.armyToView != null)
-            {
-                // run checks on data in fields
-                try
-                {
-                    // labels for troop types
-                    string[] troopTypeLabels = new string[] { "knights", "men-at-arms", "light cavalry", "longbowmen", "crossbowmen", "foot", "rabble" };
-
-                    // get number of troops to transfer
-                    uint[] troopsToTransfer = new uint[] {0, 0, 0, 0, 0, 0, 0};
-                    troopsToTransfer[0] = Convert.ToUInt32(this.armyTransKnightTextBox.Text);
-                    troopsToTransfer[1] = Convert.ToUInt32(this.armyTransMAAtextBox.Text);
-                    troopsToTransfer[2] = Convert.ToUInt32(this.armyTransLCavTextBox.Text);
-                    troopsToTransfer[3] = Convert.ToUInt32(this.armyTransLongbowTextBox.Text);
-                    troopsToTransfer[4] = Convert.ToUInt32(this.armyTransCrossbowTextBox.Text);
-                    troopsToTransfer[5] = Convert.ToUInt32(this.armyTransFootTextBox.Text);
-                    troopsToTransfer[6] = Convert.ToUInt32(this.armyTransRabbleTextBox.Text);
-
-                    // check each troop type; if not enough in army, cancel
-                    for (int i = 0; i < troopsToTransfer.Length; i++)
-                    {
-                        if (troopsToTransfer[i] > Globals_Client.armyToView.troops[i])
-                        {
-                            if (Globals_Client.showMessages)
-                            {
-                                System.Windows.Forms.MessageBox.Show("You don't have enough " + troopTypeLabels[i] + " in your army for that transfer.  Transfer cancelled.");
-                            }
-                            proceed = false;
-                            adjustDays = false;
-                        }
-                        else
-                        {
-                            totalTroopsToTransfer += troopsToTransfer[i];
-                        }
-                    }
-
-                    // if no troops selected for transfer, cancel
-                    if ((totalTroopsToTransfer == 0) && (proceed))
-                    {
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("You haven't selected any troops for transfer.  Transfer cancelled.");
-                        }
-                        proceed = false;
-                        adjustDays = false;
-                    }
-
-                    // if reduces army to < 100 troops, warn
-                    if (((Globals_Client.armyToView.calcArmySize() - totalTroopsToTransfer) < 100) && (proceed))
-                    {
-                        DialogResult dialogResult = MessageBox.Show("This transfer will reduce your army manpower to dangerous levels.  Click OK to proceed.", "Proceed with transfer?", MessageBoxButtons.OKCancel);
-
-                        // if choose to cancel
-                        if (dialogResult == DialogResult.Cancel)
-                        {
-                            if (Globals_Client.showMessages)
-                            {
-                                System.Windows.Forms.MessageBox.Show("Transfer cancelled.");
-                            }
-                            proceed = false;
-                            adjustDays = false;
-                        }
-                    }
-
-                    // check have minimum days necessary for transfer
-                    if (Globals_Client.armyToView.days < 10)
-                    {
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("You don't have enough days left for this transfer.  Transfer cancelled.");
-                        }
-                        proceed = false;
-                        adjustDays = false;
-                    }
-                    else
-                    {
-                        // calculate time taken for transfer
-                        daysTaken = Globals_Game.myRand.Next(10, 31);
-
-                        // check if have enough days for transfer in this instance
-                        if (daysTaken > Globals_Client.armyToView.days)
-                        {
-                            if (Globals_Client.showMessages)
-                            {
-                                System.Windows.Forms.MessageBox.Show("Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.");
-                            }
-                            proceed = false;
-                        }
-                    }
-
-                    // check transfer recipient exists
-                    if (!Globals_Game.pcMasterList.ContainsKey(this.armyTransDropWhoTextBox.Text))
-                    {
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Cannot identify transfer recipient.  Transfer cancelled.");
-                        }
-                        proceed = false;
-                    }
-
-                    if (proceed)
-                    {
-                        // remove troops from army
-                        for (int i = 0; i < Globals_Client.armyToView.troops.Length; i++)
-                        {
-                            Globals_Client.armyToView.troops[i] -= troopsToTransfer[i];
-                        }
-
-                        // get fief
-                        Fief thisFief = Globals_Client.armyToView.getLocation();
-
-                        // create transfer entry
-                        string[] thisTransfer = new string[10] { Globals_Client.myPlayerCharacter.charID, this.armyTransDropWhoTextBox.Text,
-                            troopsToTransfer[0].ToString(), troopsToTransfer[1].ToString(), troopsToTransfer[2].ToString(),
-                            troopsToTransfer[3].ToString(), troopsToTransfer[4].ToString(), troopsToTransfer[5].ToString(),
-                            troopsToTransfer[6].ToString(), (Globals_Client.armyToView.days - daysTaken).ToString() };
-
-                        // add to fief's troopTransfers list
-                        thisFief.troopTransfers.Add(Globals_Game.getNextDetachmentID(), thisTransfer);
-                    }
-
-                    if (adjustDays)
-                    {
-                        // get leader
-                        Character myLeader = Globals_Client.armyToView.getLeader();
-
-                        // adjust days
-                        myLeader.adjustDays(daysTaken);
-
-                        // calculate possible attrition for army
-                        byte attritionChecks = Convert.ToByte(daysTaken / 7);
-                        for (int i = 0; i < attritionChecks; i++)
-                        {
-                            // calculate attrition
-                            double attritionModifer = Globals_Client.armyToView.calcAttrition();
-                            // apply attrition
-                            Globals_Client.armyToView.applyTroopLosses(attritionModifer);
-                        }
-                    }
-
-                }
-                catch (System.FormatException fe)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
-                    }
-                }
-                catch (System.OverflowException ofe)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
-                    }
-                }
-                finally
-                {
-                    this.refreshArmyContainer(Globals_Client.armyToView);
-                }
-
-            }            
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of the armyTransPickupBtn button, invoking and displaying the
-        /// transfer selection screen, allowing detachments in the current fief to be added to the army
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyTransPickupBtn_Click(object sender, EventArgs e)
-        {
-            // check for previously opened SelectionForm and close if necessary
-            if (Application.OpenForms.OfType<SelectionForm>().Any())
-            {
-                Application.OpenForms.OfType<SelectionForm>().First().Close();
-            }
-
-            string thisArmyID = null;
-            if (this.armyListView.SelectedItems.Count > 0)
-            {
-                // get armyID and army
-                thisArmyID = this.armyListView.SelectedItems[0].SubItems[0].Text;
-
-                // display selection form
-                SelectionForm chooseTroops = new SelectionForm(this, "transferTroops", armID: thisArmyID);
-                chooseTroops.Show();
-            }
-
-            // if no army selected
-            else
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("No army selected!");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Disbands the specified army
-        /// </summary>
-        /// <param name="a">Army to be disbanded</param>
-        public void disbandArmy(Army a)
-        {
-            // carry out functions associated with disband
-            a.disbandArmy();
-
-            // set army to null
-            a = null;
-        }
-
-        /// <summary>
-        /// Responds to the click event of the armyDisbandBtn button, disbanding the selected army
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyDisbandBtn_Click(object sender, EventArgs e)
-        {
-            if (Globals_Client.armyToView != null)
-            {
-                // disband army
-                this.disbandArmy(Globals_Client.armyToView);
-
-                // refresh display
-                this.refreshArmyContainer();
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of the armyAutoCombatBtn button, setting the army's
-        /// aggression and combat odds values to those in the text fields
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyAutoCombatBtn_Click(object sender, EventArgs e)
-        {
-            if (Globals_Client.armyToView != null)
-            {
-                try
-                {
-                    // get new aggression level
-                    byte newAggroLevel = Convert.ToByte(this.armyAggroTextBox.Text);
-
-                    // get new combat odds value
-                    byte newOddsValue = Convert.ToByte(this.armyOddsTextBox.Text);
-
-                    // check values and alter if appropriate
-                    if (newAggroLevel < 0)
-                    {
-                        newAggroLevel = 0;
-                    }
-                    else if (newAggroLevel > 2)
-                    {
-                        newAggroLevel = 2;
-                    }
-                    if (newOddsValue < 0)
-                    {
-                        newOddsValue = 0;
-                    }
-                    else if (newOddsValue > 9)
-                    {
-                        newOddsValue = 9;
-                    }
-
-                    // update army's values
-                    Globals_Client.armyToView.aggression = newAggroLevel;
-                    Globals_Client.armyToView.combatOdds = newOddsValue;
-                }
-                catch (System.FormatException fe)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
-                    }
-                }
-                catch (System.OverflowException ofe)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
-                    }
-                }
-                finally
-                {
-                    // refresh display
-                    this.refreshArmyContainer(Globals_Client.armyToView);
-                }
- 
-            }
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of the armyCampBtn button
-        /// invoking the campWaitHere method for the army leader (and army)
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyCampBtn_Click(object sender, EventArgs e)
-        {
-            if (Globals_Client.armyToView != null)
-            {
-                try
-                {
-                    // get days to camp
-                    byte campDays = Convert.ToByte(this.armyCampTextBox.Text);
-
-                    // get leader
-                    Character thisLeader = Globals_Client.armyToView.getLeader();
-
-                    // camp
-                    this.campWaitHere(thisLeader, campDays);
-                }
-                catch (System.FormatException fe)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
-                    }
-                }
-                catch (System.OverflowException ofe)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
-                    }
-                }
-                finally
-                {
-                    // refresh display
-                    this.refreshArmyContainer(Globals_Client.armyToView);
-                }
-
-            }
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of the armyExamineBtn button
-        /// displaying a list of all armies in the current army's fief
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyExamineBtn_Click(object sender, EventArgs e)
-        {
-            // army leader
-            Character thisLeader = Globals_Client.armyToView.getLeader();
-
-            // check for previously opened SelectionForm and close if necessary
-            if (Application.OpenForms.OfType<SelectionForm>().Any())
-            {
-                Application.OpenForms.OfType<SelectionForm>().First().Close();
-            }
-
-            // if no army selected
-            if (this.armyListView.SelectedItems.Count < 1)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("No army selected!");
-                }
-            }
-
-            // if army selected
-            else
-            {
-                // check if has minimum days
-                if (Globals_Client.armyToView.days < 1)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
-                    }
-                }
-
-                // has minimum days
-                else
-                {
-                    // see how long reconnaissance takes
-                    int reconDays = Globals_Game.myRand.Next(1, 4);
-
-                    // check if runs out of time
-                    if (Globals_Client.armyToView.days < reconDays)
-                    {
-                        // set days to 0
-                        thisLeader.adjustDays(Globals_Client.armyToView.days);
-                        this.refreshArmyContainer(Globals_Client.armyToView);
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
-                        }
-                    }
-
-                    // doesn't run out of time
-                    else
-                    {
-                        // adjust days
-                        thisLeader.adjustDays(reconDays);
-                        this.refreshArmyContainer(Globals_Client.armyToView);
-
-                        // display armies list
-                        SelectionForm examineArmies = new SelectionForm(this, "armies", obs: thisLeader);
-                        examineArmies.Show();
-                    }
-
-                }
-
-            }
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of the houseExamineArmiesBtn button
-        /// displaying a list of all armies in the current NPC's fief
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void houseExamineArmiesBtn_Click(object sender, EventArgs e)
-        {
-            // NPC
-            Character thisObserver = Globals_Client.charToView;
-
-            // check for previously opened SelectionForm and close if necessary
-            if (Application.OpenForms.OfType<SelectionForm>().Any())
-            {
-                Application.OpenForms.OfType<SelectionForm>().First().Close();
-            }
-
-            // if no NPC selected
-            if (this.houseCharListView.SelectedItems.Count < 1)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("No NPC selected!");
-                }
-            }
-
-            // if NPC selected
-            else
-            {
-                // check if has minimum days
-                if (Globals_Client.charToView.days < 1)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
-                    }
-                }
-
-                // has minimum days
-                else
-                {
-                    // see how long reconnaissance takes
-                    int reconDays = Globals_Game.myRand.Next(1, 4);
-
-                    // check if runs out of time
-                    if (Globals_Client.charToView.days < reconDays)
-                    {
-                        // set days to 0
-                        Globals_Client.charToView.adjustDays(Globals_Client.armyToView.days);
-                        this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
-                        }
-                    }
-
-                    // doesn't run out of time
-                    else
-                    {
-                        // adjust days
-                        Globals_Client.charToView.adjustDays(reconDays);
-                        this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
-
-                        // display armies list
-                        SelectionForm examineArmies = new SelectionForm(this, "armies", obs: thisObserver);
-                        examineArmies.Show();
-                    }
-
-                }
-
-            }
-
-        }
-
-        /// <summary>
         /// Responds to the click event of the travelExamineArmiesBtn button
         /// displaying a list of all armies in the Player's current fief
         /// </summary>
@@ -7560,6 +3745,8 @@ namespace hist_mmorpg
             }
 
         }
+
+        // ------------------- BATTLE
 
         /// <summary>
         /// Calculates battle values of both armies participating in a battle or siege
@@ -8426,6 +4613,1279 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Calculates rough battle odds between two armies (i.e ratio of attacking army combat
+        /// value to defending army combat value).  NOTE: does not involve leadership values
+        /// </summary>
+        /// <returns>int containing battle odds</returns>
+        /// <param name="attacker">The attacking army</param>
+        /// <param name="defender">The defending army</param>
+        public int getBattleOdds(Army attacker, Army defender)
+        {
+            double battleOdds = 0;
+
+            battleOdds = Math.Floor(attacker.calculateCombatValue() / defender.calculateCombatValue());
+
+            return Convert.ToInt32(battleOdds);
+        }
+
+        // ------------------- ARMY MANAGEMENT
+
+        /// <summary>
+        /// Creates UI display for list of armies owned by player
+        /// </summary>
+        public void setUpArmyList()
+        {
+            // add necessary columns
+            this.armyListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.armyListView.Columns.Add("Leader", -2, HorizontalAlignment.Left);
+            this.armyListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
+            this.armyListView.Columns.Add("Size", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Retrieves information for Army display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="a">Army for which information is to be displayed</param>
+        public string displayArmyData(Army a)
+        {
+            string armyText = "";
+            uint[] troopNumbers = a.troops;
+            Fief armyLocation = a.getLocation();
+
+            // check if is garrison in a siege
+            string siegeID = a.checkIfSiegeDefenderGarrison();
+            if (String.IsNullOrWhiteSpace(siegeID))
+            {
+                // check if is additional defender in a siege
+                siegeID = a.checkIfSiegeDefenderAdditional();
+            }
+
+            // if is defender in a siege, indicate
+            if (!String.IsNullOrWhiteSpace(siegeID))
+            {
+                armyText += "NOTE: This army is currently UNDER SIEGE\r\n\r\n";
+            }
+
+            else
+            {
+                // check if is besieger in a siege
+                siegeID = a.checkIfBesieger();
+
+                // if is besieger in a siege, indicate
+                if (!String.IsNullOrWhiteSpace(siegeID))
+                {
+                    armyText += "NOTE: This army is currently BESIEGING THIS FIEF\r\n\r\n";
+                }
+
+                // check if is siege in fief (but army not involved)
+                else
+                {
+                    if (!String.IsNullOrWhiteSpace(armyLocation.siege))
+                    {
+                        armyText += "NOTE: This fief is currently UNDER SIEGE\r\n\r\n";
+                    }
+                }
+            }
+
+            // ID
+            armyText += "ID: " + a.armyID + "\r\n\r\n";
+
+            // nationality
+            armyText += "Nationality: " + a.getOwner().nationality.name + "\r\n\r\n";
+
+            // days left
+            armyText += "Days left: " + a.days + "\r\n\r\n";
+
+            // location
+            armyText += "Location: " + armyLocation.name + " (Province: " + armyLocation.province.name + ".  Kingdom: " + armyLocation.province.kingdom.name + ")\r\n\r\n";
+
+            // leader
+            Character armyLeader = a.getLeader();
+
+            armyText += "Leader: ";
+
+            if (armyLeader == null)
+            {
+                armyText += "THIS ARMY HAS NO LEADER!  You should appoint one as soon as possible.";
+            }
+            else
+            {
+                armyText += armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")";
+            }
+            armyText += "\r\n\r\n";
+
+            // labels for troop types
+            string[] troopTypeLabels = new string[] { " - Knights: ", " - Men-at-Arms: ", " - Light Cavalry: ", " - Longbowmen: ", " - Crossbowmen: ", " - Foot: ", " - Rabble: " };
+
+            // display numbers for each troop type
+            for (int i = 0; i < troopNumbers.Length; i++)
+            {
+                armyText += troopTypeLabels[i] + troopNumbers[i];
+                armyText += "\r\n";
+            }
+            armyText += "   ==================\r\n";
+            armyText += " - TOTAL: " + a.calcArmySize() + "\r\n\r\n";
+
+            // whether is maintained (and at what cost)
+            if (a.isMaintained)
+            {
+                uint armyCost = a.calcArmySize() * 500;
+
+                armyText += "This army is currently being maintained (at a cost of £" + armyCost + ")\r\n\r\n";
+            }
+            else
+            {
+                armyText += "This army is NOT currently being maintained\r\n\r\n";
+            }
+
+            // aggression level
+            armyText += "Aggression level: " + a.aggression + "\r\n\r\n";
+
+            // sally value
+            armyText += "Sally value: " + a.combatOdds + "\r\n\r\n";
+
+            return armyText;
+        }
+
+        /// <summary>
+        /// Refreshes main Army display screen
+        /// </summary>
+        /// <param name="a">Army whose information is to be displayed</param>
+        public void refreshArmyContainer(Army a = null)
+        {
+            // disable controls until army selected
+            this.disableControls(this.armyManagementPanel);
+            this.disableControls(this.armyCombatPanel);
+
+            // always enable switch between management and combat panels
+            this.armyDisplayCmbtBtn.Enabled = true;
+            this.armyDisplayMgtBtn.Enabled = true;
+
+            // ensure main textbox isn't interactive
+            this.armyTextBox.ReadOnly = true;
+
+            // clear existing items in armies list
+            this.armyListView.Items.Clear();
+
+            // iterates through player's armies adding information to ListView
+            for (int i = 0; i < Globals_Client.myPlayerCharacter.myArmies.Count; i++)
+            {
+                ListViewItem thisArmy = null;
+
+                // armyID
+                thisArmy = new ListViewItem(Globals_Client.myPlayerCharacter.myArmies[i].armyID);
+
+                // leader
+                Character armyLeader = Globals_Client.myPlayerCharacter.myArmies[i].getLeader();
+                if (armyLeader != null)
+                {
+                    thisArmy.SubItems.Add(armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")");
+                }
+                else
+                {
+                    thisArmy.SubItems.Add("No leader");
+                }
+
+                // location
+                Fief armyLocation = Globals_Client.myPlayerCharacter.myArmies[i].getLocation();
+                thisArmy.SubItems.Add(armyLocation.name + " (" + armyLocation.id + ")");
+
+                // size
+                thisArmy.SubItems.Add(Globals_Client.myPlayerCharacter.myArmies[i].calcArmySize().ToString());
+
+                if (thisArmy != null)
+                {
+                    // if army passed in as parameter, show as selected
+                    if (Globals_Client.myPlayerCharacter.myArmies[i] == a)
+                    {
+                        thisArmy.Selected = true;
+                    }
+
+                    // add item to armyListView
+                    this.armyListView.Items.Add(thisArmy);
+                }
+
+            }
+
+            if (a == null)
+            {
+                // if player is not leading any armies, set button text to 'recruit new' and enable
+                if (String.IsNullOrWhiteSpace(Globals_Client.myPlayerCharacter.armyID))
+                {
+                    this.armyRecruitBtn.Text = "Recruit a New Army In Current Fief";
+                    this.armyRecruitBtn.Tag = "new";
+                    this.armyRecruitBtn.Enabled = true;
+                    this.armyRecruitTextBox.Enabled = true;
+                }
+            }
+
+            Globals_Client.containerToView = this.armyContainer;
+            Globals_Client.containerToView.BringToFront();
+
+            // check which panel to display
+            string armyPanelTag = this.armyContainer.Panel1.Tag.ToString();
+            if (armyPanelTag.Equals("combat"))
+            {
+                this.armyCombatPanel.BringToFront();
+            }
+            else
+            {
+                this.armyManagementPanel.BringToFront();
+            }
+
+            this.armyListView.Focus();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyManagementToolStripMenuItem
+        /// which displays main Army information screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyManagementToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // get player's army
+            Army thisArmy = Globals_Client.myPlayerCharacter.getArmy();
+
+            // display army mangement screen
+            this.armyContainer.Panel1.Tag = "management";
+            this.refreshArmyContainer(thisArmy);
+        }
+
+        /// <summary>
+        /// Performs functions associated with creating a new army
+        /// </summary>
+        /// <param name="a">The army to be added to the game</param>
+        public void addArmy(Army a)
+        {
+            // get leader
+            Character armyLeader = a.getLeader();
+
+            // get owner
+            PlayerCharacter armyOwner = a.getOwner();
+
+            // get location
+            Fief armyLocation = a.getLocation();
+
+            // add to armyMasterList
+            Globals_Game.armyMasterList.Add(a.armyID, a);
+
+            // add to owner's myArmies
+            armyOwner.myArmies.Add(a);
+
+            // add to leader
+            if (armyLeader != null)
+            {
+                armyLeader.armyID = a.armyID;
+            }
+
+            // add to fief's armies
+            armyLocation.armies.Add(a.armyID);
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyRecruitBtn button, allowing the player 
+        /// to create a new army and/or recruit additional troops in the current fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyRecruitBtn_Click(object sender, EventArgs e)
+        {
+            // get tag from button
+            Button button = sender as Button;
+            string operation = button.Tag.ToString();
+
+            // get fief
+            Fief thisFief = Globals_Client.myPlayerCharacter.location;
+
+            // check for siege
+            if (!String.IsNullOrWhiteSpace(thisFief.siege))
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("You cannot recruit from a fief under siege.  Recruitment cancelled.");
+                }
+            }
+
+            // if not under siege, proceed
+            else
+            {
+                try
+                {
+                    // get number of troops specified
+                    UInt32 numberWanted = Convert.ToUInt32(this.armyRecruitTextBox.Text);
+
+                    // if no existing army, create one
+                    if (operation.Equals("new"))
+                    {
+                        // if necessary, exit keep (new armies are created outside keep)
+                        if (Globals_Client.myPlayerCharacter.inKeep)
+                        {
+                            Globals_Client.myPlayerCharacter.exitKeep();
+                        }
+
+                        Army newArmy = new Army(Globals_Game.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
+                        this.addArmy(newArmy);
+                    }
+
+                    // recruit troops
+                    Globals_Client.myPlayerCharacter.recruitTroops(numberWanted);
+
+                    // get army
+                    Army myArmy = Globals_Client.myPlayerCharacter.getArmy();
+
+                    // refresh display
+                    this.refreshArmyContainer(myArmy);
+                }
+                catch (System.FormatException fe)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    }
+                }
+                catch (System.OverflowException ofe)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    }
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyMaintainBtn button
+        /// allowing the player to maintain the army in the field
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyMaintainBtn_Click(object sender, EventArgs e)
+        {
+            if (Globals_Client.armyToView != null)
+            {
+                // maintain army
+                Globals_Client.armyToView.mantainArmy();
+
+                // refresh display
+                this.refreshArmyContainer(Globals_Client.armyToView);
+            }
+        }
+
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of the armyListView object,
+        /// invoking the displayArmyData method and passing an Army to display
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            // get army to view
+            if (this.armyListView.SelectedItems.Count > 0)
+            {
+                Globals_Client.armyToView = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+            }
+
+            if (Globals_Client.armyToView != null)
+            {
+                // display data for selected army
+                this.armyTextBox.Text = this.displayArmyData(Globals_Client.armyToView);
+
+                // check if is defender in a siege
+                string siegeID = Globals_Client.armyToView.checkIfSiegeDefenderGarrison();
+                if (String.IsNullOrWhiteSpace(siegeID))
+                {
+                    siegeID = Globals_Client.armyToView.checkIfSiegeDefenderAdditional();
+                }
+
+                // if is defender in a siege, disable controls
+                if (!String.IsNullOrWhiteSpace(siegeID))
+                {
+                    this.disableControls(this.armyManagementPanel);
+                    this.disableControls(this.armyCombatPanel);
+
+                    // always enable switch between management and combat panels
+                    this.armyDisplayCmbtBtn.Enabled = true;
+                    this.armyDisplayMgtBtn.Enabled = true;
+                }
+
+                // if isn't defender in a siege, enable controls
+                else
+                {
+                    // recruit controls
+                    // if player is leading an army but not the one on view, disable 'recruit' button
+                    if (((!String.IsNullOrWhiteSpace(Globals_Client.armyToView.leader))
+                        && (!(Globals_Client.armyToView.leader.Equals(Globals_Client.myPlayerCharacter.charID))))
+                        && (!String.IsNullOrWhiteSpace(Globals_Client.charToView.armyID)))
+                    {
+                        this.armyRecruitBtn.Enabled = false;
+                        this.armyRecruitTextBox.Enabled = false;
+                    }
+                    // otherwise, enable 'recruit' button
+                    else
+                    {
+                        this.armyRecruitBtn.Enabled = true;
+                        this.armyRecruitTextBox.Enabled = true;
+
+                        // if army on view is led by player, set button text to 'recruit additional'
+                        if (Globals_Client.armyToView.leader == Globals_Client.myPlayerCharacter.charID)
+                        {
+                            this.armyRecruitBtn.Text = "Recruit Additional Troops From Current Fief";
+                            this.armyRecruitBtn.Tag = "add";
+                        }
+                        // if player is not leading any armies, set button text to 'recruit new'
+                        else if (String.IsNullOrWhiteSpace(Globals_Client.myPlayerCharacter.armyID))
+                        {
+                            this.armyRecruitBtn.Text = "Recruit a New Army In Current Fief";
+                            this.armyRecruitBtn.Tag = "new";
+                        }
+                    }
+
+                    // if has no leader
+                    if (String.IsNullOrWhiteSpace(Globals_Client.armyToView.leader))
+                    {
+                        // set army aggression to 0
+                        if (Globals_Client.armyToView.aggression > 0)
+                        {
+                            Globals_Client.armyToView.aggression = 0;
+                        }
+
+                        // disable 'proactive' army functions
+                        this.armyExamineBtn.Enabled = false;
+                        this.armyPillageBtn.Enabled = false;
+                        this.armySiegeBtn.Enabled = false;
+                        this.armyAutoCombatBtn.Enabled = false;
+                        this.armyAggroTextBox.Enabled = false;
+                        this.armyOddsTextBox.Enabled = false;
+                        this.armyTransDropBtn.Enabled = false;
+                        this.armyTransKnightTextBox.Enabled = false;
+                        this.armyTransMAAtextBox.Enabled = false;
+                        this.armyTransLCavTextBox.Enabled = false;
+                        this.armyTransLongbowTextBox.Enabled = false;
+                        this.armyTransFootTextBox.Enabled = false;
+                        this.armyTransRabbleTextBox.Enabled = false;
+                        this.armyTransDropWhoTextBox.Enabled = false;
+                        this.armyTransPickupBtn.Enabled = false;
+                    }
+
+                    // has leader
+                    else
+                    {
+                        this.armyExamineBtn.Enabled = true;
+                        this.armyPillageBtn.Enabled = true;
+                        this.armySiegeBtn.Enabled = true;
+                        this.armyAutoCombatBtn.Enabled = true;
+                        this.armyAggroTextBox.Enabled = true;
+                        this.armyOddsTextBox.Enabled = true;
+                        this.armyTransDropBtn.Enabled = true;
+                        this.armyTransKnightTextBox.Enabled = true;
+                        this.armyTransMAAtextBox.Enabled = true;
+                        this.armyTransLCavTextBox.Enabled = true;
+                        this.armyTransLongbowTextBox.Enabled = true;
+                        this.armyTransFootTextBox.Enabled = true;
+                        this.armyTransRabbleTextBox.Enabled = true;
+                        this.armyTransDropWhoTextBox.Enabled = true;
+                        this.armyTransPickupBtn.Enabled = true;
+                    }
+
+                    // other controls
+                    this.armyMaintainBtn.Enabled = true;
+                    this.armyAppointLeaderBtn.Enabled = true;
+                    this.armyAppointSelfBtn.Enabled = true;
+                    this.armyDisbandBtn.Enabled = true;
+                    this.armyCampBtn.Enabled = true;
+                    this.armyCampTextBox.Enabled = true;
+
+                    // check to see if current fief is in rebellion and enable control as appropriate
+                    // get fief
+                    Fief thisFief = Globals_Client.armyToView.getLocation();
+                    if (thisFief.status.Equals('R'))
+                    {
+                        // only enable if army has leader
+                        if (!String.IsNullOrWhiteSpace(Globals_Client.armyToView.leader))
+                        {
+                            this.armyQuellRebellionBtn.Enabled = true;
+                        }
+                    }
+                    else
+                    {
+                        this.armyQuellRebellionBtn.Enabled = false;
+                    }
+
+                    // set auto combat values
+                    this.armyAggroTextBox.Text = Globals_Client.armyToView.aggression.ToString();
+                    this.armyOddsTextBox.Text = Globals_Client.armyToView.combatOdds.ToString();
+
+                    // preload own ID in 'drop off to' textbox (assumes transferring between own armies)
+                    this.armyTransDropWhoTextBox.Text = Globals_Client.myPlayerCharacter.charID;
+                    // and set all troop transfer numbers to 0
+                    this.armyTransKnightTextBox.Text = "0";
+                    this.armyTransMAAtextBox.Text = "0";
+                    this.armyTransLCavTextBox.Text = "0";
+                    this.armyTransLongbowTextBox.Text = "0";
+                    this.armyTransCrossbowTextBox.Text = "0";
+                    this.armyTransFootTextBox.Text = "0";
+                    this.armyTransRabbleTextBox.Text = "0";
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the listMToolStripMenuItem
+        /// displaying the army management screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void listMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.armyContainer.Panel1.Tag = "management";
+            Globals_Client.armyToView = null;
+            this.refreshArmyContainer();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyAppointLeaderBtn button
+        /// invoking and displaying the character selection screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyAppointLeaderBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            string thisArmyID = null;
+            if (this.armyListView.SelectedItems.Count > 0)
+            {
+                // get armyID and army
+                thisArmyID = this.armyListView.SelectedItems[0].SubItems[0].Text;
+
+                // display selection form
+                SelectionForm chooseLeader = new SelectionForm(this, "leader", armID: thisArmyID);
+                chooseLeader.Show();
+            }
+
+            // if no army selected
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No army selected!");
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyAppointSelfBtn button
+        /// allowing the player to appoint themselves as army leader
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyAppointSelfBtn_Click(object sender, EventArgs e)
+        {
+            // get army
+            Army thisArmy = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+
+            thisArmy.assignNewLeader(Globals_Client.myPlayerCharacter);
+
+            // refresh the army information (in the main form)
+            this.refreshArmyContainer(thisArmy);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyTransDropBtn button
+        /// allowing the player to leave troops in the fief for transfer to other armies
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyTransDropBtn_Click(object sender, EventArgs e)
+        {
+            bool proceed = true;
+            bool adjustDays = true;
+            int daysTaken = 0;
+            uint totalTroopsToTransfer = 0;
+
+            if (Globals_Client.armyToView != null)
+            {
+                // run checks on data in fields
+                try
+                {
+                    // labels for troop types
+                    string[] troopTypeLabels = new string[] { "knights", "men-at-arms", "light cavalry", "longbowmen", "crossbowmen", "foot", "rabble" };
+
+                    // get number of troops to transfer
+                    uint[] troopsToTransfer = new uint[] { 0, 0, 0, 0, 0, 0, 0 };
+                    troopsToTransfer[0] = Convert.ToUInt32(this.armyTransKnightTextBox.Text);
+                    troopsToTransfer[1] = Convert.ToUInt32(this.armyTransMAAtextBox.Text);
+                    troopsToTransfer[2] = Convert.ToUInt32(this.armyTransLCavTextBox.Text);
+                    troopsToTransfer[3] = Convert.ToUInt32(this.armyTransLongbowTextBox.Text);
+                    troopsToTransfer[4] = Convert.ToUInt32(this.armyTransCrossbowTextBox.Text);
+                    troopsToTransfer[5] = Convert.ToUInt32(this.armyTransFootTextBox.Text);
+                    troopsToTransfer[6] = Convert.ToUInt32(this.armyTransRabbleTextBox.Text);
+
+                    // check each troop type; if not enough in army, cancel
+                    for (int i = 0; i < troopsToTransfer.Length; i++)
+                    {
+                        if (troopsToTransfer[i] > Globals_Client.armyToView.troops[i])
+                        {
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("You don't have enough " + troopTypeLabels[i] + " in your army for that transfer.  Transfer cancelled.");
+                            }
+                            proceed = false;
+                            adjustDays = false;
+                        }
+                        else
+                        {
+                            totalTroopsToTransfer += troopsToTransfer[i];
+                        }
+                    }
+
+                    // if no troops selected for transfer, cancel
+                    if ((totalTroopsToTransfer == 0) && (proceed))
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("You haven't selected any troops for transfer.  Transfer cancelled.");
+                        }
+                        proceed = false;
+                        adjustDays = false;
+                    }
+
+                    // if reduces army to < 100 troops, warn
+                    if (((Globals_Client.armyToView.calcArmySize() - totalTroopsToTransfer) < 100) && (proceed))
+                    {
+                        DialogResult dialogResult = MessageBox.Show("This transfer will reduce your army manpower to dangerous levels.  Click OK to proceed.", "Proceed with transfer?", MessageBoxButtons.OKCancel);
+
+                        // if choose to cancel
+                        if (dialogResult == DialogResult.Cancel)
+                        {
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Transfer cancelled.");
+                            }
+                            proceed = false;
+                            adjustDays = false;
+                        }
+                    }
+
+                    // check have minimum days necessary for transfer
+                    if (Globals_Client.armyToView.days < 10)
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("You don't have enough days left for this transfer.  Transfer cancelled.");
+                        }
+                        proceed = false;
+                        adjustDays = false;
+                    }
+                    else
+                    {
+                        // calculate time taken for transfer
+                        daysTaken = Globals_Game.myRand.Next(10, 31);
+
+                        // check if have enough days for transfer in this instance
+                        if (daysTaken > Globals_Client.armyToView.days)
+                        {
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.");
+                            }
+                            proceed = false;
+                        }
+                    }
+
+                    // check transfer recipient exists
+                    if (!Globals_Game.pcMasterList.ContainsKey(this.armyTransDropWhoTextBox.Text))
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Cannot identify transfer recipient.  Transfer cancelled.");
+                        }
+                        proceed = false;
+                    }
+
+                    if (proceed)
+                    {
+                        // remove troops from army
+                        for (int i = 0; i < Globals_Client.armyToView.troops.Length; i++)
+                        {
+                            Globals_Client.armyToView.troops[i] -= troopsToTransfer[i];
+                        }
+
+                        // get fief
+                        Fief thisFief = Globals_Client.armyToView.getLocation();
+
+                        // create transfer entry
+                        string[] thisTransfer = new string[10] { Globals_Client.myPlayerCharacter.charID, this.armyTransDropWhoTextBox.Text,
+                            troopsToTransfer[0].ToString(), troopsToTransfer[1].ToString(), troopsToTransfer[2].ToString(),
+                            troopsToTransfer[3].ToString(), troopsToTransfer[4].ToString(), troopsToTransfer[5].ToString(),
+                            troopsToTransfer[6].ToString(), (Globals_Client.armyToView.days - daysTaken).ToString() };
+
+                        // add to fief's troopTransfers list
+                        thisFief.troopTransfers.Add(Globals_Game.getNextDetachmentID(), thisTransfer);
+                    }
+
+                    if (adjustDays)
+                    {
+                        // get leader
+                        Character myLeader = Globals_Client.armyToView.getLeader();
+
+                        // adjust days
+                        myLeader.adjustDays(daysTaken);
+
+                        // calculate possible attrition for army
+                        byte attritionChecks = Convert.ToByte(daysTaken / 7);
+                        for (int i = 0; i < attritionChecks; i++)
+                        {
+                            // calculate attrition
+                            double attritionModifer = Globals_Client.armyToView.calcAttrition();
+                            // apply attrition
+                            Globals_Client.armyToView.applyTroopLosses(attritionModifer);
+                        }
+                    }
+
+                }
+                catch (System.FormatException fe)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    }
+                }
+                catch (System.OverflowException ofe)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    }
+                }
+                finally
+                {
+                    this.refreshArmyContainer(Globals_Client.armyToView);
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyTransPickupBtn button, invoking and displaying the
+        /// transfer selection screen, allowing detachments in the current fief to be added to the army
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyTransPickupBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            string thisArmyID = null;
+            if (this.armyListView.SelectedItems.Count > 0)
+            {
+                // get armyID and army
+                thisArmyID = this.armyListView.SelectedItems[0].SubItems[0].Text;
+
+                // display selection form
+                SelectionForm chooseTroops = new SelectionForm(this, "transferTroops", armID: thisArmyID);
+                chooseTroops.Show();
+            }
+
+            // if no army selected
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No army selected!");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Disbands the specified army
+        /// </summary>
+        /// <param name="a">Army to be disbanded</param>
+        public void disbandArmy(Army a)
+        {
+            // carry out functions associated with disband
+            a.disbandArmy();
+
+            // set army to null
+            a = null;
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyDisbandBtn button, disbanding the selected army
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyDisbandBtn_Click(object sender, EventArgs e)
+        {
+            if (Globals_Client.armyToView != null)
+            {
+                // disband army
+                this.disbandArmy(Globals_Client.armyToView);
+
+                // refresh display
+                this.refreshArmyContainer();
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyAutoCombatBtn button, setting the army's
+        /// aggression and combat odds values to those in the text fields
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyAutoCombatBtn_Click(object sender, EventArgs e)
+        {
+            if (Globals_Client.armyToView != null)
+            {
+                try
+                {
+                    // get new aggression level
+                    byte newAggroLevel = Convert.ToByte(this.armyAggroTextBox.Text);
+
+                    // get new combat odds value
+                    byte newOddsValue = Convert.ToByte(this.armyOddsTextBox.Text);
+
+                    // check values and alter if appropriate
+                    if (newAggroLevel < 0)
+                    {
+                        newAggroLevel = 0;
+                    }
+                    else if (newAggroLevel > 2)
+                    {
+                        newAggroLevel = 2;
+                    }
+                    if (newOddsValue < 0)
+                    {
+                        newOddsValue = 0;
+                    }
+                    else if (newOddsValue > 9)
+                    {
+                        newOddsValue = 9;
+                    }
+
+                    // update army's values
+                    Globals_Client.armyToView.aggression = newAggroLevel;
+                    Globals_Client.armyToView.combatOdds = newOddsValue;
+                }
+                catch (System.FormatException fe)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    }
+                }
+                catch (System.OverflowException ofe)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    }
+                }
+                finally
+                {
+                    // refresh display
+                    this.refreshArmyContainer(Globals_Client.armyToView);
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyCampBtn button
+        /// invoking the campWaitHere method for the army leader (and army)
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyCampBtn_Click(object sender, EventArgs e)
+        {
+            if (Globals_Client.armyToView != null)
+            {
+                try
+                {
+                    // get days to camp
+                    byte campDays = Convert.ToByte(this.armyCampTextBox.Text);
+
+                    // get leader
+                    Character thisLeader = Globals_Client.armyToView.getLeader();
+
+                    // camp
+                    this.campWaitHere(thisLeader, campDays);
+                }
+                catch (System.FormatException fe)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    }
+                }
+                catch (System.OverflowException ofe)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    }
+                }
+                finally
+                {
+                    // refresh display
+                    this.refreshArmyContainer(Globals_Client.armyToView);
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyExamineBtn button
+        /// displaying a list of all armies in the current army's fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyExamineBtn_Click(object sender, EventArgs e)
+        {
+            // army leader
+            Character thisLeader = Globals_Client.armyToView.getLeader();
+
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            // if no army selected
+            if (this.armyListView.SelectedItems.Count < 1)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No army selected!");
+                }
+            }
+
+            // if army selected
+            else
+            {
+                // check if has minimum days
+                if (Globals_Client.armyToView.days < 1)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
+                    }
+                }
+
+                // has minimum days
+                else
+                {
+                    // see how long reconnaissance takes
+                    int reconDays = Globals_Game.myRand.Next(1, 4);
+
+                    // check if runs out of time
+                    if (Globals_Client.armyToView.days < reconDays)
+                    {
+                        // set days to 0
+                        thisLeader.adjustDays(Globals_Client.armyToView.days);
+                        this.refreshArmyContainer(Globals_Client.armyToView);
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
+                        }
+                    }
+
+                    // doesn't run out of time
+                    else
+                    {
+                        // adjust days
+                        thisLeader.adjustDays(reconDays);
+                        this.refreshArmyContainer(Globals_Client.armyToView);
+
+                        // display armies list
+                        SelectionForm examineArmies = new SelectionForm(this, "armies", obs: thisLeader);
+                        examineArmies.Show();
+                    }
+
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyDisplayMgtBtn button,
+        /// displaying the armyCombatPanel
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyDisplayMgtBtn_Click(object sender, EventArgs e)
+        {
+            this.armyContainer.Panel1.Tag = "management";
+            this.armyManagementPanel.BringToFront();
+            this.armyListView.Focus();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyDisplayCmbtBtn button,
+        /// displaying the armyManagementPanel
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyDisplayCmbtBtn_Click(object sender, EventArgs e)
+        {
+            this.armyContainer.Panel1.Tag = "combat";
+            this.armyCombatPanel.BringToFront();
+            this.armyListView.Focus();
+        }
+
+        // ------------------- SIEGE/PILLAGE
+
+        /// <summary>
+        /// Creates UI display for list of sieges owned by player
+        /// </summary>
+        public void setUpSiegeList()
+        {
+            // add necessary columns
+            this.siegeListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.siegeListView.Columns.Add("Fief", -2, HorizontalAlignment.Left);
+            this.siegeListView.Columns.Add("Defender", -2, HorizontalAlignment.Left);
+            this.siegeListView.Columns.Add("Besieger", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Retrieves information for Siege display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="s">Siege for which information is to be displayed</param>
+        public string displaySiegeData(Siege s)
+        {
+            string siegeText = "";
+            Fief siegeLocation = s.getFief();
+            PlayerCharacter fiefOwner = siegeLocation.owner;
+            bool isDefender = (fiefOwner == Globals_Client.myPlayerCharacter);
+            Army besieger = s.getBesiegingArmy();
+            PlayerCharacter besiegingPlayer = s.getBesiegingPlayer();
+            Army defenderGarrison = s.getDefenderGarrison();
+            Army defenderAdditional = s.getDefenderAdditional();
+            Character besiegerLeader = besieger.getLeader();
+            Character defGarrLeader = defenderGarrison.getLeader();
+            Character defAddLeader = null;
+            if (defenderAdditional != null)
+            {
+                defAddLeader = defenderAdditional.getLeader();
+            }
+
+            // ID
+            siegeText += "ID: " + s.siegeID + "\r\n\r\n";
+
+            // fief
+            siegeText += "Fief: " + siegeLocation.name + " (Province: " + siegeLocation.province.name + ".  Kingdom: " + siegeLocation.province.kingdom.name + ")\r\n\r\n";
+
+            // fief owner
+            siegeText += "Fief owner: " + fiefOwner.firstName + " " + fiefOwner.familyName + " (ID: " + fiefOwner.charID + ")\r\n\r\n";
+
+            // besieging player
+            siegeText += "Besieging player: " + besiegingPlayer.firstName + " " + besiegingPlayer.familyName + " (ID: " + besiegingPlayer.charID + ")\r\n\r\n";
+
+            // start date
+            siegeText += "Start date: " + s.startYear + ", " + Globals_Game.clock.seasons[s.startSeason] + "\r\n\r\n";
+
+            // duration so far
+            siegeText += "Days used so far: " + s.totalDays + "\r\n\r\n";
+
+            // days left in current season
+            siegeText += "Days remaining in current season: " + s.days + "\r\n\r\n";
+
+            // defending forces
+            siegeText += "Defending forces: ";
+            // only show details if player is defender
+            if (isDefender)
+            {
+                // garrison details
+                siegeText += "\r\nGarrison: " + defenderGarrison.armyID + "\r\n";
+                siegeText += "- Leader: ";
+                if (defGarrLeader != null)
+                {
+                    siegeText += defGarrLeader.firstName + " " + defGarrLeader.familyName + " (ID: " + defGarrLeader.charID + ")";
+                }
+                else
+                {
+                    siegeText += "None";
+                }
+                siegeText += "\r\n";
+                siegeText += "- [Kn: " + defenderGarrison.troops[0] + ";  MAA: " + defenderGarrison.troops[1]
+                    + ";  LCav: " + defenderGarrison.troops[2] + ";  Lng: " + defenderGarrison.troops[3]
+                    + ";  Crss: " + defenderGarrison.troops[4] + ";  Ft: " + defenderGarrison.troops[5]
+                    + ";  Rbl: " + defenderGarrison.troops[6] + "]";
+
+                // additional army details
+                if (defenderAdditional != null)
+                {
+                    siegeText += "\r\n\r\nField army: " + defenderAdditional.armyID + "\r\n";
+                    siegeText += "- Leader: ";
+                    if (defAddLeader != null)
+                    {
+                        siegeText += defAddLeader.firstName + " " + defAddLeader.familyName + " (ID: " + defAddLeader.charID + ")";
+                    }
+                    else
+                    {
+                        siegeText += "None";
+                    }
+                    siegeText += "\r\n";
+                    siegeText += "- [Kn: " + defenderAdditional.troops[0] + ";  MAA: " + defenderAdditional.troops[1]
+                        + ";  LCav: " + defenderAdditional.troops[2] + ";  Lng: " + defenderAdditional.troops[3]
+                        + ";  Crss: " + defenderAdditional.troops[4] + ";  Ft: " + defenderAdditional.troops[5]
+                        + ";  Rbl: " + defenderAdditional.troops[6] + "]";
+                }
+
+                siegeText += "\r\n\r\nTotal defender casualties so far (including attrition): " + s.totalCasualtiesDefender;
+            }
+
+            // if player not defending, hide defending forces details
+            else
+            {
+                siegeText += "Unknown";
+            }
+            siegeText += "\r\n\r\n";
+
+            // besieging forces
+            siegeText += "Besieging forces: ";
+            // only show details if player is besieger
+            if (!isDefender)
+            {
+                // besieging forces details
+                siegeText += "\r\nField army: " + besieger.armyID + "\r\n";
+                siegeText += "- Leader: ";
+                if (besiegerLeader != null)
+                {
+                    siegeText += besiegerLeader.firstName + " " + besiegerLeader.familyName + " (ID: " + besiegerLeader.charID + ")";
+                }
+                else
+                {
+                    siegeText += "None";
+                }
+                siegeText += "\r\n";
+                siegeText += "- [Kn: " + besieger.troops[0] + ";  MAA: " + besieger.troops[1]
+                    + ";  LCav: " + besieger.troops[2] + ";  Lng: " + besieger.troops[3] + ";  Crss: " + besieger.troops[4]
+                    + ";  Ft: " + besieger.troops[5] + ";  Rbl: " + besieger.troops[6] + "]";
+
+                siegeText += "\r\n\r\nTotal attacker casualties so far (including attrition): " + s.totalCasualtiesAttacker;
+            }
+
+            // if player not besieger, hide besieging forces details
+            else
+            {
+                siegeText += "Unknown";
+            }
+            siegeText += "\r\n\r\n";
+
+            // keep level
+            siegeText += "Keep level:\r\n";
+            // keep level at start
+            siegeText += "- at start of siege: " + s.startKeepLevel + "\r\n";
+
+            // current keep level
+            siegeText += "- current: " + siegeLocation.keepLevel + "\r\n\r\n";
+
+            if (!isDefender)
+            {
+                siegeText += "Chance of success in next round:\r\n";
+                // chance of storm success
+                /* double keepLvl = this.calcStormKeepLevel(s);
+                double successChance = this.calcStormSuccess(keepLvl); */
+                // get battle values for both armies
+                uint[] battleValues = this.calculateBattleValue(besieger, defenderGarrison, Convert.ToInt32(siegeLocation.keepLevel));
+                double successChance = this.calcVictoryChance(battleValues[0], battleValues[1]);
+                siegeText += "- storm: " + successChance + "\r\n";
+
+                // chance of negotiated success
+                siegeText += "- negotiated: " + successChance / 2 + "\r\n\r\n";
+            }
+
+            return siegeText;
+        }
+
+        /// <summary>
+        /// Refreshes main Siege display screen
+        /// </summary>
+        /// <param name="s">Siege whose information is to be displayed</param>
+        public void refreshSiegeContainer(Siege s = null)
+        {
+
+            // clear existing information
+            this.siegeTextBox.Text = "";
+
+            // ensure textboxes aren't interactive
+            this.siegeTextBox.ReadOnly = true;
+
+            // disable controls until siege selected
+            this.siegeNegotiateBtn.Enabled = false;
+            this.siegeStormBtn.Enabled = false;
+            this.siegeReduceBtn.Enabled = false;
+            this.siegeEndBtn.Enabled = false;
+
+            // clear existing items in siege list
+            this.siegeListView.Items.Clear();
+
+            // iterates through player's sieges adding information to ListView
+            for (int i = 0; i < Globals_Client.myPlayerCharacter.mySieges.Count; i++)
+            {
+                ListViewItem thisSiegeItem = null;
+                Siege thisSiege = Globals_Client.myPlayerCharacter.getSiege(Globals_Client.myPlayerCharacter.mySieges[i]);
+
+                if (thisSiege != null)
+                {
+                    // siegeID
+                    thisSiegeItem = new ListViewItem(thisSiege.siegeID);
+
+                    // fief
+                    Fief siegeLocation = thisSiege.getFief();
+                    thisSiegeItem.SubItems.Add(siegeLocation.name + " (" + siegeLocation.id + ")");
+
+                    // defender
+                    PlayerCharacter defendingPlayer = thisSiege.getDefendingPlayer();
+                    thisSiegeItem.SubItems.Add(defendingPlayer.firstName + " " + defendingPlayer.familyName + " (" + defendingPlayer.charID + ")");
+
+                    // besieger
+                    Army besiegingArmy = thisSiege.getBesiegingArmy();
+                    PlayerCharacter besieger = thisSiege.getBesiegingPlayer();
+                    thisSiegeItem.SubItems.Add(besieger.firstName + " " + besieger.familyName + " (" + besieger.charID + ")");
+
+                    if (thisSiegeItem != null)
+                    {
+                        // if siege passed in as parameter, show as selected
+                        if (thisSiege == s)
+                        {
+                            thisSiegeItem.Selected = true;
+                        }
+
+                        // add item to siegeListView
+                        this.siegeListView.Items.Add(thisSiegeItem);
+                    }
+                }
+
+            }
+
+            Globals_Client.containerToView = this.siegeContainer;
+            Globals_Client.containerToView.BringToFront();
+            this.siegeListView.Focus();
+        }
+
+        /// <summary>
         /// Calculates the outcome of the pillage of a fief by an army
         /// </summary>
         /// <param name="f">The fief being pillaged</param>
@@ -8805,7 +6265,7 @@ namespace hist_mmorpg
             // check if bailiff present in fief (he'll lead the army)
             if (f.bailiff != null)
             {
-                for (int i = 0; i < f.charactersInFief.Count; i++ )
+                for (int i = 0; i < f.charactersInFief.Count; i++)
                 {
                     if (f.charactersInFief[i] == f.bailiff)
                     {
@@ -9109,22 +6569,6 @@ namespace hist_mmorpg
                 }
             }
 
-        }
-
-        /// <summary>
-        /// Calculates rough battle odds between two armies (i.e ratio of attacking army combat
-        /// value to defending army combat value).  NOTE: does not involve leadership values
-        /// </summary>
-        /// <returns>int containing battle odds</returns>
-        /// <param name="attacker">The attacking army</param>
-        /// <param name="defender">The defending army</param>
-        public int getBattleOdds(Army attacker, Army defender)
-        {
-            double battleOdds = 0;
-
-            battleOdds = Math.Floor(attacker.calculateCombatValue() / defender.calculateCombatValue());
-
-            return Convert.ToInt32(battleOdds);
         }
 
         /// <summary>
@@ -9797,117 +7241,6 @@ namespace hist_mmorpg
             }
 
         }
-
-        /// <summary>
-        /// Checks to see if display of financial data for the specified financial period
-        /// is permitted due to ongoing siege
-        /// </summary>
-        /// <returns>bool indicating whether display is permitted</returns>
-        /// <param name="target">int indicating desired financial period relative to current season</param>
-        /// <param name="s">The siege</param>
-        public bool checkToShowFinancialData(int relativeSeason, Siege s)
-        {
-            bool displayData = true;
-
-            uint financialPeriodYear = this.getFinancialYear(relativeSeason);
-            if (financialPeriodYear > s.startYear)
-            {
-                displayData = false;
-            }
-            else if (financialPeriodYear == s.startYear)
-            {
-                byte financialPeriodSeason = this.getFinancialSeason(relativeSeason);
-                if (financialPeriodSeason > s.startSeason)
-                {
-                    displayData = false;
-                }
-            }
-
-            return displayData;
-        }
-
-        /// <summary>
-        /// Gets the year for the specified financial period
-        /// </summary>
-        /// <returns>The year</returns>
-        /// <param name="target">int indicating desired financial period relative to current season</param>
-        public uint getFinancialYear(int relativeSeason)
-        {
-            uint financialYear = 0;
-            uint thisYear = Globals_Game.clock.currentYear;
-
-            switch (relativeSeason)
-            {
-                case (-1):
-                    if (Globals_Game.clock.currentSeason == 0)
-                    {
-                        financialYear = thisYear - 1;
-                    }
-                    else
-                    {
-                        financialYear = thisYear;
-                    }
-                    break;
-                case (1):
-                    if (Globals_Game.clock.currentSeason == 4)
-                    {
-                        financialYear = thisYear + 1;
-                    }
-                    else
-                    {
-                        financialYear = thisYear;
-                    }
-                    break;
-                default:
-                    financialYear = thisYear;
-                    break;
-            }
-
-            return financialYear;
-        }
-
-        /// <summary>
-        /// Gets the season for the specified financial period
-        /// </summary>
-        /// <returns>The season</returns>
-        /// <param name="target">int indicating desired financial period relative to current season</param>
-        public byte getFinancialSeason(int relativeSeason)
-        {
-            byte financialSeason = 0;
-            byte thisSeason = Globals_Game.clock.currentSeason;
-
-            switch (relativeSeason)
-            {
-                case (-1):
-                    if (thisSeason == 0)
-                    {
-                        financialSeason = 4;
-                    }
-                    else
-                    {
-                        financialSeason = thisSeason;
-                        financialSeason--;
-                    }
-                    break;
-                case (1):
-                    if (thisSeason == 4)
-                    {
-                        financialSeason = 0;
-                    }
-                    else
-                    {
-                        financialSeason = thisSeason;
-                        financialSeason++;
-                    }
-                    break;
-                default:
-                    financialSeason = thisSeason;
-                    break;
-            }
-
-            return financialSeason;
-        }
-
         /// <summary>
         /// Allows an attacking army to lay siege to an enemy fief
         /// </summary>
@@ -9952,7 +7285,7 @@ namespace hist_mmorpg
             {
                 defAddID = defenderAdditional.armyID;
             }
-            
+
             // create siege object
             Siege mySiege = new Siege(Globals_Game.getNextSiegeID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, attacker.getOwner().charID, target.owner.charID, attacker.armyID, defenderGarrison.armyID, target.id, minDays, target.keepLevel, defAdd: defAddID);
 
@@ -10096,32 +7429,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of the armyDisplayMgtBtn button,
-        /// displaying the armyCombatPanel
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyDisplayMgtBtn_Click(object sender, EventArgs e)
-        {
-            this.armyContainer.Panel1.Tag = "management";
-            this.armyManagementPanel.BringToFront();
-            this.armyListView.Focus();
-        }
-
-        /// <summary>
-        /// Responds to the click event of the armyDisplayCmbtBtn button,
-        /// displaying the armyManagementPanel
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyDisplayCmbtBtn_Click(object sender, EventArgs e)
-        {
-            this.armyContainer.Panel1.Tag = "combat";
-            this.armyCombatPanel.BringToFront();
-            this.armyListView.Focus();
-        }
-
-        /// <summary>
         /// Responds to the click event of the armySiegeBtn button
         /// instigating the siege of a fief
         /// </summary>
@@ -10170,74 +7477,6 @@ namespace hist_mmorpg
             Globals_Client.siegeToView = null;
             this.refreshSiegeContainer();
         }
-
-        /*
-        /// <summary>
-        /// Responds to the click event of the siegeNegotiateBtn button
-        /// processing a single siege negotaiation round
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void siegeNegotiateBtn_Click(object sender, EventArgs e)
-        {
-            if (this.siegeListView.SelectedItems.Count > 0)
-            {
-                bool proceed = true;
-
-                // get siege
-                Siege thisSiege = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
-
-                // perform conditional checks here
-                proceed = this.checksBeforeSiegeOperation(thisSiege);
-
-                if (proceed)
-                {
-                    // process siege negotiation round
-                    this.siegeNegotiationRound(thisSiege);
-                }
-            }
-            else
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("No siege selected!");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of the siegeStormBtn button
-        /// processing a single siege storm round
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void siegeStormBtn_Click(object sender, EventArgs e)
-        {
-            if (this.siegeListView.SelectedItems.Count > 0)
-            {
-                bool proceed = true;
-
-                // get siege
-                Siege thisSiege = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
-
-                // perform conditional checks here
-                proceed = this.checksBeforeSiegeOperation(thisSiege);
-
-                if (proceed)
-                {
-                    // process siege storm round
-                    this.siegeStormRound(thisSiege);
-                }
-            }
-            else
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("No siege selected!");
-                }
-            }
-        }
-        */
 
         /// <summary>
         /// Responds to any of the click events of the siegeRound buttons
@@ -10318,6 +7557,527 @@ namespace hist_mmorpg
                 }
             }
 
+        }
+
+        // ------------------- PREGNANCY/BIRTH
+
+        /// <summary>
+        /// Responds to the click event of the familyGetSpousePregBt button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void familyGetSpousePregBtn_Click(object sender, EventArgs e)
+        {
+            // get spouse
+            Character mySpouse = Globals_Client.myPlayerCharacter.getSpouse();
+
+            // perform standard checks
+            if (this.checksBeforePregnancyAttempt(Globals_Client.myPlayerCharacter))
+            {
+                // ensure are both in/out of keep
+                mySpouse.inKeep = Globals_Client.myPlayerCharacter.inKeep;
+
+                // attempt pregnancy
+                bool pregnant = Globals_Client.myPlayerCharacter.getSpousePregnant(mySpouse);
+            }
+
+            // refresh screen
+            this.refreshCurrentScreen();
+
+            /*
+            // test event scheduled in clock
+            List<JournalEntry> myEvents = new List<JournalEntry>();
+            myEvents = Globals_Client.clock.scheduledEvents.getEventsOnDate();
+            if (myEvents.Count > 0)
+            {
+                foreach (JournalEntry jEvent in myEvents)
+                {
+                    System.Windows.Forms.MessageBox.Show("Year: " + jEvent.year + " | Season: " + jEvent.season + " | Who: " + jEvent.personae + " | What: " + jEvent.type);
+                }
+            } */
+        }
+
+        /// <summary>
+        /// Generates a new NPC based on parents' statistics
+        /// </summary>
+        /// <returns>NonPlayerCharacter or null</returns>
+        /// <param name="mummy">The new NPC's mother</param>
+        /// <param name="daddy">The new NPC's father</param>
+        public NonPlayerCharacter generateNewNPC(NonPlayerCharacter mummy, Character daddy)
+        {
+            NonPlayerCharacter newNPC = new NonPlayerCharacter();
+
+            // charID
+            newNPC.charID = Globals_Game.getNextCharID();
+            // first name
+            newNPC.firstName = "Baby";
+            // family name
+            newNPC.familyName = daddy.familyName;
+            // date of birth
+            newNPC.birthDate = new Tuple<uint, byte>(Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason);
+            // sex
+            newNPC.isMale = this.generateSex();
+            // nationality
+            newNPC.nationality = daddy.nationality;
+            // whether is alive
+            newNPC.isAlive = true;
+            // maxHealth
+            newNPC.maxHealth = this.generateKeyCharacteristics(mummy.maxHealth, daddy.maxHealth);
+            // virility
+            newNPC.virility = this.generateKeyCharacteristics(mummy.virility, daddy.virility);
+            // goTo queue
+            newNPC.goTo = new Queue<Fief>();
+            // language
+            newNPC.language = daddy.language;
+            // days left
+            newNPC.days = 90;
+            // stature modifier
+            newNPC.statureModifier = 0;
+            // management
+            newNPC.management = this.generateKeyCharacteristics(mummy.management, daddy.management);
+            // combat
+            newNPC.combat = this.generateKeyCharacteristics(mummy.combat, daddy.combat);
+            // skills
+            newNPC.skills = this.generateSkillSetFromParents(mummy.skills, daddy.skills, newNPC.isMale);
+            // if in keep
+            newNPC.inKeep = mummy.inKeep;
+            // if pregnant
+            newNPC.isPregnant = false;
+            // familyID
+            newNPC.familyID = daddy.familyID;
+            // spouse
+            newNPC.spouse = null;
+            // father
+            newNPC.father = daddy.charID;
+            // mother
+            newNPC.mother = mummy.charID;
+            // fiancee
+            newNPC.fiancee = null;
+            // location
+            newNPC.location = null;
+            // titles
+            newNPC.myTitles = new List<string>();
+            // armyID
+            newNPC.armyID = null;
+            // ailments
+            newNPC.ailments = new Dictionary<string, Ailment>();
+            // employer
+            newNPC.employer = null;
+            // salary/allowance
+            newNPC.salary = 0;
+            // lastOffer (will remain empty for family members)
+            newNPC.lastOffer = new Dictionary<string, uint>();
+            // inEntourage
+            newNPC.inEntourage = false;
+            // isHeir
+            newNPC.isHeir = false;
+
+            return newNPC;
+        }
+
+        /// <summary>
+        /// Generates a random sex for a Character
+        /// </summary>
+        /// <returns>bool indicating whether is male</returns>
+        public bool generateSex()
+        {
+            bool isMale = false;
+
+            // generate random (0-1) to see if male or female
+            if (Globals_Game.myRand.Next(0, 2) == 0)
+            {
+                isMale = true;
+            }
+
+            return isMale;
+        }
+
+        /// <summary>
+        /// Generates a characteristic stat for a Character, based on parent stats
+        /// </summary>
+        /// <returns>Double containing characteristic stat</returns>
+        /// <param name="mummyStat">The mother's characteristic stat</param>
+        /// <param name="daddyStat">The father's characteristic stat</param>
+        public Double generateKeyCharacteristics(Double mummyStat, Double daddyStat)
+        {
+            Double newStat = 0;
+
+            // get average of parents' stats
+            Double parentalAverage = (mummyStat + daddyStat) / 2;
+
+            // generate random (0 - 100) to determine relationship of new stat to parentalAverage
+            double randPercentage = Globals_Game.GetRandomDouble(100);
+
+            // calculate new stat
+            if (randPercentage <= 35)
+            {
+                newStat = parentalAverage;
+            }
+            else if (randPercentage <= 52.5)
+            {
+                newStat = parentalAverage - 1;
+            }
+            else if (randPercentage <= 70)
+            {
+                newStat = parentalAverage + 1;
+            }
+            else if (randPercentage <= 80)
+            {
+                newStat = parentalAverage - 2;
+            }
+            else if (randPercentage <= 90)
+            {
+                newStat = parentalAverage + 2;
+            }
+            else if (randPercentage <= 95)
+            {
+                newStat = parentalAverage - 3;
+            }
+            else
+            {
+                newStat = parentalAverage + 3;
+            }
+
+            // make sure new stat falls within acceptable range
+            if (newStat < 1)
+            {
+                newStat = 1;
+            }
+            else if (newStat > 9)
+            {
+                newStat = 9;
+            }
+
+            return newStat;
+        }
+
+        /// <summary>
+        /// Generates a skill set for a Character, based on parent skills
+        /// </summary>
+        /// <returns>Array containing skill set</returns>
+        /// <param name="mummySkills">The mother's skills</param>
+        /// <param name="daddySkills">The father's skills</param>
+        /// <param name="isMale">Whether character is a male</param>
+        public Tuple<Skill, int>[] generateSkillSetFromParents(Tuple<Skill, int>[] mummySkills, Tuple<Skill, int>[] daddySkills, bool isMale)
+        {
+            // create a List to temporarily hold skills
+            // will convert to array at end of method
+            List<Tuple<Skill, int>> newSkillsList = new List<Tuple<Skill, int>>();
+
+            // number of skills to return
+            int numSkills = 0;
+
+            // need to compare parent's skills to see how many match (could effect no. of child skills)
+            int matchingSkills = 0;
+            int totalSkillsAvail = 0;
+
+            // iterate through parents' skills identifying matches
+            for (int i = 0; i < mummySkills.Length; i++)
+            {
+                for (int ii = 0; ii < daddySkills.Length; ii++)
+                {
+                    if (mummySkills[i].Item1.skillID.Equals(daddySkills[ii].Item1.skillID))
+                    {
+                        matchingSkills++;
+                    }
+                }
+            }
+
+            // get total skill pool available from both parents
+            totalSkillsAvail = (mummySkills.Length + daddySkills.Length) - matchingSkills;
+
+            // if are only 2 skills in total, can only be 2 child skills
+            if (totalSkillsAvail == 2)
+            {
+                numSkills = 2;
+            }
+            else
+            {
+                // generate random (2-3) to see how many skills child will have
+                numSkills = Globals_Game.myRand.Next(2, 4);
+            }
+
+            // if are only 2 skills in parents' skill pool (i.e. both parents have same skills)
+            // then use highest level skills (enhanced)
+            if (totalSkillsAvail == 2)
+            {
+                for (int i = 0; i < mummySkills.Length; i++)
+                {
+                    for (int j = 0; j < daddySkills.Length; j++)
+                    {
+                        if (mummySkills[i].Item1.skillID.Equals(daddySkills[j].Item1.skillID))
+                        {
+                            // get highest of duplicate skills' level
+                            int maxLevel = Math.Max(mummySkills[i].Item2, daddySkills[j].Item2);
+
+                            // adjust the skill level upwards
+                            int newSkillLevel = 0;
+                            if (maxLevel > 6)
+                            {
+                                newSkillLevel = 9;
+                            }
+                            else
+                            {
+                                newSkillLevel = maxLevel + 2;
+                            }
+
+                            // creat new skill item
+                            Tuple<Skill, int> mySkill = new Tuple<Skill, int>(mummySkills[i].Item1, newSkillLevel);
+
+                            // add to temporary list
+                            newSkillsList.Add(mySkill);
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // if are more than 2 skills in parents' skill pool
+            else
+            {
+                Tuple<Skill, int> mySkill;
+
+                // decide which parent to use first (in case have to choose 2 skills from one parent)
+                Tuple<Skill, int>[] firstSkillSet = null;
+                Tuple<Skill, int>[] lastSkillSet = null;
+
+                // use same sex parent first
+                if (isMale)
+                {
+                    firstSkillSet = daddySkills;
+                    lastSkillSet = mummySkills;
+                }
+                else
+                {
+                    firstSkillSet = mummySkills;
+                    lastSkillSet = daddySkills;
+                }
+
+                // to hold chosen skill
+                int chosenSkill = 0;
+                // to hold previous chosen skill, to allow comparison
+                int PrevChosenSkill = 0;
+
+                // get a skill from the first parent
+                chosenSkill = Globals_Game.myRand.Next(0, firstSkillSet.Length);
+
+                // creat new skill item
+                mySkill = new Tuple<Skill, int>(firstSkillSet[chosenSkill].Item1, firstSkillSet[chosenSkill].Item2);
+                // add to temporary list
+                newSkillsList.Add(mySkill);
+                // record which skill was chosen in case comparison needed
+                PrevChosenSkill = chosenSkill;
+
+                // if child is to have 3 skills
+                if (numSkills == 3)
+                {
+                    do
+                    {
+                        // get another skill from the first parent
+                        chosenSkill = Globals_Game.myRand.Next(0, firstSkillSet.Length);
+
+                        // creat new skill item
+                        mySkill = new Tuple<Skill, int>(firstSkillSet[chosenSkill].Item1, firstSkillSet[chosenSkill].Item2);
+                        // add to temporary list
+                        newSkillsList.Add(mySkill);
+
+                        // do chosen skill doesn't match the first
+                    } while (chosenSkill == PrevChosenSkill);
+
+                }
+
+                // get a skill from the other parent
+                chosenSkill = Globals_Game.myRand.Next(0, lastSkillSet.Length);
+
+                // check to see if already have skill in newSkillsList
+                bool duplicate = false;
+                // to hold any duplicate skill items
+                Tuple<Skill, int> duplicateItem = null;
+
+                // iterate through existing skills list checking for duplicates
+                foreach (Tuple<Skill, int> element in newSkillsList)
+                {
+                    if (lastSkillSet[chosenSkill].Item1.skillID.Equals(element.Item1.skillID))
+                    {
+                        duplicate = true;
+                        // record duplicate skill item
+                        duplicateItem = element;
+                    }
+                }
+
+                // if the last chosen skill was a duplicate
+                if (duplicate)
+                {
+                    // get highest of duplicate skills' level
+                    int maxLevel = Math.Max(duplicateItem.Item2, lastSkillSet[chosenSkill].Item2);
+
+                    // adjust the skill level upwards
+                    int newSkillLevel = 0;
+                    if (maxLevel > 6)
+                    {
+                        newSkillLevel = 9;
+                    }
+                    else
+                    {
+                        newSkillLevel = maxLevel + 2;
+                    }
+
+                    // remove the duplicate item from the list
+                    newSkillsList.Remove(duplicateItem);
+
+                    // create a new skill item with enhanced skill level
+                    mySkill = new Tuple<Skill, int>(duplicateItem.Item1, newSkillLevel);
+                }
+
+                // if the last chosen skill was not a duplicate
+                else
+                {
+                    // copy chosen skill into new skill item
+                    mySkill = new Tuple<Skill, int>(lastSkillSet[chosenSkill].Item1, lastSkillSet[chosenSkill].Item2);
+                }
+
+                // add to temporary list
+                newSkillsList.Add(mySkill);
+            }
+
+            // create new skills array from temporary list
+            Tuple<Skill, int>[] newSkills = newSkillsList.ToArray();
+
+            return newSkills;
+        }
+
+        /// <summary>
+        /// Performs childbirth procedure
+        /// </summary>
+        /// <returns>Boolean indicating character death occurrence</returns>
+        /// <param name="mummy">The new NPC's mother</param>
+        /// <param name="daddy">The new NPC's father</param>
+        public void giveBirth(NonPlayerCharacter mummy, Character daddy)
+        {
+            string description = "";
+
+            // get head of family
+            PlayerCharacter thisHeadOfFamily = daddy.getHeadOfFamily();
+
+            // generate new NPC (baby)
+            NonPlayerCharacter weeBairn = this.generateNewNPC(mummy, daddy);
+
+            // check for baby being stillborn
+            bool isStillborn = weeBairn.checkForDeath(true, false, false);
+
+            if (!isStillborn)
+            {
+                // add baby to npcMasterList
+                Globals_Game.npcMasterList.Add(weeBairn.charID, weeBairn);
+
+                // set baby's location
+                weeBairn.location = mummy.location;
+                weeBairn.location.charactersInFief.Add(weeBairn);
+
+                // add baby to family
+                Globals_Client.myPlayerCharacter.myNPCs.Add(weeBairn);
+            }
+            else
+            {
+                weeBairn.isAlive = false;
+            }
+
+            // check for mother dying during childbirth
+            bool mummyDied = mummy.checkForDeath(true, true, isStillborn);
+
+            // construct and send JOURNAL ENTRY
+
+            // personae
+            string[] childbirthPersonae = new string[] { thisHeadOfFamily.charID + "|headOfFamily", mummy.charID + "|mother", daddy.charID + "|father", weeBairn.charID + "|child" };
+
+            // description
+            description += "On this day of Our Lord " + mummy.firstName + " " + mummy.familyName;
+            description += ", wife of " + daddy.firstName + " " + daddy.familyName + ", went into labour.";
+
+            // mother and baby alive
+            if ((!isStillborn) && (!mummyDied))
+            {
+                description += " Both the mother and her newborn ";
+                if (weeBairn.isMale)
+                {
+                    description += "son";
+                }
+                else
+                {
+                    description += "daughter";
+                }
+                description += " are doing well and " + thisHeadOfFamily.firstName + " " + thisHeadOfFamily.familyName;
+                description += " is delighted to welcome a new member into his family.";
+            }
+
+            // baby OK, mother dead
+            if ((!isStillborn) && (mummyDied))
+            {
+                description += " The baby ";
+                if (weeBairn.isMale)
+                {
+                    description += "boy";
+                }
+                else
+                {
+                    description += "girl";
+                }
+                description += " is doing well but sadly the mother died during childbirth. ";
+                description += thisHeadOfFamily.firstName + " " + thisHeadOfFamily.familyName;
+                description += " welcomes the new member into his family.";
+            }
+
+            // mother OK, baby dead
+            if ((isStillborn) && (!mummyDied))
+            {
+                description += " The mother is doing well but sadly her newborn ";
+                if (weeBairn.isMale)
+                {
+                    description += "son";
+                }
+                else
+                {
+                    description += "daughter";
+                }
+                description += " died during childbirth.";
+            }
+
+            // both mother and baby died
+            if ((isStillborn) && (mummyDied))
+            {
+                description += " Tragically, both the mother and her newborn ";
+                if (weeBairn.isMale)
+                {
+                    description += "son";
+                }
+                else
+                {
+                    description += "daughter";
+                }
+                description += " died of complications during the childbirth.";
+            }
+
+            // put together new journal entry
+            JournalEntry childbirth = new JournalEntry(Globals_Game.getNextJournalEntryID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, childbirthPersonae, "birth", descr: description);
+
+            // add new journal entry to pastEvents
+            Globals_Game.addPastEvent(childbirth);
+
+            // if appropriate, process mother's death
+            if (mummyDied)
+            {
+                mummy.processDeath("childbirth");
+            }
+
+
+            // display message
+            if (Globals_Client.showMessages)
+            {
+                System.Windows.Forms.MessageBox.Show(description);
+            }
+
+            this.refreshHouseholdDisplay();
         }
 
         /// <summary>
@@ -10449,30 +8209,96 @@ namespace hist_mmorpg
             }
         }
 
+        // ------------------- JOURNAL
+
         /// <summary>
-        /// Responds to the click event of the viewMyHomeFiefToolStripMenuItem
+        /// Creates UI display for list of journal entries
         /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void viewMyHomeFiefToolStripMenuItem_Click(object sender, EventArgs e)
+        public void setUpJournalList()
         {
-            // get home fief
-            Fief homeFief = Globals_Client.myPlayerCharacter.getHomeFief();
+            // add necessary columns
+            this.journalListView.Columns.Add("Entry ID", -2, HorizontalAlignment.Left);
+            this.journalListView.Columns.Add("Date", -2, HorizontalAlignment.Left);
+            this.journalListView.Columns.Add("Type", -2, HorizontalAlignment.Left);
+        }
 
-            if (homeFief != null)
+        /// <summary>
+        /// Retrieves information for journal display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="indexPosition">The index position of the journal entry to be displayed</param>
+        public string displayJournalEntry(int indexPosition)
+        {
+            string jentryText = "";
+
+            // get journal entry
+            JournalEntry thisJentry = Globals_Client.eventSetToView.ElementAt(indexPosition).Value;
+
+            // get text
+            jentryText = thisJentry.getJournalEntryDetails();
+
+            return jentryText;
+        }
+
+        /// <summary>
+        /// Refreshes main journal display screen
+        /// </summary>
+        /// <param name="a">JournalEntry to be displayed</param>
+        public void refreshJournalContainer(int jEntryIndex = -1)
+        {
+            // get JournalEntry
+            JournalEntry jEntryPassedIn = null;
+            if ((jEntryIndex >= 0) && (!(jEntryIndex > Globals_Client.jEntryMax)))
             {
-                // display home fief
-                this.refreshFiefContainer(homeFief);
+                jEntryPassedIn = Globals_Client.eventSetToView.ElementAt(jEntryIndex).Value;
             }
 
-            // if have no home fief
-            else
+            // clear existing information
+            this.journalTextBox.Text = "";
+
+            // ensure textboxes aren't interactive
+            this.journalTextBox.ReadOnly = true;
+
+            // disable controls until JournalEntry selected
+
+            // clear existing items in journal list
+            this.journalListView.Items.Clear();
+
+            // iterates through journal entries adding information to ListView
+            foreach (KeyValuePair<uint, JournalEntry> thisJentry in Globals_Client.eventSetToView)
             {
-                if (Globals_Client.showMessages)
+                ListViewItem thisEntry = null;
+
+                // jEntryID
+                thisEntry = new ListViewItem(Convert.ToString(thisJentry.Value.jEntryID));
+
+                // date
+                string entrySeason = Globals_Game.clock.seasons[thisJentry.Value.season];
+                thisEntry.SubItems.Add(entrySeason + ", " + thisJentry.Value.year);
+
+                // type
+                thisEntry.SubItems.Add(thisJentry.Value.type);
+
+                if (thisEntry != null)
                 {
-                    System.Windows.Forms.MessageBox.Show("You have no home fief!");
+                    // if journal entry passed in as parameter, show as selected
+                    if (thisJentry.Value == jEntryPassedIn)
+                    {
+                        thisEntry.Selected = true;
+                    }
+
+                    // add item to journalListView
+                    this.journalListView.Items.Add(thisEntry);
                 }
+
             }
+
+            // switch off 'unread entries' alert
+            this.setJournalAlert(false);
+
+            Globals_Client.containerToView = this.journalContainer;
+            Globals_Client.containerToView.BringToFront();
+            this.journalListView.Focus();
         }
 
         /// <summary>
@@ -10546,58 +8372,6 @@ namespace hist_mmorpg
                 Globals_Client.myPastEvents.areNewEntries = setAlert;
             }
 
-        }
-
-        /// <summary>
-        /// Responds to the click event of the addTestJournalEntryToolStripMenuItem
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void addTestJournalEntryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // create and add a past event
-            string[] myEventPersonae = new string[] { "101|father", "404|mother" };
-            JournalEntry myEntry = new JournalEntry(Globals_Game.getNextJournalEntryID(), 1320, 0, myEventPersonae, "birth");
-            Globals_Game.addPastEvent(myEntry);
-
-            // and another
-            string[] myEventPersonae002 = new string[] { "101|attackerOwner", "102|defenderOwner", "402|attackerLeader", "403|defenderLeader", "101|fiefOwner" };
-            JournalEntry myEntry002 = new JournalEntry(Globals_Game.getNextJournalEntryID(), 1320, 0, myEventPersonae002, "battle", "ESX02", "On this day there was a battle between the forces of blah and blah.");
-            Globals_Game.addPastEvent(myEntry002);
-
-            // and another
-            string[] myEventPersonae003 = new string[] { "405|father", "406|mother", "102|familyHead", "101|uncle"};
-            JournalEntry myEntry003 = new JournalEntry(Globals_Game.getNextJournalEntryID(), 1320, 0, myEventPersonae003, "birth");
-            Globals_Game.addPastEvent(myEntry003);
-        }
-
-        /// <summary>
-        /// Updates appropriate components when data received from observable
-        /// </summary>
-        /// <param name="info">String containing data about component to update</param>
-        public void update(string info)
-        {
-            // get update info
-            string[] infoSplit = info.Split('|');
-            switch (infoSplit[0])
-            {
-                case "newEvent":
-                    // get jEntry ID and retrieve from Globals_Game
-                    if (!String.IsNullOrWhiteSpace(infoSplit[1]))
-                    {
-                        uint newJentryID = Convert.ToUInt32(infoSplit[1]);
-                        JournalEntry newJentry = Globals_Game.pastEvents.entries[newJentryID];
-
-                        // check to see if is of interest to player
-                        if (newJentry.checkEventForInterest())
-                        {
-                            this.addMyPastEvent(newJentry);
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }
         }
 
         /// <summary>
@@ -10678,7 +8452,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of the journalPrevBtn button
+        /// Responds to the click event of the journalNextBtn button
         /// selecting and displaying the next journal entry
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
@@ -10703,6 +8477,8 @@ namespace hist_mmorpg
             // refresh journal screen
             this.refreshJournalContainer(Globals_Client.jEntryToView);
         }
+
+        // ------------------- MARRIAGE
 
         /// <summary>
         /// Responds to the click event of the houseProposeBtn button
@@ -11383,8 +9159,6 @@ namespace hist_mmorpg
 
         }
 
-
-
         /// <summary>
         /// Responds to the click event of either of the proposal reply buttons,
         /// sending the appropriate reply
@@ -11418,6 +9192,1218 @@ namespace hist_mmorpg
                 if (Globals_Client.showMessages)
                 {
                     System.Windows.Forms.MessageBox.Show("No journal entry selected.");
+                }
+            }
+        }
+
+        // ------------------- FIEF MANAGEMENT
+
+        /// <summary>
+        /// Creates UI display for PlayerCharacter's list of owned Fiefs
+        /// </summary>
+        public void setUpFiefsList()
+        {
+            // add necessary columns
+            this.fiefsListView.Columns.Add("Fief Name", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Where am I?", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Home Fief?", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Province Name", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Refreshes display of PlayerCharacter's list of owned Fiefs
+        /// </summary>
+        public void refreshMyFiefs()
+        {
+            // clear existing items in list
+            this.fiefsListView.Items.Clear();
+
+            // disable controls until fief selected
+            this.disableControls(this.fiefsOwnedContainer.Panel1);
+
+            ListViewItem[] fiefsOwned = new ListViewItem[Globals_Client.myPlayerCharacter.ownedFiefs.Count];
+            // iterates through fiefsOwned
+            for (int i = 0; i < Globals_Client.myPlayerCharacter.ownedFiefs.Count; i++)
+            {
+                // Create an item and subitem for each fief
+                // name
+                fiefsOwned[i] = new ListViewItem(Globals_Client.myPlayerCharacter.ownedFiefs[i].name);
+
+                // ID
+                fiefsOwned[i].SubItems.Add(Globals_Client.myPlayerCharacter.ownedFiefs[i].id);
+
+                // current location
+                if (Globals_Client.myPlayerCharacter.ownedFiefs[i] == Globals_Client.myPlayerCharacter.location)
+                {
+                    fiefsOwned[i].SubItems.Add("You are here");
+                }
+                else
+                {
+                    fiefsOwned[i].SubItems.Add("");
+                }
+
+                // home fief
+                if (Globals_Client.myPlayerCharacter.ownedFiefs[i].id.Equals(Globals_Client.myPlayerCharacter.homeFief))
+                {
+                    fiefsOwned[i].SubItems.Add("Home");
+                }
+                else
+                {
+                    fiefsOwned[i].SubItems.Add("");
+                }
+
+                // province name
+                fiefsOwned[i].SubItems.Add(Globals_Client.myPlayerCharacter.ownedFiefs[i].province.name);
+
+                // province ID
+                fiefsOwned[i].SubItems.Add(Globals_Client.myPlayerCharacter.ownedFiefs[i].province.id);
+
+                // add item to fiefsListView
+                this.fiefsListView.Items.Add(fiefsOwned[i]);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves general information for Fief display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="f">Fief for which information is to be displayed</param>
+        /// <param name="isOwner">bool indicating if fief owned by player</param>
+        public string displayFiefGeneralData(Fief f, bool isOwner)
+        {
+            string fiefText = "";
+
+            // ID
+            fiefText += "ID: " + f.id + "\r\n";
+
+            // name (& province name)
+            fiefText += "Name: " + f.name + " (Province: " + f.province.name + ".  Kingdom: " + f.province.kingdom.name + ")\r\n";
+
+            // rank
+            fiefText += "Title (rank): ";
+            fiefText += f.rank.getName(f.language) + " (" + f.rank.id + ")\r\n";
+
+            // population
+            fiefText += "Population: " + f.population + "\r\n";
+
+            // fields
+            fiefText += "Fields level: " + f.fields + "\r\n";
+
+            // industry
+            fiefText += "Industry level: " + f.industry + "\r\n";
+
+            // owner's ID
+            fiefText += "Owner (ID): " + f.owner.charID + "\r\n";
+
+            // ancestral owner's ID
+            fiefText += "Ancestral owner (ID): " + f.ancestralOwner.charID + "\r\n";
+
+            // bailiff's ID
+            fiefText += "Bailiff (ID): ";
+            if (f.bailiff != null)
+            {
+                fiefText += f.bailiff.charID;
+            }
+            else
+            {
+                fiefText += "auto-bailiff";
+            }
+            fiefText += "\r\n";
+
+            // no. of troops (only if owned)
+            if (isOwner)
+            {
+                fiefText += "Garrison: " + Convert.ToInt32(f.keyStatsCurrent[4] / 1000) + " troops\r\n";
+                fiefText += "Militia: Up to " + f.calcMaxTroops() + " troops are available for call up in this fief\r\n";
+            }
+
+            // fief status
+            fiefText += "Status: ";
+            // if under siege, replace status with siege
+            if (!String.IsNullOrWhiteSpace(f.siege))
+            {
+                fiefText += "UNDER SIEGE!";
+            }
+            else
+            {
+                switch (f.status)
+                {
+                    case 'U':
+                        fiefText += "Unrest";
+                        break;
+                    case 'R':
+                        fiefText += "Rebellion!";
+                        break;
+                    default:
+                        fiefText += "Calm";
+                        break;
+                }
+            }
+
+            fiefText += "\r\n";
+
+            // language
+            fiefText += "Language: " + f.language.getName() + "\r\n";
+
+            // terrain type
+            fiefText += "Terrain: " + f.terrain.description + "\r\n";
+
+            // barred nationalities
+            fiefText += "Barred nationalities: ";
+            if (f.barredNationalities.Count > 0)
+            {
+                // get last entry
+                string lastNatID = f.barredNationalities.Last();
+
+                foreach (string natID in f.barredNationalities)
+                {
+                    // get nationality
+                    Nationality thisNat = null;
+                    if (Globals_Game.nationalityMasterList.ContainsKey(natID))
+                    {
+                        thisNat = Globals_Game.nationalityMasterList[natID];
+                    }
+
+                    if (thisNat != null)
+                    {
+                        fiefText += thisNat.name;
+
+                        if (!natID.Equals(lastNatID))
+                        {
+                            fiefText += ", ";
+                        }
+                    }
+                }
+            }
+            else
+            {
+                fiefText += "None";
+            }
+            fiefText += "\r\n";
+
+            // barred characters
+            fiefText += "Barred characters: ";
+            if (f.barredCharacters.Count > 0)
+            {
+                // get last entry
+                string lastCharID = f.barredCharacters.Last();
+
+                foreach (string charID in f.barredCharacters)
+                {
+                    // get nationality
+                    Character thisChar = null;
+                    if (Globals_Game.npcMasterList.ContainsKey(charID))
+                    {
+                        thisChar = Globals_Game.npcMasterList[charID];
+                    }
+                    else if (Globals_Game.pcMasterList.ContainsKey(charID))
+                    {
+                        thisChar = Globals_Game.pcMasterList[charID];
+                    }
+
+                    if (thisChar != null)
+                    {
+                        fiefText += thisChar.firstName + " " + thisChar.familyName;
+
+                        if (!charID.Equals(lastCharID))
+                        {
+                            fiefText += ", ";
+                        }
+                    }
+                }
+            }
+            else
+            {
+                fiefText += "None";
+            }
+            fiefText += "\r\n";
+
+            return fiefText;
+        }
+
+        /// <summary>
+        /// Retrieves previous season's key information for Fief display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="f">Fief for which information is to be displayed</param>
+        public string displayFiefKeyStatsPrev(Fief f)
+        {
+            bool displayData = true;
+
+            string fiefText = "PREVIOUS SEASON\r\n=================\r\n\r\n";
+
+            // if under siege, check to see if display data (based on siege start date)
+            if (!String.IsNullOrWhiteSpace(f.siege))
+            {
+                Siege thisSiege = f.getSiege();
+                displayData = this.checkToShowFinancialData(-1, thisSiege);
+            }
+
+            // if not OK to display data, show message
+            if (!displayData)
+            {
+                fiefText += "CURRENTLY UNAVAILABLE - due to siege\r\n";
+            }
+            // if is OK, display as normal
+            else
+            {
+                // loyalty
+                fiefText += "Loyalty: " + f.keyStatsPrevious[0] + "\r\n\r\n";
+
+                // GDP
+                fiefText += "GDP: " + f.keyStatsPrevious[1] + "\r\n\r\n";
+
+                // tax rate
+                fiefText += "Tax rate: " + f.keyStatsPrevious[2] + "%\r\n\r\n";
+
+                // officials spend
+                fiefText += "Officials expenditure: " + f.keyStatsPrevious[3] + "\r\n\r\n";
+
+                // garrison spend
+                fiefText += "Garrison expenditure: " + f.keyStatsPrevious[4] + "\r\n\r\n";
+
+                // infrastructure spend
+                fiefText += "Infrastructure expenditure: " + f.keyStatsPrevious[5] + "\r\n\r\n";
+
+                // keep spend
+                fiefText += "Keep expenditure: " + f.keyStatsPrevious[6] + "\r\n";
+                // keep level
+                fiefText += "   (Keep level: " + f.keyStatsPrevious[7] + ")\r\n\r\n";
+
+                // income
+                fiefText += "Income: " + f.keyStatsPrevious[8] + "\r\n\r\n";
+
+                // family expenses
+                fiefText += "Family expenses: " + f.keyStatsPrevious[9] + "\r\n\r\n";
+
+                // total expenses
+                fiefText += "Total fief expenses: " + f.keyStatsPrevious[10] + "\r\n\r\n";
+
+                // overlord taxes
+                fiefText += "Overlord taxes: " + f.keyStatsPrevious[11] + "\r\n";
+                // overlord tax rate
+                fiefText += "   (tax rate: " + f.keyStatsPrevious[12] + "%)\r\n\r\n";
+
+                // surplus
+                fiefText += "Bottom line: " + f.keyStatsPrevious[13];
+            }
+
+            return fiefText;
+        }
+
+        /// <summary>
+        /// Retrieves current season's key information for Fief display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="f">Fief for which information is to be displayed</param>
+        public string displayFiefKeyStatsCurr(Fief f)
+        {
+            bool displayData = true;
+
+            string fiefText = "CURRENT SEASON\r\n=================\r\n\r\n";
+
+            // if under siege, check to see if display data (based on siege start date)
+            if (!String.IsNullOrWhiteSpace(f.siege))
+            {
+                Siege thisSiege = f.getSiege();
+                displayData = this.checkToShowFinancialData(0, thisSiege);
+            }
+
+            // if not OK to display data, show message
+            if (!displayData)
+            {
+                fiefText += "CURRENTLY UNAVAILABLE - due to siege\r\n";
+            }
+            // if is OK, display as normal
+            else
+            {
+                // loyalty
+                fiefText += "Loyalty: " + f.keyStatsCurrent[0] + "\r\n\r\n";
+
+                // GDP
+                fiefText += "GDP: " + f.keyStatsCurrent[1] + "\r\n\r\n";
+
+                // tax rate
+                fiefText += "Tax rate: " + f.keyStatsCurrent[2] + "%\r\n\r\n";
+
+                // officials spend
+                fiefText += "Officials expenditure: " + f.keyStatsCurrent[3] + "\r\n\r\n";
+
+                // garrison spend
+                fiefText += "Garrison expenditure: " + f.keyStatsCurrent[4] + "\r\n\r\n";
+
+                // infrastructure spend
+                fiefText += "Infrastructure expenditure: " + f.keyStatsCurrent[5] + "\r\n\r\n";
+
+                // keep spend
+                fiefText += "Keep expenditure: " + f.keyStatsCurrent[6] + "\r\n";
+                // keep level
+                fiefText += "   (Keep level: " + f.keyStatsCurrent[7] + ")\r\n\r\n";
+
+                // income
+                fiefText += "Income: " + f.keyStatsCurrent[8] + "\r\n\r\n";
+
+                // family expenses
+                fiefText += "Family expenses: " + f.keyStatsCurrent[9] + "\r\n\r\n";
+
+                // total expenses
+                fiefText += "Total fief expenses: " + f.keyStatsCurrent[10] + "\r\n\r\n";
+
+                // overlord taxes
+                fiefText += "Overlord taxes: " + f.keyStatsCurrent[11] + "\r\n";
+                // overlord tax rate
+                fiefText += "   (tax rate: " + f.keyStatsCurrent[12] + "%)\r\n\r\n";
+
+                // surplus
+                fiefText += "Bottom line: " + f.keyStatsCurrent[13];
+            }
+
+            return fiefText;
+        }
+
+        /// <summary>
+        /// Retrieves next season's key information for Fief display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="f">Fief for which information is to be displayed</param>
+        public string displayFiefKeyStatsNext(Fief f)
+        {
+            string fiefText = "NEXT SEASON (ESTIMATE)\r\n========================\r\n\r\n";
+
+            // if under siege, don't display data
+            if (!String.IsNullOrWhiteSpace(f.siege))
+            {
+                fiefText += "CURRENTLY UNAVAILABLE - due to siege\r\n";
+            }
+
+            // if NOT under siege
+            else
+            {
+                // loyalty
+                fiefText += "Loyalty: " + f.calcNewLoyalty() + "\r\n";
+                // various loyalty modifiers
+                fiefText += "  (including Officials spend loyalty modifier: " + f.calcOffLoyMod() + ")\r\n";
+                fiefText += "  (including Garrison spend loyalty modifier: " + f.calcGarrLoyMod() + ")\r\n";
+                fiefText += "  (including Bailiff loyalty modifier: " + f.calcBlfLoyAdjusted(f.bailiffDaysInFief >= 30) + ")\r\n";
+                fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.calcBailLoySkillMod(f.bailiffDaysInFief >= 30) + ")\r\n\r\n";
+
+                // GDP
+                fiefText += "GDP: " + f.calcNewGDP() + "\r\n\r\n";
+
+                // tax rate
+                fiefText += "Tax rate: " + f.taxRateNext + "%\r\n\r\n";
+
+                // officials expenditure
+                fiefText += "Officials expenditure: " + f.officialsSpendNext + "\r\n\r\n";
+
+                // Garrison expenditure
+                fiefText += "Garrison expenditure: " + f.garrisonSpendNext + "\r\n\r\n";
+
+                // Infrastructure expenditure
+                fiefText += "Infrastructure expenditure: " + f.infrastructureSpendNext + "\r\n\r\n";
+
+                // keep expenditure
+                fiefText += "Keep expenditure: " + f.keepSpendNext + "\r\n";
+                // keep level
+                fiefText += "   (keep level: " + f.calcNewKeepLevel() + ")\r\n\r\n";
+
+                // income
+                fiefText += "Income: " + f.calcNewIncome() + "\r\n";
+                // various income modifiers
+                fiefText += "  (including Bailiff income modifier: " + f.calcBlfIncMod(f.bailiffDaysInFief >= 30) + ")\r\n";
+                fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod() + ")\r\n\r\n";
+
+                // family expenses
+                fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
+                // famExpenses modifier for player/spouse
+                if (!String.IsNullOrWhiteSpace(f.owner.spouse))
+                {
+                    if (f.owner.getSpouse().management > f.owner.management)
+                    {
+                        fiefText += "  (which may include a famExpense skills modifier: " + Globals_Game.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")";
+                    }
+                }
+                else
+                {
+                    fiefText += "  (which may include a famExpense skills modifier: " + f.owner.calcSkillEffect("famExpense") + ")";
+                }
+                fiefText += "\r\n\r\n";
+
+                // total expenses (fief and family)
+                fiefText += "Total fief expenses: " + (f.calcNewExpenses() + f.calcFamilyExpenses()) + "\r\n";
+                // bailiff fief expenses modifier
+                fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif(f.bailiffDaysInFief >= 30) + ")\r\n\r\n";
+
+                // overlord taxes
+                fiefText += "Overlord taxes: " + f.calcNewOlordTaxes() + "\r\n";
+                // overlord tax rate
+                fiefText += "   (tax rate: " + f.province.taxRate + "%)\r\n\r\n";
+
+                // bottom line
+                fiefText += "Bottom line: " + f.calcNewBottomLine();
+            }
+
+            return fiefText;
+        }
+
+        /// <summary>
+        /// Refreshes main Fief display screen
+        /// </summary>
+        /// <param name="f">Fief whose information is to be displayed</param>
+        public void refreshFiefContainer(Fief f = null)
+        {
+            // if fief not specified, default to player's current location
+            if (f == null)
+            {
+                f = Globals_Client.myPlayerCharacter.location;
+            }
+
+            Globals_Client.fiefToView = f;
+
+            bool isOwner = Globals_Client.myPlayerCharacter.ownedFiefs.Contains(Globals_Client.fiefToView);
+            bool displayWarning = false;
+            string toDisplay = "";
+
+            // set name label text
+            this.fiefLabel.Text = Globals_Client.fiefToView.name + " (" + Globals_Client.fiefToView.id + ")";
+            // set siege label text
+            if (!String.IsNullOrWhiteSpace(f.siege))
+            {
+                this.fiefSiegeLabel.Text = "Fief under siege";
+            }
+            else
+            {
+                this.fiefSiegeLabel.Text = "";
+            }
+
+            // refresh main fief TextBox with updated info
+            this.fiefTextBox.Text = this.displayFiefGeneralData(Globals_Client.fiefToView, isOwner);
+
+            // ensure textboxes aren't interactive
+            this.fiefTextBox.ReadOnly = true;
+            this.fiefPrevKeyStatsTextBox.ReadOnly = true;
+            this.fiefCurrKeyStatsTextBox.ReadOnly = true;
+            this.fiefNextKeyStatsTextBox.ReadOnly = true;
+            this.fiefTransferAmountTextBox.Text = "";
+
+            // if fief is NOT owned by player, disable fief management buttons and TextBoxes 
+            if (!isOwner)
+            {
+                this.adjustSpendBtn.Enabled = false;
+                this.taxRateLabel.Enabled = false;
+                this.garrSpendLabel.Enabled = false;
+                this.offSpendLabel.Enabled = false;
+                this.infraSpendLabel.Enabled = false;
+                this.keepSpendLabel.Enabled = false;
+                this.adjGarrSpendTextBox.Enabled = false;
+                this.adjInfrSpendTextBox.Enabled = false;
+                this.adjOffSpendTextBox.Enabled = false;
+                this.adjustKeepSpendTextBox.Enabled = false;
+                this.adjustTaxTextBox.Enabled = false;
+                this.fiefGarrExpMaxBtn.Enabled = false;
+                this.fiefInfraExpMaxBtn.Enabled = false;
+                this.fiefKeepExpMaxBtn.Enabled = false;
+                this.fiefOffExpMaxBtn.Enabled = false;
+                this.viewBailiffBtn.Enabled = false;
+                this.lockoutBtn.Enabled = false;
+                this.selfBailiffBtn.Enabled = false;
+                this.setBailiffBtn.Enabled = false;
+                this.removeBaliffBtn.Enabled = false;
+                this.fiefTransferToFiefBtn.Enabled = false;
+                this.fiefTransferToHomeBtn.Enabled = false;
+                this.fiefHomeTreasTextBox.Enabled = false;
+                this.fiefTransferAmountTextBox.Enabled = false;
+                this.FiefTreasTextBox.Enabled = false;
+                this.fiefGrantTitleBtn.Enabled = false;
+
+                // set TextBoxes to nowt
+                this.adjGarrSpendTextBox.Text = "";
+                this.adjInfrSpendTextBox.Text = "";
+                this.adjOffSpendTextBox.Text = "";
+                this.adjustKeepSpendTextBox.Text = "";
+                this.adjustTaxTextBox.Text = "";
+                this.fiefHomeTreasTextBox.Text = "";
+                this.FiefTreasTextBox.Text = "";
+                this.fiefPrevKeyStatsTextBox.Text = "";
+                this.fiefCurrKeyStatsTextBox.Text = "";
+                this.fiefNextKeyStatsTextBox.Text = "";
+            }
+
+            // if fief IS owned by player, enable fief management buttons and TextBoxes 
+            else
+            {
+                // get home fief
+                Fief home = Globals_Client.myPlayerCharacter.getHomeFief();
+
+                // get home treasury
+                int homeTreasury = 0;
+                if (f == home)
+                {
+                    homeTreasury = home.getAvailableTreasury();
+                }
+                else
+                {
+                    homeTreasury = home.getAvailableTreasury(true);
+                }
+
+                // get this fief's treasury
+                int fiefTreasury = f.getAvailableTreasury(); ;
+
+                // if fief UNDER SIEGE, leave most controls disabled
+                if (!String.IsNullOrWhiteSpace(f.siege))
+                {
+                    // allow view bailiff
+                    this.viewBailiffBtn.Enabled = true;
+
+                    // allow financial data TextBoxes to show appropriate data
+                    this.fiefPrevKeyStatsTextBox.Text = this.displayFiefKeyStatsPrev(Globals_Client.fiefToView);
+                    this.fiefCurrKeyStatsTextBox.Text = this.displayFiefKeyStatsCurr(Globals_Client.fiefToView);
+                    this.fiefNextKeyStatsTextBox.Text = this.displayFiefKeyStatsNext(Globals_Client.fiefToView);
+                }
+
+                // if NOT under siege, enable usual controls
+                else
+                {
+                    this.adjustSpendBtn.Enabled = true;
+                    this.taxRateLabel.Enabled = true;
+                    this.garrSpendLabel.Enabled = true;
+                    this.offSpendLabel.Enabled = true;
+                    this.infraSpendLabel.Enabled = true;
+                    this.keepSpendLabel.Enabled = true;
+                    this.adjGarrSpendTextBox.Enabled = true;
+                    this.adjInfrSpendTextBox.Enabled = true;
+                    this.adjOffSpendTextBox.Enabled = true;
+                    this.adjustKeepSpendTextBox.Enabled = true;
+                    this.adjustTaxTextBox.Enabled = true;
+                    this.fiefGarrExpMaxBtn.Enabled = true;
+                    this.fiefInfraExpMaxBtn.Enabled = true;
+                    this.fiefKeepExpMaxBtn.Enabled = true;
+                    this.fiefOffExpMaxBtn.Enabled = true;
+                    this.viewBailiffBtn.Enabled = true;
+                    this.lockoutBtn.Enabled = true;
+                    this.setBailiffBtn.Enabled = true;
+                    this.removeBaliffBtn.Enabled = true;
+                    this.fiefHomeTreasTextBox.Enabled = true;
+                    this.fiefHomeTreasTextBox.ReadOnly = true;
+                    this.FiefTreasTextBox.ReadOnly = true;
+                    this.fiefGrantTitleBtn.Enabled = true;
+
+                    // don't enable 'appoint self' button if you're already the bailiff
+                    if (f.bailiff == Globals_Client.myPlayerCharacter)
+                    {
+                        this.selfBailiffBtn.Enabled = false;
+                    }
+                    else
+                    {
+                        this.selfBailiffBtn.Enabled = true;
+                    }
+
+                    // don't enable treasury transfer controls if in Home Fief (can't transfer to self)
+                    if (f == Globals_Client.myPlayerCharacter.getHomeFief())
+                    {
+                        this.fiefTransferToFiefBtn.Enabled = false;
+                        this.fiefTransferToHomeBtn.Enabled = false;
+                        this.fiefTransferAmountTextBox.Enabled = false;
+                        this.FiefTreasTextBox.Enabled = false;
+                    }
+                    else
+                    {
+                        this.fiefTransferToFiefBtn.Enabled = true;
+                        this.fiefTransferToHomeBtn.Enabled = true;
+                        this.fiefTransferAmountTextBox.Enabled = true;
+                        this.fiefHomeTreasTextBox.Enabled = true;
+                        this.FiefTreasTextBox.Enabled = true;
+                    }
+
+                    // set TextBoxes to show appropriate data
+                    this.adjGarrSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.garrisonSpendNext);
+                    this.adjInfrSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.infrastructureSpendNext);
+                    this.adjOffSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.officialsSpendNext);
+                    this.adjustKeepSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.keepSpendNext);
+                    this.adjustTaxTextBox.Text = Convert.ToString(Globals_Client.fiefToView.taxRateNext);
+                    this.fiefPrevKeyStatsTextBox.Text = this.displayFiefKeyStatsPrev(Globals_Client.fiefToView);
+                    this.fiefCurrKeyStatsTextBox.Text = this.displayFiefKeyStatsCurr(Globals_Client.fiefToView);
+                    this.fiefNextKeyStatsTextBox.Text = this.displayFiefKeyStatsNext(Globals_Client.fiefToView);
+
+                    // check if in home fief
+                    if (f == home)
+                    {
+                        // don't show fief treasury
+                        this.FiefTreasTextBox.Text = "";
+                    }
+                    else
+                    {
+                        // display fief treasury
+                        this.FiefTreasTextBox.Text = fiefTreasury.ToString();
+                    }
+
+                    // display home treasury
+                    this.fiefHomeTreasTextBox.Text = homeTreasury.ToString();
+
+                    // check to see if proposed expenditure level doesn't exceed fief treasury
+                    // get fief expenses (includes bailiff modifiers)
+                    uint totalSpend = Convert.ToUInt32(Globals_Client.fiefToView.calcNewExpenses());
+
+                    // make sure expenditure can be supported by the treasury
+                    // if it can't, display a message and cancel the commit
+                    if (!Globals_Client.fiefToView.checkExpenditureOK(totalSpend))
+                    {
+                        int difference = Convert.ToInt32(totalSpend - fiefTreasury);
+                        toDisplay = "Your proposed expenditure exceeds the " + Globals_Client.fiefToView.name + " treasury by " + difference;
+                        toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
+                        toDisplay += "\r\n\r\nAny unsupportable expenditure levels will be automatically adjusted during the seasonal update.";
+                        displayWarning = true;
+                    }
+                }
+
+            }
+
+            Globals_Client.containerToView = this.fiefContainer;
+            Globals_Client.containerToView.BringToFront();
+
+            if (displayWarning)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(toDisplay, "WARNING: CANNOT SUPPORT PROPOSED EXPENDITURE");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the fiefManagementToolStripMenuItem
+        /// which displays main Fief information screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefManagementToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.refreshFiefContainer(Globals_Client.myPlayerCharacter.location);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the adjustSpendBtn button
+        /// which commits the expenditures and tax rate for the coming year
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adjustSpendBtn_Click(object sender, EventArgs e)
+        {
+            // keep track of whether any spends ahve changed
+            bool spendChanged = false;
+
+            try
+            {
+                // get new amounts
+                Double newTax = Convert.ToDouble(this.adjustTaxTextBox.Text);
+                UInt32 newOff = Convert.ToUInt32(this.adjOffSpendTextBox.Text);
+                UInt32 newGarr = Convert.ToUInt32(this.adjGarrSpendTextBox.Text);
+                UInt32 newInfra = Convert.ToUInt32(this.adjInfrSpendTextBox.Text);
+                UInt32 newKeep = Convert.ToUInt32(this.adjustKeepSpendTextBox.Text);
+
+                // get total spend
+                uint totalSpend = newOff + newGarr + newInfra + newKeep;
+
+                // factor in bailiff skills modifier for fief expenses
+                double bailiffModif = 0;
+
+                // get bailiff modifier (passing in whether bailiffDaysInFief is sufficient)
+                bailiffModif = Globals_Client.fiefToView.calcBailExpModif(Globals_Client.fiefToView.bailiffDaysInFief >= 30);
+
+                if (bailiffModif != 0)
+                {
+                    totalSpend = totalSpend + Convert.ToUInt32(totalSpend * bailiffModif);
+                }
+
+                // check that expenditure can be supported by the treasury
+                // if it can't, display a message and cancel the commit
+                if (!Globals_Client.fiefToView.checkExpenditureOK(totalSpend))
+                {
+                    int difference = Convert.ToInt32(totalSpend - Globals_Client.fiefToView.getAvailableTreasury());
+                    string toDisplay = "Your spending exceeds the " + Globals_Client.fiefToView.name + " treasury by " + difference;
+                    toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay, "TRANSACTION CANCELLED");
+                    }
+                }
+                // if treasury funds are sufficient to cover expenditure, do the commit
+                else
+                {
+                    // tax rate
+                    // check if amount/rate changed
+                    if (newTax != Globals_Client.fiefToView.taxRateNext)
+                    {
+                        // adjust tax rate
+                        Globals_Client.fiefToView.adjustTaxRate(newTax);
+                        spendChanged = true;
+                    }
+
+                    // officials spend
+                    // check if amount/rate changed
+                    if (newOff != Globals_Client.fiefToView.officialsSpendNext)
+                    {
+                        // adjust officials spend
+                        Globals_Client.fiefToView.adjustOfficialsSpend(Convert.ToUInt32(this.adjOffSpendTextBox.Text));
+                        spendChanged = true;
+                    }
+
+                    // garrison spend
+                    // check if amount/rate changed
+                    if (newGarr != Globals_Client.fiefToView.garrisonSpendNext)
+                    {
+                        // adjust garrison spend
+                        Globals_Client.fiefToView.adjustGarrisonSpend(Convert.ToUInt32(this.adjGarrSpendTextBox.Text));
+                        spendChanged = true;
+                    }
+
+                    // infrastructure spend
+                    // check if amount/rate changed
+                    if (newInfra != Globals_Client.fiefToView.infrastructureSpendNext)
+                    {
+                        // adjust infrastructure spend
+                        Globals_Client.fiefToView.adjustInfraSpend(Convert.ToUInt32(this.adjInfrSpendTextBox.Text));
+                        spendChanged = true;
+                    }
+
+                    // adjust keep spend
+                    // check if amount/rate changed
+                    if (newKeep != Globals_Client.fiefToView.keepSpendNext)
+                    {
+                        // adjust keep spend
+                        Globals_Client.fiefToView.adjustKeepSpend(Convert.ToUInt32(this.adjustKeepSpendTextBox.Text));
+                        spendChanged = true;
+                    }
+
+                    // display appropriate message
+                    string toDisplay = "";
+                    if (spendChanged)
+                    {
+                        toDisplay += "Expenditure adjusted";
+                    }
+                    else
+                    {
+                        toDisplay += "Expenditure unchanged";
+                    }
+
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                    }
+                }
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            finally
+            {
+                // refresh screen if expenditure changed
+                if (spendChanged)
+                {
+                    // refresh display
+                    this.refreshCurrentScreen();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of myFiefsToolStripMenuItem
+        /// which refreshes and displays the owned fiefs screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void myFiefsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Globals_Client.fiefToView = null;
+            this.refreshMyFiefs();
+            Globals_Client.containerToView = this.fiefsOwnedContainer;
+            Globals_Client.containerToView.BringToFront();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the viewBailiffBtn button
+        /// which refreshes and displays the character screen, showing details of the
+        /// bailiff for the selected fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void viewBailiffBtn_Click(object sender, EventArgs e)
+        {
+            if (Globals_Client.fiefToView.bailiff != null)
+            {
+                // if player is bailiff, show in personal characteristics screen
+                if (Globals_Client.fiefToView.bailiff == Globals_Client.myPlayerCharacter)
+                {
+                    Globals_Client.charToView = Globals_Client.myPlayerCharacter;
+                    this.refreshCharacterContainer(Globals_Client.charToView);
+                }
+
+                // if NPC is bailiff, show in household affairs screen
+                else if (Globals_Client.fiefToView.bailiff is NonPlayerCharacter)
+                {
+                    Globals_Client.charToView = Globals_Client.fiefToView.bailiff;
+                    // refresh household affairs screen 
+                    this.refreshHouseholdDisplay(Globals_Client.charToView as NonPlayerCharacter);
+                    // display household affairs screen
+                    Globals_Client.containerToView = this.houseContainer;
+                    Globals_Client.containerToView.BringToFront();
+                }
+            }
+
+            // display message that is no bailiff
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("This fief currently has no bailiff.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of the fiefsListView object,
+        /// invoking the displayFief method, passing a Fief to display
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefsListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            // enable controls
+            if (this.fiefsListView.SelectedItems.Count > 0)
+            {
+                this.fiefsChallengeBtn.Enabled = true;
+                this.fiefsViewBtn.Enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the setBailiffBtn button
+        ///invoking and displaying the character selection screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void setBailiffBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            SelectionForm chooseBailiff = new SelectionForm(this, "bailiff");
+            chooseBailiff.Show();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the lockoutBtn button
+        /// invoking and displaying the lockout screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void lockoutBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            SelectionForm lockOutOptions = new SelectionForm(this, "lockout");
+            lockOutOptions.Show();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the removeBaliffBtn button,
+        /// relieving the current bailiff of his duties
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void removeBaliffBtn_Click(object sender, EventArgs e)
+        {
+            // if the fief has an existing bailiff
+            if (Globals_Client.fiefToView.bailiff != null)
+            {
+                // relieve him of his duties
+                Globals_Client.fiefToView.bailiff = null;
+
+                // refresh fief display
+                this.refreshFiefContainer(Globals_Client.fiefToView);
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the selfBailiffBtn button,
+        /// appointing the player as bailiff of the displayed fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void selfBailiffBtn_Click(object sender, EventArgs e)
+        {
+            // give player fair warning of bailiff commitments
+            DialogResult dialogResult = MessageBox.Show("Being a bailiff will restrict your movement.  Click 'OK' to proceed.", "Proceed with appointment?", MessageBoxButtons.OKCancel);
+
+            // if choose to cancel
+            if (dialogResult == DialogResult.Cancel)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Appointment cancelled.");
+                }
+            }
+
+            // if choose to proceed
+            else
+            {
+                // if the fief has an existing bailiff
+                if (Globals_Client.fiefToView.bailiff != null)
+                {
+                    // relieve him of his duties
+                    Globals_Client.fiefToView.bailiff = null;
+                }
+
+                // set player as bailiff
+                Globals_Client.fiefToView.bailiff = Globals_Client.myPlayerCharacter;
+            }
+
+            // refresh fief display
+            this.refreshFiefContainer(Globals_Client.fiefToView);
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the 'transfer funds' buttons
+        /// allowing players to transfer funds between treasuries
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void transferFundsBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // get button
+                Button button = sender as Button;
+                // get transfer parameters from tag
+                string transferType = button.Tag.ToString();
+
+                Fief fiefFrom = null;
+                Fief fiefTo = null;
+                int amount = 0;
+
+                switch (transferType)
+                {
+                    case "toFief":
+                        fiefFrom = Globals_Client.myPlayerCharacter.getHomeFief();
+                        fiefTo = Globals_Client.fiefToView;
+                        amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
+                        break;
+                    case "toHome":
+                        fiefFrom = Globals_Client.fiefToView;
+                        fiefTo = Globals_Client.myPlayerCharacter.getHomeFief();
+                        amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
+                        break;
+                    default:
+                        break;
+                }
+
+                if (((fiefFrom != null) && (fiefTo != null)) && (amount > 0))
+                {
+                    // make sure are enough funds to cover transfer
+                    if (amount > fiefFrom.getAvailableTreasury(true))
+                    {
+                        // if not, inform player and adjust amount downwards
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Too few funds available for this transfer.");
+                        }
+                    }
+
+                    else
+                    {
+                        // make the transfer
+                        this.treasuryTransfer(fiefFrom, fiefTo, amount);
+                    }
+
+                }
+
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Transfers funds between the home treasury and the fief treasury
+        /// </summary>
+        /// <param name="from">The Fief from which funds are to be transferred</param>
+        /// <param name="to">The Fief to which funds are to be transferred</param>
+        /// <param name="amount">How much to be transferred</param>
+        public void treasuryTransfer(Fief from, Fief to, int amount)
+        {
+            // subtract from source treasury
+            from.treasury = from.treasury - amount;
+
+            // add to target treasury
+            to.treasury = to.treasury + amount;
+
+            // refresh fief display
+            this.refreshCurrentScreen();
+        }
+
+        /// <summary>
+        /// Checks to see if display of financial data for the specified financial period
+        /// is permitted due to ongoing siege
+        /// </summary>
+        /// <returns>bool indicating whether display is permitted</returns>
+        /// <param name="target">int indicating desired financial period relative to current season</param>
+        /// <param name="s">The siege</param>
+        public bool checkToShowFinancialData(int relativeSeason, Siege s)
+        {
+            bool displayData = true;
+
+            uint financialPeriodYear = this.getFinancialYear(relativeSeason);
+            if (financialPeriodYear > s.startYear)
+            {
+                displayData = false;
+            }
+            else if (financialPeriodYear == s.startYear)
+            {
+                byte financialPeriodSeason = this.getFinancialSeason(relativeSeason);
+                if (financialPeriodSeason > s.startSeason)
+                {
+                    displayData = false;
+                }
+            }
+
+            return displayData;
+        }
+
+        /// <summary>
+        /// Gets the year for the specified financial period
+        /// </summary>
+        /// <returns>The year</returns>
+        /// <param name="target">int indicating desired financial period relative to current season</param>
+        public uint getFinancialYear(int relativeSeason)
+        {
+            uint financialYear = 0;
+            uint thisYear = Globals_Game.clock.currentYear;
+
+            switch (relativeSeason)
+            {
+                case (-1):
+                    if (Globals_Game.clock.currentSeason == 0)
+                    {
+                        financialYear = thisYear - 1;
+                    }
+                    else
+                    {
+                        financialYear = thisYear;
+                    }
+                    break;
+                case (1):
+                    if (Globals_Game.clock.currentSeason == 4)
+                    {
+                        financialYear = thisYear + 1;
+                    }
+                    else
+                    {
+                        financialYear = thisYear;
+                    }
+                    break;
+                default:
+                    financialYear = thisYear;
+                    break;
+            }
+
+            return financialYear;
+        }
+
+        /// <summary>
+        /// Gets the season for the specified financial period
+        /// </summary>
+        /// <returns>The season</returns>
+        /// <param name="target">int indicating desired financial period relative to current season</param>
+        public byte getFinancialSeason(int relativeSeason)
+        {
+            byte financialSeason = 0;
+            byte thisSeason = Globals_Game.clock.currentSeason;
+
+            switch (relativeSeason)
+            {
+                case (-1):
+                    if (thisSeason == 0)
+                    {
+                        financialSeason = 4;
+                    }
+                    else
+                    {
+                        financialSeason = thisSeason;
+                        financialSeason--;
+                    }
+                    break;
+                case (1):
+                    if (thisSeason == 4)
+                    {
+                        financialSeason = 0;
+                    }
+                    else
+                    {
+                        financialSeason = thisSeason;
+                        financialSeason++;
+                    }
+                    break;
+                default:
+                    financialSeason = thisSeason;
+                    break;
+            }
+
+            return financialSeason;
+        }
+
+        /// <summary>
+        /// Responds to the click event of the viewMyHomeFiefToolStripMenuItem
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void viewMyHomeFiefToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // get home fief
+            Fief homeFief = Globals_Client.myPlayerCharacter.getHomeFief();
+
+            if (homeFief != null)
+            {
+                // display home fief
+                this.refreshFiefContainer(homeFief);
+            }
+
+            // if have no home fief
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("You have no home fief!");
                 }
             }
         }
@@ -11494,6 +10480,439 @@ namespace hist_mmorpg
 
             SelectionForm transferFunds = new SelectionForm(this, "transferFunds");
             transferFunds.Show();
+        }
+
+        // ------------------- ROYAL GIFTS AND PROVINCE MANAGEMENT
+
+        /// <summary>
+        /// Creates UI display for king's lists of provinces and fiefs
+        /// </summary>
+        public void setUpRoyalGiftsLists()
+        {
+            // add necessary columns
+            // provinces
+            this.royalGiftsProvListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
+            this.royalGiftsProvListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.royalGiftsProvListView.Columns.Add("Title Holder", -2, HorizontalAlignment.Left);
+            this.royalGiftsProvListView.Columns.Add("Last Tax Rate", -2, HorizontalAlignment.Left);
+            this.royalGiftsProvListView.Columns.Add("Last Tax Income", -2, HorizontalAlignment.Left);
+            // fiefs
+            this.royalGiftsFiefListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Province", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Title Holder", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Last GDP", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Last Tax Income", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Current Treasury", -2, HorizontalAlignment.Left);
+            // positions
+            this.royalGiftsPositionListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.royalGiftsPositionListView.Columns.Add("Position", -2, HorizontalAlignment.Left);
+            this.royalGiftsPositionListView.Columns.Add("Stature", -2, HorizontalAlignment.Left);
+            this.royalGiftsPositionListView.Columns.Add("Holder", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for overlord's lists of provinces (and associated fiefs)
+        /// </summary>
+        public void setUpProvinceLists()
+        {
+            // add necessary columns
+            // provinces
+            this.provinceProvListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Last season tax rate", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Kingdom ID", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Kingdom Name", -2, HorizontalAlignment.Left);
+            // fiefs
+            this.provinceFiefListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("Current GDP", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("Last season tax income", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Refreshes royal gifts display
+        /// </summary>
+        public void refreshRoyalGiftsContainer()
+        {
+            // get PlayerCharacter (to allow for herald viewing king's finances)
+            PlayerCharacter thisKing = null;
+            if (Globals_Client.myPlayerCharacter.checkIsKing())
+            {
+                thisKing = Globals_Client.myPlayerCharacter;
+            }
+            else if (Globals_Client.myPlayerCharacter.checkIsHerald())
+            {
+                thisKing = Globals_Client.myPlayerCharacter.getKing();
+            }
+
+            if (thisKing != null)
+            {
+                // to store financial data
+                int totGDP = 0;
+                int provTaxInc = 0;
+                int totTaxInc = 0;
+                int totTreas = 0;
+                double taxRate = 0;
+
+                // disable controls until place selected in ListView
+                this.royalGiftsGiftFiefBtn.Enabled = false;
+                this.royalGiftsGrantTitleBtn.Enabled = false;
+                this.royalGiftsRevokeTitleBtn.Enabled = false;
+                this.royalGiftsPositionBtn.Enabled = false;
+                this.royalGiftsPositionRemoveBtn.Enabled = false;
+
+                // remove any previously displayed text
+
+                // clear existing items in places lists
+                this.royalGiftsProvListView.Items.Clear();
+                this.royalGiftsFiefListView.Items.Clear();
+                this.royalGiftsPositionListView.Items.Clear();
+
+                // iterates through owned provinces and fiefs, adding information to appropriate ListView
+                // PROVINCES
+                foreach (Province thisProvince in thisKing.ownedProvinces)
+                {
+                    ListViewItem provItem = null;
+
+                    // id
+                    provItem = new ListViewItem(thisProvince.id);
+
+                    // name
+                    provItem.SubItems.Add(thisProvince.name);
+
+                    // title holder
+                    // get character
+                    PlayerCharacter thisHolder = null;
+                    //System.Windows.Forms.MessageBox.Show("Got here!");
+                    if (Globals_Game.pcMasterList.ContainsKey(thisProvince.titleHolder))
+                    {
+                        thisHolder = Globals_Game.pcMasterList[thisProvince.titleHolder];
+                    }
+
+                    // title holder name & id
+                    if (thisHolder != null)
+                    {
+                        provItem.SubItems.Add(thisHolder.firstName + " " + thisHolder.familyName + "(" + thisHolder.charID + ")");
+                    }
+                    else
+                    {
+                        provItem.SubItems.Add("");
+                    }
+
+                    // last season tax rate and total tax income
+                    foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
+                    {
+                        if (fiefEntry.Value.province == thisProvince)
+                        {
+                            taxRate = fiefEntry.Value.keyStatsCurrent[12];
+                            // update tax income total for province
+                            provTaxInc += Convert.ToInt32(fiefEntry.Value.keyStatsCurrent[11]);
+                        }
+                    }
+
+                    // add tax rate subitem
+                    provItem.SubItems.Add(taxRate.ToString());
+
+                    // add tax income subitem
+                    provItem.SubItems.Add("£" + provTaxInc);
+
+                    // update total tax income for all provinces
+                    totTaxInc += provTaxInc;
+
+                    if (provItem != null)
+                    {
+                        // add item to fiefsListView
+                        this.royalGiftsProvListView.Items.Add(provItem);
+                    }
+
+                }
+
+                // add listviewitem with total tax income (all provinces)
+                string[] provItemTotalSubs = new string[] { "", "", "", "", "£" + totTaxInc };
+                ListViewItem provItemTotal = new ListViewItem(provItemTotalSubs);
+                this.royalGiftsProvListView.Items.Add(provItemTotal);
+
+                // FIEFS
+                totTaxInc = 0;
+                foreach (Fief thisFief in thisKing.ownedFiefs)
+                {
+                    ListViewItem fiefItem = null;
+
+                    // id
+                    fiefItem = new ListViewItem(thisFief.id);
+
+                    // name
+                    fiefItem.SubItems.Add(thisFief.name);
+
+                    // province name
+                    fiefItem.SubItems.Add(thisFief.province.name);
+
+                    // title holder
+                    // get character
+                    Character thisHolder = null;
+                    if (Globals_Game.pcMasterList.ContainsKey(thisFief.titleHolder))
+                    {
+                        thisHolder = Globals_Game.pcMasterList[thisFief.titleHolder];
+                    }
+                    else if (Globals_Game.npcMasterList.ContainsKey(thisFief.titleHolder))
+                    {
+                        thisHolder = Globals_Game.npcMasterList[thisFief.titleHolder];
+                    }
+
+                    // title holder name & id
+                    if (thisHolder != null)
+                    {
+                        fiefItem.SubItems.Add(thisHolder.firstName + " " + thisHolder.familyName + "(" + thisHolder.charID + ")");
+                    }
+                    else
+                    {
+                        fiefItem.SubItems.Add("");
+                    }
+
+                    // gdp
+                    fiefItem.SubItems.Add("£" + thisFief.keyStatsCurrent[1]);
+                    // update GDP total
+                    totGDP += Convert.ToInt32(thisFief.keyStatsCurrent[1]);
+
+                    // last tax income
+                    fiefItem.SubItems.Add("£" + thisFief.keyStatsCurrent[11]);
+                    // update tax income total
+                    totTaxInc += Convert.ToInt32(thisFief.keyStatsCurrent[11]);
+
+                    // treasury
+                    fiefItem.SubItems.Add("£" + thisFief.treasury);
+                    // update treasury total
+                    totTreas += thisFief.treasury;
+
+                    if (fiefItem != null)
+                    {
+                        // add item to fiefsListView
+                        this.royalGiftsFiefListView.Items.Add(fiefItem);
+                    }
+
+                }
+
+                // add listviewitem with total GDP and tax income (all fiefs)
+                string[] fiefItemTotalSubs = new string[] { "", "", "", "", "£" + totGDP, "£" + totTaxInc, "£" + totTreas };
+                ListViewItem fiefItemTotal = new ListViewItem(fiefItemTotalSubs);
+                this.royalGiftsFiefListView.Items.Add(fiefItemTotal);
+
+                // POSITIONS
+                foreach (KeyValuePair<byte, Position> thisPos in Globals_Game.positionMasterList)
+                {
+                    // only list posistions for this nationality
+                    if (thisPos.Value.nationality == thisKing.nationality)
+                    {
+                        ListViewItem posItem = null;
+
+                        // id
+                        posItem = new ListViewItem(thisPos.Value.id.ToString());
+
+                        // name
+                        posItem.SubItems.Add(thisPos.Value.getName(thisKing.language));
+
+                        // stature
+                        posItem.SubItems.Add(thisPos.Value.stature.ToString());
+
+                        // holder
+                        // get character
+                        Character thisHolder = null;
+                        if (!String.IsNullOrWhiteSpace(thisPos.Value.officeHolder))
+                        {
+                            if (Globals_Game.pcMasterList.ContainsKey(thisPos.Value.officeHolder))
+                            {
+                                thisHolder = Globals_Game.pcMasterList[thisPos.Value.officeHolder];
+                            }
+                        }
+
+                        // title holder name & id
+                        if (thisHolder != null)
+                        {
+                            posItem.SubItems.Add(thisHolder.firstName + " " + thisHolder.familyName + "(" + thisHolder.charID + ")");
+                        }
+                        else
+                        {
+                            posItem.SubItems.Add(" - ");
+                        }
+
+                        if (posItem != null)
+                        {
+                            // add item to royalGiftsPositionListView
+                            this.royalGiftsPositionListView.Items.Add(posItem);
+                        }
+                    }
+                }
+
+                Globals_Client.containerToView = this.royalGiftsContainer;
+                Globals_Client.containerToView.BringToFront();
+            }
+
+        }
+
+        /// <summary>
+        /// Refreshes overlord province management display
+        /// </summary>
+        /// <param name="province">Province to display</param>
+        public void refreshProvinceContainer(Province province = null)
+        {
+            // disable controls until place selected in ListView
+            this.disableControls(this.provinceContainer.Panel1);
+
+            // clear existing items in places lists
+            this.provinceProvListView.Items.Clear();
+            this.provinceFiefListView.Items.Clear();
+
+            // iterates through provinces where the character holds the title, adding information to ListView
+            foreach (string placeID in Globals_Client.myPlayerCharacter.myTitles)
+            {
+                ListViewItem provItem = null;
+
+                // get province
+                Province thisProvince = null;
+                if (Globals_Game.provinceMasterList.ContainsKey(placeID))
+                {
+                    thisProvince = Globals_Game.provinceMasterList[placeID];
+                }
+
+                if (thisProvince != null)
+                {
+                    // id
+                    provItem = new ListViewItem(thisProvince.id);
+
+                    // name
+                    provItem.SubItems.Add(thisProvince.name);
+
+                    // owner
+                    PlayerCharacter thisOwner = thisProvince.owner;
+                    if (thisOwner != null)
+                    {
+                        provItem.SubItems.Add(thisOwner.firstName + " " + thisOwner.familyName + " (" + thisOwner.charID + ")");
+                    }
+                    else
+                    {
+                        provItem.SubItems.Add("");
+                    }
+
+                    // last season tax rate
+                    // get a fief
+                    Fief thisFief = null;
+                    foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
+                    {
+                        if (fiefEntry.Value.province == thisProvince)
+                        {
+                            thisFief = fiefEntry.Value;
+                            break;
+                        }
+                    }
+
+                    // get tax rate from fief
+                    if (thisFief != null)
+                    {
+                        provItem.SubItems.Add(thisFief.keyStatsCurrent[12].ToString());
+                    }
+
+                    // kingdom ID
+                    provItem.SubItems.Add(thisProvince.getCurrentKingdom().id);
+
+                    // kingdom name
+                    provItem.SubItems.Add(thisProvince.getCurrentKingdom().name);
+
+                    // see if province to view has been passed in
+                    if (province != null)
+                    {
+                        if (province == thisProvince)
+                        {
+                            provItem.Selected = true;
+                        }
+                    }
+
+                    if (provItem != null)
+                    {
+                        // add item to fiefsListView
+                        this.provinceProvListView.Items.Add(provItem);
+                    }
+                }
+
+            }
+
+            Globals_Client.containerToView = this.provinceContainer;
+            Globals_Client.containerToView.BringToFront();
+        }
+
+        /// <summary>
+        /// Refreshes information the fief list in the overlord's province management display
+        /// </summary>
+        public void refreshProvinceFiefList(Province p)
+        {
+            bool underOccupation = false;
+
+            // clear existing items in list
+            this.provinceFiefListView.Items.Clear();
+
+            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
+            {
+                ListViewItem fiefItem = null;
+
+                if (fiefEntry.Value.province == p)
+                {
+                    // check for enemy occupation
+                    underOccupation = fiefEntry.Value.checkEnemyOccupation();
+
+                    // id
+                    fiefItem = new ListViewItem(fiefEntry.Value.id);
+
+                    // name
+                    fiefItem.SubItems.Add(fiefEntry.Value.name);
+
+                    // owner name & id
+                    if (fiefEntry.Value.owner != null)
+                    {
+                        fiefItem.SubItems.Add(fiefEntry.Value.owner.firstName + " " + fiefEntry.Value.owner.familyName + " (" + fiefEntry.Value.owner.charID + ")");
+                    }
+                    else
+                    {
+                        fiefItem.SubItems.Add("");
+                    }
+
+                    // GDP
+                    if (!underOccupation)
+                    {
+                        fiefItem.SubItems.Add("£" + fiefEntry.Value.keyStatsCurrent[1]);
+                    }
+                    else
+                    {
+                        fiefItem.SubItems.Add("-");
+                    }
+
+                    // last tax income
+                    if (!underOccupation)
+                    {
+                        fiefItem.SubItems.Add("£" + fiefEntry.Value.keyStatsCurrent[11]);
+                    }
+                    else
+                    {
+                        fiefItem.SubItems.Add("-");
+                    }
+
+                    // check if underOccupation message needed
+                    if (underOccupation)
+                    {
+                        fiefItem.SubItems.Add("Under enemy occupation!");
+                        fiefItem.ForeColor = Color.Red;
+                    }
+
+                    if (fiefItem != null)
+                    {
+                        // add item to fiefsListView
+                        this.provinceFiefListView.Items.Add(fiefItem);
+                    }
+                }
+
+            }
         }
 
         /// <summary>
@@ -12062,6 +11481,8 @@ namespace hist_mmorpg
             }
         }
 
+        // ------------------- QUELL REBELLION
+
         /// <summary>
         /// Checks to see if an attempts to quell a rebellion has been successful
         /// </summary>
@@ -12233,6 +11654,18 @@ namespace hist_mmorpg
                 }
 
             }
+        }
+
+        // ------------------- ADMIN EDIT
+
+        /// <summary>
+        /// Creates UI display for list of skill effects in the edit skill screen
+        /// </summary>
+        public void setUpEditSkillEffectList()
+        {
+            // add necessary columns
+            this.adminEditSkillEffsListView.Columns.Add("Effect Name", -2, HorizontalAlignment.Left);
+            this.adminEditSkillEffsListView.Columns.Add("Level", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -12454,8 +11887,6 @@ namespace hist_mmorpg
                     break;
             }
         }
-
-        // ------------------- REFRESH DISPLAY SCREEN
 
         /// <summary>
         /// Refreshes the edit Character display, displaying details of the specified Character
@@ -12765,8 +12196,6 @@ namespace hist_mmorpg
                 }
             }
         }
-
-        // ------------------- ADMIN EDIT
 
         /// <summary>
         /// Responds to the SelectedIndexChanged event of any of the adminEditSkillEffsListView
@@ -13833,6 +13262,399 @@ namespace hist_mmorpg
             this.viewMyEntriesunreadToolStripMenuItem.Text = "View UNREAD entries (" + unreadEntries + ")";
         }
 
+        // ------------------- EXIT/CLOSE
+
+        /// <summary>
+        /// Responds to the click event of the exitToolStripMenuItem
+        /// closing the application
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // closes application
+            Application.Exit();
+        }
+
+        /// <summary>
+        /// Overrides System.Windows.Forms.OnFormClosing to allow for more controlled
+        /// closing sequence whether exiting via File menu or X button.  Allows closing
+        /// to proceed unhindered if Windows shutting down
+        /// </summary>
+        /// <param name="e">The event args</param>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            // allows immediate closing if Windows shutting down
+            if (e.CloseReason == CloseReason.WindowsShutDown) return;
+
+            // Confirm user wants to close
+            switch (MessageBox.Show("Really Quit?", "Exit", MessageBoxButtons.OKCancel))
+            {
+                case DialogResult.OK:
+                    // write to database if necessary
+                    if (Globals_Game.writeToDatabase)
+                    {
+                        this.databaseWrite("fromCSV");
+                    }
+                    break;
+
+                // if cancel pressed, do nothing (don't close)
+                case DialogResult.Cancel:
+                    e.Cancel = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // ------------------- UTILITY METHODS
+
+        /// <summary>
+        /// Refreshes whichever screen is currently being displayed in the UI
+        /// </summary>
+        public void refreshCurrentScreen()
+        {
+            // fief
+            if (Globals_Client.containerToView == this.fiefContainer)
+            {
+                this.refreshFiefContainer(Globals_Client.fiefToView);
+            }
+
+            // character
+            else if (Globals_Client.containerToView == this.characterContainer)
+            {
+                this.refreshCharacterContainer(Globals_Client.charToView);
+            }
+
+            // household affairs
+            else if (Globals_Client.containerToView == this.houseContainer)
+            {
+                this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
+            }
+
+            // travel
+            else if (Globals_Client.containerToView == this.travelContainer)
+            {
+                this.refreshTravelContainer();
+            }
+
+            // meeting place
+            else if (Globals_Client.containerToView == this.meetingPlaceContainer)
+            {
+                if ((this.meetingPlaceLabel.Text).ToLower().Contains("tavern"))
+                {
+                    this.refreshMeetingPlaceDisplay("tavern");
+                }
+                else if ((this.meetingPlaceLabel.Text).ToLower().Contains("outwith"))
+                {
+                    this.refreshMeetingPlaceDisplay("outside");
+                }
+                else if ((this.meetingPlaceLabel.Text).ToLower().Contains("court"))
+                {
+                    this.refreshMeetingPlaceDisplay("court");
+                }
+
+            }
+
+            // armies
+            else if (Globals_Client.containerToView == this.armyContainer)
+            {
+                this.refreshArmyContainer(Globals_Client.armyToView);
+            }
+
+            // sieges
+            else if (Globals_Client.containerToView == this.siegeContainer)
+            {
+                this.refreshSiegeContainer(Globals_Client.siegeToView);
+            }
+
+            // journal
+            else if (Globals_Client.containerToView == this.journalContainer)
+            {
+                this.refreshJournalContainer(Globals_Client.jEntryToView);
+            }
+
+            // royal gifts
+            else if (Globals_Client.containerToView == this.royalGiftsContainer)
+            {
+                this.refreshRoyalGiftsContainer();
+            }
+
+            // overlord provinces
+            else if (Globals_Client.containerToView == this.provinceContainer)
+            {
+                this.refreshProvinceContainer(Globals_Client.provinceToView);
+            }
+
+            // adminEdit
+            else if (Globals_Client.containerToView == this.adminEditContainer)
+            {
+                // get objectType
+                string objectType = this.adminEditGetBtn.Tag.ToString();
+
+                switch (objectType)
+                {
+                    case "PC":
+                        this.refreshCharEdit();
+                        break;
+                    case "NPC":
+                        this.refreshCharEdit();
+                        break;
+                    case "Fief":
+                        this.refreshPlaceEdit();
+                        break;
+                    case "Province":
+                        this.refreshPlaceEdit();
+                        break;
+                    case "Kingdom":
+                        this.refreshPlaceEdit();
+                        break;
+                    case "Army":
+                        this.refreshArmyEdit();
+                        break;
+                    case "Skill":
+                        this.refreshSkillEdit();
+                        break;
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Disables all controls within the parent container
+        /// </summary>
+        /// <param name="parentContainer">The parent container</param>
+        public void disableControls(Control parentContainer)
+        {
+            foreach (Control c in parentContainer.Controls)
+            {
+                // clear TextBoxes
+                if (c is TextBox)
+                {
+                    (c as TextBox).Text = "";
+                }
+
+                // clear CheckBoxes
+                if (c is CheckBox)
+                {
+                    (c as CheckBox).Checked = false;
+                }
+
+                // disable controls
+                if ((c is CheckBox) || (c is Button))
+                {
+                    c.Enabled = false;
+                }
+
+                // clear ListViews
+                if (c is ListView)
+                {
+                    (c as ListView).Items.Clear();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Enables all controls within the parent container
+        /// </summary>
+        /// <param name="parentContainer">The parent container</param>
+        public void enableControls(Control parentContainer)
+        {
+            foreach (Control c in parentContainer.Controls)
+            {
+                // disable controls
+                if ((c is CheckBox) || (c is Button))
+                {
+                    c.Enabled = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Generates a random skill set for a Character
+        /// </summary>
+        /// <returns>Tuple<Skill, int>[] for use with a Character object</returns>
+        public Tuple<Skill, int>[] generateSkillSet()
+        {
+
+            // create array of skills between 2-3 in length
+            Tuple<Skill, int>[] skillSet = new Tuple<Skill, int>[Globals_Game.myRand.Next(2, 4)];
+
+            // populate array of skills with randomly chosen skills
+            // 1) make temporary copy of skillKeys
+            List<string> skillKeysCopy = new List<string>(Globals_Game.skillKeys);
+
+            // 2) choose random skill, and assign random skill level
+            for (int i = 0; i < skillSet.Length; i++)
+            {
+                // choose random skill
+                int randSkill = Globals_Game.myRand.Next(0, skillKeysCopy.Count - 1);
+
+                // assign random skill level
+                int randSkillLevel = Globals_Game.myRand.Next(1, 10);
+
+                // create Skill tuple
+                skillSet[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[skillKeysCopy[randSkill]], randSkillLevel);
+
+                // remove skill from skillKeysCopy to ensure isn't chosen again
+                skillKeysCopy.RemoveAt(randSkill);
+            }
+
+            return skillSet;
+
+        }
+
+        // ------------------- MVC
+
+        /// <summary>
+        /// Updates appropriate components when data received from observable
+        /// </summary>
+        /// <param name="info">String containing data about component to update</param>
+        public void update(string info)
+        {
+            // get update info
+            string[] infoSplit = info.Split('|');
+            switch (infoSplit[0])
+            {
+                case "newEvent":
+                    // get jEntry ID and retrieve from Globals_Game
+                    if (!String.IsNullOrWhiteSpace(infoSplit[1]))
+                    {
+                        uint newJentryID = Convert.ToUInt32(infoSplit[1]);
+                        JournalEntry newJentry = Globals_Game.pastEvents.entries[newJentryID];
+
+                        // check to see if is of interest to player
+                        if (newJentry.checkEventForInterest())
+                        {
+                            this.addMyPastEvent(newJentry);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // ------------------- TEST METHODS
+
+        /// <summary>
+        /// Responds to the click event of the updateCharacter button
+        /// which performs end/start of seasonal updates for character on display (testing)
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void updateCharacter_Click(object sender, EventArgs e)
+        {
+            // something
+        }
+
+        /// <summary>
+        /// Responds to the click event of the updateFiefBtn button
+        /// which performs end/start of seasonal updates for Fief on display (testing)
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void updateFiefBtn_Click(object sender, EventArgs e)
+        {
+            Globals_Client.fiefToView.validateFiefExpenditure();
+            this.refreshFiefContainer();
+        }
+
+        /// <summary>
+        /// Responds to the click event of button1
+        /// calling any method I see fit
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.giveBirth(Globals_Game.npcMasterList[Globals_Client.myPlayerCharacter.spouse], Globals_Client.myPlayerCharacter);
+        }
+
+        /// <summary>
+        /// Test
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void testRefreshScreen(object sender, EventArgs e)
+        {
+            this.refreshCurrentScreen();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the testUpdateMenuItem
+        /// performing a full seasonal update
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void testUpdateMenuItem_Click(object sender, EventArgs e)
+        {
+            // necessary in order to be able to access button tag
+            ToolStripItem menuItem = sender as ToolStripItem;
+
+            // get type of update from button tag
+            string updateType = menuItem.Tag.ToString();
+
+            this.seasonUpdate(updateType);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the switchPlayerMenuItem
+        /// allowing the switch to another player (for testing)
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void switchPlayerMenuItem_Click(object sender, EventArgs e)
+        {
+            // get new player ID
+            string playerID = this.switchPlayerMenuTextBox.Text;
+
+            if (String.IsNullOrWhiteSpace(playerID))
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No PlayerCharacter ID entered.  Operation cancelled.");
+                }
+            }
+            else if (!Globals_Game.pcMasterList.ContainsKey(playerID))
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("PlayerCharacter could not be identified.  Operation cancelled.");
+                }
+            }
+            else
+            {
+                Globals_Client.myPlayerCharacter = Globals_Game.pcMasterList[playerID];
+                Globals_Client.charToView = Globals_Client.myPlayerCharacter;
+                this.refreshCharacterContainer(Globals_Client.charToView);
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the addTestJournalEntryToolStripMenuItem
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void addTestJournalEntryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // create and add a past event
+            string[] myEventPersonae = new string[] { "101|father", "404|mother" };
+            JournalEntry myEntry = new JournalEntry(Globals_Game.getNextJournalEntryID(), 1320, 0, myEventPersonae, "birth");
+            Globals_Game.addPastEvent(myEntry);
+
+            // and another
+            string[] myEventPersonae002 = new string[] { "101|attackerOwner", "102|defenderOwner", "402|attackerLeader", "403|defenderLeader", "101|fiefOwner" };
+            JournalEntry myEntry002 = new JournalEntry(Globals_Game.getNextJournalEntryID(), 1320, 0, myEventPersonae002, "battle", "ESX02", "On this day there was a battle between the forces of blah and blah.");
+            Globals_Game.addPastEvent(myEntry002);
+
+            // and another
+            string[] myEventPersonae003 = new string[] { "405|father", "406|mother", "102|familyHead", "101|uncle" };
+            JournalEntry myEntry003 = new JournalEntry(Globals_Game.getNextJournalEntryID(), 1320, 0, myEventPersonae003, "birth");
+            Globals_Game.addPastEvent(myEntry003);
+        }
     }
 
 }

@@ -95,6 +95,52 @@ namespace hist_mmorpg
         public Army()
 		{
 		}
+
+        /// <summary>
+        /// Maintains the specified field army
+        /// </summary>
+        public void mantainArmy()
+        {
+            string toDisplay = "";
+
+            // get cost
+            uint maintCost = this.calcArmySize() * 500;
+
+            // get available treasury
+            Fief homeFief = this.getOwner().getHomeFief();
+            int availTreas = homeFief.getAvailableTreasury();
+
+            // check if army is already maintained
+            if (!this.isMaintained)
+            {
+                // check if can afford maintenance
+                if (maintCost > availTreas)
+                {
+                    // display 'no' message
+                    toDisplay += "Sorry, milord, to maintain this army would cost £" + maintCost + "\r\n";
+                    toDisplay += "and you only have £" + availTreas + " available in the home treasury.";
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                    }
+                }
+                else
+                {
+                    // set isMaintained
+                    this.isMaintained = true;
+
+                    // deduct funds from treasury
+                    homeFief.treasury -= Convert.ToInt32(maintCost);
+
+                    // display confirmation message
+                    toDisplay += "Army maintained at a cost of £" + maintCost + ".";
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                    }
+                }
+            }
+        }
 		
         /// <summary>
         /// Assigns a new leader to the army
