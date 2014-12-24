@@ -978,7 +978,21 @@ namespace hist_mmorpg
                 }
             }
 
-            // ============== 8. (NPC) check and remove from PC MYNPCS list
+            // ============== 8. (PC) check and remove any Positions
+            if (this is PlayerCharacter)
+            {
+                // iterate through positions
+                foreach (KeyValuePair<byte, Position> posEntry in Globals_Game.positionMasterList)
+                {
+                    // if deceased character is office holder, remove from office
+                    if (posEntry.Value.getOfficeHolder() == this)
+                    {
+                        posEntry.Value.removeFromOffice(this as PlayerCharacter);
+                    }
+                }
+            }
+
+            // ============== 9. (NPC) check and remove from PC MYNPCS list
             PlayerCharacter headOfFamily = null;
             if (this is NonPlayerCharacter)
             {
@@ -1004,7 +1018,7 @@ namespace hist_mmorpg
 
             }
 
-            // ============== 9. (NPC) re-assign TITLES to fief owner
+            // ============== 10. (NPC) re-assign TITLES to fief owner
             if (this is NonPlayerCharacter)
             {
                 foreach (string fiefID in (this as NonPlayerCharacter).myTitles)
@@ -1019,13 +1033,13 @@ namespace hist_mmorpg
             }
 
 
-            // ============== 10. RESPAWN dead non-family NPCs
+            // ============== 11. RESPAWN dead non-family NPCs
             if ((role.Equals("employee")) || (role.Equals("character")))
             {
                 this.respawnNPC(this as NonPlayerCharacter);
             }
 
-            // ============== 11. (Player) GET HEIR and PROCESS INHERITANCE
+            // ============== 12. (Player) GET HEIR and PROCESS INHERITANCE
             else if (role.Equals("player"))
             {
                 // get heir
@@ -1049,7 +1063,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // ============== 12. create and send DEATH JOURNAL ENTRY (unless is a player or a nobody)
+            // ============== 13. create and send DEATH JOURNAL ENTRY (unless is a player or a nobody)
             if (!role.Equals("character"))
             {
                 bool success = false;

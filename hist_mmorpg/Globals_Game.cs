@@ -254,6 +254,40 @@ namespace hist_mmorpg
         public static bool statureCapInForce = true;
 
         /// <summary>
+        /// Generates a random skill set for a Character
+        /// </summary>
+        /// <returns>Tuple<Skill, int>[] for use with a Character object</returns>
+        public static Tuple<Skill, int>[] generateSkillSet()
+        {
+
+            // create array of skills between 2-3 in length
+            Tuple<Skill, int>[] skillSet = new Tuple<Skill, int>[Globals_Game.myRand.Next(2, 4)];
+
+            // populate array of skills with randomly chosen skills
+            // 1) make temporary copy of skillKeys
+            List<string> skillKeysCopy = new List<string>(Globals_Game.skillKeys);
+
+            // 2) choose random skill, and assign random skill level
+            for (int i = 0; i < skillSet.Length; i++)
+            {
+                // choose random skill
+                int randSkill = Globals_Game.myRand.Next(0, skillKeysCopy.Count - 1);
+
+                // assign random skill level
+                int randSkillLevel = Globals_Game.myRand.Next(1, 10);
+
+                // create Skill tuple
+                skillSet[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[skillKeysCopy[randSkill]], randSkillLevel);
+
+                // remove skill from skillKeysCopy to ensure isn't chosen again
+                skillKeysCopy.RemoveAt(randSkill);
+            }
+
+            return skillSet;
+
+        }
+
+        /// <summary>
         /// Gets the game's end date (year)
         /// </summary>
         /// <returns>uint containing end year</returns>

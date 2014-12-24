@@ -80,6 +80,18 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form1_ army.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_battle.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_birth.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_character.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Form1_CSVimport.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -87,6 +99,33 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1_databaseWrite.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_fief.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_household.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_journal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_marriage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_meetingPlace.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_movement.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_royal_overlord.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_siege_pillage_rebellion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1_sysAdmin.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GameClock.cs" />

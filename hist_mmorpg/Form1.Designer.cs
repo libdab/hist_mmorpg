@@ -70,6 +70,8 @@ namespace hist_mmorpg
             this.journalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewMyEntriesunreadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewEntriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewEntriescurrentYearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewEntriesALLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterContainer = new System.Windows.Forms.SplitContainer();
             this.characterTitlesCheckBox = new System.Windows.Forms.CheckBox();
             this.characterTextBox = new System.Windows.Forms.TextBox();
@@ -885,7 +887,9 @@ namespace hist_mmorpg
             // 
             this.journalToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.viewMyEntriesunreadToolStripMenuItem,
-            this.viewEntriesToolStripMenuItem});
+            this.viewEntriesToolStripMenuItem,
+            this.viewEntriescurrentYearToolStripMenuItem,
+            this.viewEntriesALLToolStripMenuItem});
             this.journalToolStripMenuItem.Name = "journalToolStripMenuItem";
             this.journalToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
             this.journalToolStripMenuItem.Text = "Journal";
@@ -894,16 +898,34 @@ namespace hist_mmorpg
             // viewMyEntriesunreadToolStripMenuItem
             // 
             this.viewMyEntriesunreadToolStripMenuItem.Name = "viewMyEntriesunreadToolStripMenuItem";
-            this.viewMyEntriesunreadToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.viewMyEntriesunreadToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.viewMyEntriesunreadToolStripMenuItem.Tag = "unread";
             this.viewMyEntriesunreadToolStripMenuItem.Text = "View my UNREAD entries";
-            this.viewMyEntriesunreadToolStripMenuItem.Click += new System.EventHandler(this.viewMyEntriesunreadToolStripMenuItem_Click);
+            this.viewMyEntriesunreadToolStripMenuItem.Click += new System.EventHandler(this.viewEntriesToolStripMenuItem_Click);
             // 
             // viewEntriesToolStripMenuItem
             // 
             this.viewEntriesToolStripMenuItem.Name = "viewEntriesToolStripMenuItem";
-            this.viewEntriesToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-            this.viewEntriesToolStripMenuItem.Text = "View entries (current season)";
+            this.viewEntriesToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.viewEntriesToolStripMenuItem.Tag = "season";
+            this.viewEntriesToolStripMenuItem.Text = "View entries (current SEASON)";
             this.viewEntriesToolStripMenuItem.Click += new System.EventHandler(this.viewEntriesToolStripMenuItem_Click);
+            // 
+            // viewEntriescurrentYearToolStripMenuItem
+            // 
+            this.viewEntriescurrentYearToolStripMenuItem.Name = "viewEntriescurrentYearToolStripMenuItem";
+            this.viewEntriescurrentYearToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.viewEntriescurrentYearToolStripMenuItem.Tag = "year";
+            this.viewEntriescurrentYearToolStripMenuItem.Text = "View entries (current YEAR)";
+            this.viewEntriescurrentYearToolStripMenuItem.Click += new System.EventHandler(this.viewEntriesToolStripMenuItem_Click);
+            // 
+            // viewEntriesALLToolStripMenuItem
+            // 
+            this.viewEntriesALLToolStripMenuItem.Name = "viewEntriesALLToolStripMenuItem";
+            this.viewEntriesALLToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.viewEntriesALLToolStripMenuItem.Tag = "all";
+            this.viewEntriesALLToolStripMenuItem.Text = "View entries (ALL)";
+            this.viewEntriesALLToolStripMenuItem.Click += new System.EventHandler(this.viewEntriesToolStripMenuItem_Click);
             // 
             // characterContainer
             // 
@@ -4776,9 +4798,9 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
+            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.houseContainer);
-            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.journalContainer);
@@ -5380,6 +5402,8 @@ namespace hist_mmorpg
         private System.Windows.Forms.TextBox armyTransCrossbowTextBox;
         private System.Windows.Forms.Label label86;
         private System.Windows.Forms.ToolStripMenuItem viewMyEntriesunreadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewEntriescurrentYearToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewEntriesALLToolStripMenuItem;
 
     }
 }

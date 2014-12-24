@@ -1181,7 +1181,7 @@ namespace hist_mmorpg
                 // if no skills, generate random set
                 if (skills == null)
                 {
-                    Tuple<Skill, int>[] generatedSkills = this.generateSkillSet();
+                    Tuple<Skill, int>[] generatedSkills = Globals_Game.generateSkillSet();
 
                     // convert to format for saving to database
                     skills = new Tuple<String, int>[generatedSkills.Length];
@@ -1337,7 +1337,7 @@ namespace hist_mmorpg
                 // if no skills, generate random set
                 if (skills == null)
                 {
-                    Tuple<Skill, int>[] generatedSkills = this.generateSkillSet();
+                    Tuple<Skill, int>[] generatedSkills = Globals_Game.generateSkillSet();
 
                     // convert to format for saving to database
                     skills = new Tuple<String, int>[generatedSkills.Length];

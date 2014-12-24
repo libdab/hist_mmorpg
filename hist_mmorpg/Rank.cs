@@ -183,7 +183,7 @@ namespace hist_mmorpg
                 }
 
                 // remove from position
-                this.removePosition(oldPositionHolder);
+                this.removeFromOffice(oldPositionHolder);
             }
 
             // assign position
@@ -238,7 +238,7 @@ namespace hist_mmorpg
         /// Removes the supplied PlayerCharacter's ID from the Position's officeHolder variable 
         /// </summary>
         /// <param name="pc">PlayerCharacter being removed from the Position</param>
-        public void removePosition(PlayerCharacter pc)
+        public void removeFromOffice(PlayerCharacter pc)
         {
             // remove from position
             this.officeHolder = null;
@@ -265,6 +265,22 @@ namespace hist_mmorpg
             }
 
             return thisKingdom;
+        }
+
+        /// <summary>
+        /// Gets the position's current office holder
+        /// </summary>
+        /// <returns>The office holder (PlayerCharacter)</returns>
+        public PlayerCharacter getOfficeHolder()
+        {
+            PlayerCharacter holder = null;
+
+            if (Globals_Game.pcMasterList.ContainsKey(this.officeHolder))
+            {
+                holder = Globals_Game.pcMasterList[this.officeHolder];
+            }
+
+            return holder;
         }
     }
 

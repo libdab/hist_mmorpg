@@ -2189,6 +2189,132 @@ namespace hist_mmorpg
 
             return armyInKeep;
         }
+
+        /// <summary>
+        /// Checks to see if an attempts to quell a rebellion has been successful
+        /// </summary>
+        /// <returns>bool indicating quell success or failure</returns>
+        /// <param name="a">The army trying to quell the rebellion</param>
+        public bool quell_checkSuccess(Army a)
+        {
+            bool rebellionQuelled = false;
+
+            // calculate base chance of success, based on army size and fief population
+            double successChance = a.calcArmySize() / (this.population / Convert.ToDouble(1000));
+
+            // get army leader
+            Character aLeader = null;
+            if (a.getLeader() != null)
+            {
+                aLeader = a.getLeader();
+            }
+
+            if (aLeader != null)
+            {
+                // apply any bonus for leadership skills
+                successChance += aLeader.getLeadershipValue();
+
+                // apply any bonus for ancestral ownership
+                if ((this.owner != this.ancestralOwner) && (aLeader == this.ancestralOwner))
+                {
+                    successChance += (aLeader.calculateStature() * 2.22);
+                }
+            }
+
+            // ensure successChance always between 1 > 99 (to allow for minimum chance of success/failure)
+            if (successChance < 1)
+            {
+                successChance = 1;
+            }
+            else if (successChance > 99)
+            {
+                successChance = 99;
+            }
+
+            // generate random double 0-100 to check for success
+            rebellionQuelled = (Globals_Game.GetRandomDouble(101) <= successChance);
+
+            return rebellionQuelled;
+        }
+
+        /// <summary>
+        /// Attempts to quell the rebellion in the specified fief using the specified army
+        /// </summary>
+        /// <returns>bool indicating quell success or failure</returns>
+        /// <param name="a">The army trying to quell the rebellion</param>
+        public bool quellRebellion(Army a)
+        {
+            // check to see if quell attempt was successful
+            bool quellSuccessful = this.quell_checkSuccess(a);
+
+            // if quell successful
+            if (quellSuccessful)
+            {
+                // process change of ownership, if appropriate
+                if (this.owner != a.getOwner())
+                {
+                    this.changeOwnership(a.getOwner());
+                }
+
+                // set status
+                this.status = 'C';
+            }
+
+            // if quell not successful
+            else
+            {
+                // CREATE JOURNAL ENTRY
+                // get interested parties
+                bool success = true;
+                PlayerCharacter fiefOwner = this.owner;
+                PlayerCharacter attackerOwner = a.getOwner();
+                Character attackerLeader = null;
+                if (a.getLeader() != null)
+                {
+                    attackerLeader = a.getLeader();
+                }
+
+                // ID
+                uint entryID = Globals_Game.getNextJournalEntryID();
+
+                // date
+                uint year = Globals_Game.clock.currentYear;
+                byte season = Globals_Game.clock.currentSeason;
+
+                // personae
+                List<string> tempPersonae = new List<string>();
+                tempPersonae.Add(fiefOwner.charID + "|fiefOwner");
+                tempPersonae.Add(attackerOwner.charID + "|attackerOwner");
+                if (attackerLeader != null)
+                {
+                    tempPersonae.Add(attackerLeader.charID + "|attackerLeader");
+                }
+                string[] quellPersonae = tempPersonae.ToArray();
+
+                // type
+                string type = "rebellionQuellFailed";
+
+                // location
+                string location = this.id;
+
+                // description
+                string description = "On this day of Our Lord the attempt by the forces of ";
+                description += attackerOwner.firstName + " " + attackerOwner.familyName;
+                if (attackerLeader != null)
+                {
+                    description += ", led by " + attackerLeader.firstName + " " + attackerLeader.familyName + ",";
+                }
+                description += " FAILED in their attempt to quell the rebellion in the fief of " + this.name;
+                description += ", owned by " + fiefOwner.firstName + " " + fiefOwner.familyName + ".";
+                description += "\r\n\r\nThe army was forced to retreat into an adjoining fief.";
+
+                // create and add a journal entry to the pastEvents journal
+                JournalEntry quellEntry = new JournalEntry(entryID, year, season, quellPersonae, type, loc: location, descr: description);
+                success = Globals_Game.addPastEvent(quellEntry);
+            }
+
+            return quellSuccessful;
+        }
     }
 
 	/// <summary>
