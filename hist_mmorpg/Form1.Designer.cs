@@ -1553,7 +1553,7 @@ namespace hist_mmorpg
             this.listOutsideKeepBtn.Tag = "outsideKeep";
             this.listOutsideKeepBtn.Text = "List Those Outside The Keep";
             this.listOutsideKeepBtn.UseVisualStyleBackColor = true;
-            this.listOutsideKeepBtn.Click += new System.EventHandler(this.listOutsideKeepBtn_Click);
+            this.listOutsideKeepBtn.Click += new System.EventHandler(this.visitMeetingPlace);
             // 
             // visitTavernBtn
             // 
@@ -1564,7 +1564,7 @@ namespace hist_mmorpg
             this.visitTavernBtn.Tag = "tavern";
             this.visitTavernBtn.Text = "Visit Tavern";
             this.visitTavernBtn.UseVisualStyleBackColor = true;
-            this.visitTavernBtn.Click += new System.EventHandler(this.visitTavernBtn_Click_1);
+            this.visitTavernBtn.Click += new System.EventHandler(this.visitMeetingPlace);
             // 
             // visitCourtBtn1
             // 
@@ -1575,7 +1575,7 @@ namespace hist_mmorpg
             this.visitCourtBtn1.Tag = "court";
             this.visitCourtBtn1.Text = "Visit Court";
             this.visitCourtBtn1.UseVisualStyleBackColor = true;
-            this.visitCourtBtn1.Click += new System.EventHandler(this.visitCourtBtn1_Click);
+            this.visitCourtBtn1.Click += new System.EventHandler(this.visitMeetingPlace);
             // 
             // enterKeepBtn
             // 
@@ -4798,18 +4798,18 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
-            this.Controls.Add(this.fiefContainer);
+            this.Controls.Add(this.adminEditContainer);
+            this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.travelContainer);
+            this.Controls.Add(this.armyContainer);
+            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.journalContainer);
             this.Controls.Add(this.provinceContainer);
             this.Controls.Add(this.royalGiftsContainer);
-            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.characterContainer);
-            this.Controls.Add(this.adminEditContainer);
-            this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";

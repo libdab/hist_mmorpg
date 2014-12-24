@@ -1742,6 +1742,2827 @@ namespace hist_mmorpg
         }
 
         // ------------------- CONTROLS
+        // ------------------- SYSADMIN
+
+        /// <summary>
+        /// Responds to the SelectedIndexChanged event of any of the adminEditSkillEffsListView
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditSkillEffsListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.adminEditSkillEffsListView.SelectedItems.Count > 0)
+            {
+                // display selected skill for editing
+                this.adminEditSkillEffTextBox.Text = this.adminEditSkillEffsListView.SelectedItems[0].SubItems[0].Text;
+                this.adminEditSkillEfflvlTextBox.Text = this.adminEditSkillEffsListView.SelectedItems[0].SubItems[1].Text;
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the 'edit skill effects' buttons
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditSkillEffBtn_Click(object sender, EventArgs e)
+        {
+            string effName = null;
+            double effLvl = 0;
+            bool effectsChanged = false;
+
+            // get button and tag
+            Button thisButton = (sender as Button);
+            string operation = thisButton.Tag.ToString();
+
+            try
+            {
+                // get effects collection
+                Dictionary<string, double> effects = new Dictionary<string, double>();
+                for (int i = 0; i < this.adminEditSkillEffsListView.Items.Count; i++)
+                {
+                    effects.Add(this.adminEditSkillEffsListView.Items[i].SubItems[0].Text,
+                        Convert.ToDouble(this.adminEditSkillEffsListView.Items[i].SubItems[1].Text));
+                }
+
+                // get selected effect
+                effName = this.adminEditSkillEffTextBox.Text;
+                if (!String.IsNullOrWhiteSpace(effName))
+                {
+                    effLvl = Convert.ToDouble(this.adminEditSkillEfflvlTextBox.Text);
+                }
+
+                if (effLvl > 0)
+                {
+                    // perform operation
+                    switch (operation)
+                    {
+                        // change selected effect
+                        case "chaEffect":
+                            // check effect present in collection
+                            if (effects.ContainsKey(effName))
+                            {
+                                effects[effName] = effLvl;
+                                effectsChanged = true;
+                            }
+                            else
+                            {
+                                if (Globals_Client.showMessages)
+                                {
+                                    System.Windows.Forms.MessageBox.Show("The effect " + effName + " does not exist.  Operation cancelled.");
+                                }
+                            }
+                            break;
+                        case "addEffect":
+                            // check effect present in collection
+                            if (!effects.ContainsKey(effName))
+                            {
+                                effects.Add(effName, effLvl);
+                                effectsChanged = true;
+                            }
+                            else
+                            {
+                                if (Globals_Client.showMessages)
+                                {
+                                    System.Windows.Forms.MessageBox.Show("The effect " + effName + " already exists.  Operation cancelled.");
+                                }
+                            }
+                            break;
+                        case "delEffect":
+                            // check effect present in collection
+                            if (effects.ContainsKey(effName))
+                            {
+                                effects.Remove(effName);
+                                effectsChanged = true;
+                            }
+                            else
+                            {
+                                if (Globals_Client.showMessages)
+                                {
+                                    System.Windows.Forms.MessageBox.Show("The effect " + effName + " does not exist.  Operation cancelled.");
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if (effectsChanged)
+                    {
+                        this.refreshSkillEffectsList(effects);
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Effects updated.");
+                        }
+                    }
+                }
+
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the adminEditSaveBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditSaveBtn_Click(object sender, EventArgs e)
+        {
+            bool success = false;
+
+            // get button
+            Button thisButton = (sender as Button);
+            string objectType = thisButton.Tag.ToString();
+
+            // save specified object
+            switch (objectType)
+            {
+                case "PC":
+                    success = this.saveCharEdit(objectType);
+                    break;
+
+                case "NPC":
+                    success = this.saveCharEdit(objectType);
+                    break;
+
+                case "Fief":
+                    success = this.savePlaceEdit(objectType);
+                    break;
+
+                case "Province":
+                    success = this.savePlaceEdit(objectType);
+                    break;
+
+                case "Kingdom":
+                    success = this.savePlaceEdit(objectType);
+                    break;
+
+                case "Skill":
+                    success = this.saveSkillEdit();
+                    break;
+
+                case "Army":
+                    success = this.saveArmyEdit();
+                    break;
+
+                default:
+                    break;
+            }
+
+            if (success)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Object saved.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the 'edit object' MenuItems
+        /// displaying the appropriate screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditObjectMenuItem_Click(object sender, EventArgs e)
+        {
+            // get MenuItem
+            ToolStripMenuItem thisItem = (sender as ToolStripMenuItem);
+            string objectType = thisItem.Tag.ToString();
+
+            // display edit object screen
+            Globals_Client.containerToView = this.adminEditContainer;
+            Globals_Client.containerToView.BringToFront();
+
+            // set get/save button tag to identify object type (for retrieving and saving object)
+            this.adminEditGetBtn.Tag = objectType;
+            this.adminEditSaveBtn.Tag = objectType;
+            this.adminEditCancelBtn.Tag = objectType;
+
+            // clear previous object ID from TextBox
+            this.adminEditTextBox.Text = "";
+
+            // change admin edit control properties to match object type
+            this.adminEditGetBtn.Text = "Get " + objectType;
+            this.adminEditSaveBtn.Text = "Save " + objectType;
+            this.adminEditLabel.Text = objectType + " ID";
+
+            // display appropriate panel
+            switch (objectType)
+            {
+                case "PC":
+                    // clear previous data
+                    this.refreshCharEdit();
+                    this.adminEditCharIDTextBox.ReadOnly = true;
+                    // display edit character panel
+                    this.adminEditCharContainer.BringToFront();
+                    // display edit pc panel
+                    this.adminEditCharPcPanel.BringToFront();
+                    break;
+                case "NPC":
+                    // clear previous data
+                    this.refreshCharEdit();
+                    this.adminEditCharIDTextBox.ReadOnly = true;
+                    // display edit character panel
+                    this.adminEditCharContainer.BringToFront();
+                    // display edit npc panel
+                    this.adminEditCharNpcPanel.BringToFront();
+                    break;
+                case "Fief":
+                    // clear previous data
+                    this.refreshPlaceEdit();
+                    this.adminEditPlaceIdTextBox.ReadOnly = true;
+                    // display edit place panel
+                    this.adminEditPlaceContainer.BringToFront();
+                    // display edit fief panel
+                    this.adminEditFiefPanel.BringToFront();
+                    break;
+                case "Province":
+                    // clear previous data
+                    this.refreshPlaceEdit();
+                    this.adminEditPlaceIdTextBox.ReadOnly = true;
+                    // display edit place panel
+                    this.adminEditPlaceContainer.BringToFront();
+                    // display edit province panel
+                    this.adminEditProvPanel.BringToFront();
+                    break;
+                case "Kingdom":
+                    // clear previous data
+                    this.refreshPlaceEdit();
+                    this.adminEditPlaceIdTextBox.ReadOnly = true;
+                    // display edit place panel
+                    this.adminEditPlaceContainer.BringToFront();
+                    // display edit kingdom panel
+                    this.adminEditKingPanel.BringToFront();
+                    break;
+                case "Skill":
+                    // clear previous data
+                    this.refreshSkillEdit();
+                    this.adminEditSkillIdTextBox.ReadOnly = true;
+                    // display edit skill panel
+                    this.adminEditSkillPanel.BringToFront();
+                    break;
+                case "Army":
+                    // clear previous data
+                    this.refreshArmyEdit();
+                    this.adminEditArmyIdTextBox.ReadOnly = true;
+                    // display edit army panel
+                    this.adminEditArmyPanel.BringToFront();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the adminEditGetBtn button
+        /// retrieving the specified object
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditGetBtn_Click(object sender, EventArgs e)
+        {
+            // get button
+            Button thisButton = (sender as Button);
+            string objectType = thisButton.Tag.ToString();
+
+            // get specified object
+            switch (objectType)
+            {
+                case "PC":
+                    // get PC
+                    PlayerCharacter thisPC = null;
+                    if (Globals_Game.pcMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thisPC = Globals_Game.pcMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display PC details
+                    if (thisPC != null)
+                    {
+                        this.refreshCharEdit(thisPC);
+                    }
+                    break;
+                case "NPC":
+                    // get NPC
+                    NonPlayerCharacter thisNPC = null;
+                    if (Globals_Game.npcMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thisNPC = Globals_Game.npcMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display NPC details
+                    if (thisNPC != null)
+                    {
+                        this.refreshCharEdit(thisNPC);
+                    }
+                    break;
+
+                case "Fief":
+                    // get fief
+                    Fief thisFief = null;
+                    if (Globals_Game.fiefMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thisFief = Globals_Game.fiefMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display fief details
+                    if (thisFief != null)
+                    {
+                        this.refreshPlaceEdit(thisFief);
+                    }
+                    break;
+
+                case "Province":
+                    // get province
+                    Province thisProv = null;
+                    if (Globals_Game.provinceMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thisProv = Globals_Game.provinceMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display province details
+                    if (thisProv != null)
+                    {
+                        this.refreshPlaceEdit(thisProv);
+                    }
+                    break;
+
+                case "Kingdom":
+                    // get kingdom
+                    Kingdom thiskingdom = null;
+                    if (Globals_Game.kingdomMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thiskingdom = Globals_Game.kingdomMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display kingdom details
+                    if (thiskingdom != null)
+                    {
+                        this.refreshPlaceEdit(thiskingdom);
+                    }
+                    break;
+
+                case "Skill":
+                    // get skill
+                    Skill thisSkill = null;
+                    if (Globals_Game.skillMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thisSkill = Globals_Game.skillMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display skill details
+                    if (thisSkill != null)
+                    {
+                        this.refreshSkillEdit(thisSkill);
+                    }
+                    break;
+
+                case "Army":
+                    // get army
+                    Army thisArmy = null;
+                    if (Globals_Game.armyMasterList.ContainsKey(this.adminEditTextBox.Text))
+                    {
+                        thisArmy = Globals_Game.armyMasterList[this.adminEditTextBox.Text];
+                    }
+
+                    // display army details
+                    if (thisArmy != null)
+                    {
+                        this.refreshArmyEdit(thisArmy);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the adminEditCancelBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adminEditCancelBtn_Click(object sender, EventArgs e)
+        {
+            // get button
+            Button thisButton = (sender as Button);
+            string objectType = thisButton.Tag.ToString();
+
+            // save specified object
+            switch (objectType)
+            {
+                case "PC":
+                    this.refreshCharEdit();
+                    break;
+
+                case "NPC":
+                    this.refreshCharEdit();
+                    break;
+
+                case "Fief":
+                    this.refreshPlaceEdit();
+                    break;
+
+                case "Province":
+                    this.refreshPlaceEdit();
+                    break;
+
+                case "Kingdom":
+                    this.refreshPlaceEdit();
+                    break;
+
+                case "Skill":
+                    this.refreshSkillEdit();
+                    break;
+
+                case "Army":
+                    this.refreshArmyEdit();
+                    break;
+
+                default:
+                    break;
+            }
+
+            // clear ID box
+            this.adminEditTextBox.Clear();
+        }
+
+        // ------------------- SIEGE/PILLAGE/REBELLION
+
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of the siegeListView object,
+        /// allowing details of the selected siege to be displayed
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void siegeListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            // get siege to view
+            if (this.siegeListView.SelectedItems.Count > 0)
+            {
+                Globals_Client.siegeToView = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+            }
+
+            if (Globals_Client.siegeToView != null)
+            {
+                Army besiegingArmy = Globals_Client.siegeToView.getBesiegingArmy();
+                PlayerCharacter besiegingPlayer = Globals_Client.siegeToView.getBesiegingPlayer();
+                bool playerIsBesieger = (Globals_Client.myPlayerCharacter == besiegingPlayer);
+
+                // display data for selected siege
+                this.siegeTextBox.Text = this.displaySiegeData(Globals_Client.siegeToView);
+
+                // if player is besieger
+                if (playerIsBesieger)
+                {
+                    // enable various controls
+                    this.siegeReduceBtn.Enabled = true;
+                    this.siegeEndBtn.Enabled = true;
+
+                    // if besieging army has a leader
+                    if (!String.IsNullOrWhiteSpace(besiegingArmy.leader))
+                    {
+                        // enable proactive controls (storm, negotiate)
+                        this.siegeNegotiateBtn.Enabled = true;
+                        this.siegeStormBtn.Enabled = true;
+                    }
+
+                    // if besieging army has no leader
+                    else
+                    {
+                        // disable proactive controls (storm, negotiate)
+                        this.siegeNegotiateBtn.Enabled = false;
+                        this.siegeStormBtn.Enabled = false;
+                    }
+                }
+
+                // if player is defender
+                else
+                {
+                    // disable various controls
+                    this.siegeNegotiateBtn.Enabled = false;
+                    this.siegeStormBtn.Enabled = false;
+                    this.siegeReduceBtn.Enabled = false;
+                    this.siegeEndBtn.Enabled = false;
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armySiegeBtn button
+        /// instigating the siege of a fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armySiegeBtn_Click(object sender, EventArgs e)
+        {
+            // check army selected
+            if (this.armyListView.SelectedItems.Count > 0)
+            {
+                bool proceed = true;
+
+                // get army
+                Army thisArmy = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+
+                // get fief
+                Fief thisFief = thisArmy.getLocation();
+
+                // do various checks
+                proceed = this.checksBeforePillageSiege(thisArmy, thisFief, "siege");
+
+                // process siege
+                if (proceed)
+                {
+                    this.siegeStart(thisArmy, thisFief);
+                }
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No army selected!");
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the viewMySiegesToolStripMenuItem
+        /// displaying the siege management screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void viewMySiegesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Globals_Client.siegeToView = null;
+            this.refreshSiegeContainer();
+        }
+
+        /// <summary>
+        /// Responds to any of the click events of the siegeRound buttons
+        /// processing a single siege round of specified type
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void siegeRoundBtn_Click(object sender, EventArgs e)
+        {
+            if (this.siegeListView.SelectedItems.Count > 0)
+            {
+                bool proceed = true;
+
+                // get tag from button
+                Button button = sender as Button;
+                string roundType = button.Tag.ToString();
+
+                // get siege
+                Siege thisSiege = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+
+                // perform conditional checks here
+                proceed = this.checksBeforeSiegeOperation(thisSiege);
+
+                if (proceed)
+                {
+                    // process siege round of specified type
+                    this.siegeReductionRound(thisSiege, roundType);
+                }
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No siege selected!");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the siegeEndBtn button
+        /// dismantling the selected siege
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void siegeEndBtn_Click(object sender, EventArgs e)
+        {
+            if (this.siegeListView.SelectedItems.Count > 0)
+            {
+                bool proceed = true;
+
+                // get siege
+                Siege thisSiege = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
+
+                // perform conditional checks here
+                proceed = this.checksBeforeSiegeOperation(thisSiege, "end");
+
+                if (proceed)
+                {
+                    // construct event description to be passed into siegeEnd
+                    string siegeDescription = "On this day of Our Lord the forces of ";
+                    siegeDescription += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
+                    siegeDescription += " have chosen to abandon the siege of " + thisSiege.getFief().name;
+                    siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
+                    siegeDescription += " retains ownership of the fief.";
+
+                    // process siege reduction round
+                    this.siegeEnd(thisSiege, siegeDescription);
+
+                    //refresh screen
+                    this.refreshCurrentScreen();
+                }
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No siege selected!");
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the armyPillageBtn button
+        /// instigating the pillage of a fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyPillageBtn_Click(object sender, EventArgs e)
+        {
+            // check army selected
+            if (this.armyListView.SelectedItems.Count > 0)
+            {
+                bool proceed = true;
+
+                // get army
+                Army thisArmy = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+
+                // get fief
+                Fief thisFief = thisArmy.getLocation();
+
+                // do various checks
+                proceed = this.checksBeforePillageSiege(thisArmy, thisFief);
+
+                // process pillage
+                if (proceed)
+                {
+                    this.pillageFief(thisArmy, thisFief);
+                }
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No army selected!");
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the armyQuellRebellionBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void armyQuellRebellionBtn_Click(object sender, EventArgs e)
+        {
+            if (this.armyListView.SelectedItems.Count > 0)
+            {
+                bool proceed = true;
+
+                // get army
+                Army thisArmy = null;
+                if (Globals_Game.armyMasterList.ContainsKey(this.armyListView.SelectedItems[0].SubItems[0].Text))
+                {
+                    thisArmy = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
+                }
+
+                if (thisArmy != null)
+                {
+                    // get fief
+                    Fief thisFief = null;
+                    if (Globals_Game.fiefMasterList.ContainsKey(thisArmy.location))
+                    {
+                        thisFief = Globals_Game.fiefMasterList[thisArmy.location];
+                    }
+
+                    if (thisFief != null)
+                    {
+                        // do various checks
+                        proceed = this.checksBeforePillageSiege(thisArmy, thisFief, circumstance: "quellRebellion");
+
+                        if (proceed)
+                        {
+                            bool quellSuccess = thisFief.quellRebellion(thisArmy);
+
+                            // quell successful, pillage fief
+                            if (quellSuccess)
+                            {
+                                // pillage the fief
+                                this.processPillage(thisFief, thisArmy, "quellRebellion");
+                            }
+
+                            // if not successful, retreat army
+                            else
+                            {
+                                // retreat army 1 hex
+                                this.processRetreat(thisArmy, 1);
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+        // ------------------- ROYAL/OVERLORD FUNCTIONS
+
+        /// <summary>
+        /// Responds to the click event of the royalGiftsToolStripMenuItem
+        /// which displays royal gifts screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void royalGiftsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // display royal gifts screen
+            this.refreshRoyalGiftsContainer();
+            Globals_Client.containerToView = this.royalGiftsContainer;
+            Globals_Client.containerToView.BringToFront();
+        }
+
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of either of the royal gifts ListViews
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void royalGiftsListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            Province thisProv = null;
+            Fief thisFief = null;
+            Position thisPos = null;
+
+            // get ListView tag
+            ListView listview = sender as ListView;
+            string whichView = listview.Tag.ToString();
+
+            // check for and correct 'loop backs' due to listview item deselection
+            if (whichView.Equals("province"))
+            {
+                if (this.royalGiftsProvListView.SelectedItems.Count < 1)
+                {
+                    if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                    {
+                        whichView = "fief";
+                    }
+                    else if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+                    {
+                        whichView = "position";
+                    }
+                }
+            }
+            else if (whichView.Equals("fief"))
+            {
+                if (this.royalGiftsFiefListView.SelectedItems.Count < 1)
+                {
+                    if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                    {
+                        whichView = "province";
+                    }
+                    else if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+                    {
+                        whichView = "position";
+                    }
+                }
+            }
+            else if (whichView.Equals("position"))
+            {
+                if (this.royalGiftsPositionListView.SelectedItems.Count < 1)
+                {
+                    if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                    {
+                        whichView = "province";
+                    }
+                    else if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                    {
+                        whichView = "fief";
+                    }
+                }
+            }
+
+            // get selected place or position
+            if (whichView.Equals("province"))
+            {
+                if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                {
+                    // get province
+                    if (Globals_Game.provinceMasterList.ContainsKey(this.royalGiftsProvListView.SelectedItems[0].SubItems[0].Text))
+                    {
+                        thisProv = Globals_Game.provinceMasterList[this.royalGiftsProvListView.SelectedItems[0].SubItems[0].Text];
+                    }
+                }
+            }
+            else if (whichView.Equals("fief"))
+            {
+                if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                {
+                    // get fief
+                    if (Globals_Game.fiefMasterList.ContainsKey(this.royalGiftsFiefListView.SelectedItems[0].SubItems[0].Text))
+                    {
+                        thisFief = Globals_Game.fiefMasterList[this.royalGiftsFiefListView.SelectedItems[0].SubItems[0].Text];
+                    }
+                }
+            }
+            else if (whichView.Equals("position"))
+            {
+                if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+                {
+                    // get position
+                    if (Globals_Game.positionMasterList.ContainsKey(Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)))
+                    {
+                        thisPos = Globals_Game.positionMasterList[Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)];
+                    }
+                }
+            }
+
+            // deselect any selected items in other listView
+            if (whichView.Equals("province"))
+            {
+                if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                {
+                    this.royalGiftsFiefListView.SelectedItems[0].Selected = false;
+                }
+                else if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+                {
+                    this.royalGiftsPositionListView.SelectedItems[0].Selected = false;
+                }
+            }
+            else if (whichView.Equals("fief"))
+            {
+                if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                {
+                    this.royalGiftsProvListView.SelectedItems[0].Selected = false;
+                }
+                else if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+                {
+                    this.royalGiftsPositionListView.SelectedItems[0].Selected = false;
+                }
+            }
+            else if (whichView.Equals("position"))
+            {
+                if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                {
+                    this.royalGiftsProvListView.SelectedItems[0].Selected = false;
+                }
+                else if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                {
+                    this.royalGiftsFiefListView.SelectedItems[0].Selected = false;
+                }
+            }
+
+            // set button text and tag
+            if (whichView.Equals("province"))
+            {
+                this.royalGiftsGrantTitleBtn.Text = "Grant Province Title";
+                this.royalGiftsRevokeTitleBtn.Text = "Revoke Province Title";
+                if (thisProv != null)
+                {
+                    this.royalGiftsGrantTitleBtn.Tag = "province|" + thisProv.id;
+                    this.royalGiftsRevokeTitleBtn.Tag = "province|" + thisProv.id;
+                }
+            }
+            else if (whichView.Equals("fief"))
+            {
+                this.royalGiftsGrantTitleBtn.Text = "Grant Fief Title";
+                this.royalGiftsRevokeTitleBtn.Text = "Revoke Fief Title";
+                if (thisFief != null)
+                {
+                    this.royalGiftsGrantTitleBtn.Tag = "fief|" + thisFief.id;
+                    this.royalGiftsRevokeTitleBtn.Tag = "fief|" + thisFief.id;
+                    this.royalGiftsGiftFiefBtn.Tag = "fief|" + thisFief.id;
+                }
+            }
+            else if (whichView.Equals("position"))
+            {
+                if (thisPos != null)
+                {
+                    this.royalGiftsPositionBtn.Tag = thisPos.id;
+                }
+            }
+
+            // enable/disable controls as appropriate
+
+            // check to see if viewer is king or herald
+            if (!Globals_Client.myPlayerCharacter.checkIsHerald())
+            {
+                // provinces
+                if (whichView.Equals("province"))
+                {
+                    if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                    {
+                        if (thisProv != null)
+                        {
+                            // revoke title button
+                            if (thisProv.titleHolder.Equals(Globals_Client.myPlayerCharacter.charID))
+                            {
+                                this.royalGiftsRevokeTitleBtn.Enabled = false;
+                            }
+                            else
+                            {
+                                this.royalGiftsRevokeTitleBtn.Enabled = true;
+                            }
+                        }
+                    }
+
+                    // 'grant title' button
+                    this.royalGiftsGrantTitleBtn.Enabled = true;
+
+                    // gift fief button
+                    this.royalGiftsGiftFiefBtn.Enabled = false;
+
+                    // position buttons
+                    this.royalGiftsPositionBtn.Enabled = false;
+                    this.royalGiftsPositionRemoveBtn.Enabled = false;
+                }
+
+                // fiefs
+                else if (whichView.Equals("fief"))
+                {
+                    if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                    {
+                        if (thisFief != null)
+                        {
+                            // revoke title button
+                            if (thisFief.titleHolder.Equals(Globals_Client.myPlayerCharacter.charID))
+                            {
+                                this.royalGiftsRevokeTitleBtn.Enabled = false;
+                            }
+                            else
+                            {
+                                this.royalGiftsRevokeTitleBtn.Enabled = true;
+                            }
+
+                            // gift fief button
+                            this.royalGiftsGiftFiefBtn.Enabled = true;
+
+                            // 'grant title' button
+                            this.royalGiftsGrantTitleBtn.Enabled = true;
+
+                            // position buttons
+                            this.royalGiftsPositionBtn.Enabled = false;
+                            this.royalGiftsPositionRemoveBtn.Enabled = false;
+                        }
+                    }
+                }
+
+                // positions
+                else if (whichView.Equals("position"))
+                {
+                    if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+                    {
+                        if (thisPos != null)
+                        {
+                            // bestow position button
+                            this.royalGiftsPositionBtn.Enabled = true;
+
+                            // remove position button, enabled if there is a current holder
+                            if (!String.IsNullOrWhiteSpace(thisPos.officeHolder))
+                            {
+                                this.royalGiftsPositionRemoveBtn.Enabled = true;
+                            }
+                            else
+                            {
+                                this.royalGiftsPositionRemoveBtn.Enabled = false;
+                            }
+
+                            // revoke title button
+                            this.royalGiftsRevokeTitleBtn.Enabled = false;
+
+                            // gift fief button
+                            this.royalGiftsGiftFiefBtn.Enabled = false;
+
+                            // always enable 'grant title' button
+                            this.royalGiftsGrantTitleBtn.Enabled = false;
+                        }
+                    }
+                }
+            }
+
+            // don't enable controls if herald
+            else
+            {
+                this.royalGiftsGrantTitleBtn.Enabled = false;
+                this.royalGiftsRevokeTitleBtn.Enabled = false;
+                this.royalGiftsGiftFiefBtn.Enabled = false;
+                this.royalGiftsPositionBtn.Enabled = false;
+            }
+
+            // give focus back to appropriate listview
+            if (whichView.Equals("province"))
+            {
+                this.royalGiftsProvListView.Focus();
+            }
+            else if (whichView.Equals("fief"))
+            {
+                this.royalGiftsFiefListView.Focus();
+            }
+            else if (whichView.Equals("position"))
+            {
+                this.royalGiftsPositionListView.Focus();
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of either the royalGiftsGrantTitleBtn button
+        /// or the royalGiftsGiftFiefBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void royalGiftsBtn_Click(object sender, EventArgs e)
+        {
+            // get gift type and place id from button tag and name
+            Button button = sender as Button;
+            string giftID = button.Tag.ToString();
+            string giftType = null;
+
+            if (button.Name.ToString().Equals("royalGiftsGrantTitleBtn"))
+            {
+                giftType = "royalGiftTitle";
+            }
+            else if (button.Name.ToString().Equals("royalGiftsGiftFiefBtn"))
+            {
+                giftType = "royalGiftFief";
+            }
+            else if (button.Name.ToString().Equals("royalGiftsPositionBtn"))
+            {
+                giftType = "royalGiftPosition";
+            }
+
+            if (!String.IsNullOrWhiteSpace(giftType))
+            {
+                // check for previously opened SelectionForm and close if necessary
+                if (Application.OpenForms.OfType<SelectionForm>().Any())
+                {
+                    Application.OpenForms.OfType<SelectionForm>().First().Close();
+                }
+
+                // open new SelectionForm
+                SelectionForm royalGiftSelection = null;
+                // if gifting place or place title
+                if (!giftType.Equals("royalGiftPosition"))
+                {
+                    royalGiftSelection = new SelectionForm(this, giftType, place: giftID);
+                }
+
+                // if bestowing position
+                else
+                {
+                    royalGiftSelection = new SelectionForm(this, giftType, posID: Convert.ToByte(giftID));
+                }
+                royalGiftSelection.Show();
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the manageProvincesToolStripMenuItem
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void manageProvincesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // clear existing provinceToView
+            Globals_Client.provinceToView = null;
+
+            // display royal gifts screen
+            this.refreshProvinceContainer();
+
+            // display household affairs screen
+            Globals_Client.containerToView = this.provinceContainer;
+            Globals_Client.containerToView.BringToFront();
+        }
+
+        /// <summary>
+        /// Responds to the SelectedIndexChanged event of the provinceProvListView
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void provinceProvListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.provinceProvListView.SelectedItems.Count > 0)
+            {
+                // get province
+                Province thisProvince = null;
+                if (Globals_Game.provinceMasterList.ContainsKey(this.provinceProvListView.SelectedItems[0].SubItems[0].Text))
+                {
+                    thisProvince = Globals_Game.provinceMasterList[this.provinceProvListView.SelectedItems[0].SubItems[0].Text];
+                }
+
+                if (thisProvince != null)
+                {
+                    // refresh fief list
+                    this.refreshProvinceFiefList(thisProvince);
+
+                    // populate provinceTaxTextBox
+                    this.provinceTaxTextBox.Text = thisProvince.taxRate.ToString();
+
+                    // enable controls
+                    this.provinceTaxBtn.Enabled = true;
+                    this.provinceTaxTextBox.Enabled = true;
+                    this.provinceChallengeBtn.Enabled = true;
+
+                    // set provinceToView
+                    Globals_Client.provinceToView = thisProvince;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the provinceTaxBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void provinceTaxBtn_Click(object sender, EventArgs e)
+        {
+            if (this.provinceProvListView.SelectedItems.Count > 0)
+            {
+                bool rateChanged = false;
+
+                // get province
+                Province thisProvince = null;
+                if (Globals_Game.provinceMasterList.ContainsKey(this.provinceProvListView.SelectedItems[0].SubItems[0].Text))
+                {
+                    thisProvince = Globals_Game.provinceMasterList[this.provinceProvListView.SelectedItems[0].SubItems[0].Text];
+                }
+
+                if (thisProvince != null)
+                {
+                    // keep track of whether tax has changed
+                    double originalRate = thisProvince.taxRate;
+
+                    try
+                    {
+                        // get new rate
+                        Double newTax = Convert.ToDouble(this.provinceTaxTextBox.Text);
+
+                        // if rate changed, commit new rate
+                        if (newTax != originalRate)
+                        {
+                            // adjust tax rate
+                            thisProvince.adjustTaxRate(newTax);
+                            rateChanged = true;
+
+                            // display confirmation message
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Province tax rate changed.");
+                            }
+                        }
+                    }
+                    catch (System.FormatException fe)
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                        }
+                    }
+                    catch (System.OverflowException ofe)
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                        }
+                    }
+                    finally
+                    {
+                        // refresh screen if expenditure changed
+                        if (rateChanged)
+                        {
+                            // refresh display
+                            this.refreshCurrentScreen();
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the royalGiftsPositionRemoveBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void royalGiftsPositionRemoveBtn_Click(object sender, EventArgs e)
+        {
+            if (this.royalGiftsPositionListView.SelectedItems.Count > 0)
+            {
+                // get position
+                Position thisPos = null;
+                if (Globals_Game.positionMasterList.ContainsKey(Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)))
+                {
+                    thisPos = Globals_Game.positionMasterList[Convert.ToByte(this.royalGiftsPositionListView.SelectedItems[0].SubItems[0].Text)];
+                }
+
+                if (thisPos != null)
+                {
+                    // get current holder
+                    PlayerCharacter currentHolder = thisPos.getOfficeHolder();
+
+                    // remove from position
+                    if (currentHolder != null)
+                    {
+                        thisPos.removeFromOffice(currentHolder);
+
+                        // refresh screen
+                        this.refreshCurrentScreen();
+                    }
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the royalGiftsRevokeTitleBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void royalGiftsRevokeTitleBtn_Click(object sender, EventArgs e)
+        {
+            // get place type and id from button tag
+            Button button = sender as Button;
+            string[] placeDetails = button.Tag.ToString().Split('|');
+
+            // fiefs
+            if (placeDetails[0].Equals("fief"))
+            {
+                if (this.royalGiftsFiefListView.SelectedItems.Count > 0)
+                {
+                    // get fief
+                    Fief thisFief = null;
+                    if (Globals_Game.fiefMasterList.ContainsKey(placeDetails[1]))
+                    {
+                        thisFief = Globals_Game.fiefMasterList[placeDetails[1]];
+                    }
+
+                    // reassign title
+                    if (thisFief != null)
+                    {
+                        Globals_Client.myPlayerCharacter.grantTitle(Globals_Client.myPlayerCharacter, thisFief);
+
+                        // refresh screen
+                        this.refreshCurrentScreen();
+                    }
+                }
+            }
+
+            // provinces
+            else if (placeDetails[0].Equals("province"))
+            {
+                if (this.royalGiftsProvListView.SelectedItems.Count > 0)
+                {
+                    // get province
+                    Province thisProv = null;
+                    if (Globals_Game.provinceMasterList.ContainsKey(placeDetails[1]))
+                    {
+                        thisProv = Globals_Game.provinceMasterList[placeDetails[1]];
+                    }
+
+                    // reassign title
+                    if (thisProv != null)
+                    {
+                        Globals_Client.myPlayerCharacter.grantTitle(Globals_Client.myPlayerCharacter, thisProv);
+
+                        // refresh screen
+                        this.refreshCurrentScreen();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the provinceChallengeBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void provinceChallengeBtn_Click(object sender, EventArgs e)
+        {
+            if (this.provinceProvListView.SelectedItems.Count > 0)
+            {
+                // get kingdom
+                Kingdom targetKingdom = null;
+                if (Globals_Game.kingdomMasterList.ContainsKey(this.provinceProvListView.SelectedItems[0].SubItems[4].Text))
+                {
+                    targetKingdom = Globals_Game.kingdomMasterList[this.provinceProvListView.SelectedItems[0].SubItems[4].Text];
+                }
+
+                if (targetKingdom != null)
+                {
+                    targetKingdom.lodgeOwnershipChallenge();
+                }
+
+                this.provinceProvListView.Focus();
+            }
+        }
+
+        // ------------------- TRAVEL SCREEN
+
+        /// <summary>
+        /// Responds to the click event of any routeBtn buttons invoking the takeThisRoute method
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void routeBtn_Click(object sender, EventArgs e)
+        {
+            // get button
+            Button button = sender as Button;
+
+            // check button tag to see on which screen the movement command occurred
+            string whichScreen = button.Tag.ToString();
+
+            // perform move
+            this.takeThisRoute(whichScreen);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the travelExamineArmiesBtn button
+        /// displaying a list of all armies in the Player's current fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void travelExamineArmiesBtn_Click(object sender, EventArgs e)
+        {
+            // examine armies
+            this.examineArmiesInFief(Globals_Client.myPlayerCharacter);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the travelCampBtn button
+        /// invoking the campWaitHere method
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void travelCampBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // get days to camp
+                byte campDays = Convert.ToByte(this.travelCampDaysTextBox.Text);
+
+                // camp
+                this.campWaitHere(Globals_Client.myPlayerCharacter, campDays);
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            finally
+            {
+                // refresh display
+                this.refreshTravelContainer();
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the travel buttons
+        /// which attempts to move the player to the target fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void travelBtnClick(object sender, EventArgs e)
+        {
+            bool success = false;
+            // necessary in order to be able to access button tag
+            Button button = sender as Button;
+            // get target fief using travel button tag (contains direction string)
+            Fief targetFief = Globals_Game.gameMap.getFief(Globals_Client.myPlayerCharacter.location, button.Tag.ToString());
+
+            if (targetFief != null)
+            {
+                // get travel cost
+                double travelCost = this.getTravelCost(Globals_Client.myPlayerCharacter.location, targetFief, Globals_Client.myPlayerCharacter.armyID);
+                // attempt to move player to target fief
+                success = this.moveCharacter(Globals_Client.myPlayerCharacter, targetFief, travelCost);
+                // if move successfull, refresh travel display
+                if (success)
+                {
+                    Globals_Client.fiefToView = targetFief;
+                    this.refreshTravelContainer();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the enterKeepBtn button
+        /// which causes the player (and entourage) to enter/exit the keep and
+        /// refreshes the travel screen, setting appropriate text for the enterKeepBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void enterKeepBtn_Click(object sender, EventArgs e)
+        {
+            // if player in keep
+            if (Globals_Client.myPlayerCharacter.inKeep)
+            {
+                // exit keep
+                Globals_Client.myPlayerCharacter.exitKeep();
+                // change button text
+                this.enterKeepBtn.Text = "Enter Keep";
+                // refresh display
+                this.refreshTravelContainer();
+            }
+
+            // if player not in keep
+            else
+            {
+                // attempt to enter keep
+                Globals_Client.myPlayerCharacter.enterKeep();
+
+                // if successful
+                if (Globals_Client.myPlayerCharacter.inKeep)
+                {
+                    // change button text
+                    this.enterKeepBtn.Text = "Exit Keep";
+                    // refresh display
+                    this.refreshTravelContainer();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of any moveTo buttons invoking the moveTo method
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void moveToBtn_Click(object sender, EventArgs e)
+        {
+            // get button
+            Button button = sender as Button;
+
+            // check button tag to see on which screen the movement command occurred
+            string whichScreen = button.Tag.ToString();
+
+            // perform move
+            this.moveTo(whichScreen);
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the 'visit meeting place' buttons
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void visitMeetingPlace(object sender, EventArgs e)
+        {
+            bool success = true;
+
+            // get button
+            Button thisButton = (sender as Button);
+            string place = thisButton.Tag.ToString();
+
+            // enter/exit keep if required
+            switch (place)
+            {
+                case "court":
+                    if (!Globals_Client.myPlayerCharacter.inKeep)
+                    {
+                        success = Globals_Client.myPlayerCharacter.enterKeep();
+                    }
+                    break;
+                default:
+                    if (Globals_Client.myPlayerCharacter.inKeep)
+                    {
+                        success = Globals_Client.myPlayerCharacter.exitKeep();
+                    }
+                    break;
+            }
+
+            if (success)
+            {
+                // set button tags to reflect which meeting place
+                this.hireNPC_Btn.Tag = place;
+                this.meetingPlaceMoveToBtn.Tag = place;
+                this.meetingPlaceRouteBtn.Tag = place;
+                this.meetingPlaceEntourageBtn.Tag = place;
+
+                // refresh outside keep screen 
+                this.refreshMeetingPlaceDisplay(place);
+
+                // display tavern screen
+                Globals_Client.containerToView = this.meetingPlaceContainer;
+                Globals_Client.containerToView.BringToFront();
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the navigateToolStripMenuItem
+        /// which refreshes and displays the navigation screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void navigateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // ensure reflects player's location
+            Globals_Client.charToView = Globals_Client.myPlayerCharacter;
+
+            // refresh navigation data
+            Globals_Client.fiefToView = Globals_Client.myPlayerCharacter.location;
+            this.refreshTravelContainer();
+
+            // show navigation screen
+            Globals_Client.containerToView = this.travelContainer;
+            Globals_Client.containerToView.BringToFront();
+        }
+
+        // ------------------- MEETING PLACE SCREEN
+
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of the meetingPlaceCharsListView
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void meetingPlaceCharsListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            Character charToDisplay = null;
+
+            // loop through the characters in the fief
+            for (int i = 0; i < Globals_Client.fiefToView.charactersInFief.Count; i++)
+            {
+                if (meetingPlaceCharsListView.SelectedItems.Count > 0)
+                {
+                    // find matching character
+                    if (Globals_Client.fiefToView.charactersInFief[i].charID.Equals(this.meetingPlaceCharsListView.SelectedItems[0].SubItems[1].Text))
+                    {
+                        charToDisplay = Globals_Client.fiefToView.charactersInFief[i];
+
+                        // check whether is this PC's employee or family
+                        if (Globals_Client.myPlayerCharacter.myNPCs.Contains(Globals_Client.fiefToView.charactersInFief[i]))
+                        {
+                            // see if is in entourage to set text of entourage button
+                            if ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).inEntourage)
+                            {
+                                this.meetingPlaceEntourageBtn.Text = "Remove From Entourage";
+                            }
+                            else
+                            {
+                                this.meetingPlaceEntourageBtn.Text = "Add To Entourage";
+                            }
+
+                            // enable 'move to' controls
+                            this.meetingPlaceMoveToBtn.Enabled = true;
+                            this.meetingPlaceMoveToTextBox.Enabled = true;
+                            this.meetingPlaceRouteBtn.Enabled = true;
+                            this.meetingPlaceRouteTextBox.Enabled = true;
+                            this.meetingPlaceEntourageBtn.Enabled = true;
+
+                            // disable marriage proposals
+                            this.meetingPlaceProposeBtn.Enabled = false;
+                            this.meetingPlaceProposeTextBox.Text = "";
+                            this.meetingPlaceProposeTextBox.Enabled = false;
+
+                            // if is employee
+                            if ((!String.IsNullOrWhiteSpace((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).employer))
+                                && ((Globals_Client.fiefToView.charactersInFief[i] as NonPlayerCharacter).employer.Equals(Globals_Client.myPlayerCharacter.charID)))
+                            {
+                                // set appropriate text for hire/fire button, and enable it
+                                this.hireNPC_Btn.Text = "Fire NPC";
+                                this.hireNPC_Btn.Enabled = true;
+                                // disable 'salary offer' text box
+                                this.hireNPC_TextBox.Visible = false;
+                            }
+                            else
+                            {
+                                this.hireNPC_Btn.Enabled = false;
+                                this.hireNPC_TextBox.Enabled = false;
+                            }
+                        }
+
+                        // if is not employee or family
+                        else
+                        {
+                            // set appropriate text for hire/fire controls, and enable them
+                            this.hireNPC_Btn.Text = "Hire NPC";
+                            this.hireNPC_TextBox.Visible = true;
+
+                            // can only employ men (non-PCs)
+                            if (charToDisplay.checkCanHire(Globals_Client.myPlayerCharacter))
+                            {
+                                this.hireNPC_Btn.Enabled = true;
+                                this.hireNPC_TextBox.Enabled = true;
+                            }
+                            else
+                            {
+                                this.hireNPC_Btn.Enabled = false;
+                                this.hireNPC_TextBox.Enabled = false;
+                            }
+
+                            // disable 'move to' and entourage controls
+                            this.meetingPlaceMoveToBtn.Enabled = false;
+                            this.meetingPlaceMoveToTextBox.Enabled = false;
+                            this.meetingPlaceRouteBtn.Enabled = false;
+                            this.meetingPlaceRouteTextBox.Enabled = false;
+                            this.meetingPlaceEntourageBtn.Enabled = false;
+
+                            // checks for enabling marriage proposals
+                            if (((!String.IsNullOrWhiteSpace(charToDisplay.spouse)) || (charToDisplay.isMale)) || (!String.IsNullOrWhiteSpace(charToDisplay.fiancee)))
+                            {
+                                // disable marriage proposals
+                                this.meetingPlaceProposeBtn.Enabled = false;
+                                this.meetingPlaceProposeTextBox.Text = "";
+                                this.meetingPlaceProposeTextBox.Enabled = false;
+                            }
+                            else
+                            {
+                                // enable marriage proposals
+                                this.meetingPlaceProposeBtn.Enabled = true;
+                                this.meetingPlaceProposeTextBox.Text = Globals_Client.myPlayerCharacter.charID;
+                                this.meetingPlaceProposeTextBox.Enabled = true;
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+            // retrieve and display character information
+            if (charToDisplay != null)
+            {
+                Globals_Client.charToView = charToDisplay;
+                string textToDisplay = "";
+                textToDisplay += this.displayCharacter(charToDisplay);
+                this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
+                this.meetingPlaceCharDisplayTextBox.Text = textToDisplay;
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of any hireNPC button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void hireNPC_Btn_Click(object sender, EventArgs e)
+        {
+            bool amHiring = false;
+            bool isHired = false;
+
+            // get hireNPC_Btn tag (shows which meeting place are in)
+            string place = Convert.ToString(((Button)sender).Tag);
+
+            // if selected NPC is not a current employee
+            if (!Globals_Client.myPlayerCharacter.myNPCs.Contains(Globals_Client.charToView))
+            {
+                amHiring = true;
+
+                try
+                {
+                    // get offer amount
+                    UInt32 newOffer = Convert.ToUInt32(this.hireNPC_TextBox.Text);
+                    // submit offer
+                    isHired = Globals_Client.myPlayerCharacter.processEmployOffer((Globals_Client.charToView as NonPlayerCharacter), newOffer);
+
+                }
+                catch (System.FormatException fe)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                    }
+                }
+                catch (System.OverflowException ofe)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                    }
+                }
+
+            }
+
+            // if selected NPC is already an employee
+            else
+            {
+                // fire NPC
+                Globals_Client.myPlayerCharacter.fireNPC(Globals_Client.charToView as NonPlayerCharacter);
+            }
+
+            // refresh appropriate screen
+            // if firing an NPC
+            if (!amHiring)
+            {
+                if (place.Equals("house"))
+                {
+                    this.refreshHouseholdDisplay();
+                }
+                else
+                {
+                    this.refreshMeetingPlaceDisplay(place);
+                }
+            }
+            // if hiring an NPC
+            else
+            {
+                // if in the tavern and NPC is hired, refresh whole screen (NPC removed from list)
+                if (isHired)
+                {
+                    this.refreshMeetingPlaceDisplay(place);
+                }
+                else
+                {
+                    this.meetingPlaceCharDisplayTextBox.Text = this.displayCharacter(Globals_Client.charToView);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of any entourage button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void entourageBtn_Click(object sender, EventArgs e)
+        {
+            // for messages
+            string toDisplay = "";
+
+            // get button
+            Button button = sender as Button;
+
+            // check button tag to see on which screen the command occurred
+            string whichScreen = button.Tag.ToString();
+
+            // check which action to perform
+            // if is in entourage, remove
+            if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
+            {
+                Globals_Client.myPlayerCharacter.removeFromEntourage((Globals_Client.charToView as NonPlayerCharacter));
+            }
+
+            // if is not in entourage, add
+            else
+            {
+                // check to see if NPC is army leader
+                // if not leader, proceed
+                if (String.IsNullOrWhiteSpace(Globals_Client.charToView.armyID))
+                {
+                    // add to entourage
+                    Globals_Client.myPlayerCharacter.addToEntourage((Globals_Client.charToView as NonPlayerCharacter));
+
+                }
+
+                // if is army leader, can't add to entourage
+                else
+                {
+                    toDisplay += "Sorry, milord, this person is an army leader\r\n";
+                    toDisplay += "and, therefore, cannot be added to your entourage.";
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                    }
+                }
+            }
+
+            // refresh appropriate screen
+            if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
+            {
+                this.refreshMeetingPlaceDisplay(whichScreen); ;
+            }
+            else if (whichScreen.Equals("house"))
+            {
+                this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
+            }
+        }
+
+        // ------------------- MARRIAGE
+
+        /// <summary>
+        /// Responds to the click event of the meetingPlaceProposeBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void meetingPlaceProposeBtn_Click(object sender, EventArgs e)
+        {
+            // get entry
+            if (this.meetingPlaceCharsListView.SelectedItems.Count > 0)
+            {
+                bool proceed = true;
+
+                Character bride = null;
+                Character groom = null;
+                string brideID = "";
+                string groomID = "";
+
+                if (this.meetingPlaceProposeTextBox.Text.Trim() == "")
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                    }
+                }
+                else
+                {
+                    // get bride and groom IDs
+                    brideID = this.meetingPlaceCharsListView.SelectedItems[0].SubItems[1].Text;
+                    groomID = this.houseProposeGroomTextBox.Text;
+
+                    // get bride
+                    if (Globals_Game.npcMasterList.ContainsKey(brideID))
+                    {
+                        bride = Globals_Game.npcMasterList[brideID];
+                    }
+
+                    if (bride == null)
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
+                        }
+                    }
+                    else
+                    {
+                        // get groom
+                        if (Globals_Game.npcMasterList.ContainsKey(groomID))
+                        {
+                            groom = Globals_Game.npcMasterList[groomID];
+                        }
+                        else if (Globals_Game.pcMasterList.ContainsKey(groomID))
+                        {
+                            groom = Globals_Game.pcMasterList[groomID];
+                        }
+
+                        if (groom == null)
+                        {
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                            }
+                        }
+                        else
+                        {
+                            // carry out conditional checks
+                            proceed = this.checksBeforeProposal(bride, groom);
+
+                            // if checks OK, process proposal
+                            if (proceed)
+                            {
+                                this.proposeMarriage(bride, groom);
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Please select a prospective bride.");
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of either of the proposal reply buttons,
+        /// sending the appropriate reply
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void journalProposalReplyButton_Click(object sender, EventArgs e)
+        {
+            if (this.journalListView.SelectedItems.Count > 0)
+            {
+                bool proposalAccepted = false;
+
+                // get tag from button
+                Button button = sender as Button;
+                string reply = button.Tag.ToString();
+
+                // set appropriate response
+                if (reply.Equals("accept"))
+                {
+                    proposalAccepted = true;
+                }
+
+                // get JournalEntry
+                JournalEntry thisJentry = Globals_Client.eventSetToView.ElementAt(Globals_Client.jEntryToView).Value;
+
+                // send reply
+                this.replyToProposal(thisJentry, proposalAccepted);
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No journal entry selected.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the houseProposeBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void houseProposeBtn_Click(object sender, EventArgs e)
+        {
+            bool proceed = true;
+
+            Character bride = null;
+            Character groom = null;
+            string brideID = "";
+            string groomID = "";
+
+            if (String.IsNullOrWhiteSpace(this.houseProposeBrideTextBox.Text))
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
+                }
+            }
+            else if (String.IsNullOrWhiteSpace(this.houseProposeGroomTextBox.Text))
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                }
+            }
+            else
+            {
+                // get bride and groom IDs
+                brideID = this.houseProposeBrideTextBox.Text;
+                groomID = this.houseProposeGroomTextBox.Text;
+
+                // get bride
+                if (Globals_Game.npcMasterList.ContainsKey(brideID))
+                {
+                    bride = Globals_Game.npcMasterList[brideID];
+                }
+
+                if (bride == null)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Cannot identify the prospective bride.");
+                    }
+                }
+                else
+                {
+                    // get groom
+                    if (Globals_Game.npcMasterList.ContainsKey(groomID))
+                    {
+                        groom = Globals_Game.npcMasterList[groomID];
+                    }
+                    else if (Globals_Game.pcMasterList.ContainsKey(groomID))
+                    {
+                        groom = Globals_Game.pcMasterList[groomID];
+                    }
+
+                    if (groom == null)
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Cannot identify the prospective groom.");
+                        }
+                    }
+                    else
+                    {
+                        // carry out conditional checks
+                        proceed = this.checksBeforeProposal(bride, groom);
+
+                        // if checks OK, process proposal
+                        if (proceed)
+                        {
+                            this.proposeMarriage(bride, groom);
+
+                            // refresh screen
+                            this.refreshCurrentScreen();
+                        }
+                    }
+
+                }
+            }
+
+        }
+
+        // ------------------- HOUSEHOLD MANAGEMENT
+
+        /// <summary>
+        /// Responds to the click event of the houseExamineArmiesBtn button
+        /// displaying a list of all armies in the current NPC's fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void houseExamineArmiesBtn_Click(object sender, EventArgs e)
+        {
+            // NPC
+            Character thisObserver = Globals_Client.charToView;
+
+            // examine armies
+            this.examineArmiesInFief(thisObserver);
+        }
+
+        /// <summary>
+        /// Responds to the click event of the familyNameChildButton
+        /// allowing the player to name the selected child
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void familyNameChildButton_Click(object sender, EventArgs e)
+        {
+            if (this.houseCharListView.SelectedItems.Count > 0)
+            {
+                // get NPC to name
+                NonPlayerCharacter child = null;
+                if (Globals_Game.npcMasterList.ContainsKey(this.houseCharListView.SelectedItems[0].SubItems[1].Text))
+                {
+                    child = Globals_Game.npcMasterList[this.houseCharListView.SelectedItems[0].SubItems[1].Text];
+                }
+
+                if (child != null)
+                {
+                    if (Regex.IsMatch(this.familyNameChildTextBox.Text.Trim(), @"^[a-zA-Z- ]+$"))
+                    {
+                        child.firstName = this.familyNameChildTextBox.Text;
+                        this.refreshHouseholdDisplay(child);
+                    }
+                    else
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("'" + this.familyNameChildTextBox.Text + "' is an unsuitable name, milord.");
+                        }
+                    }
+                }
+                else
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Could not retrieve details of NonPlayerCharacter.");
+                    }
+                }
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Please select a character from the list.");
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the houseHeirBtn button
+        /// allowing the switch to another player (for testing)
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void houseHeirBtn_Click(object sender, EventArgs e)
+        {
+            if (this.houseCharListView.SelectedItems.Count > 0)
+            {
+                // get selected NPC
+                NonPlayerCharacter selectedNPC = Globals_Game.npcMasterList[this.houseCharListView.SelectedItems[0].SubItems[1].Text];
+
+                // check for an existing heir and remove
+                foreach (NonPlayerCharacter npc in Globals_Client.myPlayerCharacter.myNPCs)
+                {
+                    if (npc.isHeir)
+                    {
+                        npc.isHeir = false;
+                    }
+                }
+
+                // appoint NPC as heir
+                selectedNPC.isHeir = true;
+
+                // refresh the household screen (in the main form)
+                this.refreshHouseholdDisplay(selectedNPC);
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the dealWithHouseholdAffairsToolStripMenuItem
+        /// which causes the Household screen to display, listing the player's
+        /// family and employed NPCs
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void dealWithHouseholdAffairsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Globals_Client.charToView = null;
+
+            // refresh household affairs screen 
+            this.refreshHouseholdDisplay();
+
+            // display household affairs screen
+            Globals_Client.containerToView = this.houseContainer;
+            Globals_Client.containerToView.BringToFront();
+        }
+
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of the houseCharListView object,
+        /// invoking the displayCharacter method, passing a Character to display
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void houseCharListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            Character charToDisplay = null;
+
+            // loop through the characters in employees
+            for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
+            {
+                if (this.houseCharListView.SelectedItems.Count > 0)
+                {
+                    // find matching character
+                    if (Globals_Client.myPlayerCharacter.myNPCs[i].charID.Equals(this.houseCharListView.SelectedItems[0].SubItems[1].Text))
+                    {
+                        charToDisplay = Globals_Client.myPlayerCharacter.myNPCs[i];
+                        break;
+                    }
+
+                }
+
+            }
+
+            // retrieve and display character information
+            if (charToDisplay != null)
+            {
+                Globals_Client.charToView = charToDisplay;
+                this.houseCharTextBox.Text = this.displayCharacter(charToDisplay);
+                this.houseCharTextBox.ReadOnly = true;
+
+                // see if is in entourage to set text of entourage button
+                if ((charToDisplay as NonPlayerCharacter).inEntourage)
+                {
+                    this.houseEntourageBtn.Text = "Remove From Entourage";
+                }
+                else
+                {
+                    this.houseEntourageBtn.Text = "Add To Entourage";
+                }
+
+                // FAMILY MATTERS CONTROLS
+                // if family selected, enable 'choose heir' button, disbale 'fire' button
+                if ((!String.IsNullOrWhiteSpace(Globals_Client.charToView.familyID)) && (Globals_Client.charToView.familyID.Equals(Globals_Client.myPlayerCharacter.charID)))
+                {
+                    this.houseHeirBtn.Enabled = true;
+                    this.houseFireBtn.Enabled = false;
+
+                    // if is male and married, enable NPC 'get wife with child' control
+                    if ((Globals_Client.charToView.isMale) && (!String.IsNullOrWhiteSpace(Globals_Client.charToView.spouse)))
+                    {
+                        this.familyNpcSpousePregBtn.Enabled = true;
+                    }
+                    else
+                    {
+                        this.familyNpcSpousePregBtn.Enabled = false;
+                    }
+                }
+                else
+                {
+                    this.houseHeirBtn.Enabled = false;
+                    this.houseFireBtn.Enabled = true;
+                    this.familyNpcSpousePregBtn.Enabled = false;
+                }
+
+                // if character firstname = "Baby", enable 'name child' controls
+                if ((charToDisplay as NonPlayerCharacter).firstName.Equals("Baby"))
+                {
+                    this.familyNameChildButton.Enabled = true;
+                    this.familyNameChildTextBox.Enabled = true;
+                }
+                // if not, ensure are disabled
+                else
+                {
+                    this.familyNameChildButton.Enabled = false;
+                    this.familyNameChildTextBox.Enabled = false;
+                }
+
+                // 'get wife with child' button always enabled
+                this.familyGetSpousePregBtn.Enabled = true;
+
+                // SIEGE CHECKS
+                // check to see if is inside besieged keep
+                if ((Globals_Client.charToView.inKeep) && (!String.IsNullOrWhiteSpace(Globals_Client.charToView.location.siege)))
+                {
+                    // if is inside besieged keep, disable most of controls
+                    this.houseCampBtn.Enabled = false;
+                    this.houseCampDaysTextBox.Enabled = false;
+                    this.houseMoveToBtn.Enabled = false;
+                    this.houseMoveToTextBox.Enabled = false;
+                    this.houseRouteBtn.Enabled = false;
+                    this.houseEntourageBtn.Enabled = false;
+                    this.houseFireBtn.Enabled = false;
+                    this.houseExamineArmiesBtn.Enabled = false;
+                }
+
+                // is NOT inside besieged keep
+                else
+                {
+                    // re-enable controls
+                    this.houseCampBtn.Enabled = true;
+                    this.houseCampDaysTextBox.Enabled = true;
+                    this.houseMoveToBtn.Enabled = true;
+                    this.houseMoveToTextBox.Enabled = true;
+                    this.houseRouteBtn.Enabled = true;
+                    this.houseRouteTextBox.Enabled = true;
+                    this.houseEntourageBtn.Enabled = true;
+                    this.houseExamineArmiesBtn.Enabled = true;
+
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the houseCampBtn button
+        /// invoking the campWaitHere method
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void houseCampBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // get days to camp
+                byte campDays = Convert.ToByte(this.houseCampDaysTextBox.Text);
+
+                // camp
+                this.campWaitHere(Globals_Client.charToView, campDays);
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            finally
+            {
+                // refresh display
+                this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
+            }
+
+        }
+
+        // ------------------- FIEF MANAGEMENT
+
+        /// <summary>
+        /// Responds to the click event of the viewMyHomeFiefToolStripMenuItem
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void viewMyHomeFiefToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // get home fief
+            Fief homeFief = Globals_Client.myPlayerCharacter.getHomeFief();
+
+            if (homeFief != null)
+            {
+                // display home fief
+                this.refreshFiefContainer(homeFief);
+            }
+
+            // if have no home fief
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("You have no home fief!");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the 'Max' buttons inn the fief management screen,
+        /// filling in the maximum expenditure for the selected field
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void maxSpendButton_Click(object sender, EventArgs e)
+        {
+            uint maxSpend = 0;
+
+            // get tag from button
+            Button button = sender as Button;
+            string expType = button.Tag.ToString();
+
+            // get max spend of specified type
+            maxSpend = Globals_Client.fiefToView.getMaxSpend(expType);
+
+            if (maxSpend != 0)
+            {
+                switch (expType)
+                {
+                    case "garrison":
+                        this.adjGarrSpendTextBox.Text = maxSpend.ToString();
+                        break;
+                    case "infrastructure":
+                        this.adjInfrSpendTextBox.Text = maxSpend.ToString();
+                        break;
+                    case "keep":
+                        this.adjustKeepSpendTextBox.Text = maxSpend.ToString();
+                        break;
+                    case "officials":
+                        this.adjOffSpendTextBox.Text = maxSpend.ToString();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Responds to the click event of the fiefGrantTitleBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefGrantTitleBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            SelectionForm chooseTitleHolder = new SelectionForm(this, "titleHolder");
+            chooseTitleHolder.Show();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the fiefTransferFundsPlayerBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefTransferFundsPlayerBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            SelectionForm transferFunds = new SelectionForm(this, "transferFunds");
+            transferFunds.Show();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the selfBailiffBtn button,
+        /// appointing the player as bailiff of the displayed fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void selfBailiffBtn_Click(object sender, EventArgs e)
+        {
+            // give player fair warning of bailiff commitments
+            DialogResult dialogResult = MessageBox.Show("Being a bailiff will restrict your movement.  Click 'OK' to proceed.", "Proceed with appointment?", MessageBoxButtons.OKCancel);
+
+            // if choose to cancel
+            if (dialogResult == DialogResult.Cancel)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Appointment cancelled.");
+                }
+            }
+
+            // if choose to proceed
+            else
+            {
+                // if the fief has an existing bailiff
+                if (Globals_Client.fiefToView.bailiff != null)
+                {
+                    // relieve him of his duties
+                    Globals_Client.fiefToView.bailiff = null;
+                }
+
+                // set player as bailiff
+                Globals_Client.fiefToView.bailiff = Globals_Client.myPlayerCharacter;
+            }
+
+            // refresh fief display
+            this.refreshFiefContainer(Globals_Client.fiefToView);
+        }
+
+        /// <summary>
+        /// Responds to the click event of any of the 'transfer funds' buttons
+        /// allowing players to transfer funds between treasuries
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void transferFundsBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // get button
+                Button button = sender as Button;
+                // get transfer parameters from tag
+                string transferType = button.Tag.ToString();
+
+                Fief fiefFrom = null;
+                Fief fiefTo = null;
+                int amount = 0;
+
+                switch (transferType)
+                {
+                    case "toFief":
+                        fiefFrom = Globals_Client.myPlayerCharacter.getHomeFief();
+                        fiefTo = Globals_Client.fiefToView;
+                        amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
+                        break;
+                    case "toHome":
+                        fiefFrom = Globals_Client.fiefToView;
+                        fiefTo = Globals_Client.myPlayerCharacter.getHomeFief();
+                        amount = Convert.ToInt32(this.fiefTransferAmountTextBox.Text);
+                        break;
+                    default:
+                        break;
+                }
+
+                if (((fiefFrom != null) && (fiefTo != null)) && (amount > 0))
+                {
+                    // make sure are enough funds to cover transfer
+                    if (amount > fiefFrom.getAvailableTreasury(true))
+                    {
+                        // if not, inform player and adjust amount downwards
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Too few funds available for this transfer.");
+                        }
+                    }
+
+                    else
+                    {
+                        // make the transfer
+                        this.treasuryTransfer(fiefFrom, fiefTo, amount);
+                    }
+
+                }
+
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the viewBailiffBtn button
+        /// which refreshes and displays the character screen, showing details of the
+        /// bailiff for the selected fief
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void viewBailiffBtn_Click(object sender, EventArgs e)
+        {
+            if (Globals_Client.fiefToView.bailiff != null)
+            {
+                // if player is bailiff, show in personal characteristics screen
+                if (Globals_Client.fiefToView.bailiff == Globals_Client.myPlayerCharacter)
+                {
+                    Globals_Client.charToView = Globals_Client.myPlayerCharacter;
+                    this.refreshCharacterContainer(Globals_Client.charToView);
+                }
+
+                // if NPC is bailiff, show in household affairs screen
+                else if (Globals_Client.fiefToView.bailiff is NonPlayerCharacter)
+                {
+                    Globals_Client.charToView = Globals_Client.fiefToView.bailiff;
+                    // refresh household affairs screen 
+                    this.refreshHouseholdDisplay(Globals_Client.charToView as NonPlayerCharacter);
+                    // display household affairs screen
+                    Globals_Client.containerToView = this.houseContainer;
+                    Globals_Client.containerToView.BringToFront();
+                }
+            }
+
+            // display message that is no bailiff
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("This fief currently has no bailiff.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the ItemSelectionChanged event of the fiefsListView object,
+        /// invoking the displayFief method, passing a Fief to display
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefsListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            // enable controls
+            if (this.fiefsListView.SelectedItems.Count > 0)
+            {
+                this.fiefsChallengeBtn.Enabled = true;
+                this.fiefsViewBtn.Enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the setBailiffBtn button
+        ///invoking and displaying the character selection screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void setBailiffBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            SelectionForm chooseBailiff = new SelectionForm(this, "bailiff");
+            chooseBailiff.Show();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the lockoutBtn button
+        /// invoking and displaying the lockout screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void lockoutBtn_Click(object sender, EventArgs e)
+        {
+            // check for previously opened SelectionForm and close if necessary
+            if (Application.OpenForms.OfType<SelectionForm>().Any())
+            {
+                Application.OpenForms.OfType<SelectionForm>().First().Close();
+            }
+
+            SelectionForm lockOutOptions = new SelectionForm(this, "lockout");
+            lockOutOptions.Show();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the removeBaliffBtn button,
+        /// relieving the current bailiff of his duties
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void removeBaliffBtn_Click(object sender, EventArgs e)
+        {
+            // if the fief has an existing bailiff
+            if (Globals_Client.fiefToView.bailiff != null)
+            {
+                // relieve him of his duties
+                Globals_Client.fiefToView.bailiff = null;
+
+                // refresh fief display
+                this.refreshFiefContainer(Globals_Client.fiefToView);
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the adjustSpendBtn button
+        /// which commits the expenditures and tax rate for the coming year
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void adjustSpendBtn_Click(object sender, EventArgs e)
+        {
+            // keep track of whether any spends ahve changed
+            bool spendChanged = false;
+
+            try
+            {
+                // get new amounts
+                Double newTax = Convert.ToDouble(this.adjustTaxTextBox.Text);
+                UInt32 newOff = Convert.ToUInt32(this.adjOffSpendTextBox.Text);
+                UInt32 newGarr = Convert.ToUInt32(this.adjGarrSpendTextBox.Text);
+                UInt32 newInfra = Convert.ToUInt32(this.adjInfrSpendTextBox.Text);
+                UInt32 newKeep = Convert.ToUInt32(this.adjustKeepSpendTextBox.Text);
+
+                // process adjustments
+                Globals_Client.fiefToView.adjustExpenditures(newTax, newOff, newGarr, newInfra, newKeep);
+            }
+            catch (System.FormatException fe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            catch (System.OverflowException ofe)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
+                }
+            }
+            finally
+            {
+                // refresh screen if expenditure changed
+                if (spendChanged)
+                {
+                    // refresh display
+                    this.refreshCurrentScreen();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of myFiefsToolStripMenuItem
+        /// which refreshes and displays the owned fiefs screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void myFiefsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Globals_Client.fiefToView = null;
+            this.refreshMyFiefs();
+            Globals_Client.containerToView = this.fiefsOwnedContainer;
+            Globals_Client.containerToView.BringToFront();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the fiefManagementToolStripMenuItem
+        /// which displays main Fief information screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefManagementToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.refreshFiefContainer(Globals_Client.myPlayerCharacter.location);
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the fiefsChallengeBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefsChallengeBtn_Click(object sender, EventArgs e)
+        {
+            if (this.fiefsListView.SelectedItems.Count > 0)
+            {
+                // get province
+                Province targetProv = null;
+                if (Globals_Game.provinceMasterList.ContainsKey(this.fiefsListView.SelectedItems[0].SubItems[5].Text))
+                {
+                    targetProv = Globals_Game.provinceMasterList[this.fiefsListView.SelectedItems[0].SubItems[5].Text];
+                }
+
+                if (targetProv != null)
+                {
+                    targetProv.lodgeOwnershipChallenge();
+                }
+
+                this.fiefsListView.Focus();
+            }
+        }
+
+        /// <summary>
+        /// Responds to the Click event of the fiefsViewBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefsViewBtn_Click(object sender, EventArgs e)
+        {
+            if (this.fiefsListView.SelectedItems.Count > 0)
+            {
+                // get fief to view
+                Globals_Client.fiefToView = Globals_Game.fiefMasterList[this.fiefsListView.SelectedItems[0].SubItems[1].Text];
+
+                // go to fief display screen
+                this.refreshFiefContainer(Globals_Client.fiefToView);
+                Globals_Client.containerToView = this.fiefContainer;
+                Globals_Client.containerToView.BringToFront();
+            }
+        }
+
+        // ------------------- CHARACTER DISPLAY
+
+        /// <summary>
+        /// Responds to the click event of the personalCharacteristicsAndAffairsToolStripMenuItem
+        /// which displays main Character information screen
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void personalCharacteristicsAndAffairsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Globals_Client.charToView = Globals_Client.myPlayerCharacter;
+            this.refreshCharacterContainer(Globals_Client.charToView);
+        }
+
+        /// <summary>
+        /// Responds to the CheckedChanged event of the characterTitlesCheckBox,
+        /// displaying the player's titles/ranks
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void characterTitlesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            this.refreshCharacterContainer(Globals_Client.charToView);
+        }
+        
+        // ------------------- CHILDBIRTH
+
+        /// <summary>
+        /// Responds to the click event of the familyNpcSpousePregBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void familyNpcSpousePregBtn_Click(object sender, EventArgs e)
+        {
+            if (this.houseCharListView.SelectedItems.Count > 0)
+            {
+                // get spouse
+                Character mySpouse = Globals_Client.charToView.getSpouse();
+
+                // perform standard checks
+                if (this.checksBeforePregnancyAttempt(Globals_Client.charToView))
+                {
+                    // ensure are both in/out of keep
+                    mySpouse.inKeep = Globals_Client.charToView.inKeep;
+
+                    // attempt pregnancy
+                    bool pregnant = Globals_Client.charToView.getSpousePregnant(mySpouse);
+                }
+            }
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No character selected!");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the familyGetSpousePregBt button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void familyGetSpousePregBtn_Click(object sender, EventArgs e)
+        {
+            // get spouse
+            Character mySpouse = Globals_Client.myPlayerCharacter.getSpouse();
+
+            // perform standard checks
+            if (this.checksBeforePregnancyAttempt(Globals_Client.myPlayerCharacter))
+            {
+                // ensure are both in/out of keep
+                mySpouse.inKeep = Globals_Client.myPlayerCharacter.inKeep;
+
+                // attempt pregnancy
+                bool pregnant = Globals_Client.myPlayerCharacter.getSpousePregnant(mySpouse);
+            }
+
+            // refresh screen
+            this.refreshCurrentScreen();
+
+        }
+
         // ------------------- JOURNAL
 
         /// <summary>
@@ -1754,6 +4575,7 @@ namespace hist_mmorpg
         {
             // get ToolStripMenuItem
             ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
+
             // get entry scope from tag
             string entryScope = menuItem.Tag.ToString();
 
@@ -2439,27 +5261,8 @@ namespace hist_mmorpg
                     // get new combat odds value
                     byte newOddsValue = Convert.ToByte(this.armyOddsTextBox.Text);
 
-                    // check values and alter if appropriate
-                    if (newAggroLevel < 0)
-                    {
-                        newAggroLevel = 0;
-                    }
-                    else if (newAggroLevel > 2)
-                    {
-                        newAggroLevel = 2;
-                    }
-                    if (newOddsValue < 0)
-                    {
-                        newOddsValue = 0;
-                    }
-                    else if (newOddsValue > 9)
-                    {
-                        newOddsValue = 9;
-                    }
-
-                    // update army's values
-                    Globals_Client.armyToView.aggression = newAggroLevel;
-                    Globals_Client.armyToView.combatOdds = newOddsValue;
+                    // check and adjust values
+                    Globals_Client.armyToView.adjustAutoLevels(newAggroLevel, newOddsValue);
                 }
                 catch (System.FormatException fe)
                 {
@@ -2541,67 +5344,8 @@ namespace hist_mmorpg
             // army leader
             Character thisLeader = Globals_Client.armyToView.getLeader();
 
-            // check for previously opened SelectionForm and close if necessary
-            if (Application.OpenForms.OfType<SelectionForm>().Any())
-            {
-                Application.OpenForms.OfType<SelectionForm>().First().Close();
-            }
-
-            // if no army selected
-            if (this.armyListView.SelectedItems.Count < 1)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("No army selected!");
-                }
-            }
-
-            // if army selected
-            else
-            {
-                // check if has minimum days
-                if (Globals_Client.armyToView.days < 1)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("You don't have enough days for this operation.");
-                    }
-                }
-
-                // has minimum days
-                else
-                {
-                    // see how long reconnaissance takes
-                    int reconDays = Globals_Game.myRand.Next(1, 4);
-
-                    // check if runs out of time
-                    if (Globals_Client.armyToView.days < reconDays)
-                    {
-                        // set days to 0
-                        thisLeader.adjustDays(Globals_Client.armyToView.days);
-                        this.refreshArmyContainer(Globals_Client.armyToView);
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
-                        }
-                    }
-
-                    // doesn't run out of time
-                    else
-                    {
-                        // adjust days
-                        thisLeader.adjustDays(reconDays);
-                        this.refreshArmyContainer(Globals_Client.armyToView);
-
-                        // display armies list
-                        SelectionForm examineArmies = new SelectionForm(this, "armies", obs: thisLeader);
-                        examineArmies.Show();
-                    }
-
-                }
-
-            }
-
+            // examine armies
+            this.examineArmiesInFief(thisLeader);
         }
 
         /// <summary>

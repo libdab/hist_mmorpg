@@ -1724,10 +1724,13 @@ namespace hist_mmorpg
         /// <summary>
         /// Enables character to exit keep
         /// </summary>
-        public virtual void exitKeep()
+        /// <returns>bool indicating hire-able status</returns>
+        public virtual bool exitKeep()
         {
             // exit keep
             this.inKeep = false;
+
+            return !(this.inKeep);
         }
 
         /// <summary>
@@ -3142,10 +3145,10 @@ namespace hist_mmorpg
         /// <summary>
         /// Extends base method allowing PlayerCharacter to exit keep. Then exits entourage.
         /// </summary>
-        public override void exitKeep()
+        public override bool exitKeep()
         {
             // invoke base method for PlayerCharacter
-            base.exitKeep();
+            bool success = base.exitKeep();
 
             // iterate through employees
             for (int i = 0; i < this.myNPCs.Count; i++)
@@ -3156,6 +3159,8 @@ namespace hist_mmorpg
                     this.myNPCs[i].inKeep = false;
                 }
             }
+
+            return success;
         }
 
         /// <summary>

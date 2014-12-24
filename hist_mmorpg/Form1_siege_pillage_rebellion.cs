@@ -21,62 +21,6 @@ namespace hist_mmorpg
     partial class Form1
     {
         /// <summary>
-        /// Responds to the Click event of the armyQuellRebellionBtn button
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyQuellRebellionBtn_Click(object sender, EventArgs e)
-        {
-            if (this.armyListView.SelectedItems.Count > 0)
-            {
-                bool proceed = true;
-
-                // get army
-                Army thisArmy = null;
-                if (Globals_Game.armyMasterList.ContainsKey(this.armyListView.SelectedItems[0].SubItems[0].Text))
-                {
-                    thisArmy = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
-                }
-
-                if (thisArmy != null)
-                {
-                    // get fief
-                    Fief thisFief = null;
-                    if (Globals_Game.fiefMasterList.ContainsKey(thisArmy.location))
-                    {
-                        thisFief = Globals_Game.fiefMasterList[thisArmy.location];
-                    }
-
-                    if (thisFief != null)
-                    {
-                        // do various checks
-                        proceed = this.checksBeforePillageSiege(thisArmy, thisFief, circumstance: "quellRebellion");
-
-                        if (proceed)
-                        {
-                            bool quellSuccess = thisFief.quellRebellion(thisArmy);
-
-                            // quell successful, pillage fief
-                            if (quellSuccess)
-                            {
-                                // pillage the fief
-                                this.processPillage(thisFief, thisArmy, "quellRebellion");
-                            }
-
-                            // if not successful, retreat army
-                            else
-                            {
-                                // retreat army 1 hex
-                                this.processRetreat(thisArmy, 1);
-                            }
-                        }
-                    }
-                }
-
-            }
-        }
-
-        /// <summary>
         /// Creates UI display for list of sieges owned by player
         /// </summary>
         public void setUpSiegeList()
@@ -607,11 +551,6 @@ namespace hist_mmorpg
 
             // get army nationality
             string thisNationality = f.owner.nationality.natID;
-            /* string thisNationality = f.owner.nationality.natID.ToUpper();
-            if (!thisNationality.Equals("E"))
-            {
-                thisNationality = "O";
-            } */
 
             // get size of fief garrison
             garrisonSize = Convert.ToUInt32(f.getGarrisonSize());
@@ -956,44 +895,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Responds to the click event of the armyPillageBtn button
-        /// instigating the pillage of a fief
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armyPillageBtn_Click(object sender, EventArgs e)
-        {
-            // check army selected
-            if (this.armyListView.SelectedItems.Count > 0)
-            {
-                bool proceed = true;
-
-                // get army
-                Army thisArmy = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
-
-                // get fief
-                Fief thisFief = thisArmy.getLocation();
-
-                // do various checks
-                proceed = this.checksBeforePillageSiege(thisArmy, thisFief);
-
-                // process pillage
-                if (proceed)
-                {
-                    this.pillageFief(thisArmy, thisFief);
-                }
-            }
-            else
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("No army selected!");
-                }
-            }
-
-        }
-
-        /// <summary>
         /// Ends the specified siege
         /// </summary>
         /// <param name="s">Siege to be ended</param>
@@ -1011,7 +912,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates the precentage chance of successfully storming a keep, based on keep level
+        /// Calculates the percentage chance of successfully storming a keep, based on keep level
         /// </summary>
         /// <returns>double containing precentage chance of success</returns>
         /// <param name="keepLvl">The keep level</param>
@@ -1787,198 +1688,6 @@ namespace hist_mmorpg
 
             // display siege in siege screen
             this.refreshSiegeContainer(mySiege);
-        }
-
-        /// <summary>
-        /// Responds to the ItemSelectionChanged event of the siegeListView object,
-        /// allowing details of the selected siege to be displayed
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void siegeListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
-        {
-            // get siege to view
-            if (this.siegeListView.SelectedItems.Count > 0)
-            {
-                Globals_Client.siegeToView = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
-            }
-
-            if (Globals_Client.siegeToView != null)
-            {
-                Army besiegingArmy = Globals_Client.siegeToView.getBesiegingArmy();
-                PlayerCharacter besiegingPlayer = Globals_Client.siegeToView.getBesiegingPlayer();
-                bool playerIsBesieger = (Globals_Client.myPlayerCharacter == besiegingPlayer);
-
-                // display data for selected siege
-                this.siegeTextBox.Text = this.displaySiegeData(Globals_Client.siegeToView);
-
-                // if player is besieger
-                if (playerIsBesieger)
-                {
-                    // enable various controls
-                    this.siegeReduceBtn.Enabled = true;
-                    this.siegeEndBtn.Enabled = true;
-
-                    // if besieging army has a leader
-                    if (!String.IsNullOrWhiteSpace(besiegingArmy.leader))
-                    {
-                        // enable proactive controls (storm, negotiate)
-                        this.siegeNegotiateBtn.Enabled = true;
-                        this.siegeStormBtn.Enabled = true;
-                    }
-
-                    // if besieging army has no leader
-                    else
-                    {
-                        // disable proactive controls (storm, negotiate)
-                        this.siegeNegotiateBtn.Enabled = false;
-                        this.siegeStormBtn.Enabled = false;
-                    }
-                }
-
-                // if player is defender
-                else
-                {
-                    // disable various controls
-                    this.siegeNegotiateBtn.Enabled = false;
-                    this.siegeStormBtn.Enabled = false;
-                    this.siegeReduceBtn.Enabled = false;
-                    this.siegeEndBtn.Enabled = false;
-                }
-
-            }
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of the armySiegeBtn button
-        /// instigating the siege of a fief
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void armySiegeBtn_Click(object sender, EventArgs e)
-        {
-            // check army selected
-            if (this.armyListView.SelectedItems.Count > 0)
-            {
-                bool proceed = true;
-
-                // get army
-                Army thisArmy = Globals_Game.armyMasterList[this.armyListView.SelectedItems[0].SubItems[0].Text];
-
-                // get fief
-                Fief thisFief = thisArmy.getLocation();
-
-                // do various checks
-                proceed = this.checksBeforePillageSiege(thisArmy, thisFief, "siege");
-
-                // process siege
-                if (proceed)
-                {
-                    this.siegeStart(thisArmy, thisFief);
-                }
-            }
-            else
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("No army selected!");
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Responds to the click event of the viewMySiegesToolStripMenuItem
-        /// displaying the siege management screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void viewMySiegesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Globals_Client.siegeToView = null;
-            this.refreshSiegeContainer();
-        }
-
-        /// <summary>
-        /// Responds to any of the click events of the siegeRound buttons
-        /// processing a single siege round of specified type
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void siegeRoundBtn_Click(object sender, EventArgs e)
-        {
-            if (this.siegeListView.SelectedItems.Count > 0)
-            {
-                bool proceed = true;
-
-                // get tag from button
-                Button button = sender as Button;
-                string roundType = button.Tag.ToString();
-
-                // get siege
-                Siege thisSiege = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
-
-                // perform conditional checks here
-                proceed = this.checksBeforeSiegeOperation(thisSiege);
-
-                if (proceed)
-                {
-                    // process siege round of specified type
-                    this.siegeReductionRound(thisSiege, roundType);
-                }
-            }
-            else
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("No siege selected!");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of the siegeEndBtn button
-        /// dismantling the selected siege
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void siegeEndBtn_Click(object sender, EventArgs e)
-        {
-            if (this.siegeListView.SelectedItems.Count > 0)
-            {
-                bool proceed = true;
-
-                // get siege
-                Siege thisSiege = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
-
-                // perform conditional checks here
-                proceed = this.checksBeforeSiegeOperation(thisSiege, "end");
-
-                if (proceed)
-                {
-                    // construct event description to be passed into siegeEnd
-                    string siegeDescription = "On this day of Our Lord the forces of ";
-                    siegeDescription += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
-                    siegeDescription += " have chosen to abandon the siege of " + thisSiege.getFief().name;
-                    siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
-                    siegeDescription += " retains ownership of the fief.";
-
-                    // process siege reduction round
-                    this.siegeEnd(thisSiege, siegeDescription);
-
-                    //refresh screen
-                    this.refreshCurrentScreen();
-                }
-            }
-            else
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("No siege selected!");
-                }
-            }
-
         }
     }
 }

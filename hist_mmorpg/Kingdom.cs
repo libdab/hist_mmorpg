@@ -46,6 +46,65 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Processes functions involved in lodging a new ownership (and kingship) challenge
+        /// </summary>
+        public void lodgeOwnershipChallenge()
+        {
+            bool proceed = true;
+
+            // ensure aren't current owner
+            if (Globals_Client.myPlayerCharacter == this.owner)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("You are already the King of " + this.name + "!");
+                }
+            }
+
+            else
+            {
+                // create and send new OwnershipChallenge
+                OwnershipChallenge newChallenge = new OwnershipChallenge(Globals_Game.getNextOwnChallengeID(), Globals_Client.myPlayerCharacter.charID, "kingdom", this.id);
+                proceed = Globals_Game.addOwnershipChallenge(newChallenge);
+            }
+
+            if (proceed)
+            {
+                // create and send journal entry
+                // get interested parties
+                PlayerCharacter currentOwner = this.owner;
+
+                // ID
+                uint entryID = Globals_Game.getNextJournalEntryID();
+
+                // date
+                uint year = Globals_Game.clock.currentYear;
+                byte season = Globals_Game.clock.currentSeason;
+
+                // location
+                string entryLoc = this.id;
+
+                // journal entry personae
+                string allEntry = "all|all";
+                string currentOwnerEntry = currentOwner.charID + "|king";
+                string challengerEntry = Globals_Client.myPlayerCharacter.charID + "|pretender";
+                string[] entryPersonae = new string[] { currentOwnerEntry, challengerEntry, allEntry };
+
+                // entry type
+                string entryType = "depose_new";
+
+                // journal entry description
+                string description = "On this day of Our Lord a challenge for the crown of " + this.name + " (" + this.id + ")";
+                description += " has COMMENCED.  " + Globals_Client.myPlayerCharacter.firstName + " " + Globals_Client.myPlayerCharacter.familyName + " seeks to press his claim ";
+                description += "and depose the current king, His Highness " + currentOwner.firstName + " " + currentOwner.familyName + ", King of " + this.name + ".";
+
+                // create and send a proposal (journal entry)
+                JournalEntry myEntry = new JournalEntry(entryID, year, season, entryPersonae, entryType, descr: description, loc: entryLoc);
+                Globals_Game.addPastEvent(myEntry);
+            }
+        }
+
+        /// <summary>
         /// Transfers ownership of the kingdom (and the kingship) to the specified PlayerCharacter
         /// </summary>
         /// <param name="newOwner">The new owner</param>

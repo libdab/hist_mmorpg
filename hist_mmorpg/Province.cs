@@ -53,6 +53,65 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Processes functions involved in lodging a new ownership challenge
+        /// </summary>
+        public void lodgeOwnershipChallenge()
+        {
+            bool proceed = true;
+
+            // ensure aren't current owner
+            if (Globals_Client.myPlayerCharacter == this.owner)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("You already own " + this.name + "!");
+                }
+            }
+
+            else
+            {
+                // create and send new OwnershipChallenge
+                OwnershipChallenge newChallenge = new OwnershipChallenge(Globals_Game.getNextOwnChallengeID(), Globals_Client.myPlayerCharacter.charID, "province", this.id);
+                proceed = Globals_Game.addOwnershipChallenge(newChallenge);
+            }
+
+            if (proceed)
+            {
+                // create and send journal entry
+                // get interested parties
+                PlayerCharacter currentOwner = this.owner;
+
+                // ID
+                uint entryID = Globals_Game.getNextJournalEntryID();
+
+                // date
+                uint year = Globals_Game.clock.currentYear;
+                byte season = Globals_Game.clock.currentSeason;
+
+                // location
+                string entryLoc = this.id;
+
+                // journal entry personae
+                string allEntry = "all|all";
+                string currentOwnerEntry = currentOwner.charID + "|owner";
+                string challengerEntry = Globals_Client.myPlayerCharacter.charID + "|challenger";
+                string[] entryPersonae = new string[] { currentOwnerEntry, challengerEntry, allEntry };
+
+                // entry type
+                string entryType = "ownershipChallenge_new";
+
+                // journal entry description
+                string description = "On this day of Our Lord a challenge for the ownership of " + this.name + " (" + this.id + ")";
+                description += " has COMMENCED.  " + Globals_Client.myPlayerCharacter.firstName + " " + Globals_Client.myPlayerCharacter.familyName + " seeks to rest ownership from ";
+                description += "the current owner, " + currentOwner.firstName + " " + currentOwner.familyName + ".";
+
+                // create and send a proposal (journal entry)
+                JournalEntry myEntry = new JournalEntry(entryID, year, season, entryPersonae, entryType, descr: description, loc: entryLoc);
+                Globals_Game.addPastEvent(myEntry);
+            }
+        }
+
+        /// <summary>
         /// Adjusts province tax rate
         /// </summary>
         /// <param name="tx">double containing new tax rate</param>

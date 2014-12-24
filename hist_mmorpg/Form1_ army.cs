@@ -271,5 +271,82 @@ namespace hist_mmorpg
             // set army to null
             a = null;
         }
+
+        /// <summary>
+        /// Retrieves details of all armies in observer's current fief
+        /// </summary>
+        /// <param name="observer">The observer</param>
+        private void examineArmiesInFief(Character observer)
+        {
+            bool proceed = true;
+            int reconDays = 0;
+
+            // check if has minimum days
+            if (observer.days < 1)
+            {
+                proceed = false;
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(observer.firstName + observer.familyName + " doesn't have enough days for this operation.");
+                }
+            }
+
+            // has minimum days
+            else
+            {
+                // see how long reconnaissance takes
+                reconDays = Globals_Game.myRand.Next(1, 4);
+
+                // check if runs out of time
+                if (observer.days < reconDays)
+                {
+                    proceed = false;
+
+                    // set days to 0
+                    observer.adjustDays(observer.days);
+
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
+                    }
+                }
+
+                else
+                {
+                    // adjust days for recon
+                    observer.adjustDays(reconDays);
+                }
+
+            }
+
+            // refresh display
+            if (Globals_Client.containerToView == this.armyContainer)
+            {
+                this.refreshArmyContainer(Globals_Client.armyToView);
+            }
+            else if (Globals_Client.containerToView == this.houseContainer)
+            {
+                this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
+            }
+            else if (Globals_Client.containerToView == this.travelContainer)
+            {
+                this.refreshTravelContainer();
+            }
+
+            if (proceed)
+            {
+                // check for previously opened SelectionForm and close if necessary
+                if (Application.OpenForms.OfType<SelectionForm>().Any())
+                {
+                    Application.OpenForms.OfType<SelectionForm>().First().Close();
+                }
+
+                // display armies list
+                SelectionForm examineArmies = new SelectionForm(this, "armies", obs: observer);
+                examineArmies.Show();
+            }
+
+
+        }
     }
 }

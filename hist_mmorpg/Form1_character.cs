@@ -462,28 +462,5 @@ namespace hist_mmorpg
             Globals_Client.containerToView = this.characterContainer;
             Globals_Client.containerToView.BringToFront();
         }
-
-        /// <summary>
-        /// Responds to the click event of the personalCharacteristicsAndAffairsToolStripMenuItem
-        /// which displays main Character information screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void personalCharacteristicsAndAffairsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Globals_Client.charToView = Globals_Client.myPlayerCharacter;
-            this.refreshCharacterContainer(Globals_Client.charToView);
-        }
-
-        /// <summary>
-        /// Responds to the CheckedChanged event of the characterTitlesCheckBox,
-        /// displaying the player's titles/ranks
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void characterTitlesCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            this.refreshCharacterContainer(Globals_Client.charToView);
-        }
     }
 }

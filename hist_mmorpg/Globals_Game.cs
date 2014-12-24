@@ -420,17 +420,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Gets the next available newOwnChallengeID, then increments it
-        /// </summary>
-        /// <returns>string containing newOwnChallengeID</returns>
-        public static string getNextOwnChallengeID()
-        {
-            string challengeID = "Challenge_" + Globals_Game.newOwnChallengeID;
-            Globals_Game.newOwnChallengeID++;
-            return challengeID;
-        }
-
-        /// <summary>
         /// Generates a random double, specifying maximum and (optional) minimum values
         /// </summary>
         /// <returns>random double</returns>
@@ -486,6 +475,38 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Gets the next available newOwnChallengeID, then increments it
+        /// </summary>
+        /// <returns>string containing newOwnChallengeID</returns>
+        public static string getNextOwnChallengeID()
+        {
+            string challengeID = "Challenge_" + Globals_Game.newOwnChallengeID;
+            Globals_Game.newOwnChallengeID++;
+            return challengeID;
+        }
+
+        /// <summary>
+        /// Checks for the existence of a challenge for the same Place
+        /// </summary>
+        /// <returns>bool indicating the existence of a challenge</returns>
+        /// <param name="placeID">ID of Place for new challenge</param>
+        public static bool checkForExistingChallenge(string newPlaceID)
+        {
+            bool isExistingChallenge = false;
+
+            foreach (KeyValuePair<string, OwnershipChallenge> challengeEntry in Globals_Game.ownershipChallenges)
+            {
+                if (challengeEntry.Value.placeID.Equals(newPlaceID))
+                {
+                    isExistingChallenge = true;
+                    break;
+                }
+            }
+
+            return isExistingChallenge;
+        }
+
+        /// <summary>
         /// Adds a new OwnershipChallenge to the ownershipChallenges collection
         /// </summary>
         /// <returns>bool indicating success</returns>
@@ -494,7 +515,7 @@ namespace hist_mmorpg
         {
             bool success = true;
 
-            if (Globals_Game.ownershipChallenges.ContainsKey(challenge.id))
+            if (Globals_Game.checkForExistingChallenge(challenge.placeID))
             {
                 success = false;
                 if (Globals_Client.showMessages)

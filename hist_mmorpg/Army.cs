@@ -141,6 +141,36 @@ namespace hist_mmorpg
                 }
             }
         }
+
+        /// <summary>
+        /// Updates the army's aggression and combatOdds values
+        /// </summary>
+        /// <param name="newAggroLevel">The new aggression value</param>
+        /// <param name="newOddsValue">The new combatOdds value</param>
+        public void adjustAutoLevels(byte newAggroLevel, byte newOddsValue)
+        {
+            // check values and alter if appropriate
+            if (newAggroLevel < 0)
+            {
+                newAggroLevel = 0;
+            }
+            else if (newAggroLevel > 2)
+            {
+                newAggroLevel = 2;
+            }
+            if (newOddsValue < 0)
+            {
+                newOddsValue = 0;
+            }
+            else if (newOddsValue > 9)
+            {
+                newOddsValue = 9;
+            }
+
+            // update army's values
+            Globals_Client.armyToView.aggression = newAggroLevel;
+            Globals_Client.armyToView.combatOdds = newOddsValue;
+        }
 		
         /// <summary>
         /// Assigns a new leader to the army

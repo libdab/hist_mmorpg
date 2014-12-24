@@ -21,56 +21,6 @@ namespace hist_mmorpg
     partial class Form1
     {
         /// <summary>
-        /// Responds to the click event of the adminEditCancelBtn button
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void adminEditCancelBtn_Click(object sender, EventArgs e)
-        {
-            // get button
-            Button thisButton = (sender as Button);
-            string objectType = thisButton.Tag.ToString();
-
-            // save specified object
-            switch (objectType)
-            {
-                case "PC":
-                    this.refreshCharEdit();
-                    break;
-
-                case "NPC":
-                    this.refreshCharEdit();
-                    break;
-
-                case "Fief":
-                    this.refreshPlaceEdit();
-                    break;
-
-                case "Province":
-                    this.refreshPlaceEdit();
-                    break;
-
-                case "Kingdom":
-                    this.refreshPlaceEdit();
-                    break;
-
-                case "Skill":
-                    this.refreshSkillEdit();
-                    break;
-
-                case "Army":
-                    this.refreshArmyEdit();
-                    break;
-
-                default:
-                    break;
-            }
-
-            // clear ID box
-            this.adminEditTextBox.Clear();
-        }
-
-        /// <summary>
         /// Creates UI display for list of skill effects in the edit skill screen
         /// </summary>
         public void setUpEditSkillEffectList()
@@ -78,226 +28,6 @@ namespace hist_mmorpg
             // add necessary columns
             this.adminEditSkillEffsListView.Columns.Add("Effect Name", -2, HorizontalAlignment.Left);
             this.adminEditSkillEffsListView.Columns.Add("Level", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
-        /// Responds to the click event of any of the 'edit object' MenuItems
-        /// displaying the appropriate screen
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void adminEditObjectMenuItem_Click(object sender, EventArgs e)
-        {
-            // get MenuItem
-            ToolStripMenuItem thisItem = (sender as ToolStripMenuItem);
-            string objectType = thisItem.Tag.ToString();
-
-            // display edit object screen
-            Globals_Client.containerToView = this.adminEditContainer;
-            Globals_Client.containerToView.BringToFront();
-
-            // set get/save button tag to identify object type (for retrieving and saving object)
-            this.adminEditGetBtn.Tag = objectType;
-            this.adminEditSaveBtn.Tag = objectType;
-            this.adminEditCancelBtn.Tag = objectType;
-
-            // clear previous object ID from TextBox
-            this.adminEditTextBox.Text = "";
-
-            // change admin edit control properties to match object type
-            this.adminEditGetBtn.Text = "Get " + objectType;
-            this.adminEditSaveBtn.Text = "Save " + objectType;
-            this.adminEditLabel.Text = objectType + " ID";
-
-            // display appropriate panel
-            switch (objectType)
-            {
-                case "PC":
-                    // clear previous data
-                    this.refreshCharEdit();
-                    this.adminEditCharIDTextBox.ReadOnly = true;
-                    // display edit character panel
-                    this.adminEditCharContainer.BringToFront();
-                    // display edit pc panel
-                    this.adminEditCharPcPanel.BringToFront();
-                    break;
-                case "NPC":
-                    // clear previous data
-                    this.refreshCharEdit();
-                    this.adminEditCharIDTextBox.ReadOnly = true;
-                    // display edit character panel
-                    this.adminEditCharContainer.BringToFront();
-                    // display edit npc panel
-                    this.adminEditCharNpcPanel.BringToFront();
-                    break;
-                case "Fief":
-                    // clear previous data
-                    this.refreshPlaceEdit();
-                    this.adminEditPlaceIdTextBox.ReadOnly = true;
-                    // display edit place panel
-                    this.adminEditPlaceContainer.BringToFront();
-                    // display edit fief panel
-                    this.adminEditFiefPanel.BringToFront();
-                    break;
-                case "Province":
-                    // clear previous data
-                    this.refreshPlaceEdit();
-                    this.adminEditPlaceIdTextBox.ReadOnly = true;
-                    // display edit place panel
-                    this.adminEditPlaceContainer.BringToFront();
-                    // display edit province panel
-                    this.adminEditProvPanel.BringToFront();
-                    break;
-                case "Kingdom":
-                    // clear previous data
-                    this.refreshPlaceEdit();
-                    this.adminEditPlaceIdTextBox.ReadOnly = true;
-                    // display edit place panel
-                    this.adminEditPlaceContainer.BringToFront();
-                    // display edit kingdom panel
-                    this.adminEditKingPanel.BringToFront();
-                    break;
-                case "Skill":
-                    // clear previous data
-                    this.refreshSkillEdit();
-                    this.adminEditSkillIdTextBox.ReadOnly = true;
-                    // display edit skill panel
-                    this.adminEditSkillPanel.BringToFront();
-                    break;
-                case "Army":
-                    // clear previous data
-                    this.refreshArmyEdit();
-                    this.adminEditArmyIdTextBox.ReadOnly = true;
-                    // display edit army panel
-                    this.adminEditArmyPanel.BringToFront();
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of any of the adminEditGetBtn button
-        /// retrieving the specified object
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void adminEditGetBtn_Click(object sender, EventArgs e)
-        {
-            // get button
-            Button thisButton = (sender as Button);
-            string objectType = thisButton.Tag.ToString();
-
-            // get specified object
-            switch (objectType)
-            {
-                case "PC":
-                    // get PC
-                    PlayerCharacter thisPC = null;
-                    if (Globals_Game.pcMasterList.ContainsKey(this.adminEditTextBox.Text))
-                    {
-                        thisPC = Globals_Game.pcMasterList[this.adminEditTextBox.Text];
-                    }
-
-                    // display PC details
-                    if (thisPC != null)
-                    {
-                        this.refreshCharEdit(thisPC);
-                    }
-                    break;
-                case "NPC":
-                    // get NPC
-                    NonPlayerCharacter thisNPC = null;
-                    if (Globals_Game.npcMasterList.ContainsKey(this.adminEditTextBox.Text))
-                    {
-                        thisNPC = Globals_Game.npcMasterList[this.adminEditTextBox.Text];
-                    }
-
-                    // display NPC details
-                    if (thisNPC != null)
-                    {
-                        this.refreshCharEdit(thisNPC);
-                    }
-                    break;
-
-                case "Fief":
-                    // get fief
-                    Fief thisFief = null;
-                    if (Globals_Game.fiefMasterList.ContainsKey(this.adminEditTextBox.Text))
-                    {
-                        thisFief = Globals_Game.fiefMasterList[this.adminEditTextBox.Text];
-                    }
-
-                    // display fief details
-                    if (thisFief != null)
-                    {
-                        this.refreshPlaceEdit(thisFief);
-                    }
-                    break;
-
-                case "Province":
-                    // get province
-                    Province thisProv = null;
-                    if (Globals_Game.provinceMasterList.ContainsKey(this.adminEditTextBox.Text))
-                    {
-                        thisProv = Globals_Game.provinceMasterList[this.adminEditTextBox.Text];
-                    }
-
-                    // display province details
-                    if (thisProv != null)
-                    {
-                        this.refreshPlaceEdit(thisProv);
-                    }
-                    break;
-
-                case "Kingdom":
-                    // get kingdom
-                    Kingdom thiskingdom = null;
-                    if (Globals_Game.kingdomMasterList.ContainsKey(this.adminEditTextBox.Text))
-                    {
-                        thiskingdom = Globals_Game.kingdomMasterList[this.adminEditTextBox.Text];
-                    }
-
-                    // display kingdom details
-                    if (thiskingdom != null)
-                    {
-                        this.refreshPlaceEdit(thiskingdom);
-                    }
-                    break;
-
-                case "Skill":
-                    // get skill
-                    Skill thisSkill = null;
-                    if (Globals_Game.skillMasterList.ContainsKey(this.adminEditTextBox.Text))
-                    {
-                        thisSkill = Globals_Game.skillMasterList[this.adminEditTextBox.Text];
-                    }
-
-                    // display skill details
-                    if (thisSkill != null)
-                    {
-                        this.refreshSkillEdit(thisSkill);
-                    }
-                    break;
-
-                case "Army":
-                    // get army
-                    Army thisArmy = null;
-                    if (Globals_Game.armyMasterList.ContainsKey(this.adminEditTextBox.Text))
-                    {
-                        thisArmy = Globals_Game.armyMasterList[this.adminEditTextBox.Text];
-                    }
-
-                    // display army details
-                    if (thisArmy != null)
-                    {
-                        this.refreshArmyEdit(thisArmy);
-                    }
-                    break;
-
-                default:
-                    break;
-            }
         }
 
         /// <summary>
@@ -315,6 +45,9 @@ namespace hist_mmorpg
             // display character data, if provided
             if (ch != null)
             {
+                // enable controls
+                this.enableControls(this.adminEditCharContainer.Panel1);
+
                 // id
                 this.adminEditCharIDTextBox.Text = ch.charID;
                 // firstname
@@ -375,6 +108,9 @@ namespace hist_mmorpg
                 // PC data
                 if (ch is PlayerCharacter)
                 {
+                    // enable controls
+                    this.enableControls(this.adminEditCharPcPanel);
+
                     // playerID
                     if (!String.IsNullOrWhiteSpace((ch as PlayerCharacter).playerID))
                     {
@@ -400,6 +136,9 @@ namespace hist_mmorpg
                 // NPC data
                 else
                 {
+                    // enable controls
+                    this.enableControls(this.adminEditCharNpcPanel);
+
                     // wage
                     this.adminEditCharWageTextBox.Text = (ch as NonPlayerCharacter).salary.ToString();
                 }
@@ -422,6 +161,9 @@ namespace hist_mmorpg
             // display place data, if provided
             if (p != null)
             {
+                // enable controls
+                this.enableControls(this.adminEditPlaceContainer.Panel1);
+
                 // id
                 this.adminEditPlaceIdTextBox.Text = p.id;
                 // name
@@ -436,6 +178,9 @@ namespace hist_mmorpg
                 // Fief data
                 if (p is Fief)
                 {
+                    // enable controls
+                    this.enableControls(this.adminEditFiefPanel);
+
                     // province ID
                     this.adminEditFiefProvTextBox.Text = (p as Fief).province.id;
                     // ancestral owner
@@ -498,6 +243,9 @@ namespace hist_mmorpg
                 // province data
                 else if (p is Province)
                 {
+                    // enable controls
+                    this.enableControls(this.adminEditProvPanel);
+
                     // overlord tax rate
                     this.adminEditProvTaxTextBox.Text = (p as Province).taxRate.ToString();
                     // kingdom
@@ -507,6 +255,9 @@ namespace hist_mmorpg
                 // kingdom data
                 else
                 {
+                    // enable controls
+                    this.enableControls(this.adminEditKingPanel);
+
                     // nationality
                     this.adminEditKingNatTextBox.Text = (p as Kingdom).nationality.natID;
                 }
@@ -526,6 +277,9 @@ namespace hist_mmorpg
             // display skill data, if provided
             if (s != null)
             {
+                // enable controls
+                this.enableControls(this.adminEditSkillPanel);
+
                 // id
                 this.adminEditSkillIdTextBox.Text = s.skillID;
                 // name
@@ -580,6 +334,9 @@ namespace hist_mmorpg
             // display army data, if provided
             if (a != null)
             {
+                // enable controls
+                this.enableControls(this.adminEditArmyPanel);
+
                 // id
                 this.adminEditArmyIdTextBox.Text = a.armyID;
                 // owner
@@ -605,192 +362,6 @@ namespace hist_mmorpg
                 else
                 {
                     this.adminEditArmyMaintCheckBox.Checked = false;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Responds to the SelectedIndexChanged event of any of the adminEditSkillEffsListView
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void adminEditSkillEffsListView_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (this.adminEditSkillEffsListView.SelectedItems.Count > 0)
-            {
-                // display selected skill for editing
-                this.adminEditSkillEffTextBox.Text = this.adminEditSkillEffsListView.SelectedItems[0].SubItems[0].Text;
-                this.adminEditSkillEfflvlTextBox.Text = this.adminEditSkillEffsListView.SelectedItems[0].SubItems[1].Text;
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of any of the 'edit skill effects' buttons
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void adminEditSkillEffBtn_Click(object sender, EventArgs e)
-        {
-            string effName = null;
-            double effLvl = 0;
-            bool effectsChanged = false;
-
-            // get button and tag
-            Button thisButton = (sender as Button);
-            string operation = thisButton.Tag.ToString();
-
-            try
-            {
-                // get effects collection
-                Dictionary<string, double> effects = new Dictionary<string, double>();
-                for (int i = 0; i < this.adminEditSkillEffsListView.Items.Count; i++)
-                {
-                    effects.Add(this.adminEditSkillEffsListView.Items[i].SubItems[0].Text,
-                        Convert.ToDouble(this.adminEditSkillEffsListView.Items[i].SubItems[1].Text));
-                }
-
-                // get selected effect
-                effName = this.adminEditSkillEffTextBox.Text;
-                if (!String.IsNullOrWhiteSpace(effName))
-                {
-                    effLvl = Convert.ToDouble(this.adminEditSkillEfflvlTextBox.Text);
-                }
-
-                if (effLvl > 0)
-                {
-                    // perform operation
-                    switch (operation)
-                    {
-                        // change selected effect
-                        case "chaEffect":
-                            // check effect present in collection
-                            if (effects.ContainsKey(effName))
-                            {
-                                effects[effName] = effLvl;
-                                effectsChanged = true;
-                            }
-                            else
-                            {
-                                if (Globals_Client.showMessages)
-                                {
-                                    System.Windows.Forms.MessageBox.Show("The effect " + effName + " does not exist.  Operation cancelled.");
-                                }
-                            }
-                            break;
-                        case "addEffect":
-                            // check effect present in collection
-                            if (!effects.ContainsKey(effName))
-                            {
-                                effects.Add(effName, effLvl);
-                                effectsChanged = true;
-                            }
-                            else
-                            {
-                                if (Globals_Client.showMessages)
-                                {
-                                    System.Windows.Forms.MessageBox.Show("The effect " + effName + " already exists.  Operation cancelled.");
-                                }
-                            }
-                            break;
-                        case "delEffect":
-                            // check effect present in collection
-                            if (effects.ContainsKey(effName))
-                            {
-                                effects.Remove(effName);
-                                effectsChanged = true;
-                            }
-                            else
-                            {
-                                if (Globals_Client.showMessages)
-                                {
-                                    System.Windows.Forms.MessageBox.Show("The effect " + effName + " does not exist.  Operation cancelled.");
-                                }
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-
-                    if (effectsChanged)
-                    {
-                        this.refreshSkillEffectsList(effects);
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Effects updated.");
-                        }
-                    }
-                }
-
-            }
-            catch (System.FormatException fe)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
-                }
-            }
-            catch (System.OverflowException ofe)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Responds to the click event of the adminEditSaveBtn button
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void adminEditSaveBtn_Click(object sender, EventArgs e)
-        {
-            bool success = false;
-
-            // get button
-            Button thisButton = (sender as Button);
-            string objectType = thisButton.Tag.ToString();
-
-            // save specified object
-            switch (objectType)
-            {
-                case "PC":
-                    success = this.saveCharEdit(objectType);
-                    break;
-
-                case "NPC":
-                    success = this.saveCharEdit(objectType);
-                    break;
-
-                case "Fief":
-                    success = this.savePlaceEdit(objectType);
-                    break;
-
-                case "Province":
-                    success = this.savePlaceEdit(objectType);
-                    break;
-
-                case "Kingdom":
-                    success = this.savePlaceEdit(objectType);
-                    break;
-
-                case "Skill":
-                    success = this.saveSkillEdit();
-                    break;
-
-                case "Army":
-                    success = this.saveArmyEdit();
-                    break;
-
-                default:
-                    break;
-            }
-
-            if (success)
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("Object saved.");
                 }
             }
         }

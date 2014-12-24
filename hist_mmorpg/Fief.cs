@@ -358,6 +358,111 @@ namespace hist_mmorpg
 		}
 
         /// <summary>
+        /// Adjusts the fief's tax rate and expenditure levels (officials, garrison, infrastructure, keep)
+        /// </summary>
+        /// <param name="tx">Proposed tax rate</param>
+        /// <param name="off">Proposed officials expenditure</param>
+        /// <param name="garr">Proposed garrison expenditure</param>
+        /// <param name="infr">Proposed infrastructure expenditure</param>
+        /// <param name="kp">Proposed keep expenditure</param>
+        public void adjustExpenditures(double tx, uint off, uint garr, uint infr, uint kp)
+        {
+            // keep track of whether any spends ahve changed
+            bool spendChanged = false;
+
+            // get total spend
+            uint totalSpend = off + garr + infr + kp;
+
+            // factor in bailiff skills modifier for fief expenses
+            double bailiffModif = 0;
+
+            // get bailiff modifier (passing in whether bailiffDaysInFief is sufficient)
+            bailiffModif = Globals_Client.fiefToView.calcBailExpModif(Globals_Client.fiefToView.bailiffDaysInFief >= 30);
+
+            if (bailiffModif != 0)
+            {
+                totalSpend = totalSpend + Convert.ToUInt32(totalSpend * bailiffModif);
+            }
+
+            // check that expenditure can be supported by the treasury
+            // if it can't, display a message and cancel the commit
+            if (!Globals_Client.fiefToView.checkExpenditureOK(totalSpend))
+            {
+                int difference = Convert.ToInt32(totalSpend - Globals_Client.fiefToView.getAvailableTreasury());
+                string toDisplay = "Your spending exceeds the " + Globals_Client.fiefToView.name + " treasury by " + difference;
+                toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(toDisplay, "TRANSACTION CANCELLED");
+                }
+            }
+            // if treasury funds are sufficient to cover expenditure, do the commit
+            else
+            {
+                // tax rate
+                // check if amount/rate changed
+                if (tx != this.taxRateNext)
+                {
+                    // adjust tax rate
+                    this.adjustTaxRate(tx);
+                    spendChanged = true;
+                }
+
+                // officials spend
+                // check if amount/rate changed
+                if (off != this.officialsSpendNext)
+                {
+                    // adjust officials spend
+                    this.adjustOfficialsSpend(off);
+                    spendChanged = true;
+                }
+
+                // garrison spend
+                // check if amount/rate changed
+                if (garr != this.garrisonSpendNext)
+                {
+                    // adjust garrison spend
+                    this.adjustGarrisonSpend(garr);
+                    spendChanged = true;
+                }
+
+                // infrastructure spend
+                // check if amount/rate changed
+                if (infr != this.infrastructureSpendNext)
+                {
+                    // adjust infrastructure spend
+                    this.adjustInfraSpend(infr);
+                    spendChanged = true;
+                }
+
+                // adjust keep spend
+                // check if amount/rate changed
+                if (kp != this.keepSpendNext)
+                {
+                    // adjust keep spend
+                    this.adjustKeepSpend(kp);
+                    spendChanged = true;
+                }
+
+                // display appropriate message
+                string toDisplay = "";
+                if (spendChanged)
+                {
+                    toDisplay += "Expenditure adjusted";
+                }
+                else
+                {
+                    toDisplay += "Expenditure unchanged";
+                }
+
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(toDisplay);
+                }
+            }
+        }
+
+        /// <summary>
         /// Calculates fief GDP
         /// </summary>
         /// <returns>uint containing fief GDP</returns>

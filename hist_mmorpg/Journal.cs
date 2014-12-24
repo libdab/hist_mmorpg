@@ -354,6 +354,10 @@ namespace hist_mmorpg
                 {
                     thisPlace = Globals_Game.provinceMasterList[this.location];
                 }
+                else if (Globals_Game.kingdomMasterList.ContainsKey(this.location))
+                {
+                    thisPlace = Globals_Game.kingdomMasterList[this.location];
+                }
                 entryText += "Location: " + thisPlace.name + " (" + this.location + ")\r\n\r\n";
             }
 

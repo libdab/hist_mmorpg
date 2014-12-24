@@ -21,42 +21,6 @@ namespace hist_mmorpg
     partial class Form1
     {
         /// <summary>
-        /// Responds to the click event of the familyGetSpousePregBt button
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void familyGetSpousePregBtn_Click(object sender, EventArgs e)
-        {
-            // get spouse
-            Character mySpouse = Globals_Client.myPlayerCharacter.getSpouse();
-
-            // perform standard checks
-            if (this.checksBeforePregnancyAttempt(Globals_Client.myPlayerCharacter))
-            {
-                // ensure are both in/out of keep
-                mySpouse.inKeep = Globals_Client.myPlayerCharacter.inKeep;
-
-                // attempt pregnancy
-                bool pregnant = Globals_Client.myPlayerCharacter.getSpousePregnant(mySpouse);
-            }
-
-            // refresh screen
-            this.refreshCurrentScreen();
-
-            /*
-            // test event scheduled in clock
-            List<JournalEntry> myEvents = new List<JournalEntry>();
-            myEvents = Globals_Client.clock.scheduledEvents.getEventsOnDate();
-            if (myEvents.Count > 0)
-            {
-                foreach (JournalEntry jEvent in myEvents)
-                {
-                    System.Windows.Forms.MessageBox.Show("Year: " + jEvent.year + " | Season: " + jEvent.season + " | Who: " + jEvent.personae + " | What: " + jEvent.type);
-                }
-            } */
-        }
-
-        /// <summary>
         /// Generates a new NPC based on parents' statistics
         /// </summary>
         /// <returns>NonPlayerCharacter or null</returns>
@@ -635,37 +599,6 @@ namespace hist_mmorpg
             }
 
             return proceed;
-        }
-
-        /// <summary>
-        /// Responds to the click event of the familyNpcSpousePregBtn button
-        /// </summary>
-        /// <param name="sender">The control object that sent the event args</param>
-        /// <param name="e">The event args</param>
-        private void familyNpcSpousePregBtn_Click(object sender, EventArgs e)
-        {
-            if (this.houseCharListView.SelectedItems.Count > 0)
-            {
-                // get spouse
-                Character mySpouse = Globals_Client.charToView.getSpouse();
-
-                // perform standard checks
-                if (this.checksBeforePregnancyAttempt(Globals_Client.charToView))
-                {
-                    // ensure are both in/out of keep
-                    mySpouse.inKeep = Globals_Client.charToView.inKeep;
-
-                    // attempt pregnancy
-                    bool pregnant = Globals_Client.charToView.getSpousePregnant(mySpouse);
-                }
-            }
-            else
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("No character selected!");
-                }
-            }
         }
     }
 }
