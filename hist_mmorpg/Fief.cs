@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace hist_mmorpg
 {
@@ -187,91 +188,133 @@ namespace hist_mmorpg
         public Fief(String id, String nam, Province prov, int pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
             Double kpLvl, Double loy, char stat, Language lang, Terrain terr, List<Character> chars, List<string> barChars, List<string> barNats,
-            byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, String tiHo = null,
+            byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, string tiHo = null,
             PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank r = null, string sge = null)
             : base(id, nam, own: own, r: r, tiHo: tiHo)
         {
+            // VALIDATION
+            bool isValid = true;
 
-            // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
-            // SX,SY,WK,YS/01-19
-
-            // validate nam length = 1-40
-            if ((nam.Length < 1) || (nam.Length > 40))
+            // POP
+            if (pop < 1)
             {
-                throw new InvalidDataException("Fief name must be between 1 and 40 characters in length");
+                throw new InvalidDataException("Fief population must be an integer greater than 0");
             }
 
-            // TODO: validate prov ID = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
-            // SX,SY,WK,YS/00
-
-            // validate pop = 1-2000000
-            if ((pop < 1) || (pop > 2000000))
-            {
-                throw new InvalidDataException("Fief population must be an integer between 1 and 2000000");
-            }
-
-            // TODO: validate own ID = 1-10000?
-            // TODO: validate ancOwn ID = 1-10000?
-            // TODO: validate bail ID = 1-10000?
-
-            // validate fld >= 0
-            if (fld < 0)
+            // FLD
+            isValid = Globals_Game.validateFiefDouble(fld);
+            if (!isValid)
             {
                 throw new InvalidDataException("Fief field level must be a double >= 0");
             }
 
-            // validate ind >= 0
-            if (ind < 0)
+            // IND
+            isValid = Globals_Game.validateFiefDouble(ind);
+            if (!isValid)
             {
                 throw new InvalidDataException("Fief industry level must be a double >= 0");
             }
 
-            // TODO: validate trp = (upper limit?)
-            // validate tx = 0-100.00
-            if ((tx < 0) || (tx > 100))
+            // TAX
+            isValid = Globals_Game.validateTax(tx);
+            if (!isValid)
             {
-                throw new InvalidDataException("Fief tax rate must be a double between 0 and 100");
+                throw new InvalidDataException("Fief taxrate must be between 0 and 100");
             }
 
-            // TODO: validate off = (upper limit?)
-            // TODO: validate garr = (upper limit?)
-            // TODO: validate infra = (upper limit?)
-            // TODO: validate keep = (upper limit?)
-            // validate tx = 0-100.00
-            if ((txNxt < 0) || (txNxt > 100))
+            // TAXNEXT
+            isValid = Globals_Game.validateTax(txNxt);
+            if (!isValid)
             {
-                throw new InvalidDataException("Fief tax rate (next season) must be a double between 0 and 100");
+                throw new InvalidDataException("Fief taxrate for next season must be between 0 and 100");
             }
 
-            // TODO: validate offNxt = (upper limit?)
-            // TODO: validate garrNxt = (upper limit?)
-            // TODO: validate infraNxt = (upper limit?)
-            // TODO: validate keepNxt = (upper limit?)
+            // FINCUR
 
-            // validate keepLvl >= 0
-            if (kpLvl < 0)
+            // FINPREV
+            
+            // KPLVL
+            isValid = Globals_Game.validateFiefDouble(kpLvl);
+            if (!isValid)
             {
                 throw new InvalidDataException("Fief keep level must be a double >= 0");
             }
 
-            // validate loy = 0-9.00
-            if ((loy < 0) || (loy > 9))
+            // LOY
+            isValid = Globals_Game.validateFiefDouble(loy, 9);
+            if (!isValid)
             {
                 throw new InvalidDataException("Fief loyalty must be a double between 0 and 9");
             }
 
-            // validate stat = C/U/R
-            if (((!stat.Equals('C')) && (!stat.Equals('U'))) && (!stat.Equals('R')))
+            // STAT
+            if (!(Regex.IsMatch(stat.ToString(), "[CRU]")))
             {
                 throw new InvalidDataException("Fief status must be 'C', 'U' or 'R'");
             }
 
-            /*
-            this.id = id;
-            this.name = nam;
-            this.owner = own;
-            this.rank = r;
-            this.titleHolder = tiHo; */
+            // BARCHARS
+            for (int i = 0; i < barChars.Count; i++ )
+            {
+                // trim and ensure 1st is uppercase
+                barChars[i] = Globals_Game.firstCharToUpper(barChars[i].Trim());
+
+                isValid = Globals_Game.validateCharacterID(barChars[i]);
+                if (!isValid)
+                {
+                    throw new InvalidDataException("All fief barred character IDs must have the format 'Char_' followed by some numbers");
+                }
+                break;
+            }
+
+            // BARNATS
+            for (int i = 0; i < barNats.Count; i++)
+            {
+                // trim and ensure 1st is uppercase
+                barNats[i] = Globals_Game.firstCharToUpper(barNats[i].Trim());
+
+                isValid = Globals_Game.validateNationalityID(barNats[i]);
+                if (!isValid)
+                {
+                    throw new InvalidDataException("All fief barred nationality IDs must be 1-3 characters long, and consist entirely of letters");
+                }
+                break;
+            }
+
+            // BAILIFFDAYSINFIEF
+            isValid = Globals_Game.validateFiefDouble(bailInF);
+            if (!isValid)
+            {
+                throw new InvalidDataException("bailiffDaysInFief must be a double of 0 or greater");
+            }
+
+            // ARMS
+            for (int i = 0; i < arms.Count; i++)
+            {
+                // trim and ensure 1st is uppercase
+                arms[i] = Globals_Game.firstCharToUpper(arms[i].Trim());
+
+                isValid = Globals_Game.validateArmyID(arms[i]);
+                if (!isValid)
+                {
+                    throw new InvalidDataException("All fief army IDs must have the format 'Army_' followed by some numbers");
+                }
+                break;
+            }
+
+            // SIEGE
+            if (!String.IsNullOrWhiteSpace(sge))
+            {
+                // trim and ensure 1st is uppercase
+                sge = Globals_Game.firstCharToUpper(sge.Trim());
+
+                isValid = Globals_Game.validateSiegeID(sge);
+                if (!isValid)
+                {
+                    throw new InvalidDataException("Fief siege IDs must have the format 'Siege_' followed by some numbers");
+                }
+            }
+
             this.province = prov;
             this.population = pop;
             this.ancestralOwner = ancOwn;

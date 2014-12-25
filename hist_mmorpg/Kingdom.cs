@@ -174,6 +174,19 @@ namespace hist_mmorpg
         public Kingdom_Serialised(String id, String nam, byte r, string nat, String tiHo = null, string own = null)
             : base(id, nam, r, own: own, tiHo: tiHo)
         {
+            // VALIDATION
+            bool isValid = true;
+
+            // NAT
+            // trim and ensure 1st is uppercase
+            nat = Globals_Game.firstCharToUpper(nat.Trim());
+
+            isValid = Globals_Game.validateNationalityID(nat);
+            if (!isValid)
+            {
+                throw new InvalidDataException("Kingdom_Serialised nationality ID must be 1-3 characters long, and consist entirely of letters");
+            }
+
             this.nationality = nat;
         }
     }

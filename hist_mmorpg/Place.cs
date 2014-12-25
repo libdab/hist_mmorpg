@@ -38,14 +38,40 @@ namespace hist_mmorpg
         /// <param name="rnk">Place rank (Rank object)</param>
         public Place(String id, String nam, String tiHo = null, PlayerCharacter own = null, Rank r = null)
         {
+            // VALIDATION
+            bool isValid = true;
 
-            // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
-            // SX,SY,WK,YS/00
+            // ID
+            // trim and ensure is uppercase
+            id = id.Trim().ToUpper();
 
-            // validate nam length = 1-40
-            if ((nam.Length < 1) || (nam.Length > 40))
+            isValid = Globals_Game.validatePlaceID(id);
+            if (!isValid)
             {
-                throw new InvalidDataException("Place name must be between 1 and 40 characters in length");
+                throw new InvalidDataException("Place id must be 5 characters long, start with a letter, and end in at least 2 numbers");
+            }
+
+            // NAM
+            // trim and ensure 1st is uppercase
+            nam = Globals_Game.firstCharToUpper(nam.Trim());
+
+            isValid = Globals_Game.validateName(nam);
+            if (!isValid)
+            {
+                throw new InvalidDataException("Place name must be 1-30 characters long, start with a letter, and contain only valid characters (a-z and ') or spaces");
+            }
+
+            // TIHO
+            if (!String.IsNullOrWhiteSpace(tiHo))
+            {
+                // trim and ensure 1st is uppercase
+                tiHo = Globals_Game.firstCharToUpper(tiHo.Trim());
+
+                isValid = Globals_Game.validateCharacterID(tiHo);
+                if (!isValid)
+                {
+                    throw new InvalidDataException("Place titleHolder must have the format 'Char_' followed by some numbers");
+                }
             }
 
             this.id = id;
@@ -195,14 +221,53 @@ namespace hist_mmorpg
         /// <param name="rnk">Place rank (Rank object)</param>
         public Place_Serialised(String id, String nam, byte r, String tiHo = null, string own = null)
         {
+            // VALIDATION
+            bool isValid = true;
 
-            // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
-            // SX,SY,WK,YS/00
+            // ID
+            // trim and ensure is uppercase
+            id = id.Trim().ToUpper();
 
-            // validate nam length = 1-40
-            if ((nam.Length < 1) || (nam.Length > 40))
+            isValid = Globals_Game.validatePlaceID(id);
+            if (!isValid)
             {
-                throw new InvalidDataException("Place name must be between 1 and 40 characters in length");
+                throw new InvalidDataException("Place_Serialised id must be 5 characters long, start with a letter, and end in at least 2 numbers");
+            }
+
+            // NAM VALIDATION
+            // trim and ensure 1st is uppercase
+            nam = Globals_Game.firstCharToUpper(nam.Trim());
+
+            isValid = Globals_Game.validateName(nam);
+            if (!isValid)
+            {
+                throw new InvalidDataException("Place_Serialised name must be 1-30 characters long, start with a letter, and contain only valid characters (a-z and ') or spaces");
+            }
+
+            // TIHO VALIDATION
+            if (!String.IsNullOrWhiteSpace(tiHo))
+            {
+                // trim and ensure 1st is uppercase
+                tiHo = Globals_Game.firstCharToUpper(tiHo.Trim());
+
+                isValid = Globals_Game.validateCharacterID(tiHo);
+                if (!isValid)
+                {
+                    throw new InvalidDataException("Place_Serialised titleHolder must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // OWNER VALIDATION
+            if (!String.IsNullOrWhiteSpace(owner))
+            {
+                // trim and ensure 1st is uppercase
+                owner = Globals_Game.firstCharToUpper(owner.Trim());
+
+                isValid = Globals_Game.validateCharacterID(owner);
+                if (!isValid)
+                {
+                    throw new InvalidDataException("Place_Serialised owner must have the format 'Char_' followed by some numbers");
+                }
             }
 
             this.id = id;

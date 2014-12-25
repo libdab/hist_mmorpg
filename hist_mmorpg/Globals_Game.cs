@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace hist_mmorpg
 {
@@ -252,6 +253,260 @@ namespace hist_mmorpg
         /// Holds bool indicating whether or not a cap on characters' stature modifier is in force
         /// </summary>
         public static bool statureCapInForce = true;
+
+        /// <summary>
+        /// Checks that a Siege id is in the correct format
+        /// </summary>
+        /// <returns>bool indicating whether the id is valid</returns>
+        /// <param name="id">The id to be validated</param>
+        public static bool validateSiegeID(string id)
+        {
+            bool isValid = true;
+
+            // split and ensure has correct format
+            string[] idSplit = id.Split('_');
+            if (idSplit.Length != 2)
+            {
+                isValid = false;
+            }
+
+            // must start with 'Army'
+            else if (!idSplit[0].Equals("Siege"))
+            {
+                isValid = false;
+            }
+
+            // must end with numbers
+            else if (!Globals_Game.checkStringValid("numbers", idSplit[1]))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that an Army id is in the correct format
+        /// </summary>
+        /// <returns>bool indicating whether the id is valid</returns>
+        /// <param name="id">The id to be validated</param>
+        public static bool validateArmyID(string id)
+        {
+            bool isValid = true;
+
+            // split and ensure has correct format
+            string[] idSplit = id.Split('_');
+            if (idSplit.Length != 2)
+            {
+                isValid = false;
+            }
+
+            // must start with 'Army'
+            else if (!idSplit[0].Equals("Army"))
+            {
+                isValid = false;
+            }
+
+            // must end with numbers
+            else if (!Globals_Game.checkStringValid("numbers", idSplit[1]))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks a fief double property (keepLevel, industry, fields, loyalty, bailiffDaysInFief) is in the correct range
+        /// </summary>
+        /// <returns>bool indicating whether the double is valid</returns>
+        /// <param name="input">The double to be validated</param>
+        /// <param name="upperLimit">The upper limit of the double to be validated (optional)</param>
+        public static bool validateFiefDouble(double input, double upperLimit = -1)
+        {
+            bool isValid = true;
+
+            // check is >= 0
+            if (input < 0)
+            {
+                isValid = false;
+            }
+
+            else if (upperLimit != -1)
+            {
+                if (input > upperLimit)
+                {
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that a nationality id is in the correct format
+        /// </summary>
+        /// <returns>bool indicating whether the id is valid</returns>
+        /// <param name="nat">The id to be validated</param>
+        public static bool validateNationalityID(string nat)
+        {
+            bool isValid = true;
+
+            // 0-3 in length
+            if ((nat.Length < 1) || (nat.Length > 3))
+            {
+                isValid = false;
+            }
+
+            // letters only
+            if (!Globals_Game.checkStringValid("letters", nat))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that taxrate is in the correct range
+        /// </summary>
+        /// <returns>bool indicating whether the taxrate is valid</returns>
+        /// <param name="tx">The taxrate to be validated</param>
+        public static bool validateTax(double tx)
+        {
+            bool isValid = true;
+
+            if ((tx < 0) || (tx >100))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that a name is in the correct format
+        /// </summary>
+        /// <returns>bool indicating whether the name is valid</returns>
+        /// <param name="name">The name to be validated</param>
+        public static bool validateName(string name)
+        {
+            bool isValid = true;
+
+            // ensure is 1-30 in length
+            if ((name.Length < 1) || (name.Length > 30))
+            {
+                isValid = false;
+            }
+
+            // ensure only contains correct characters
+            else if (!(Regex.IsMatch(name, "^[a-zA-Z'\\s-]+$")))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that a Place id is in the correct format
+        /// </summary>
+        /// <returns>bool indicating whether the id is valid</returns>
+        /// <param name="id">The id to be validated</param>
+        public static bool validatePlaceID(string id)
+        {
+            bool isValid = true;
+
+            // ensure is 5 in length
+            if (id.Length != 5)
+            {
+                isValid = false;
+            }
+
+            // ensure 1st is letter
+            else if (!Globals_Game.checkStringValid("letters", id.Substring(0, 1)))
+            {
+                isValid = false;
+            }
+
+            // ensure ends in 2 numbers
+            else if (!Globals_Game.checkStringValid("numbers", id.Substring(3)))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that a Character id is in the correct format
+        /// </summary>
+        /// <returns>bool indicating whether the id is valid</returns>
+        /// <param name="id">The id to be validated</param>
+        public static bool validateCharacterID(string id)
+        {
+            bool isValid = true;
+
+            // split and ensure has correct format
+            string[] idSplit = id.Split('_');
+            if (idSplit.Length != 2)
+            {
+                isValid = false;
+            }
+
+            // must start with 'Char'
+            else if (!idSplit[0].Equals("Char"))
+            {
+                isValid = false;
+            }
+
+            // must end with numbers
+            else if (!Globals_Game.checkStringValid("numbers", idSplit[1]))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks to see if a string meets the specified conditions (all letters, all numbers)
+        /// </summary>
+        /// <returns>bool indicating whether the string fulfils the conditions</returns>
+        /// <param name="matchType">Type of pattern to match (letters, numbers)</param>
+        /// <param name="input">string to be converted</param>
+        public static bool checkStringValid(string matchType, string input)
+        {
+            switch (matchType)
+            {
+                case "letters":
+                    return Regex.IsMatch(input, @"^[a-zA-Z]+$");
+                case "numbers":
+                    int myNumber;
+                    return int.TryParse(input, out myNumber);
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Converts the first letter of a string to uppercase
+        /// </summary>
+        /// <returns>Converted string</returns>
+        /// <param name="input">string to be converted</param>
+        public static string firstCharToUpper(string input)
+        {
+            string output = "";
+
+            if (!String.IsNullOrEmpty(input))
+            {
+                input = input.First().ToString().ToUpper() + input.Substring(1);
+            }
+
+            output = input;
+
+            return output;
+        }
 
         /// <summary>
         /// Generates a random skill set for a Character

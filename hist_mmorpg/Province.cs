@@ -27,6 +27,16 @@ namespace hist_mmorpg
         public Province(String id, String nam, Double otax, String tiHo = null, PlayerCharacter own = null, Kingdom king = null, Rank r = null)
             : base(id, nam, tiHo, own, r)
         {
+            // VALIDATION
+            bool isValid = true;
+
+            // OTAX
+            isValid = Globals_Game.validateTax(otax);
+            if (!isValid)
+            {
+                throw new InvalidDataException("Province taxrate must be between 0 and 100");
+            }
+
             this.taxRate = otax;
             this.kingdom = king;
         }
@@ -239,6 +249,26 @@ namespace hist_mmorpg
         public Province_Serialised(String id, String nam, byte r, Double otax, String tiHo = null, string own = null, string king = null)
             : base(id, nam, r, own: own, tiHo: tiHo)
         {
+            // VALIDATION
+            bool isValid = true;
+
+            // OTAX
+            isValid = Globals_Game.validateTax(otax);
+            if (!isValid)
+            {
+                throw new InvalidDataException("Province_Serialised taxrate must be between 0 and 100");
+            }
+
+            // KING
+            // trim and ensure is uppercase
+            king = king.Trim().ToUpper();
+
+            isValid = Globals_Game.validatePlaceID(king);
+            if (!isValid)
+            {
+                throw new InvalidDataException("Province_Serialised kingdom must be 5 characters long, start with a letter, and end in at least 2 numbers");
+            }
+
             this.taxRate = otax;
             this.kingdom = king;
         }
