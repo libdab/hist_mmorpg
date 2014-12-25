@@ -230,8 +230,36 @@ namespace hist_mmorpg
             }
 
             // FINCUR
+            /// 0 = loyalty,
+            /// 1 = GDP,
+            /// 2 = tax rate,
+            /// 3 = official expenditure,
+            /// 4 = garrison expenditure,
+            /// 5 = infrastructure expenditure,
+            /// 6 = keep expenditure,
+            /// 7 = keep level,
+            /// 8 = income,
+            /// 9 = family expenses,
+            /// 10 = total expenses,
+            /// 11 = overlord taxes,
+            /// 12 = overlord tax rate,
+            /// 13 = bottom line
 
             // FINPREV
+            /// 0 = loyalty,
+            /// 1 = GDP,
+            /// 2 = tax rate,
+            /// 3 = official expenditure,
+            /// 4 = garrison expenditure,
+            /// 5 = infrastructure expenditure,
+            /// 6 = keep expenditure,
+            /// 7 = keep level,
+            /// 8 = income,
+            /// 9 = family expenses,
+            /// 10 = total expenses,
+            /// 11 = overlord taxes,
+            /// 12 = overlord tax rate,
+            /// 13 = bottom line
             
             // KPLVL
             isValid = Globals_Game.validateFiefDouble(kpLvl);
