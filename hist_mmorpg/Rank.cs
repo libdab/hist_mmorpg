@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace hist_mmorpg
 {
@@ -31,10 +32,15 @@ namespace hist_mmorpg
         /// <param name="stat">byte holding base stature for rank</param>
         public Rank(byte id, TitleName[] ti, byte stat)
         {
+            // VALIDATION
 
-            // TODO: validation
+            // ID
+            if (id < 1)
+            {
+                throw new InvalidDataException("Rank id must be a byte > 0");
+            }
 
-            // validate stature
+            // STATURE
             if (stat < 1)
             {
                 stat = 1;
@@ -140,6 +146,20 @@ namespace hist_mmorpg
         public Position(byte id, TitleName[] ti, byte stat, string holder, Nationality nat)
             : base(id, ti, stat)
         {
+            // VALIDATION
+
+            // HOLDER
+            if (!String.IsNullOrWhiteSpace(holder))
+            {
+                // trim and ensure 1st is uppercase
+                holder = Globals_Game.firstCharToUpper(holder.Trim());
+
+                if (!Globals_Game.validateCharacterID(holder))
+                {
+                    throw new InvalidDataException("Position officeHolder id must have the format 'Char_' followed by some numbers");
+                }
+            }
+
             this.officeHolder = holder;
             this.nationality = nat;
         }
@@ -334,6 +354,45 @@ namespace hist_mmorpg
         /// <param name="nat">string holding ID of Nationality associated with the position</param>
         public Position_Serialised(byte id, TitleName[] ti, byte stat, string holder, string nat)
         {
+            // VALIDATION
+
+            // ID
+            if (id < 1)
+            {
+                throw new InvalidDataException("Position_Serialised id must be a byte > 0");
+            }
+
+            // STAT
+            if (stat < 1)
+            {
+                stat = 1;
+            }
+            else if (stat > 3)
+            {
+                stat = 3;
+            }
+
+            // HOLDER
+            if (!String.IsNullOrWhiteSpace(holder))
+            {
+                // trim and ensure 1st is uppercase
+                holder = Globals_Game.firstCharToUpper(holder.Trim());
+
+                if (!Globals_Game.validateCharacterID(holder))
+                {
+                    throw new InvalidDataException("Position_Serialised officeHolder id must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // NAT
+            // trim and ensure 1st is uppercase
+            nat = Globals_Game.firstCharToUpper(nat.Trim());
+
+            if (!Globals_Game.validateNationalityID(nat))
+            {
+                throw new InvalidDataException("Position_Serialised nationality ID must be 1-3 characters long, and consist entirely of letters");
+            }
+
             this.id = id;
             this.title = ti;
             this.stature = stat;
@@ -371,6 +430,23 @@ namespace hist_mmorpg
         /// <param name="nam">string holding title name associated with specific language</param>
         public TitleName(string lang, string nam)
         {
+            // VALIDATION
+
+            // LANG
+            if ((!Globals_Game.validateLanguageID(lang)) && (!lang.Equals("generic")))
+            {
+                throw new InvalidDataException("TitleName langID must either be 'generic' or have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");
+            }
+
+            // NAM
+            // trim and ensure 1st is uppercase
+            nam = Globals_Game.firstCharToUpper(nam.Trim());
+
+            if (!Globals_Game.validateName(nam))
+            {
+                throw new InvalidDataException("TitleName name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
+            }
+
             this.langID = lang;
             this.name = nam;
         }

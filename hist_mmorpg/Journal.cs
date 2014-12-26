@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace hist_mmorpg
 {
@@ -276,6 +277,36 @@ namespace hist_mmorpg
         /// <param name="descr">String holding description of event</param>
         public JournalEntry(uint id, uint yr, byte seas, String[] pers, String typ, String loc = null, String descr = null)
         {
+            // VALIDATION
+
+            // SEAS
+            // check between 0-3
+            if ((seas < 0) || (seas > 3))
+            {
+                throw new InvalidDataException("JournalEntry season must be a byte between 0-3");
+            }
+
+            // PERS
+            if (pers.Length > 0)
+            {
+                for (int i = 0; i < pers.Length; i++ )
+                {
+                    if (!Globals_Game.validateJentryPersonae(pers[i]))
+                    {
+                        throw new InvalidDataException("Each JournalEntry personae must consist of 2 sections of letters, divided by '|', the 1st of which must be a valid character ID");
+                    }
+                }
+            }
+
+            // LOC
+            // trim and ensure is uppercase
+            loc = loc.Trim().ToUpper();
+
+            if (!Globals_Game.validatePlaceID(loc))
+            {
+                throw new InvalidDataException("JournalEntry location id must be 5 characters long, start with a letter, and end in at least 2 numbers");
+            }
+
             this.jEntryID = id;
             this.year = yr;
             this.season = seas;

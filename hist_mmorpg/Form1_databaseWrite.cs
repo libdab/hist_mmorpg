@@ -960,7 +960,7 @@ namespace hist_mmorpg
         public bool databaseWrite_Terrain(string gameID, Terrain t)
         {
 
-            var rTerrain = new RiakObject(gameID, t.terrainCode, t);
+            var rTerrain = new RiakObject(gameID, t.id, t);
             var putTerrainResult = rClient.Put(rTerrain);
 
             if (!putTerrainResult.IsSuccess)

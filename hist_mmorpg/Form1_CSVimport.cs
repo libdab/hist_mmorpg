@@ -570,7 +570,7 @@ namespace hist_mmorpg
                             this.databaseWrite_Terrain(bucketID, thisTerr);
 
                             // add id to keylist
-                            terrKeyList.Add(thisTerr.terrainCode);
+                            terrKeyList.Add(thisTerr.id);
                         }
                         else
                         {
@@ -1378,7 +1378,7 @@ namespace hist_mmorpg
                     Convert.ToDouble(npcData[14]), Convert.ToDouble(npcData[15]), skills, Convert.ToBoolean(npcData[16]),
                     Convert.ToBoolean(npcData[17]), npcData[18], npcData[19], npcData[20], npcData[21], myTitles, npcData[22],
                     Convert.ToUInt32(npcData[23]), Convert.ToBoolean(npcData[24]), Convert.ToBoolean(npcData[25]),
-                    ails: new Dictionary<string, Ailment>(), loc: loc, aID: aID, mb: boss);
+                    ails: new Dictionary<string, Ailment>(), loc: loc, aID: aID, empl: boss);
             }
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)

@@ -252,15 +252,15 @@ namespace hist_mmorpg
 
 			// create terrain objects
 			Terrain plains = new Terrain("terr_P", "Plains", 1);
-			Globals_Game.terrainMasterList.Add (plains.terrainCode, plains);
+			Globals_Game.terrainMasterList.Add (plains.id, plains);
             Terrain hills = new Terrain("terr_H", "Hills", 1.5);
-            Globals_Game.terrainMasterList.Add(hills.terrainCode, hills);
+            Globals_Game.terrainMasterList.Add(hills.id, hills);
             Terrain forrest = new Terrain("terr_F", "Forrest", 1.5);
-            Globals_Game.terrainMasterList.Add(forrest.terrainCode, forrest);
+            Globals_Game.terrainMasterList.Add(forrest.id, forrest);
             Terrain mountains = new Terrain("terr_M", "Mountains", 15);
-            Globals_Game.terrainMasterList.Add(mountains.terrainCode, mountains);
+            Globals_Game.terrainMasterList.Add(mountains.id, mountains);
             Terrain impassable_mountains = new Terrain("terr_MX", "Impassable mountains", 91);
-            Globals_Game.terrainMasterList.Add(impassable_mountains.terrainCode, impassable_mountains);
+            Globals_Game.terrainMasterList.Add(impassable_mountains.id, impassable_mountains);
 
 			// create keep barred lists for fiefs
 			List<string> keep1BarChars = new List<string>();
@@ -396,19 +396,19 @@ namespace hist_mmorpg
             List<string> barredNats06 = new List<string>();
             List<string> barredNats07 = new List<string>();
 
-            Fief myFief1 = new Fief("ESX02", "Cuckfield", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', c1, plains, fief1Chars, keep1BarChars, barredNats01, 0, 2000000, armies001, false, transfers001, false, r: myRank17);
+            Fief myFief1 = new Fief("ESX02", "Cuckfield", null, null, myRank17, myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin001, prevFin001, 5.63, 5.5, 'C', c1, plains, fief1Chars, keep1BarChars, barredNats01, 0, 2000000, armies001, false, transfers001, false);
             Globals_Game.fiefMasterList.Add(myFief1.id, myFief1);
-            Fief myFief2 = new Fief("ESX03", "Pulborough", myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'C', c1, hills, fief2Chars, keep2BarChars, barredNats02, 0, 4000, armies002, false, transfers002, false, r: myRank15);
+            Fief myFief2 = new Fief("ESX03", "Pulborough", null, null, myRank15, myProv, 10000, 3.50, 0.20, 50, 10, 10, 1000, 1000, 2000, 2000, currFin002, prevFin002, 5.63, 5.20, 'C', c1, hills, fief2Chars, keep2BarChars, barredNats02, 0, 4000, armies002, false, transfers002, false);
             Globals_Game.fiefMasterList.Add(myFief2.id, myFief2);
-            Fief myFief3 = new Fief("ESX01", "Hastings", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', c1, plains, fief3Chars, keep3BarChars, barredNats03, 0, 100000, armies003, false, transfers003, false, r: myRank17);
+            Fief myFief3 = new Fief("ESX01", "Hastings", null, null, myRank17, myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin003, prevFin003, 5.63, 5.5, 'C', c1, plains, fief3Chars, keep3BarChars, barredNats03, 0, 100000, armies003, false, transfers003, false);
             Globals_Game.fiefMasterList.Add(myFief3.id, myFief3);
-            Fief myFief4 = new Fief("ESX04", "Eastbourne", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', c1, plains, fief4Chars, keep4BarChars, barredNats04, 0, 100000, armies004, false, transfers004, false, r: myRank17);
+            Fief myFief4 = new Fief("ESX04", "Eastbourne", null, null, myRank17, myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin004, prevFin004, 5.63, 5.5, 'C', c1, plains, fief4Chars, keep4BarChars, barredNats04, 0, 100000, armies004, false, transfers004, false);
             Globals_Game.fiefMasterList.Add(myFief4.id, myFief4);
-            Fief myFief5 = new Fief("ESX05", "Worthing", myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', f1, plains, fief5Chars, keep5BarChars, barredNats05, 0, 100000, armies005, false, transfers005, false, r: myRank15);
+            Fief myFief5 = new Fief("ESX05", "Worthing", null, null, myRank15, myProv, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin005, prevFin005, 5.63, 5.5, 'C', f1, plains, fief5Chars, keep5BarChars, barredNats05, 0, 100000, armies005, false, transfers005, false);
             Globals_Game.fiefMasterList.Add(myFief5.id, myFief5);
-            Fief myFief6 = new Fief("ESR03", "Reigate", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', f1, plains, fief6Chars, keep6BarChars, barredNats06, 0, 100000, armies006, false, transfers006, false, r: myRank17);
+            Fief myFief6 = new Fief("ESR03", "Reigate", null, null, myRank17, myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin006, prevFin006, 5.63, 5.5, 'C', f1, plains, fief6Chars, keep6BarChars, barredNats06, 0, 100000, armies006, false, transfers006, false);
             Globals_Game.fiefMasterList.Add(myFief6.id, myFief6);
-            Fief myFief7 = new Fief("ESR04", "Guilford", myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', f1, forrest, fief7Chars, keep7BarChars, barredNats07, 0, 100000, armies007, false, transfers007, false, r: myRank15);
+            Fief myFief7 = new Fief("ESR04", "Guilford", null, null, myRank15, myProv2, 6000, 3.0, 3.0, 50, 10, 10, 12000, 42000, 2000, 2000, currFin007, prevFin007, 5.63, 5.5, 'C', f1, forrest, fief7Chars, keep7BarChars, barredNats07, 0, 100000, armies007, false, transfers007, false);
             Globals_Game.fiefMasterList.Add(myFief7.id, myFief7);
 
 			// create QuickGraph undirected graph
@@ -521,9 +521,9 @@ namespace hist_mmorpg
             Globals_Game.pcMasterList.Add(myChar2.charID, myChar2);
             NonPlayerCharacter myNPC1 = new NonPlayerCharacter("Char_401", "Jimmy", "Servant", myDob003, true, nationality02, true, 8.50, 6.0, myGoTo3, c1, 90, 0, 3.3, 6.7, Globals_Game.generateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("Char_402", "Johnny", "Servant", myDob004, true, nationality02, true, 8.50, 6.0, myGoTo4, c1, 90, 0, 7.1, 5.2, Globals_Game.generateSkillSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, mb: myChar1.charID, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("Char_402", "Johnny", "Servant", myDob004, true, nationality02, true, 8.50, 6.0, myGoTo4, c1, 90, 0, 7.1, 5.2, Globals_Game.generateSkillSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, empl: myChar1.charID, loc: myFief1);
             Globals_Game.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("Char_403", "Harry", "Bailiff", myDob005, true, nationality01, true, 8.50, 6.0, myGoTo5, c1, 90, 0, 7.1, 5.2, Globals_Game.generateSkillSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, mb: myChar2.charID, loc: myFief6);
+            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("Char_403", "Harry", "Bailiff", myDob005, true, nationality01, true, 8.50, 6.0, myGoTo5, c1, 90, 0, 7.1, 5.2, Globals_Game.generateSkillSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, empl: myChar2.charID, loc: myFief6);
             Globals_Game.npcMasterList.Add(myNPC3.charID, myNPC3);
             NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("Char_404", "Bev", "Bond", myDob006, false, nationality02, true, 2.50, 9.0, myGoTo6, f1, 90, 0, 4.0, 6.0, Globals_Game.generateSkillSet(), false, false, "Char_47", "Char_47", null, null, 30000, false, false, myTitles006, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myChar1Wife.charID, myChar1Wife);
@@ -829,26 +829,18 @@ namespace hist_mmorpg
 
             // create an army and add in appropriate places
             uint[] myArmyTroops = new uint[] {10, 10, 0, 100, 100, 200, 400};
-            Army myArmy = new Army(Globals_Game.getNextArmyID(), null, null, 90, null, trp: myArmyTroops);
+            Army myArmy = new Army(Globals_Game.getNextArmyID(), null, myChar1.charID, 90, myChar1.location.id, trp: myArmyTroops);
             Globals_Game.armyMasterList.Add(myArmy.armyID, myArmy);
-            myArmy.owner = myChar1.charID;
-            // myArmy.leader = myChar1.charID;
-            myArmy.days = Globals_Game.pcMasterList[myArmy.owner].days;
             myChar1.myArmies.Add(myArmy);
             // myChar1.armyID = myArmy.armyID;
-            myArmy.location = Globals_Game.pcMasterList[myArmy.owner].location.id;
             myChar1.location.armies.Add(myArmy.armyID);
 
             // create another (enemy) army and add in appropriate places
             uint[] myArmyTroops2 = new uint[] { 10, 10, 30, 0, 40, 200, 0 };
-            Army myArmy2 = new Army(Globals_Game.getNextArmyID(), null, null, 90, null, trp: myArmyTroops2, aggr: 1);
+            Army myArmy2 = new Army(Globals_Game.getNextArmyID(), myChar2.charID, myChar2.charID, myChar2.days, myChar2.location.id, trp: myArmyTroops2, aggr: 1);
             Globals_Game.armyMasterList.Add(myArmy2.armyID, myArmy2);
-            myArmy2.owner = myChar2.charID;
-            myArmy2.leader = myChar2.charID;
-            myArmy2.days = Globals_Game.pcMasterList[myArmy2.leader].days;
             myChar2.myArmies.Add(myArmy2);
             myChar2.armyID = myArmy2.armyID;
-            myArmy2.location = Globals_Game.pcMasterList[myArmy2.leader].location.id;
             myChar2.location.armies.Add(myArmy2.armyID);
 
             // bar a character from the myFief1 keep

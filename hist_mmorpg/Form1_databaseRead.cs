@@ -180,7 +180,7 @@ namespace hist_mmorpg
             {
                 Terrain terr = this.databaseRead_terrain(gameID, element);
                 // add Terrain to terrainMasterList
-                Globals_Game.terrainMasterList.Add(terr.terrainCode, terr);
+                Globals_Game.terrainMasterList.Add(terr.id, terr);
             }
 
             // ========= load FIEFS

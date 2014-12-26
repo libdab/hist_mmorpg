@@ -30,6 +30,14 @@ namespace hist_mmorpg
         /// <param name="dial">int holding language dialect code</param>
         public Language(BaseLanguage bLang, int dial)
         {
+            // VALIDATION
+
+            // DIALECT
+            if (dial < 1)
+            {
+                throw new InvalidDataException("Language dialect code must be an integer >= 0");
+            }
+
             this.baseLanguage = bLang;
             this.dialect = dial;
             this.id = this.baseLanguage.id + this.dialect;
@@ -87,10 +95,21 @@ namespace hist_mmorpg
         /// <param name="nam">String holding language name</param>
         public BaseLanguage(String id, String nam)
         {
-            // validate nam length = 1-20
-            if ((nam.Length < 1) || (nam.Length > 20))
+            // VALIDATION
+
+            // ID
+            if (!Globals_Game.validateLanguageID(id, "baseLang"))
             {
-                throw new InvalidDataException("BaseLanguage name must be between 1 and 20 characters in length");
+                throw new InvalidDataException("BaseLanguage ID must have the format 'lang_' followed by 1-2 letters");
+            }
+
+            // NAM
+            // trim and ensure 1st is uppercase
+            nam = Globals_Game.firstCharToUpper(nam.Trim());
+
+            if (!Globals_Game.validateName(nam))
+            {
+                throw new InvalidDataException("BaseLanguage name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             this.id = id;
@@ -152,6 +171,31 @@ namespace hist_mmorpg
         /// <param name="dial">int holding language dialect code</param>
         public Language_Serialised(string id, string bLang, int dial)
         {
+            // VALIDATION
+
+            // ID
+            if (!id.Contains(bLang))
+            {
+                throw new InvalidDataException("Language_Serialised ID be based on its BaseLanguage ID");
+            }
+
+            else if (!Globals_Game.validateLanguageID(id))
+            {
+                throw new InvalidDataException("Language_Serialised ID must have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");
+            }
+
+            // BLANG
+            if (!Globals_Game.validateLanguageID(bLang, "baseLang"))
+            {
+                throw new InvalidDataException("Language_Serialised BaseLanguage ID must have the format 'lang_' followed by 1-2 letters");
+            }
+
+            // DIALECT
+            if (dial < 1)
+            {
+                throw new InvalidDataException("Language dialect code must be an integer >= 0");
+            }
+
             this.id = id;
             this.baseLanguage = bLang;
             this.dialect = dial;

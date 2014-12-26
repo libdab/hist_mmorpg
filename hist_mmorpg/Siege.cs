@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace hist_mmorpg
 {
@@ -93,6 +94,83 @@ namespace hist_mmorpg
             string defGarr, string fief, double day, double kpLvl, int totAtt = 0, int totDef = 0, double totDay = 0,
             string defAdd = null, string end = null)
         {
+            // VALIDATION
+
+            // ID
+            // trim and ensure 1st is uppercase
+            id = Globals_Game.firstCharToUpper(id.Trim());
+
+            if (!Globals_Game.validateSiegeID(id))
+            {
+                throw new InvalidDataException("Siege ID must have the format 'Siege_' followed by some numbers");
+            }
+
+            // STARTSEAS
+            if (!Globals_Game.validateSeason(startSeas))
+            {
+                throw new InvalidDataException("Siege startSeason must be a byte between 0-3");
+            }
+
+            // BSGPLAYER
+            // trim and ensure 1st is uppercase
+            bsgPlayer = Globals_Game.firstCharToUpper(bsgPlayer.Trim());
+
+            if (!Globals_Game.validateCharacterID(bsgPlayer))
+            {
+                throw new InvalidDataException("Siege besiegingPlayer id must have the format 'Char_' followed by some numbers");
+            }
+
+            // DEFPLAYER
+            // trim and ensure 1st is uppercase
+            defPlayer = Globals_Game.firstCharToUpper(defPlayer.Trim());
+
+            if (!Globals_Game.validateCharacterID(defPlayer))
+            {
+                throw new InvalidDataException("Siege defendingPlayer id must have the format 'Char_' followed by some numbers");
+            }
+
+            // BSGARMY
+            // trim and ensure 1st is uppercase
+            bsgArmy = Globals_Game.firstCharToUpper(bsgArmy.Trim());
+
+            if (!Globals_Game.validateArmyID(bsgArmy))
+            {
+                throw new InvalidDataException("Siege besiegingArmy id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
+            }
+
+            // DEFGARR
+            // trim and ensure 1st is uppercase
+            defGarr = Globals_Game.firstCharToUpper(defGarr.Trim());
+
+            if (!Globals_Game.validateArmyID(defGarr))
+            {
+                throw new InvalidDataException("Siege defendingGarrison id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
+            }
+
+            // FIEF
+
+            // DAY
+
+            // KPLVL
+
+            // TOTATT
+
+            // TOTDEF
+
+            // TOTDAY
+
+            // DEFADD
+            if (!String.IsNullOrWhiteSpace(defAdd))
+            {
+                // trim and ensure 1st is uppercase
+                defAdd = Globals_Game.firstCharToUpper(defAdd.Trim());
+
+                if (!Globals_Game.validateArmyID(defAdd))
+                {
+                    throw new InvalidDataException("Siege defenderAdditonal id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
+                }
+            }
+
             this.siegeID = id;
             this.startYear = startYr;
             this.startSeason = startSeas;

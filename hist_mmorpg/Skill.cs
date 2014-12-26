@@ -31,11 +31,48 @@ namespace hist_mmorpg
         /// <param name="effs">Dictionary(string, double) holding skill effects</param>
         public Skill(String id, String nam, Dictionary<string, double> effs)
         {
+            // VALIDATION
 
-            // validate nam length = 1-20
-            if ((nam.Length < 1) || (nam.Length > 20))
+            // ID
+            // trim
+            id = id.Trim();
+            if (!Globals_Game.validateSkillID(id))
             {
-                throw new InvalidDataException("Skill name must be between 1 and 20 characters in length");
+                throw new InvalidDataException("Skill ID must have the format 'skill_' followed by some numbers");
+            }
+
+            // NAM
+            // trim and ensure 1st is uppercase
+            nam = Globals_Game.firstCharToUpper(nam.Trim());
+
+            if (!Globals_Game.validateName(nam))
+            {
+                throw new InvalidDataException("Skill name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
+            }
+
+            // EFFS
+            // effect name
+            string[] effNames = new string[effs.Count];
+            effs.Keys.CopyTo(effNames, 0);
+
+            for (int i = 0; i < effNames.Length; i++ )
+            {
+                if (!Globals_Game.validateName(effNames[i]))
+                {
+                    throw new InvalidDataException("All Skill effect names must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
+                }
+            }
+
+            // effect values
+            double[] effVals = new double[effs.Count];
+            effs.Values.CopyTo(effVals, 0);
+
+            for (int i = 0; i < effVals.Length; i++)
+            {
+                if ((effVals[i] < -0.99) || (effVals[i] > 0.99))
+                {
+                    throw new InvalidDataException("All Skill effect values must be doubles between -0.99 and 0.99");
+                }
             }
 
 			this.skillID = id;

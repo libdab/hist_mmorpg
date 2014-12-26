@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace hist_mmorpg
 {
@@ -11,9 +12,9 @@ namespace hist_mmorpg
     public class Terrain
     {
         /// <summary>
-        /// Holds terrain code
+        /// Holds terrain ID
         /// </summary>
-		public String terrainCode { get; set; }
+		public String id { get; set; }
         /// <summary>
         /// Holds terrain description
         /// </summary>
@@ -26,12 +27,35 @@ namespace hist_mmorpg
         /// <summary>
         /// Constructor for Terrain
         /// </summary>
-		/// <param name="c">String holding terrain code</param>
+		/// <param name="id">String holding terrain code</param>
         /// <param name="desc">String holding terrain description</param>
         /// <param name="tc">double holding terrain travel cost</param>
-		public Terrain(String c, string desc, double tc)
+		public Terrain(String id, string desc, double tc)
         {
-            this.terrainCode = c;
+            // VALIDATION
+
+            // ID
+            if (!Globals_Game.validateTerrainID(id))
+            {
+                throw new InvalidDataException("Terrain ID must have the format 'terr_' followed by some letters");
+            }
+
+            // DESC
+            // trim and ensure 1st is uppercase
+            desc = Globals_Game.firstCharToUpper(desc.Trim());
+
+            if (!Globals_Game.validateName(desc))
+            {
+                throw new InvalidDataException("Terrain description must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
+            }
+
+            // TC
+            if (tc < 1)
+            {
+                throw new InvalidDataException("Terrain travelCost must be a double >= 1");
+            }
+
+            this.id = id;
             this.description = desc;
             this.travelCost = tc;
         }

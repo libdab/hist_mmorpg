@@ -33,20 +33,18 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="id">String holding place ID</param>
         /// <param name="nam">String holding place name</param>
-        /// <param name="own">Place owner (PlayerCharacter)</param>
         /// <param name="tiHo">String holding place title holder (charID)</param>
+        /// <param name="own">Place owner (PlayerCharacter)</param>
         /// <param name="rnk">Place rank (Rank object)</param>
-        public Place(String id, String nam, String tiHo = null, PlayerCharacter own = null, Rank r = null)
+        public Place(String id, String nam, String tiHo, PlayerCharacter own, Rank r)
         {
             // VALIDATION
-            bool isValid = true;
 
             // ID
             // trim and ensure is uppercase
             id = id.Trim().ToUpper();
 
-            isValid = Globals_Game.validatePlaceID(id);
-            if (!isValid)
+            if (!Globals_Game.validatePlaceID(id))
             {
                 throw new InvalidDataException("Place id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -55,10 +53,9 @@ namespace hist_mmorpg
             // trim and ensure 1st is uppercase
             nam = Globals_Game.firstCharToUpper(nam.Trim());
 
-            isValid = Globals_Game.validateName(nam);
-            if (!isValid)
+            if (!Globals_Game.validateName(nam))
             {
-                throw new InvalidDataException("Place name must be 1-30 characters long, start with a letter, and contain only valid characters (a-z and ') or spaces");
+                throw new InvalidDataException("Place name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // TIHO
@@ -67,8 +64,7 @@ namespace hist_mmorpg
                 // trim and ensure 1st is uppercase
                 tiHo = Globals_Game.firstCharToUpper(tiHo.Trim());
 
-                isValid = Globals_Game.validateCharacterID(tiHo);
-                if (!isValid)
+                if (!Globals_Game.validateCharacterID(tiHo))
                 {
                     throw new InvalidDataException("Place titleHolder must have the format 'Char_' followed by some numbers");
                 }
@@ -216,20 +212,18 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="id">String holding place ID</param>
         /// <param name="nam">String holding place name</param>
-        /// <param name="own">Place owner (PlayerCharacter)</param>
+        /// <param name="own">String holding Place owner (ID)</param>
         /// <param name="tiHo">String holding place title holder (charID)</param>
-        /// <param name="rnk">Place rank (Rank object)</param>
+        /// <param name="rnk">String holding Place rank (ID)</param>
         public Place_Serialised(String id, String nam, byte r, String tiHo = null, string own = null)
         {
             // VALIDATION
-            bool isValid = true;
 
             // ID
             // trim and ensure is uppercase
             id = id.Trim().ToUpper();
 
-            isValid = Globals_Game.validatePlaceID(id);
-            if (!isValid)
+            if (!Globals_Game.validatePlaceID(id))
             {
                 throw new InvalidDataException("Place_Serialised id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -238,10 +232,9 @@ namespace hist_mmorpg
             // trim and ensure 1st is uppercase
             nam = Globals_Game.firstCharToUpper(nam.Trim());
 
-            isValid = Globals_Game.validateName(nam);
-            if (!isValid)
+            if (!Globals_Game.validateName(nam))
             {
-                throw new InvalidDataException("Place_Serialised name must be 1-30 characters long, start with a letter, and contain only valid characters (a-z and ') or spaces");
+                throw new InvalidDataException("Place_Serialised name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // TIHO VALIDATION
@@ -250,8 +243,7 @@ namespace hist_mmorpg
                 // trim and ensure 1st is uppercase
                 tiHo = Globals_Game.firstCharToUpper(tiHo.Trim());
 
-                isValid = Globals_Game.validateCharacterID(tiHo);
-                if (!isValid)
+                if (!Globals_Game.validateCharacterID(tiHo))
                 {
                     throw new InvalidDataException("Place_Serialised titleHolder must have the format 'Char_' followed by some numbers");
                 }
@@ -263,8 +255,7 @@ namespace hist_mmorpg
                 // trim and ensure 1st is uppercase
                 owner = Globals_Game.firstCharToUpper(owner.Trim());
 
-                isValid = Globals_Game.validateCharacterID(owner);
-                if (!isValid)
+                if (!Globals_Game.validateCharacterID(owner))
                 {
                     throw new InvalidDataException("Place_Serialised owner must have the format 'Char_' followed by some numbers");
                 }

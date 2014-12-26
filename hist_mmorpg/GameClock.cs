@@ -36,7 +36,9 @@ namespace hist_mmorpg
         public GameClock(String id, uint yr, byte s = 0)
         {
 			this.clockID = id;
+
             this.currentYear = yr;
+
             // ensure season within correct values
             if (s > 3)
             {
@@ -46,6 +48,7 @@ namespace hist_mmorpg
             {
                 s = 0;
             }
+
             this.currentSeason = s;
         }
 

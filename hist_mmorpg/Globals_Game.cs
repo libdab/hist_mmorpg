@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace hist_mmorpg
 {
@@ -255,6 +256,265 @@ namespace hist_mmorpg
         public static bool statureCapInForce = true;
 
         /// <summary>
+        /// Checks that a JournalEntry personae entry is in the correct format
+        /// </summary>
+        /// <returns>bool indicating whether the personae entry is valid</returns>
+        /// <param name="id">The personae entry to be validated</param>
+        public static bool validateJentryPersonae(string personae)
+        {
+            bool isValid = true;
+
+            // split using'|'
+            string[] persSplit = personae.Split('|');
+            if (persSplit.Length != 2)
+            {
+                isValid = false;
+            }
+
+            // 1st section must be valid character ID or 'all'
+            else if ((!persSplit[0].Equals("all")) && (!Globals_Game.validateCharacterID(persSplit[0])))
+            {
+                isValid = false;
+            }
+
+            // 2nd section must be all letters
+            else if (!Globals_Game.checkStringValid("letters", persSplit[1]))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that an OwnershipChallenge id is in the correct format
+        /// </summary>
+        /// <returns>bool indicating whether the id is valid</returns>
+        /// <param name="id">The id to be validated</param>
+        public static bool validateChallengeID(string id)
+        {
+            bool isValid = true;
+
+            // split and ensure has correct format
+            string[] idSplit = id.Split('_');
+            if (idSplit.Length != 2)
+            {
+                isValid = false;
+            }
+
+            // must start with 'Challenge'
+            else if (!idSplit[0].Equals("Challenge"))
+            {
+                isValid = false;
+            }
+
+            // must end with numbers
+            else if (!Globals_Game.checkStringValid("numbers", idSplit[1]))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that an Ailment id is in the correct format
+        /// </summary>
+        /// <returns>bool indicating whether the id is valid</returns>
+        /// <param name="id">The id to be validated</param>
+        public static bool validateAilmentID(string id)
+        {
+            bool isValid = true;
+
+            // split and ensure has correct format
+            string[] idSplit = id.Split('_');
+            if (idSplit.Length != 2)
+            {
+                isValid = false;
+            }
+
+            // must start with 'Ail'
+            else if (!idSplit[0].Equals("Ail"))
+            {
+                isValid = false;
+            }
+
+            // must end with numbers
+            else if (!Globals_Game.checkStringValid("numbers", idSplit[1]))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that a Skill id is in the correct format
+        /// </summary>
+        /// <returns>bool indicating whether the id is valid</returns>
+        /// <param name="id">The id to be validated</param>
+        public static bool validateSkillID(string id)
+        {
+            bool isValid = true;
+
+            // split and ensure has correct format
+            string[] idSplit = id.Split('_');
+            if (idSplit.Length != 2)
+            {
+                isValid = false;
+            }
+
+            // must start with 'skill'
+            else if (!idSplit[0].Equals("skill"))
+            {
+                isValid = false;
+            }
+
+            // must end with numbers
+            else if (!Globals_Game.checkStringValid("numbers", idSplit[1]))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that a days value is in the correct range
+        /// </summary>
+        /// <returns>bool indicating whether the value is valid</returns>
+        /// <param name="stat">The value to be validated</param>
+        public static bool validateDays(double days)
+        {
+            bool isValid = true;
+
+            // check is between 0-109
+            if ((days < 0) || (days > 109))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that a character statistic (combat, management, stature, virility, maxHealth, skill level) is in the correct range
+        /// </summary>
+        /// <returns>bool indicating whether the statistic is valid</returns>
+        /// <param name="stat">The statistic to be validated</param>
+        /// <param name="lowerLimit">The lower limit for the statistic to be validated (optional)</param>
+        public static bool validateCharacterStat(double stat, double lowerLimit = 1)
+        {
+            bool isValid = true;
+
+            // check is between 1-9
+            if ((stat < lowerLimit) || (stat > 9))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that a season is in the correct range
+        /// </summary>
+        /// <returns>bool indicating whether the season is valid</returns>
+        /// <param name="season">The season to be validated</param>
+        public static bool validateSeason(byte season)
+        {
+            bool isValid = true;
+
+            if ((season < 0) || (season > 3))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that a Terrain id is in the correct format
+        /// </summary>
+        /// <returns>bool indicating whether the id is valid</returns>
+        /// <param name="id">The id to be validated</param>
+        public static bool validateTerrainID(string id)
+        {
+            bool isValid = true;
+
+            // split and ensure has correct format
+            string[] idSplit = id.Split('_');
+            if (idSplit.Length != 2)
+            {
+                isValid = false;
+            }
+
+            // must start with 'terr'
+            else if (!idSplit[0].Equals("terr"))
+            {
+                isValid = false;
+            }
+
+            // must end with letters
+            else if (!Globals_Game.checkStringValid("letters", idSplit[1]))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Checks that a Language id is in the correct format
+        /// </summary>
+        /// <returns>bool indicating whether the id is valid</returns>
+        /// <param name="id">The id to be validated</param>
+        /// <param name="langType">The type of id to be validated (lang, baseLang)</param>
+        public static bool validateLanguageID(string id, string langType = "lang")
+        {
+            bool isValid = true;
+
+            // split and ensure has correct format
+            string[] idSplit = id.Split('_');
+            if (idSplit.Length != 2)
+            {
+                isValid = false;
+            }
+
+            // must start with 'lang'
+            else if (!idSplit[0].Equals("lang"))
+            {
+                isValid = false;
+            }
+
+            else if (langType.Equals("baseLang"))
+            {
+                // 2nd section must be letters
+                if (!Globals_Game.checkStringValid("letters", idSplit[1]))
+                {
+                    isValid = false;
+                }
+            }
+
+            else
+            {
+                // 1st character of 2nd section must be letter
+                if (!Globals_Game.checkStringValid("letters", idSplit[1].Substring(0, 1)))
+                {
+                    isValid = false;
+                }
+
+                // last character of 2nd section must be number
+                else if (!Globals_Game.checkStringValid("numbers", idSplit[1].Substring(idSplit[1].Length - 1, 1)))
+                {
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
         /// Checks that a Siege id is in the correct format
         /// </summary>
         /// <returns>bool indicating whether the id is valid</returns>
@@ -270,7 +530,7 @@ namespace hist_mmorpg
                 isValid = false;
             }
 
-            // must start with 'Army'
+            // must start with 'Siege'
             else if (!idSplit[0].Equals("Siege"))
             {
                 isValid = false;
@@ -301,8 +561,8 @@ namespace hist_mmorpg
                 isValid = false;
             }
 
-            // must start with 'Army'
-            else if (!idSplit[0].Equals("Army"))
+            // must start with 'Army' or 'GarrisonArmy'
+            else if ((!idSplit[0].Equals("Army")) && (!idSplit[0].Equals("GarrisonArmy")))
             {
                 isValid = false;
             }
@@ -372,7 +632,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating whether the taxrate is valid</returns>
         /// <param name="tx">The taxrate to be validated</param>
-        public static bool validateTax(double tx)
+        public static bool validatePercentage(double tx)
         {
             bool isValid = true;
 
@@ -1091,6 +1351,35 @@ namespace hist_mmorpg
         /// <param name="fiefs">double holding percentage of fiefs under player's control at start of game</param>
         public VictoryData(string player, string pc, double stat, double pop, double fiefs)
         {
+            // VALIDATION
+
+            // PC
+            // trim and ensure 1st is uppercase
+            pc = Globals_Game.firstCharToUpper(pc.Trim());
+
+            if (!Globals_Game.validateCharacterID(pc))
+            {
+                throw new InvalidDataException("VictoryData playerCharacterID must have the format 'Char_' followed by some numbers");
+            }
+
+            // STAT
+            if (!Globals_Game.validateCharacterStat(stat, 0))
+            {
+                throw new InvalidDataException("VictoryData startStature must be a double between 0-9");
+            }
+
+            // POP
+            if (!Globals_Game.validatePercentage(pop))
+            {
+                throw new InvalidDataException("VictoryData startPopulation must be a double between 0 and 100");
+            }
+
+            // FIEFS
+            if (!Globals_Game.validatePercentage(fiefs))
+            {
+                throw new InvalidDataException("VictoryData startFiefs must be a double between 0 and 100");
+            }
+
             this.playerID = player;
             this.playerCharacterID = pc;
             this.startStature = stat;
@@ -1210,6 +1499,41 @@ namespace hist_mmorpg
         /// <param name="place">string holding ID of place</param>
         public OwnershipChallenge(string chalID, string chID, string type, string place)
         {
+            // VALIDATION
+
+            // ID
+            // trim and ensure 1st is uppercase
+            chalID = Globals_Game.firstCharToUpper(chalID.Trim());
+
+            if (!Globals_Game.validateChallengeID(chalID))
+            {
+                throw new InvalidDataException("OwnershipChallenge id must have the format 'Challenge_' followed by some numbers");
+            }
+
+            // CHID
+            // trim and ensure 1st is uppercase
+            chID = Globals_Game.firstCharToUpper(chID.Trim());
+
+            if (!Globals_Game.validateCharacterID(chID))
+            {
+                throw new InvalidDataException("OwnershipChallenge challenger id must have the format 'Char_' followed by some numbers");
+            }
+
+            // TYPE
+            if ((!type.Equals("province")) && (!type.Equals("kingdom")))
+            {
+                throw new InvalidDataException("OwnershipChallenge type must be either 'province' or 'kingdom'");
+            }
+
+            // PLACE
+            // trim and ensure is uppercase
+            place = place.Trim().ToUpper();
+
+            if (!Globals_Game.validatePlaceID(place))
+            {
+                throw new InvalidDataException("OwnershipChallenge place id must be 5 characters long, start with a letter, and end in at least 2 numbers");
+            }
+
             this.id = chalID;
             this.challengerID = chID;
             this.placeType = type;

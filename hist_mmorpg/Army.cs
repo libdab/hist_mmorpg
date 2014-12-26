@@ -68,11 +68,59 @@ namespace hist_mmorpg
         /// <param name="trp">uint[] holding troops in army</param>
         public Army(String id, string ldr, string own, double day, string loc, bool maint = false, byte aggr = 1, byte odds = 9, uint[] trp = null)
         {
+            // VALIDATION
 
-            // TODO: validate trp = (upper limit?)
-            // TODO: validate ldr ID = 1-10000?
+            // ID
+            // trim and ensure 1st is uppercase
+            id = Globals_Game.firstCharToUpper(id.Trim());
 
-            // TODO: validate day
+            if (!Globals_Game.validateArmyID(id))
+            {
+                throw new InvalidDataException("Army id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
+            }
+
+            // LDR
+            if (!String.IsNullOrWhiteSpace(ldr))
+            {
+                // trim and ensure 1st is uppercase
+                ldr = Globals_Game.firstCharToUpper(ldr.Trim());
+
+                if (!Globals_Game.validateCharacterID(ldr))
+                {
+                    throw new InvalidDataException("Army leader id must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // OWN
+            // trim and ensure 1st is uppercase
+            own = Globals_Game.firstCharToUpper(own.Trim());
+
+            if (!Globals_Game.validateCharacterID(own))
+            {
+                throw new InvalidDataException("Army owner id must have the format 'Char_' followed by some numbers");
+            }
+
+            // DAY
+            if (!Globals_Game.validateDays(day))
+            {
+                throw new InvalidDataException("Army days must be a double between 0-109");
+            }
+
+            // LOC
+            // trim and ensure is uppercase
+            loc = loc.Trim().ToUpper();
+
+            if (!Globals_Game.validatePlaceID(loc))
+            {
+                throw new InvalidDataException("Army location id must be 5 characters long, start with a letter, and end in at least 2 numbers");
+            }
+
+            // AGGR
+            // check is < 3
+            if (aggr > 2)
+            {
+                throw new InvalidDataException("Army aggression level must be a byte less than 3");
+            }
 
             this.armyID = id;
             this.leader = ldr;

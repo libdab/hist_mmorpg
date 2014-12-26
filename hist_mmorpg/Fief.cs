@@ -185,15 +185,14 @@ namespace hist_mmorpg
         /// <param name="pil">bool indicating whether pillage has occurred in the fief (current season)</param>
         /// <param name="trans">Dictionary<string, string[]> containing troop detachments in the fief awaiting transfer</param>
         /// <param name="sge">String holding siegeID of active siege</param>
-        public Fief(String id, String nam, Province prov, int pop, Double fld, Double ind, uint trp, Double tx,
+        public Fief(String id, String nam, string tiHo, PlayerCharacter own, Rank r, Province prov, int pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
             Double kpLvl, Double loy, char stat, Language lang, Terrain terr, List<Character> chars, List<string> barChars, List<string> barNats,
-            byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, string tiHo = null,
-            PlayerCharacter own = null, PlayerCharacter ancOwn = null, Character bail = null, Rank r = null, string sge = null)
-            : base(id, nam, own: own, r: r, tiHo: tiHo)
+            byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil,
+            PlayerCharacter ancOwn = null, Character bail = null, string sge = null)
+            : base(id, nam, tiHo, own, r)
         {
             // VALIDATION
-            bool isValid = true;
 
             // POP
             if (pop < 1)
@@ -202,75 +201,147 @@ namespace hist_mmorpg
             }
 
             // FLD
-            isValid = Globals_Game.validateFiefDouble(fld);
-            if (!isValid)
+            if (!Globals_Game.validateFiefDouble(fld))
             {
                 throw new InvalidDataException("Fief field level must be a double >= 0");
             }
 
             // IND
-            isValid = Globals_Game.validateFiefDouble(ind);
-            if (!isValid)
+            if (!Globals_Game.validateFiefDouble(ind))
             {
                 throw new InvalidDataException("Fief industry level must be a double >= 0");
             }
 
             // TAX
-            isValid = Globals_Game.validateTax(tx);
-            if (!isValid)
+            if (!Globals_Game.validatePercentage(tx))
             {
-                throw new InvalidDataException("Fief taxrate must be between 0 and 100");
+                throw new InvalidDataException("Fief taxrate must be a double between 0 and 100");
             }
 
             // TAXNEXT
-            isValid = Globals_Game.validateTax(txNxt);
-            if (!isValid)
+            if (!Globals_Game.validatePercentage(txNxt))
             {
-                throw new InvalidDataException("Fief taxrate for next season must be between 0 and 100");
+                throw new InvalidDataException("Fief taxrate for next season must be a double between 0 and 100");
             }
 
             // FINCUR
-            /// 0 = loyalty,
-            /// 1 = GDP,
-            /// 2 = tax rate,
-            /// 3 = official expenditure,
-            /// 4 = garrison expenditure,
-            /// 5 = infrastructure expenditure,
-            /// 6 = keep expenditure,
-            /// 7 = keep level,
-            /// 8 = income,
-            /// 9 = family expenses,
-            /// 10 = total expenses,
-            /// 11 = overlord taxes,
-            /// 12 = overlord tax rate,
-            /// 13 = bottom line
+            // 0 = loyalty
+            if (!Globals_Game.validateFiefDouble(finCurr[0], 9))
+            {
+                throw new InvalidDataException("finCurr[0] (loyalty) must be a double between 0 and 9");
+            }
+
+            // 1 = GDP
+            int gdpCurr = Convert.ToInt32(finCurr[1]);
+
+            // 2 = tax rate,
+            if (!Globals_Game.validatePercentage(finCurr[2]))
+            {
+                throw new InvalidDataException("finCurr[2] (taxrate) must be a double between 0 and 100");
+            }
+
+            // 3 = official expenditure,
+            uint offCurr = Convert.ToUInt32(finCurr[3]);
+
+            // 4 = garrison expenditure,
+            uint garrCurr = Convert.ToUInt32(finCurr[4]);
+
+            // 5 = infrastructure expenditure,
+            uint infCurr = Convert.ToUInt32(finCurr[5]);
+
+            // 6 = keep expenditure,
+            uint kpCurr = Convert.ToUInt32(finCurr[6]);
+
+            // 7 = keep level,
+            if (!Globals_Game.validateFiefDouble(finCurr[7]))
+            {
+                throw new InvalidDataException("finCurr[7] (keep level) must be a double >= 0");
+            }
+
+            // 8 = income,
+            uint incCurr = Convert.ToUInt32(finCurr[8]);
+
+            // 9 = family expenses,
+            uint famCurr = Convert.ToUInt32(finCurr[9]);
+
+            // 10 = total expenses,
+            uint expCurr = Convert.ToUInt32(finCurr[10]);
+
+            // 11 = overlord taxes,
+            uint otaxCurr = Convert.ToUInt32(finCurr[11]);
+
+            // 12 = overlord tax rate,
+            if (!Globals_Game.validatePercentage(finCurr[12]))
+            {
+                throw new InvalidDataException("finCurr[12] (overlord taxrate) must be a double between 0 and 100");
+            }
+
+            // 13 = bottom line
+            int botCurr = Convert.ToInt32(finCurr[13]);
 
             // FINPREV
-            /// 0 = loyalty,
-            /// 1 = GDP,
-            /// 2 = tax rate,
-            /// 3 = official expenditure,
-            /// 4 = garrison expenditure,
-            /// 5 = infrastructure expenditure,
-            /// 6 = keep expenditure,
-            /// 7 = keep level,
-            /// 8 = income,
-            /// 9 = family expenses,
-            /// 10 = total expenses,
-            /// 11 = overlord taxes,
-            /// 12 = overlord tax rate,
-            /// 13 = bottom line
+            // 0 = loyalty,
+            if (!Globals_Game.validateFiefDouble(finPrev[0], 9))
+            {
+                throw new InvalidDataException("finPrev[0] (loyalty) must be a double between 0 and 9");
+            }
+
+            // 1 = GDP
+            int gdpPrev = Convert.ToInt32(finPrev[1]);
+
+            // 2 = tax rate,
+            if (!Globals_Game.validatePercentage(finPrev[2]))
+            {
+                throw new InvalidDataException("finPrev[2] (taxrate) must be a double between 0 and 100");
+            }
+
+            // 3 = official expenditure,
+            uint offPrev = Convert.ToUInt32(finPrev[3]);
+
+            // 4 = garrison expenditure,
+            uint garrPrev = Convert.ToUInt32(finPrev[4]);
+
+            // 5 = infrastructure expenditure,
+            uint infPrev = Convert.ToUInt32(finPrev[5]);
+
+            // 6 = keep expenditure,
+            uint kpPrev = Convert.ToUInt32(finPrev[6]);
+
+            // 7 = keep level,
+            if (!Globals_Game.validateFiefDouble(finPrev[7]))
+            {
+                throw new InvalidDataException("finPrev[7] (keep level) must be a double >= 0");
+            }
+
+            // 8 = income,
+            uint incPrev = Convert.ToUInt32(finPrev[8]);
+
+            // 9 = family expenses,
+            uint famPrev = Convert.ToUInt32(finPrev[9]);
+
+            // 10 = total expenses,
+            uint expPrev = Convert.ToUInt32(finPrev[10]);
+
+            // 11 = overlord taxes,
+            uint otaxPrev = Convert.ToUInt32(finPrev[11]);
+
+            // 12 = overlord tax rate,
+            if (!Globals_Game.validatePercentage(finPrev[12]))
+            {
+                throw new InvalidDataException("finPrev[12] (overlord taxrate) must be a double between 0 and 100");
+            }
+
+            // 13 = bottom line
+            int botPrev = Convert.ToInt32(finPrev[13]);
             
             // KPLVL
-            isValid = Globals_Game.validateFiefDouble(kpLvl);
-            if (!isValid)
+            if (!Globals_Game.validateFiefDouble(kpLvl))
             {
                 throw new InvalidDataException("Fief keep level must be a double >= 0");
             }
 
             // LOY
-            isValid = Globals_Game.validateFiefDouble(loy, 9);
-            if (!isValid)
+            if (!Globals_Game.validateFiefDouble(loy, 9))
             {
                 throw new InvalidDataException("Fief loyalty must be a double between 0 and 9");
             }
@@ -287,12 +358,10 @@ namespace hist_mmorpg
                 // trim and ensure 1st is uppercase
                 barChars[i] = Globals_Game.firstCharToUpper(barChars[i].Trim());
 
-                isValid = Globals_Game.validateCharacterID(barChars[i]);
-                if (!isValid)
+                if (!Globals_Game.validateCharacterID(barChars[i]))
                 {
                     throw new InvalidDataException("All fief barred character IDs must have the format 'Char_' followed by some numbers");
                 }
-                break;
             }
 
             // BARNATS
@@ -301,19 +370,16 @@ namespace hist_mmorpg
                 // trim and ensure 1st is uppercase
                 barNats[i] = Globals_Game.firstCharToUpper(barNats[i].Trim());
 
-                isValid = Globals_Game.validateNationalityID(barNats[i]);
-                if (!isValid)
+                if (!Globals_Game.validateNationalityID(barNats[i]))
                 {
                     throw new InvalidDataException("All fief barred nationality IDs must be 1-3 characters long, and consist entirely of letters");
                 }
-                break;
             }
 
             // BAILIFFDAYSINFIEF
-            isValid = Globals_Game.validateFiefDouble(bailInF);
-            if (!isValid)
+            if (!Globals_Game.validateFiefDouble(bailInF))
             {
-                throw new InvalidDataException("bailiffDaysInFief must be a double of 0 or greater");
+                throw new InvalidDataException("Fief bailiffDaysInFief must be a double of 0 or greater");
             }
 
             // ARMS
@@ -322,12 +388,10 @@ namespace hist_mmorpg
                 // trim and ensure 1st is uppercase
                 arms[i] = Globals_Game.firstCharToUpper(arms[i].Trim());
 
-                isValid = Globals_Game.validateArmyID(arms[i]);
-                if (!isValid)
+                if (!Globals_Game.validateArmyID(arms[i]))
                 {
-                    throw new InvalidDataException("All fief army IDs must have the format 'Army_' followed by some numbers");
+                    throw new InvalidDataException("All fief army IDs must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
                 }
-                break;
             }
 
             // SIEGE
@@ -336,8 +400,7 @@ namespace hist_mmorpg
                 // trim and ensure 1st is uppercase
                 sge = Globals_Game.firstCharToUpper(sge.Trim());
 
-                isValid = Globals_Game.validateSiegeID(sge);
-                if (!isValid)
+                if (!Globals_Game.validateSiegeID(sge))
                 {
                     throw new InvalidDataException("Fief siege IDs must have the format 'Siege_' followed by some numbers");
                 }
@@ -2664,7 +2727,7 @@ namespace hist_mmorpg
 			this.loyalty = f.loyalty;
 			this.status = f.status;
             this.language = f.language.id;
-			this.terrain = f.terrain.terrainCode;
+			this.terrain = f.terrain.id;
 			if (f.charactersInFief.Count > 0)
 			{
 				for (int i = 0; i < f.charactersInFief.Count; i++)
@@ -2724,79 +2787,269 @@ namespace hist_mmorpg
             string own = null, string ancOwn = null, string bail = null, string sge = null)
             : base(id, nam, own: own, r: r, tiHo: tiHo)
         {
+            // VALIDATION
 
-            // TODO: validate id = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
-            // SX,SY,WK,YS/01-19
+            //PROV
+            // trim and ensure is uppercase
+            prov = prov.Trim().ToUpper();
 
-            // validate nam length = 1-40
-            if ((nam.Length < 1) || (nam.Length > 40))
+            if (!Globals_Game.validatePlaceID(prov))
             {
-                throw new InvalidDataException("Fief name must be between 1 and 40 characters in length");
+                throw new InvalidDataException("Fief_Serialised province ID must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
 
-            // TODO: validate prov ID = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
-            // SX,SY,WK,YS/00
-
-            // validate pop = 1-2000000
-            if ((pop < 1) || (pop > 2000000))
+            // POP
+            if (pop < 1)
             {
-                throw new InvalidDataException("Fief population must be an integer between 1 and 2000000");
+                throw new InvalidDataException("Fief_Serialised population must be an integer greater than 0");
             }
 
-            // TODO: validate own ID = 1-10000?
-            // TODO: validate ancOwn ID = 1-10000?
-            // TODO: validate bail ID = 1-10000?
-
-            // validate fld >= 0
-            if (fld < 0)
+            // FLD
+            if (!Globals_Game.validateFiefDouble(fld))
             {
-                throw new InvalidDataException("Fief field level must be a double >= 0");
+                throw new InvalidDataException("Fief_Serialised field level must be a double >= 0");
             }
 
-            // validate ind >= 0
-            if (ind < 0)
+            // IND
+            if (!Globals_Game.validateFiefDouble(ind))
             {
-                throw new InvalidDataException("Fief industry level must be a double >= 0");
+                throw new InvalidDataException("Fief_Serialised industry level must be a double >= 0");
             }
 
-            // TODO: validate trp = (upper limit?)
-            // validate tx = 0-100.00
-            if ((tx < 0) || (tx > 100))
+            // TAX
+            if (!Globals_Game.validatePercentage(tx))
             {
-                throw new InvalidDataException("Fief tax rate must be a double between 0 and 100");
+                throw new InvalidDataException("Fief_Serialised taxrate must be a double between 0 and 100");
             }
 
-            // TODO: validate off = (upper limit?)
-            // TODO: validate garr = (upper limit?)
-            // TODO: validate infra = (upper limit?)
-            // TODO: validate keep = (upper limit?)
-            // validate tx = 0-100.00
-            if ((txNxt < 0) || (txNxt > 100))
+            // TAXNEXT
+            if (!Globals_Game.validatePercentage(txNxt))
             {
-                throw new InvalidDataException("Fief tax rate (next season) must be a double between 0 and 100");
+                throw new InvalidDataException("Fief_Serialised taxrate for next season must be a double between 0 and 100");
             }
 
-            // TODO: validate offNxt = (upper limit?)
-            // TODO: validate garrNxt = (upper limit?)
-            // TODO: validate infraNxt = (upper limit?)
-            // TODO: validate keepNxt = (upper limit?)
-
-            // validate keepLvl >= 0
-            if (kpLvl < 0)
+            // FINCUR
+            // 0 = loyalty
+            if (!Globals_Game.validateFiefDouble(finCurr[0], 9))
             {
-                throw new InvalidDataException("Fief keep level must be a double >= 0");
+                throw new InvalidDataException("Fief_Serialised finCurr[0] (loyalty) must be a double between 0 and 9");
             }
 
-            // validate loy = 0-9.00
-            if ((loy < 0) || (loy > 9))
+            // 1 = GDP
+            int gdpCurr = Convert.ToInt32(finCurr[1]);
+
+            // 2 = tax rate,
+            if (!Globals_Game.validatePercentage(finCurr[2]))
             {
-                throw new InvalidDataException("Fief loyalty must be a double between 0 and 9");
+                throw new InvalidDataException("Fief_Serialised finCurr[2] (taxrate) must be a double between 0 and 100");
             }
 
-            // validate stat = C/U/R
-            if (((!stat.Equals('C')) && (!stat.Equals('U'))) && (!stat.Equals('R')))
+            // 3 = official expenditure,
+            uint offCurr = Convert.ToUInt32(finCurr[3]);
+
+            // 4 = garrison expenditure,
+            uint garrCurr = Convert.ToUInt32(finCurr[4]);
+
+            // 5 = infrastructure expenditure,
+            uint infCurr = Convert.ToUInt32(finCurr[5]);
+
+            // 6 = keep expenditure,
+            uint kpCurr = Convert.ToUInt32(finCurr[6]);
+
+            // 7 = keep level,
+            if (!Globals_Game.validateFiefDouble(finCurr[7]))
             {
-                throw new InvalidDataException("Fief status must be 'C', 'U' or 'R'");
+                throw new InvalidDataException("Fief_Serialised finCurr[7] (keep level) must be a double >= 0");
+            }
+
+            // 8 = income,
+            uint incCurr = Convert.ToUInt32(finCurr[8]);
+
+            // 9 = family expenses,
+            uint famCurr = Convert.ToUInt32(finCurr[9]);
+
+            // 10 = total expenses,
+            uint expCurr = Convert.ToUInt32(finCurr[10]);
+
+            // 11 = overlord taxes,
+            uint otaxCurr = Convert.ToUInt32(finCurr[11]);
+
+            // 12 = overlord tax rate,
+            if (!Globals_Game.validatePercentage(finCurr[12]))
+            {
+                throw new InvalidDataException("Fief_Serialised finCurr[12] (overlord taxrate) must be a double between 0 and 100");
+            }
+
+            // 13 = bottom line
+            int botCurr = Convert.ToInt32(finCurr[13]);
+
+            // FINPREV
+            // 0 = loyalty,
+            if (!Globals_Game.validateFiefDouble(finPrev[0], 9))
+            {
+                throw new InvalidDataException("Fief_Serialised finPrev[0] (loyalty) must be a double between 0 and 9");
+            }
+
+            // 1 = GDP
+            int gdpPrev = Convert.ToInt32(finPrev[1]);
+
+            // 2 = tax rate,
+            if (!Globals_Game.validatePercentage(finPrev[2]))
+            {
+                throw new InvalidDataException("Fief_Serialised finPrev[2] (taxrate) must be a double between 0 and 100");
+            }
+
+            // 3 = official expenditure,
+            uint offPrev = Convert.ToUInt32(finPrev[3]);
+
+            // 4 = garrison expenditure,
+            uint garrPrev = Convert.ToUInt32(finPrev[4]);
+
+            // 5 = infrastructure expenditure,
+            uint infPrev = Convert.ToUInt32(finPrev[5]);
+
+            // 6 = keep expenditure,
+            uint kpPrev = Convert.ToUInt32(finPrev[6]);
+
+            // 7 = keep level,
+            if (!Globals_Game.validateFiefDouble(finPrev[7]))
+            {
+                throw new InvalidDataException("Fief_Serialised finPrev[7] (keep level) must be a double >= 0");
+            }
+
+            // 8 = income,
+            uint incPrev = Convert.ToUInt32(finPrev[8]);
+
+            // 9 = family expenses,
+            uint famPrev = Convert.ToUInt32(finPrev[9]);
+
+            // 10 = total expenses,
+            uint expPrev = Convert.ToUInt32(finPrev[10]);
+
+            // 11 = overlord taxes,
+            uint otaxPrev = Convert.ToUInt32(finPrev[11]);
+
+            // 12 = overlord tax rate,
+            if (!Globals_Game.validatePercentage(finPrev[12]))
+            {
+                throw new InvalidDataException("Fief_Serialised finPrev[12] (overlord taxrate) must be a double between 0 and 100");
+            }
+
+            // 13 = bottom line
+            int botPrev = Convert.ToInt32(finPrev[13]);
+
+            // KPLVL
+            if (!Globals_Game.validateFiefDouble(kpLvl))
+            {
+                throw new InvalidDataException("Fief_Serialised keep level must be a double >= 0");
+            }
+
+            // LOY
+            if (!Globals_Game.validateFiefDouble(loy, 9))
+            {
+                throw new InvalidDataException("Fief_Serialised loyalty must be a double between 0 and 9");
+            }
+
+            // STAT
+            if (!(Regex.IsMatch(stat.ToString(), "[CRU]")))
+            {
+                throw new InvalidDataException("Fief_Serialised status must be 'C', 'U' or 'R'");
+            }
+
+            // LANG
+            if (!Globals_Game.validateLanguageID(lang))
+            {
+                throw new InvalidDataException("Fief_Serialised language ID must have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");
+            }
+
+            // TERR
+            if (!Globals_Game.validateTerrainID(terr))
+            {
+                throw new InvalidDataException("Fief_Serialised terrain ID must have the format 'terr_' followed by some letters");
+            }
+
+            // CHARS
+            for (int i = 0; i < chars.Count; i++)
+            {
+                // trim and ensure 1st is uppercase
+                chars[i] = Globals_Game.firstCharToUpper(chars[i].Trim());
+
+                if (!Globals_Game.validateCharacterID(chars[i]))
+                {
+                    throw new InvalidDataException("All Fief_Serialised character IDs must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // BARCHARS
+            for (int i = 0; i < barChars.Count; i++)
+            {
+                // trim and ensure 1st is uppercase
+                barChars[i] = Globals_Game.firstCharToUpper(barChars[i].Trim());
+
+                if (!Globals_Game.validateCharacterID(barChars[i]))
+                {
+                    throw new InvalidDataException("All Fief_Serialised barred character IDs must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // BARNATS
+            for (int i = 0; i < barNats.Count; i++)
+            {
+                // trim and ensure 1st is uppercase
+                barNats[i] = Globals_Game.firstCharToUpper(barNats[i].Trim());
+
+                if (!Globals_Game.validateNationalityID(barNats[i]))
+                {
+                    throw new InvalidDataException("All Fief_Serialised barred nationality IDs must be 1-3 characters long, and consist entirely of letters");
+                }
+            }
+
+            // BAILIFFDAYSINFIEF
+            if (!Globals_Game.validateFiefDouble(bailInF))
+            {
+                throw new InvalidDataException("Fief_Serialised bailiffDaysInFief must be a double of 0 or greater");
+            }
+
+            // ARMS
+            for (int i = 0; i < arms.Count; i++)
+            {
+                // trim and ensure 1st is uppercase
+                arms[i] = Globals_Game.firstCharToUpper(arms[i].Trim());
+
+                if (!Globals_Game.validateArmyID(arms[i]))
+                {
+                    throw new InvalidDataException("All Fief_Serialised army IDs must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
+                }
+            }
+
+            // ANCOWN
+            // trim and ensure 1st is uppercase
+            ancOwn = Globals_Game.firstCharToUpper(ancOwn.Trim());
+
+            if (!Globals_Game.validateCharacterID(ancOwn))
+            {
+                throw new InvalidDataException("Fief_Serialised ancestral owner ID must have the format 'Char_' followed by some numbers");
+            }
+
+            // BAIL
+            // trim and ensure 1st is uppercase
+            bail = Globals_Game.firstCharToUpper(bail.Trim());
+
+            if (!Globals_Game.validateCharacterID(bail))
+            {
+                throw new InvalidDataException("Fief_Serialised bailiff ID must have the format 'Char_' followed by some numbers");
+            }
+
+            // SIEGE
+            if (!String.IsNullOrWhiteSpace(sge))
+            {
+                // trim and ensure 1st is uppercase
+                sge = Globals_Game.firstCharToUpper(sge.Trim());
+
+                if (!Globals_Game.validateSiegeID(sge))
+                {
+                    throw new InvalidDataException("Fief_Serialised siege ID must have the format 'Siege_' followed by some numbers");
+                }
             }
 
             this.province = prov;

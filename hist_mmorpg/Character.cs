@@ -155,76 +155,198 @@ namespace hist_mmorpg
             Queue<Fief> go, Language lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg,
             String famID, String sp, String fath, String moth, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null)
         {
+            // VALIDATION
 
-            // validation
-            // TODO validate id = 1-10000?
+            // ID
+            // trim and ensure 1st is uppercase
+            id = Globals_Game.firstCharToUpper(id.Trim());
 
-            // validate firstNam length = 2-40
-            if ((firstNam.Length < 2) || (firstNam.Length > 40))
+            if (!Globals_Game.validateCharacterID(id))
             {
-                throw new InvalidDataException("Character first name must be between 2 and 40 characters in length");
+                throw new InvalidDataException("Character id must have the format 'Char_' followed by some numbers");
             }
 
-            // validate famNam length = 2-40
-            if ((famNam.Length < 2) || (famNam.Length > 40))
+            // FIRSTNAM
+            // trim and ensure 1st is uppercase
+            firstNam = Globals_Game.firstCharToUpper(firstNam.Trim());
+
+            if (!Globals_Game.validateName(firstNam))
             {
-                throw new InvalidDataException("Character family name must be between 2 and 40 characters in length");
+                throw new InvalidDataException("Character firstname must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
-            // TODO: validate dob
+            // FAMNAM
+            // trim and ensure 1st is uppercase
+            famNam = Globals_Game.firstCharToUpper(famNam.Trim());
 
-            // validate preg = not if male
-            if (isM)
+            if (!Globals_Game.validateName(famNam))
             {
-				this.isPregnant = false;
+                throw new InvalidDataException("Character family name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
-            //  TODO: validate nat
-
-            // validate maxHea = 1-9.00
-            if ((mxHea < 1) || (mxHea > 9))
+            // DOB
+            if (!Globals_Game.validateSeason(dob.Item2))
             {
-                throw new InvalidDataException("Character maximum health must be a double between 1 and 9");
+                throw new InvalidDataException("Character date-of-birth season must be a byte between 0-3");
             }
 
-            // validate vir = 1-9.00
-            if ((vir < 1) || (vir > 9))
+            // MXHEA
+            if (!Globals_Game.validateCharacterStat(mxHea))
             {
-                throw new InvalidDataException("Character virility must be a double between 1 and 9");
+                throw new InvalidDataException("Character maxHealth must be a double between 1-9");
             }
 
-
-            // TODO: validate lang = string B,C,D,E,F,G,H,I,L/1-3
-
-            // validate day = 0-90
-            if ((day > 90) || (day < 0))
+            // VIR
+            if (!Globals_Game.validateCharacterStat(vir))
             {
-                throw new InvalidDataException("Character remaining days must be a double between 0 and 90");
+                throw new InvalidDataException("Character virility must be a double between 1-9");
             }
 
-            // validate stat = 0-9.00
-            if (stat > 9)
+            // DAYS
+            if (!Globals_Game.validateDays(day))
             {
-                throw new InvalidDataException("Character stature must be a double between 0 and 9");
+                throw new InvalidDataException("Character days must be a double between 0-109");
             }
 
-            // validate mngmnt = 0-9.00
-            if (mngmnt > 9)
+            // STAT
+            if (!Globals_Game.validateCharacterStat(stat, 0))
             {
-                throw new InvalidDataException("Character stature must be a double between 0 and 9");
+                throw new InvalidDataException("Character stature must be a double between 0-9");
             }
 
-            // validate cbt = 0-9.00
-            if (cbt > 9)
+            // MNGMNT
+            if (!Globals_Game.validateCharacterStat(mngmnt))
             {
-                throw new InvalidDataException("Character stature must be a double between 0 and 9");
+                throw new InvalidDataException("Character management must be a double between 1-9");
             }
 
-            // TODO: validate spID = 1-10000?
-            // TODO: ensure married characters have a sp and unmarried ones don't? (but may initially be null)
-            // TODO: validate fath ID = 1-10000?
+            // CBT
+            if (!Globals_Game.validateCharacterStat(cbt))
+            {
+                throw new InvalidDataException("Character combat must be a double between 1-9");
+            }
 
-            // TODO: validate famHead ID = 1-10000?
+            // SKL
+            for (int i = 0; i < skl.Length; i++)
+            {
+                if (!Globals_Game.validateCharacterStat(Convert.ToDouble(skl[i].Item2)))
+                {
+                    throw new InvalidDataException("Character skill level must be an integer between 1-9");
+                }
+            }
+
+            // PREG
+            if (preg)
+            {
+                if (isM)
+                {
+                    throw new InvalidDataException("Character cannot be pregnant if is male");
+                }
+            }
+
+            // FAMID
+            if (!String.IsNullOrWhiteSpace(famID))
+            {
+                // trim and ensure 1st is uppercase
+                famID = Globals_Game.firstCharToUpper(famID.Trim());
+
+                if (!Globals_Game.validateCharacterID(famID))
+                {
+                    throw new InvalidDataException("Character family id must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // SP
+            if (!String.IsNullOrWhiteSpace(sp))
+            {
+                // trim and ensure 1st is uppercase
+                sp = Globals_Game.firstCharToUpper(sp.Trim());
+
+                if (!Globals_Game.validateCharacterID(sp))
+                {
+                    throw new InvalidDataException("Character spouse id must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // FATH
+            if (!String.IsNullOrWhiteSpace(fath))
+            {
+                // trim and ensure 1st is uppercase
+                fath = Globals_Game.firstCharToUpper(fath.Trim());
+
+                if (!Globals_Game.validateCharacterID(fath))
+                {
+                    throw new InvalidDataException("Character father id must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // MOTH
+            if (!String.IsNullOrWhiteSpace(moth))
+            {
+                // trim and ensure 1st is uppercase
+                moth = Globals_Game.firstCharToUpper(moth.Trim());
+
+                if (!Globals_Game.validateCharacterID(moth))
+                {
+                    throw new InvalidDataException("Character mother id must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // MYTI
+            for (int i = 0; i < myTi.Count; i++ )
+            {
+                // trim and ensure is uppercase
+                myTi[i] = myTi[i].Trim().ToUpper();
+
+                if (!Globals_Game.validatePlaceID(myTi[i]))
+                {
+                    throw new InvalidDataException("All Character title IDs must be 5 characters long, start with a letter, and end in at least 2 numbers");
+                }
+            }
+
+            // FIA
+            if (!String.IsNullOrWhiteSpace(fia))
+            {
+                // trim and ensure 1st is uppercase
+                fia = Globals_Game.firstCharToUpper(fia.Trim());
+
+                if (!Globals_Game.validateCharacterID(fia))
+                {
+                    throw new InvalidDataException("Character fiancee id must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // AILS
+            if (ails != null)
+            {
+                if (ails.Count > 0)
+                {
+                    string[] myAils = new string[ails.Count];
+                    ails.Keys.CopyTo(myAils, 0);
+                    for (int i = 0; i < myAils.Length; i++)
+                    {
+                        // trim and ensure 1st is uppercase
+                        myAils[i] = Globals_Game.firstCharToUpper(myAils[i].Trim());
+
+                        if (!Globals_Game.validateAilmentID(myAils[i]))
+                        {
+                            throw new InvalidDataException("All IDs in Character ailments must have the format 'Ail_' followed by some numbers");
+                        }
+                    }
+                }
+            }
+
+            // AID
+            if (!String.IsNullOrWhiteSpace(aID))
+            {
+                // trim and ensure 1st is uppercase
+                aID = Globals_Game.firstCharToUpper(aID.Trim());
+
+                if (!Globals_Game.validateArmyID(aID))
+                {
+                    throw new InvalidDataException("Character army id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
+                }
+            }
 
             this.charID = id;
             this.firstName = firstNam;
@@ -2685,20 +2807,55 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="outl">bool holding character outlawed status</param>
         /// <param name="pur">uint holding character purse</param>
-        /// <param name="npcs">List<NonPlayerCharacter> holding employees and family of character</param>
-        /// <param name="ownedF">List<Fief> holding fiefs owned by character</param>
-        /// <param name="ownedP">List<Province> holding provinces owned by character</param>
+        /// <param name="npcs">List(NonPlayerCharacter) holding employees and family of character</param>
+        /// <param name="ownedF">List(Fief) holding fiefs owned by character</param>
+        /// <param name="ownedP">List(Province) holding provinces owned by character</param>
         /// <param name="home">String holding character's home fief (fiefID)</param>
         /// <param name="anchome">String holding character's ancestral home fief (fiefID)</param>
         /// <param name="pID">String holding ID of player who is currently playing this PlayerCharacter</param>
-        /// <param name="myA">List<Army> holding character's armies</param>
-        /// <param name="myS">List<string> holding character's sieges (siegeIDs)</param>
+        /// <param name="myA">List(Army) holding character's armies</param>
+        /// <param name="myS">List(string) holding character's sieges (siegeIDs)</param>
         public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, Nationality nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Language lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
             String sp, String fath, String moth, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> ownedF, List<Province> ownedP, String home, String ancHome, List<String> myTi, List<Army> myA,
             List<string> myS, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null, String pID = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc, aID)
         {
+            // VALIDATION
+
+            // HOME
+            // trim and ensure is uppercase
+            home = home.Trim().ToUpper();
+
+            if (!Globals_Game.validatePlaceID(home))
+            {
+                throw new InvalidDataException("PlayerCharacter homeFief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
+            }
+
+            // ANCHOME
+            // trim and ensure is uppercase
+            ancHome = ancHome.Trim().ToUpper();
+
+            if (!Globals_Game.validatePlaceID(ancHome))
+            {
+                throw new InvalidDataException("PlayerCharacter ancestral homeFief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
+            }
+
+            // MYSIEGES
+            if (myS.Count > 0)
+            {
+                for (int i = 0; i < myS.Count; i++ )
+                {
+                    // trim and ensure 1st is uppercase
+                    myS[i] = Globals_Game.firstCharToUpper(myS[i].Trim());
+
+                    if (!Globals_Game.validateSiegeID(myS[i]))
+                    {
+                        throw new InvalidDataException("All PlayerCharacter siege IDs must have the format 'Siege_' followed by some numbers");
+                    }
+                }
+            }
+
             this.outlawed = outl;
             this.purse = pur;
             this.myNPCs = npcs;
@@ -3893,21 +4050,36 @@ namespace hist_mmorpg
         /// <summary>
         /// Constructor for NonPlayerCharacter
         /// </summary>
-        /// <param name="mb">String holding NPC's employer (charID)</param>
-        /// <param name="wa">string holding NPC's wage</param>
+        /// <param name="empl">String holding NPC's employer (charID)</param>
+        /// <param name="sal">string holding NPC's wage</param>
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
         /// <param name="isH">bool denoting if is player's heir</param>
         public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, Nationality nat, bool alive, Double mxHea, Double vir,
             Queue<Fief> go, Language lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
-            String sp, String fath, String moth, uint wa, bool inEnt, bool isH, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null, String mb = null)
+            String sp, String fath, String moth, uint sal, bool inEnt, bool isH, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null, String empl = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc, aID)
         {
-            // TODO: validate hb = 1-10000
-            // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
-            // TODO: validate wa = uint
+            // VALIDATION
 
-            this.employer = mb;
-            this.salary = wa;
+            // EMPL
+            if (!String.IsNullOrWhiteSpace(empl))
+            {
+                // trim and ensure 1st is uppercase
+                empl = Globals_Game.firstCharToUpper(empl.Trim());
+
+                if (!String.IsNullOrWhiteSpace(famID))
+                {
+                    throw new InvalidDataException("A NonPlayerCharacter with a familyID cannot have an employer ID");
+                }
+
+                else if (!Globals_Game.validateCharacterID(empl))
+                {
+                    throw new InvalidDataException("NonPlayerCharacter employer ID must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            this.employer = empl;
+            this.salary = sal;
             this.inEntourage = inEnt;
             this.lastOffer = new Dictionary<string, uint>();
             this.isHeir = isH;
@@ -4674,76 +4846,240 @@ namespace hist_mmorpg
             List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] skl, bool inK, bool preg,
             String famID, String sp, String fath, String moth, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, string loc = null, String aID = null)
         {
+            // VALIDATION
 
-            // validation
-            // TODO validate id = 1-10000?
+            // ID
+            // trim and ensure 1st is uppercase
+            id = Globals_Game.firstCharToUpper(id.Trim());
 
-            // validate firstNam length = 2-40
-            if ((firstNam.Length < 2) || (firstNam.Length > 40))
+            if (!Globals_Game.validateCharacterID(id))
             {
-                throw new InvalidDataException("Character first name must be between 2 and 40 characters in length");
+                throw new InvalidDataException("Character_Serialised id must have the format 'Char_' followed by some numbers");
             }
 
-            // validate famNam length = 2-40
-            if ((famNam.Length < 2) || (famNam.Length > 40))
+            // FIRSTNAM
+            // trim and ensure 1st is uppercase
+            firstNam = Globals_Game.firstCharToUpper(firstNam.Trim());
+
+            if (!Globals_Game.validateName(firstNam))
             {
-                throw new InvalidDataException("Character family name must be between 2 and 40 characters in length");
+                throw new InvalidDataException("Character_Serialised firstname must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
-            // TODO: validate dob
+            // FAMNAM
+            // trim and ensure 1st is uppercase
+            famNam = Globals_Game.firstCharToUpper(famNam.Trim());
 
-            // validate preg = not if male
-            if (isM)
+            if (!Globals_Game.validateName(famNam))
             {
-				this.isPregnant = false;
+                throw new InvalidDataException("Character_Serialised family name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
-            //  TODO: validate nat
-
-            // validate maxHea = 1-9.00
-            if ((mxHea < 1) || (mxHea > 9))
+            // DOB
+            if (!Globals_Game.validateSeason(dob.Item2))
             {
-                throw new InvalidDataException("Character maximum health must be a double between 1 and 9");
+                throw new InvalidDataException("Character_Serialised date-of-birth season must be a byte between 0-3");
             }
 
-            // validate vir = 1-9.00
-            if ((vir < 1) || (vir > 9))
+            // NAT
+            // trim and ensure 1st is uppercase
+            nat = Globals_Game.firstCharToUpper(nat.Trim());
+
+            if (!Globals_Game.validateNationalityID(nat))
             {
-                throw new InvalidDataException("Character virility must be a double between 1 and 9");
+                throw new InvalidDataException("Character_Serialised nationality ID must be 1-3 characters long, and consist entirely of letters");
             }
 
-
-            // TODO: validate lang = string B,C,D,E,F,G,H,I,L/1-3
-
-            // validate day = 0-90
-            if ((day > 90) || (day < 0))
+            // MXHEA
+            if (!Globals_Game.validateCharacterStat(mxHea))
             {
-                throw new InvalidDataException("Character remaining days must be a double between 0 and 90");
+                throw new InvalidDataException("Character_Serialised maxHealth must be a double between 1-9");
             }
 
-            // validate stat = 0-9.00
-            if (stat > 9)
+            // VIR
+            if (!Globals_Game.validateCharacterStat(vir))
             {
-                throw new InvalidDataException("Character stature must be a double between 0 and 9");
+                throw new InvalidDataException("Character_Serialised virility must be a double between 1-9");
             }
 
-            // validate mngmnt = 0-9.00
-            if (mngmnt > 9)
+            // GOTO
+            if (go.Count > 0)
             {
-                throw new InvalidDataException("Character stature must be a double between 0 and 9");
+                string[] goQueue = go.ToArray();
+                for (int i = 0; i < goQueue.Length; i++ )
+                {
+                    // trim and ensure is uppercase
+                    goQueue[i] = goQueue[i].Trim().ToUpper();
+
+                    if (!Globals_Game.validatePlaceID(goQueue[i]))
+                    {
+                        throw new InvalidDataException("All IDs in Character_Serialised goTo queue must be 5 characters long, start with a letter, and end in at least 2 numbers");
+                    }
+                }
             }
 
-            // validate cbt = 0-9.00
-            if (cbt > 9)
+            // LANG
+            if (!Globals_Game.validateLanguageID(lang))
             {
-                throw new InvalidDataException("Character stature must be a double between 0 and 9");
+                throw new InvalidDataException("Character_Serialised language ID must have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");
             }
 
-            // TODO: validate spID = 1-10000?
-            // TODO: ensure married characters have a sp and unmarried ones don't? (but may initially be null)
-            // TODO: validate fath ID = 1-10000?
+            // DAYS
+            if (!Globals_Game.validateDays(day))
+            {
+                throw new InvalidDataException("Character_Serialised days must be a double between 0-109");
+            }
 
-            // TODO: validate famHead ID = 1-10000?
+            // STAT
+            if (!Globals_Game.validateCharacterStat(stat, 0))
+            {
+                throw new InvalidDataException("Character_Serialised stature must be a double between 0-9");
+            }
+
+            // MNGMNT
+            if (!Globals_Game.validateCharacterStat(mngmnt))
+            {
+                throw new InvalidDataException("Character_Serialised management must be a double between 1-9");
+            }
+
+            // CBT
+            if (!Globals_Game.validateCharacterStat(cbt))
+            {
+                throw new InvalidDataException("Character_Serialised combat must be a double between 1-9");
+            }
+
+            // SKL
+            for (int i = 0; i < skl.Length; i++)
+            {
+                if (!Globals_Game.validateSkillID(skl[i].Item1))
+                {
+                    throw new InvalidDataException("Character_Serialised skill ID must have the format 'skill_' followed by some numbers");
+                }
+
+                else if (!Globals_Game.validateCharacterStat(Convert.ToDouble(skl[i].Item2)))
+                {
+                    throw new InvalidDataException("Character_Serialised skill level must be an integer between 1-9");
+                }
+            }
+
+            // PREG
+            if (preg)
+            {
+                if (isM)
+                {
+                    throw new InvalidDataException("Character_Serialised cannot be pregnant if is male");
+                }
+            }
+
+            // FAMID
+            if (!String.IsNullOrWhiteSpace(famID))
+            {
+                // trim and ensure 1st is uppercase
+                famID = Globals_Game.firstCharToUpper(famID.Trim());
+
+                if (!Globals_Game.validateCharacterID(famID))
+                {
+                    throw new InvalidDataException("Character_Serialised family id must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // SP
+            if (!String.IsNullOrWhiteSpace(sp))
+            {
+                // trim and ensure 1st is uppercase
+                sp = Globals_Game.firstCharToUpper(sp.Trim());
+
+                if (!Globals_Game.validateCharacterID(sp))
+                {
+                    throw new InvalidDataException("Character_Serialised spouse id must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // FATH
+            if (!String.IsNullOrWhiteSpace(fath))
+            {
+                // trim and ensure 1st is uppercase
+                fath = Globals_Game.firstCharToUpper(fath.Trim());
+
+                if (!Globals_Game.validateCharacterID(fath))
+                {
+                    throw new InvalidDataException("Character_Serialised father id must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // MOTH
+            if (!String.IsNullOrWhiteSpace(moth))
+            {
+                // trim and ensure 1st is uppercase
+                moth = Globals_Game.firstCharToUpper(moth.Trim());
+
+                if (!Globals_Game.validateCharacterID(moth))
+                {
+                    throw new InvalidDataException("Character_Serialised mother id must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // MYTI
+            for (int i = 0; i < myTi.Count; i++)
+            {
+                // trim and ensure is uppercase
+                myTi[i] = myTi[i].Trim().ToUpper();
+
+                if (!Globals_Game.validatePlaceID(myTi[i]))
+                {
+                    throw new InvalidDataException("All Character_Serialised title IDs must be 5 characters long, start with a letter, and end in at least 2 numbers");
+                }
+            }
+
+            // FIA
+            if (!String.IsNullOrWhiteSpace(fia))
+            {
+                // trim and ensure 1st is uppercase
+                fia = Globals_Game.firstCharToUpper(fia.Trim());
+
+                if (!Globals_Game.validateCharacterID(fia))
+                {
+                    throw new InvalidDataException("Character_Serialised fiancee id must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            // AILS
+            if (ails.Count > 0)
+            {
+                string[] myAils = new string[ails.Count];
+                ails.Keys.CopyTo(myAils, 0);
+                for (int i = 0; i < myAils.Length; i++)
+                {
+                    // trim and ensure is uppercase
+                    myAils[i] = myAils[i].Trim().ToUpper();
+
+                    if (!Globals_Game.validateAilmentID(myAils[i]))
+                    {
+                        throw new InvalidDataException("All IDs in Character_Serialised ailments must have the format 'Ail_' followed by some numbers");
+                    }
+                }
+            }
+
+            // LOC
+            // trim and ensure is uppercase
+            loc = loc.Trim().ToUpper();
+
+            if (!Globals_Game.validatePlaceID(loc))
+            {
+                throw new InvalidDataException("Character_Serialised location id must be 5 characters long, start with a letter, and end in at least 2 numbers");
+            }
+
+            // AID
+            if (!String.IsNullOrWhiteSpace(aID))
+            {
+                // trim and ensure 1st is uppercase
+                aID = Globals_Game.firstCharToUpper(aID.Trim());
+
+                if (!Globals_Game.validateArmyID(aID))
+                {
+                    throw new InvalidDataException("Character_Serialised army id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
+                }
+            }
 
             this.charID = id;
             this.firstName = firstNam;
@@ -4890,6 +5226,101 @@ namespace hist_mmorpg
             List<string> myS, Dictionary<string, Ailment> ails = null, string loc = null, String aID = null, String pID = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc, aID)
         {
+            // VALIDATION
+
+            // MYNPCS
+            if (npcs.Count > 0)
+            {
+                for (int i = 0; i < npcs.Count; i++ )
+                {
+                    // trim and ensure 1st is uppercase
+                    npcs[i] = Globals_Game.firstCharToUpper(npcs[i].Trim());
+
+                    if (!Globals_Game.validateCharacterID(npcs[i]))
+                    {
+                        throw new InvalidDataException("All PlayerCharacter_Serialised myNPC IDs must have the format 'Char_' followed by some numbers");
+                    }
+                }
+            }
+
+            // MYOWNEDFIEFS
+            if (ownedF.Count > 0)
+            {
+                for (int i = 0; i < ownedF.Count; i++)
+                {
+                    // trim and ensure is uppercase
+                    ownedF[i] = ownedF[i].Trim().ToUpper();
+
+                    if (!Globals_Game.validatePlaceID(ownedF[i]))
+                    {
+                        throw new InvalidDataException("All PlayerCharacter_Serialised ownedFief IDs must be 5 characters long, start with a letter, and end in at least 2 numbers");
+                    }
+                }
+            }
+
+            // MYOWNEDPROVS
+            if (ownedP.Count > 0)
+            {
+                for (int i = 0; i < ownedP.Count; i++)
+                {
+                    // trim and ensure is uppercase
+                    ownedP[i] = ownedP[i].Trim().ToUpper();
+
+                    if (!Globals_Game.validatePlaceID(ownedP[i]))
+                    {
+                        throw new InvalidDataException("All PlayerCharacter_Serialised ownedProvince IDs must be 5 characters long, start with a letter, and end in at least 2 numbers");
+                    }
+                }
+            }
+
+            // HOME
+            // trim and ensure is uppercase
+            home = home.Trim().ToUpper();
+
+            if (!Globals_Game.validatePlaceID(home))
+            {
+                throw new InvalidDataException("PlayerCharacter_Serialised homeFief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
+            }
+
+            // ANCHOME
+            // trim and ensure is uppercase
+            ancHome = ancHome.Trim().ToUpper();
+
+            if (!Globals_Game.validatePlaceID(ancHome))
+            {
+                throw new InvalidDataException("PlayerCharacter_Serialised ancestral homeFief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
+            }
+
+            // MYARMIES
+            if (myA.Count > 0)
+            {
+                for (int i = 0; i < myA.Count; i++)
+                {
+                    // trim and ensure 1st is uppercase
+                    myA[i] = Globals_Game.firstCharToUpper(myA[i].Trim());
+
+                    if (!Globals_Game.validateArmyID(myA[i]))
+                    {
+                        throw new InvalidDataException("All PlayerCharacter_Serialised army IDs must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
+                    }
+                }
+            }
+
+            // MYSIEGES
+            if (myS.Count > 0)
+            {
+                for (int i = 0; i < myS.Count; i++)
+                {
+                    // trim and ensure 1st is uppercase
+                    myS[i] = Globals_Game.firstCharToUpper(myS[i].Trim());
+
+                    if (!Globals_Game.validateSiegeID(myS[i]))
+                    {
+                        throw new InvalidDataException("All PlayerCharacter_Serialised siege IDs must have the format 'Siege_' followed by some numbers");
+                    }
+                }
+            }
+
             this.outlawed = outl;
             this.purse = pur;
             this.myNPCs = npcs;
@@ -4961,21 +5392,31 @@ namespace hist_mmorpg
         /// Constructor for NonPlayerCharacter_Serialised taking seperate values.
         /// For creating NonPlayerCharacter_Serialised from CSV file.
         /// </summary>
-        /// <param name="mb">String holding NPC's employer (charID)</param>
-        /// <param name="wa">string holding NPC's wage</param>
+        /// <param name="empl">String holding NPC's employer (charID)</param>
+        /// <param name="sal">string holding NPC's wage</param>
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
         /// <param name="isH">bool denoting if is player's heir</param>
         public NonPlayerCharacter_Serialised(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, string nat, bool alive, Double mxHea, Double vir,
             List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] skl, bool inK, bool preg, String famID,
-            String sp, String fath, String moth, List<String> myTi, string fia, uint wa, bool inEnt, bool isH, Dictionary<string, Ailment> ails = null, string loc = null, String aID = null, String mb = null)
+            String sp, String fath, String moth, List<String> myTi, string fia, uint sal, bool inEnt, bool isH, Dictionary<string, Ailment> ails = null, string loc = null, String aID = null, String empl = null)
             : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc, aID)
         {
-            // TODO: validate hb = 1-10000
-            // TODO: validate go = string E/AR,BK,CG,CH,CU,CW,DR,DT,DU,DV,EX,GL,HE,HM,KE,LA,LC,LN,NF,NH,NO,NU,NW,OX,PM,SM,SR,ST,SU,SW,
-            // TODO: validate wa = uint
+            // VALIDATION
 
-            this.employer = mb;
-            this.wage = wa;
+            // EMPL
+            if (!String.IsNullOrWhiteSpace(empl))
+            {
+                // trim and ensure 1st is uppercase
+                empl = Globals_Game.firstCharToUpper(empl.Trim());
+
+                if (!Globals_Game.validateCharacterID(empl))
+                {
+                    throw new InvalidDataException("NonPlayerCharacter employer ID must have the format 'Char_' followed by some numbers");
+                }
+            }
+
+            this.employer = empl;
+            this.wage = sal;
             this.inEntourage = inEnt;
             this.lastOffer = new Dictionary<string, uint>();
             this.isHeir = isH;

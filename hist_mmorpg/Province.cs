@@ -28,13 +28,11 @@ namespace hist_mmorpg
             : base(id, nam, tiHo, own, r)
         {
             // VALIDATION
-            bool isValid = true;
 
             // OTAX
-            isValid = Globals_Game.validateTax(otax);
-            if (!isValid)
+            if (!Globals_Game.validatePercentage(otax))
             {
-                throw new InvalidDataException("Province taxrate must be between 0 and 100");
+                throw new InvalidDataException("Province taxrate must be a double between 0 and 100");
             }
 
             this.taxRate = otax;
@@ -250,23 +248,20 @@ namespace hist_mmorpg
             : base(id, nam, r, own: own, tiHo: tiHo)
         {
             // VALIDATION
-            bool isValid = true;
 
             // OTAX
-            isValid = Globals_Game.validateTax(otax);
-            if (!isValid)
+            if (!Globals_Game.validatePercentage(otax))
             {
-                throw new InvalidDataException("Province_Serialised taxrate must be between 0 and 100");
+                throw new InvalidDataException("Province_Serialised taxrate must be a double between 0 and 100");
             }
 
             // KING
             // trim and ensure is uppercase
             king = king.Trim().ToUpper();
 
-            isValid = Globals_Game.validatePlaceID(king);
-            if (!isValid)
+            if (!Globals_Game.validatePlaceID(king))
             {
-                throw new InvalidDataException("Province_Serialised kingdom must be 5 characters long, start with a letter, and end in at least 2 numbers");
+                throw new InvalidDataException("Province_Serialised kingdom ID must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
 
             this.taxRate = otax;

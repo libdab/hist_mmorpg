@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace hist_mmorpg
 {
@@ -41,6 +42,59 @@ namespace hist_mmorpg
         /// <param name="minEff">uint holding minimum ailment effect</param>
         public Ailment(String id, string descr, string wh, uint eff, uint minEff)
         {
+            // VALIDATION
+
+            // ID
+            // trim and ensure 1st is uppercase
+            id = Globals_Game.firstCharToUpper(id.Trim());
+
+            if (!Globals_Game.validateAilmentID(id))
+            {
+                throw new InvalidDataException("Ailment ID must have the format 'Ail_' followed by some numbers");
+            }
+
+            // DESCR
+            // trim and ensure 1st is uppercase
+            descr = Globals_Game.firstCharToUpper(descr.Trim());
+
+            if (!Globals_Game.validateName(descr))
+            {
+                throw new InvalidDataException("Ailment description must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
+            }
+
+            // WHEN
+            // trim and ensure 1st is uppercase
+            wh = Globals_Game.firstCharToUpper(wh.Trim());
+
+            // check contains season
+            if (!wh.Contains("Spring"))
+            {
+                if (!wh.Contains("Summer"))
+                {
+                    if (!wh.Contains("Autumn"))
+                    {
+                        if (!wh.Contains("Winter"))
+                        {
+                            throw new InvalidDataException("Ailment 'when' must specify the season and year in which the ailment occurred");
+                        }
+                    }
+                }
+            }
+
+            // EFF
+            // check not > 5
+            if (eff > 5)
+            {
+                throw new InvalidDataException("Ailment effect must be a uint less than 6");
+            }
+
+            // MINEFF
+            // check not > 1
+            if (minEff > 1)
+            {
+                throw new InvalidDataException("Ailment minimumEffect must be a uint less than 2");
+            }
+
             this.ailmentID = id;
             this.description = descr;
             this.when = wh;
