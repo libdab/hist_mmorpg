@@ -30,7 +30,7 @@ namespace hist_mmorpg
             // VALIDATION
 
             // OTAX
-            if (!Globals_Game.validatePercentage(otax))
+            if (!Utility_Methods.validatePercentage(otax))
             {
                 throw new InvalidDataException("Province taxrate must be a double between 0 and 100");
             }
@@ -250,7 +250,7 @@ namespace hist_mmorpg
             // VALIDATION
 
             // OTAX
-            if (!Globals_Game.validatePercentage(otax))
+            if (!Utility_Methods.validatePercentage(otax))
             {
                 throw new InvalidDataException("Province_Serialised taxrate must be a double between 0 and 100");
             }
@@ -259,7 +259,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             king = king.Trim().ToUpper();
 
-            if (!Globals_Game.validatePlaceID(king))
+            if (!Utility_Methods.validatePlaceID(king))
             {
                 throw new InvalidDataException("Province_Serialised kingdom ID must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }

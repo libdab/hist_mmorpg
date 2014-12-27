@@ -178,9 +178,9 @@ namespace hist_mmorpg
 
             // NAT
             // trim and ensure 1st is uppercase
-            nat = Globals_Game.firstCharToUpper(nat.Trim());
+            nat = Utility_Methods.firstCharToUpper(nat.Trim());
 
-            if (!Globals_Game.validateNationalityID(nat))
+            if (!Utility_Methods.validateNationalityID(nat))
             {
                 throw new InvalidDataException("Kingdom_Serialised nationality ID must be 1-3 characters long, and consist entirely of letters");
             }

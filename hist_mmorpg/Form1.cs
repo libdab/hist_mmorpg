@@ -100,6 +100,8 @@ namespace hist_mmorpg
             this.setUpProvinceLists();
             this.setUpEditSkillEffectList();
 
+            // ensure 
+
             // set player's character to display
             Globals_Client.charToView = Globals_Client.myPlayerCharacter;
 
@@ -151,9 +153,221 @@ namespace hist_mmorpg
             // initialise player's character display in UI
             this.refreshCharacterContainer();
 
+            // ensure Globals_Game.victoryData is up-to-date
+            this.synchroniseVictoryData();
+
         }
 
-		/// <summary>
+        /// <summary>
+        /// Ensures that the Globals_Game.victoryData is up-to-date
+        /// </summary>
+        public void synchroniseVictoryData()
+        {
+            List<string> toRemove = new List<string>();
+            List<VictoryData> toAdd = new List<VictoryData>();
+
+            // iterate through Globals_Game.victoryData
+            foreach (KeyValuePair<string, VictoryData> vicDataEntry in Globals_Game.victoryData)
+            {
+                // check that player still active
+                PlayerCharacter thisPC = null;
+                if (Globals_Game.pcMasterList.ContainsKey(vicDataEntry.Value.playerCharacterID))
+                {
+                    thisPC = Globals_Game.pcMasterList[vicDataEntry.Value.playerCharacterID];
+                }
+
+                // if PC exists
+                if (thisPC != null)
+                {
+                    // check is active player
+                    if ((String.IsNullOrWhiteSpace(thisPC.playerID)) || (!thisPC.isAlive))
+                    {
+                        toRemove.Add(vicDataEntry.Key);
+                    }
+                }
+
+                // if PC doesn't exist
+                else
+                {
+                    toRemove.Add(vicDataEntry.Key);
+                }
+            }
+
+            // remove Globals_Game.victoryData entries if necessary
+            if (toRemove.Count > 0)
+            {
+                for (int i = 0; i < toRemove.Count; i++ )
+                {
+                    Globals_Game.victoryData.Remove(toRemove[i]);
+                }
+            }
+            toRemove.Clear();
+
+            // iterate through pcMasterList
+            foreach (KeyValuePair<string, PlayerCharacter> pcEntry in Globals_Game.pcMasterList)
+            {
+                // check for playerID (i.e. active player)
+                if (!String.IsNullOrWhiteSpace(pcEntry.Value.playerID))
+                {
+                    // check if is in Globals_Game.victoryData
+                    if (!Globals_Game.victoryData.ContainsKey(pcEntry.Value.playerID))
+                    {
+                        // create and add new VictoryData if necessary
+                        VictoryData newVicData = new VictoryData(pcEntry.Value.playerID, pcEntry.Value.charID, pcEntry.Value.calculateStature(), pcEntry.Value.getPopulationPercentage(), pcEntry.Value.getFiefsPercentage());
+                        toAdd.Add(newVicData);
+                    }
+                }
+            }
+
+            // add any new Globals_Game.victoryData entries
+            if (toAdd.Count > 0)
+            {
+                for (int i = 0; i < toAdd.Count; i++)
+                {
+                    Globals_Game.victoryData.Add(toAdd[i].playerID, toAdd[i]);
+                }
+            }
+            toAdd.Clear();
+
+        }
+
+        /// <summary>
+        /// Creates UI display for list of skill effects in the edit skill screen
+        /// </summary>
+        public void setUpEditSkillEffectList()
+        {
+            // add necessary columns
+            this.adminEditSkillEffsListView.Columns.Add("Effect Name", -2, HorizontalAlignment.Left);
+            this.adminEditSkillEffsListView.Columns.Add("Level", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for king's lists of provinces and fiefs
+        /// </summary>
+        public void setUpRoyalGiftsLists()
+        {
+            // add necessary columns
+            // provinces
+            this.royalGiftsProvListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
+            this.royalGiftsProvListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.royalGiftsProvListView.Columns.Add("Title Holder", -2, HorizontalAlignment.Left);
+            this.royalGiftsProvListView.Columns.Add("Last Tax Rate", -2, HorizontalAlignment.Left);
+            this.royalGiftsProvListView.Columns.Add("Last Tax Income", -2, HorizontalAlignment.Left);
+            // fiefs
+            this.royalGiftsFiefListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Province", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Title Holder", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Last GDP", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Last Tax Income", -2, HorizontalAlignment.Left);
+            this.royalGiftsFiefListView.Columns.Add("Current Treasury", -2, HorizontalAlignment.Left);
+            // positions
+            this.royalGiftsPositionListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.royalGiftsPositionListView.Columns.Add("Position", -2, HorizontalAlignment.Left);
+            this.royalGiftsPositionListView.Columns.Add("Stature", -2, HorizontalAlignment.Left);
+            this.royalGiftsPositionListView.Columns.Add("Holder", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for overlord's lists of provinces (and associated fiefs)
+        /// </summary>
+        public void setUpProvinceLists()
+        {
+            // add necessary columns
+            // provinces
+            this.provinceProvListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Last season tax rate", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Kingdom ID", -2, HorizontalAlignment.Left);
+            this.provinceProvListView.Columns.Add("Kingdom Name", -2, HorizontalAlignment.Left);
+            // fiefs
+            this.provinceFiefListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("Current GDP", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("Last season tax income", -2, HorizontalAlignment.Left);
+            this.provinceFiefListView.Columns.Add("", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for list of journal entries
+        /// </summary>
+        public void setUpJournalList()
+        {
+            // add necessary columns
+            this.journalListView.Columns.Add("Entry ID", -2, HorizontalAlignment.Left);
+            this.journalListView.Columns.Add("Date", -2, HorizontalAlignment.Left);
+            this.journalListView.Columns.Add("Type", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for list of sieges owned by player
+        /// </summary>
+        public void setUpSiegeList()
+        {
+            // add necessary columns
+            this.siegeListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.siegeListView.Columns.Add("Fief", -2, HorizontalAlignment.Left);
+            this.siegeListView.Columns.Add("Defender", -2, HorizontalAlignment.Left);
+            this.siegeListView.Columns.Add("Besieger", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for list of armies owned by player
+        /// </summary>
+        public void setUpArmyList()
+        {
+            // add necessary columns
+            this.armyListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.armyListView.Columns.Add("Leader", -2, HorizontalAlignment.Left);
+            this.armyListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
+            this.armyListView.Columns.Add("Size", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for list of characters in the Household screen
+        /// </summary>
+        public void setUpHouseholdCharsList()
+        {
+            // add necessary columns
+            this.houseCharListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("Function", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("Responsibilities", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
+            this.houseCharListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for list of characters present in Court, Tavern, outside keep
+        /// </summary>
+        public void setUpMeetingPLaceCharsList()
+        {
+            // add necessary columns
+            this.meetingPlaceCharsListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
+            this.meetingPlaceCharsListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
+            this.meetingPlaceCharsListView.Columns.Add("Sex", -2, HorizontalAlignment.Left);
+            this.meetingPlaceCharsListView.Columns.Add("Household", -2, HorizontalAlignment.Left);
+            this.meetingPlaceCharsListView.Columns.Add("Type", -2, HorizontalAlignment.Left);
+            this.meetingPlaceCharsListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
+        /// Creates UI display for PlayerCharacter's list of owned Fiefs
+        /// </summary>
+        public void setUpFiefsList()
+        {
+            // add necessary columns
+            this.fiefsListView.Columns.Add("Fief Name", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Where am I?", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Home Fief?", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Province Name", -2, HorizontalAlignment.Left);
+            this.fiefsListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
+        }
+
+        /// <summary>
 		/// Creates some game objects from code (temporary)
 		/// </summary>
 		public void loadFromCode()
@@ -515,29 +729,29 @@ namespace hist_mmorpg
             List<string> mySieges002 = new List<string>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("Char_47", "Dave", "Bond", myDob001, true, nationality02, true, 8.50, 9.0, myGoTo1, c1, 90, 0, 7.2, 6.1, Globals_Game.generateSkillSet(), false, false, "Char_47", "Char_403", null, null, false, 13000, myEmployees1, myFiefsOwned1, myProvsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
+            PlayerCharacter myChar1 = new PlayerCharacter("Char_47", "Dave", "Bond", myDob001, true, nationality02, true, 8.50, 9.0, myGoTo1, c1, 90, 0, 7.2, 6.1, Utility_Methods.generateSkillSet(), false, false, "Char_47", "Char_403", null, null, false, 13000, myEmployees1, myFiefsOwned1, myProvsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
             Globals_Game.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("Char_40", "Bave", "Dond", myDob002, true, nationality01, true, 8.50, 6.0, myGoTo2, f1, 90, 0, 5.0, 4.5, Globals_Game.generateSkillSet(), false, false, "Char_40", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, myProvsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
+            PlayerCharacter myChar2 = new PlayerCharacter("Char_40", "Bave", "Dond", myDob002, true, nationality01, true, 8.50, 6.0, myGoTo2, f1, 90, 0, 5.0, 4.5, Utility_Methods.generateSkillSet(), false, false, "Char_40", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, myProvsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
             Globals_Game.pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("Char_401", "Jimmy", "Servant", myDob003, true, nationality02, true, 8.50, 6.0, myGoTo3, c1, 90, 0, 3.3, 6.7, Globals_Game.generateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("Char_401", "Jimmy", "Servant", myDob003, true, nationality02, true, 8.50, 6.0, myGoTo3, c1, 90, 0, 3.3, 6.7, Utility_Methods.generateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("Char_402", "Johnny", "Servant", myDob004, true, nationality02, true, 8.50, 6.0, myGoTo4, c1, 90, 0, 7.1, 5.2, Globals_Game.generateSkillSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, empl: myChar1.charID, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("Char_402", "Johnny", "Servant", myDob004, true, nationality02, true, 8.50, 6.0, myGoTo4, c1, 90, 0, 7.1, 5.2, Utility_Methods.generateSkillSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, empl: myChar1.charID, loc: myFief1);
             Globals_Game.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("Char_403", "Harry", "Bailiff", myDob005, true, nationality01, true, 8.50, 6.0, myGoTo5, c1, 90, 0, 7.1, 5.2, Globals_Game.generateSkillSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, empl: myChar2.charID, loc: myFief6);
+            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("Char_403", "Harry", "Bailiff", myDob005, true, nationality01, true, 8.50, 6.0, myGoTo5, c1, 90, 0, 7.1, 5.2, Utility_Methods.generateSkillSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, empl: myChar2.charID, loc: myFief6);
             Globals_Game.npcMasterList.Add(myNPC3.charID, myNPC3);
-            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("Char_404", "Bev", "Bond", myDob006, false, nationality02, true, 2.50, 9.0, myGoTo6, f1, 90, 0, 4.0, 6.0, Globals_Game.generateSkillSet(), false, false, "Char_47", "Char_47", null, null, 30000, false, false, myTitles006, null, loc: myFief1);
+            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("Char_404", "Bev", "Bond", myDob006, false, nationality02, true, 2.50, 9.0, myGoTo6, f1, 90, 0, 4.0, 6.0, Utility_Methods.generateSkillSet(), false, false, "Char_47", "Char_47", null, null, 30000, false, false, myTitles006, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myChar1Wife.charID, myChar1Wife);
-            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("Char_405", "Horatio", "Dond", myDob007, true, nationality01, true, 8.50, 6.0, myGoTo7, f1, 90, 0, 7.1, 5.2, Globals_Game.generateSkillSet(), true, false, "Char_40", "Char_406", "Char_40", null, 10000, false, true, myTitles007, null, loc: myFief6);
+            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("Char_405", "Horatio", "Dond", myDob007, true, nationality01, true, 8.50, 6.0, myGoTo7, f1, 90, 0, 7.1, 5.2, Utility_Methods.generateSkillSet(), true, false, "Char_40", "Char_406", "Char_40", null, 10000, false, true, myTitles007, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2Son.charID, myChar2Son);
-            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("Char_406", "Mave", "Dond", myDob008, false, nationality02, true, 2.50, 9.0, myGoTo8, f1, 90, 0, 4.0, 6.0, Globals_Game.generateSkillSet(), true, false, "Char_40", "Char_405", null, null, 30000, false, false, myTitles008, null, loc: myFief6);
+            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("Char_406", "Mave", "Dond", myDob008, false, nationality02, true, 2.50, 9.0, myGoTo8, f1, 90, 0, 4.0, 6.0, Utility_Methods.generateSkillSet(), true, false, "Char_40", "Char_405", null, null, 30000, false, false, myTitles008, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2SonWife.charID, myChar2SonWife);
-            NonPlayerCharacter myChar1Son = new NonPlayerCharacter("Char_407", "Rickie", "Bond", myDob009, true, nationality02, true, 2.50, 9.0, myGoTo9, c1, 90, 0, 4.0, 6.0, Globals_Game.generateSkillSet(), true, false, "Char_47", null, "Char_47", "Char_404", 30000, false, true, myTitles009, null, loc: myFief1);
+            NonPlayerCharacter myChar1Son = new NonPlayerCharacter("Char_407", "Rickie", "Bond", myDob009, true, nationality02, true, 2.50, 9.0, myGoTo9, c1, 90, 0, 4.0, 6.0, Utility_Methods.generateSkillSet(), true, false, "Char_47", null, "Char_47", "Char_404", 30000, false, true, myTitles009, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myChar1Son.charID, myChar1Son);
-            NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("Char_408", "Elsie", "Bond", myDob010, false, nationality02, true, 2.50, 9.0, myGoTo10, c1, 90, 0, 4.0, 6.0, Globals_Game.generateSkillSet(), true, false, "Char_47", null, "Char_47", "Char_404", 30000, false, false, myTitles010, null, loc: myFief1);
+            NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("Char_408", "Elsie", "Bond", myDob010, false, nationality02, true, 2.50, 9.0, myGoTo10, c1, 90, 0, 4.0, 6.0, Utility_Methods.generateSkillSet(), true, false, "Char_47", null, "Char_47", "Char_404", 30000, false, false, myTitles010, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myChar1Daughter.charID, myChar1Daughter);
-            NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("Char_409", "Wayne", "Dond", myDob011, true, nationality01, true, 2.50, 9.0, myGoTo11, f1, 90, 0, 4.0, 6.0, Globals_Game.generateSkillSet(), true, false, "Char_40", null, "Char_40", null, 30000, false, false, myTitles011, null, loc: myFief6);
+            NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("Char_409", "Wayne", "Dond", myDob011, true, nationality01, true, 2.50, 9.0, myGoTo11, f1, 90, 0, 4.0, 6.0, Utility_Methods.generateSkillSet(), true, false, "Char_40", null, "Char_40", null, 30000, false, false, myTitles011, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2Son2.charID, myChar2Son2);
-            NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("Char_410", "Esmerelda", "Dond", myDob012, false, nationality01, true, 2.50, 9.0, myGoTo12, f1, 90, 0, 4.0, 6.0, Globals_Game.generateSkillSet(), true, false, "Char_40", null, "Char_40", null, 30000, false, false, myTitles012, null, loc: myFief6);
+            NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("Char_410", "Esmerelda", "Dond", myDob012, false, nationality01, true, 2.50, 9.0, myGoTo12, f1, 90, 0, 4.0, 6.0, Utility_Methods.generateSkillSet(), true, false, "Char_40", null, "Char_40", null, 30000, false, false, myTitles012, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2Daughter.charID, myChar2Daughter);
 
             /*
@@ -848,11 +1062,12 @@ namespace hist_mmorpg
             myFief2.barCharacter(myChar2.charID);
             myFief2.barCharacter(myChar1Wife.charID);
 
+            /*
             // create VictoryDatas for PCs
             VictoryData myVicData01 = new VictoryData(myChar1.playerID, myChar1.charID, myChar1.calculateStature(), myChar1.getPopulationPercentage(), myChar1.getFiefsPercentage());
             Globals_Game.victoryData.Add(myVicData01.playerID, myVicData01);
             VictoryData myVicData02 = new VictoryData(myChar2.playerID, myChar2.charID, myChar2.calculateStature(), myChar2.getPopulationPercentage(), myChar2.getFiefsPercentage());
-            Globals_Game.victoryData.Add(myVicData02.playerID, myVicData02);
+            Globals_Game.victoryData.Add(myVicData02.playerID, myVicData02); */
 
 			// try retrieving fief from masterlist using fiefID
 			// Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");

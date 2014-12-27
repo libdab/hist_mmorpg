@@ -21,55 +21,6 @@ namespace hist_mmorpg
     partial class Form1
     {
         /// <summary>
-        /// Creates UI display for king's lists of provinces and fiefs
-        /// </summary>
-        public void setUpRoyalGiftsLists()
-        {
-            // add necessary columns
-            // provinces
-            this.royalGiftsProvListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
-            this.royalGiftsProvListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.royalGiftsProvListView.Columns.Add("Title Holder", -2, HorizontalAlignment.Left);
-            this.royalGiftsProvListView.Columns.Add("Last Tax Rate", -2, HorizontalAlignment.Left);
-            this.royalGiftsProvListView.Columns.Add("Last Tax Income", -2, HorizontalAlignment.Left);
-            // fiefs
-            this.royalGiftsFiefListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
-            this.royalGiftsFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.royalGiftsFiefListView.Columns.Add("Province", -2, HorizontalAlignment.Left);
-            this.royalGiftsFiefListView.Columns.Add("Title Holder", -2, HorizontalAlignment.Left);
-            this.royalGiftsFiefListView.Columns.Add("Last GDP", -2, HorizontalAlignment.Left);
-            this.royalGiftsFiefListView.Columns.Add("Last Tax Income", -2, HorizontalAlignment.Left);
-            this.royalGiftsFiefListView.Columns.Add("Current Treasury", -2, HorizontalAlignment.Left);
-            // positions
-            this.royalGiftsPositionListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.royalGiftsPositionListView.Columns.Add("Position", -2, HorizontalAlignment.Left);
-            this.royalGiftsPositionListView.Columns.Add("Stature", -2, HorizontalAlignment.Left);
-            this.royalGiftsPositionListView.Columns.Add("Holder", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
-        /// Creates UI display for overlord's lists of provinces (and associated fiefs)
-        /// </summary>
-        public void setUpProvinceLists()
-        {
-            // add necessary columns
-            // provinces
-            this.provinceProvListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
-            this.provinceProvListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.provinceProvListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
-            this.provinceProvListView.Columns.Add("Last season tax rate", -2, HorizontalAlignment.Left);
-            this.provinceProvListView.Columns.Add("Kingdom ID", -2, HorizontalAlignment.Left);
-            this.provinceProvListView.Columns.Add("Kingdom Name", -2, HorizontalAlignment.Left);
-            // fiefs
-            this.provinceFiefListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
-            this.provinceFiefListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.provinceFiefListView.Columns.Add("Owner", -2, HorizontalAlignment.Left);
-            this.provinceFiefListView.Columns.Add("Current GDP", -2, HorizontalAlignment.Left);
-            this.provinceFiefListView.Columns.Add("Last season tax income", -2, HorizontalAlignment.Left);
-            this.provinceFiefListView.Columns.Add("", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
         /// Refreshes royal gifts display
         /// </summary>
         public void refreshRoyalGiftsContainer()

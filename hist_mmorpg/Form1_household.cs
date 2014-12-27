@@ -21,20 +21,6 @@ namespace hist_mmorpg
     partial class Form1
     {
         /// <summary>
-        /// Creates UI display for list of characters in the Household screen
-        /// </summary>
-        public void setUpHouseholdCharsList()
-        {
-            // add necessary columns
-            this.houseCharListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.houseCharListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.houseCharListView.Columns.Add("Function", -2, HorizontalAlignment.Left);
-            this.houseCharListView.Columns.Add("Responsibilities", -2, HorizontalAlignment.Left);
-            this.houseCharListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
-            this.houseCharListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
         /// Refreshes Household display
         /// </summary>
         /// <param name="npc">NonPlayerCharacter to display</param>

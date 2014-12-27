@@ -35,16 +35,16 @@ namespace hist_mmorpg
             // VALIDATION
 
             // ID
-            if (!Globals_Game.validateTerrainID(id))
+            if (!Utility_Methods.validateTerrainID(id))
             {
                 throw new InvalidDataException("Terrain ID must have the format 'terr_' followed by some letters");
             }
 
             // DESC
             // trim and ensure 1st is uppercase
-            desc = Globals_Game.firstCharToUpper(desc.Trim());
+            desc = Utility_Methods.firstCharToUpper(desc.Trim());
 
-            if (!Globals_Game.validateName(desc))
+            if (!Utility_Methods.validateName(desc))
             {
                 throw new InvalidDataException("Terrain description must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }

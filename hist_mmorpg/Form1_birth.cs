@@ -129,7 +129,7 @@ namespace hist_mmorpg
             Double parentalAverage = (mummyStat + daddyStat) / 2;
 
             // generate random (0 - 100) to determine relationship of new stat to parentalAverage
-            double randPercentage = Globals_Game.GetRandomDouble(100);
+            double randPercentage = Utility_Methods.GetRandomDouble(100);
 
             // calculate new stat
             if (randPercentage <= 35)

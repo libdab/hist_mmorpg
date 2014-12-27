@@ -201,32 +201,32 @@ namespace hist_mmorpg
             }
 
             // FLD
-            if (!Globals_Game.validateFiefDouble(fld))
+            if (!Utility_Methods.validateFiefDouble(fld))
             {
                 throw new InvalidDataException("Fief field level must be a double >= 0");
             }
 
             // IND
-            if (!Globals_Game.validateFiefDouble(ind))
+            if (!Utility_Methods.validateFiefDouble(ind))
             {
                 throw new InvalidDataException("Fief industry level must be a double >= 0");
             }
 
             // TAX
-            if (!Globals_Game.validatePercentage(tx))
+            if (!Utility_Methods.validatePercentage(tx))
             {
                 throw new InvalidDataException("Fief taxrate must be a double between 0 and 100");
             }
 
             // TAXNEXT
-            if (!Globals_Game.validatePercentage(txNxt))
+            if (!Utility_Methods.validatePercentage(txNxt))
             {
                 throw new InvalidDataException("Fief taxrate for next season must be a double between 0 and 100");
             }
 
             // FINCUR
             // 0 = loyalty
-            if (!Globals_Game.validateFiefDouble(finCurr[0], 9))
+            if (!Utility_Methods.validateFiefDouble(finCurr[0], 9))
             {
                 throw new InvalidDataException("finCurr[0] (loyalty) must be a double between 0 and 9");
             }
@@ -235,7 +235,7 @@ namespace hist_mmorpg
             int gdpCurr = Convert.ToInt32(finCurr[1]);
 
             // 2 = tax rate,
-            if (!Globals_Game.validatePercentage(finCurr[2]))
+            if (!Utility_Methods.validatePercentage(finCurr[2]))
             {
                 throw new InvalidDataException("finCurr[2] (taxrate) must be a double between 0 and 100");
             }
@@ -253,7 +253,7 @@ namespace hist_mmorpg
             uint kpCurr = Convert.ToUInt32(finCurr[6]);
 
             // 7 = keep level,
-            if (!Globals_Game.validateFiefDouble(finCurr[7]))
+            if (!Utility_Methods.validateFiefDouble(finCurr[7]))
             {
                 throw new InvalidDataException("finCurr[7] (keep level) must be a double >= 0");
             }
@@ -271,7 +271,7 @@ namespace hist_mmorpg
             uint otaxCurr = Convert.ToUInt32(finCurr[11]);
 
             // 12 = overlord tax rate,
-            if (!Globals_Game.validatePercentage(finCurr[12]))
+            if (!Utility_Methods.validatePercentage(finCurr[12]))
             {
                 throw new InvalidDataException("finCurr[12] (overlord taxrate) must be a double between 0 and 100");
             }
@@ -281,7 +281,7 @@ namespace hist_mmorpg
 
             // FINPREV
             // 0 = loyalty,
-            if (!Globals_Game.validateFiefDouble(finPrev[0], 9))
+            if (!Utility_Methods.validateFiefDouble(finPrev[0], 9))
             {
                 throw new InvalidDataException("finPrev[0] (loyalty) must be a double between 0 and 9");
             }
@@ -290,7 +290,7 @@ namespace hist_mmorpg
             int gdpPrev = Convert.ToInt32(finPrev[1]);
 
             // 2 = tax rate,
-            if (!Globals_Game.validatePercentage(finPrev[2]))
+            if (!Utility_Methods.validatePercentage(finPrev[2]))
             {
                 throw new InvalidDataException("finPrev[2] (taxrate) must be a double between 0 and 100");
             }
@@ -308,7 +308,7 @@ namespace hist_mmorpg
             uint kpPrev = Convert.ToUInt32(finPrev[6]);
 
             // 7 = keep level,
-            if (!Globals_Game.validateFiefDouble(finPrev[7]))
+            if (!Utility_Methods.validateFiefDouble(finPrev[7]))
             {
                 throw new InvalidDataException("finPrev[7] (keep level) must be a double >= 0");
             }
@@ -326,7 +326,7 @@ namespace hist_mmorpg
             uint otaxPrev = Convert.ToUInt32(finPrev[11]);
 
             // 12 = overlord tax rate,
-            if (!Globals_Game.validatePercentage(finPrev[12]))
+            if (!Utility_Methods.validatePercentage(finPrev[12]))
             {
                 throw new InvalidDataException("finPrev[12] (overlord taxrate) must be a double between 0 and 100");
             }
@@ -335,13 +335,13 @@ namespace hist_mmorpg
             int botPrev = Convert.ToInt32(finPrev[13]);
             
             // KPLVL
-            if (!Globals_Game.validateFiefDouble(kpLvl))
+            if (!Utility_Methods.validateFiefDouble(kpLvl))
             {
                 throw new InvalidDataException("Fief keep level must be a double >= 0");
             }
 
             // LOY
-            if (!Globals_Game.validateFiefDouble(loy, 9))
+            if (!Utility_Methods.validateFiefDouble(loy, 9))
             {
                 throw new InvalidDataException("Fief loyalty must be a double between 0 and 9");
             }
@@ -356,9 +356,9 @@ namespace hist_mmorpg
             for (int i = 0; i < barChars.Count; i++ )
             {
                 // trim and ensure 1st is uppercase
-                barChars[i] = Globals_Game.firstCharToUpper(barChars[i].Trim());
+                barChars[i] = Utility_Methods.firstCharToUpper(barChars[i].Trim());
 
-                if (!Globals_Game.validateCharacterID(barChars[i]))
+                if (!Utility_Methods.validateCharacterID(barChars[i]))
                 {
                     throw new InvalidDataException("All fief barred character IDs must have the format 'Char_' followed by some numbers");
                 }
@@ -368,16 +368,16 @@ namespace hist_mmorpg
             for (int i = 0; i < barNats.Count; i++)
             {
                 // trim and ensure 1st is uppercase
-                barNats[i] = Globals_Game.firstCharToUpper(barNats[i].Trim());
+                barNats[i] = Utility_Methods.firstCharToUpper(barNats[i].Trim());
 
-                if (!Globals_Game.validateNationalityID(barNats[i]))
+                if (!Utility_Methods.validateNationalityID(barNats[i]))
                 {
                     throw new InvalidDataException("All fief barred nationality IDs must be 1-3 characters long, and consist entirely of letters");
                 }
             }
 
             // BAILIFFDAYSINFIEF
-            if (!Globals_Game.validateFiefDouble(bailInF))
+            if (!Utility_Methods.validateFiefDouble(bailInF))
             {
                 throw new InvalidDataException("Fief bailiffDaysInFief must be a double of 0 or greater");
             }
@@ -386,9 +386,9 @@ namespace hist_mmorpg
             for (int i = 0; i < arms.Count; i++)
             {
                 // trim and ensure 1st is uppercase
-                arms[i] = Globals_Game.firstCharToUpper(arms[i].Trim());
+                arms[i] = Utility_Methods.firstCharToUpper(arms[i].Trim());
 
-                if (!Globals_Game.validateArmyID(arms[i]))
+                if (!Utility_Methods.validateArmyID(arms[i]))
                 {
                     throw new InvalidDataException("All fief army IDs must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
                 }
@@ -398,9 +398,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(sge))
             {
                 // trim and ensure 1st is uppercase
-                sge = Globals_Game.firstCharToUpper(sge.Trim());
+                sge = Utility_Methods.firstCharToUpper(sge.Trim());
 
-                if (!Globals_Game.validateSiegeID(sge))
+                if (!Utility_Methods.validateSiegeID(sge))
                 {
                     throw new InvalidDataException("Fief siege IDs must have the format 'Siege_' followed by some numbers");
                 }
@@ -658,6 +658,12 @@ namespace hist_mmorpg
 
             // factor in officials spend modifier
             fiefIncome = fiefIncome + Convert.ToInt32(fiefBaseIncome * this.calcOffIncMod());
+
+            // ensure min income = 0
+            if (fiefIncome < 0)
+            {
+                fiefIncome = 0;
+            }
 
             return fiefIncome;
         }
@@ -1721,7 +1727,7 @@ namespace hist_mmorpg
                 // method 1 (depends on tax rate and surplus)
                 if ((this.taxRate > 20) && (this.keyStatsCurrent[13] > (this.keyStatsCurrent[8] * 0.1)))
                 {
-                    if (Globals_Game.GetRandomDouble(100) <= (this.taxRate - 20))
+                    if (Utility_Methods.GetRandomDouble(100) <= (this.taxRate - 20))
                     {
                         this.status = 'R';
                     }
@@ -1730,7 +1736,7 @@ namespace hist_mmorpg
                 // method 2 (depends on fief loyalty level)
                 if (!this.status.Equals('R'))
                 {
-                    double chance = Globals_Game.GetRandomDouble(100);
+                    double chance = Utility_Methods.GetRandomDouble(100);
                     
                     // loyalty 3-4
                     if ((this.loyalty > 3) && (this.loyalty <= 4))
@@ -1989,7 +1995,7 @@ namespace hist_mmorpg
             int maxNumber = this.calcMaxTroops();
 
             // generate random double between min and max
-            double myRandomDouble = Globals_Game.GetRandomDouble(min: minProportion, max: maxProportion);
+            double myRandomDouble = Utility_Methods.GetRandomDouble(min: minProportion, max: maxProportion);
 
             // apply random double as modifier to maxNumber
             numberTroops = Convert.ToInt32(maxNumber * myRandomDouble);
@@ -2471,7 +2477,7 @@ namespace hist_mmorpg
             }
 
             // generate random double 0-100 to check for success
-            rebellionQuelled = (Globals_Game.GetRandomDouble(101) <= successChance);
+            rebellionQuelled = (Utility_Methods.GetRandomDouble(101) <= successChance);
 
             return rebellionQuelled;
         }
@@ -2793,7 +2799,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             prov = prov.Trim().ToUpper();
 
-            if (!Globals_Game.validatePlaceID(prov))
+            if (!Utility_Methods.validatePlaceID(prov))
             {
                 throw new InvalidDataException("Fief_Serialised province ID must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -2805,32 +2811,32 @@ namespace hist_mmorpg
             }
 
             // FLD
-            if (!Globals_Game.validateFiefDouble(fld))
+            if (!Utility_Methods.validateFiefDouble(fld))
             {
                 throw new InvalidDataException("Fief_Serialised field level must be a double >= 0");
             }
 
             // IND
-            if (!Globals_Game.validateFiefDouble(ind))
+            if (!Utility_Methods.validateFiefDouble(ind))
             {
                 throw new InvalidDataException("Fief_Serialised industry level must be a double >= 0");
             }
 
             // TAX
-            if (!Globals_Game.validatePercentage(tx))
+            if (!Utility_Methods.validatePercentage(tx))
             {
                 throw new InvalidDataException("Fief_Serialised taxrate must be a double between 0 and 100");
             }
 
             // TAXNEXT
-            if (!Globals_Game.validatePercentage(txNxt))
+            if (!Utility_Methods.validatePercentage(txNxt))
             {
                 throw new InvalidDataException("Fief_Serialised taxrate for next season must be a double between 0 and 100");
             }
 
             // FINCUR
             // 0 = loyalty
-            if (!Globals_Game.validateFiefDouble(finCurr[0], 9))
+            if (!Utility_Methods.validateFiefDouble(finCurr[0], 9))
             {
                 throw new InvalidDataException("Fief_Serialised finCurr[0] (loyalty) must be a double between 0 and 9");
             }
@@ -2839,7 +2845,7 @@ namespace hist_mmorpg
             int gdpCurr = Convert.ToInt32(finCurr[1]);
 
             // 2 = tax rate,
-            if (!Globals_Game.validatePercentage(finCurr[2]))
+            if (!Utility_Methods.validatePercentage(finCurr[2]))
             {
                 throw new InvalidDataException("Fief_Serialised finCurr[2] (taxrate) must be a double between 0 and 100");
             }
@@ -2857,7 +2863,7 @@ namespace hist_mmorpg
             uint kpCurr = Convert.ToUInt32(finCurr[6]);
 
             // 7 = keep level,
-            if (!Globals_Game.validateFiefDouble(finCurr[7]))
+            if (!Utility_Methods.validateFiefDouble(finCurr[7]))
             {
                 throw new InvalidDataException("Fief_Serialised finCurr[7] (keep level) must be a double >= 0");
             }
@@ -2875,7 +2881,7 @@ namespace hist_mmorpg
             uint otaxCurr = Convert.ToUInt32(finCurr[11]);
 
             // 12 = overlord tax rate,
-            if (!Globals_Game.validatePercentage(finCurr[12]))
+            if (!Utility_Methods.validatePercentage(finCurr[12]))
             {
                 throw new InvalidDataException("Fief_Serialised finCurr[12] (overlord taxrate) must be a double between 0 and 100");
             }
@@ -2885,7 +2891,7 @@ namespace hist_mmorpg
 
             // FINPREV
             // 0 = loyalty,
-            if (!Globals_Game.validateFiefDouble(finPrev[0], 9))
+            if (!Utility_Methods.validateFiefDouble(finPrev[0], 9))
             {
                 throw new InvalidDataException("Fief_Serialised finPrev[0] (loyalty) must be a double between 0 and 9");
             }
@@ -2894,7 +2900,7 @@ namespace hist_mmorpg
             int gdpPrev = Convert.ToInt32(finPrev[1]);
 
             // 2 = tax rate,
-            if (!Globals_Game.validatePercentage(finPrev[2]))
+            if (!Utility_Methods.validatePercentage(finPrev[2]))
             {
                 throw new InvalidDataException("Fief_Serialised finPrev[2] (taxrate) must be a double between 0 and 100");
             }
@@ -2912,7 +2918,7 @@ namespace hist_mmorpg
             uint kpPrev = Convert.ToUInt32(finPrev[6]);
 
             // 7 = keep level,
-            if (!Globals_Game.validateFiefDouble(finPrev[7]))
+            if (!Utility_Methods.validateFiefDouble(finPrev[7]))
             {
                 throw new InvalidDataException("Fief_Serialised finPrev[7] (keep level) must be a double >= 0");
             }
@@ -2930,7 +2936,7 @@ namespace hist_mmorpg
             uint otaxPrev = Convert.ToUInt32(finPrev[11]);
 
             // 12 = overlord tax rate,
-            if (!Globals_Game.validatePercentage(finPrev[12]))
+            if (!Utility_Methods.validatePercentage(finPrev[12]))
             {
                 throw new InvalidDataException("Fief_Serialised finPrev[12] (overlord taxrate) must be a double between 0 and 100");
             }
@@ -2939,13 +2945,13 @@ namespace hist_mmorpg
             int botPrev = Convert.ToInt32(finPrev[13]);
 
             // KPLVL
-            if (!Globals_Game.validateFiefDouble(kpLvl))
+            if (!Utility_Methods.validateFiefDouble(kpLvl))
             {
                 throw new InvalidDataException("Fief_Serialised keep level must be a double >= 0");
             }
 
             // LOY
-            if (!Globals_Game.validateFiefDouble(loy, 9))
+            if (!Utility_Methods.validateFiefDouble(loy, 9))
             {
                 throw new InvalidDataException("Fief_Serialised loyalty must be a double between 0 and 9");
             }
@@ -2957,13 +2963,13 @@ namespace hist_mmorpg
             }
 
             // LANG
-            if (!Globals_Game.validateLanguageID(lang))
+            if (!Utility_Methods.validateLanguageID(lang))
             {
                 throw new InvalidDataException("Fief_Serialised language ID must have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");
             }
 
             // TERR
-            if (!Globals_Game.validateTerrainID(terr))
+            if (!Utility_Methods.validateTerrainID(terr))
             {
                 throw new InvalidDataException("Fief_Serialised terrain ID must have the format 'terr_' followed by some letters");
             }
@@ -2972,9 +2978,9 @@ namespace hist_mmorpg
             for (int i = 0; i < chars.Count; i++)
             {
                 // trim and ensure 1st is uppercase
-                chars[i] = Globals_Game.firstCharToUpper(chars[i].Trim());
+                chars[i] = Utility_Methods.firstCharToUpper(chars[i].Trim());
 
-                if (!Globals_Game.validateCharacterID(chars[i]))
+                if (!Utility_Methods.validateCharacterID(chars[i]))
                 {
                     throw new InvalidDataException("All Fief_Serialised character IDs must have the format 'Char_' followed by some numbers");
                 }
@@ -2984,9 +2990,9 @@ namespace hist_mmorpg
             for (int i = 0; i < barChars.Count; i++)
             {
                 // trim and ensure 1st is uppercase
-                barChars[i] = Globals_Game.firstCharToUpper(barChars[i].Trim());
+                barChars[i] = Utility_Methods.firstCharToUpper(barChars[i].Trim());
 
-                if (!Globals_Game.validateCharacterID(barChars[i]))
+                if (!Utility_Methods.validateCharacterID(barChars[i]))
                 {
                     throw new InvalidDataException("All Fief_Serialised barred character IDs must have the format 'Char_' followed by some numbers");
                 }
@@ -2996,16 +3002,16 @@ namespace hist_mmorpg
             for (int i = 0; i < barNats.Count; i++)
             {
                 // trim and ensure 1st is uppercase
-                barNats[i] = Globals_Game.firstCharToUpper(barNats[i].Trim());
+                barNats[i] = Utility_Methods.firstCharToUpper(barNats[i].Trim());
 
-                if (!Globals_Game.validateNationalityID(barNats[i]))
+                if (!Utility_Methods.validateNationalityID(barNats[i]))
                 {
                     throw new InvalidDataException("All Fief_Serialised barred nationality IDs must be 1-3 characters long, and consist entirely of letters");
                 }
             }
 
             // BAILIFFDAYSINFIEF
-            if (!Globals_Game.validateFiefDouble(bailInF))
+            if (!Utility_Methods.validateFiefDouble(bailInF))
             {
                 throw new InvalidDataException("Fief_Serialised bailiffDaysInFief must be a double of 0 or greater");
             }
@@ -3014,9 +3020,9 @@ namespace hist_mmorpg
             for (int i = 0; i < arms.Count; i++)
             {
                 // trim and ensure 1st is uppercase
-                arms[i] = Globals_Game.firstCharToUpper(arms[i].Trim());
+                arms[i] = Utility_Methods.firstCharToUpper(arms[i].Trim());
 
-                if (!Globals_Game.validateArmyID(arms[i]))
+                if (!Utility_Methods.validateArmyID(arms[i]))
                 {
                     throw new InvalidDataException("All Fief_Serialised army IDs must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
                 }
@@ -3024,18 +3030,18 @@ namespace hist_mmorpg
 
             // ANCOWN
             // trim and ensure 1st is uppercase
-            ancOwn = Globals_Game.firstCharToUpper(ancOwn.Trim());
+            ancOwn = Utility_Methods.firstCharToUpper(ancOwn.Trim());
 
-            if (!Globals_Game.validateCharacterID(ancOwn))
+            if (!Utility_Methods.validateCharacterID(ancOwn))
             {
                 throw new InvalidDataException("Fief_Serialised ancestral owner ID must have the format 'Char_' followed by some numbers");
             }
 
             // BAIL
             // trim and ensure 1st is uppercase
-            bail = Globals_Game.firstCharToUpper(bail.Trim());
+            bail = Utility_Methods.firstCharToUpper(bail.Trim());
 
-            if (!Globals_Game.validateCharacterID(bail))
+            if (!Utility_Methods.validateCharacterID(bail))
             {
                 throw new InvalidDataException("Fief_Serialised bailiff ID must have the format 'Char_' followed by some numbers");
             }
@@ -3044,9 +3050,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(sge))
             {
                 // trim and ensure 1st is uppercase
-                sge = Globals_Game.firstCharToUpper(sge.Trim());
+                sge = Utility_Methods.firstCharToUpper(sge.Trim());
 
-                if (!Globals_Game.validateSiegeID(sge))
+                if (!Utility_Methods.validateSiegeID(sge))
                 {
                     throw new InvalidDataException("Fief_Serialised siege ID must have the format 'Siege_' followed by some numbers");
                 }

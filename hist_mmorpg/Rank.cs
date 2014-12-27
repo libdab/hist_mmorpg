@@ -152,9 +152,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(holder))
             {
                 // trim and ensure 1st is uppercase
-                holder = Globals_Game.firstCharToUpper(holder.Trim());
+                holder = Utility_Methods.firstCharToUpper(holder.Trim());
 
-                if (!Globals_Game.validateCharacterID(holder))
+                if (!Utility_Methods.validateCharacterID(holder))
                 {
                     throw new InvalidDataException("Position officeHolder id must have the format 'Char_' followed by some numbers");
                 }
@@ -376,9 +376,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(holder))
             {
                 // trim and ensure 1st is uppercase
-                holder = Globals_Game.firstCharToUpper(holder.Trim());
+                holder = Utility_Methods.firstCharToUpper(holder.Trim());
 
-                if (!Globals_Game.validateCharacterID(holder))
+                if (!Utility_Methods.validateCharacterID(holder))
                 {
                     throw new InvalidDataException("Position_Serialised officeHolder id must have the format 'Char_' followed by some numbers");
                 }
@@ -386,9 +386,9 @@ namespace hist_mmorpg
 
             // NAT
             // trim and ensure 1st is uppercase
-            nat = Globals_Game.firstCharToUpper(nat.Trim());
+            nat = Utility_Methods.firstCharToUpper(nat.Trim());
 
-            if (!Globals_Game.validateNationalityID(nat))
+            if (!Utility_Methods.validateNationalityID(nat))
             {
                 throw new InvalidDataException("Position_Serialised nationality ID must be 1-3 characters long, and consist entirely of letters");
             }
@@ -433,16 +433,16 @@ namespace hist_mmorpg
             // VALIDATION
 
             // LANG
-            if ((!Globals_Game.validateLanguageID(lang)) && (!lang.Equals("generic")))
+            if ((!Utility_Methods.validateLanguageID(lang)) && (!lang.Equals("generic")))
             {
                 throw new InvalidDataException("TitleName langID must either be 'generic' or have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");
             }
 
             // NAM
             // trim and ensure 1st is uppercase
-            nam = Globals_Game.firstCharToUpper(nam.Trim());
+            nam = Utility_Methods.firstCharToUpper(nam.Trim());
 
-            if (!Globals_Game.validateName(nam))
+            if (!Utility_Methods.validateName(nam))
             {
                 throw new InvalidDataException("TitleName name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }

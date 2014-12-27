@@ -152,6 +152,7 @@
     <Compile Include="Siege.cs" />
     <Compile Include="Skill.cs" />
     <Compile Include="Terrain.cs" />
+    <Compile Include="Utility_Methods.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

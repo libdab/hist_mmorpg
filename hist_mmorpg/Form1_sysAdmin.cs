@@ -21,16 +21,6 @@ namespace hist_mmorpg
     partial class Form1
     {
         /// <summary>
-        /// Creates UI display for list of skill effects in the edit skill screen
-        /// </summary>
-        public void setUpEditSkillEffectList()
-        {
-            // add necessary columns
-            this.adminEditSkillEffsListView.Columns.Add("Effect Name", -2, HorizontalAlignment.Left);
-            this.adminEditSkillEffsListView.Columns.Add("Level", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
         /// Refreshes the edit Character display, displaying details of the specified Character
         /// and clearing any previously displayed data
         /// </summary>

@@ -159,69 +159,69 @@ namespace hist_mmorpg
 
             // ID
             // trim and ensure 1st is uppercase
-            id = Globals_Game.firstCharToUpper(id.Trim());
+            id = Utility_Methods.firstCharToUpper(id.Trim());
 
-            if (!Globals_Game.validateCharacterID(id))
+            if (!Utility_Methods.validateCharacterID(id))
             {
                 throw new InvalidDataException("Character id must have the format 'Char_' followed by some numbers");
             }
 
             // FIRSTNAM
             // trim and ensure 1st is uppercase
-            firstNam = Globals_Game.firstCharToUpper(firstNam.Trim());
+            firstNam = Utility_Methods.firstCharToUpper(firstNam.Trim());
 
-            if (!Globals_Game.validateName(firstNam))
+            if (!Utility_Methods.validateName(firstNam))
             {
                 throw new InvalidDataException("Character firstname must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // FAMNAM
             // trim and ensure 1st is uppercase
-            famNam = Globals_Game.firstCharToUpper(famNam.Trim());
+            famNam = Utility_Methods.firstCharToUpper(famNam.Trim());
 
-            if (!Globals_Game.validateName(famNam))
+            if (!Utility_Methods.validateName(famNam))
             {
                 throw new InvalidDataException("Character family name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // DOB
-            if (!Globals_Game.validateSeason(dob.Item2))
+            if (!Utility_Methods.validateSeason(dob.Item2))
             {
                 throw new InvalidDataException("Character date-of-birth season must be a byte between 0-3");
             }
 
             // MXHEA
-            if (!Globals_Game.validateCharacterStat(mxHea))
+            if (!Utility_Methods.validateCharacterStat(mxHea))
             {
                 throw new InvalidDataException("Character maxHealth must be a double between 1-9");
             }
 
             // VIR
-            if (!Globals_Game.validateCharacterStat(vir))
+            if (!Utility_Methods.validateCharacterStat(vir))
             {
                 throw new InvalidDataException("Character virility must be a double between 1-9");
             }
 
             // DAYS
-            if (!Globals_Game.validateDays(day))
+            if (!Utility_Methods.validateDays(day))
             {
                 throw new InvalidDataException("Character days must be a double between 0-109");
             }
 
             // STAT
-            if (!Globals_Game.validateCharacterStat(stat, 0))
+            if (!Utility_Methods.validateCharacterStat(stat, 0))
             {
                 throw new InvalidDataException("Character stature must be a double between 0-9");
             }
 
             // MNGMNT
-            if (!Globals_Game.validateCharacterStat(mngmnt))
+            if (!Utility_Methods.validateCharacterStat(mngmnt))
             {
                 throw new InvalidDataException("Character management must be a double between 1-9");
             }
 
             // CBT
-            if (!Globals_Game.validateCharacterStat(cbt))
+            if (!Utility_Methods.validateCharacterStat(cbt))
             {
                 throw new InvalidDataException("Character combat must be a double between 1-9");
             }
@@ -229,7 +229,7 @@ namespace hist_mmorpg
             // SKL
             for (int i = 0; i < skl.Length; i++)
             {
-                if (!Globals_Game.validateCharacterStat(Convert.ToDouble(skl[i].Item2)))
+                if (!Utility_Methods.validateCharacterStat(Convert.ToDouble(skl[i].Item2)))
                 {
                     throw new InvalidDataException("Character skill level must be an integer between 1-9");
                 }
@@ -248,9 +248,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(famID))
             {
                 // trim and ensure 1st is uppercase
-                famID = Globals_Game.firstCharToUpper(famID.Trim());
+                famID = Utility_Methods.firstCharToUpper(famID.Trim());
 
-                if (!Globals_Game.validateCharacterID(famID))
+                if (!Utility_Methods.validateCharacterID(famID))
                 {
                     throw new InvalidDataException("Character family id must have the format 'Char_' followed by some numbers");
                 }
@@ -260,9 +260,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(sp))
             {
                 // trim and ensure 1st is uppercase
-                sp = Globals_Game.firstCharToUpper(sp.Trim());
+                sp = Utility_Methods.firstCharToUpper(sp.Trim());
 
-                if (!Globals_Game.validateCharacterID(sp))
+                if (!Utility_Methods.validateCharacterID(sp))
                 {
                     throw new InvalidDataException("Character spouse id must have the format 'Char_' followed by some numbers");
                 }
@@ -272,9 +272,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(fath))
             {
                 // trim and ensure 1st is uppercase
-                fath = Globals_Game.firstCharToUpper(fath.Trim());
+                fath = Utility_Methods.firstCharToUpper(fath.Trim());
 
-                if (!Globals_Game.validateCharacterID(fath))
+                if (!Utility_Methods.validateCharacterID(fath))
                 {
                     throw new InvalidDataException("Character father id must have the format 'Char_' followed by some numbers");
                 }
@@ -284,9 +284,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(moth))
             {
                 // trim and ensure 1st is uppercase
-                moth = Globals_Game.firstCharToUpper(moth.Trim());
+                moth = Utility_Methods.firstCharToUpper(moth.Trim());
 
-                if (!Globals_Game.validateCharacterID(moth))
+                if (!Utility_Methods.validateCharacterID(moth))
                 {
                     throw new InvalidDataException("Character mother id must have the format 'Char_' followed by some numbers");
                 }
@@ -298,7 +298,7 @@ namespace hist_mmorpg
                 // trim and ensure is uppercase
                 myTi[i] = myTi[i].Trim().ToUpper();
 
-                if (!Globals_Game.validatePlaceID(myTi[i]))
+                if (!Utility_Methods.validatePlaceID(myTi[i]))
                 {
                     throw new InvalidDataException("All Character title IDs must be 5 characters long, start with a letter, and end in at least 2 numbers");
                 }
@@ -308,9 +308,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(fia))
             {
                 // trim and ensure 1st is uppercase
-                fia = Globals_Game.firstCharToUpper(fia.Trim());
+                fia = Utility_Methods.firstCharToUpper(fia.Trim());
 
-                if (!Globals_Game.validateCharacterID(fia))
+                if (!Utility_Methods.validateCharacterID(fia))
                 {
                     throw new InvalidDataException("Character fiancee id must have the format 'Char_' followed by some numbers");
                 }
@@ -326,9 +326,9 @@ namespace hist_mmorpg
                     for (int i = 0; i < myAils.Length; i++)
                     {
                         // trim and ensure 1st is uppercase
-                        myAils[i] = Globals_Game.firstCharToUpper(myAils[i].Trim());
+                        myAils[i] = Utility_Methods.firstCharToUpper(myAils[i].Trim());
 
-                        if (!Globals_Game.validateAilmentID(myAils[i]))
+                        if (!Utility_Methods.validateAilmentID(myAils[i]))
                         {
                             throw new InvalidDataException("All IDs in Character ailments must have the format 'Ail_' followed by some numbers");
                         }
@@ -340,9 +340,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(aID))
             {
                 // trim and ensure 1st is uppercase
-                aID = Globals_Game.firstCharToUpper(aID.Trim());
+                aID = Utility_Methods.firstCharToUpper(aID.Trim());
 
-                if (!Globals_Game.validateArmyID(aID))
+                if (!Utility_Methods.validateArmyID(aID))
                 {
                     throw new InvalidDataException("Character army id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
                 }
@@ -859,7 +859,7 @@ namespace hist_mmorpg
             }
 
             // generate a rndom double between 0-100 and compare to deathChance
-            if ((Globals_Game.GetRandomDouble(100)) <= deathChance)
+            if ((Utility_Methods.GetRandomDouble(100)) <= deathChance)
             {
                 return true;
             }
@@ -1181,6 +1181,10 @@ namespace hist_mmorpg
                 // if no heir, king inherits
                 else
                 {
+                    // remove from Globals_Game.victoryData
+                    Globals_Game.victoryData.Remove((this as PlayerCharacter).playerID);
+
+                    // process inheritance
                     this.transferPropertyToKing((this as PlayerCharacter), (this as PlayerCharacter).getKing());
                 }
             }
@@ -1721,7 +1725,13 @@ namespace hist_mmorpg
                 thisSiege.besiegingPlayer = promotedNPC.charID;
             }
 
-			// ============== 7. change GLOBALS_CLIENT.MYPLAYERCHARACTER
+            // ============== 7. update GLOBALS_GAME.VICTORYDATA
+            if (Globals_Game.victoryData.ContainsKey(promotedNPC.playerID))
+            {
+                Globals_Game.victoryData[promotedNPC.playerID].playerCharacterID = promotedNPC.charID;
+            }
+
+			// ============== 8. change GLOBALS_CLIENT.MYPLAYERCHARACTER
             if (Globals_Client.myPlayerCharacter == deceased)
             {
                 Globals_Client.myPlayerCharacter = promotedNPC;
@@ -2221,7 +2231,7 @@ namespace hist_mmorpg
                     }
 
                     // generate random (0 - 100) to see if pregnancy successful
-                    double randPercentage = Globals_Game.GetRandomDouble(100);
+                    double randPercentage = Utility_Methods.GetRandomDouble(100);
 
                     // holds chance of pregnancy based on age and virility
                     int chanceOfPregnancy = 0;
@@ -2827,7 +2837,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             home = home.Trim().ToUpper();
 
-            if (!Globals_Game.validatePlaceID(home))
+            if (!Utility_Methods.validatePlaceID(home))
             {
                 throw new InvalidDataException("PlayerCharacter homeFief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -2836,7 +2846,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             ancHome = ancHome.Trim().ToUpper();
 
-            if (!Globals_Game.validatePlaceID(ancHome))
+            if (!Utility_Methods.validatePlaceID(ancHome))
             {
                 throw new InvalidDataException("PlayerCharacter ancestral homeFief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -2847,9 +2857,9 @@ namespace hist_mmorpg
                 for (int i = 0; i < myS.Count; i++ )
                 {
                     // trim and ensure 1st is uppercase
-                    myS[i] = Globals_Game.firstCharToUpper(myS[i].Trim());
+                    myS[i] = Utility_Methods.firstCharToUpper(myS[i].Trim());
 
-                    if (!Globals_Game.validateSiegeID(myS[i]))
+                    if (!Utility_Methods.validateSiegeID(myS[i]))
                     {
                         throw new InvalidDataException("All PlayerCharacter siege IDs must have the format 'Siege_' followed by some numbers");
                     }
@@ -2998,7 +3008,7 @@ namespace hist_mmorpg
             double potentialSalary = npc.calcSalary(this);
 
             // generate random (0 - 100) to see if accepts offer
-            double chance = Globals_Game.GetRandomDouble(100);
+            double chance = Utility_Methods.GetRandomDouble(100);
 
             // get 'npcHire' skill effect modifier (increase/decrease chance of offer being accepted)
             double hireSkills = this.calcSkillEffect("npcHire");
@@ -4065,14 +4075,14 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(empl))
             {
                 // trim and ensure 1st is uppercase
-                empl = Globals_Game.firstCharToUpper(empl.Trim());
+                empl = Utility_Methods.firstCharToUpper(empl.Trim());
 
                 if (!String.IsNullOrWhiteSpace(famID))
                 {
                     throw new InvalidDataException("A NonPlayerCharacter with a familyID cannot have an employer ID");
                 }
 
-                else if (!Globals_Game.validateCharacterID(empl))
+                else if (!Utility_Methods.validateCharacterID(empl))
                 {
                     throw new InvalidDataException("NonPlayerCharacter employer ID must have the format 'Char_' followed by some numbers");
                 }
@@ -4850,54 +4860,54 @@ namespace hist_mmorpg
 
             // ID
             // trim and ensure 1st is uppercase
-            id = Globals_Game.firstCharToUpper(id.Trim());
+            id = Utility_Methods.firstCharToUpper(id.Trim());
 
-            if (!Globals_Game.validateCharacterID(id))
+            if (!Utility_Methods.validateCharacterID(id))
             {
                 throw new InvalidDataException("Character_Serialised id must have the format 'Char_' followed by some numbers");
             }
 
             // FIRSTNAM
             // trim and ensure 1st is uppercase
-            firstNam = Globals_Game.firstCharToUpper(firstNam.Trim());
+            firstNam = Utility_Methods.firstCharToUpper(firstNam.Trim());
 
-            if (!Globals_Game.validateName(firstNam))
+            if (!Utility_Methods.validateName(firstNam))
             {
                 throw new InvalidDataException("Character_Serialised firstname must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // FAMNAM
             // trim and ensure 1st is uppercase
-            famNam = Globals_Game.firstCharToUpper(famNam.Trim());
+            famNam = Utility_Methods.firstCharToUpper(famNam.Trim());
 
-            if (!Globals_Game.validateName(famNam))
+            if (!Utility_Methods.validateName(famNam))
             {
                 throw new InvalidDataException("Character_Serialised family name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // DOB
-            if (!Globals_Game.validateSeason(dob.Item2))
+            if (!Utility_Methods.validateSeason(dob.Item2))
             {
                 throw new InvalidDataException("Character_Serialised date-of-birth season must be a byte between 0-3");
             }
 
             // NAT
             // trim and ensure 1st is uppercase
-            nat = Globals_Game.firstCharToUpper(nat.Trim());
+            nat = Utility_Methods.firstCharToUpper(nat.Trim());
 
-            if (!Globals_Game.validateNationalityID(nat))
+            if (!Utility_Methods.validateNationalityID(nat))
             {
                 throw new InvalidDataException("Character_Serialised nationality ID must be 1-3 characters long, and consist entirely of letters");
             }
 
             // MXHEA
-            if (!Globals_Game.validateCharacterStat(mxHea))
+            if (!Utility_Methods.validateCharacterStat(mxHea))
             {
                 throw new InvalidDataException("Character_Serialised maxHealth must be a double between 1-9");
             }
 
             // VIR
-            if (!Globals_Game.validateCharacterStat(vir))
+            if (!Utility_Methods.validateCharacterStat(vir))
             {
                 throw new InvalidDataException("Character_Serialised virility must be a double between 1-9");
             }
@@ -4911,7 +4921,7 @@ namespace hist_mmorpg
                     // trim and ensure is uppercase
                     goQueue[i] = goQueue[i].Trim().ToUpper();
 
-                    if (!Globals_Game.validatePlaceID(goQueue[i]))
+                    if (!Utility_Methods.validatePlaceID(goQueue[i]))
                     {
                         throw new InvalidDataException("All IDs in Character_Serialised goTo queue must be 5 characters long, start with a letter, and end in at least 2 numbers");
                     }
@@ -4919,31 +4929,31 @@ namespace hist_mmorpg
             }
 
             // LANG
-            if (!Globals_Game.validateLanguageID(lang))
+            if (!Utility_Methods.validateLanguageID(lang))
             {
                 throw new InvalidDataException("Character_Serialised language ID must have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");
             }
 
             // DAYS
-            if (!Globals_Game.validateDays(day))
+            if (!Utility_Methods.validateDays(day))
             {
                 throw new InvalidDataException("Character_Serialised days must be a double between 0-109");
             }
 
             // STAT
-            if (!Globals_Game.validateCharacterStat(stat, 0))
+            if (!Utility_Methods.validateCharacterStat(stat, 0))
             {
                 throw new InvalidDataException("Character_Serialised stature must be a double between 0-9");
             }
 
             // MNGMNT
-            if (!Globals_Game.validateCharacterStat(mngmnt))
+            if (!Utility_Methods.validateCharacterStat(mngmnt))
             {
                 throw new InvalidDataException("Character_Serialised management must be a double between 1-9");
             }
 
             // CBT
-            if (!Globals_Game.validateCharacterStat(cbt))
+            if (!Utility_Methods.validateCharacterStat(cbt))
             {
                 throw new InvalidDataException("Character_Serialised combat must be a double between 1-9");
             }
@@ -4951,12 +4961,12 @@ namespace hist_mmorpg
             // SKL
             for (int i = 0; i < skl.Length; i++)
             {
-                if (!Globals_Game.validateSkillID(skl[i].Item1))
+                if (!Utility_Methods.validateSkillID(skl[i].Item1))
                 {
                     throw new InvalidDataException("Character_Serialised skill ID must have the format 'skill_' followed by some numbers");
                 }
 
-                else if (!Globals_Game.validateCharacterStat(Convert.ToDouble(skl[i].Item2)))
+                else if (!Utility_Methods.validateCharacterStat(Convert.ToDouble(skl[i].Item2)))
                 {
                     throw new InvalidDataException("Character_Serialised skill level must be an integer between 1-9");
                 }
@@ -4975,9 +4985,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(famID))
             {
                 // trim and ensure 1st is uppercase
-                famID = Globals_Game.firstCharToUpper(famID.Trim());
+                famID = Utility_Methods.firstCharToUpper(famID.Trim());
 
-                if (!Globals_Game.validateCharacterID(famID))
+                if (!Utility_Methods.validateCharacterID(famID))
                 {
                     throw new InvalidDataException("Character_Serialised family id must have the format 'Char_' followed by some numbers");
                 }
@@ -4987,9 +4997,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(sp))
             {
                 // trim and ensure 1st is uppercase
-                sp = Globals_Game.firstCharToUpper(sp.Trim());
+                sp = Utility_Methods.firstCharToUpper(sp.Trim());
 
-                if (!Globals_Game.validateCharacterID(sp))
+                if (!Utility_Methods.validateCharacterID(sp))
                 {
                     throw new InvalidDataException("Character_Serialised spouse id must have the format 'Char_' followed by some numbers");
                 }
@@ -4999,9 +5009,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(fath))
             {
                 // trim and ensure 1st is uppercase
-                fath = Globals_Game.firstCharToUpper(fath.Trim());
+                fath = Utility_Methods.firstCharToUpper(fath.Trim());
 
-                if (!Globals_Game.validateCharacterID(fath))
+                if (!Utility_Methods.validateCharacterID(fath))
                 {
                     throw new InvalidDataException("Character_Serialised father id must have the format 'Char_' followed by some numbers");
                 }
@@ -5011,9 +5021,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(moth))
             {
                 // trim and ensure 1st is uppercase
-                moth = Globals_Game.firstCharToUpper(moth.Trim());
+                moth = Utility_Methods.firstCharToUpper(moth.Trim());
 
-                if (!Globals_Game.validateCharacterID(moth))
+                if (!Utility_Methods.validateCharacterID(moth))
                 {
                     throw new InvalidDataException("Character_Serialised mother id must have the format 'Char_' followed by some numbers");
                 }
@@ -5025,7 +5035,7 @@ namespace hist_mmorpg
                 // trim and ensure is uppercase
                 myTi[i] = myTi[i].Trim().ToUpper();
 
-                if (!Globals_Game.validatePlaceID(myTi[i]))
+                if (!Utility_Methods.validatePlaceID(myTi[i]))
                 {
                     throw new InvalidDataException("All Character_Serialised title IDs must be 5 characters long, start with a letter, and end in at least 2 numbers");
                 }
@@ -5035,9 +5045,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(fia))
             {
                 // trim and ensure 1st is uppercase
-                fia = Globals_Game.firstCharToUpper(fia.Trim());
+                fia = Utility_Methods.firstCharToUpper(fia.Trim());
 
-                if (!Globals_Game.validateCharacterID(fia))
+                if (!Utility_Methods.validateCharacterID(fia))
                 {
                     throw new InvalidDataException("Character_Serialised fiancee id must have the format 'Char_' followed by some numbers");
                 }
@@ -5053,7 +5063,7 @@ namespace hist_mmorpg
                     // trim and ensure is uppercase
                     myAils[i] = myAils[i].Trim().ToUpper();
 
-                    if (!Globals_Game.validateAilmentID(myAils[i]))
+                    if (!Utility_Methods.validateAilmentID(myAils[i]))
                     {
                         throw new InvalidDataException("All IDs in Character_Serialised ailments must have the format 'Ail_' followed by some numbers");
                     }
@@ -5064,7 +5074,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             loc = loc.Trim().ToUpper();
 
-            if (!Globals_Game.validatePlaceID(loc))
+            if (!Utility_Methods.validatePlaceID(loc))
             {
                 throw new InvalidDataException("Character_Serialised location id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -5073,9 +5083,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(aID))
             {
                 // trim and ensure 1st is uppercase
-                aID = Globals_Game.firstCharToUpper(aID.Trim());
+                aID = Utility_Methods.firstCharToUpper(aID.Trim());
 
-                if (!Globals_Game.validateArmyID(aID))
+                if (!Utility_Methods.validateArmyID(aID))
                 {
                     throw new InvalidDataException("Character_Serialised army id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
                 }
@@ -5234,9 +5244,9 @@ namespace hist_mmorpg
                 for (int i = 0; i < npcs.Count; i++ )
                 {
                     // trim and ensure 1st is uppercase
-                    npcs[i] = Globals_Game.firstCharToUpper(npcs[i].Trim());
+                    npcs[i] = Utility_Methods.firstCharToUpper(npcs[i].Trim());
 
-                    if (!Globals_Game.validateCharacterID(npcs[i]))
+                    if (!Utility_Methods.validateCharacterID(npcs[i]))
                     {
                         throw new InvalidDataException("All PlayerCharacter_Serialised myNPC IDs must have the format 'Char_' followed by some numbers");
                     }
@@ -5251,7 +5261,7 @@ namespace hist_mmorpg
                     // trim and ensure is uppercase
                     ownedF[i] = ownedF[i].Trim().ToUpper();
 
-                    if (!Globals_Game.validatePlaceID(ownedF[i]))
+                    if (!Utility_Methods.validatePlaceID(ownedF[i]))
                     {
                         throw new InvalidDataException("All PlayerCharacter_Serialised ownedFief IDs must be 5 characters long, start with a letter, and end in at least 2 numbers");
                     }
@@ -5266,7 +5276,7 @@ namespace hist_mmorpg
                     // trim and ensure is uppercase
                     ownedP[i] = ownedP[i].Trim().ToUpper();
 
-                    if (!Globals_Game.validatePlaceID(ownedP[i]))
+                    if (!Utility_Methods.validatePlaceID(ownedP[i]))
                     {
                         throw new InvalidDataException("All PlayerCharacter_Serialised ownedProvince IDs must be 5 characters long, start with a letter, and end in at least 2 numbers");
                     }
@@ -5277,7 +5287,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             home = home.Trim().ToUpper();
 
-            if (!Globals_Game.validatePlaceID(home))
+            if (!Utility_Methods.validatePlaceID(home))
             {
                 throw new InvalidDataException("PlayerCharacter_Serialised homeFief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -5286,7 +5296,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             ancHome = ancHome.Trim().ToUpper();
 
-            if (!Globals_Game.validatePlaceID(ancHome))
+            if (!Utility_Methods.validatePlaceID(ancHome))
             {
                 throw new InvalidDataException("PlayerCharacter_Serialised ancestral homeFief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -5297,9 +5307,9 @@ namespace hist_mmorpg
                 for (int i = 0; i < myA.Count; i++)
                 {
                     // trim and ensure 1st is uppercase
-                    myA[i] = Globals_Game.firstCharToUpper(myA[i].Trim());
+                    myA[i] = Utility_Methods.firstCharToUpper(myA[i].Trim());
 
-                    if (!Globals_Game.validateArmyID(myA[i]))
+                    if (!Utility_Methods.validateArmyID(myA[i]))
                     {
                         throw new InvalidDataException("All PlayerCharacter_Serialised army IDs must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
                     }
@@ -5312,9 +5322,9 @@ namespace hist_mmorpg
                 for (int i = 0; i < myS.Count; i++)
                 {
                     // trim and ensure 1st is uppercase
-                    myS[i] = Globals_Game.firstCharToUpper(myS[i].Trim());
+                    myS[i] = Utility_Methods.firstCharToUpper(myS[i].Trim());
 
-                    if (!Globals_Game.validateSiegeID(myS[i]))
+                    if (!Utility_Methods.validateSiegeID(myS[i]))
                     {
                         throw new InvalidDataException("All PlayerCharacter_Serialised siege IDs must have the format 'Siege_' followed by some numbers");
                     }
@@ -5407,9 +5417,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(empl))
             {
                 // trim and ensure 1st is uppercase
-                empl = Globals_Game.firstCharToUpper(empl.Trim());
+                empl = Utility_Methods.firstCharToUpper(empl.Trim());
 
-                if (!Globals_Game.validateCharacterID(empl))
+                if (!Utility_Methods.validateCharacterID(empl))
                 {
                     throw new InvalidDataException("NonPlayerCharacter employer ID must have the format 'Char_' followed by some numbers");
                 }

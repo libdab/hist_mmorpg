@@ -44,16 +44,16 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             id = id.Trim().ToUpper();
 
-            if (!Globals_Game.validatePlaceID(id))
+            if (!Utility_Methods.validatePlaceID(id))
             {
                 throw new InvalidDataException("Place id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
 
             // NAM
             // trim and ensure 1st is uppercase
-            nam = Globals_Game.firstCharToUpper(nam.Trim());
+            nam = Utility_Methods.firstCharToUpper(nam.Trim());
 
-            if (!Globals_Game.validateName(nam))
+            if (!Utility_Methods.validateName(nam))
             {
                 throw new InvalidDataException("Place name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
@@ -62,9 +62,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(tiHo))
             {
                 // trim and ensure 1st is uppercase
-                tiHo = Globals_Game.firstCharToUpper(tiHo.Trim());
+                tiHo = Utility_Methods.firstCharToUpper(tiHo.Trim());
 
-                if (!Globals_Game.validateCharacterID(tiHo))
+                if (!Utility_Methods.validateCharacterID(tiHo))
                 {
                     throw new InvalidDataException("Place titleHolder must have the format 'Char_' followed by some numbers");
                 }
@@ -223,16 +223,16 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             id = id.Trim().ToUpper();
 
-            if (!Globals_Game.validatePlaceID(id))
+            if (!Utility_Methods.validatePlaceID(id))
             {
                 throw new InvalidDataException("Place_Serialised id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
 
             // NAM VALIDATION
             // trim and ensure 1st is uppercase
-            nam = Globals_Game.firstCharToUpper(nam.Trim());
+            nam = Utility_Methods.firstCharToUpper(nam.Trim());
 
-            if (!Globals_Game.validateName(nam))
+            if (!Utility_Methods.validateName(nam))
             {
                 throw new InvalidDataException("Place_Serialised name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
@@ -241,9 +241,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(tiHo))
             {
                 // trim and ensure 1st is uppercase
-                tiHo = Globals_Game.firstCharToUpper(tiHo.Trim());
+                tiHo = Utility_Methods.firstCharToUpper(tiHo.Trim());
 
-                if (!Globals_Game.validateCharacterID(tiHo))
+                if (!Utility_Methods.validateCharacterID(tiHo))
                 {
                     throw new InvalidDataException("Place_Serialised titleHolder must have the format 'Char_' followed by some numbers");
                 }
@@ -253,9 +253,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(owner))
             {
                 // trim and ensure 1st is uppercase
-                owner = Globals_Game.firstCharToUpper(owner.Trim());
+                owner = Utility_Methods.firstCharToUpper(owner.Trim());
 
-                if (!Globals_Game.validateCharacterID(owner))
+                if (!Utility_Methods.validateCharacterID(owner))
                 {
                     throw new InvalidDataException("Place_Serialised owner must have the format 'Char_' followed by some numbers");
                 }

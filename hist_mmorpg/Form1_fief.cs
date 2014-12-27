@@ -21,20 +21,6 @@ namespace hist_mmorpg
     partial class Form1
     {
         /// <summary>
-        /// Creates UI display for PlayerCharacter's list of owned Fiefs
-        /// </summary>
-        public void setUpFiefsList()
-        {
-            // add necessary columns
-            this.fiefsListView.Columns.Add("Fief Name", -2, HorizontalAlignment.Left);
-            this.fiefsListView.Columns.Add("Fief ID", -2, HorizontalAlignment.Left);
-            this.fiefsListView.Columns.Add("Where am I?", -2, HorizontalAlignment.Left);
-            this.fiefsListView.Columns.Add("Home Fief?", -2, HorizontalAlignment.Left);
-            this.fiefsListView.Columns.Add("Province Name", -2, HorizontalAlignment.Left);
-            this.fiefsListView.Columns.Add("Province ID", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
         /// Refreshes display of PlayerCharacter's list of owned Fiefs
         /// </summary>
         public void refreshMyFiefs()

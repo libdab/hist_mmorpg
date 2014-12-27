@@ -21,18 +21,6 @@ namespace hist_mmorpg
     partial class Form1
     {
         /// <summary>
-        /// Creates UI display for list of sieges owned by player
-        /// </summary>
-        public void setUpSiegeList()
-        {
-            // add necessary columns
-            this.siegeListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.siegeListView.Columns.Add("Fief", -2, HorizontalAlignment.Left);
-            this.siegeListView.Columns.Add("Defender", -2, HorizontalAlignment.Left);
-            this.siegeListView.Columns.Add("Besieger", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
         /// Retrieves information for Siege display screen
         /// </summary>
         /// <returns>String containing information to display</returns>
@@ -1063,7 +1051,7 @@ namespace hist_mmorpg
             }
 
             // generate random double 0-1 to see what proportion of extraDamageMultiplier will apply
-            double myRandomDouble = Globals_Game.GetRandomDouble(1);
+            double myRandomDouble = Utility_Methods.GetRandomDouble(1);
             extraDamageMultiplier = extraDamageMultiplier * myRandomDouble;
 
             keepDamageModifier += (0.015 * extraDamageMultiplier);
@@ -1324,7 +1312,7 @@ namespace hist_mmorpg
             double successChance = this.calcVictoryChance(battleValues[0], battleValues[1]) / 2;
 
             // generate random double 0-100 to see if storm a success
-            double myRandomDouble = Globals_Game.GetRandomDouble(100);
+            double myRandomDouble = Utility_Methods.GetRandomDouble(100);
 
             if (myRandomDouble <= successChance)
             {

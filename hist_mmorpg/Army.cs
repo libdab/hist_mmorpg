@@ -72,9 +72,9 @@ namespace hist_mmorpg
 
             // ID
             // trim and ensure 1st is uppercase
-            id = Globals_Game.firstCharToUpper(id.Trim());
+            id = Utility_Methods.firstCharToUpper(id.Trim());
 
-            if (!Globals_Game.validateArmyID(id))
+            if (!Utility_Methods.validateArmyID(id))
             {
                 throw new InvalidDataException("Army id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
             }
@@ -83,9 +83,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(ldr))
             {
                 // trim and ensure 1st is uppercase
-                ldr = Globals_Game.firstCharToUpper(ldr.Trim());
+                ldr = Utility_Methods.firstCharToUpper(ldr.Trim());
 
-                if (!Globals_Game.validateCharacterID(ldr))
+                if (!Utility_Methods.validateCharacterID(ldr))
                 {
                     throw new InvalidDataException("Army leader id must have the format 'Char_' followed by some numbers");
                 }
@@ -93,15 +93,15 @@ namespace hist_mmorpg
 
             // OWN
             // trim and ensure 1st is uppercase
-            own = Globals_Game.firstCharToUpper(own.Trim());
+            own = Utility_Methods.firstCharToUpper(own.Trim());
 
-            if (!Globals_Game.validateCharacterID(own))
+            if (!Utility_Methods.validateCharacterID(own))
             {
                 throw new InvalidDataException("Army owner id must have the format 'Char_' followed by some numbers");
             }
 
             // DAY
-            if (!Globals_Game.validateDays(day))
+            if (!Utility_Methods.validateDays(day))
             {
                 throw new InvalidDataException("Army days must be a double between 0-109");
             }
@@ -110,7 +110,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             loc = loc.Trim().ToUpper();
 
-            if (!Globals_Game.validatePlaceID(loc))
+            if (!Utility_Methods.validatePlaceID(loc))
             {
                 throw new InvalidDataException("Army location id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -578,7 +578,7 @@ namespace hist_mmorpg
                 troopNumbers[i] = this.troops[i];
 
                 // generate random double between 0 and estimate variance to decide variance in this case
-                double thisVariance = Globals_Game.GetRandomDouble(estimateVariance);
+                double thisVariance = Utility_Methods.GetRandomDouble(estimateVariance);
 
                 // apply variance (negatively or positively) to troop number
                 // 0 = under-estimate, 1-2 = over-estimate

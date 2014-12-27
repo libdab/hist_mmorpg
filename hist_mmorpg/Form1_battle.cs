@@ -176,8 +176,8 @@ namespace hist_mmorpg
             double[] battleCasualties = new double[2];
 
             // generate casualty increments
-            double winnerIncrement = Globals_Game.GetRandomDouble(min: 0.01, max: 0.02);
-            double loserIncrement = Globals_Game.GetRandomDouble(min: 0.04, max: 0.08);
+            double winnerIncrement = Utility_Methods.GetRandomDouble(min: 0.01, max: 0.02);
+            double loserIncrement = Utility_Methods.GetRandomDouble(min: 0.04, max: 0.08);
 
             // determine highest/lowest battle value
             double maxBV = Math.Max(attackerValue, defenderValue);

@@ -1111,7 +1111,7 @@ namespace hist_mmorpg
                     if ((skStart > -1) && (skEnd > -1))
                     {
                         // check to ensure all skills have accompanying skill level
-                        if (Globals_Game.IsOdd(skStart + skEnd))
+                        if (Utility_Methods.IsOdd(skStart + skEnd))
                         {
                             for (int i = skStart + 1; i < skEnd; i = i + 2)
                             {
@@ -1181,7 +1181,7 @@ namespace hist_mmorpg
                 // if no skills, generate random set
                 if (skills == null)
                 {
-                    Tuple<Skill, int>[] generatedSkills = Globals_Game.generateSkillSet();
+                    Tuple<Skill, int>[] generatedSkills = Utility_Methods.generateSkillSet();
 
                     // convert to format for saving to database
                     skills = new Tuple<String, int>[generatedSkills.Length];
@@ -1312,7 +1312,7 @@ namespace hist_mmorpg
                     if ((skStart > -1) && (skEnd > -1))
                     {
                         // check to ensure all skills have accompanying skill level
-                        if (Globals_Game.IsOdd(skStart + skEnd))
+                        if (Utility_Methods.IsOdd(skStart + skEnd))
                         {
                             for (int i = skStart + 1; i < skEnd; i = i + 2)
                             {
@@ -1337,7 +1337,7 @@ namespace hist_mmorpg
                 // if no skills, generate random set
                 if (skills == null)
                 {
-                    Tuple<Skill, int>[] generatedSkills = Globals_Game.generateSkillSet();
+                    Tuple<Skill, int>[] generatedSkills = Utility_Methods.generateSkillSet();
 
                     // convert to format for saving to database
                     skills = new Tuple<String, int>[generatedSkills.Length];
@@ -1456,7 +1456,7 @@ namespace hist_mmorpg
                     if ((effStart > -1) && (effEnd > -1))
                     {
                         // check to ensure all effects have accompanying effect level
-                        if (Globals_Game.IsOdd(effStart + effEnd))
+                        if (Utility_Methods.IsOdd(effStart + effEnd))
                         {
                             for (int i = effStart + 1; i < effEnd; i = i + 2)
                             {
@@ -1770,7 +1770,7 @@ namespace hist_mmorpg
                 if ((tiStart > -1) && (tiEnd > -1))
                 {
                     // check to ensure all effects have accompanying effect level
-                    if (Globals_Game.IsOdd(tiStart + tiEnd))
+                    if (Utility_Methods.IsOdd(tiStart + tiEnd))
                     {
                         for (int i = tiStart + 1; i < tiEnd; i = i + 2)
                         {
@@ -1864,7 +1864,7 @@ namespace hist_mmorpg
                 if ((tiStart > -1) && (tiEnd > -1))
                 {
                     // check to ensure all effects have accompanying effect level
-                    if (Globals_Game.IsOdd(tiStart + tiEnd))
+                    if (Utility_Methods.IsOdd(tiStart + tiEnd))
                     {
                         for (int i = tiStart + 1; i < tiEnd; i = i + 2)
                         {
@@ -2548,10 +2548,10 @@ namespace hist_mmorpg
                             int col = 0;
 
                             // if not first column in even-numbered row, add link between this hex/fief and hex/fief above left
-                            if (!((!Globals_Game.IsOdd(i)) && (j == 0)))
+                            if (!((!Utility_Methods.IsOdd(i)) && (j == 0)))
                             {
                                 // target correct column (above left is different for odd/even numbered rows)
-                                if (Globals_Game.IsOdd(i))
+                                if (Utility_Methods.IsOdd(i))
                                 {
                                     col = j;
                                 }
@@ -2573,10 +2573,10 @@ namespace hist_mmorpg
                             }
 
                             // if not last column in odd-numbered row, add link between this hex/fief and hex/fief above right
-                            if (!((Globals_Game.IsOdd(i)) && (j == mapArray.GetLength(1) - 1)))
+                            if (!((Utility_Methods.IsOdd(i)) && (j == mapArray.GetLength(1) - 1)))
                             {
                                 // target correct column (above right is different for odd/even numbered rows)
-                                if (Globals_Game.IsOdd(i))
+                                if (Utility_Methods.IsOdd(i))
                                 {
                                     col = j + 1;
                                 }

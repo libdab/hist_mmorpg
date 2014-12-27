@@ -46,25 +46,25 @@ namespace hist_mmorpg
 
             // ID
             // trim and ensure 1st is uppercase
-            id = Globals_Game.firstCharToUpper(id.Trim());
+            id = Utility_Methods.firstCharToUpper(id.Trim());
 
-            if (!Globals_Game.validateAilmentID(id))
+            if (!Utility_Methods.validateAilmentID(id))
             {
                 throw new InvalidDataException("Ailment ID must have the format 'Ail_' followed by some numbers");
             }
 
             // DESCR
             // trim and ensure 1st is uppercase
-            descr = Globals_Game.firstCharToUpper(descr.Trim());
+            descr = Utility_Methods.firstCharToUpper(descr.Trim());
 
-            if (!Globals_Game.validateName(descr))
+            if (!Utility_Methods.validateName(descr))
             {
                 throw new InvalidDataException("Ailment description must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // WHEN
             // trim and ensure 1st is uppercase
-            wh = Globals_Game.firstCharToUpper(wh.Trim());
+            wh = Utility_Methods.firstCharToUpper(wh.Trim());
 
             // check contains season
             if (!wh.Contains("Spring"))

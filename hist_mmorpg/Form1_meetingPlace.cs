@@ -22,20 +22,6 @@ namespace hist_mmorpg
     partial class Form1
     {
         /// <summary>
-        /// Creates UI display for list of characters present in Court, Tavern, outside keep
-        /// </summary>
-        public void setUpMeetingPLaceCharsList()
-        {
-            // add necessary columns
-            this.meetingPlaceCharsListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
-            this.meetingPlaceCharsListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.meetingPlaceCharsListView.Columns.Add("Sex", -2, HorizontalAlignment.Left);
-            this.meetingPlaceCharsListView.Columns.Add("Household", -2, HorizontalAlignment.Left);
-            this.meetingPlaceCharsListView.Columns.Add("Type", -2, HorizontalAlignment.Left);
-            this.meetingPlaceCharsListView.Columns.Add("Companion", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
         /// Refreshes UI Court, Tavern, outside keep display
         /// </summary>
         /// <param name="place">string specifying whether court, tavern, outside keep</param>

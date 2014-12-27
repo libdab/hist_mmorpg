@@ -21,18 +21,6 @@ namespace hist_mmorpg
     partial class Form1
     {
         /// <summary>
-        /// Creates UI display for list of armies owned by player
-        /// </summary>
-        public void setUpArmyList()
-        {
-            // add necessary columns
-            this.armyListView.Columns.Add("ID", -2, HorizontalAlignment.Left);
-            this.armyListView.Columns.Add("Leader", -2, HorizontalAlignment.Left);
-            this.armyListView.Columns.Add("Location", -2, HorizontalAlignment.Left);
-            this.armyListView.Columns.Add("Size", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
         /// Retrieves information for Army display screen
         /// </summary>
         /// <returns>String containing information to display</returns>

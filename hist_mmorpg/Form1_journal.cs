@@ -64,17 +64,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Creates UI display for list of journal entries
-        /// </summary>
-        public void setUpJournalList()
-        {
-            // add necessary columns
-            this.journalListView.Columns.Add("Entry ID", -2, HorizontalAlignment.Left);
-            this.journalListView.Columns.Add("Date", -2, HorizontalAlignment.Left);
-            this.journalListView.Columns.Add("Type", -2, HorizontalAlignment.Left);
-        }
-
-        /// <summary>
         /// Retrieves information for journal display screen
         /// </summary>
         /// <returns>String containing information to display</returns>

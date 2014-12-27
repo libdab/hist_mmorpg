@@ -98,16 +98,16 @@ namespace hist_mmorpg
             // VALIDATION
 
             // ID
-            if (!Globals_Game.validateLanguageID(id, "baseLang"))
+            if (!Utility_Methods.validateLanguageID(id, "baseLang"))
             {
                 throw new InvalidDataException("BaseLanguage ID must have the format 'lang_' followed by 1-2 letters");
             }
 
             // NAM
             // trim and ensure 1st is uppercase
-            nam = Globals_Game.firstCharToUpper(nam.Trim());
+            nam = Utility_Methods.firstCharToUpper(nam.Trim());
 
-            if (!Globals_Game.validateName(nam))
+            if (!Utility_Methods.validateName(nam))
             {
                 throw new InvalidDataException("BaseLanguage name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
@@ -179,13 +179,13 @@ namespace hist_mmorpg
                 throw new InvalidDataException("Language_Serialised ID be based on its BaseLanguage ID");
             }
 
-            else if (!Globals_Game.validateLanguageID(id))
+            else if (!Utility_Methods.validateLanguageID(id))
             {
                 throw new InvalidDataException("Language_Serialised ID must have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");
             }
 
             // BLANG
-            if (!Globals_Game.validateLanguageID(bLang, "baseLang"))
+            if (!Utility_Methods.validateLanguageID(bLang, "baseLang"))
             {
                 throw new InvalidDataException("Language_Serialised BaseLanguage ID must have the format 'lang_' followed by 1-2 letters");
             }
