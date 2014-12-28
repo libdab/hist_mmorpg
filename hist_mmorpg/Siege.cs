@@ -148,16 +148,43 @@ namespace hist_mmorpg
             }
 
             // FIEF
+            // trim and ensure is uppercase
+            fief = fief.Trim().ToUpper();
+
+            if (!Utility_Methods.validatePlaceID(fief))
+            {
+                throw new InvalidDataException("Siege fief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
+            }
 
             // DAY
+            if (!Utility_Methods.validateDays(day))
+            {
+                throw new InvalidDataException("Siege days must be a double between 0-109");
+            }
 
             // KPLVL
+            if (!Utility_Methods.validateFiefDouble(kpLvl))
+            {
+                throw new InvalidDataException("Siege startKeepLevel must be a double >= 0");
+            }
 
             // TOTATT
+            if (totAtt < 0)
+            {
+                throw new InvalidDataException("Siege totalCasualtiesAttacker must be an integer >= 0");
+            }
 
             // TOTDEF
+            if (totDef < 0)
+            {
+                throw new InvalidDataException("Siege totalCasualtiesDefender must be an integer >= 0");
+            }
 
             // TOTDAY
+            if (totDay < 0)
+            {
+                throw new InvalidDataException("Siege totalDays must be a double >= 0");
+            }
 
             // DEFADD
             if (!String.IsNullOrWhiteSpace(defAdd))

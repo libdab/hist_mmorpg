@@ -347,6 +347,9 @@ namespace hist_mmorpg
             }
 
             // STAT
+            // convert to uppercase
+            stat = Convert.ToChar(stat.ToString().ToUpper());
+
             if (!(Regex.IsMatch(stat.ToString(), "[CRU]")))
             {
                 throw new InvalidDataException("Fief status must be 'C', 'U' or 'R'");
@@ -2779,7 +2782,7 @@ namespace hist_mmorpg
         /// <param name="barNats">List holding IDs of nationalities barred from keep</param>
         /// <param name="ancOwn">String holding ancestral owner (id)</param>
         /// <param name="bail">String holding fief bailiff (id)</param>
-        /// <param name="bailInF">byte holding days bailiff in fief</param>
+        /// <param name="bailInF">double holding days bailiff in fief</param>
         /// <param name="treas">int containing fief treasury</param>
         /// <param name="arms">List holding IDs of armies present in fief</param>
         /// <param name="rec">bool indicating whether recruitment has occurred in the fief (current season)</param>
@@ -2789,7 +2792,7 @@ namespace hist_mmorpg
         public Fief_Serialised(String id, String nam, string prov, int pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
             Double kpLvl, Double loy, char stat, string lang, string terr, List<string> chars, List<string> barChars, List<string> barNats,
-            byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, byte r, String tiHo = null,
+            double bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil, byte r, String tiHo = null,
             string own = null, string ancOwn = null, string bail = null, string sge = null)
             : base(id, nam, own: own, r: r, tiHo: tiHo)
         {
@@ -2957,6 +2960,9 @@ namespace hist_mmorpg
             }
 
             // STAT
+            // convert to uppercase
+            stat = Convert.ToChar(stat.ToString().ToUpper());
+
             if (!(Regex.IsMatch(stat.ToString(), "[CRU]")))
             {
                 throw new InvalidDataException("Fief_Serialised status must be 'C', 'U' or 'R'");

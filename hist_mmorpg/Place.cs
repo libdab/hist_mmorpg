@@ -228,7 +228,7 @@ namespace hist_mmorpg
                 throw new InvalidDataException("Place_Serialised id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
 
-            // NAM VALIDATION
+            // NAM
             // trim and ensure 1st is uppercase
             nam = Utility_Methods.firstCharToUpper(nam.Trim());
 
@@ -237,7 +237,7 @@ namespace hist_mmorpg
                 throw new InvalidDataException("Place_Serialised name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
-            // TIHO VALIDATION
+            // TIHO
             if (!String.IsNullOrWhiteSpace(tiHo))
             {
                 // trim and ensure 1st is uppercase
@@ -249,7 +249,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // OWNER VALIDATION
+            // OWNER
             if (!String.IsNullOrWhiteSpace(owner))
             {
                 // trim and ensure 1st is uppercase

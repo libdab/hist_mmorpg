@@ -9,6 +9,37 @@ namespace hist_mmorpg
     public static class Utility_Methods
     {
         /// <summary>
+        /// Creates a JournalEntry for the attention of the game sysAdmin
+        /// </summary>
+        /// <returns>random double</returns>
+        public static JournalEntry createSysAdminJentry()
+        {
+            JournalEntry jEntry = null;
+
+            if (Globals_Game.sysAdmin != null)
+            {
+                // ID
+                uint jEntryID = Globals_Game.getNextJournalEntryID();
+
+                // date
+                uint year = Globals_Game.clock.currentYear;
+                byte season = Globals_Game.clock.currentSeason;
+
+                // personae
+                string sysAdminEntry = Globals_Game.sysAdmin.charID + "|sysAdmin";
+                string[] jEntryPersonae = new string[] { sysAdminEntry };
+
+                // description
+                string description = "To be added";
+
+                // create and send a proposal (journal entry)
+                jEntry = new JournalEntry(jEntryID, year, season, jEntryPersonae, "CSV_importError", descr: description);
+            }
+
+            return jEntry;
+        }
+
+        /// <summary>
         /// Generates a random double, specifying maximum and (optional) minimum values
         /// </summary>
         /// <returns>random double</returns>
@@ -256,7 +287,7 @@ namespace hist_mmorpg
             }
 
             // must start with 'lang'
-            else if (!idSplit[0].Equals("lang"))
+            else if (!idSplit[0].ToLower().Equals("lang"))
             {
                 isValid = false;
             }
@@ -386,7 +417,7 @@ namespace hist_mmorpg
         {
             bool isValid = true;
 
-            // 0-3 in length
+            // 1-3 in length
             if ((nat.Length < 1) || (nat.Length > 3))
             {
                 isValid = false;

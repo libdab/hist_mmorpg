@@ -373,7 +373,7 @@ namespace hist_mmorpg
 		public void loadFromCode()
 		{
             // create GameClock
-            GameClock myGameClock = new GameClock("clock001", 1320);
+            GameClock myGameClock = new GameClock("clock001", 1194);
             Globals_Game.clock = myGameClock;
 
 			// create skills
@@ -693,18 +693,18 @@ namespace hist_mmorpg
             List<Province> myProvsOwned2 = new List<Province>();
 
             // create DOBs for characters
-            Tuple<uint, byte> myDob001 = new Tuple<uint, byte>(1287, 1);
-            Tuple<uint, byte> myDob002 = new Tuple<uint, byte>(1260, 0);
-            Tuple<uint, byte> myDob003 = new Tuple<uint, byte>(1278, 2);
-            Tuple<uint, byte> myDob004 = new Tuple<uint, byte>(1295, 3);
-            Tuple<uint, byte> myDob005 = new Tuple<uint, byte>(1293, 2);
-            Tuple<uint, byte> myDob006 = new Tuple<uint, byte>(1285, 2);
-            Tuple<uint, byte> myDob007 = new Tuple<uint, byte>(1285, 3);
-            Tuple<uint, byte> myDob008 = new Tuple<uint, byte>(1307, 2);
-            Tuple<uint, byte> myDob009 = new Tuple<uint, byte>(1305, 0);
-            Tuple<uint, byte> myDob010 = new Tuple<uint, byte>(1305, 0);
-            Tuple<uint, byte> myDob011 = new Tuple<uint, byte>(1302, 1);
-            Tuple<uint, byte> myDob012 = new Tuple<uint, byte>(1303, 3);
+            Tuple<uint, byte> myDob001 = new Tuple<uint, byte>(1161, 1);
+            Tuple<uint, byte> myDob002 = new Tuple<uint, byte>(1134, 0);
+            Tuple<uint, byte> myDob003 = new Tuple<uint, byte>(1152, 2);
+            Tuple<uint, byte> myDob004 = new Tuple<uint, byte>(1169, 3);
+            Tuple<uint, byte> myDob005 = new Tuple<uint, byte>(1167, 2);
+            Tuple<uint, byte> myDob006 = new Tuple<uint, byte>(1159, 2);
+            Tuple<uint, byte> myDob007 = new Tuple<uint, byte>(1159, 3);
+            Tuple<uint, byte> myDob008 = new Tuple<uint, byte>(1181, 2);
+            Tuple<uint, byte> myDob009 = new Tuple<uint, byte>(1179, 0);
+            Tuple<uint, byte> myDob010 = new Tuple<uint, byte>(1179, 0);
+            Tuple<uint, byte> myDob011 = new Tuple<uint, byte>(1176, 1);
+            Tuple<uint, byte> myDob012 = new Tuple<uint, byte>(1177, 3);
 
             // create titles list for characters
             List<string> myTitles001 = new List<string>();

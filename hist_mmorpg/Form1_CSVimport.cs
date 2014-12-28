@@ -33,6 +33,7 @@ namespace hist_mmorpg
             bool inputFileError = false;
             string lineIn;
             string[] lineParts;
+            int lineNum = 0;
             StreamReader srObjects = null;
 
             // list for storing object keys
@@ -86,6 +87,9 @@ namespace hist_mmorpg
             // while there is data in the line
             while ((lineIn = srObjects.ReadLine()) != null)
             {
+                // increment lineNum
+                lineNum++;
+
                 // put the contents of the line into lineParts array, splitting on (char)9 (TAB)
                 lineParts = lineIn.Split(',');
 
@@ -93,7 +97,7 @@ namespace hist_mmorpg
                 {
                     Fief_Serialised thisFiefSer = null;
 
-                    thisFiefSer = this.importFromCSV_Fief(lineParts);
+                    thisFiefSer = this.importFromCSV_Fief(lineParts, lineNum);
 
                     if (thisFiefSer != null)
                     {
@@ -126,44 +130,32 @@ namespace hist_mmorpg
                 else if (lineParts[0].Equals("province"))
                 {
                     Province_Serialised thisProvSer = null;
+                    thisProvSer = this.importFromCSV_Prov(lineParts, lineNum);
 
-                    if (lineParts.Length != 8)
+                    if (thisProvSer != null)
+                    {
+                        // check for resynching
+                        if (resynch)
+                        {
+                            // add to masterList
+                            provinceMasterList.Add(thisProvSer.id, thisProvSer);
+                        }
+
+                        else
+                        {
+                            // save to database
+                            this.databaseWrite_Province(bucketID, ps: thisProvSer);
+                        }
+
+                        // add province id to keylist
+                        provKeyList.Add(thisProvSer.id);
+                    }
+                    else
                     {
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
                         {
-                            MessageBox.Show("Incorrect number of data parts for Province object.");
-                        }
-                    }
-                    else
-                    {
-                        thisProvSer = this.importFromCSV_Prov(lineParts);
-
-                        if (thisProvSer != null)
-                        {
-                            // check for resynching
-                            if (resynch)
-                            {
-                                // add to masterList
-                                provinceMasterList.Add(thisProvSer.id, thisProvSer);
-                            }
-
-                            else
-                            {
-                                // save to database
-                                this.databaseWrite_Province(bucketID, ps: thisProvSer);
-                            }
-
-                            // add province id to keylist
-                            provKeyList.Add(thisProvSer.id);
-                        }
-                        else
-                        {
-                            inputFileError = true;
-                            if (Globals_Client.showDebugMessages)
-                            {
-                                MessageBox.Show("Unable to create Province object: " + lineParts[1]);
-                            }
+                            MessageBox.Show("Unable to create Province object: " + lineParts[1]);
                         }
                     }
                 }
@@ -171,44 +163,32 @@ namespace hist_mmorpg
                 else if (lineParts[0].Equals("kingdom"))
                 {
                     Kingdom_Serialised thisKingSer = null;
+                    thisKingSer = this.importFromCSV_Kingdom(lineParts, lineNum);
 
-                    if (lineParts.Length != 7)
+                    if (thisKingSer != null)
+                    {
+                        // check for resynching
+                        if (resynch)
+                        {
+                            // add to masterList
+                            kingdomMasterList.Add(thisKingSer.id, thisKingSer);
+                        }
+
+                        else
+                        {
+                            // save to database
+                            this.databaseWrite_Kingdom(bucketID, ks: thisKingSer);
+                        }
+
+                        // add kingdom id to keylist
+                        kingKeyList.Add(thisKingSer.id);
+                    }
+                    else
                     {
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
                         {
-                            MessageBox.Show("Incorrect number of data parts for Kingdom object.");
-                        }
-                    }
-                    else
-                    {
-                        thisKingSer = this.importFromCSV_Kingdom(lineParts);
-
-                        if (thisKingSer != null)
-                        {
-                            // check for resynching
-                            if (resynch)
-                            {
-                                // add to masterList
-                                kingdomMasterList.Add(thisKingSer.id, thisKingSer);
-                            }
-
-                            else
-                            {
-                                // save to database
-                                this.databaseWrite_Kingdom(bucketID, ks: thisKingSer);
-                            }
-
-                            // add kingdom id to keylist
-                            kingKeyList.Add(thisKingSer.id);
-                        }
-                        else
-                        {
-                            inputFileError = true;
-                            if (Globals_Client.showDebugMessages)
-                            {
-                                MessageBox.Show("Unable to create Kingdom object: " + lineParts[1]);
-                            }
+                            MessageBox.Show("Unable to create Kingdom object: " + lineParts[1]);
                         }
                     }
                 }
@@ -217,7 +197,7 @@ namespace hist_mmorpg
                 {
                     PlayerCharacter_Serialised thisPcSer = null;
 
-                    thisPcSer = this.importFromCSV_PC(lineParts);
+                    thisPcSer = this.importFromCSV_PC(lineParts, lineNum);
 
                     if (thisPcSer != null)
                     {
@@ -251,7 +231,7 @@ namespace hist_mmorpg
                 {
                     NonPlayerCharacter_Serialised thisNpcSer = null;
 
-                    thisNpcSer = this.importFromCSV_NPC(lineParts);
+                    thisNpcSer = this.importFromCSV_NPC(lineParts, lineNum);
 
                     if (thisNpcSer != null)
                     {
@@ -285,7 +265,7 @@ namespace hist_mmorpg
                 {
                     Skill thisSkill = null;
 
-                    thisSkill = this.importFromCSV_Skill(lineParts);
+                    thisSkill = this.importFromCSV_Skill(lineParts, lineNum);
 
                     if (thisSkill != null)
                     {
@@ -308,44 +288,32 @@ namespace hist_mmorpg
                 else if (lineParts[0].Equals("army"))
                 {
                     Army thisArmy = null;
+                    thisArmy = this.importFromCSV_Army(lineParts, lineNum);
 
-                    if (lineParts.Length != 16)
+                    if (thisArmy != null)
+                    {
+                        // check for resynching
+                        if (resynch)
+                        {
+                            // add to masterList
+                            armyMasterList.Add(thisArmy.armyID, thisArmy);
+                        }
+
+                        else
+                        {
+                            // save to database
+                            this.databaseWrite_Army(bucketID, thisArmy);
+                        }
+
+                        // add id to keylist
+                        armyKeyList.Add(thisArmy.armyID);
+                    }
+                    else
                     {
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
                         {
-                            MessageBox.Show("Incorrect number of data parts for Army object.");
-                        }
-                    }
-                    else
-                    {
-                        thisArmy = this.importFromCSV_Army(lineParts);
-
-                        if (thisArmy != null)
-                        {
-                            // check for resynching
-                            if (resynch)
-                            {
-                                // add to masterList
-                                armyMasterList.Add(thisArmy.armyID, thisArmy);
-                            }
-
-                            else
-                            {
-                                // save to database
-                                this.databaseWrite_Army(bucketID, thisArmy);
-                            }
-
-                            // add id to keylist
-                            armyKeyList.Add(thisArmy.armyID);
-                        }
-                        else
-                        {
-                            inputFileError = true;
-                            if (Globals_Client.showDebugMessages)
-                            {
-                                MessageBox.Show("Unable to create Army object: " + lineParts[1]);
-                            }
+                            MessageBox.Show("Unable to create Army object: " + lineParts[1]);
                         }
                     }
                 }
@@ -353,34 +321,22 @@ namespace hist_mmorpg
                 else if (lineParts[0].Equals("language"))
                 {
                     Language_Serialised thisLangSer = null;
+                    thisLangSer = this.importFromCSV_Language(lineParts, lineNum);
 
-                    if (lineParts.Length != 4)
+                    if (thisLangSer != null)
+                    {
+                        // save to database
+                        this.databaseWrite_Language(bucketID, ls: thisLangSer);
+
+                        // add id to keylist
+                        langKeyList.Add(thisLangSer.id);
+                    }
+                    else
                     {
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
                         {
-                            MessageBox.Show("Incorrect number of data parts for Language object.");
-                        }
-                    }
-                    else
-                    {
-                        thisLangSer = this.importFromCSV_Language(lineParts);
-
-                        if (thisLangSer != null)
-                        {
-                            // save to database
-                            this.databaseWrite_Language(bucketID, ls: thisLangSer);
-
-                            // add id to keylist
-                            langKeyList.Add(thisLangSer.id);
-                        }
-                        else
-                        {
-                            inputFileError = true;
-                            if (Globals_Client.showDebugMessages)
-                            {
-                                MessageBox.Show("Unable to create Language object: " + lineParts[1]);
-                            }
+                            MessageBox.Show("Unable to create Language object: " + lineParts[1]);
                         }
                     }
                 }
@@ -388,34 +344,22 @@ namespace hist_mmorpg
                 else if (lineParts[0].Equals("baseLanguage"))
                 {
                     BaseLanguage thisBaseLang = null;
+                    thisBaseLang = this.importFromCSV_BaseLanguage(lineParts, lineNum);
 
-                    if (lineParts.Length != 3)
+                    if (thisBaseLang != null)
+                    {
+                        // save to database
+                        this.databaseWrite_BaseLanguage(bucketID, thisBaseLang);
+
+                        // add id to keylist
+                        baseLangKeyList.Add(thisBaseLang.id);
+                    }
+                    else
                     {
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
                         {
-                            MessageBox.Show("Incorrect number of data parts for BaseLanguage object.");
-                        }
-                    }
-                    else
-                    {
-                        thisBaseLang = this.importFromCSV_BaseLanguage(lineParts);
-
-                        if (thisBaseLang != null)
-                        {
-                            // save to database
-                            this.databaseWrite_BaseLanguage(bucketID, thisBaseLang);
-
-                            // add id to keylist
-                            baseLangKeyList.Add(thisBaseLang.id);
-                        }
-                        else
-                        {
-                            inputFileError = true;
-                            if (Globals_Client.showDebugMessages)
-                            {
-                                MessageBox.Show("Unable to create BaseLanguage object: " + lineParts[1]);
-                            }
+                            MessageBox.Show("Unable to create BaseLanguage object: " + lineParts[1]);
                         }
                     }
                 }
@@ -423,34 +367,22 @@ namespace hist_mmorpg
                 else if (lineParts[0].Equals("nationality"))
                 {
                     Nationality thisNat = null;
+                    thisNat = this.importFromCSV_Nationality(lineParts, lineNum);
 
-                    if (lineParts.Length != 3)
+                    if (thisNat != null)
+                    {
+                        // save to database
+                        this.databaseWrite_Nationality(bucketID, thisNat);
+
+                        // add id to keylist
+                        natKeyList.Add(thisNat.natID);
+                    }
+                    else
                     {
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
                         {
-                            MessageBox.Show("Incorrect number of data parts for Nationality object.");
-                        }
-                    }
-                    else
-                    {
-                        thisNat = this.importFromCSV_Nationality(lineParts);
-
-                        if (thisNat != null)
-                        {
-                            // save to database
-                            this.databaseWrite_Nationality(bucketID, thisNat);
-
-                            // add id to keylist
-                            natKeyList.Add(thisNat.natID);
-                        }
-                        else
-                        {
-                            inputFileError = true;
-                            if (Globals_Client.showDebugMessages)
-                            {
-                                MessageBox.Show("Unable to create Nationality object: " + lineParts[1]);
-                            }
+                            MessageBox.Show("Unable to create Nationality object: " + lineParts[1]);
                         }
                     }
                 }
@@ -459,7 +391,7 @@ namespace hist_mmorpg
                 {
                     Rank thisRank = null;
 
-                    thisRank = this.importFromCSV_Rank(lineParts);
+                    thisRank = this.importFromCSV_Rank(lineParts, lineNum);
 
                     if (thisRank != null)
                     {
@@ -482,8 +414,7 @@ namespace hist_mmorpg
                 else if (lineParts[0].Equals("position"))
                 {
                     Position_Serialised thisPosSer = null;
-
-                    thisPosSer = this.importFromCSV_Position(lineParts);
+                    thisPosSer = this.importFromCSV_Position(lineParts, lineNum);
 
                     if (thisPosSer != null)
                     {
@@ -506,44 +437,32 @@ namespace hist_mmorpg
                 else if (lineParts[0].Equals("siege"))
                 {
                     Siege thisSiege = null;
+                    thisSiege = this.importFromCSV_Siege(lineParts, lineNum);
 
-                    if (lineParts.Length != 16)
+                    if (thisSiege != null)
+                    {
+                        // check for resynching
+                        if (resynch)
+                        {
+                            // add to masterList
+                            siegeMasterList.Add(thisSiege.siegeID, thisSiege);
+                        }
+
+                        else
+                        {
+                            // save to database
+                            this.databaseWrite_Siege(bucketID, thisSiege);
+                        }
+
+                        // add id to keylist
+                        siegeKeyList.Add(thisSiege.siegeID);
+                    }
+                    else
                     {
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
                         {
-                            MessageBox.Show("Incorrect number of data parts for Siege object.");
-                        }
-                    }
-                    else
-                    {
-                        thisSiege = this.importFromCSV_Siege(lineParts);
-
-                        if (thisSiege != null)
-                        {
-                            // check for resynching
-                            if (resynch)
-                            {
-                                // add to masterList
-                                siegeMasterList.Add(thisSiege.siegeID, thisSiege);
-                            }
-
-                            else
-                            {
-                                // save to database
-                                this.databaseWrite_Siege(bucketID, thisSiege);
-                            }
-
-                            // add id to keylist
-                            siegeKeyList.Add(thisSiege.siegeID);
-                        }
-                        else
-                        {
-                            inputFileError = true;
-                            if (Globals_Client.showDebugMessages)
-                            {
-                                MessageBox.Show("Unable to create Siege object: " + lineParts[1]);
-                            }
+                            MessageBox.Show("Unable to create Siege object: " + lineParts[1]);
                         }
                     }
                 }
@@ -551,34 +470,22 @@ namespace hist_mmorpg
                 else if (lineParts[0].Equals("terrain"))
                 {
                     Terrain thisTerr = null;
+                    thisTerr = this.importFromCSV_Terrain(lineParts, lineNum);
 
-                    if (lineParts.Length != 4)
+                    if (thisTerr != null)
+                    {
+                        // save to database
+                        this.databaseWrite_Terrain(bucketID, thisTerr);
+
+                        // add id to keylist
+                        terrKeyList.Add(thisTerr.id);
+                    }
+                    else
                     {
                         inputFileError = true;
                         if (Globals_Client.showDebugMessages)
                         {
-                            MessageBox.Show("Incorrect number of data parts for Terrain object.");
-                        }
-                    }
-                    else
-                    {
-                        thisTerr = this.importFromCSV_Terrain(lineParts);
-
-                        if (thisTerr != null)
-                        {
-                            // save to database
-                            this.databaseWrite_Terrain(bucketID, thisTerr);
-
-                            // add id to keylist
-                            terrKeyList.Add(thisTerr.id);
-                        }
-                        else
-                        {
-                            inputFileError = true;
-                            if (Globals_Client.showDebugMessages)
-                            {
-                                MessageBox.Show("Unable to create Terrain object: " + lineParts[1]);
-                            }
+                            MessageBox.Show("Unable to create Terrain object: " + lineParts[1]);
                         }
                     }
                 }
@@ -699,7 +606,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Fief_Serialised object</returns>
         /// <param name="fiefData">string[] holding source data</param>
-        public Fief_Serialised importFromCSV_Fief(string[] fiefData)
+        public Fief_Serialised importFromCSV_Fief(string[] fiefData, int lineNum)
         {
             Fief_Serialised thisFiefSer = null;
 
@@ -848,33 +755,65 @@ namespace hist_mmorpg
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 
@@ -886,12 +825,18 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Province_Serialised object</returns>
         /// <param name="provData">string[] holding source data</param>
-        public Province_Serialised importFromCSV_Prov(string[] provData)
+        /// <param name="lineNum">Line number in source file</param>
+        public Province_Serialised importFromCSV_Prov(string[] provData, int lineNum)
         {
             Province_Serialised thisProvSer = null;
 
             try
             {
+                if (provData.Length != 8)
+                {
+                    throw new InvalidDataException("Incorrect number of data parts for Province object.");
+                }
+
                 // check for presence of conditional values
                 string tiHo, own, kingdom;
                 tiHo = own = kingdom = null;
@@ -916,33 +861,65 @@ namespace hist_mmorpg
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 
@@ -954,12 +931,18 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Kingdom_Serialised object</returns>
         /// <param name="kingData">string[] holding source data</param>
-        public Kingdom_Serialised importFromCSV_Kingdom(string[] kingData)
+        /// <param name="lineNum">Line number in source file</param>
+        public Kingdom_Serialised importFromCSV_Kingdom(string[] kingData, int lineNum)
         {
             Kingdom_Serialised thisKingSer = null;
 
             try
             {
+                if (kingData.Length != 7)
+                {
+                    throw new InvalidDataException("Incorrect number of data parts for Kingdom object.");
+                }
+
                 // check for presence of conditional values
                 string tiHo, own;
                 tiHo = own = null;
@@ -980,33 +963,65 @@ namespace hist_mmorpg
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 
@@ -1018,7 +1033,8 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>PlayerCharacter_Serialised object</returns>
         /// <param name="pcData">string[] holding source data</param>
-        public PlayerCharacter_Serialised importFromCSV_PC(string[] pcData)
+        /// <param name="lineNum">Line number in source file</param>
+        public PlayerCharacter_Serialised importFromCSV_PC(string[] pcData, int lineNum)
         {
             PlayerCharacter_Serialised thisPcSer = null;
 
@@ -1228,33 +1244,65 @@ namespace hist_mmorpg
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 
@@ -1266,7 +1314,8 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>NonPlayerCharacter_Serialised object</returns>
         /// <param name="npcData">string[] holding source data</param>
-        public NonPlayerCharacter_Serialised importFromCSV_NPC(string[] npcData)
+        /// <param name="lineNum">Line number in source file</param>
+        public NonPlayerCharacter_Serialised importFromCSV_NPC(string[] npcData, int lineNum)
         {
             NonPlayerCharacter_Serialised thisNpcSer = null;
 
@@ -1383,33 +1432,65 @@ namespace hist_mmorpg
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 
@@ -1421,7 +1502,8 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Skill object</returns>
         /// <param name="skillData">string[] holding source data</param>
-        public Skill importFromCSV_Skill(string[] skillData)
+        /// <param name="lineNum">Line number in source file</param>
+        public Skill importFromCSV_Skill(string[] skillData, int lineNum)
         {
             Skill thisSkill = null;
 
@@ -1475,33 +1557,65 @@ namespace hist_mmorpg
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 
@@ -1513,12 +1627,18 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Army object</returns>
         /// <param name="armyData">string[] holding source data</param>
-        public Army importFromCSV_Army(string[] armyData)
+        /// <param name="lineNum">Line number in source file</param>
+        public Army importFromCSV_Army(string[] armyData, int lineNum)
         {
             Army thisArmy = null;
 
             try
             {
+                if (armyData.Length != 16)
+                {
+                    throw new InvalidDataException("Incorrect number of data parts for Army object.");
+                }
+
                 // create troops array
                 uint[] troops = new uint[] { Convert.ToUInt32(armyData[9]), Convert.ToUInt32(armyData[10]),
                     Convert.ToUInt32(armyData[11]), Convert.ToUInt32(armyData[12]), Convert.ToUInt32(armyData[13]),
@@ -1548,33 +1668,65 @@ namespace hist_mmorpg
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 
@@ -1586,45 +1738,83 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Language_Serialised object</returns>
         /// <param name="langData">string[] holding source data</param>
-        public Language_Serialised importFromCSV_Language(string[] langData)
+        /// <param name="lineNum">Line number in source file</param>
+        public Language_Serialised importFromCSV_Language(string[] langData, int lineNum)
         {
             Language_Serialised thisLangSer = null;
 
             try
             {
+                if (langData.Length != 4)
+                {
+                    throw new InvalidDataException("Incorrect number of data parts for Language object.");
+                }
+
                 // create Language_Serialised object
                 thisLangSer = new Language_Serialised(langData[1], langData[2], Convert.ToInt32(langData[3]));
             }
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 
@@ -1636,45 +1826,83 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>BaseLanguage object</returns>
         /// <param name="baseLangData">string[] holding source data</param>
-        public BaseLanguage importFromCSV_BaseLanguage(string[] baseLangData)
+        /// <param name="lineNum">Line number in source file</param>
+        public BaseLanguage importFromCSV_BaseLanguage(string[] baseLangData, int lineNum)
         {
             BaseLanguage thisBaseLang = null;
 
             try
             {
+                if (baseLangData.Length != 3)
+                {
+                    throw new InvalidDataException("Incorrect number of data parts for BaseLanguage object.");
+                }
+
                 // create BaseLanguage object
                 thisBaseLang = new BaseLanguage(baseLangData[1], baseLangData[2]);
             }
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 
@@ -1686,45 +1914,83 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Nationality object</returns>
         /// <param name="natData">string[] holding source data</param>
-        public Nationality importFromCSV_Nationality(string[] natData)
+        /// <param name="lineNum">Line number in source file</param>
+        public Nationality importFromCSV_Nationality(string[] natData, int lineNum)
         {
             Nationality thisNat = null;
 
             try
             {
+                if (natData.Length != 3)
+                {
+                    throw new InvalidDataException("Incorrect number of data parts for Nationality object.");
+                }
+
                 // create Nationality object
                 thisNat = new Nationality(natData[1], natData[2]);
             }
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 
@@ -1736,7 +2002,8 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Rank object</returns>
         /// <param name="rankData">string[] holding source data</param>
-        public Rank importFromCSV_Rank(string[] rankData)
+        /// <param name="lineNum">Line number in source file</param>
+        public Rank importFromCSV_Rank(string[] rankData, int lineNum)
         {
             Rank thisRank = null;
 
@@ -1792,33 +2059,65 @@ namespace hist_mmorpg
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 
@@ -1830,7 +2129,8 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Position_Serialised object</returns>
         /// <param name="posData">string[] holding source data</param>
-        public Position_Serialised importFromCSV_Position(string[] posData)
+        /// <param name="lineNum">Line number in source file</param>
+        public Position_Serialised importFromCSV_Position(string[] posData, int lineNum)
         {
             Position_Serialised thisPosSer = null;
 
@@ -1886,33 +2186,65 @@ namespace hist_mmorpg
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 
@@ -1924,12 +2256,18 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Siege object</returns>
         /// <param name="siegeData">string[] holding source data</param>
-        public Siege importFromCSV_Siege(string[] siegeData)
+        /// <param name="lineNum">Line number in source file</param>
+        public Siege importFromCSV_Siege(string[] siegeData, int lineNum)
         {
             Siege thisSiege = null;
 
             try
             {
+                if (siegeData.Length != 16)
+                {
+                    throw new InvalidDataException("Incorrect number of data parts for Siege object.");
+                }
+
                 // check for presence of conditional values
                 string totAttCas, totDefCas, totDays, defenderAdd, siegeEnd;
                 totAttCas = totDefCas = totDays = defenderAdd = siegeEnd = null;
@@ -1964,33 +2302,65 @@ namespace hist_mmorpg
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 
@@ -2002,45 +2372,83 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Terrain object</returns>
         /// <param name="terrData">string[] holding source data</param>
-        public Terrain importFromCSV_Terrain(string[] terrData)
+        /// <param name="lineNum">Line number in source file</param>
+        public Terrain importFromCSV_Terrain(string[] terrData, int lineNum)
         {
             Terrain thisTerr = null;
 
             try
             {
+                if (terrData.Length != 4)
+                {
+                    throw new InvalidDataException("Incorrect number of data parts for Terrain object.");
+                }
+                
                 // create Terrain object
                 thisTerr = new Terrain(terrData[1], terrData[2], Convert.ToDouble(terrData[3]));
             }
             // catch exception that could result from incorrect conversion of string to numeric 
             catch (FormatException fe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(fe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + fe.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (ArgumentOutOfRangeException aoore)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(aoore.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + aoore.Message);
                 }
             }
             // catch exception that could be thrown by several checks in the Fief constructor
             catch (InvalidDataException ide)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(ide.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                 }
             }
             // catch exception that could result from incorrect numeric values
             catch (OverflowException oe)
             {
+                // create and add sysAdmin JournalEntry
+                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                if (importErrorEntry != null)
+                {
+                    importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
+                    Globals_Game.addPastEvent(importErrorEntry);
+                }
+
                 if (Globals_Client.showDebugMessages)
                 {
-                    MessageBox.Show(oe.Message);
+                    MessageBox.Show("Line " + lineNum + ": " + oe.Message);
                 }
             }
 

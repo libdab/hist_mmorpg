@@ -2895,7 +2895,7 @@ namespace hist_mmorpg
 			: base(pcs: pcs)
 		{
 
-			this.outlawed = pcs.outlawed;
+			this.outlawed = pcs.isOutlawed;
 			this.purse = pcs.purse;
             // create empty NPC List, to be populated later
 			this.myNPCs = new List<NonPlayerCharacter> ();
@@ -4115,7 +4115,7 @@ namespace hist_mmorpg
 			{
 				this.employer = npcs.employer;
 			}
-			this.salary = npcs.wage;
+			this.salary = npcs.salary;
 			this.inEntourage = npcs.inEntourage;
 			this.lastOffer = npcs.lastOffer;
             this.isHeir = npcs.isHeir;
@@ -5134,7 +5134,7 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Holds character outlawed status
 		/// </summary>
-		public bool outlawed { get; set; }
+		public bool isOutlawed { get; set; }
 		/// <summary>
 		/// Holds character's finances
 		/// </summary>
@@ -5180,7 +5180,7 @@ namespace hist_mmorpg
 			: base(pc: pc)
 		{
 
-			this.outlawed = pc.outlawed;
+			this.isOutlawed = pc.outlawed;
 			this.purse = pc.purse;
 			if (pc.myNPCs.Count > 0)
 			{
@@ -5331,7 +5331,7 @@ namespace hist_mmorpg
                 }
             }
 
-            this.outlawed = outl;
+            this.isOutlawed = outl;
             this.purse = pur;
             this.myNPCs = npcs;
             this.ownedFiefs = ownedF;
@@ -5365,7 +5365,7 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Holds NPC's wage
 		/// </summary>
-		public uint wage { get; set; }
+		public uint salary { get; set; }
 		/// <summary>
 		/// Holds last wage offer from individual PCs
 		/// </summary>
@@ -5392,7 +5392,7 @@ namespace hist_mmorpg
 			{
 				this.employer = npc.employer;
 			}
-			this.wage = npc.salary;
+			this.salary = npc.salary;
 			this.inEntourage = npc.inEntourage;
 			this.lastOffer = npc.lastOffer;
             this.isHeir = npc.isHeir;
@@ -5426,7 +5426,7 @@ namespace hist_mmorpg
             }
 
             this.employer = empl;
-            this.wage = sal;
+            this.salary = sal;
             this.inEntourage = inEnt;
             this.lastOffer = new Dictionary<string, uint>();
             this.isHeir = isH;

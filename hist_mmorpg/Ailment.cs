@@ -82,10 +82,10 @@ namespace hist_mmorpg
             }
 
             // EFF
-            // check not > 5
-            if (eff > 5)
+            // check must be 1-5
+            if ((eff < 1) || (eff > 5))
             {
-                throw new InvalidDataException("Ailment effect must be a uint less than 6");
+                throw new InvalidDataException("Ailment effect must be a uint between 1-5");
             }
 
             // MINEFF

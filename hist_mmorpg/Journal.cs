@@ -281,7 +281,7 @@ namespace hist_mmorpg
 
             // SEAS
             // check between 0-3
-            if ((seas < 0) || (seas > 3))
+            if (!Utility_Methods.validateSeason(seas))
             {
                 throw new InvalidDataException("JournalEntry season must be a byte between 0-3");
             }
@@ -299,12 +299,15 @@ namespace hist_mmorpg
             }
 
             // LOC
-            // trim and ensure is uppercase
-            loc = loc.Trim().ToUpper();
-
-            if (!Utility_Methods.validatePlaceID(loc))
+            if (!String.IsNullOrWhiteSpace(loc))
             {
-                throw new InvalidDataException("JournalEntry location id must be 5 characters long, start with a letter, and end in at least 2 numbers");
+                // trim and ensure is uppercase
+                loc = loc.Trim().ToUpper();
+
+                if (!Utility_Methods.validatePlaceID(loc))
+                {
+                    throw new InvalidDataException("JournalEntry location id must be 5 characters long, start with a letter, and end in at least 2 numbers");
+                }
             }
 
             this.jEntryID = id;
