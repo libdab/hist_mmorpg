@@ -176,8 +176,8 @@ namespace hist_mmorpg
             }
 
             // FAMNAM
-            // trim and ensure 1st is uppercase
-            famNam = Utility_Methods.firstCharToUpper(famNam.Trim());
+            // trim
+            famNam = famNam.Trim();
 
             if (!Utility_Methods.validateName(famNam))
             {
@@ -4877,8 +4877,8 @@ namespace hist_mmorpg
             }
 
             // FAMNAM
-            // trim and ensure 1st is uppercase
-            famNam = Utility_Methods.firstCharToUpper(famNam.Trim());
+            // trim
+            famNam = famNam.Trim();
 
             if (!Utility_Methods.validateName(famNam))
             {
@@ -4929,6 +4929,8 @@ namespace hist_mmorpg
             }
 
             // LANG
+            // trim
+            lang = lang.Trim();
             if (!Utility_Methods.validateLanguageID(lang))
             {
                 throw new InvalidDataException("Character_Serialised language ID must have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");

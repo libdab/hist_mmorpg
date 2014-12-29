@@ -98,6 +98,9 @@ namespace hist_mmorpg
             // VALIDATION
 
             // ID
+            // trim
+            id = id.Trim();
+
             if (!Utility_Methods.validateLanguageID(id, "baseLang"))
             {
                 throw new InvalidDataException("BaseLanguage ID must have the format 'lang_' followed by 1-2 letters");
@@ -174,6 +177,10 @@ namespace hist_mmorpg
             // VALIDATION
 
             // ID
+            // trim id and bLang
+            id = id.Trim();
+            bLang = bLang.Trim();
+
             if (!id.Contains(bLang))
             {
                 throw new InvalidDataException("Language_Serialised ID be based on its BaseLanguage ID");

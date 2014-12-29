@@ -61,6 +61,9 @@ namespace hist_mmorpg
             Dictionary<string, Siege> siegeMasterList = new Dictionary<string, Siege>();
             Dictionary<string, Army> armyMasterList = new Dictionary<string, Army>();
 
+            // temp
+            List<Language_Serialised> myBLs = new List<Language_Serialised>();
+
             try
             {
                 // opens StreamReader to read in  data from csv file
@@ -93,400 +96,425 @@ namespace hist_mmorpg
                 // put the contents of the line into lineParts array, splitting on (char)9 (TAB)
                 lineParts = lineIn.Split(',');
 
-                if (lineParts[0].Equals("fief"))
+                try
                 {
-                    Fief_Serialised thisFiefSer = null;
 
-                    thisFiefSer = this.importFromCSV_Fief(lineParts, lineNum);
-
-                    if (thisFiefSer != null)
+                    if (lineParts[0].Equals("fief"))
                     {
-                        // check for resynching
-                        if (resynch)
-                        {
-                            // add to masterList
-                            fiefMasterList.Add(thisFiefSer.id, thisFiefSer);
-                        }
+                        Fief_Serialised thisFiefSer = null;
 
+                        thisFiefSer = this.importFromCSV_Fief(lineParts, lineNum);
+
+                        if (thisFiefSer != null)
+                        {
+                            // check for resynching
+                            if (resynch)
+                            {
+                                // add to masterList
+                                fiefMasterList.Add(thisFiefSer.id, thisFiefSer);
+                            }
+
+                            else
+                            {
+                                // save to database
+                                this.databaseWrite_Fief(bucketID, fs: thisFiefSer);
+                            }
+
+                            // add fief id to keylist
+                            fiefKeyList.Add(thisFiefSer.id);
+                        }
                         else
                         {
-                            // save to database
-                            this.databaseWrite_Fief(bucketID, fs: thisFiefSer);
-                        }
-
-                        // add fief id to keylist
-                        fiefKeyList.Add(thisFiefSer.id);
-                    }
-                    else
-                    {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
-                        {
-                            MessageBox.Show("Unable to create Fief object: " + lineParts[1]);
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Fief object: " + lineParts[1]);
+                            }
                         }
                     }
-                }
 
-                else if (lineParts[0].Equals("province"))
-                {
-                    Province_Serialised thisProvSer = null;
-                    thisProvSer = this.importFromCSV_Prov(lineParts, lineNum);
-
-                    if (thisProvSer != null)
+                    else if (lineParts[0].Equals("province"))
                     {
-                        // check for resynching
-                        if (resynch)
-                        {
-                            // add to masterList
-                            provinceMasterList.Add(thisProvSer.id, thisProvSer);
-                        }
+                        Province_Serialised thisProvSer = null;
+                        thisProvSer = this.importFromCSV_Prov(lineParts, lineNum);
 
+                        if (thisProvSer != null)
+                        {
+                            // check for resynching
+                            if (resynch)
+                            {
+                                // add to masterList
+                                provinceMasterList.Add(thisProvSer.id, thisProvSer);
+                            }
+
+                            else
+                            {
+                                // save to database
+                                this.databaseWrite_Province(bucketID, ps: thisProvSer);
+                            }
+
+                            // add province id to keylist
+                            provKeyList.Add(thisProvSer.id);
+                        }
                         else
                         {
-                            // save to database
-                            this.databaseWrite_Province(bucketID, ps: thisProvSer);
-                        }
-
-                        // add province id to keylist
-                        provKeyList.Add(thisProvSer.id);
-                    }
-                    else
-                    {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
-                        {
-                            MessageBox.Show("Unable to create Province object: " + lineParts[1]);
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Province object: " + lineParts[1]);
+                            }
                         }
                     }
-                }
 
-                else if (lineParts[0].Equals("kingdom"))
-                {
-                    Kingdom_Serialised thisKingSer = null;
-                    thisKingSer = this.importFromCSV_Kingdom(lineParts, lineNum);
-
-                    if (thisKingSer != null)
+                    else if (lineParts[0].Equals("kingdom"))
                     {
-                        // check for resynching
-                        if (resynch)
-                        {
-                            // add to masterList
-                            kingdomMasterList.Add(thisKingSer.id, thisKingSer);
-                        }
+                        Kingdom_Serialised thisKingSer = null;
+                        thisKingSer = this.importFromCSV_Kingdom(lineParts, lineNum);
 
+                        if (thisKingSer != null)
+                        {
+                            // check for resynching
+                            if (resynch)
+                            {
+                                // add to masterList
+                                kingdomMasterList.Add(thisKingSer.id, thisKingSer);
+                            }
+
+                            else
+                            {
+                                // save to database
+                                this.databaseWrite_Kingdom(bucketID, ks: thisKingSer);
+                            }
+
+                            // add kingdom id to keylist
+                            kingKeyList.Add(thisKingSer.id);
+                        }
                         else
                         {
-                            // save to database
-                            this.databaseWrite_Kingdom(bucketID, ks: thisKingSer);
-                        }
-
-                        // add kingdom id to keylist
-                        kingKeyList.Add(thisKingSer.id);
-                    }
-                    else
-                    {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
-                        {
-                            MessageBox.Show("Unable to create Kingdom object: " + lineParts[1]);
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Kingdom object: " + lineParts[1]);
+                            }
                         }
                     }
-                }
 
-                else if (lineParts[0].Equals("pc"))
-                {
-                    PlayerCharacter_Serialised thisPcSer = null;
-
-                    thisPcSer = this.importFromCSV_PC(lineParts, lineNum);
-
-                    if (thisPcSer != null)
+                    else if (lineParts[0].Equals("pc"))
                     {
-                        // check for resynching
-                        if (resynch)
-                        {
-                            // add to masterList
-                            pcMasterList.Add(thisPcSer.charID, thisPcSer);
-                        }
+                        PlayerCharacter_Serialised thisPcSer = null;
 
+                        thisPcSer = this.importFromCSV_PC(lineParts, lineNum);
+
+                        if (thisPcSer != null)
+                        {
+                            // check for resynching
+                            if (resynch)
+                            {
+                                // add to masterList
+                                pcMasterList.Add(thisPcSer.charID, thisPcSer);
+                            }
+
+                            else
+                            {
+                                // save to database
+                                this.databaseWrite_PC(bucketID, pcs: thisPcSer);
+                            }
+
+                            // add id to keylist
+                            pcKeyList.Add(thisPcSer.charID);
+                        }
                         else
                         {
-                            // save to database
-                            this.databaseWrite_PC(bucketID, pcs: thisPcSer);
-                        }
-
-                        // add id to keylist
-                        pcKeyList.Add(thisPcSer.charID);
-                    }
-                    else
-                    {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
-                        {
-                            MessageBox.Show("Unable to create PlayerCharacter object: " + lineParts[1]);
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create PlayerCharacter object: " + lineParts[1]);
+                            }
                         }
                     }
-                }
 
-                else if (lineParts[0].Equals("npc"))
-                {
-                    NonPlayerCharacter_Serialised thisNpcSer = null;
-
-                    thisNpcSer = this.importFromCSV_NPC(lineParts, lineNum);
-
-                    if (thisNpcSer != null)
+                    else if (lineParts[0].Equals("npc"))
                     {
-                        // check for resynching
-                        if (resynch)
-                        {
-                            // add to masterList
-                            npcMasterList.Add(thisNpcSer.charID, thisNpcSer);
-                        }
+                        NonPlayerCharacter_Serialised thisNpcSer = null;
+                        thisNpcSer = this.importFromCSV_NPC(lineParts, lineNum);
 
+                        if (thisNpcSer != null)
+                        {
+                            // check for resynching
+                            if (resynch)
+                            {
+                                // add to masterList
+                                npcMasterList.Add(thisNpcSer.charID, thisNpcSer);
+                            }
+
+                            else
+                            {
+                                // save to database
+                                this.databaseWrite_NPC(bucketID, npcs: thisNpcSer);
+                            }
+
+                            // add id to keylist
+                            npcKeyList.Add(thisNpcSer.charID);
+                        }
                         else
                         {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create NonPlayerCharacter object: " + lineParts[1]);
+                            }
+                        }
+                    }
+
+                    else if (lineParts[0].Equals("skill"))
+                    {
+                        Skill thisSkill = null;
+
+                        thisSkill = this.importFromCSV_Skill(lineParts, lineNum);
+
+                        if (thisSkill != null)
+                        {
                             // save to database
-                            this.databaseWrite_NPC(bucketID, npcs: thisNpcSer);
+                            this.databaseWrite_Skill(bucketID, thisSkill);
+
+                            // add id to keylist
+                            skillKeyList.Add(thisSkill.skillID);
                         }
-
-                        // add id to keylist
-                        npcKeyList.Add(thisNpcSer.charID);
-                    }
-                    else
-                    {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
-                        {
-                            MessageBox.Show("Unable to create NonPlayerCharacter object: " + lineParts[1]);
-                        }
-                    }
-                }
-
-                else if (lineParts[0].Equals("skill"))
-                {
-                    Skill thisSkill = null;
-
-                    thisSkill = this.importFromCSV_Skill(lineParts, lineNum);
-
-                    if (thisSkill != null)
-                    {
-                        // save to database
-                        this.databaseWrite_Skill(bucketID, thisSkill);
-
-                        // add id to keylist
-                        skillKeyList.Add(thisSkill.skillID);
-                    }
-                    else
-                    {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
-                        {
-                            MessageBox.Show("Unable to create Skill object: " + lineParts[1]);
-                        }
-                    }
-                }
-
-                else if (lineParts[0].Equals("army"))
-                {
-                    Army thisArmy = null;
-                    thisArmy = this.importFromCSV_Army(lineParts, lineNum);
-
-                    if (thisArmy != null)
-                    {
-                        // check for resynching
-                        if (resynch)
-                        {
-                            // add to masterList
-                            armyMasterList.Add(thisArmy.armyID, thisArmy);
-                        }
-
                         else
                         {
-                            // save to database
-                            this.databaseWrite_Army(bucketID, thisArmy);
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Skill object: " + lineParts[1]);
+                            }
                         }
-
-                        // add id to keylist
-                        armyKeyList.Add(thisArmy.armyID);
                     }
-                    else
+
+                    else if (lineParts[0].Equals("army"))
                     {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
+                        Army thisArmy = null;
+                        thisArmy = this.importFromCSV_Army(lineParts, lineNum);
+
+                        if (thisArmy != null)
                         {
-                            MessageBox.Show("Unable to create Army object: " + lineParts[1]);
+                            // check for resynching
+                            if (resynch)
+                            {
+                                // add to masterList
+                                armyMasterList.Add(thisArmy.armyID, thisArmy);
+                            }
+
+                            else
+                            {
+                                // save to database
+                                this.databaseWrite_Army(bucketID, thisArmy);
+                            }
+
+                            // add id to keylist
+                            armyKeyList.Add(thisArmy.armyID);
                         }
-                    }
-                }
-
-                else if (lineParts[0].Equals("language"))
-                {
-                    Language_Serialised thisLangSer = null;
-                    thisLangSer = this.importFromCSV_Language(lineParts, lineNum);
-
-                    if (thisLangSer != null)
-                    {
-                        // save to database
-                        this.databaseWrite_Language(bucketID, ls: thisLangSer);
-
-                        // add id to keylist
-                        langKeyList.Add(thisLangSer.id);
-                    }
-                    else
-                    {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
-                        {
-                            MessageBox.Show("Unable to create Language object: " + lineParts[1]);
-                        }
-                    }
-                }
-
-                else if (lineParts[0].Equals("baseLanguage"))
-                {
-                    BaseLanguage thisBaseLang = null;
-                    thisBaseLang = this.importFromCSV_BaseLanguage(lineParts, lineNum);
-
-                    if (thisBaseLang != null)
-                    {
-                        // save to database
-                        this.databaseWrite_BaseLanguage(bucketID, thisBaseLang);
-
-                        // add id to keylist
-                        baseLangKeyList.Add(thisBaseLang.id);
-                    }
-                    else
-                    {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
-                        {
-                            MessageBox.Show("Unable to create BaseLanguage object: " + lineParts[1]);
-                        }
-                    }
-                }
-
-                else if (lineParts[0].Equals("nationality"))
-                {
-                    Nationality thisNat = null;
-                    thisNat = this.importFromCSV_Nationality(lineParts, lineNum);
-
-                    if (thisNat != null)
-                    {
-                        // save to database
-                        this.databaseWrite_Nationality(bucketID, thisNat);
-
-                        // add id to keylist
-                        natKeyList.Add(thisNat.natID);
-                    }
-                    else
-                    {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
-                        {
-                            MessageBox.Show("Unable to create Nationality object: " + lineParts[1]);
-                        }
-                    }
-                }
-
-                else if (lineParts[0].Equals("rank"))
-                {
-                    Rank thisRank = null;
-
-                    thisRank = this.importFromCSV_Rank(lineParts, lineNum);
-
-                    if (thisRank != null)
-                    {
-                        // save to database
-                        this.databaseWrite_Rank(bucketID, thisRank);
-
-                        // add id to keylist
-                        rankKeyList.Add(thisRank.id);
-                    }
-                    else
-                    {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
-                        {
-                            MessageBox.Show("Unable to create Rank object: " + lineParts[1]);
-                        }
-                    }
-                }
-
-                else if (lineParts[0].Equals("position"))
-                {
-                    Position_Serialised thisPosSer = null;
-                    thisPosSer = this.importFromCSV_Position(lineParts, lineNum);
-
-                    if (thisPosSer != null)
-                    {
-                        // save to database
-                        this.databaseWrite_Position(bucketID, ps: thisPosSer);
-
-                        // add id to keylist
-                        posKeyList.Add(thisPosSer.id);
-                    }
-                    else
-                    {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
-                        {
-                            MessageBox.Show("Unable to create Position object: " + lineParts[1]);
-                        }
-                    }
-                }
-
-                else if (lineParts[0].Equals("siege"))
-                {
-                    Siege thisSiege = null;
-                    thisSiege = this.importFromCSV_Siege(lineParts, lineNum);
-
-                    if (thisSiege != null)
-                    {
-                        // check for resynching
-                        if (resynch)
-                        {
-                            // add to masterList
-                            siegeMasterList.Add(thisSiege.siegeID, thisSiege);
-                        }
-
                         else
                         {
-                            // save to database
-                            this.databaseWrite_Siege(bucketID, thisSiege);
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Army object: " + lineParts[1]);
+                            }
                         }
-
-                        // add id to keylist
-                        siegeKeyList.Add(thisSiege.siegeID);
                     }
+
+                    else if (lineParts[0].Equals("language"))
+                    {
+                        Language_Serialised thisLangSer = null;
+                        thisLangSer = this.importFromCSV_Language(lineParts, lineNum);
+
+                        if (thisLangSer != null)
+                        {
+                            // save to database
+                            this.databaseWrite_Language(bucketID, ls: thisLangSer);
+
+                            // add id to keylist
+                            langKeyList.Add(thisLangSer.id);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Language object: " + lineParts[1]);
+                            }
+                        }
+                    }
+
+                    else if (lineParts[0].Equals("baseLanguage"))
+                    {
+                        BaseLanguage thisBaseLang = null;
+                        thisBaseLang = this.importFromCSV_BaseLanguage(lineParts, lineNum);
+
+                        if (thisBaseLang != null)
+                        {
+                            // save to database
+                            this.databaseWrite_BaseLanguage(bucketID, thisBaseLang);
+
+                            // add id to keylist
+                            baseLangKeyList.Add(thisBaseLang.id);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create BaseLanguage object: " + lineParts[1]);
+                            }
+                        }
+                    }
+
+                    else if (lineParts[0].Equals("nationality"))
+                    {
+                        Nationality thisNat = null;
+                        thisNat = this.importFromCSV_Nationality(lineParts, lineNum);
+
+                        if (thisNat != null)
+                        {
+                            // save to database
+                            this.databaseWrite_Nationality(bucketID, thisNat);
+
+                            // add id to keylist
+                            natKeyList.Add(thisNat.natID);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Nationality object: " + lineParts[1]);
+                            }
+                        }
+                    }
+
+                    else if (lineParts[0].Equals("rank"))
+                    {
+                        Rank thisRank = null;
+
+                        thisRank = this.importFromCSV_Rank(lineParts, lineNum);
+
+                        if (thisRank != null)
+                        {
+                            // save to database
+                            this.databaseWrite_Rank(bucketID, thisRank);
+
+                            // add id to keylist
+                            rankKeyList.Add(thisRank.id);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Rank object: " + lineParts[1]);
+                            }
+                        }
+                    }
+
+                    else if (lineParts[0].Equals("position"))
+                    {
+                        Position_Serialised thisPosSer = null;
+                        thisPosSer = this.importFromCSV_Position(lineParts, lineNum);
+
+                        if (thisPosSer != null)
+                        {
+                            // save to database
+                            this.databaseWrite_Position(bucketID, ps: thisPosSer);
+
+                            // add id to keylist
+                            posKeyList.Add(thisPosSer.id);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Position object: " + lineParts[1]);
+                            }
+                        }
+                    }
+
+                    else if (lineParts[0].Equals("siege"))
+                    {
+                        Siege thisSiege = null;
+                        thisSiege = this.importFromCSV_Siege(lineParts, lineNum);
+
+                        if (thisSiege != null)
+                        {
+                            // check for resynching
+                            if (resynch)
+                            {
+                                // add to masterList
+                                siegeMasterList.Add(thisSiege.siegeID, thisSiege);
+                            }
+
+                            else
+                            {
+                                // save to database
+                                this.databaseWrite_Siege(bucketID, thisSiege);
+                            }
+
+                            // add id to keylist
+                            siegeKeyList.Add(thisSiege.siegeID);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Siege object: " + lineParts[1]);
+                            }
+                        }
+                    }
+
+                    else if (lineParts[0].Equals("terrain"))
+                    {
+                        Terrain thisTerr = null;
+                        thisTerr = this.importFromCSV_Terrain(lineParts, lineNum);
+
+                        if (thisTerr != null)
+                        {
+                            // save to database
+                            this.databaseWrite_Terrain(bucketID, thisTerr);
+
+                            // add id to keylist
+                            terrKeyList.Add(thisTerr.id);
+                        }
+                        else
+                        {
+                            inputFileError = true;
+                            if (Globals_Client.showDebugMessages)
+                            {
+                                MessageBox.Show("Unable to create Terrain object: " + lineParts[1]);
+                            }
+                        }
+                    }
+
+                    // non-recognised object prefix
                     else
                     {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
-                        {
-                            MessageBox.Show("Unable to create Siege object: " + lineParts[1]);
-                        }
+                        throw new InvalidDataException("Object prefix not recognised");
                     }
                 }
-
-                else if (lineParts[0].Equals("terrain"))
+                // catch exception that could be thrown by an invalid object prefix
+                catch (InvalidDataException ide)
                 {
-                    Terrain thisTerr = null;
-                    thisTerr = this.importFromCSV_Terrain(lineParts, lineNum);
-
-                    if (thisTerr != null)
+                    // create and add sysAdmin JournalEntry
+                    JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                    if (importErrorEntry != null)
                     {
-                        // save to database
-                        this.databaseWrite_Terrain(bucketID, thisTerr);
-
-                        // add id to keylist
-                        terrKeyList.Add(thisTerr.id);
+                        importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
+                        Globals_Game.addPastEvent(importErrorEntry);
                     }
-                    else
+
+                    if (Globals_Client.showDebugMessages)
                     {
-                        inputFileError = true;
-                        if (Globals_Client.showDebugMessages)
-                        {
-                            MessageBox.Show("Unable to create Terrain object: " + lineParts[1]);
-                        }
+                        MessageBox.Show("Line " + lineNum + ": " + ide.Message);
                     }
                 }
             }
