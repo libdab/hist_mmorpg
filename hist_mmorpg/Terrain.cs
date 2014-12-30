@@ -35,6 +35,9 @@ namespace hist_mmorpg
             // VALIDATION
 
             // ID
+            // trim
+            id = id.Trim();
+
             if (!Utility_Methods.validateTerrainID(id))
             {
                 throw new InvalidDataException("Terrain ID must have the format 'terr_' followed by some letters");

@@ -91,7 +91,7 @@ namespace hist_mmorpg
         /// <param name="defAdd">String holding additional defending army (armyID)</param>
         /// <param name="end">string holding season and year the siege ended</param>
         public Siege(String id, uint startYr, byte startSeas, string bsgPlayer, string defPlayer, string bsgArmy,
-            string defGarr, string fief, double day, double kpLvl, int totAtt = 0, int totDef = 0, double totDay = 0,
+            string defGarr, string fief, double day, double kpLvl, int totAtt = 0, int totDef = 0, double totDay = 1,
             string defAdd = null, string end = null)
         {
             // VALIDATION
@@ -212,7 +212,14 @@ namespace hist_mmorpg
             this.totalCasualtiesDefender = totDef;
             this.totalDays = totDay;
             this.defenderAdditional = defAdd;
-            this.endDate = end;
+            if (String.IsNullOrWhiteSpace(end))
+            {
+                this.endDate = null;
+            }
+            else
+            {
+                this.endDate = end;
+            }
         }
 
         /// <summary>

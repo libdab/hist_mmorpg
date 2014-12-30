@@ -188,7 +188,7 @@ namespace hist_mmorpg
         public Fief(String id, String nam, string tiHo, PlayerCharacter own, Rank r, Province prov, int pop, Double fld, Double ind, uint trp, Double tx,
             Double txNxt, uint offNxt, uint garrNxt, uint infraNxt, uint keepNxt, double[] finCurr, double[] finPrev,
             Double kpLvl, Double loy, char stat, Language lang, Terrain terr, List<Character> chars, List<string> barChars, List<string> barNats,
-            byte bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil,
+            double bailInF, int treas, List<string> arms, bool rec, Dictionary<string, string[]> trans, bool pil,
             PlayerCharacter ancOwn = null, Character bail = null, string sge = null)
             : base(id, nam, tiHo, own, r)
         {
@@ -380,9 +380,9 @@ namespace hist_mmorpg
             }
 
             // BAILIFFDAYSINFIEF
-            if (!Utility_Methods.validateFiefDouble(bailInF))
+            if (!Utility_Methods.validateDays(bailInF))
             {
-                throw new InvalidDataException("Fief bailiffDaysInFief must be a double of 0 or greater");
+                throw new InvalidDataException("Fief bailiffDaysInFief must be a double between 0-109");
             }
 
             // ARMS
@@ -2969,12 +2969,18 @@ namespace hist_mmorpg
             }
 
             // LANG
+            // trim
+            lang = lang.Trim();
+
             if (!Utility_Methods.validateLanguageID(lang))
             {
                 throw new InvalidDataException("Fief_Serialised language ID must have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");
             }
 
             // TERR
+            // trim
+            terr = terr.Trim();
+
             if (!Utility_Methods.validateTerrainID(terr))
             {
                 throw new InvalidDataException("Fief_Serialised terrain ID must have the format 'terr_' followed by some letters");
@@ -3017,9 +3023,9 @@ namespace hist_mmorpg
             }
 
             // BAILIFFDAYSINFIEF
-            if (!Utility_Methods.validateFiefDouble(bailInF))
+            if (!Utility_Methods.validateDays(bailInF))
             {
-                throw new InvalidDataException("Fief_Serialised bailiffDaysInFief must be a double of 0 or greater");
+                throw new InvalidDataException("Fief_Serialised bailiffDaysInFief must be a double between 0-109");
             }
 
             // ARMS
@@ -3044,12 +3050,15 @@ namespace hist_mmorpg
             }
 
             // BAIL
-            // trim and ensure 1st is uppercase
-            bail = Utility_Methods.firstCharToUpper(bail.Trim());
-
-            if (!Utility_Methods.validateCharacterID(bail))
+            if (!String.IsNullOrWhiteSpace(bail))
             {
-                throw new InvalidDataException("Fief_Serialised bailiff ID must have the format 'Char_' followed by some numbers");
+                // trim and ensure 1st is uppercase
+                bail = Utility_Methods.firstCharToUpper(bail.Trim());
+
+                if (!Utility_Methods.validateCharacterID(bail))
+                {
+                    throw new InvalidDataException("Fief_Serialised bailiff ID must have the format 'Char_' followed by some numbers");
+                }
             }
 
             // SIEGE

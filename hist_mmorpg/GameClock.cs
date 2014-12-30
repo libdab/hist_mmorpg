@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace hist_mmorpg
 {
@@ -13,7 +14,7 @@ namespace hist_mmorpg
 		/// <summary>
 		/// Holds clock ID
 		/// </summary>
-		public String clockID { get; set; }
+		public String id { get; set; }
         /// <summary>
         /// Holds seasons
         /// </summary>
@@ -35,7 +36,14 @@ namespace hist_mmorpg
         /// <param name="s">byte holding current season (default: 0)</param>
         public GameClock(String id, uint yr, byte s = 0)
         {
-			this.clockID = id;
+            if (String.IsNullOrWhiteSpace(id))
+            {
+                throw new InvalidDataException("GameClock ID must be a string > 0 characters in length");
+            }
+            else
+            {
+                this.id = id;
+            }
 
             this.currentYear = yr;
 

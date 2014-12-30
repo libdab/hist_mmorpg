@@ -952,6 +952,9 @@ namespace hist_mmorpg
             }
 
             // TYPE
+            // trim and convert to lowercase
+            type = type.Trim().ToLower();
+
             if ((!type.Equals("province")) && (!type.Equals("kingdom")))
             {
                 throw new InvalidDataException("OwnershipChallenge type must be either 'province' or 'kingdom'");

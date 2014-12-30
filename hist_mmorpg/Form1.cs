@@ -47,10 +47,8 @@ namespace hist_mmorpg
             // initialise game objects
 			this.initGameObjects("Char_47", "fromCSV");
 
-			this.ImportFromCSV("testObjects.csv", "fromCSV", true);
+			//this.ImportFromCSV("testObjects.csv", "fromCSV", true);
 			//this.CreateMapArrayFromCSV ("map.csv", "fromCSV");
-
-            //this.constructorTesting();
         }
 
         /// <summary>
@@ -1069,83 +1067,6 @@ namespace hist_mmorpg
 
 			// try retrieving fief from masterlist using fiefID
 			// Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
-        }
-
-        public void constructorTesting()
-        {
-            List<Ailment> myAilments = new List<Ailment>();
-
-            try
-            {
-                // AILMENT
-                // ID
-                Ailment myAilment1 = new Ailment(" " + Globals_Game.getNextAilmentID() + " ", "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment1);
-                Ailment myAilment2 = new Ailment("ail_99", "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment2);
-                Ailment myAilment3 = new Ailment("Ail99", "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment3);
-                Ailment myAilment4 = new Ailment("Bil_99", "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment4);
-                Ailment myAilment5 = new Ailment("Ail_9B", "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment5);
-                // DESCRIPTION
-                Ailment myAilment6 = new Ailment(Globals_Game.getNextAilmentID(), "battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment6);
-                Ailment myAilment7 = new Ailment(Globals_Game.getNextAilmentID(), " Battlefield injury ", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment7);
-                Ailment myAilment8 = new Ailment(Globals_Game.getNextAilmentID(), "Battle45eld injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment8);
-                Ailment myAilment9 = new Ailment(Globals_Game.getNextAilmentID(), "", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment9);
-                Ailment myAilment10 = new Ailment(Globals_Game.getNextAilmentID(), "B", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment10);
-                Ailment myAilment11 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury hh asasasa", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment11);
-                Ailment myAilment12 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury hh asasasas", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment12);
-                Ailment myAilment13 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury hh asasasasa", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment13);
-                // WHEN
-                Ailment myAilment14 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", "spring, " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment14);
-                Ailment myAilment15 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", "June, " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment15);
-                // EFFECT
-                Ailment myAilment16 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 0, 1);
-                myAilments.Add(myAilment16);
-                Ailment myAilment17 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 2, 1);
-                myAilments.Add(myAilment17);
-                Ailment myAilment18 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 5, 1);
-                myAilments.Add(myAilment18);
-                Ailment myAilment19 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 6, 1);
-                myAilments.Add(myAilment19);
-                // MINEFFECT
-                Ailment myAilment20 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 0);
-                myAilments.Add(myAilment20);
-                Ailment myAilment21 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 1);
-                myAilments.Add(myAilment21);
-                Ailment myAilment22 = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 3, 2);
-                myAilments.Add(myAilment22);
-            }
-            // catch exception that could be thrown by an invalid object prefix
-            catch (InvalidDataException ide)
-            {
-                // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
-                if (importErrorEntry != null)
-                {
-                    importErrorEntry.description = ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
-                }
-            }
-            finally
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("Done testing.");
-                }
-            }
         }
 
         // ------------------- SEASONAL UPDATE

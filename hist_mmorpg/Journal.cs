@@ -289,13 +289,34 @@ namespace hist_mmorpg
             // PERS
             if (pers.Length > 0)
             {
-                for (int i = 0; i < pers.Length; i++ )
+                for (int i = 0; i < pers.Length; i++)
                 {
+                    // split using'|'
+                    string[] persSplit = pers[i].Split('|');
+                    if (persSplit.Length > 1)
+                    {
+                        // character ID: trim and ensure 1st is uppercase
+                        if (!persSplit[0].Contains("all"))
+                        {
+                            persSplit[0] = Utility_Methods.firstCharToUpper(persSplit[0].Trim());
+                        }
+                        // trim role
+                        persSplit[1] = persSplit[1].Trim();
+                        // put back together
+                        pers[i] = persSplit[0] + "|" + persSplit[1];
+                    }
+
                     if (!Utility_Methods.validateJentryPersonae(pers[i]))
                     {
                         throw new InvalidDataException("Each JournalEntry personae must consist of 2 sections of letters, divided by '|', the 1st of which must be a valid character ID");
                     }
                 }
+            }
+
+            // TYPE
+            if (String.IsNullOrWhiteSpace(typ))
+            {
+                throw new InvalidDataException("JournalEntry type must be a string > 0 characters in length");
             }
 
             // LOC
@@ -315,11 +336,11 @@ namespace hist_mmorpg
             this.season = seas;
             this.personae = pers;
             this.type = typ;
-            if (loc != null)
+            if (!String.IsNullOrWhiteSpace(loc))
             {
                 this.location = loc;
             }
-            if (descr != null)
+            if (!String.IsNullOrWhiteSpace(descr))
             {
                 this.description = descr;
             }

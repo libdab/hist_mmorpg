@@ -36,6 +36,7 @@ namespace hist_mmorpg
             // ID
             // trim
             id = id.Trim();
+
             if (!Utility_Methods.validateSkillID(id))
             {
                 throw new InvalidDataException("Skill ID must have the format 'skill_' followed by some numbers");

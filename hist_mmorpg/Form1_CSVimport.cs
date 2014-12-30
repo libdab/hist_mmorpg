@@ -61,9 +61,6 @@ namespace hist_mmorpg
             Dictionary<string, Siege> siegeMasterList = new Dictionary<string, Siege>();
             Dictionary<string, Army> armyMasterList = new Dictionary<string, Army>();
 
-            // temp
-            List<Language_Serialised> myBLs = new List<Language_Serialised>();
-
             try
             {
                 // opens StreamReader to read in  data from csv file
@@ -401,7 +398,7 @@ namespace hist_mmorpg
                         if (thisRank != null)
                         {
                             // save to database
-                            this.databaseWrite_Rank(bucketID, thisRank);
+                            //this.databaseWrite_Rank(bucketID, thisRank);
 
                             // add id to keylist
                             rankKeyList.Add(thisRank.id);
@@ -424,7 +421,7 @@ namespace hist_mmorpg
                         if (thisPosSer != null)
                         {
                             // save to database
-                            this.databaseWrite_Position(bucketID, ps: thisPosSer);
+                            this.databaseWrite_Position(bucketID, ps: thisPosSer);                            
 
                             // add id to keylist
                             posKeyList.Add(thisPosSer.id);
@@ -655,7 +652,7 @@ namespace hist_mmorpg
                     chStart = chEnd = barChStart = barChEnd = barNatStart = barNatEnd = arStart = arEnd = -1;
 
                     // iterate through main list STORING START/END INDEX POSITIONS
-                    for (int i = 59; i < fiefData.Length; i++)
+                    for (int i = 57; i < fiefData.Length; i++)
                     {
                         if (fiefData[i].Equals("chStart"))
                         {
@@ -713,7 +710,7 @@ namespace hist_mmorpg
                     // barredNats
                     if ((barNatStart > -1) && (barNatEnd > -1))
                     {
-                        for (int i = barChStart + 1; i < barChEnd; i++)
+                        for (int i = barNatStart + 1; i < barNatEnd; i++)
                         {
                             barredNats.Add(fiefData[i]);
                         }
@@ -776,7 +773,7 @@ namespace hist_mmorpg
                     Convert.ToUInt32(fiefData[11]), Convert.ToUInt32(fiefData[12]), Convert.ToUInt32(fiefData[13]),
                     finCurr, finPrev, Convert.ToDouble(fiefData[42]), Convert.ToDouble(fiefData[43]),
                     Convert.ToChar(fiefData[44]), fiefData[45], fiefData[46], characters, barredChars,
-                    barredNats, Convert.ToByte(fiefData[47]), Convert.ToInt32(fiefData[48]), armies,
+                    barredNats, Convert.ToDouble(fiefData[47]), Convert.ToInt32(fiefData[48]), armies,
                     Convert.ToBoolean(fiefData[49]), new Dictionary<string, string[]>(), Convert.ToBoolean(fiefData[50]),
                     Convert.ToByte(fiefData[51]), tiHo: tiHo, own: own, ancOwn: ancOwn, bail: bail, sge: sge);
             }
@@ -2304,13 +2301,25 @@ namespace hist_mmorpg
                 {
                     totAttCas = siegeData[11];
                 }
+                else
+                {
+                    totAttCas = "0";
+                }
                 if (!String.IsNullOrWhiteSpace(siegeData[12]))
                 {
                     totDefCas = siegeData[12];
                 }
+                else
+                {
+                    totDefCas = "0";
+                }
                 if (!String.IsNullOrWhiteSpace(siegeData[13]))
                 {
                     totDays = siegeData[13];
+                }
+                else
+                {
+                    totDays = "0";
                 }
                 if (!String.IsNullOrWhiteSpace(siegeData[14]))
                 {

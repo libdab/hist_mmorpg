@@ -34,12 +34,6 @@ namespace hist_mmorpg
         {
             // VALIDATION
 
-            // ID
-            if (id < 1)
-            {
-                throw new InvalidDataException("Rank id must be a byte > 0");
-            }
-
             // STATURE
             if (stat < 1)
             {
@@ -356,12 +350,6 @@ namespace hist_mmorpg
         {
             // VALIDATION
 
-            // ID
-            if (id < 1)
-            {
-                throw new InvalidDataException("Position_Serialised id must be a byte > 0");
-            }
-
             // STAT
             if (stat < 1)
             {
@@ -433,6 +421,9 @@ namespace hist_mmorpg
             // VALIDATION
 
             // LANG
+            // trim
+            lang = lang.Trim();
+
             if ((!Utility_Methods.validateLanguageID(lang)) && (!lang.Equals("generic")))
             {
                 throw new InvalidDataException("TitleName langID must either be 'generic' or have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");

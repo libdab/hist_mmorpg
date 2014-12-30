@@ -5421,6 +5421,11 @@ namespace hist_mmorpg
                 // trim and ensure 1st is uppercase
                 empl = Utility_Methods.firstCharToUpper(empl.Trim());
 
+                if (!String.IsNullOrWhiteSpace(famID))
+                {
+                    throw new InvalidDataException("A NonPlayerCharacter with a familyID cannot have an employer ID");
+                }
+
                 if (!Utility_Methods.validateCharacterID(empl))
                 {
                     throw new InvalidDataException("NonPlayerCharacter employer ID must have the format 'Char_' followed by some numbers");
