@@ -435,7 +435,7 @@ namespace hist_mmorpg
 
             if (!Utility_Methods.validateName(nam))
             {
-                throw new InvalidDataException("TitleName name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
+                throw new InvalidDataException("TitleName name must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             this.langID = lang;

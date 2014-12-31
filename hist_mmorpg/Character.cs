@@ -172,7 +172,7 @@ namespace hist_mmorpg
 
             if (!Utility_Methods.validateName(firstNam))
             {
-                throw new InvalidDataException("Character firstname must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
+				throw new InvalidDataException("Character firstname must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // FAMNAM
@@ -181,7 +181,7 @@ namespace hist_mmorpg
 
             if (!Utility_Methods.validateName(famNam))
             {
-                throw new InvalidDataException("Character family name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
+                throw new InvalidDataException("Character family name must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // DOB
@@ -4902,7 +4902,7 @@ namespace hist_mmorpg
 
             if (!Utility_Methods.validateName(firstNam))
             {
-                throw new InvalidDataException("Character_Serialised firstname must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
+                throw new InvalidDataException("Character_Serialised firstname must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // FAMNAM
@@ -4911,7 +4911,7 @@ namespace hist_mmorpg
 
             if (!Utility_Methods.validateName(famNam))
             {
-                throw new InvalidDataException("Character_Serialised family name must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
+                throw new InvalidDataException("Character_Serialised family name must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // DOB

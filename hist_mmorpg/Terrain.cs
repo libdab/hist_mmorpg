@@ -49,7 +49,7 @@ namespace hist_mmorpg
 
             if (!Utility_Methods.validateName(desc))
             {
-                throw new InvalidDataException("Terrain description must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
+                throw new InvalidDataException("Terrain description must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // TC

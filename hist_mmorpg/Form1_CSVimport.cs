@@ -2544,11 +2544,14 @@ namespace hist_mmorpg
                         thisOwner = pcMasterList[fiefEntry.Value.owner];
                     }
 
-                    // put fief in owner's ownedFiefs
-                    if (!thisOwner.ownedFiefs.Contains(fiefEntry.Key))
-                    {
-                        thisOwner.ownedFiefs.Add(fiefEntry.Key);
-                    }
+					// put fief in owner's ownedFiefs
+					if (thisOwner != null)
+					{
+						if (!thisOwner.ownedFiefs.Contains(fiefEntry.Key))
+						{
+							thisOwner.ownedFiefs.Add(fiefEntry.Key);
+						}
+					}
                 }
             }
 

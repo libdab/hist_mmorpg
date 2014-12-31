@@ -59,7 +59,7 @@ namespace hist_mmorpg
 
             if (!Utility_Methods.validateName(descr))
             {
-                throw new InvalidDataException("Ailment description must be 1-30 characters long and contain only valid characters (a-z and ') or spaces");
+                throw new InvalidDataException("Ailment description must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // WHEN

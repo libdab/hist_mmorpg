@@ -462,7 +462,7 @@ namespace hist_mmorpg
         /// <param name="f">Fief whose information is to be displayed</param>
         public void refreshFiefContainer(Fief f = null)
         {
-            // if fief not specified, default to player's current location
+			// if fief not specified, default to player's current location
             if (f == null)
             {
                 f = Globals_Client.myPlayerCharacter.location;
@@ -554,8 +554,8 @@ namespace hist_mmorpg
                     {
                         this.selfBailiffBtn.Enabled = true;
                     }
-
-                    // don't enable treasury transfer controls if in Home Fief (can't transfer to self)
+						
+					// don't enable treasury transfer controls if in Home Fief (can't transfer to self)
                     if (f == home)
                     {
                         this.fiefTransferToFiefBtn.Enabled = false;

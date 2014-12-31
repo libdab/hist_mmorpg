@@ -611,10 +611,8 @@ namespace hist_mmorpg
 
             // calculate production from fields using next season's expenditure
             fldProd = Convert.ToUInt32((this.calcNewFieldLevel() * 8997));
+			indProd = Convert.ToUInt32(this.calcNewIndustryLevel() * this.calcNewPop());
 
-            // calculate production from industry using next season's expenditure
-            indProd = Convert.ToUInt32(this.calcNewIndustryLevel() * (290 * Math.Pow(1.2, ((this.calcNewPop() / 1000) - 1))));
-            
             // calculate final gdp
             gdp = (fldProd + indProd) / (this.calcNewPop() / 1000);
 

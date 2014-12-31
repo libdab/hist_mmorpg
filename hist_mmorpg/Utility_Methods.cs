@@ -458,8 +458,8 @@ namespace hist_mmorpg
         {
             bool isValid = true;
 
-            // ensure is 1-30 in length
-            if ((name.Length < 1) || (name.Length > 30))
+			// ensure is 1-40 in length
+			if ((name.Length < 1) || (name.Length > 40))
             {
                 isValid = false;
             }

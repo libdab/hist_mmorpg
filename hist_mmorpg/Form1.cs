@@ -47,7 +47,7 @@ namespace hist_mmorpg
             // initialise game objects
 			this.initGameObjects("Char_47", "fromCSV");
 
-			//this.ImportFromCSV("testObjects.csv", "fromCSV", true);
+			//this.ImportFromCSV("gameObjects.csv", "fromCSV", true);
 			//this.CreateMapArrayFromCSV ("map.csv", "fromCSV");
         }
 
