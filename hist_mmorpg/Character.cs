@@ -4028,6 +4028,35 @@ namespace hist_mmorpg
             return fiefPercent;
         }
 
+        /// <summary>
+        /// Gets the percentage of total money in the game owned by the PlayerCharacter
+        /// </summary>
+        /// <returns>double containing percentage of total money owned</returns>
+        public double getMoneyPercentage()
+        {
+            double moneyPercent = 0;
+
+            moneyPercent = (Convert.ToDouble(this.getMyMoney()) / Globals_Game.getTotalMoney()) * 100;
+
+            return moneyPercent;
+        }
+
+        /// <summary>
+        /// Calculates the total funds currently owned by the PlayerCharacter
+        /// </summary>
+        /// <returns>int containing the total funds</returns>
+        public int getMyMoney()
+        {
+            int totalFunds = 0;
+
+            foreach (Fief thisFief in this.ownedFiefs)
+            {
+                totalFunds += thisFief.treasury;
+            }
+
+            return totalFunds;
+        }
+
     }
 
     /// <summary>

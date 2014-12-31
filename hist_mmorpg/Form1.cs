@@ -213,7 +213,7 @@ namespace hist_mmorpg
                     if (!Globals_Game.victoryData.ContainsKey(pcEntry.Value.playerID))
                     {
                         // create and add new VictoryData if necessary
-                        VictoryData newVicData = new VictoryData(pcEntry.Value.playerID, pcEntry.Value.charID, pcEntry.Value.calculateStature(), pcEntry.Value.getPopulationPercentage(), pcEntry.Value.getFiefsPercentage());
+                        VictoryData newVicData = new VictoryData(pcEntry.Value.playerID, pcEntry.Value.charID, pcEntry.Value.calculateStature(), pcEntry.Value.getPopulationPercentage(), pcEntry.Value.getFiefsPercentage(), pcEntry.Value.getMoneyPercentage());
                         toAdd.Add(newVicData);
                     }
                 }
@@ -1057,13 +1057,12 @@ namespace hist_mmorpg
 			myFief2.barCharacter(myNPC1.charID);
             myFief2.barCharacter(myChar2.charID);
             myFief2.barCharacter(myChar1Wife.charID);
-
-            /*
+            
             // create VictoryDatas for PCs
-            VictoryData myVicData01 = new VictoryData(myChar1.playerID, myChar1.charID, myChar1.calculateStature(), myChar1.getPopulationPercentage(), myChar1.getFiefsPercentage());
+            VictoryData myVicData01 = new VictoryData(myChar1.playerID, myChar1.charID, myChar1.calculateStature(), myChar1.getPopulationPercentage(), myChar1.getFiefsPercentage(), myChar1.getMoneyPercentage());
             Globals_Game.victoryData.Add(myVicData01.playerID, myVicData01);
-            VictoryData myVicData02 = new VictoryData(myChar2.playerID, myChar2.charID, myChar2.calculateStature(), myChar2.getPopulationPercentage(), myChar2.getFiefsPercentage());
-            Globals_Game.victoryData.Add(myVicData02.playerID, myVicData02); */
+            VictoryData myVicData02 = new VictoryData(myChar2.playerID, myChar2.charID, myChar2.calculateStature(), myChar2.getPopulationPercentage(), myChar2.getFiefsPercentage(), myChar2.getMoneyPercentage());
+            Globals_Game.victoryData.Add(myVicData02.playerID, myVicData02);
 
 			// try retrieving fief from masterlist using fiefID
 			// Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");

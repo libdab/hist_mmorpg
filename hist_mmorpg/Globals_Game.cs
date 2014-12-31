@@ -282,12 +282,29 @@ namespace hist_mmorpg
                 thisScore += scoresEntry.Value.calcStatureScore();
                 thisScore += scoresEntry.Value.calcPopulationScore();
                 thisScore += scoresEntry.Value.calcFiefScore();
+                thisScore += scoresEntry.Value.calcMoneyScore();
 
                 // add to list
                 currentScores.Add(thisScore, scoresEntry.Value.playerID);
             }
 
             return currentScores;
+        }
+
+        /// <summary>
+        /// Gets the total money owned by all PlayerCharacters in the game
+        /// </summary>
+        /// <returns>int containing total money</returns>
+        public static int getTotalMoney()
+        {
+            int totMoney = 0;
+
+            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
+            {
+                totMoney += fiefEntry.Value.treasury;
+            }
+
+            return totMoney;
         }
         
         /// <summary>
@@ -772,6 +789,14 @@ namespace hist_mmorpg
         /// Holds percentage of fiefs currently under player's control
         /// </summary>
         public double currentFiefs;
+        /// <summary>
+        /// Holds the percentage of total funds owned by the player at start of game
+        /// </summary>
+        public double startMoney;
+        /// <summary>
+        /// Holds the percentage of total funds currently owned by the player
+        /// </summary>
+        public double currentMoney;
 
         /// <summary>
         /// Constructor for VictoryData
@@ -781,7 +806,8 @@ namespace hist_mmorpg
         /// <param name="stat">double player's stature at start of game</param>
         /// <param name="pop">double holding percentage of population under player's control at start of game</param>
         /// <param name="fiefs">double holding percentage of fiefs under player's control at start of game</param>
-        public VictoryData(string player, string pc, double stat, double pop, double fiefs)
+        /// <param name="money">double holding the percentage of total funds owned by the player at start of game</param>
+        public VictoryData(string player, string pc, double stat, double pop, double fiefs, double money)
         {
             // VALIDATION
 
@@ -812,6 +838,12 @@ namespace hist_mmorpg
                 throw new InvalidDataException("VictoryData startFiefs must be a double between 0 and 100");
             }
 
+            // MONEY
+            if (!Utility_Methods.validatePercentage(money))
+            {
+                throw new InvalidDataException("VictoryData startMoney must be a double between 0 and 100");
+            }
+
             this.playerID = player;
             this.playerCharacterID = pc;
             this.startStature = stat;
@@ -820,6 +852,8 @@ namespace hist_mmorpg
             this.currentPopulation = 0;
             this.startFiefs = fiefs;
             this.currentFiefs = 0;
+            this.startMoney = money;
+            this.currentMoney = 0;
         }
 
         /// <summary>
@@ -853,6 +887,9 @@ namespace hist_mmorpg
 
                 // fiefs owned
                 this.currentFiefs = thisPC.getFiefsPercentage();
+
+                // money
+                this.currentMoney = thisPC.getMoneyPercentage();
             }
         }
         
@@ -893,6 +930,19 @@ namespace hist_mmorpg
             fiefScore = (this.currentFiefs + (this.currentFiefs - this.startFiefs)) / 10;
 
             return fiefScore;
+        }
+
+        /// <summary>
+        /// Calculates the current money score
+        /// </summary>
+        /// <returns>double containing the money score</returns>
+        public double calcMoneyScore()
+        {
+            double moneyScore = 0;
+
+            moneyScore = (this.currentMoney + (this.currentMoney - this.startMoney)) / 10;
+
+            return moneyScore;
         }
     }
 
