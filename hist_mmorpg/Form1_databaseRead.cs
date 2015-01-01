@@ -81,6 +81,7 @@ namespace hist_mmorpg
 
             // ========= read GLOBALS_GAME/CLIENT/SERVER BOOL VARIABLES
             Globals_Game.loadFromDatabase = this.databaseRead_bool(gameID, "loadFromDatabase");
+            Globals_Game.loadFromCSV = this.databaseRead_bool(gameID, "loadFromCSV");
             Globals_Game.writeToDatabase = this.databaseRead_bool(gameID, "writeToDatabase");
             Globals_Game.statureCapInForce = this.databaseRead_bool(gameID, "statureCapInForce");
             Globals_Client.showMessages = this.databaseRead_bool(gameID, "showMessages");

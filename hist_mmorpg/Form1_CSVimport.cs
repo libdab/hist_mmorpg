@@ -20,6 +20,172 @@ namespace hist_mmorpg
     /// </summary>
     partial class Form1
     {
+        /// <summary>
+        /// Creates game objects necessary for a new game, mainly using data imported from a CSV file
+        /// </summary>
+        /// <param name="objectDataFile">Name of file containing game object CSV data</param>
+        /// <param name="mapDataFile">Name of file containing map CSV data</param>
+        public void newGameFromCSV(string objectDataFile, string mapDataFile, uint start = 1337)
+        {
+            // create GameClock
+            Globals_Game.clock = new GameClock("clock_1", start);
+
+            // load game objects from CSV
+            this.ImportFromCSV(objectDataFile, synch: true, toDatabase: false);
+
+            // load/create map from CSV
+            this.CreateMapEdgesFromCSV(mapDataFile, toDatabase: false);
+
+            // POPULATE GLOBALS
+            // populate Globals_Server.gameTypes
+            Globals_Server.gameTypes.Add(0, "Individual points");
+            Globals_Server.gameTypes.Add(1, "Individual position");
+            Globals_Server.gameTypes.Add(2, "Team historical");
+
+            // populate Globals_Server.combatValues
+            uint[] eCombatValues = new uint[] { 9, 9, 1, 9, 5, 3, 1 };
+            Globals_Server.combatValues.Add("Eng", eCombatValues);
+            uint[] fCombatValues = new uint[] { 7, 7, 3, 2, 4, 2, 1 };
+            Globals_Server.combatValues.Add("Fr", fCombatValues);
+            uint[] sCombatValues = new uint[] { 8, 8, 1, 2, 4, 4, 1 };
+            Globals_Server.combatValues.Add("Sco", sCombatValues);
+            uint[] oCombatValues = new uint[] { 7, 7, 3, 2, 4, 2, 1 };
+            Globals_Server.combatValues.Add("Oth", oCombatValues);
+
+            // populate Globals_Server.recruitRatios
+            double[] eRecruitRatios = new double[] { 0.01, 0.02, 0, 0.12, 0.03, 0.32, 0.49 };
+            Globals_Server.recruitRatios.Add("Eng", eRecruitRatios);
+            double[] fRecruitRatios = new double[] { 0.01, 0.02, 0.03, 0, 0.04, 0.40, 0.49 };
+            Globals_Server.recruitRatios.Add("Fr", fRecruitRatios);
+            double[] sRecruitRatios = new double[] { 0.01, 0.02, 0, 0, 0.04, 0.43, 0.49 };
+            Globals_Server.recruitRatios.Add("Sco", sRecruitRatios);
+            double[] oRecruitRatios = new double[] { 0.01, 0.02, 0.03, 0, 0.04, 0.40, 0.49 };
+            Globals_Server.recruitRatios.Add("Oth", oRecruitRatios);
+
+            // populate Globals_Server.battleProbabilities
+            double[] odds = new double[] { 2, 3, 4, 5, 6, 99 };
+            Globals_Server.battleProbabilities.Add("odds", odds);
+            double[] bChance = new double[] { 10, 30, 50, 70, 80, 90 };
+            Globals_Server.battleProbabilities.Add("battle", bChance);
+            double[] pChance = new double[] { 10, 20, 30, 40, 50, 60 };
+            Globals_Server.battleProbabilities.Add("pillage", pChance);
+
+            // populate Globals_Game.jEntryPriorities
+            // marriage
+            string[] thisPriorityKey001 = { "proposalMade", "headOfFamilyBride" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey001, 2);
+            string[] thisPriorityKey002 = { "proposalRejected", "headOfFamilyGroom" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey002, 2);
+            string[] thisPriorityKey003 = { "proposalAccepted", "headOfFamilyGroom" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey003, 2);
+            string[] thisPriorityKey004 = { "marriage", "headOfFamilyBride" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey004, 1);
+            string[] thisPriorityKey005 = { "marriage", "headOfFamilyGroom" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey005, 1);
+            string[] thisPriorityKey016 = { "marriageCancelled", "headOfFamilyGroom" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey016, 2);
+            string[] thisPriorityKey017 = { "marriageCancelled", "headOfFamilyBride" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey017, 1);
+            // birth
+            string[] thisPriorityKey006 = { "birth", "headOfFamily" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey006, 2);
+            string[] thisPriorityKey007 = { "birth", "father" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey007, 2);
+            // battle
+            string[] thisPriorityKey008 = { "battle", "defenderOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey008, 2);
+            string[] thisPriorityKey009 = { "battle", "sallyOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey009, 2);
+            string[] thisPriorityKey010 = { "battle", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey010, 1);
+            // siege
+            string[] thisPriorityKey011 = { "siege", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey011, 2);
+            string[] thisPriorityKey012 = { "siegeReduction", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey012, 1);
+            string[] thisPriorityKey013 = { "siegeStorm", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey013, 1);
+            string[] thisPriorityKey014 = { "siegeNegotiation", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey014, 1);
+            string[] thisPriorityKey015 = { "siegeEnd", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey015, 2);
+            // death
+            string[] thisPriorityKey018 = { "deathOfHeir", "headOfFamily" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey018, 2);
+            string[] thisPriorityKey019 = { "deathOfFamilyMember", "headOfFamily" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey019, 1);
+            string[] thisPriorityKey020 = { "deathOfEmployee", "employer" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey020, 1);
+            string[] thisPriorityKey021 = { "deathOfPlayer", "newHeadOfFamily" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey021, 2);
+            string[] thisPriorityKey022 = { "deathOfPlayer", "deceasedHeadOfFamily" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey022, 2);
+            // injury
+            string[] thisPriorityKey023 = { "injury", "employer" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey023, 1);
+            string[] thisPriorityKey024 = { "injury", "headOfFamily" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey024, 1);
+            string[] thisPriorityKey025 = { "injury", "injuredCharacter" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey025, 2);
+            // pillage
+            string[] thisPriorityKey026 = { "pillage", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey026, 2);
+            // fief status change
+            string[] thisPriorityKey027 = { "fiefStatusUnrest", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey027, 1);
+            string[] thisPriorityKey028 = { "fiefStatusRebellion", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey028, 2);
+            // quelling rebellion
+            string[] thisPriorityKey029 = { "rebellionQuelled", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey029, 1);
+            string[] thisPriorityKey030 = { "rebellionQuellFailed", "fiefOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey030, 1);
+            // fief/province/position title holder change
+            string[] thisPriorityKey031 = { "grantTitleFief", "newTitleHolder" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey031, 1);
+            string[] thisPriorityKey032 = { "grantTitleFief", "oldTitleHolder" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey032, 1);
+            string[] thisPriorityKey033 = { "grantTitleProvince", "newTitleHolder" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey033, 1);
+            string[] thisPriorityKey034 = { "grantTitleProvince", "oldTitleHolder" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey034, 1);
+            string[] thisPriorityKey035 = { "grantPosition", "newPositionHolder" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey035, 1);
+            string[] thisPriorityKey036 = { "grantPosition", "oldPositionHolder" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey036, 1);
+            // fief change of ownership
+            string[] thisPriorityKey037 = { "fiefOwnership_Hostile", "oldOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey037, 2);
+            string[] thisPriorityKey038 = { "fiefOwnership_Gift", "newOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey038, 2);
+            // ownership/kingship challenges
+            string[] thisPriorityKey039 = { "ownershipChallenge_new", "owner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey039, 2);
+            string[] thisPriorityKey040 = { "ownershipChallenge_success", "newOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey040, 2);
+            string[] thisPriorityKey041 = { "ownershipChallenge_success", "oldOwner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey041, 2);
+            string[] thisPriorityKey042 = { "ownershipChallenge_failure", "owner" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey042, 2);
+            string[] thisPriorityKey043 = { "ownershipChallenge_failure", "challenger" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey043, 2);
+            string[] thisPriorityKey044 = { "depose_success", "newKing" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey044, 2);
+            string[] thisPriorityKey045 = { "depose_success", "oldKing" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey045, 2);
+            string[] thisPriorityKey049 = { "depose_success", "all" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey049, 2);
+            string[] thisPriorityKey046 = { "depose_failure", "king" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey046, 2);
+            string[] thisPriorityKey047 = { "depose_failure", "pretender" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey047, 2);
+            string[] thisPriorityKey050 = { "depose_failure", "all" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey050, 1);
+            string[] thisPriorityKey048 = { "depose_new", "king" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey048, 2);
+            string[] thisPriorityKey051 = { "depose_new", "all" };
+            Globals_Game.jEntryPriorities.Add(thisPriorityKey051, 2);
+        }
 
         /// <summary>
         /// Creates game objects using data imported from a CSV file and writes them to the database
@@ -29,7 +195,7 @@ namespace hist_mmorpg
         /// <param name="bucketID">The name of the database bucket in which to store the game objects</param>
         /// <param name="synch">bool indicating whether or not to synch the game objects' properties</param>
         /// <param name="toDatabase">bool indicating whether or not to save the game objects to database or game</param>
-        public bool ImportFromCSV(string filename, string bucketID, bool synch = false, bool toDatabase = true)
+        public bool ImportFromCSV(string filename, string bucketID = null, bool synch = false, bool toDatabase = true)
         {
             bool inputFileError = false;
             string lineIn;
@@ -177,7 +343,6 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("pc"))
                     {
                         PlayerCharacter_Serialised thisPcSer = null;
-
                         thisPcSer = this.importFromCSV_PC(lineParts, lineNum);
 
                         if (thisPcSer != null)
@@ -454,105 +619,228 @@ namespace hist_mmorpg
                 }
             }
 
-            if (toDatabase)
+            // SAVE KEYLISTS
+            // fiefs
+            if (fiefKeyList.Count > 0)
             {
-                // SAVE KEYLISTS TO DATABASE if necessary
-                // fiefs
-                if (fiefKeyList.Count > 0)
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "fiefKeys", fiefKeyList);
                 }
 
-                // provinces
-                if (provKeyList.Count > 0)
+                else
+                {
+                    // save to game
+                    Globals_Game.fiefKeys = fiefKeyList;
+                }
+            }
+
+            // provinces
+            if (provKeyList.Count > 0)
+            {
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "provKeys", provKeyList);
                 }
 
-                // kingdoms
-                if (kingKeyList.Count > 0)
+                else
+                {
+                    // save to game
+                    Globals_Game.provKeys = provKeyList;
+                }
+            }
+
+            // kingdoms
+            if (kingKeyList.Count > 0)
+            {
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "kingKeys", kingKeyList);
                 }
 
-                // PCs
-                if (pcKeyList.Count > 0)
+                else
+                {
+                    // save to game
+                    Globals_Game.kingKeys = kingKeyList;
+                }
+            }
+
+            // PCs
+            if (pcKeyList.Count > 0)
+            {
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "pcKeys", pcKeyList);
                 }
 
-                // NPCs
-                if (npcKeyList.Count > 0)
+                else
+                {
+                    // save to game
+                    Globals_Game.pcKeys = pcKeyList;
+                }
+            }
+
+            // NPCs
+            if (npcKeyList.Count > 0)
+            {
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "npcKeys", npcKeyList);
                 }
 
-                // skills
-                if (skillKeyList.Count > 0)
+                else
+                {
+                    // save to game
+                    Globals_Game.npcKeys = npcKeyList;
+                }
+            }
+
+            // skills
+            if (skillKeyList.Count > 0)
+            {
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "skillKeys", skillKeyList);
                 }
 
-                // armies
-                if (armyKeyList.Count > 0)
+                else
+                {
+                    // save to game
+                    Globals_Game.skillKeys = skillKeyList;
+                }
+            }
+
+            // armies
+            if (armyKeyList.Count > 0)
+            {
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "armyKeys", armyKeyList);
                 }
 
-                // languages
-                if (langKeyList.Count > 0)
+                else
+                {
+                    // save to game
+                    Globals_Game.armyKeys = armyKeyList;
+                }
+            }
+
+            // languages
+            if (langKeyList.Count > 0)
+            {
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "langKeys", langKeyList);
                 }
 
-                // baseLanguages
-                if (baseLangKeyList.Count > 0)
+                else
+                {
+                    // save to game
+                    Globals_Game.langKeys = langKeyList;
+                }
+            }
+
+            // baseLanguages
+            if (baseLangKeyList.Count > 0)
+            {
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "baseLangKeys", baseLangKeyList);
                 }
 
-                // nationalities
-                if (natKeyList.Count > 0)
+                else
+                {
+                    // save to game
+                    Globals_Game.baseLangKeys = baseLangKeyList;
+                }
+            }
+
+            // nationalities
+            if (natKeyList.Count > 0)
+            {
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "nationalityKeys", natKeyList);
                 }
 
-                // ranks
-                if (rankKeyList.Count > 0)
+                else
+                {
+                    // save to game
+                    Globals_Game.nationalityKeys = natKeyList;
+                }
+            }
+
+            // ranks
+            if (rankKeyList.Count > 0)
+            {
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "rankKeys", rankKeyList);
                 }
 
-                // positions
-                if (posKeyList.Count > 0)
+                else
+                {
+                    // save to game
+                    Globals_Game.rankKeys = rankKeyList;
+                }
+            }
+
+            // positions
+            if (posKeyList.Count > 0)
+            {
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "positionKeys", posKeyList);
                 }
 
-                // sieges
-                if (siegeKeyList.Count > 0)
+                else
+                {
+                    // save to game
+                    Globals_Game.positionKeys = posKeyList;
+                }
+            }
+
+            // sieges
+            if (siegeKeyList.Count > 0)
+            {
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "siegeKeys", siegeKeyList);
                 }
 
-                // terrains
-                if (terrKeyList.Count > 0)
+                else
+                {
+                    // save to game
+                    Globals_Game.siegeKeys = siegeKeyList;
+                }
+            }
+
+            // terrains
+            if (terrKeyList.Count > 0)
+            {
+                if (toDatabase)
                 {
                     // save keylist to database
                     this.databaseWrite_KeyList(bucketID, "terrKeys", terrKeyList);
+                }
+
+                else
+                {
+                    // save to game
+                    Globals_Game.terrKeys = terrKeyList;
                 }
             }
 
@@ -1474,16 +1762,25 @@ namespace hist_mmorpg
                     }
                 }
 
-                // if no skills, generate random set
+                // if no skills, try to generate random set
                 if (skills == null)
                 {
-                    Tuple<Skill, int>[] generatedSkills = Utility_Methods.generateSkillSet();
-
-                    // convert to format for saving to database
-                    skills = new Tuple<String, int>[generatedSkills.Length];
-                    for (int i = 0; i < generatedSkills.Length; i++)
+                    if (Globals_Game.skillMasterList.Count > 2)
                     {
-                        skills[i] = new Tuple<string, int>(generatedSkills[i].Item1.skillID, generatedSkills[i].Item2);
+                        Tuple<Skill, int>[] generatedSkills = Utility_Methods.generateSkillSet();
+
+                        // convert to format for saving to database
+                        skills = new Tuple<String, int>[generatedSkills.Length];
+                        for (int i = 0; i < generatedSkills.Length; i++)
+                        {
+                            skills[i] = new Tuple<string, int>(generatedSkills[i].Item1.skillID, generatedSkills[i].Item2);
+                        }
+                    }
+
+                    // if can't generate set, create empty set
+                    else
+                    {
+                        skills = new Tuple<string, int>[0];
                     }
                 }
 
@@ -1663,16 +1960,25 @@ namespace hist_mmorpg
                     }
                 }
 
-                // if no skills, generate random set
+                // if no skills, try to generate random set
                 if (skills == null)
                 {
-                    Tuple<Skill, int>[] generatedSkills = Utility_Methods.generateSkillSet();
-
-                    // convert to format for saving to database
-                    skills = new Tuple<String, int>[generatedSkills.Length];
-                    for (int i = 0; i < generatedSkills.Length; i++)
+                    if (Globals_Game.skillMasterList.Count > 2)
                     {
-                        skills[i] = new Tuple<string, int>(generatedSkills[i].Item1.skillID, generatedSkills[i].Item2);
+                        Tuple<Skill, int>[] generatedSkills = Utility_Methods.generateSkillSet();
+
+                        // convert to format for saving to database
+                        skills = new Tuple<String, int>[generatedSkills.Length];
+                        for (int i = 0; i < generatedSkills.Length; i++)
+                        {
+                            skills[i] = new Tuple<string, int>(generatedSkills[i].Item1.skillID, generatedSkills[i].Item2);
+                        }
+                    }
+
+                    // if can't generate set, create empty set
+                    else
+                    {
+                        skills = new Tuple<string, int>[0];
                     }
                 }
 
@@ -3151,6 +3457,22 @@ namespace hist_mmorpg
                     NonPlayerCharacter newObject = new NonPlayerCharacter();
                     foreach (KeyValuePair<string, NonPlayerCharacter_Serialised> thisEntry in npcMasterList)
                     {
+                        // if no skills, try to generate random set
+                        if (thisEntry.Value.skills.Length < 2)
+                        {
+                            if (Globals_Game.skillMasterList.Count > 2)
+                            {
+                                Tuple<Skill, int>[] generatedSkills = Utility_Methods.generateSkillSet();
+
+                                // convert to format for saving to database
+                                thisEntry.Value.skills = new Tuple<String, int>[generatedSkills.Length];
+                                for (int i = 0; i < generatedSkills.Length; i++)
+                                {
+                                    thisEntry.Value.skills[i] = new Tuple<string, int>(generatedSkills[i].Item1.skillID, generatedSkills[i].Item2);
+                                }
+                            }
+                        }
+
                         // de-serialise 
                         newObject = this.NPC_deserialise(thisEntry.Value);
 
@@ -3177,6 +3499,22 @@ namespace hist_mmorpg
                     PlayerCharacter newObject = new PlayerCharacter();
                     foreach (KeyValuePair<string, PlayerCharacter_Serialised> thisEntry in pcMasterList)
                     {
+                        // if no skills, try to generate random set
+                        if (thisEntry.Value.skills.Length < 2)
+                        {
+                            if (Globals_Game.skillMasterList.Count > 2)
+                            {
+                                Tuple<Skill, int>[] generatedSkills = Utility_Methods.generateSkillSet();
+
+                                // convert to format for saving to database
+                                thisEntry.Value.skills = new Tuple<String, int>[generatedSkills.Length];
+                                for (int i = 0; i < generatedSkills.Length; i++)
+                                {
+                                    thisEntry.Value.skills[i] = new Tuple<string, int>(generatedSkills[i].Item1.skillID, generatedSkills[i].Item2);
+                                }
+                            }
+                        }
+
                         // de-serialise 
                         newObject = this.PC_deserialise(thisEntry.Value);
 
@@ -3305,12 +3643,14 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Creates game map using data imported from a CSV file and writes it to the database
+        /// Creates a map edges collection using data imported from a CSV file and either writes it to the database
+        /// or creates a game map
         /// </summary>
         /// <returns>bool indicating success state</returns>
         /// <param name="filename">The name of the CSV file</param>
         /// <param name="bucketID">The name of the database bucket in which to store the game objects</param>
-        public bool CreateMapArrayFromCSV(string filename, string bucketID)
+        /// <param name="toDatabase">bool indicating whether or not to save the game objects to database or game</param>
+        public bool CreateMapEdgesFromCSV(string filename, string bucketID = null, bool toDatabase = true)
         {
             bool success = true;
             List<TaggedEdge<string, string>> mapEdges = new List<TaggedEdge<string, string>>();
@@ -3372,8 +3712,26 @@ namespace hist_mmorpg
             // create list of map edges from array
             mapEdges = this.CreateMapFromArray(mapHexes);
 
-            // save to database
-            this.databaseWrite_MapEdges(bucketID, edges: mapEdges);
+            // SAVE TO DATABASE OR CREATE MAP FOR NEW GAME
+            if (toDatabase)
+            {
+                // save to database
+                this.databaseWrite_MapEdges(bucketID, edges: mapEdges);
+            }
+
+            else
+            {
+                HexMapGraph newMap = new HexMapGraph();
+
+                // creat map edges array from list
+                TaggedEdge<Fief, string>[] edgesArray = this.EdgeCollection_deserialise(mapEdges);
+
+                // create map from edges array
+                newMap = new HexMapGraph("map_1", edgesArray);
+
+                // set new map as current Globals_Game.gameMap
+                Globals_Game.gameMap = newMap;
+            }
 
             return success;
         }

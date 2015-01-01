@@ -232,6 +232,9 @@ namespace hist_mmorpg
         public static List<PlayerCharacter> promotedNPCs = new List<PlayerCharacter>();
         /// <summary>
         /// Holds type of game (sets victory conditions)
+        /// 0 = individual point game
+        /// 1 = individual position game
+        /// 2 = team historical game
         /// </summary>
         public static uint gameType = 0;
         /// <summary>
@@ -241,11 +244,15 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds start year for current game
         /// </summary>
-        public static uint startYear { get; set; }
+        public static uint startYear = 1337;
         /// <summary>
         /// Holds bool indicating whether or not to load initial object data from database on startup
         /// </summary>
 		public static bool loadFromDatabase = false;
+        /// <summary>
+        /// Holds bool indicating whether or not to load initial object data from CSV file
+        /// </summary>
+        public static bool loadFromCSV = true;
         /// <summary>
         /// Holds bool indicating whether or not to write current object data to database on exit
         /// </summary>

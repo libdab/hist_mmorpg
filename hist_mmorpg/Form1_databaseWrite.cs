@@ -114,6 +114,8 @@ namespace hist_mmorpg
             // ========= write GLOBALS_GAME/CLIENT/SERVER BOOL VARIABLES
             // Globals_Game.loadFromDatabase
             this.databaseWrite_Bool(gameID, "loadFromDatabase", Globals_Game.loadFromDatabase);
+            // Globals_Game.loadFromCSV
+            this.databaseWrite_Bool(gameID, "loadFromCSV", Globals_Game.loadFromCSV);
             // Globals_Game.writeToDatabase
             this.databaseWrite_Bool(gameID, "writeToDatabase", Globals_Game.writeToDatabase);
             // Globals_Game.statureCapInForce

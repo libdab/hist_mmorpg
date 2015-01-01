@@ -45,21 +45,11 @@ namespace hist_mmorpg
 			rClient = (RiakClient)rCluster.CreateClient();
 
             // initialise game objects
-			this.initGameObjects("Char_47", "fromCSV");
+            this.initGameObjects("Char_47", gameID: "fromCSV", objectDataFile: "gameObjects.csv", mapDataFile: "map.csv",
+            start: 1194, king1: "Char_47", king2: "Char_40", herald1: "Char_47", sysAdmin: "Char_47");
 
-			//this.ImportFromCSV("gameObjects.csv", "fromCSV", true);
-			//this.CreateMapArrayFromCSV ("map.csv", "fromCSV");
-        }
-
-        /// <summary>
-        /// Starts a new game using the parameters provided
-        /// </summary>
-        /// <param name="gameID">gameID of the new game</param>
-        /// <param name="startYear">Starting year of the new game</param>
-        /// <param name="duration">duration (years) of the new game</param>
-        /// <param name="gameType">gameType of the new game (sets victory conditions)</param>        
-        public void startNewGame(string gameID, uint startYear = 1337, uint duration = 100, uint gameType = 0)
-        {
+			// this.ImportFromCSV("gameObjects.csv", bucketID: "fromCSV", synch: true, toDatabase: true);
+			// this.CreateMapArrayFromCSV ("map.csv", bucketID: "fromCSV", toDatabase: true);
         }
 
         // ------------------- GAME START/INITIALISATION
@@ -67,29 +57,134 @@ namespace hist_mmorpg
 		/// <summary>
         /// Initialises all game objects
 		/// </summary>
-		/// <param name="pc">ID of PlayerCharacter to set as Globals_Client.myPlayerCharacter</param>
+		/// <param name="pcID">ID of PlayerCharacter to set as Globals_Client.myPlayerCharacter</param>
 		/// <param name="gameID">gameID of the game</param>
-		public void initGameObjects(string pcID, string gameID)
+        /// <param name="objectDataFile">Name of file containing game object CSV data</param>
+        /// <param name="mapDataFile">Name of file containing map CSV data</param>
+        /// <param name="type">Game type</param>
+        /// <param name="duration">Game duration (years)</param>
+        /// <param name="start">Start year</param>
+        /// <param name="king1">ID of PlayerCharacter in role of kingOne</param>
+        /// <param name="king2">ID of PlayerCharacter in role of kingTwo</param>
+        /// <param name="herald1">ID of PlayerCharacter in role of heraldOne</param>
+        /// <param name="herald2">ID of PlayerCharacter in role of heraldTwo</param>
+        /// <param name="sysAdmin">ID of PlayerCharacter in role of sysAdmin</param>
+        public void initGameObjects(string pcID, string gameID = null, string objectDataFile = null,
+            string mapDataFile = null, uint type = 0, uint duration = 100, uint start = 1337, string king1 = null,
+            string king2 = null, string herald1 = null, string herald2 = null, string sysAdmin = null)
         {
+            bool dataLoaded = false;
 
+            // LOAD DATA
+            // database
             if (Globals_Game.loadFromDatabase)
 			{
-				// load objects from database
+				// load objects
 				this.databaseRead (gameID);
-			}
-			else
-			{
-				// create from code
-				this.loadFromCode ();
-			}
 
+                dataLoaded = true;
+			}
+            // CSV file
+            else if (Globals_Game.loadFromCSV)
+            {
+                // load objects (mainly) from CSV file
+                if (!String.IsNullOrWhiteSpace(objectDataFile))
+                {
+                    // load objects
+                    this.newGameFromCSV(objectDataFile, mapDataFile, start);
+
+                    // initialise Globals_Game.victoryData
+                    this.synchroniseVictoryData();
+
+                    dataLoaded = true;
+                }
+            }
+            // from code (for quick testing)
+            if (!dataLoaded)
+			{
+                // load objects
+				this.loadFromCode ();
+
+                // initialise Globals_Game.victoryData
+                this.synchroniseVictoryData();
+            }
+
+            if ((!Globals_Game.loadFromDatabase) || (!dataLoaded))
+            {
+                // INITIALISE ROLES
+                // set kings
+                if (!String.IsNullOrWhiteSpace(king1))
+                {
+                    if (Globals_Game.pcMasterList.ContainsKey(king1))
+                    {
+                        Globals_Game.kingOne = Globals_Game.pcMasterList[king1];
+                    }
+                }
+                if (!String.IsNullOrWhiteSpace(king2))
+                {
+                    if (Globals_Game.pcMasterList.ContainsKey(king2))
+                    {
+                        Globals_Game.kingTwo = Globals_Game.pcMasterList[king2];
+                    }
+                }
+
+                // set heralds
+                if (!String.IsNullOrWhiteSpace(herald1))
+                {
+                    if (Globals_Game.pcMasterList.ContainsKey(herald1))
+                    {
+                        Globals_Game.heraldOne = Globals_Game.pcMasterList[herald1];
+                    }
+                }
+                if (!String.IsNullOrWhiteSpace(herald2))
+                {
+                    if (Globals_Game.pcMasterList.ContainsKey(herald2))
+                    {
+                        Globals_Game.heraldTwo = Globals_Game.pcMasterList[herald2];
+                    }
+                }
+
+                // set sysAdmin
+                if (!String.IsNullOrWhiteSpace(sysAdmin))
+                {
+                    if (Globals_Game.pcMasterList.ContainsKey(sysAdmin))
+                    {
+                        Globals_Game.sysAdmin = Globals_Game.pcMasterList[sysAdmin];
+                    }
+                }
+
+                // SET GAME PARAMETERS
+                // game type
+                if (type != 0)
+                {
+                    Globals_Game.gameType = type;
+                }
+
+                // start date
+                if (start != 1337)
+                {
+                    Globals_Game.startYear = start;
+                }
+
+                // duration
+                if (duration != 100)
+                {
+                    Globals_Game.duration = duration;
+                }
+
+            }
+
+            // INITIALISE GLOBALS_CLIENT VARIABLES
             // set myPlayerCharacter
             Globals_Client.myPlayerCharacter = Globals_Game.pcMasterList[pcID];
 
             // set inital fief to display
             Globals_Client.fiefToView = Globals_Client.myPlayerCharacter.location;
 
-            // initialise list elements in UI
+            // set player's character to display
+            Globals_Client.charToView = Globals_Client.myPlayerCharacter;
+
+            // INITIALISE UI ELEMENTS
             this.setUpFiefsList();
             this.setUpMeetingPLaceCharsList();
             this.setUpHouseholdCharsList();
@@ -99,11 +194,6 @@ namespace hist_mmorpg
             this.setUpRoyalGiftsLists();
             this.setUpProvinceLists();
             this.setUpEditSkillEffectList();
-
-            // ensure 
-
-            // set player's character to display
-            Globals_Client.charToView = Globals_Client.myPlayerCharacter;
 
             // check if royal & overlord menus should be displayed
             if (((Globals_Client.myPlayerCharacter.checkIsKing())
@@ -150,12 +240,8 @@ namespace hist_mmorpg
                 this.adminToolStripMenuItem.Enabled = false;
             }
 
-            // initialise player's character display in UI
+            // INITIALISE UI DISPLAY
             this.refreshCharacterContainer();
-
-            // ensure Globals_Game.victoryData is up-to-date
-            this.synchroniseVictoryData();
-
         }
 
         /// <summary>
@@ -370,11 +456,11 @@ namespace hist_mmorpg
         /// <summary>
 		/// Creates some game objects from code (temporary)
 		/// </summary>
-		public void loadFromCode()
+        /// <param name="start">Start year</param>
+        public void loadFromCode(uint start = 1337)
 		{
             // create GameClock
-            GameClock myGameClock = new GameClock("clock001", 1194);
-            Globals_Game.clock = myGameClock;
+            Globals_Game.clock = new GameClock("clock_1", start);
 
 			// create skills
 			// Dictionary of skill effects
@@ -777,15 +863,6 @@ namespace hist_mmorpg
             // set kingdom owners
             Globals_Game.kingOne = myChar1;
             Globals_Game.kingTwo = myChar2;
-            myKingdom1.owner = Globals_Game.kingOne;
-            myKingdom2.owner = Globals_Game.kingTwo;
-
-            // set heralds
-            // Globals_Game.heraldOne = myChar1;
-            Globals_Game.heraldTwo = myChar2;
-
-            // set sysAdmin
-            Globals_Game.sysAdmin = myChar1;
 
             // set province owners
             myProv.owner = myChar2;
@@ -1058,11 +1135,12 @@ namespace hist_mmorpg
             myFief2.barCharacter(myChar2.charID);
             myFief2.barCharacter(myChar1Wife.charID);
             
+            /*
             // create VictoryDatas for PCs
             VictoryData myVicData01 = new VictoryData(myChar1.playerID, myChar1.charID, myChar1.calculateStature(), myChar1.getPopulationPercentage(), myChar1.getFiefsPercentage(), myChar1.getMoneyPercentage());
             Globals_Game.victoryData.Add(myVicData01.playerID, myVicData01);
             VictoryData myVicData02 = new VictoryData(myChar2.playerID, myChar2.charID, myChar2.calculateStature(), myChar2.getPopulationPercentage(), myChar2.getFiefsPercentage(), myChar2.getMoneyPercentage());
-            Globals_Game.victoryData.Add(myVicData02.playerID, myVicData02);
+            Globals_Game.victoryData.Add(myVicData02.playerID, myVicData02);*/
 
 			// try retrieving fief from masterlist using fiefID
 			// Fief source = fiefMasterList.Find(x => x.fiefID == "ESX03");
