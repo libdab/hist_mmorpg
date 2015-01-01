@@ -27,8 +27,9 @@ namespace hist_mmorpg
         /// <returns>bool indicating success state</returns>
         /// <param name="filename">The name of the CSV file</param>
         /// <param name="bucketID">The name of the database bucket in which to store the game objects</param>
-        /// <param name="resynch">bool indicating whether or not to resynch the game objects</param>
-        public bool ImportFromCSV(string filename, string bucketID, bool resynch = false)
+        /// <param name="synch">bool indicating whether or not to synch the game objects' properties</param>
+        /// <param name="toDatabase">bool indicating whether or not to save the game objects to database or game</param>
+        public bool ImportFromCSV(string filename, string bucketID, bool synch = false, bool toDatabase = true)
         {
             bool inputFileError = false;
             string lineIn;
@@ -52,7 +53,7 @@ namespace hist_mmorpg
             List<string> siegeKeyList = new List<string>();
             List<string> terrKeyList = new List<string>();
 
-            // dictionaries for storing objects (if resynching)
+            // dictionaries for temporary storage of objects
             Dictionary<string, Fief_Serialised> fiefMasterList = new Dictionary<string, Fief_Serialised>();
             Dictionary<string, PlayerCharacter_Serialised> pcMasterList = new Dictionary<string, PlayerCharacter_Serialised>();
             Dictionary<string, NonPlayerCharacter_Serialised> npcMasterList = new Dictionary<string, NonPlayerCharacter_Serialised>();
@@ -60,6 +61,13 @@ namespace hist_mmorpg
             Dictionary<string, Kingdom_Serialised> kingdomMasterList = new Dictionary<string, Kingdom_Serialised>();
             Dictionary<string, Siege> siegeMasterList = new Dictionary<string, Siege>();
             Dictionary<string, Army> armyMasterList = new Dictionary<string, Army>();
+            Dictionary<string, BaseLanguage> baseLanguageMasterList = new Dictionary<string, BaseLanguage>();
+            Dictionary<string, Language_Serialised> languageMasterList = new Dictionary<string, Language_Serialised>();
+            Dictionary<string, Skill> skillMasterList = new Dictionary<string, Skill>();
+            Dictionary<string, Nationality> nationalityMasterList = new Dictionary<string, Nationality>();
+            Dictionary<byte, Rank> rankMasterList = new Dictionary<byte, Rank>();
+            Dictionary<byte, Position_Serialised> positionMasterList = new Dictionary<byte, Position_Serialised>();
+            Dictionary<string, Terrain> terrainMasterList = new Dictionary<string, Terrain>();
 
             try
             {
@@ -104,20 +112,10 @@ namespace hist_mmorpg
 
                         if (thisFiefSer != null)
                         {
-                            // check for resynching
-                            if (resynch)
-                            {
-                                // add to masterList
-                                fiefMasterList.Add(thisFiefSer.id, thisFiefSer);
-                            }
+                            // add object to masterList
+                            fiefMasterList.Add(thisFiefSer.id, thisFiefSer);
 
-                            else
-                            {
-                                // save to database
-                                this.databaseWrite_Fief(bucketID, fs: thisFiefSer);
-                            }
-
-                            // add fief id to keylist
+                            // add key to keylist
                             fiefKeyList.Add(thisFiefSer.id);
                         }
                         else
@@ -137,20 +135,10 @@ namespace hist_mmorpg
 
                         if (thisProvSer != null)
                         {
-                            // check for resynching
-                            if (resynch)
-                            {
-                                // add to masterList
-                                provinceMasterList.Add(thisProvSer.id, thisProvSer);
-                            }
+                            // add object to masterList
+                            provinceMasterList.Add(thisProvSer.id, thisProvSer);
 
-                            else
-                            {
-                                // save to database
-                                this.databaseWrite_Province(bucketID, ps: thisProvSer);
-                            }
-
-                            // add province id to keylist
+                            // add key to keylist
                             provKeyList.Add(thisProvSer.id);
                         }
                         else
@@ -170,20 +158,10 @@ namespace hist_mmorpg
 
                         if (thisKingSer != null)
                         {
-                            // check for resynching
-                            if (resynch)
-                            {
-                                // add to masterList
-                                kingdomMasterList.Add(thisKingSer.id, thisKingSer);
-                            }
+                            // add object to masterList
+                            kingdomMasterList.Add(thisKingSer.id, thisKingSer);
 
-                            else
-                            {
-                                // save to database
-                                this.databaseWrite_Kingdom(bucketID, ks: thisKingSer);
-                            }
-
-                            // add kingdom id to keylist
+                            // add key to keylist
                             kingKeyList.Add(thisKingSer.id);
                         }
                         else
@@ -204,20 +182,10 @@ namespace hist_mmorpg
 
                         if (thisPcSer != null)
                         {
-                            // check for resynching
-                            if (resynch)
-                            {
-                                // add to masterList
-                                pcMasterList.Add(thisPcSer.charID, thisPcSer);
-                            }
+                            // add object to masterList
+                            pcMasterList.Add(thisPcSer.charID, thisPcSer);
 
-                            else
-                            {
-                                // save to database
-                                this.databaseWrite_PC(bucketID, pcs: thisPcSer);
-                            }
-
-                            // add id to keylist
+                            // add key to keylist
                             pcKeyList.Add(thisPcSer.charID);
                         }
                         else
@@ -237,20 +205,10 @@ namespace hist_mmorpg
 
                         if (thisNpcSer != null)
                         {
-                            // check for resynching
-                            if (resynch)
-                            {
-                                // add to masterList
-                                npcMasterList.Add(thisNpcSer.charID, thisNpcSer);
-                            }
+                            // add object to masterList
+                            npcMasterList.Add(thisNpcSer.charID, thisNpcSer);
 
-                            else
-                            {
-                                // save to database
-                                this.databaseWrite_NPC(bucketID, npcs: thisNpcSer);
-                            }
-
-                            // add id to keylist
+                            // add key to keylist
                             npcKeyList.Add(thisNpcSer.charID);
                         }
                         else
@@ -271,10 +229,10 @@ namespace hist_mmorpg
 
                         if (thisSkill != null)
                         {
-                            // save to database
-                            this.databaseWrite_Skill(bucketID, thisSkill);
+                            // add object to masterList
+                            skillMasterList.Add(thisSkill.skillID, thisSkill);
 
-                            // add id to keylist
+                            // add key to keylist
                             skillKeyList.Add(thisSkill.skillID);
                         }
                         else
@@ -294,20 +252,10 @@ namespace hist_mmorpg
 
                         if (thisArmy != null)
                         {
-                            // check for resynching
-                            if (resynch)
-                            {
-                                // add to masterList
-                                armyMasterList.Add(thisArmy.armyID, thisArmy);
-                            }
+                            // add object to masterList
+                            armyMasterList.Add(thisArmy.armyID, thisArmy);
 
-                            else
-                            {
-                                // save to database
-                                this.databaseWrite_Army(bucketID, thisArmy);
-                            }
-
-                            // add id to keylist
+                            // add key to keylist
                             armyKeyList.Add(thisArmy.armyID);
                         }
                         else
@@ -327,10 +275,10 @@ namespace hist_mmorpg
 
                         if (thisLangSer != null)
                         {
-                            // save to database
-                            this.databaseWrite_Language(bucketID, ls: thisLangSer);
+                            // add object to masterList
+                            languageMasterList.Add(thisLangSer.id, thisLangSer);
 
-                            // add id to keylist
+                            // add key to keylist
                             langKeyList.Add(thisLangSer.id);
                         }
                         else
@@ -350,10 +298,10 @@ namespace hist_mmorpg
 
                         if (thisBaseLang != null)
                         {
-                            // save to database
-                            this.databaseWrite_BaseLanguage(bucketID, thisBaseLang);
+                            // add object to masterList
+                            baseLanguageMasterList.Add(thisBaseLang.id, thisBaseLang);
 
-                            // add id to keylist
+                            // add key to keylist
                             baseLangKeyList.Add(thisBaseLang.id);
                         }
                         else
@@ -373,10 +321,10 @@ namespace hist_mmorpg
 
                         if (thisNat != null)
                         {
-                            // save to database
-                            this.databaseWrite_Nationality(bucketID, thisNat);
+                            // add object to masterList
+                            nationalityMasterList.Add(thisNat.natID, thisNat);
 
-                            // add id to keylist
+                            // add key to keylist
                             natKeyList.Add(thisNat.natID);
                         }
                         else
@@ -397,10 +345,10 @@ namespace hist_mmorpg
 
                         if (thisRank != null)
                         {
-                            // save to database
-                            //this.databaseWrite_Rank(bucketID, thisRank);
+                            // add object to masterList
+                            rankMasterList.Add(thisRank.id, thisRank);
 
-                            // add id to keylist
+                            // add key to keylist
                             rankKeyList.Add(thisRank.id);
                         }
                         else
@@ -420,10 +368,10 @@ namespace hist_mmorpg
 
                         if (thisPosSer != null)
                         {
-                            // save to database
-                            this.databaseWrite_Position(bucketID, ps: thisPosSer);                            
+                            // add object to masterList
+                            positionMasterList.Add(thisPosSer.id, thisPosSer);
 
-                            // add id to keylist
+                            // add key to keylist
                             posKeyList.Add(thisPosSer.id);
                         }
                         else
@@ -443,20 +391,10 @@ namespace hist_mmorpg
 
                         if (thisSiege != null)
                         {
-                            // check for resynching
-                            if (resynch)
-                            {
-                                // add to masterList
-                                siegeMasterList.Add(thisSiege.siegeID, thisSiege);
-                            }
+                            // add object to masterList
+                            siegeMasterList.Add(thisSiege.siegeID, thisSiege);
 
-                            else
-                            {
-                                // save to database
-                                this.databaseWrite_Siege(bucketID, thisSiege);
-                            }
-
-                            // add id to keylist
+                            // add key to keylist
                             siegeKeyList.Add(thisSiege.siegeID);
                         }
                         else
@@ -476,10 +414,10 @@ namespace hist_mmorpg
 
                         if (thisTerr != null)
                         {
-                            // save to database
-                            this.databaseWrite_Terrain(bucketID, thisTerr);
+                            // add object to masterList
+                            terrainMasterList.Add(thisTerr.id, thisTerr);
 
-                            // add id to keylist
+                            // add key to keylist
                             terrKeyList.Add(thisTerr.id);
                         }
                         else
@@ -516,111 +454,428 @@ namespace hist_mmorpg
                 }
             }
 
-            // perform resynch if appropriate
-            if (resynch)
+            if (toDatabase)
             {
-                // pass objects for resynching/writing
+                // SAVE KEYLISTS TO DATABASE if necessary
+                // fiefs
+                if (fiefKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "fiefKeys", fiefKeyList);
+                }
+
+                // provinces
+                if (provKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "provKeys", provKeyList);
+                }
+
+                // kingdoms
+                if (kingKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "kingKeys", kingKeyList);
+                }
+
+                // PCs
+                if (pcKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "pcKeys", pcKeyList);
+                }
+
+                // NPCs
+                if (npcKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "npcKeys", npcKeyList);
+                }
+
+                // skills
+                if (skillKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "skillKeys", skillKeyList);
+                }
+
+                // armies
+                if (armyKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "armyKeys", armyKeyList);
+                }
+
+                // languages
+                if (langKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "langKeys", langKeyList);
+                }
+
+                // baseLanguages
+                if (baseLangKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "baseLangKeys", baseLangKeyList);
+                }
+
+                // nationalities
+                if (natKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "nationalityKeys", natKeyList);
+                }
+
+                // ranks
+                if (rankKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "rankKeys", rankKeyList);
+                }
+
+                // positions
+                if (posKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "positionKeys", posKeyList);
+                }
+
+                // sieges
+                if (siegeKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "siegeKeys", siegeKeyList);
+                }
+
+                // terrains
+                if (terrKeyList.Count > 0)
+                {
+                    // save keylist to database
+                    this.databaseWrite_KeyList(bucketID, "terrKeys", terrKeyList);
+                }
+            }
+
+            // SAVE OBJECTS NOT NEEDING SYNCHING
+            // skill
+            if (skillMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<string, Skill> thisEntry in skillMasterList)
+                    {
+                        this.databaseWrite_Skill(bucketID, thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    Globals_Game.skillMasterList = skillMasterList;
+                }
+            }
+
+            // baseLanguage
+            if (baseLanguageMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<string, BaseLanguage> thisEntry in baseLanguageMasterList)
+                    {
+                        this.databaseWrite_BaseLanguage(bucketID, thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    Globals_Game.baseLanguageMasterList = baseLanguageMasterList;
+                }
+            }
+
+            // nationality
+            if (nationalityMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<string, Nationality> thisEntry in nationalityMasterList)
+                    {
+                        this.databaseWrite_Nationality(bucketID, thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    Globals_Game.nationalityMasterList = nationalityMasterList;
+                }
+           }
+
+            // rank
+            if (rankMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<byte, Rank> thisEntry in rankMasterList)
+                    {
+                        this.databaseWrite_Rank(bucketID, thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    Globals_Game.rankMasterList = rankMasterList;
+                }
+            }
+
+            // terrain
+            if (terrainMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<string, Terrain> thisEntry in terrainMasterList)
+                    {
+                        this.databaseWrite_Terrain(bucketID, thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    Globals_Game.terrainMasterList = terrainMasterList;
+                }
+            }
+
+            // langauge
+            if (languageMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<string, Language_Serialised> thisEntry in languageMasterList)
+                    {
+                        this.databaseWrite_Language(bucketID, ls: thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    Language newObject = new Language();
+                    foreach (KeyValuePair<string, Language_Serialised> thisEntry in languageMasterList)
+                    {
+                        // de-serialise 
+                        newObject = this.Language_deserialise(thisEntry.Value);
+
+                        // add to Globals_Game masterList
+                        Globals_Game.languageMasterList.Add(newObject.id, newObject);
+                    }
+                }
+            }
+
+            // position
+            if (positionMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<byte, Position_Serialised> thisEntry in positionMasterList)
+                    {
+                        this.databaseWrite_Position(bucketID, ps: thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    Position newObject = new Position();
+                    foreach (KeyValuePair<byte, Position_Serialised> thisEntry in positionMasterList)
+                    {
+                        // de-serialise 
+                        newObject = this.Position_deserialise(thisEntry.Value);
+
+                        // add to Globals_Game masterList
+                        Globals_Game.positionMasterList.Add(newObject.id, newObject);
+                    }
+                }
+            }
+
+            // CHECK FOR OBJECTS NEEDING SYNCHING
+            // if synching, pass remaining objects to SynchGameObjectCollections
+            if (synch)
+            {
+                // pass objects for resynching/saving
                 this.SynchGameObjectCollections(fiefMasterList, pcMasterList, npcMasterList, provinceMasterList,
-                    kingdomMasterList, siegeMasterList, armyMasterList, bucketID);
+                    kingdomMasterList, siegeMasterList, armyMasterList, bucketID, toDatabase);
             }
 
-            // save keyLists to database
-            // fiefs
-            if (fiefKeyList.Count > 0)
+            // if not synching, save remaining objects
+            else
             {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "fiefKeys", fiefKeyList);
-            }
+                // army
+                if (armyMasterList.Count > 0)
+                {
+                    // save to database
+                    if (toDatabase)
+                    {
+                        foreach (KeyValuePair<string, Army> thisEntry in armyMasterList)
+                        {
+                            this.databaseWrite_Army(bucketID, thisEntry.Value);
+                        }
+                    }
+                    // save to game
+                    else
+                    {
+                        Globals_Game.armyMasterList = armyMasterList;
+                    }
+                }
 
-            // provinces
-            if (provKeyList.Count > 0)
-            {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "provKeys", provKeyList);
-            }
+                // siege
+                if (siegeMasterList.Count > 0)
+                {
+                    // save to database
+                    if (toDatabase)
+                    {
+                        foreach (KeyValuePair<string, Siege> thisEntry in siegeMasterList)
+                        {
+                            this.databaseWrite_Siege(bucketID, thisEntry.Value);
+                        }
+                    }
+                    // save to game
+                    else
+                    {
+                        Globals_Game.siegeMasterList = siegeMasterList;
+                    }
+                }
 
-            // kingdoms
-            if (kingKeyList.Count > 0)
-            {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "kingKeys", kingKeyList);
-            }
+                // NPC
+                if (npcMasterList.Count > 0)
+                {
+                    // save to database
+                    if (toDatabase)
+                    {
+                        foreach (KeyValuePair<string, NonPlayerCharacter_Serialised> thisEntry in npcMasterList)
+                        {
+                            this.databaseWrite_NPC(bucketID, npcs: thisEntry.Value);
+                        }
+                    }
+                    // save to game
+                    else
+                    {
+                        NonPlayerCharacter newObject = new NonPlayerCharacter();
+                        foreach (KeyValuePair<string, NonPlayerCharacter_Serialised> thisEntry in npcMasterList)
+                        {
+                            // de-serialise 
+                            newObject = this.NPC_deserialise(thisEntry.Value);
 
-            // PCs
-            if (pcKeyList.Count > 0)
-            {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "pcKeys", pcKeyList);
-            }
+                            // add to Globals_Game masterList
+                            Globals_Game.npcMasterList.Add(newObject.charID, newObject);
+                        }
+                    }
+                }
 
-            // NPCs
-            if (npcKeyList.Count > 0)
-            {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "npcKeys", npcKeyList);
-            }
+                // PC
+                if (pcMasterList.Count > 0)
+                {
+                    // save to database
+                    if (toDatabase)
+                    {
+                        foreach (KeyValuePair<string, PlayerCharacter_Serialised> thisEntry in pcMasterList)
+                        {
+                            this.databaseWrite_PC(bucketID, pcs: thisEntry.Value);
+                        }
+                    }
+                    // save to game
+                    else
+                    {
+                        PlayerCharacter newObject = new PlayerCharacter();
+                        foreach (KeyValuePair<string, PlayerCharacter_Serialised> thisEntry in pcMasterList)
+                        {
+                            // de-serialise 
+                            newObject = this.PC_deserialise(thisEntry.Value);
 
-            // skills
-            if (skillKeyList.Count > 0)
-            {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "skillKeys", skillKeyList);
-            }
+                            // add to Globals_Game masterList
+                            Globals_Game.pcMasterList.Add(newObject.charID, newObject);
+                        }
+                    }
+                }
 
-            // armies
-            if (armyKeyList.Count > 0)
-            {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "armyKeys", armyKeyList);
-            }
+                // kingdom
+                if (kingdomMasterList.Count > 0)
+                {
+                    // save to database
+                    if (toDatabase)
+                    {
+                        foreach (KeyValuePair<string, Kingdom_Serialised> thisEntry in kingdomMasterList)
+                        {
+                            this.databaseWrite_Kingdom(bucketID, ks: thisEntry.Value);
+                        }
+                    }
+                    // save to game
+                    else
+                    {
+                        Kingdom newObject = new Kingdom();
+                        foreach (KeyValuePair<string, Kingdom_Serialised> thisEntry in kingdomMasterList)
+                        {
+                            // de-serialise 
+                            newObject = this.Kingdom_deserialise(thisEntry.Value);
 
-            // languages
-            if (langKeyList.Count > 0)
-            {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "langKeys", langKeyList);
-            }
+                            // add to Globals_Game masterList
+                            Globals_Game.kingdomMasterList.Add(newObject.id, newObject);
+                        }
+                    }
+                }
 
-            // baseLanguages
-            if (baseLangKeyList.Count > 0)
-            {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "baseLangKeys", baseLangKeyList);
-            }
+                // province
+                if (provinceMasterList.Count > 0)
+                {
+                    // save to database
+                    if (toDatabase)
+                    {
+                        foreach (KeyValuePair<string, Province_Serialised> thisEntry in provinceMasterList)
+                        {
+                            this.databaseWrite_Province(bucketID, ps: thisEntry.Value);
+                        }
+                    }
+                    // save to game
+                    else
+                    {
+                        Province newObject = new Province();
+                        foreach (KeyValuePair<string, Province_Serialised> thisEntry in provinceMasterList)
+                        {
+                            // de-serialise 
+                            newObject = this.Province_deserialise(thisEntry.Value);
 
-            // nationalities
-            if (natKeyList.Count > 0)
-            {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "nationalityKeys", natKeyList);
-            }
+                            // add to Globals_Game masterList
+                            Globals_Game.provinceMasterList.Add(newObject.id, newObject);
+                        }
+                    }
+                }
 
-            // ranks
-            if (rankKeyList.Count > 0)
-            {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "rankKeys", rankKeyList);
-            }
+                // fief
+                if (fiefMasterList.Count > 0)
+                {
+                    // save to database
+                    if (toDatabase)
+                    {
+                        foreach (KeyValuePair<string, Fief_Serialised> thisEntry in fiefMasterList)
+                        {
+                            this.databaseWrite_Fief(bucketID, fs: thisEntry.Value);
+                        }
+                    }
+                    // save to game
+                    else
+                    {
+                        Fief newObject = new Fief();
+                        foreach (KeyValuePair<string, Fief_Serialised> thisEntry in fiefMasterList)
+                        {
+                            // de-serialise 
+                            newObject = this.Fief_deserialise(thisEntry.Value);
 
-            // positions
-            if (posKeyList.Count > 0)
-            {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "positionKeys", posKeyList);
-            }
-
-            // sieges
-            if (siegeKeyList.Count > 0)
-            {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "siegeKeys", siegeKeyList);
-            }
-
-            // terrains
-            if (terrKeyList.Count > 0)
-            {
-                // save keylist to database
-                this.databaseWrite_KeyList(bucketID, "terrKeys", terrKeyList);
+                            // add to Globals_Game masterList
+                            Globals_Game.fiefMasterList.Add(newObject.id, newObject);
+                        }
+                    }
+                }
             }
 
             return inputFileError;
@@ -2503,10 +2758,11 @@ namespace hist_mmorpg
         /// <param name="siegeMasterList">Siege objects</param>
         /// <param name="armyMasterList">Army objects</param>
         /// <param name="bucketID">The name of the database bucket in which to store the game objects</param>
+        /// <param name="toDatabase">bool indicating whether or not to save the game objects to database or game</param>
         public void SynchGameObjectCollections(Dictionary<string, Fief_Serialised> fiefMasterList, Dictionary<string,
             PlayerCharacter_Serialised> pcMasterList, Dictionary<string, NonPlayerCharacter_Serialised> npcMasterList,
             Dictionary<string, Province_Serialised> provinceMasterList, Dictionary<string, Kingdom_Serialised> kingdomMasterList,
-            Dictionary<string, Siege> siegeMasterList, Dictionary<string, Army> armyMasterList, string bucketID)
+            Dictionary<string, Siege> siegeMasterList, Dictionary<string, Army> armyMasterList, string bucketID, bool toDatabase = true)
         {
 
             // iterate through FIEFS
@@ -2842,6 +3098,173 @@ namespace hist_mmorpg
                 }
             }
 
+            // army
+            if (armyMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<string, Army> thisEntry in armyMasterList)
+                    {
+                        this.databaseWrite_Army(bucketID, thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    Globals_Game.armyMasterList = armyMasterList;
+                }
+            }
+
+            // siege
+            if (siegeMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<string, Siege> thisEntry in siegeMasterList)
+                    {
+                        this.databaseWrite_Siege(bucketID, thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    Globals_Game.siegeMasterList = siegeMasterList;
+                }
+            }
+
+            // NPC
+            if (npcMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<string, NonPlayerCharacter_Serialised> thisEntry in npcMasterList)
+                    {
+                        this.databaseWrite_NPC(bucketID, npcs: thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    NonPlayerCharacter newObject = new NonPlayerCharacter();
+                    foreach (KeyValuePair<string, NonPlayerCharacter_Serialised> thisEntry in npcMasterList)
+                    {
+                        // de-serialise 
+                        newObject = this.NPC_deserialise(thisEntry.Value);
+
+                        // add to Globals_Game masterList
+                        Globals_Game.npcMasterList.Add(newObject.charID, newObject);
+                    }
+                }
+            }
+
+            // PC
+            if (pcMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<string, PlayerCharacter_Serialised> thisEntry in pcMasterList)
+                    {
+                        this.databaseWrite_PC(bucketID, pcs: thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    PlayerCharacter newObject = new PlayerCharacter();
+                    foreach (KeyValuePair<string, PlayerCharacter_Serialised> thisEntry in pcMasterList)
+                    {
+                        // de-serialise 
+                        newObject = this.PC_deserialise(thisEntry.Value);
+
+                        // add to Globals_Game masterList
+                        Globals_Game.pcMasterList.Add(newObject.charID, newObject);
+                    }
+                }
+            }
+
+            // kingdom
+            if (kingdomMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<string, Kingdom_Serialised> thisEntry in kingdomMasterList)
+                    {
+                        this.databaseWrite_Kingdom(bucketID, ks: thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    Kingdom newObject = new Kingdom();
+                    foreach (KeyValuePair<string, Kingdom_Serialised> thisEntry in kingdomMasterList)
+                    {
+                        // de-serialise 
+                        newObject = this.Kingdom_deserialise(thisEntry.Value);
+
+                        // add to Globals_Game masterList
+                        Globals_Game.kingdomMasterList.Add(newObject.id, newObject);
+                    }
+                }
+            }
+
+            // province
+            if (provinceMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<string, Province_Serialised> thisEntry in provinceMasterList)
+                    {
+                        this.databaseWrite_Province(bucketID, ps: thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    Province newObject = new Province();
+                    foreach (KeyValuePair<string, Province_Serialised> thisEntry in provinceMasterList)
+                    {
+                        // de-serialise 
+                        newObject = this.Province_deserialise(thisEntry.Value);
+
+                        // add to Globals_Game masterList
+                        Globals_Game.provinceMasterList.Add(newObject.id, newObject);
+                    }
+                }
+            }
+
+            // fief
+            if (fiefMasterList.Count > 0)
+            {
+                // save to database
+                if (toDatabase)
+                {
+                    foreach (KeyValuePair<string, Fief_Serialised> thisEntry in fiefMasterList)
+                    {
+                        this.databaseWrite_Fief(bucketID, fs: thisEntry.Value);
+                    }
+                }
+                // save to game
+                else
+                {
+                    Fief newObject = new Fief();
+                    foreach (KeyValuePair<string, Fief_Serialised> thisEntry in fiefMasterList)
+                    {
+                        // de-serialise 
+                        newObject = this.Fief_deserialise(thisEntry.Value);
+
+                        // add to Globals_Game masterList
+                        Globals_Game.fiefMasterList.Add(newObject.id, newObject);
+                    }
+                }
+            }
+
+            /*
             // save all objects
             foreach (KeyValuePair<string, Fief_Serialised> fiefEntry in fiefMasterList)
             {
@@ -2877,7 +3300,7 @@ namespace hist_mmorpg
             {
                 // save to database
                 this.databaseWrite_Army(bucketID, armyEntry.Value);
-            }
+            } */
 
         }
 

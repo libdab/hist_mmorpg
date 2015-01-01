@@ -179,7 +179,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Holds next value for character ID
         /// </summary>
-        public static uint newCharID = 6300;
+        public static uint newCharID = 7000;
         /// <summary>
         /// Holds next value for army ID
         /// </summary>

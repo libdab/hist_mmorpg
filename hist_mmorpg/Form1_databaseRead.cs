@@ -79,6 +79,13 @@ namespace hist_mmorpg
                 Globals_Game.victoryData.Add(vicData.playerID, vicData);
             }
 
+            // ========= read GLOBALS_GAME/CLIENT/SERVER BOOL VARIABLES
+            Globals_Game.loadFromDatabase = this.databaseRead_bool(gameID, "loadFromDatabase");
+            Globals_Game.writeToDatabase = this.databaseRead_bool(gameID, "writeToDatabase");
+            Globals_Game.statureCapInForce = this.databaseRead_bool(gameID, "statureCapInForce");
+            Globals_Client.showMessages = this.databaseRead_bool(gameID, "showMessages");
+            Globals_Client.showDebugMessages = this.databaseRead_bool(gameID, "showDebugMessages");
+
             // ========= load SKILLS
             foreach (string element in Globals_Game.skillKeys)
             {
@@ -210,13 +217,6 @@ namespace hist_mmorpg
             Globals_Game.princeTwo = this.databaseRead_PcVariable(gameID, "princeTwo");
             Globals_Game.heraldOne = this.databaseRead_PcVariable(gameID, "heraldOne");
             Globals_Game.heraldTwo = this.databaseRead_PcVariable(gameID, "heraldTwo");
-
-            // ========= read GLOBALS_GAME/CLIENT/SERVER BOOL VARIABLES
-            Globals_Game.loadFromDatabase = this.databaseRead_bool(gameID, "loadFromDatabase");
-            Globals_Game.writeToDatabase = this.databaseRead_bool(gameID, "writeToDatabase");
-            Globals_Game.statureCapInForce = this.databaseRead_bool(gameID, "statureCapInForce");
-            Globals_Client.showMessages = this.databaseRead_bool(gameID, "showMessages");
-            Globals_Client.showDebugMessages = this.databaseRead_bool(gameID, "showDebugMessages");
 
             // ========= load MAP
             Globals_Game.gameMap = this.databaseRead_map(gameID, "mapEdges");
@@ -1086,7 +1086,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // insert employees
+            // insert employees/family
             if (pcs.myNPCs.Count > 0)
             {
                 for (int i = 0; i < pcs.myNPCs.Count; i++)
@@ -1577,6 +1577,7 @@ namespace hist_mmorpg
             {
                 edgesList = mapResult.Value.GetObject<List<TaggedEdge<string, string>>>();
                 TaggedEdge<Fief, string>[] edgesArray = this.EdgeCollection_deserialise(edgesList);
+
                 // create map from edges collection
                 newMap = new HexMapGraph("map001", edgesArray);
             }
