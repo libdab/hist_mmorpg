@@ -526,8 +526,8 @@ namespace hist_mmorpg
             if (!Globals_Client.fiefToView.checkExpenditureOK(totalSpend))
             {
                 int difference = Convert.ToInt32(totalSpend - Globals_Client.fiefToView.getAvailableTreasury());
-                string toDisplay = "Your spending exceeds the " + Globals_Client.fiefToView.name + " treasury by " + difference;
-                toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
+                string toDisplay = "Expenditure adjustment CANCELLED; Your spending would exceed the " + Globals_Client.fiefToView.name + " treasury by " + difference;
+                toDisplay += "\r\n\r\nTo increase expenditure, you must transfer funds from your Home Treasury.";
                 if (Globals_Client.showMessages)
                 {
                     System.Windows.Forms.MessageBox.Show(toDisplay, "TRANSACTION CANCELLED");
@@ -1099,10 +1099,10 @@ namespace hist_mmorpg
             {
                 indLvl = this.industry - (this.industry / 100);
             }
-            // industry level increases by 0.1 per 100k spent
+            // industry level increases by 0.1 per 150k spent
             else
             {
-                indLvl = this.industry + (this.infrastructureSpendNext / 1000000.00);
+                indLvl = this.industry + (this.infrastructureSpendNext / 1500000.00);
             }
             return indLvl;
         }

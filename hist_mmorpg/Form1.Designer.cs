@@ -431,6 +431,7 @@ namespace hist_mmorpg
             this.adminEditSkillNameTextBox = new System.Windows.Forms.TextBox();
             this.label81 = new System.Windows.Forms.Label();
             this.adminEditSkillIdTextBox = new System.Windows.Forms.TextBox();
+            this.fiefAutoAdjustBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -973,6 +974,7 @@ namespace hist_mmorpg
             // 
             // fiefContainer.Panel1
             // 
+            this.fiefContainer.Panel1.Controls.Add(this.fiefAutoAdjustBtn);
             this.fiefContainer.Panel1.Controls.Add(this.fiefTransferFundsPlayerBtn);
             this.fiefContainer.Panel1.Controls.Add(this.fiefGrantTitleBtn);
             this.fiefContainer.Panel1.Controls.Add(this.fiefInfraExpMaxBtn);
@@ -1017,7 +1019,7 @@ namespace hist_mmorpg
             // 
             // fiefTransferFundsPlayerBtn
             // 
-            this.fiefTransferFundsPlayerBtn.Location = new System.Drawing.Point(90, 645);
+            this.fiefTransferFundsPlayerBtn.Location = new System.Drawing.Point(90, 669);
             this.fiefTransferFundsPlayerBtn.Name = "fiefTransferFundsPlayerBtn";
             this.fiefTransferFundsPlayerBtn.Size = new System.Drawing.Size(173, 23);
             this.fiefTransferFundsPlayerBtn.TabIndex = 38;
@@ -1103,7 +1105,7 @@ namespace hist_mmorpg
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(129, 568);
+            this.label1.Location = new System.Drawing.Point(129, 592);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(85, 13);
             this.label1.TabIndex = 30;
@@ -1112,14 +1114,14 @@ namespace hist_mmorpg
             // fiefTransferAmountTextBox
             // 
             this.fiefTransferAmountTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fiefTransferAmountTextBox.Location = new System.Drawing.Point(124, 599);
+            this.fiefTransferAmountTextBox.Location = new System.Drawing.Point(124, 623);
             this.fiefTransferAmountTextBox.Name = "fiefTransferAmountTextBox";
             this.fiefTransferAmountTextBox.Size = new System.Drawing.Size(94, 20);
             this.fiefTransferAmountTextBox.TabIndex = 29;
             // 
             // fiefTransferToHomeBtn
             // 
-            this.fiefTransferToHomeBtn.Location = new System.Drawing.Point(243, 596);
+            this.fiefTransferToHomeBtn.Location = new System.Drawing.Point(243, 620);
             this.fiefTransferToHomeBtn.Name = "fiefTransferToHomeBtn";
             this.fiefTransferToHomeBtn.Size = new System.Drawing.Size(79, 23);
             this.fiefTransferToHomeBtn.TabIndex = 28;
@@ -1130,7 +1132,7 @@ namespace hist_mmorpg
             // 
             // fiefTransferToFiefBtn
             // 
-            this.fiefTransferToFiefBtn.Location = new System.Drawing.Point(21, 596);
+            this.fiefTransferToFiefBtn.Location = new System.Drawing.Point(21, 620);
             this.fiefTransferToFiefBtn.Name = "fiefTransferToFiefBtn";
             this.fiefTransferToFiefBtn.Size = new System.Drawing.Size(79, 23);
             this.fiefTransferToFiefBtn.TabIndex = 27;
@@ -1142,7 +1144,7 @@ namespace hist_mmorpg
             // fiefHomeTreasTextBox
             // 
             this.fiefHomeTreasTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fiefHomeTreasTextBox.Location = new System.Drawing.Point(216, 565);
+            this.fiefHomeTreasTextBox.Location = new System.Drawing.Point(216, 589);
             this.fiefHomeTreasTextBox.Name = "fiefHomeTreasTextBox";
             this.fiefHomeTreasTextBox.Size = new System.Drawing.Size(122, 20);
             this.fiefHomeTreasTextBox.TabIndex = 26;
@@ -1150,7 +1152,7 @@ namespace hist_mmorpg
             // FiefTreasTextBox
             // 
             this.FiefTreasTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.FiefTreasTextBox.Location = new System.Drawing.Point(15, 565);
+            this.FiefTreasTextBox.Location = new System.Drawing.Point(15, 589);
             this.FiefTreasTextBox.Name = "FiefTreasTextBox";
             this.FiefTreasTextBox.Size = new System.Drawing.Size(111, 20);
             this.FiefTreasTextBox.TabIndex = 25;
@@ -1158,7 +1160,7 @@ namespace hist_mmorpg
             // fiefHomeTreasLabel
             // 
             this.fiefHomeTreasLabel.AutoSize = true;
-            this.fiefHomeTreasLabel.Location = new System.Drawing.Point(213, 549);
+            this.fiefHomeTreasLabel.Location = new System.Drawing.Point(213, 573);
             this.fiefHomeTreasLabel.Name = "fiefHomeTreasLabel";
             this.fiefHomeTreasLabel.Size = new System.Drawing.Size(125, 13);
             this.fiefHomeTreasLabel.TabIndex = 24;
@@ -1167,7 +1169,7 @@ namespace hist_mmorpg
             // fiefTreasLabel
             // 
             this.fiefTreasLabel.AutoSize = true;
-            this.fiefTreasLabel.Location = new System.Drawing.Point(12, 549);
+            this.fiefTreasLabel.Location = new System.Drawing.Point(12, 573);
             this.fiefTreasLabel.Name = "fiefTreasLabel";
             this.fiefTreasLabel.Size = new System.Drawing.Size(114, 13);
             this.fiefTreasLabel.TabIndex = 23;
@@ -1177,7 +1179,7 @@ namespace hist_mmorpg
             // 
             this.fiefTreasTransferLabel.AutoSize = true;
             this.fiefTreasTransferLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fiefTreasTransferLabel.Location = new System.Drawing.Point(66, 521);
+            this.fiefTreasTransferLabel.Location = new System.Drawing.Point(66, 545);
             this.fiefTreasTransferLabel.Name = "fiefTreasTransferLabel";
             this.fiefTreasTransferLabel.Size = new System.Drawing.Size(187, 13);
             this.fiefTreasTransferLabel.TabIndex = 22;
@@ -1330,7 +1332,7 @@ namespace hist_mmorpg
             // 
             // adjustSpendBtn
             // 
-            this.adjustSpendBtn.Location = new System.Drawing.Point(90, 465);
+            this.adjustSpendBtn.Location = new System.Drawing.Point(90, 490);
             this.adjustSpendBtn.Name = "adjustSpendBtn";
             this.adjustSpendBtn.Size = new System.Drawing.Size(173, 23);
             this.adjustSpendBtn.TabIndex = 0;
@@ -4793,18 +4795,28 @@ namespace hist_mmorpg
             this.adminEditSkillIdTextBox.Size = new System.Drawing.Size(159, 20);
             this.adminEditSkillIdTextBox.TabIndex = 27;
             // 
+            // fiefAutoAdjustBtn
+            // 
+            this.fiefAutoAdjustBtn.Location = new System.Drawing.Point(90, 458);
+            this.fiefAutoAdjustBtn.Name = "fiefAutoAdjustBtn";
+            this.fiefAutoAdjustBtn.Size = new System.Drawing.Size(173, 23);
+            this.fiefAutoAdjustBtn.TabIndex = 39;
+            this.fiefAutoAdjustBtn.Text = "Auto-adjust current overspend";
+            this.fiefAutoAdjustBtn.UseVisualStyleBackColor = true;
+            this.fiefAutoAdjustBtn.Click += new System.EventHandler(this.fiefAutoAdjustBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
+            this.Controls.Add(this.meetingPlaceContainer);
+            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.adminEditContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.armyContainer);
-            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.houseContainer);
-            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.journalContainer);
             this.Controls.Add(this.provinceContainer);
@@ -5404,6 +5416,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.ToolStripMenuItem viewMyEntriesunreadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewEntriescurrentYearToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewEntriesALLToolStripMenuItem;
+        private System.Windows.Forms.Button fiefAutoAdjustBtn;
 
     }
 }

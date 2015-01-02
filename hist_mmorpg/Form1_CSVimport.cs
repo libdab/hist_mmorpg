@@ -273,7 +273,6 @@ namespace hist_mmorpg
                     if (lineParts[0].Equals("fief"))
                     {
                         Fief_Serialised thisFiefSer = null;
-
                         thisFiefSer = this.importFromCSV_Fief(lineParts, lineNum);
 
                         if (thisFiefSer != null)

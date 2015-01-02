@@ -25,7 +25,8 @@ namespace hist_mmorpg
         /// Refreshes UI Court, Tavern, outside keep display
         /// </summary>
         /// <param name="place">string specifying whether court, tavern, outside keep</param>
-        public void refreshMeetingPlaceDisplay(string place)
+        /// <param name="ch">The Character to display</param>
+        public void refreshMeetingPlaceDisplay(string place, Character ch = null)
         {
             // refresh general information
             this.meetingPlaceDisplayText();
@@ -66,7 +67,7 @@ namespace hist_mmorpg
                     break;
             }
             // refresh list of characters
-            this.meetingPlaceDisplayList(place);
+            this.meetingPlaceDisplayList(place, ch);
         }
 
         /// <summary>
@@ -92,7 +93,8 @@ namespace hist_mmorpg
         /// Refreshes display of Character list in Court, Tavern, outside keep
         /// </summary>
         /// <param name="place">String specifying whether court, tavern, outside keep</param>
-        public void meetingPlaceDisplayList(string place)
+        /// <param name="ch">The Character to display</param>
+        public void meetingPlaceDisplayList(string place, Character ch = null)
         {
             // clear existing items in list
             this.meetingPlaceCharsListView.Items.Clear();
@@ -107,7 +109,7 @@ namespace hist_mmorpg
             // iterates through characters
             for (int i = 0; i < Globals_Client.myPlayerCharacter.location.charactersInFief.Count; i++)
             {
-                ListViewItem charsInCourt = null;
+                ListViewItem thisCharacterItem = null;
 
                 // only display characters in relevant location (in keep, or not)
                 if (Globals_Client.myPlayerCharacter.location.charactersInFief[i].inKeep == ifInKeep)
@@ -126,23 +128,34 @@ namespace hist_mmorpg
                                     if ((Globals_Client.myPlayerCharacter.location.charactersInFief[i] as NonPlayerCharacter).salary == 0)
                                     {
                                         // Create an item and subitems for character
-                                        charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
+                                        thisCharacterItem = this.createMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
                                     }
                                 }
                                 break;
                             default:
                                 // Create an item and subitems for character
-                                charsInCourt = this.createMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
+                                thisCharacterItem = this.createMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
                                 break;
                         }
 
+                        // check to see if character information is to be displayed
+                        if (Globals_Client.myPlayerCharacter.location.charactersInFief[i] == ch)
+                        {
+                            thisCharacterItem.Selected = true;
+                        }
                     }
                 }
 
                 // add item to fiefsListView
-                if (charsInCourt != null)
+                if (thisCharacterItem != null)
                 {
-                    this.meetingPlaceCharsListView.Items.Add(charsInCourt);
+                    this.meetingPlaceCharsListView.Items.Add(thisCharacterItem);
+                }
+
+                // if viewing particular character, give focus back to ListView
+                if (ch != null)
+                {
+                    this.meetingPlaceCharsListView.Focus();
                 }
             }
         }

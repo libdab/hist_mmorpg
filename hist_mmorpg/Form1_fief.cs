@@ -523,7 +523,7 @@ namespace hist_mmorpg
                 }
 
                 // get this fief's treasury
-                int fiefTreasury = f.getAvailableTreasury(); ;
+                int fiefTreasury = f.getAvailableTreasury();
 
                 // if fief UNDER SIEGE, leave most controls disabled
                 if (!String.IsNullOrWhiteSpace(f.siege))
@@ -592,14 +592,21 @@ namespace hist_mmorpg
                     uint totalSpend = Convert.ToUInt32(Globals_Client.fiefToView.calcNewExpenses());
 
                     // make sure expenditure can be supported by the treasury
-                    // if it can't, display a message and cancel the commit
+                    // if it can't, display a message and enable the overspend auto-adjust button
                     if (!Globals_Client.fiefToView.checkExpenditureOK(totalSpend))
                     {
+                        this.fiefAutoAdjustBtn.Enabled = true;
+
                         int difference = Convert.ToInt32(totalSpend - fiefTreasury);
                         toDisplay = "Your proposed expenditure exceeds the " + Globals_Client.fiefToView.name + " treasury by " + difference;
                         toDisplay += "\r\n\r\nYou must either transfer funds from your Home Treasury, or reduce your spending.";
                         toDisplay += "\r\n\r\nAny unsupportable expenditure levels will be automatically adjusted during the seasonal update.";
                         displayWarning = true;
+                    }
+                    else
+                    {
+                        // disable the overspend auto-adjust button
+                        this.fiefAutoAdjustBtn.Enabled = false;
                     }
                 }
 

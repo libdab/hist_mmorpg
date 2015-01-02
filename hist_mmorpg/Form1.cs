@@ -3758,20 +3758,21 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    this.refreshMeetingPlaceDisplay(place);
+                    this.refreshMeetingPlaceDisplay(place, Globals_Client.charToView);
                 }
             }
             // if hiring an NPC
             else
             {
                 // if in the tavern and NPC is hired, refresh whole screen (NPC removed from list)
-                if (isHired)
+                if ((isHired) && (place.Equals("tavern")))
                 {
                     this.refreshMeetingPlaceDisplay(place);
                 }
                 else
                 {
-                    this.meetingPlaceCharDisplayTextBox.Text = this.displayCharacter(Globals_Client.charToView);
+                    this.refreshMeetingPlaceDisplay(place, Globals_Client.charToView);
+                    //this.meetingPlaceCharDisplayTextBox.Text = this.displayCharacter(Globals_Client.charToView);
                 }
             }
 
@@ -4664,6 +4665,7 @@ namespace hist_mmorpg
 
                 // process adjustments
                 Globals_Client.fiefToView.adjustExpenditures(newTax, newOff, newGarr, newInfra, newKeep);
+                spendChanged = true;
             }
             catch (System.FormatException fe)
             {
@@ -4688,6 +4690,26 @@ namespace hist_mmorpg
                     this.refreshCurrentScreen();
                 }
             }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the fiefAutoAdjustBtn button,
+        /// displaying the armyManagementPanel
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void fiefAutoAdjustBtn_Click(object sender, EventArgs e)
+        {
+            int overspend = 0;
+
+            // calculate overspend
+            overspend = (Globals_Client.fiefToView.calcNewExpenses() - Globals_Client.fiefToView.getAvailableTreasury());
+
+            // auto-adjust expenditure
+            Globals_Client.fiefToView.autoAdjustExpenditure(Convert.ToUInt32(overspend));
+
+            // refresh screen
+            this.refreshCurrentScreen();
         }
 
         /// <summary>
