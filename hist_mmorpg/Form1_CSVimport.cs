@@ -3657,6 +3657,7 @@ namespace hist_mmorpg
             string[] lineParts;
             StreamReader srHexes = null;
             string[,] mapHexes = null;
+            List<string[]> customLinks = new List<string[]>();
             int row = 0;
 
             try
@@ -3695,8 +3696,8 @@ namespace hist_mmorpg
                     mapHexes = new string[Convert.ToInt32(lineParts[1]), Convert.ToInt32(lineParts[2])];
                 }
 
-                // the rest of the lines hold the values (fiefIDs)
-                else
+                // unlabelled rows hold hex values (fiefIDs) for adjacent hexes
+                else if (!lineParts[0].Equals("customLink"))
                 {
                     for (int i = 0; i < mapHexes.GetLength(1); i++)
                     {
@@ -3706,10 +3707,27 @@ namespace hist_mmorpg
                     // increment row
                     row++;
                 }
+
+                // 'customLink' rows hold data for additional links (e.g. non-adjacent hexes)
+                else if (lineParts[0].Equals("customLink"))
+                {
+                    if (lineParts.Length == 4)
+                    {
+                        string[] newLink = new string[] { lineParts[1], lineParts[2], lineParts[3] };
+                        customLinks.Add(newLink);
+                    }
+                }
             }
 
             // create list of map edges from array
-            mapEdges = this.CreateMapFromArray(mapHexes);
+            if (customLinks.Count > 0)
+            {
+                mapEdges = this.CreateMapEdgesList(mapHexes, customLinks: customLinks);
+            }
+            else
+            {
+                mapEdges = this.CreateMapEdgesList(mapHexes);
+            }
 
             // SAVE TO DATABASE OR CREATE MAP FOR NEW GAME
             if (toDatabase)
@@ -3736,11 +3754,12 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Creates list of map edges using a 2D string array
+        /// Creates list of serialised map edges
         /// </summary>
         /// <returns>List containing map edges</returns>
-        /// <param name="mapArray">string[,] containing map data</param>
-        public List<TaggedEdge<string, string>> CreateMapFromArray(string[,] mapArray)
+        /// <param name="mapArray">string[,] containing main map data</param>
+        /// <param name="customLinks">List(string) containing custom hex links (optional)</param>
+        public List<TaggedEdge<string, string>> CreateMapEdgesList(string[,] mapArray, List<string[]> customLinks = null)
         {
             List<TaggedEdge<string, string>> edgesOut = new List<TaggedEdge<string, string>>();
             TaggedEdge<string, string> thisEdge = null;
@@ -3826,6 +3845,16 @@ namespace hist_mmorpg
                             }
                         }
                     }
+                }
+            }
+
+            // check for custom links
+            if (customLinks != null)
+            {
+                foreach (string[] linkEntry in customLinks)
+                {
+                    thisEdge = new TaggedEdge<string, string>(linkEntry[0], linkEntry[1], linkEntry[2]);
+                    edgesOut.Add(thisEdge);
                 }
             }
 
