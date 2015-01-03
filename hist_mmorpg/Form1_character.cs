@@ -293,13 +293,16 @@ namespace hist_mmorpg
                     if (thisPlace != null)
                     {
                         // get correct title
-                        charText += thisPlace.rank.getName(ch.language) + " (rank " + thisPlace.rank.id + ") of ";
+                        charText += thisPlace.rank.getName(ch.language).ToUpper() + " (rank " + thisPlace.rank.id + ") of ";
                         // get kingdom details
                         charText += thisPlace.name + " (" + titleEntry + ")\r\n";
                     }
                 }
+                charText += "\r\n";
 
                 // provinces
+                charText += "PROVINCES:\r\n";
+                int provCount = 0;
                 foreach (string titleEntry in ch.myTitles)
                 {
                     // get province
@@ -314,12 +317,22 @@ namespace hist_mmorpg
                     {
                         // get correct title
                         charText += thisPlace.rank.getName(ch.language) + " (rank " + thisPlace.rank.id + ") of ";
+
                         // get province details
                         charText += thisPlace.name + " (" + titleEntry + ")\r\n";
+
+                        provCount++;
                     }
                 }
+                if (provCount < 1)
+                {
+                    charText += "None\r\n";
+                }
+                charText += "\r\n";
 
                 // fiefs
+                // provinces
+                charText += "FIEFS:\r\n";
                 foreach (string titleEntry in ch.myTitles)
                 {
                     // get fief

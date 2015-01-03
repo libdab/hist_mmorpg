@@ -862,14 +862,27 @@ namespace hist_mmorpg
                 // factor in skills of player or spouse (highest management rating)
                 double famSkillsModifier = 0;
 
-                // get famExpense rating of whoever has highest management rating
-                if ((!String.IsNullOrWhiteSpace(this.owner.spouse)) && (this.owner.management < this.owner.getSpouse().management))
+                // if home fief, owner or owner's spouse
+                if (this == this.owner.getHomeFief())
                 {
-                    famSkillsModifier = this.owner.getSpouse().calcSkillEffect("famExpense");
+                    // get famExpense rating of whoever has highest management rating
+                    if ((!String.IsNullOrWhiteSpace(this.owner.spouse)) && (this.owner.management < this.owner.getSpouse().management))
+                    {
+                        famSkillsModifier = this.owner.getSpouse().calcSkillEffect("famExpense");
+                    }
+                    else
+                    {
+                        famSkillsModifier = this.owner.calcSkillEffect("famExpense");
+                    }
                 }
+
+                // non-home fiefs, bailiff
                 else
                 {
-                    famSkillsModifier = this.owner.calcSkillEffect("famExpense");
+                    if ((this.bailiffDaysInFief >= 30) && (this.bailiff != null))
+                    {
+                        famSkillsModifier = this.bailiff.calcSkillEffect("famExpense");
+                    }
                 }
 
                 // apply to family expenses
