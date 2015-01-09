@@ -76,6 +76,7 @@ namespace hist_mmorpg
             this.characterTitlesCheckBox = new System.Windows.Forms.CheckBox();
             this.characterTextBox = new System.Windows.Forms.TextBox();
             this.fiefContainer = new System.Windows.Forms.SplitContainer();
+            this.fiefAutoAdjustBtn = new System.Windows.Forms.Button();
             this.fiefTransferFundsPlayerBtn = new System.Windows.Forms.Button();
             this.fiefGrantTitleBtn = new System.Windows.Forms.Button();
             this.fiefInfraExpMaxBtn = new System.Windows.Forms.Button();
@@ -431,7 +432,6 @@ namespace hist_mmorpg
             this.adminEditSkillNameTextBox = new System.Windows.Forms.TextBox();
             this.label81 = new System.Windows.Forms.Label();
             this.adminEditSkillIdTextBox = new System.Windows.Forms.TextBox();
-            this.fiefAutoAdjustBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -1016,6 +1016,16 @@ namespace hist_mmorpg
             this.fiefContainer.Size = new System.Drawing.Size(935, 711);
             this.fiefContainer.SplitterDistance = 370;
             this.fiefContainer.TabIndex = 3;
+            // 
+            // fiefAutoAdjustBtn
+            // 
+            this.fiefAutoAdjustBtn.Location = new System.Drawing.Point(90, 458);
+            this.fiefAutoAdjustBtn.Name = "fiefAutoAdjustBtn";
+            this.fiefAutoAdjustBtn.Size = new System.Drawing.Size(173, 23);
+            this.fiefAutoAdjustBtn.TabIndex = 39;
+            this.fiefAutoAdjustBtn.Text = "Auto-adjust current overspend";
+            this.fiefAutoAdjustBtn.UseVisualStyleBackColor = true;
+            this.fiefAutoAdjustBtn.Click += new System.EventHandler(this.fiefAutoAdjustBtn_Click);
             // 
             // fiefTransferFundsPlayerBtn
             // 
@@ -4795,25 +4805,15 @@ namespace hist_mmorpg
             this.adminEditSkillIdTextBox.Size = new System.Drawing.Size(159, 20);
             this.adminEditSkillIdTextBox.TabIndex = 27;
             // 
-            // fiefAutoAdjustBtn
-            // 
-            this.fiefAutoAdjustBtn.Location = new System.Drawing.Point(90, 458);
-            this.fiefAutoAdjustBtn.Name = "fiefAutoAdjustBtn";
-            this.fiefAutoAdjustBtn.Size = new System.Drawing.Size(173, 23);
-            this.fiefAutoAdjustBtn.TabIndex = 39;
-            this.fiefAutoAdjustBtn.Text = "Auto-adjust current overspend";
-            this.fiefAutoAdjustBtn.UseVisualStyleBackColor = true;
-            this.fiefAutoAdjustBtn.Click += new System.EventHandler(this.fiefAutoAdjustBtn_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
-            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.fiefContainer);
-            this.Controls.Add(this.adminEditContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
+            this.Controls.Add(this.meetingPlaceContainer);
+            this.Controls.Add(this.adminEditContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.houseContainer);

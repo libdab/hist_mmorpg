@@ -1174,6 +1174,16 @@ namespace hist_mmorpg
             // factor in bailiff modifier (also passing whether bailiffDaysInFief is sufficient)
             newLoy = newLoy + (newBaseLoy * this.calcBlfLoyAdjusted(this.bailiffDaysInFief >= 30));
 
+            // ensure loyalty within limits
+            if (newLoy < 0)
+            {
+                newLoy = 0;
+            }
+            else if (newLoy > 9)
+            {
+                newLoy = 9;
+            }
+
             return newLoy;
         }
 
@@ -1629,6 +1639,10 @@ namespace hist_mmorpg
         /// </summary>
         public void updateFief()
         {
+            // update tax rate
+            this.keyStatsCurrent[2] = this.taxRateNext;
+            this.taxRate = this.taxRateNext;
+
             // update bailiffDaysInFief if appropriate
             if ((this.bailiff != null) && (this.bailiff.days > 0))
             {
@@ -1643,12 +1657,10 @@ namespace hist_mmorpg
 
             // update loyalty level
             this.keyStatsCurrent[0] = this.calcNewLoyalty();
+            this.loyalty = this.keyStatsCurrent[0];
 
             // update GDP
             this.keyStatsCurrent[1] = this.calcNewGDP();
-
-            // update tax rate
-            this.keyStatsCurrent[2] = this.taxRateNext;
 
             // update officials spend (updating total expenses)
             this.keyStatsCurrent[3] = this.officialsSpendNext;
@@ -1686,6 +1698,9 @@ namespace hist_mmorpg
             // update bottom line
             this.keyStatsCurrent[13] = this.calcNewBottomLine();
 
+            // check for unrest/rebellion
+            this.status = this.checkFiefStatus();
+
             // update fields level (based on next season infrastructure spend)
             this.fields = this.calcNewFieldLevel();
 
@@ -1712,9 +1727,6 @@ namespace hist_mmorpg
                     }
                 }
             }
-
-            // check for unrest/rebellion
-            this.status = this.checkFiefStatus();
 
             // reset bailiffDaysInFief
             this.bailiffDaysInFief = 0;

@@ -377,7 +377,7 @@ namespace hist_mmorpg
             pcText += "Purse: " + pc.purse + "\r\n";
 
             // employees
-            pcText += "Employees:\r\n";
+            pcText += "Family and employees:\r\n";
             for (int i = 0; i < pc.myNPCs.Count; i++)
             {
                 pcText += "  - " + pc.myNPCs[i].firstName + " " + pc.myNPCs[i].familyName;

@@ -283,10 +283,14 @@ namespace hist_mmorpg
 
             // % population loss
             thisLoss = (0.007 * pillageMultiplier);
-            // ensure is at least 1%
+            // ensure is between 1%-20%
             if (thisLoss < 1)
             {
                 thisLoss = 1;
+            }
+            else if (thisLoss > 20)
+            {
+                thisLoss = 20;
             }
             // apply population loss
             pillageResults += "- Population loss: " + Convert.ToUInt32((f.population * (thisLoss / 100))) + "\r\n";
@@ -296,10 +300,14 @@ namespace hist_mmorpg
             if (!circumstance.Equals("quellRebellion"))
             {
                 thisLoss = (0.2 * pillageMultiplier);
-                // ensure is at least 1%
+                // ensure is between 1%-80%
                 if (thisLoss < 1)
                 {
                     thisLoss = 1;
+                }
+                else if (thisLoss > 80)
+                {
+                    thisLoss = 80;
                 }
                 // apply treasury loss
                 pillageResults += "- Treasury loss: " + Convert.ToInt32((f.treasury * (thisLoss / 100))) + "\r\n";
@@ -326,10 +334,14 @@ namespace hist_mmorpg
 
             // % fields loss
             thisLoss = (0.01 * pillageMultiplier);
-            // ensure is at least 1%
+            // ensure is between 1%-20%
             if (thisLoss < 1)
             {
                 thisLoss = 1;
+            }
+            else if (thisLoss > 20)
+            {
+                thisLoss = 20;
             }
             // apply fields loss
             pillageResults += "- Fields loss: " + (f.fields * (thisLoss / 100)) + "\r\n";
@@ -337,10 +349,14 @@ namespace hist_mmorpg
 
             // % industry loss
             thisLoss = (0.01 * pillageMultiplier);
-            // ensure is at least 1%
+            // ensure is between 1%-20%
             if (thisLoss < 1)
             {
                 thisLoss = 1;
+            }
+            else if (thisLoss > 20)
+            {
+                thisLoss = 20;
             }
             // apply industry loss
             pillageResults += "- Industry loss: " + (f.industry * (thisLoss / 100)) + "\r\n";
@@ -348,10 +364,14 @@ namespace hist_mmorpg
 
             // money pillaged (based on GDP)
             thisLoss = (0.01 * pillageMultiplier);
-            // ensure is at least 1%
+            // ensure is between 1%-50%
             if (thisLoss < 1)
             {
                 thisLoss = 1;
+            }
+            else if (thisLoss > 50)
+            {
+                thisLoss = 50;
             }
             // calculate base amount pillaged
             double baseMoneyPillaged = (f.keyStatsCurrent[1] * (thisLoss / 100));
@@ -1371,7 +1391,10 @@ namespace hist_mmorpg
             s.totalCasualtiesDefender += Convert.ToInt32(defenderCasualties);
 
             // inform player of success
-            System.Windows.Forms.MessageBox.Show(siegeDescription);
+            if (Globals_Client.showMessages)
+            {
+                System.Windows.Forms.MessageBox.Show(siegeDescription);
+            }
 
             // refresh screen
             this.refreshCurrentScreen();

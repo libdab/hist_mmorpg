@@ -1003,25 +1003,37 @@ namespace hist_mmorpg
 
             if (thisCharacter != null)
             {
-                // add ID to barred characters
-                Globals_Client.fiefToView.barredCharacters.Add(thisCharacter.charID);
-
-                // check if is currently in keep of barring fief, and remove if necessary
-                if ((thisCharacter.inKeep) && (thisCharacter.location == Globals_Client.fiefToView))
+                // ensure can't bar self
+                if (thisCharacter != Globals_Client.myPlayerCharacter)
                 {
-                    thisCharacter.inKeep = false;
-                    if (Globals_Client.showMessages)
+                    // add ID to barred characters
+                    Globals_Client.fiefToView.barredCharacters.Add(thisCharacter.charID);
+
+                    // check if is currently in keep of barring fief, and remove if necessary
+                    if ((thisCharacter.inKeep) && (thisCharacter.location == Globals_Client.fiefToView))
                     {
-                        System.Windows.Forms.MessageBox.Show(thisCharacter.firstName + " " + thisCharacter.familyName + " has been ejected from the keep.");
+                        thisCharacter.inKeep = false;
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show(thisCharacter.firstName + " " + thisCharacter.familyName + " has been ejected from the keep.");
+                        }
+
                     }
 
+                    // refresh display
+                    this.refreshBarredDisplay();
+
+                    // refresh the parent's fief container
+                    this.parent.refreshFiefContainer(Globals_Client.fiefToView);
                 }
 
-                // refresh display
-                this.refreshBarredDisplay();
-
-                // refresh the parent's fief container
-                this.parent.refreshFiefContainer(Globals_Client.fiefToView);
+                else
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("You cannot bar yourself from your own fief!");
+                    }
+                }
             }
         }
 

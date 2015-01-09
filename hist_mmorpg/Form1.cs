@@ -45,7 +45,7 @@ namespace hist_mmorpg
 			rClient = (RiakClient)rCluster.CreateClient();
 
             // initialise game objects
-            this.initGameObjects("Char_47", gameID: "fromCSV", objectDataFile: "gameObjects.csv", mapDataFile: "map.csv",
+            this.initGameObjects("Char_196", gameID: "fromCSV", objectDataFile: "gameObjects.csv", mapDataFile: "map.csv",
             start: 1194, king1: "Char_47", king2: "Char_40", herald1: "Char_47", sysAdmin: "Char_47");
 
 			// this.ImportFromCSV("gameObjects.csv", bucketID: "fromCSV", synch: true, toDatabase: true);
@@ -1224,7 +1224,10 @@ namespace hist_mmorpg
             {
                 foreach (PlayerCharacter pc in Globals_Game.promotedNPCs)
                 {
-                    Globals_Game.pcMasterList.Add(pc.charID, pc);
+                    if (!Globals_Game.pcMasterList.ContainsKey(pc.charID))
+                    {
+                        Globals_Game.pcMasterList.Add(pc.charID, pc);
+                    }
                 }
             }
 
@@ -1421,19 +1424,19 @@ namespace hist_mmorpg
                 }
             }
 
-            // CHECK SCHEDULED EVENTS
-            if (!endDateReached)
+            if (!((endDateReached) || (absoluteVictory)))
             {
+                // CHECK SCHEDULED EVENTS
                 List<JournalEntry> entriesForRemoval = this.processScheduledEvents();
                 // remove processed events from Globals_Game.scheduledEvents
                 for (int i = 0; i < entriesForRemoval.Count; i++)
                 {
                     Globals_Game.scheduledEvents.entries.Remove(entriesForRemoval[i].jEntryID);
                 }
-            }
 
-            // CHECK OWNERSHIP CHALLENGES
-            Globals_Game.processOwnershipChallenges();
+                // CHECK OWNERSHIP CHALLENGES
+                Globals_Game.processOwnershipChallenges();
+            }
 
             // SWITCH ON MESSAGES
             Globals_Client.showMessages = true;
@@ -3855,7 +3858,7 @@ namespace hist_mmorpg
                 string brideID = "";
                 string groomID = "";
 
-                if (this.meetingPlaceProposeTextBox.Text.Trim() == "")
+                if (String.IsNullOrWhiteSpace(this.meetingPlaceProposeTextBox.Text))
                 {
                     if (Globals_Client.showMessages)
                     {

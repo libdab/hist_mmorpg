@@ -1170,6 +1170,7 @@ namespace hist_mmorpg
                     if (npc.isHeir)
                     {
                         thisHeir = npc;
+                        break;
                     }
                 }
 
@@ -1189,8 +1190,8 @@ namespace hist_mmorpg
                 }
             }
 
-            // ============== 13. create and send DEATH JOURNAL ENTRY (unless is a player or a nobody)
-            if (!role.Equals("character"))
+            // ============== 13. create and send DEATH JOURNAL ENTRY (unless is a nobody)
+            if (!role.Equals("NPC"))
             {
                 bool success = false;
 
@@ -1215,18 +1216,17 @@ namespace hist_mmorpg
                 {
                     // personae
                     interestedPlayerEntry = headOfFamily.charID + "|headOfFamily";
-                    deceasedCharacterEntry = this.charID;
 
                     if (role.Equals("heir"))
                     {
-                        deceasedCharacterEntry += "|deceasedHeir";
+                        deceasedCharacterEntry += this.charID + "|deceasedHeir";
 
                         // type
                         type = "deathOfHeir";
                     }
                     else
                     {
-                        deceasedCharacterEntry += "|deceasedFamilyMember";
+                        deceasedCharacterEntry += this.charID + "|deceasedFamilyMember";
 
                         // type
                         type = "deathOfFamilyMember";
@@ -1242,7 +1242,7 @@ namespace hist_mmorpg
                 {
                     // personae
                     interestedPlayerEntry = employer.charID + "|employer";
-                    deceasedCharacterEntry += "|deceasedEmployee";
+                    deceasedCharacterEntry += this.charID + "|deceasedEmployee";
 
                     // type
                     type = "deathOfEmployee";
@@ -1252,25 +1252,38 @@ namespace hist_mmorpg
                     description += employer.firstName + " " + employer.familyName;
                 }
 
-                // player
-                else if (role.Equals("player"))
+                // player or non-played PC
+                else if ((role.Equals("player")) || (role.Equals("PC")))
                 {
                     // personae
                     allEntry = "all|all";
-                    interestedPlayerEntry = thisHeir.charID + "|newHeadOfFamily";
+                    if (thisHeir != null)
+                    {
+                        interestedPlayerEntry = thisHeir.charID + "|newHeadOfFamily";
+                    }
                     deceasedCharacterEntry += this.charID + "|deceasedHeadOfFamily";
 
                     // type
-                    type = "deathOfPlayer";
+                    if (role.Equals("player"))
+                    {
+                        type = "deathOfPlayer";
+                    }
+                    else
+                    {
+                        type = "deathOfNoble";
+                    }
 
                     // description
                     description += ", head of the " + this.familyName + " family";
                 }
 
                 // personae
-                tempPersonae.Add(interestedPlayerEntry);
+                if (!String.IsNullOrWhiteSpace(interestedPlayerEntry))
+                {
+                    tempPersonae.Add(interestedPlayerEntry);
+                }
                 tempPersonae.Add(deceasedCharacterEntry);
-                if (String.IsNullOrWhiteSpace(allEntry))
+                if (!String.IsNullOrWhiteSpace(allEntry))
                 {
                     tempPersonae.Add(allEntry);
                 }
@@ -1292,7 +1305,7 @@ namespace hist_mmorpg
                 }
 
                 // player death additional description
-                if (role.Equals("player"))
+                if ((role.Equals("player")) || (role.Equals("PC")))
                 {
                     // have an heir
                     if (thisHeir != null)
@@ -1586,12 +1599,6 @@ namespace hist_mmorpg
                 if (fief.ancestralOwner == deceased)
                 {
                     fief.ancestralOwner = king;
-                }
-
-                // bailiff
-                if (fief.bailiff == deceased)
-                {
-                    fief.bailiff = null;
                 }
             }
 
@@ -2198,165 +2205,131 @@ namespace hist_mmorpg
         {
             bool success = false;
 
-            // make sure not already pregnant
-            if (wife.isPregnant)
+            // generate random (0 - 100) to see if pregnancy successful
+            double randPercentage = Utility_Methods.GetRandomDouble(100);
+
+            // holds chance of pregnancy based on age and virility
+            int chanceOfPregnancy = 0;
+
+            // holds pregnancy modifier based on virility
+            double pregModifier = 0;
+
+            // spouse's age
+            int spouseAge = wife.calcAge();
+
+            // calculate base chance of pregnancy, based on age of spouse
+            if ((!(spouseAge < 14)) && (!(spouseAge > 55)))
             {
-                if (Globals_Client.showMessages)
+                if (spouseAge < 18)
                 {
-                    System.Windows.Forms.MessageBox.Show(wife.firstName + " " + wife.familyName + " is already pregnant, milord.  Don't be so impatient!", "PREGNANCY ATTEMPT CANCELLED");
+                    chanceOfPregnancy = 8;
+                }
+                else if (spouseAge < 25)
+                {
+                    chanceOfPregnancy = 10;
+                }
+                else if (spouseAge < 30)
+                {
+                    chanceOfPregnancy = 8;
+                }
+                else if (spouseAge < 35)
+                {
+                    chanceOfPregnancy = 6;
+                }
+                else if (spouseAge < 40)
+                {
+                    chanceOfPregnancy = 5;
+                }
+                else if (spouseAge < 45)
+                {
+                    chanceOfPregnancy = 4;
+                }
+                else if (spouseAge < 50)
+                {
+                    chanceOfPregnancy = 2;
+                }
+                else if (spouseAge < 55)
+                {
+                    chanceOfPregnancy = 1;
                 }
             }
-            else
-            {
-                // ensure player and spouse have at least 1 day remaining
-                double minDays = Math.Min(this.days, wife.days);
 
-                if (minDays < 1)
+            // factor in effect of parent's virility
+            // but only if within child-bearing age bracket (14 - 55)
+            if ((!(spouseAge < 14)) && (!(spouseAge > 55)))
+            {
+                // modifier will be in range 0.4 - -0.4 depending on parent's virility
+                // 1. get average parent virility
+                pregModifier = (this.virility + wife.virility) / 2;
+                // 2. subtract 5 and divide by 10 to give final modifier
+                pregModifier = (pregModifier - 5) / 10;
+
+                // apply modifier to chanceOfPregnancy
+                chanceOfPregnancy = chanceOfPregnancy + Convert.ToInt32(chanceOfPregnancy * pregModifier);
+                if (chanceOfPregnancy < 0)
                 {
+                    chanceOfPregnancy = 0;
+                }
+            }
+
+            // compare chanceOfPregnancy with randPercentage to see if pregnancy successful
+            if (chanceOfPregnancy > 0)
+            {
+                // if attempt successful
+                if (randPercentage <= chanceOfPregnancy)
+                {
+                    // set spouse as pregnant
+                    wife.isPregnant = true;
+
+                    // schedule birth in clock sheduledEvents
+                    uint birthYear = Globals_Game.clock.currentYear;
+                    byte birthSeason = Globals_Game.clock.currentSeason;
+                    if (Globals_Game.clock.currentSeason == 0)
+                    {
+                        birthSeason = (byte)(birthSeason + 3);
+                    }
+                    else
+                    {
+                        birthSeason = (byte)(birthSeason - 1);
+                        birthYear = birthYear + 1;
+                    }
+                    string[] birthPersonae = new string[] { wife.familyID + "|headOfFamily", wife.charID + "|mother", wife.spouse + "|father" };
+                    JournalEntry birth = new JournalEntry(Globals_Game.getNextJournalEntryID(), birthYear, birthSeason, birthPersonae, "birth");
+                    Globals_Game.scheduledEvents.entries.Add(birth.jEntryID, birth);
+
+                    // display message of celebration
                     if (Globals_Client.showMessages)
                     {
-                        System.Windows.Forms.MessageBox.Show("Sorry, you don't have enough time left for this in the current season.", "PREGNANCY ATTEMPT CANCELLED");
+                        System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + wife.firstName + " " + wife.familyName + " is pregnant!", "PREGNANCY SUCCESSFUL");
                     }
+                    success = true;
                 }
+                // if attempt not successful
                 else
                 {
-                    // ensure days are synchronised
-                    if (this.days != minDays)
+                    // display encouraging message
+                    if (Globals_Client.showMessages)
                     {
-                        (this as PlayerCharacter).adjustDays(this.days - minDays);
+                        System.Windows.Forms.MessageBox.Show("I'm afraid " + wife.firstName + " " + wife.familyName + " is not pregnant.  Better luck next time, milord!", "PREGNANCY UNSUCCESSFUL");
                     }
-                    else
-                    {
-                        wife.adjustDays(wife.days - minDays);
-                    }
+                }
 
-                    // generate random (0 - 100) to see if pregnancy successful
-                    double randPercentage = Utility_Methods.GetRandomDouble(100);
+                // succeed or fail, deduct a day
+                if (this is PlayerCharacter)
+                {
+                    (this as PlayerCharacter).adjustDays(1);
+                }
 
-                    // holds chance of pregnancy based on age and virility
-                    int chanceOfPregnancy = 0;
+                wife.adjustDays(1);
 
-                    // holds pregnancy modifier based on virility
-                    double pregModifier = 0;
-
-                    // spouse's age
-                    int spouseAge = wife.calcAge();
-
-                    // calculate base chance of pregnancy, based on age of spouse
-                    if ((!(spouseAge < 14)) && (!(spouseAge > 55)))
-                    {
-                        if (spouseAge < 18)
-                        {
-                            chanceOfPregnancy = 8;
-                        }
-                        else if (spouseAge < 25)
-                        {
-                            chanceOfPregnancy = 10;
-                        }
-                        else if (spouseAge < 30)
-                        {
-                            chanceOfPregnancy = 8;
-                        }
-                        else if (spouseAge < 35)
-                        {
-                            chanceOfPregnancy = 6;
-                        }
-                        else if (spouseAge < 40)
-                        {
-                            chanceOfPregnancy = 5;
-                        }
-                        else if (spouseAge < 45)
-                        {
-                            chanceOfPregnancy = 4;
-                        }
-                        else if (spouseAge < 50)
-                        {
-                            chanceOfPregnancy = 2;
-                        }
-                        else if (spouseAge < 55)
-                        {
-                            chanceOfPregnancy = 1;
-                        }
-                    }
-
-                    // factor in effect of parent's virility
-                    // but only if within child-bearing age bracket (14 - 55)
-                    if ((!(spouseAge < 14)) && (!(spouseAge > 55)))
-                    {
-                        // modifier will be in range 0.4 - -0.4 depending on parent's virility
-                        // 1. get average parent virility
-                        pregModifier = (this.virility + wife.virility) / 2;
-                        // 2. subtract 5 and divide by 10 to give final modifier
-                        pregModifier = (pregModifier - 5) / 10;
-
-                        // apply modifier to chanceOfPregnancy
-                        chanceOfPregnancy = chanceOfPregnancy + Convert.ToInt32(chanceOfPregnancy * pregModifier);
-                        if (chanceOfPregnancy < 0)
-                        {
-                            chanceOfPregnancy = 0;
-                        }
-                    }
-
-                    // compare chanceOfPregnancy with randPercentage to see if pregnancy successful
-                    if (chanceOfPregnancy > 0)
-                    {
-                        // if attempt successful
-                        if (randPercentage <= chanceOfPregnancy)
-                        {
-                            // set spouse as pregnant
-                            wife.isPregnant = true;
-
-                            // schedule birth in clock sheduledEvents
-                            uint birthYear = Globals_Game.clock.currentYear;
-                            byte birthSeason = Globals_Game.clock.currentSeason;
-                            if (Globals_Game.clock.currentSeason == 0)
-                            {
-                                birthSeason = (byte)(birthSeason + 3);
-                            }
-                            else
-                            {
-                                birthSeason = (byte)(birthSeason - 1);
-                                birthYear = birthYear + 1;
-                            }
-                            string[] birthPersonae = new string[] { wife.familyID + "|headOfFamily", wife.charID + "|mother", wife.spouse + "|father" };
-                            JournalEntry birth = new JournalEntry(Globals_Game.getNextJournalEntryID(), birthYear, birthSeason, birthPersonae, "birth");
-                            Globals_Game.scheduledEvents.entries.Add(birth.jEntryID, birth);
-
-                             // display message of celebration
-                            if (Globals_Client.showMessages)
-                            {
-                                System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + wife.firstName + " " + wife.familyName + " is pregnant!", "PREGNANCY SUCCESSFUL");
-                            }
-                            success = true;
-                        }
-                        // if attempt not successful
-                        else
-                        {
-                            // display encouraging message
-                            if (Globals_Client.showMessages)
-                            {
-                                System.Windows.Forms.MessageBox.Show("I'm afraid " + wife.firstName + " " + wife.familyName + " is not pregnant.  Better luck next time, milord!", "PREGNANCY UNSUCCESSFUL");
-                            }
-                        }
-
-                        // succeed or fail, deduct a day
-                        if (this is PlayerCharacter)
-                        {
-                            (this as PlayerCharacter).adjustDays(1);
-                        }
-
-                        wife.adjustDays(1);
-
-                    }
-                    // if pregnancy impossible
-                    else
-                    {
-                        // give the player the bad news
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Ahem ...\r\n\r\nUnfortunately, the fief physician advises that " + wife.firstName + " " + wife.familyName + " will never get pregnant with her current partner", "PREGNANCY UNSUCCESSFUL");
-                        }
-                    }
+            }
+            // if pregnancy impossible
+            else
+            {
+                // give the player the bad news
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Ahem ...\r\n\r\nUnfortunately, the fief physician advises that " + wife.firstName + " " + wife.familyName + " will never get pregnant with her current partner", "PREGNANCY UNSUCCESSFUL");
                 }
             }
 
@@ -3012,10 +2985,13 @@ namespace hist_mmorpg
 
             // get 'npcHire' skill effect modifier (increase/decrease chance of offer being accepted)
             double hireSkills = this.calcSkillEffect("npcHire");
+
             // convert to % to allow easy modification of chance
             hireSkills = (hireSkills * 100);
+
             // apply to chance
             chance = (chance + (hireSkills * -1));
+
             // ensure chance is a valid %
             if (chance < 0)
             {
@@ -3075,7 +3051,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // automatically reject if offer !> previous offer
+            // automatically reject if offer < previous offer
             else if (offerLess)
             {
                 accepted = false;
@@ -3140,10 +3116,13 @@ namespace hist_mmorpg
 
             // add to employee list
             this.myNPCs.Add(npc);
+
             // set NPC wage
             npc.salary = wage;
+
             // set this PC as NPC's boss
             npc.employer = this.charID;
+
             // remove any offers by this PC from NPCs lastOffer list
             npc.lastOffer.Clear();
         }
@@ -4438,10 +4417,11 @@ namespace hist_mmorpg
         {
             double salary = 0;
 
-            // NPC will only accept a minimum offer od 5% above his current salary
+            // NPC will only accept a minimum offer of 5% above his current salary
             salary = this.salary + (this.salary * 0.05);
 
-            // use this to calculate median salary to use as basis for negotiations
+            // use minimum figure to calculate median salary to use as basis for negotiations
+            // (i.e. the minimum figure is 90% of the median salary)
             salary = salary + (salary * 0.11);
 
             return salary;
@@ -4464,6 +4444,7 @@ namespace hist_mmorpg
 
             // determine lowest of 2 ratings
             double minRating = Math.Min(armyLeaderRating, fiefMgtRating);
+
             // determine highest of 2 ratings
             double maxRating = Math.Max(armyLeaderRating, fiefMgtRating);
             if (maxRating < 0)
