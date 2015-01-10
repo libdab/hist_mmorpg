@@ -638,7 +638,10 @@ namespace hist_mmorpg
             }
 
             // remove from master list
-            Globals_Game.siegeMasterList.Remove(this.siegeID);
+            if (Globals_Game.siegeMasterList.ContainsKey(this.siegeID))
+            {
+                Globals_Game.siegeMasterList.Remove(this.siegeID);
+            }
         }
 
 

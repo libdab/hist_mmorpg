@@ -4132,20 +4132,27 @@ namespace hist_mmorpg
                 // get selected NPC
                 NonPlayerCharacter selectedNPC = Globals_Game.npcMasterList[this.houseCharListView.SelectedItems[0].SubItems[1].Text];
 
-                // check for an existing heir and remove
-                foreach (NonPlayerCharacter npc in Globals_Client.myPlayerCharacter.myNPCs)
+                // check for suitability
+                bool isSuitable = selectedNPC.checksForHeir(Globals_Client.myPlayerCharacter);
+
+                if (isSuitable)
                 {
-                    if (npc.isHeir)
+                    // check for an existing heir and remove
+                    foreach (NonPlayerCharacter npc in Globals_Client.myPlayerCharacter.myNPCs)
                     {
-                        npc.isHeir = false;
+                        if (npc.isHeir)
+                        {
+                            npc.isHeir = false;
+                        }
                     }
+
+                    // appoint NPC as heir
+                    selectedNPC.isHeir = true;
+
+                    // refresh the household screen (in the main form)
+                    this.refreshHouseholdDisplay(selectedNPC);
                 }
 
-                // appoint NPC as heir
-                selectedNPC.isHeir = true;
-
-                // refresh the household screen (in the main form)
-                this.refreshHouseholdDisplay(selectedNPC);
             }
 
         }

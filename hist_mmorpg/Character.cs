@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace hist_mmorpg
 {
@@ -1156,23 +1157,17 @@ namespace hist_mmorpg
 
 
             // ============== 11. RESPAWN dead non-family NPCs
-            if ((role.Equals("employee")) || (role.Equals("character")))
+            if ((role.Equals("employee")) || (role.Equals("NPC")))
             {
-                this.respawnNPC(this as NonPlayerCharacter);
+                // respawn
+                bool respawned = this.respawnNPC(this as NonPlayerCharacter);
             }
 
-            // ============== 12. (Player) GET HEIR and PROCESS INHERITANCE
-            else if (role.Equals("player"))
+            // ============== 12. (Player or PC) GET HEIR and PROCESS INHERITANCE
+            else if ((role.Equals("player")) || (role.Equals("PC")))
             {
                 // get heir
-                foreach (NonPlayerCharacter npc in (this as PlayerCharacter).myNPCs)
-                {
-                    if (npc.isHeir)
-                    {
-                        thisHeir = npc;
-                        break;
-                    }
-                }
+                thisHeir = (this as PlayerCharacter).getHeir();
 
                 if (thisHeir != null)
                 {
@@ -1182,9 +1177,6 @@ namespace hist_mmorpg
                 // if no heir, king inherits
                 else
                 {
-                    // remove from Globals_Game.victoryData
-                    Globals_Game.victoryData.Remove((this as PlayerCharacter).playerID);
-
                     // process inheritance
                     this.transferPropertyToKing((this as PlayerCharacter), (this as PlayerCharacter).getKing());
                 }
@@ -1361,19 +1353,31 @@ namespace hist_mmorpg
         public void transferPropertyToKing(PlayerCharacter deceased, PlayerCharacter king)
         {
             // END SIEGES
+            // copy siege IDs into temp list
+            List<string> siegesToEnd = new List<string>();
             foreach (string siege in deceased.mySieges)
             {
-                Siege thisSiege = null;
-                if (Globals_Game.siegeMasterList.ContainsKey(siege))
-                {
-                    thisSiege = Globals_Game.siegeMasterList[siege];
-                }
+                siegesToEnd.Add(siege);
+            }
 
-                if (thisSiege != null)
+            if (siegesToEnd.Count > 0)
+            {
+                foreach (string siege in siegesToEnd)
                 {
-                    thisSiege.siegeEnd(null);
-                    thisSiege = null;
+                    // get siege object
+                    Siege thisSiege = null;
+                    if (Globals_Game.siegeMasterList.ContainsKey(siege))
+                    {
+                        thisSiege = Globals_Game.siegeMasterList[siege];
+                    }
+
+                    // end siege
+                    if (thisSiege != null)
+                    {
+                        thisSiege.siegeEnd(null);
+                    }
                 }
+                siegesToEnd.Clear();
             }
 
             // DISBAND ARMIES
@@ -1628,6 +1632,16 @@ namespace hist_mmorpg
 
 				toRemove.Clear ();
 			}
+
+            // UPDATE GLOBALS_GAME.VICTORYDATA
+            if (!String.IsNullOrWhiteSpace(deceased.playerID))
+            {
+                if (Globals_Game.victoryData.ContainsKey(deceased.playerID))
+                {
+                    Globals_Game.victoryData.Remove(deceased.playerID);
+                }
+            }
+
         }
 
         /// <summary>
@@ -1671,7 +1685,7 @@ namespace hist_mmorpg
                 }
             }
 
-			// ============== 3. change OWNER & ANCESTRALOWNER for FIEFS and REMOVE inheritor
+            // ============== 3. change OWNER & ANCESTRALOWNER for FIEFS and set inheritor and promotedNPC LOCATION
             List<string> ancestOwnerChanges = new List<string>();
             List<string> ownerChanges = new List<string>();
             foreach (KeyValuePair<string, Fief> thisFiefEntry in Globals_Game.fiefMasterList)
@@ -1688,10 +1702,14 @@ namespace hist_mmorpg
                     ownerChanges.Add(thisFiefEntry.Key);
                 }
 
-				// remove inheritor from fief
+                // set inheritor and promotedNPC location
 				if (thisFiefEntry.Value.charactersInFief.Contains(inheritor))
 				{
+                    // remove inheritor
 					thisFiefEntry.Value.charactersInFief.Remove(inheritor);
+
+                    // add promotedNPC
+                    thisFiefEntry.Value.charactersInFief.Add(promotedNPC);
 				}
             }
 
@@ -1733,9 +1751,12 @@ namespace hist_mmorpg
             }
 
             // ============== 7. update GLOBALS_GAME.VICTORYDATA
-            if (Globals_Game.victoryData.ContainsKey(promotedNPC.playerID))
+            if (!String.IsNullOrWhiteSpace(promotedNPC.playerID))
             {
-                Globals_Game.victoryData[promotedNPC.playerID].playerCharacterID = promotedNPC.charID;
+                if (Globals_Game.victoryData.ContainsKey(promotedNPC.playerID))
+                {
+                    Globals_Game.victoryData[promotedNPC.playerID].playerCharacterID = promotedNPC.charID;
+                }
             }
 
 			// ============== 8. change GLOBALS_CLIENT.MYPLAYERCHARACTER
@@ -1750,10 +1771,9 @@ namespace hist_mmorpg
         /// Creates new NonPlayerCharacter, based on supplied NonPlayerCharacter
         /// </summary>
         /// <param name="oldNPC">Old NonPlayerCharacter</param>
-        public void respawnNPC(NonPlayerCharacter oldNPC)
+        public bool respawnNPC(NonPlayerCharacter oldNPC)
         {
-            // create basic NPC
-            NonPlayerCharacter newNPC = new NonPlayerCharacter(oldNPC);
+            bool success = true;
 
             // LOCATION
             List<string> fiefIDs = new List<string>();
@@ -1761,21 +1781,45 @@ namespace hist_mmorpg
             // get all fief where language same as newNPC's
             foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
             {
-                if (fiefEntry.Value.language == newNPC.language)
+                if (fiefEntry.Value.language == oldNPC.language)
                 {
                     fiefIDs.Add(fiefEntry.Key);
                 }
             }
 
-            // generate random int to choose new location
-            string newLocationID = fiefIDs[Globals_Game.myRand.Next(0, fiefIDs.Count)];
+            // choose new location (by generating random int)
+            string newLocationID = "";
 
-            // assign location
-            newNPC.location = Globals_Game.fiefMasterList[newLocationID];
-            newNPC.location.charactersInFief.Add(newNPC);
+            // choose from fiefs with same language
+            if (fiefIDs.Count > 0)
+            {
+                newLocationID = fiefIDs[Globals_Game.myRand.Next(0, fiefIDs.Count)];
+            }
+
+            // if no fiefs with same language, choose random fief
+            else
+            {
+                newLocationID = Globals_Game.fiefMasterList.Keys.ElementAt(Globals_Game.myRand.Next(0, fiefIDs.Count));
+            }
+
+            // create new NPC and assign location
+            if (!String.IsNullOrWhiteSpace(newLocationID))
+            {
+                // create basic NPC
+                NonPlayerCharacter newNPC = new NonPlayerCharacter(oldNPC);
+
+                newNPC.location = Globals_Game.fiefMasterList[newLocationID];
+                newNPC.location.charactersInFief.Add(newNPC);
+            }
+
+            else
+            {
+                success = false;
+            }
 
             // TODO: FIRSTNAME
 
+            return success;
         }
         
         /// <summary>
@@ -2902,6 +2946,84 @@ namespace hist_mmorpg
             this.playerID = pc.playerID;
             this.myArmies = pc.myArmies;
             this.mySieges = pc.mySieges;
+        }
+
+        /// <summary>
+        /// Identifies and returns the PlayerCharacter's heir
+        /// </summary>
+        /// <returns>The heir (NonPlayerCharacter)</returns>
+        public NonPlayerCharacter getHeir()
+        {
+            NonPlayerCharacter heir = null;
+            List<NonPlayerCharacter> sons = new List<NonPlayerCharacter>();
+            List<NonPlayerCharacter> brothers = new List<NonPlayerCharacter>();
+
+            foreach (NonPlayerCharacter npc in this.myNPCs)
+            {
+                // check for assigned heir
+                if (npc.isHeir)
+                {
+                    heir = npc;
+                    break;
+                }
+
+                // take note of sons
+                else if (npc.getFunction(this).Equals("Son"))
+                {
+                    sons.Add(npc);
+                }
+
+                // take note of brothers
+                else if (npc.getFunction(this).Equals("Brother"))
+                {
+                    brothers.Add(npc);
+                }
+            }
+
+            // if no assigned heir identified
+            if (heir == null)
+            {
+                int age = 0;
+
+                // if there are some sons
+                if (sons.Count > 0)
+                {
+                    foreach (NonPlayerCharacter son in sons)
+                    {
+                        // if son is older, assign as heir
+                        if (son.calcAge() > age)
+                        {
+                            heir = son;
+                            age = son.calcAge();
+                        }
+                    }
+                }
+
+                // if there are some brothers
+                else if (brothers.Count > 0)
+                {
+                    foreach (NonPlayerCharacter brother in brothers)
+                    {
+                        // if brother is older, assign as heir
+                        if (brother.calcAge() > age)
+                        {
+                            heir = brother;
+                            age = brother.calcAge();
+                        }
+                    }
+                }
+            }
+
+            // make sure heir is properly identified
+            if (heir != null)
+            {
+                if (!heir.isHeir)
+                {
+                    heir.isHeir = true;
+                }
+            }
+
+            return heir;
         }
 
         /// <summary>
@@ -4142,6 +4264,45 @@ namespace hist_mmorpg
             this.inEntourage = false;
             this.lastOffer = new Dictionary<string,uint>();
             this.isHeir = false;
+        }
+
+        /// <summary>
+        /// Performs conditional checks prior to assigning the NonPlayerCharacter as heir
+        /// </summary>
+        /// <returns>bool indicating NonPlayerCharacter's suitability as heir</returns>
+        /// <param name="pc">The PlayerCharacter who is choosing the heir</param>
+        public bool checksForHeir(PlayerCharacter pc)
+        {
+            bool suitableHeir = true;
+
+            if (String.IsNullOrWhiteSpace(this.familyID))
+            {
+                suitableHeir = false;
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("You must choose a family member as your heir.");
+                }
+            }
+
+            else if (this.familyID != pc.familyID)
+            {
+                suitableHeir = false;
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("You must choose a family member as your heir.");
+                }
+            }
+
+            else if (!this.isMale)
+            {
+                suitableHeir = false;
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("You cannot choose a female as your heir.");
+                }
+            }
+
+            return suitableHeir;
         }
 
         /// <summary>
