@@ -1968,9 +1968,12 @@ namespace hist_mmorpg
         public double calcFiefIncMod()
         {
             double incomeModif = 0;
+
             // 2.5% increase in income per management level above 1
             incomeModif = (this.management - 1) * 2.5;
+
             incomeModif = incomeModif / 100;
+
             return incomeModif;
         }
 
@@ -2237,6 +2240,7 @@ namespace hist_mmorpg
             if (this.location.bailiff == this)
             {
                 this.location.bailiffDaysInFief += remainingDays;
+                this.adjustDays(remainingDays);
             }
         }
 

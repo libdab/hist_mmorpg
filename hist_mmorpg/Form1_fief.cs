@@ -424,25 +424,12 @@ namespace hist_mmorpg
                 fiefText += "  (including Officials spend income modifier: " + f.calcOffIncMod() + ")\r\n\r\n";
 
                 // family expenses
-                fiefText += "Family expenses: " + f.calcFamilyExpenses() + "\r\n";
-                // famExpenses modifier for player/spouse
-                if (!String.IsNullOrWhiteSpace(f.owner.spouse))
-                {
-                    if (f.owner.getSpouse().management > f.owner.management)
-                    {
-                        fiefText += "  (which may include a famExpense skills modifier: " + Globals_Game.npcMasterList[f.owner.spouse].calcSkillEffect("famExpense") + ")";
-                    }
-                }
-                else
-                {
-                    fiefText += "  (which may include a famExpense skills modifier: " + f.owner.calcSkillEffect("famExpense") + ")";
-                }
+                fiefText += "Family expenses  (may include a famExpense modifier): " + f.calcFamilyExpenses();
                 fiefText += "\r\n\r\n";
 
                 // total expenses (fief and family)
-                fiefText += "Total fief expenses: " + (f.calcNewExpenses() + f.calcFamilyExpenses()) + "\r\n";
-                // bailiff fief expenses modifier
-                fiefText += "  (which may include a Bailiff fiefExpense skills modifier: " + f.calcBailExpModif(f.bailiffDaysInFief >= 30) + ")\r\n\r\n";
+                fiefText += "Total fief expenses  (may include expenses modifiers): " + (f.calcNewExpenses() + f.calcFamilyExpenses());
+                fiefText += "\r\n\r\n";
 
                 // overlord taxes
                 fiefText += "Overlord taxes: " + f.calcNewOlordTaxes() + "\r\n";
