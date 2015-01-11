@@ -3502,13 +3502,120 @@ namespace hist_mmorpg
             // arrives outside keep
             npc.inKeep = false;
         }
+
+        /// <summary>
+        /// Carries out conditional checks prior to recruitment
+        /// </summary>
+        /// <returns>bool indicating whether recruitment can proceed</returns>
+        public bool checksBeforeRecruitment()
+        {
+            bool proceed = true;
+            int indivTroopCost = 0;
+            string toDisplay = "";
+
+            // get home fief
+            Fief homeFief = this.getHomeFief();
+
+            // calculate cost of individual soldier
+            if (this.location.ancestralOwner == this)
+            {
+                indivTroopCost = 500;
+            }
+            else
+            {
+                indivTroopCost = 2000;
+            }
+
+            // 1. see if fief owned by player
+            if (this.location.owner != this)
+            {
+                proceed = false;
+                if (Globals_Client.showMessages)
+                {
+                    toDisplay = "You cannot recruit in this fief, my lord, as you don't actually own it.";
+                    System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                }
+            }
+            else
+            {
+                // 2. see if recruitment already occurred for this season
+                if (this.location.hasRecruited)
+                {
+                    proceed = false;
+                    if (Globals_Client.showMessages)
+                    {
+                        toDisplay = "I'm afraid you have already recruited here in this season, my lord.";
+                        System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                    }
+                }
+                else
+                {
+                    // 3. Check language and loyalty permit recruitment
+                    if ((this.language.baseLanguage != this.location.language.baseLanguage)
+                        && (this.location.loyalty < 7))
+                    {
+                        proceed = false;
+                        if (Globals_Client.showMessages)
+                        {
+                            toDisplay = "I'm sorry, my lord, you do not speak the same language as the people in this fief,\r\n";
+                            toDisplay += "and thier loyalty is not sufficiently high to allow recruitment.";
+                            System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                        }
+                    }
+                    else
+                    {
+                        // 4. check sufficient funds for at least 1 troop
+                        if (!(homeFief.getAvailableTreasury() > indivTroopCost))
+                        {
+                            proceed = false;
+                            if (Globals_Client.showMessages)
+                            {
+                                toDisplay = "I'm sorry, my Lord; you have insufficient funds for recruitment.";
+                                System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                            }
+                        }
+                        else
+                        {
+                            // 5. check minimum days remaining
+                            if (this.days < 1)
+                            {
+                                proceed = false;
+                                if (Globals_Client.showMessages)
+                                {
+                                    toDisplay = "I'm afraid you don't have enough days for this operation, my lord.";
+                                    System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                }
+                            }
+                            else
+                            {
+                                // 6. check for siege
+                                if (!String.IsNullOrWhiteSpace(this.location.siege))
+                                {
+                                    proceed = false;
+                                    if (Globals_Client.showMessages)
+                                    {
+                                        toDisplay = "I'm sorry, my lord, you cannot recruit from a fief under siege.";
+                                        if (Globals_Client.showMessages)
+                                        {
+                                            System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return proceed;
+        }
         
         /// <summary>
         /// Recruits troops from the current fief
         /// </summary>
         /// <returns>uint containing number of troops recruited</returns>
         /// <param name="number">How many troops to recruit</param>
-        public int recruitTroops(uint number)
+        /// <param name="armyExists">bool indicating whether the army already exists</param>
+        public int recruitTroops(uint number, bool armyExists)
         {
             // used to record outcome of various checks
             bool proceed = true;
@@ -3526,7 +3633,7 @@ namespace hist_mmorpg
             Fief homeFief = this.getHomeFief();
 
             // get army
-            Army thisArmy = this.getArmy();
+            Army thisArmy = null;
 
             // calculate cost of individual soldier
             if (this.location.ancestralOwner == this)
@@ -3542,6 +3649,9 @@ namespace hist_mmorpg
             string toDisplay = "";
 
             // various checks to see whether to proceed
+            proceed = this.checksBeforeRecruitment();
+
+            /*
             // 1. see if fief owned by player
             if (!this.ownedFiefs.Contains(this.location))
             {
@@ -3608,7 +3718,7 @@ namespace hist_mmorpg
                         }
                     }
                 }
-            }
+            } */
 
             // if have not passed any of checks above, return
             if (!proceed)
@@ -3712,6 +3822,24 @@ namespace hist_mmorpg
 
                 if (confirmPurchase)
                 {
+                    // if no existing army, create one
+                    if (!armyExists)
+                    {
+                        // if necessary, exit keep (new armies are created outside keep)
+                        if (Globals_Client.myPlayerCharacter.inKeep)
+                        {
+                            Globals_Client.myPlayerCharacter.exitKeep();
+                        }
+
+                        thisArmy = new Army(Globals_Game.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
+                        thisArmy.addArmy();
+                    }
+
+                    else
+                    {
+                        thisArmy = this.getArmy();
+                    }
+
                     // deduct cost of troops from treasury
                     homeFief.treasury = homeFief.treasury - troopCost;
 
@@ -3750,13 +3878,13 @@ namespace hist_mmorpg
 
                     // indicate recruitment has occurred in this fief
                     this.location.hasRecruited = true;
+
+                    // update character's days
+                    this.adjustDays(daysUsed);
+
+                    // update army's days
+                    thisArmy.days = this.days;
                 }
-
-                // update character's days
-                this.adjustDays(daysUsed);
-
-                // update army's days
-                thisArmy.days = this.days;
             }
 
             return troopsRecruited;

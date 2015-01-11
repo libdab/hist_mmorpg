@@ -1151,8 +1151,7 @@ namespace hist_mmorpg
         /// <summary>
 		/// Updates game objects at end/start of season
 		/// </summary>
-        /// <param name="type">Specifies type of update to perform</param>
-        public void seasonUpdate(string type = "full")
+        public void seasonUpdate()
 		{
             // used to check if character update is necessary
             bool performCharacterUpdate = true;
@@ -1958,13 +1957,7 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void testUpdateMenuItem_Click(object sender, EventArgs e)
         {
-            // necessary in order to be able to access button tag
-            ToolStripItem menuItem = sender as ToolStripItem;
-
-            // get type of update from button tag
-            string updateType = menuItem.Tag.ToString();
-
-            this.seasonUpdate(updateType);
+            this.seasonUpdate();
         }
 
         /// <summary>
@@ -5001,65 +4994,58 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void armyRecruitBtn_Click(object sender, EventArgs e)
         {
+            bool armyExists = true;
+
             // get tag from button
             Button button = sender as Button;
             string operation = button.Tag.ToString();
 
-            // get fief
-            Fief thisFief = Globals_Client.myPlayerCharacter.location;
+            if (operation.Equals("new"))
+            {
+                armyExists = false;
+            }
 
-            // check for siege
-            if (!String.IsNullOrWhiteSpace(thisFief.siege))
+            try
+            {
+                // get number of troops specified
+                UInt32 numberWanted = Convert.ToUInt32(this.armyRecruitTextBox.Text);
+
+                /*
+                // if no existing army, create one
+                if (operation.Equals("new"))
+                {
+                    // if necessary, exit keep (new armies are created outside keep)
+                    if (Globals_Client.myPlayerCharacter.inKeep)
+                    {
+                        Globals_Client.myPlayerCharacter.exitKeep();
+                    }
+
+                    Army newArmy = new Army(Globals_Game.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
+                    newArmy.addArmy();
+                } */
+
+                // recruit troops
+                Globals_Client.myPlayerCharacter.recruitTroops(numberWanted, armyExists);
+
+                // get army
+                Army myArmy = Globals_Client.myPlayerCharacter.getArmy();
+
+                // refresh display
+                this.refreshArmyContainer(myArmy);
+
+            }
+            catch (System.FormatException fe)
             {
                 if (Globals_Client.showMessages)
                 {
-                    System.Windows.Forms.MessageBox.Show("You cannot recruit from a fief under siege.  Recruitment cancelled.");
+                    System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
                 }
             }
-
-            // if not under siege, proceed
-            else
+            catch (System.OverflowException ofe)
             {
-                try
+                if (Globals_Client.showMessages)
                 {
-                    // get number of troops specified
-                    UInt32 numberWanted = Convert.ToUInt32(this.armyRecruitTextBox.Text);
-
-                    // if no existing army, create one
-                    if (operation.Equals("new"))
-                    {
-                        // if necessary, exit keep (new armies are created outside keep)
-                        if (Globals_Client.myPlayerCharacter.inKeep)
-                        {
-                            Globals_Client.myPlayerCharacter.exitKeep();
-                        }
-
-                        Army newArmy = new Army(Globals_Game.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
-                        this.addArmy(newArmy);
-                    }
-
-                    // recruit troops
-                    Globals_Client.myPlayerCharacter.recruitTroops(numberWanted);
-
-                    // get army
-                    Army myArmy = Globals_Client.myPlayerCharacter.getArmy();
-
-                    // refresh display
-                    this.refreshArmyContainer(myArmy);
-                }
-                catch (System.FormatException fe)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(fe.Message + "\r\nPlease enter a valid value.");
-                    }
-                }
-                catch (System.OverflowException ofe)
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
-                    }
+                    System.Windows.Forms.MessageBox.Show(ofe.Message + "\r\nPlease enter a valid value.");
                 }
             }
 

@@ -145,6 +145,37 @@ namespace hist_mmorpg
 		}
 
         /// <summary>
+        /// Performs functions associated with creating a new army
+        /// </summary>
+        public void addArmy()
+        {
+            // get leader
+            Character armyLeader = this.getLeader();
+
+            // get owner
+            PlayerCharacter armyOwner = this.getOwner();
+
+            // get location
+            Fief armyLocation = this.getLocation();
+
+            // add to armyMasterList
+            Globals_Game.armyMasterList.Add(this.armyID, this);
+
+            // add to owner's myArmies
+            armyOwner.myArmies.Add(this);
+
+            // add to leader
+            if (armyLeader != null)
+            {
+                armyLeader.armyID = this.armyID;
+            }
+
+            // add to fief's armies
+            armyLocation.armies.Add(this.armyID);
+
+        }
+
+        /// <summary>
         /// Maintains the specified field army
         /// </summary>
         public void mantainArmy()

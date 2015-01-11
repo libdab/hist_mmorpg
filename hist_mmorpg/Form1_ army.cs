@@ -215,7 +215,7 @@ namespace hist_mmorpg
             this.armyListView.Focus();
         }
 
-        /// <summary>
+/*        /// <summary>
         /// Performs functions associated with creating a new army
         /// </summary>
         /// <param name="a">The army to be added to the game</param>
@@ -245,7 +245,7 @@ namespace hist_mmorpg
             // add to fief's armies
             armyLocation.armies.Add(a.armyID);
 
-        }
+        } */
 
         /// <summary>
         /// Disbands the specified army

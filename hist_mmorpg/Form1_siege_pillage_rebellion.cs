@@ -615,7 +615,7 @@ namespace hist_mmorpg
 
             // create temporary army for battle/siege
             defender = new Army("Garrison" + Globals_Game.getNextArmyID(), armyLeaderID, f.owner.charID, armyLeaderDays, f.id, trp: troopsForArmy);
-            this.addArmy(defender);
+            defender.addArmy();
 
             return defender;
         }
