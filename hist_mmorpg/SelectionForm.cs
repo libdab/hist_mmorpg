@@ -1200,17 +1200,26 @@ namespace hist_mmorpg
                         double thisDays = Convert.ToDouble(item.SubItems[8].Text);
 
                         // get numbers of each type to add
-                        uint[] thisTroops = new uint[] { 0, 0, 0, 0, 0, 0, 0 };
+                        uint[] thisTroops = new uint[] { Convert.ToUInt32(item.SubItems[1].Text), Convert.ToUInt32(item.SubItems[2].Text),
+                            Convert.ToUInt32(item.SubItems[3].Text), Convert.ToUInt32(item.SubItems[4].Text),
+                            Convert.ToUInt32(item.SubItems[5].Text), Convert.ToUInt32(item.SubItems[6].Text),
+                            Convert.ToUInt32(item.SubItems[7].Text) };
+
+                        /*
                         uint thisTotal = 0;
                         for (int i = 0; i < thisTroops.Length; i++)
                         {
                             thisTroops[i] = Convert.ToUInt32(item.SubItems[i+1].Text);
                             thisTotal += thisTroops[i];
-                        }
+                        } */
 
                         // if does have enough days, proceed
                         if (thisDays >= daysTaken)
                         {
+                            // create temporary army to check attrition
+                            Army tempArmy = new Army(Globals_Game.getNextArmyID(), null, item.SubItems[9].Text,
+                                thisDays, thisArmy.location, trp: thisTroops);
+
                             // compare days to minDays, apply attrition if necessary
                             // then add to troopsToAdd
                             if (thisDays > minDays)
@@ -1222,25 +1231,29 @@ namespace hist_mmorpg
 
                                 for (int i = 0; i < attritionChecks; i++)
                                 {
-                                    attritionModifier = thisArmy.calcAttrition(thisTotal);
-                                }
+                                    attritionModifier = tempArmy.calcAttrition();
 
-                                // apply attrition
-                                for (int i = 0; i < totTroopsToAdd.Length; i++)
-                                {
-                                    totTroopsToAdd[i] += (thisTroops[i] - Convert.ToUInt32(thisTroops[i] * attritionModifier));
+                                    // apply attrition
+                                    if (attritionModifier > 0)
+                                    {
+                                        for (int j = 0; j < totTroopsToAdd.Length; j++)
+                                        {
+                                            tempArmy.applyTroopLosses(attritionModifier);
+                                        }
+                                    }
                                 }
                             }
-                            else
+
+                            for (int i = 0; i < totTroopsToAdd.Length; i++)
                             {
-                                for (int i = 0; i < totTroopsToAdd.Length; i++)
-                                {
-                                    totTroopsToAdd[i] += thisTroops[i];
-                                }
+                                totTroopsToAdd[i] += tempArmy.troops[i];
                             }
 
                             // remove detachment from fief
                             thisFief.troopTransfers.Remove(item.SubItems[0].Text);
+
+                            // nullify tempArmy
+                            tempArmy = null;
                         }
 
                     }
@@ -1267,7 +1280,10 @@ namespace hist_mmorpg
                         for (int i = 0; i < attritionChecks; i++)
                         {
                             attritionModifier = thisArmy.calcAttrition();
-                            thisArmy.applyTroopLosses(attritionModifier);
+                            if (attritionModifier > 0)
+                            {
+                                thisArmy.applyTroopLosses(attritionModifier);
+                            }
                         }
                     }
                     else
@@ -1294,7 +1310,10 @@ namespace hist_mmorpg
                         for (int i = 0; i < attritionChecks; i++)
                         {
                             attritionModifier = thisArmy.calcAttrition();
-                            thisArmy.applyTroopLosses(attritionModifier);
+                            if (attritionModifier > 0)
+                            {
+                                thisArmy.applyTroopLosses(attritionModifier);
+                            }
                         }
 
                        // add troops to army
@@ -1315,7 +1334,10 @@ namespace hist_mmorpg
                             for (int i = 0; i < attritionChecks; i++)
                             {
                                 attritionModifier = thisArmy.calcAttrition();
-                                thisArmy.applyTroopLosses(attritionModifier);
+                                if (attritionModifier > 0)
+                                {
+                                    thisArmy.applyTroopLosses(attritionModifier);
+                                }
                             }
                         }
                     }

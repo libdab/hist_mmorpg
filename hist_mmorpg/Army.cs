@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Windows.Forms;
 
 namespace hist_mmorpg 
 {
@@ -76,7 +77,7 @@ namespace hist_mmorpg
 
             if (!Utility_Methods.validateArmyID(id))
             {
-                throw new InvalidDataException("Army id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
+                throw new InvalidDataException("Army ID must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
             }
 
             // LDR
@@ -87,7 +88,7 @@ namespace hist_mmorpg
 
                 if (!Utility_Methods.validateCharacterID(ldr))
                 {
-                    throw new InvalidDataException("Army leader id must have the format 'Char_' followed by some numbers");
+                    throw new InvalidDataException("Army leader ID must have the format 'Char_' followed by some numbers");
                 }
             }
 
@@ -224,10 +225,13 @@ namespace hist_mmorpg
         /// <summary>
         /// Updates the army's aggression and combatOdds values
         /// </summary>
+        /// <returns>bool indicating success</returns>
         /// <param name="newAggroLevel">The new aggression value</param>
         /// <param name="newOddsValue">The new combatOdds value</param>
-        public void adjustAutoLevels(byte newAggroLevel, byte newOddsValue)
+        public bool adjustAutoLevels(byte newAggroLevel, byte newOddsValue)
         {
+            bool success = true;
+
             // check values and alter if appropriate
             if (newAggroLevel < 0)
             {
@@ -247,8 +251,15 @@ namespace hist_mmorpg
             }
 
             // update army's values
-            Globals_Client.armyToView.aggression = newAggroLevel;
-            Globals_Client.armyToView.combatOdds = newOddsValue;
+            this.aggression = newAggroLevel;
+            this.combatOdds = newOddsValue;
+
+            if ((this.aggression != newAggroLevel) || (this.combatOdds != newOddsValue))
+            {
+                success = false;
+            }
+
+            return success;
         }
 		
         /// <summary>
@@ -425,70 +436,69 @@ namespace hist_mmorpg
         /// Calculates attrition for the army
         /// </summary>
         /// <returns>double containing casualty modifier to be applied troops</returns>
-        public double calcAttrition(uint troopNumbers = 0)
+        public double calcAttrition()
         {
+            uint troopNumbers = this.calcArmySize();
             double casualtyModifier = 0;
             Double attritionChance = 0;
             String toDisplay = "";
 
-            // if no specific troop number passed in, use army size
-            if (troopNumbers == 0)
+            // ensure is no attrition if army maintained
+            if (!this.isMaintained)
             {
-                troopNumbers = this.calcArmySize();
-            }
+                // get fief
+                Fief currentFief = this.getLocation();
 
-            // get fief
-            Fief currentFief = this.getLocation();
+                // get leader
+                Character myLeader = this.getLeader();
 
-            // get leader
-            Character myLeader = this.getLeader();
+                // calculate base chance of attrition
+                attritionChance = (troopNumbers / Convert.ToDouble(currentFief.population)) * 100;
+                toDisplay += "Base chance: " + attritionChance + "\r\n";
 
-            // calculate base chance of attrition
-            attritionChance = (troopNumbers / Convert.ToDouble(currentFief.population)) * 100;
-            toDisplay += "Base chance: " + attritionChance + "\r\n";
-
-            // factor in effect of leader (need to check if army has leader)
-            if (myLeader != null)
-            {
-                // apply effect of leader
-                attritionChance = attritionChance - ((myLeader.calculateStature() + myLeader.management) / 2);
-                toDisplay += "Leader effect: " + (myLeader.calculateStature() + myLeader.management) / 2 + "\r\n";
-            }
-
-            // factor in effect of season (add 20 if is winter or spring)
-            if ((Globals_Game.clock.currentSeason == 0) || (Globals_Game.clock.currentSeason == 3))
-            {
-                attritionChance = attritionChance + 20;
-                toDisplay += "Season effect: 20\r\n";
-            }
-
-            // normalise chance of attrition
-            if (attritionChance < 10)
-            {
-                attritionChance = 10;
-            }
-            else if (attritionChance > 100)
-            {
-                attritionChance = 100;
-            }
-
-            // generate random number (0-100) to check if attrition occurs
-            Double randomPercent = Globals_Game.myRand.NextDouble() * 100;
-
-            // check if attrition occurs
-            if (randomPercent <= attritionChance)
-            {
-                // calculate base casualtyModifier
-                casualtyModifier = (troopNumbers / Convert.ToDouble(currentFief.population)) / 10;
-                toDisplay += "casualtyModifier: " + casualtyModifier + "\r\n";
-
-                // factor in effect of season on potential losses (* 3 if is winter or spring)
-                if ((Globals_Game.clock.currentSeason == 0) || (Globals_Game.clock.currentSeason == 3))
+                // factor in effect of leader (need to check if army has leader)
+                if (myLeader != null)
                 {
-                    casualtyModifier = casualtyModifier * 3;
-                    toDisplay += "casualtyModifier after seasonal effect: " + casualtyModifier + "\r\n";
+                    // apply effect of leader
+                    attritionChance = attritionChance - ((myLeader.calculateStature() + myLeader.management) / 2);
+                    toDisplay += "Leader effect: " + (myLeader.calculateStature() + myLeader.management) / 2 + "\r\n";
                 }
 
+                // factor in effect of season (add 20 if is winter or spring)
+                if ((Globals_Game.clock.currentSeason == 0) || (Globals_Game.clock.currentSeason == 3))
+                {
+                    attritionChance = attritionChance + 20;
+                    toDisplay += "Season effect: 20\r\n";
+                }
+
+                // normalise chance of attrition
+                if (attritionChance < 10)
+                {
+                    attritionChance = 10;
+                }
+                else if (attritionChance > 100)
+                {
+                    attritionChance = 100;
+                }
+
+                // generate random number (0-100) to check if attrition occurs
+                Double randomPercent = Globals_Game.myRand.NextDouble() * 100;
+
+                // check if attrition occurs
+                if (randomPercent <= attritionChance)
+                {
+                    // calculate base casualtyModifier
+                    casualtyModifier = (troopNumbers / Convert.ToDouble(currentFief.population)) / 10;
+                    toDisplay += "casualtyModifier: " + casualtyModifier + "\r\n";
+
+                    // factor in effect of season on potential losses (* 3 if is winter or spring)
+                    if ((Globals_Game.clock.currentSeason == 0) || (Globals_Game.clock.currentSeason == 3))
+                    {
+                        casualtyModifier = casualtyModifier * 3;
+                        toDisplay += "casualtyModifier after seasonal effect: " + casualtyModifier + "\r\n";
+                    }
+
+                }
             }
 
             if (casualtyModifier > 0)
@@ -520,6 +530,204 @@ namespace hist_mmorpg
             }
 
             return troopsLost;
+        }
+
+        /// <summary>
+        /// Creates a detachment from the army's troops and leaves it in the fief
+        /// </summary>
+        /// <returns>bool indicating success of transfer</returns>
+        /// <param name="details">string[] containing troop numbers and recipient (ID)</param>
+        public bool createDetachment(string[] details)
+        {
+            bool proceed = true;
+            bool adjustDays = true;
+            int daysTaken = 0;
+            uint totalTroopsToTransfer = 0;
+            string toDisplay = "";
+            string[] troopTypeLabels = new string[] { "knights", "men-at-arms", "light cavalry", "longbowmen", "crossbowmen", "foot", "rabble" };
+            Character myLeader = null;
+
+            // carry out CONDITIONAL CHECKS
+
+            // 1. check arry length
+            if (details.Length != 8)
+            {
+                proceed = false;
+                adjustDays = false;
+                toDisplay = "Not enough data parts in transfer details array.";
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                }
+            }
+            else
+            {
+                // 2. check each troop type; if not enough in army, cancel
+                for (int i = 0; i < details.Length - 1; i++)
+                {
+                    if (Convert.ToUInt32(details[i]) > this.troops[i])
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            toDisplay = "You don't have enough " + troopTypeLabels[i] + " in your army for that transfer.";
+                            System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                        }
+                        proceed = false;
+                        adjustDays = false;
+                    }
+                    else
+                    {
+                        totalTroopsToTransfer += Convert.ToUInt32(details[i]);
+                    }
+                }
+
+                if (proceed)
+                {
+                    // 3. if no troops selected for transfer, cancel
+                    if (totalTroopsToTransfer < 1)
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            toDisplay = "You haven't selected any troops for transfer.";
+                            System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                        }
+                        proceed = false;
+                        adjustDays = false;
+                    }
+                    else
+                    {
+                        // 4. check have minimum days necessary for transfer
+                        if (Globals_Client.armyToView.days < 10)
+                        {
+                            if (Globals_Client.showMessages)
+                            {
+                                toDisplay = "You don't have enough days left for this transfer.";
+                                System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                            }
+                            proceed = false;
+                            adjustDays = false;
+                        }
+                        else
+                        {
+                            // 5. check if have enough days for transfer in this instance
+
+                            // calculate time taken for transfer
+                            daysTaken = Globals_Game.myRand.Next(10, 31);
+
+                            if (daysTaken > Globals_Client.armyToView.days)
+                            {
+                                if (Globals_Client.showMessages)
+                                {
+                                    toDisplay = "Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.";
+                                    System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                }
+                                proceed = false;
+                            }
+                            else
+                            {
+                                // 6. check transfer recipient exists
+                                if (!Globals_Game.pcMasterList.ContainsKey(details[7]))
+                                {
+                                    if (Globals_Client.showMessages)
+                                    {
+                                        toDisplay = "Cannot identify transfer recipient.";
+                                        System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                    }
+                                    proceed = false;
+                                    adjustDays = false;
+                                }
+                                else
+                                {
+                                    // 7. check army has a leader
+
+                                    // get leader
+                                    myLeader = this.getLeader();
+
+                                    if (myLeader == null)
+                                    {
+                                        if (Globals_Client.showMessages)
+                                        {
+                                            toDisplay = "An army without a leader cannot make a transfer.";
+                                            System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                        }
+                                        proceed = false;
+                                        adjustDays = false;
+                                    }
+                                    else
+                                    {
+                                        // 8. if reduces army to < 100 troops, display warning
+                                        if (((this.calcArmySize() - totalTroopsToTransfer) < 100) && (proceed))
+                                        {
+                                            toDisplay = "This transfer will reduce your army manpower to dangerous levels.  Click OK to proceed.";
+                                            DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with transfer?", MessageBoxButtons.OKCancel);
+
+                                            // if choose to cancel
+                                            if (dialogResult == DialogResult.Cancel)
+                                            {
+                                                if (Globals_Client.showMessages)
+                                                {
+                                                    toDisplay = "Transfer cancelled.";
+                                                    System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                                }
+                                                proceed = false;
+                                                adjustDays = false;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (proceed)
+            {
+                // remove troops from army
+                for (int i = 0; i < this.troops.Length; i++)
+                {
+                    this.troops[i] -= Convert.ToUInt32(details[i]);
+                }
+
+                // get fief
+                Fief thisFief = this.getLocation();
+
+                // create transfer entry
+                string[] thisTransfer = new string[10] { this.owner, details[7], details[0], details[1], details[2],
+                            details[3], details[4], details[5], details[6], (this.days - daysTaken).ToString() };
+
+                // add to fief's troopTransfers list
+                string tranferID = Globals_Game.getNextDetachmentID();
+                thisFief.troopTransfers.Add(tranferID, thisTransfer);
+
+                // check detachment added to troopTransfers
+                if (!thisFief.troopTransfers.ContainsKey(tranferID))
+                {
+                    proceed = false;
+                }
+            }
+
+            if (adjustDays)
+            {
+                // adjust days
+                myLeader.adjustDays(daysTaken);
+
+                // calculate possible attrition for army
+                byte attritionChecks = Convert.ToByte(daysTaken / 7);
+                for (int i = 0; i < attritionChecks; i++)
+                {
+                    // calculate attrition
+                    double attritionModifer = this.calcAttrition();
+
+                    // apply attrition
+                    if (attritionModifer > 0)
+                    {
+                        this.applyTroopLosses(attritionModifer);
+                    }
+                }
+            }
+
+            return proceed;
         }
 
         /// <summary>

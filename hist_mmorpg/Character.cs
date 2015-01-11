@@ -3601,11 +3601,28 @@ namespace hist_mmorpg
                                         }
                                     }
                                 }
+                                else
+                                {
+                                    // 7. check for rebellion
+                                    if (this.location.status.Equals('R'))
+                                    {
+                                        proceed = false;
+                                        if (Globals_Client.showMessages)
+                                        {
+                                            toDisplay = "I'm sorry, my lord, you cannot recruit from a fief in rebellion.";
+                                            if (Globals_Client.showMessages)
+                                            {
+                                                System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+
             return proceed;
         }
         
@@ -3651,137 +3668,49 @@ namespace hist_mmorpg
             // various checks to see whether to proceed
             proceed = this.checksBeforeRecruitment();
 
-            /*
-            // 1. see if fief owned by player
-            if (!this.ownedFiefs.Contains(this.location))
-            {
-                proceed = false;
-                toDisplay = "You cannot recruit in this fief, my lord, as you don't actually own it.";
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(toDisplay);
-                }
-            }
-            else
-            {
-                // 2. see if recruitment already occurred for this season
-                if (this.location.hasRecruited)
-                {
-                    proceed = false;
-                    toDisplay = "I'm afraid you have already recruited here in this season, my lord.";
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(toDisplay);
-                    }
-                }
-                else
-                {
-                    // 3. Check language and loyalty permit recruitment
-                    if ((this.language.baseLanguage != this.location.language.baseLanguage)
-                        && (this.location.loyalty < 7))
-                    {
-                        proceed = false;
-                        toDisplay = "I'm sorry, my lord, you do not speak the same language as the people in this fief,\r\n";
-                        toDisplay += "and thier loyalty is not sufficiently high to allow recruitment.";
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show(toDisplay);
-                        }
-                    }
-                    else
-                    {
-                        // 4. check sufficient funds for at least 1 troop
-                        if (!(homeFief.getAvailableTreasury() > indivTroopCost))
-                        {
-                            proceed = false;
-                            toDisplay = "I'm sorry, my Lord; you have insufficient funds for recruitment.";
-                            if (Globals_Client.showMessages)
-                            {
-                                System.Windows.Forms.MessageBox.Show(toDisplay);
-                            }
-                        }
-                        else
-                        {
-                            // 5. check sufficient days remaining
-                            // see how long recuitment attempt will take: generate random int (1-5)
-                            daysUsed = Globals_Game.myRand.Next(6);
-
-                            if (this.days < daysUsed)
-                            {
-                                proceed = false;
-                                toDisplay = "I'm afraid you have run out of days, my lord.";
-                                if (Globals_Client.showMessages)
-                                {
-                                    System.Windows.Forms.MessageBox.Show(toDisplay);
-                                }
-                            }
-                        }
-                    }
-                }
-            } */
-
-            // if have not passed any of checks above, return
+            // if have not passed all of checks above, return
             if (!proceed)
             {
                 return troopsRecruited;
             }
 
-            // calculate potential cost
-            troopCost = Convert.ToInt32(number) * indivTroopCost;
+            // actual days taken
+            // see how long recuitment attempt will take: generate random int (1-5)
+            daysUsed = Globals_Game.myRand.Next(1, 6);
 
-            // check to see if can afford the specified number of troops
-            // if can't afford specified number
-            if (!(homeFief.getAvailableTreasury() >= troopCost))
+            if (this.days < daysUsed)
             {
-                // work out how many troops can afford
-                double roughNumber = homeFief.getAvailableTreasury() / indivTroopCost;
-                revisedRecruited = Convert.ToInt32(Math.Floor(roughNumber));
-
-                // present alternative number and ask for confirmation
-                toDisplay = "Sorry, milord, you do not have the funds to recruit " + number + " troops.";
-                toDisplay += "  However, you can afford to recruit " + revisedRecruited + ".\r\n";
-                toDisplay += "Do you wish to proceed with the recruitment of the revised number?";
-                DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with revised recruitment?", MessageBoxButtons.OKCancel);
-
-                // if choose to cancel
-                if (dialogResult == DialogResult.Cancel)
+                proceed = false;
+                toDisplay = "I'm afraid, due to poor organisation, you have run out of days, my lord.";
+                if (Globals_Client.showMessages)
                 {
-                    proceed = false;
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
-                    }
-                }
-                // chooses to proceed
-                else
-                {
-                    // revise number to recruit
-                    number = Convert.ToUInt32(revisedRecruited);
+                    System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
                 }
             }
 
             if (proceed)
             {
-                // calculate number of troops responding to call (based on fief population)
-                troopsRecruited = this.location.callUpTroops(minProportion: 0.4);
+                // calculate potential cost
+                troopCost = Convert.ToInt32(number) * indivTroopCost;
 
-                // adjust if necessary
-                if (troopsRecruited >= number)
+                // check to see if can afford the specified number of troops
+                // if can't afford specified number
+                if (!(homeFief.getAvailableTreasury() >= troopCost))
                 {
-                    troopsRecruited = Convert.ToInt32(number);
+                    // work out how many troops can afford
+                    double roughNumber = homeFief.getAvailableTreasury() / indivTroopCost;
+                    revisedRecruited = Convert.ToInt32(Math.Floor(roughNumber));
 
-                    // calculate total cost
-                    troopCost = troopsRecruited * indivTroopCost;
-
-                    // confirm recruitment
-                    toDisplay = troopsRecruited + " men have responded to your call, milord, and they would cost " + troopCost + " to recruit.\r\n";
-                    toDisplay += "There is " + homeFief.getAvailableTreasury() + "in the home treasury.  Do you wish to proceed with recruitment?";
-                    DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with recruitment?", MessageBoxButtons.OKCancel);
+                    // present alternative number and ask for confirmation
+                    toDisplay = "Sorry, milord, you do not have the funds to recruit " + number + " troops.";
+                    toDisplay += "  However, you can afford to recruit " + revisedRecruited + ".\r\n\r\n";
+                    toDisplay += "Do you wish to proceed with the recruitment of the revised number?";
+                    DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with revised recruitment?", MessageBoxButtons.OKCancel);
 
                     // if choose to cancel
                     if (dialogResult == DialogResult.Cancel)
                     {
-                        confirmPurchase = false;
+                        proceed = false;
                         if (Globals_Client.showMessages)
                         {
                             System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
@@ -3790,102 +3719,126 @@ namespace hist_mmorpg
                     // chooses to proceed
                     else
                     {
-                        confirmPurchase = true;
-                    }
-                }
-                // if less than specified number respond to call
-                else
-                {
-                    // calculate total cost
-                    troopCost = troopsRecruited * indivTroopCost;
-
-                    // confirm recruitment
-                    toDisplay = "Only " + troopsRecruited + " men have responded to your call, milord, and they would cost " + troopCost + " to recruit.\r\n";
-                    toDisplay += "There is " + homeFief.getAvailableTreasury() + "in the home treasury.  Do you wish to proceed with recruitment?";
-                    DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with recruitment?", MessageBoxButtons.OKCancel);
-
-                    // if choose to cancel
-                    if (dialogResult == DialogResult.Cancel)
-                    {
-                        confirmPurchase = false;
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
-                        }
-                    }
-                    // chooses to proceed
-                    else
-                    {
-                        confirmPurchase = true;
+                        // revise number to recruit
+                        number = Convert.ToUInt32(revisedRecruited);
                     }
                 }
 
-                if (confirmPurchase)
+                if (proceed)
                 {
-                    // if no existing army, create one
-                    if (!armyExists)
+                    // calculate number of troops responding to call (based on fief population)
+                    troopsRecruited = this.location.callUpTroops(minProportion: 0.4);
+
+                    // adjust if necessary
+                    if (troopsRecruited >= number)
                     {
-                        // if necessary, exit keep (new armies are created outside keep)
-                        if (Globals_Client.myPlayerCharacter.inKeep)
+                        troopsRecruited = Convert.ToInt32(number);
+
+                        // calculate total cost
+                        troopCost = troopsRecruited * indivTroopCost;
+
+                        // confirm recruitment
+                        toDisplay = troopsRecruited + " men have responded to your call, milord, and they would cost " + troopCost + " to recruit.\r\n\r\n";
+                        toDisplay += "There is " + homeFief.getAvailableTreasury() + " in the home treasury.  Do you wish to proceed with recruitment?";
+                        DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with recruitment?", MessageBoxButtons.OKCancel);
+
+                        // if choose to cancel
+                        if (dialogResult == DialogResult.Cancel)
                         {
-                            Globals_Client.myPlayerCharacter.exitKeep();
-                        }
-
-                        thisArmy = new Army(Globals_Game.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
-                        thisArmy.addArmy();
-                    }
-
-                    else
-                    {
-                        thisArmy = this.getArmy();
-                    }
-
-                    // deduct cost of troops from treasury
-                    homeFief.treasury = homeFief.treasury - troopCost;
-
-                    // work out how many of each type recruited
-                    uint[] typesRecruited = new uint[] {0, 0, 0, 0, 0, 0, 0};
-                    uint totalSoFar = 0;
-                    for (int i = 0; i < typesRecruited.Length; i++ )
-                    {
-                        // work out 'trained' troops numbers
-                        if (i < typesRecruited.Length - 1)
-                        {
-                            // get army nationality
-                            string thisNationality = this.nationality.natID;
-
-                            /*
-                            string thisNationality = this.nationality.natID.ToUpper();
-                            if (!thisNationality.Equals("E"))
+                            confirmPurchase = false;
+                            if (Globals_Client.showMessages)
                             {
-                                thisNationality = "O";
-                            } */
-                            typesRecruited[i] = Convert.ToUInt32(troopsRecruited * Globals_Server.recruitRatios[thisNationality][i]);
-                            totalSoFar += typesRecruited[i];
+                                System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
+                            }
                         }
-                        // fill up with rabble
+                        // chooses to proceed
                         else
                         {
-                            typesRecruited[i] = Convert.ToUInt32(troopsRecruited) - totalSoFar;
+                            confirmPurchase = true;
+                        }
+                    }
+                    // if less than specified number respond to call
+                    else
+                    {
+                        // calculate total cost
+                        troopCost = troopsRecruited * indivTroopCost;
+
+                        // confirm recruitment
+                        toDisplay = "Only " + troopsRecruited + " men have responded to your call, milord, and they would cost " + troopCost + " to recruit.\r\n\r\n";
+                        toDisplay += "There is " + homeFief.getAvailableTreasury() + " in the home treasury.  Do you wish to proceed with recruitment?";
+                        DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with recruitment?", MessageBoxButtons.OKCancel);
+
+                        // if choose to cancel
+                        if (dialogResult == DialogResult.Cancel)
+                        {
+                            confirmPurchase = false;
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Recruitment cancelled");
+                            }
+                        }
+                        // chooses to proceed
+                        else
+                        {
+                            confirmPurchase = true;
                         }
                     }
 
-                    // add new troops to army
-                    for (int i = 0; i < thisArmy.troops.Length; i++ )
+                    if (confirmPurchase)
                     {
-                        thisArmy.troops[i] += typesRecruited[i];
+                        // if no existing army, create one
+                        if (!armyExists)
+                        {
+                            // if necessary, exit keep (new armies are created outside keep)
+                            if (Globals_Client.myPlayerCharacter.inKeep)
+                            {
+                                Globals_Client.myPlayerCharacter.exitKeep();
+                            }
+
+                            thisArmy = new Army(Globals_Game.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
+                            thisArmy.addArmy();
+                        }
+
+                        else
+                        {
+                            thisArmy = this.getArmy();
+                        }
+
+                        // deduct cost of troops from treasury
+                        homeFief.treasury = homeFief.treasury - troopCost;
+
+                        // get army nationality
+                        string thisNationality = this.nationality.natID;
+
+                        // work out how many of each type recruited
+                        uint[] typesRecruited = new uint[] { 0, 0, 0, 0, 0, 0, 0 };
+                        uint totalSoFar = 0;
+                        for (int i = 0; i < typesRecruited.Length; i++)
+                        {
+                            // work out 'trained' troops numbers
+                            if (i < typesRecruited.Length - 1)
+                            {
+                                typesRecruited[i] = Convert.ToUInt32(troopsRecruited * Globals_Server.recruitRatios[thisNationality][i]);
+                                totalSoFar += typesRecruited[i];
+                            }
+                            // fill up with rabble
+                            else
+                            {
+                                typesRecruited[i] = Convert.ToUInt32(troopsRecruited) - totalSoFar;
+                            }
+                        }
+
+                        // add new troops to army
+                        typesRecruited.CopyTo(thisArmy.troops, 0);
+
+                        // indicate recruitment has occurred in this fief
+                        this.location.hasRecruited = true;
                     }
-
-                    // indicate recruitment has occurred in this fief
-                    this.location.hasRecruited = true;
-
-                    // update character's days
-                    this.adjustDays(daysUsed);
-
-                    // update army's days
-                    thisArmy.days = this.days;
                 }
             }
+
+            // update character's days
+            this.adjustDays(daysUsed);
 
             return troopsRecruited;
         }

@@ -2080,6 +2080,12 @@ namespace hist_mmorpg
             // apply random double as modifier to maxNumber
             numberTroops = Convert.ToInt32(maxNumber * myRandomDouble);
 
+            // check for effects of unrest (only get 50% of troops)
+            if (this.status.Equals('U'))
+            {
+                numberTroops = numberTroops / 2;
+            }
+
             return numberTroops;
         }
 

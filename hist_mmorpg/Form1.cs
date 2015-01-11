@@ -5010,20 +5010,6 @@ namespace hist_mmorpg
                 // get number of troops specified
                 UInt32 numberWanted = Convert.ToUInt32(this.armyRecruitTextBox.Text);
 
-                /*
-                // if no existing army, create one
-                if (operation.Equals("new"))
-                {
-                    // if necessary, exit keep (new armies are created outside keep)
-                    if (Globals_Client.myPlayerCharacter.inKeep)
-                    {
-                        Globals_Client.myPlayerCharacter.exitKeep();
-                    }
-
-                    Army newArmy = new Army(Globals_Game.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
-                    newArmy.addArmy();
-                } */
-
                 // recruit troops
                 Globals_Client.myPlayerCharacter.recruitTroops(numberWanted, armyExists);
 
@@ -5159,6 +5145,7 @@ namespace hist_mmorpg
                         this.armyTransMAAtextBox.Enabled = false;
                         this.armyTransLCavTextBox.Enabled = false;
                         this.armyTransLongbowTextBox.Enabled = false;
+                        this.armyTransCrossbowTextBox.Enabled = false;
                         this.armyTransFootTextBox.Enabled = false;
                         this.armyTransRabbleTextBox.Enabled = false;
                         this.armyTransDropWhoTextBox.Enabled = false;
@@ -5179,6 +5166,7 @@ namespace hist_mmorpg
                         this.armyTransMAAtextBox.Enabled = true;
                         this.armyTransLCavTextBox.Enabled = true;
                         this.armyTransLongbowTextBox.Enabled = true;
+                        this.armyTransCrossbowTextBox.Enabled = true;
                         this.armyTransFootTextBox.Enabled = true;
                         this.armyTransRabbleTextBox.Enabled = true;
                         this.armyTransDropWhoTextBox.Enabled = true;
@@ -5303,19 +5291,13 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void armyTransDropBtn_Click(object sender, EventArgs e)
         {
-            bool proceed = true;
-            bool adjustDays = true;
-            int daysTaken = 0;
-            uint totalTroopsToTransfer = 0;
+            bool success = true;
+            string toDisplay = "";
 
             if (Globals_Client.armyToView != null)
             {
-                // run checks on data in fields
                 try
                 {
-                    // labels for troop types
-                    string[] troopTypeLabels = new string[] { "knights", "men-at-arms", "light cavalry", "longbowmen", "crossbowmen", "foot", "rabble" };
-
                     // get number of troops to transfer
                     uint[] troopsToTransfer = new uint[] { 0, 0, 0, 0, 0, 0, 0 };
                     troopsToTransfer[0] = Convert.ToUInt32(this.armyTransKnightTextBox.Text);
@@ -5326,129 +5308,31 @@ namespace hist_mmorpg
                     troopsToTransfer[5] = Convert.ToUInt32(this.armyTransFootTextBox.Text);
                     troopsToTransfer[6] = Convert.ToUInt32(this.armyTransRabbleTextBox.Text);
 
-                    // check each troop type; if not enough in army, cancel
-                    for (int i = 0; i < troopsToTransfer.Length; i++)
-                    {
-                        if (troopsToTransfer[i] > Globals_Client.armyToView.troops[i])
-                        {
-                            if (Globals_Client.showMessages)
-                            {
-                                System.Windows.Forms.MessageBox.Show("You don't have enough " + troopTypeLabels[i] + " in your army for that transfer.  Transfer cancelled.");
-                            }
-                            proceed = false;
-                            adjustDays = false;
-                        }
-                        else
-                        {
-                            totalTroopsToTransfer += troopsToTransfer[i];
-                        }
-                    }
+                    // create detachment details
+                    string[] detachmentDetails = new string[] {troopsToTransfer[0].ToString(), troopsToTransfer[1].ToString(),
+                        troopsToTransfer[2].ToString(), troopsToTransfer[3].ToString(), troopsToTransfer[4].ToString(),
+                        troopsToTransfer[5].ToString(), troopsToTransfer[6].ToString(), this.armyTransDropWhoTextBox.Text };
 
-                    // if no troops selected for transfer, cancel
-                    if ((totalTroopsToTransfer == 0) && (proceed))
+                    // create detachment and leave in fief
+                    success = Globals_Client.armyToView.createDetachment(detachmentDetails);
+
+                    // inform player
+                    if (!success)
                     {
                         if (Globals_Client.showMessages)
                         {
-                            System.Windows.Forms.MessageBox.Show("You haven't selected any troops for transfer.  Transfer cancelled.");
+                            toDisplay = "An error occurred that prevented the transfer.";
+                            System.Windows.Forms.MessageBox.Show(toDisplay, "ERROR DETECTED");
                         }
-                        proceed = false;
-                        adjustDays = false;
-                    }
-
-                    // if reduces army to < 100 troops, warn
-                    if (((Globals_Client.armyToView.calcArmySize() - totalTroopsToTransfer) < 100) && (proceed))
-                    {
-                        DialogResult dialogResult = MessageBox.Show("This transfer will reduce your army manpower to dangerous levels.  Click OK to proceed.", "Proceed with transfer?", MessageBoxButtons.OKCancel);
-
-                        // if choose to cancel
-                        if (dialogResult == DialogResult.Cancel)
-                        {
-                            if (Globals_Client.showMessages)
-                            {
-                                System.Windows.Forms.MessageBox.Show("Transfer cancelled.");
-                            }
-                            proceed = false;
-                            adjustDays = false;
-                        }
-                    }
-
-                    // check have minimum days necessary for transfer
-                    if (Globals_Client.armyToView.days < 10)
-                    {
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("You don't have enough days left for this transfer.  Transfer cancelled.");
-                        }
-                        proceed = false;
-                        adjustDays = false;
                     }
                     else
                     {
-                        // calculate time taken for transfer
-                        daysTaken = Globals_Game.myRand.Next(10, 31);
-
-                        // check if have enough days for transfer in this instance
-                        if (daysTaken > Globals_Client.armyToView.days)
-                        {
-                            if (Globals_Client.showMessages)
-                            {
-                                System.Windows.Forms.MessageBox.Show("Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.");
-                            }
-                            proceed = false;
-                        }
-                    }
-
-                    // check transfer recipient exists
-                    if (!Globals_Game.pcMasterList.ContainsKey(this.armyTransDropWhoTextBox.Text))
-                    {
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Cannot identify transfer recipient.  Transfer cancelled.");
-                        }
-                        proceed = false;
-                    }
-
-                    if (proceed)
-                    {
-                        // remove troops from army
-                        for (int i = 0; i < Globals_Client.armyToView.troops.Length; i++)
-                        {
-                            Globals_Client.armyToView.troops[i] -= troopsToTransfer[i];
-                        }
-
-                        // get fief
-                        Fief thisFief = Globals_Client.armyToView.getLocation();
-
-                        // create transfer entry
-                        string[] thisTransfer = new string[10] { Globals_Client.myPlayerCharacter.charID, this.armyTransDropWhoTextBox.Text,
-                            troopsToTransfer[0].ToString(), troopsToTransfer[1].ToString(), troopsToTransfer[2].ToString(),
-                            troopsToTransfer[3].ToString(), troopsToTransfer[4].ToString(), troopsToTransfer[5].ToString(),
-                            troopsToTransfer[6].ToString(), (Globals_Client.armyToView.days - daysTaken).ToString() };
-
-                        // add to fief's troopTransfers list
-                        thisFief.troopTransfers.Add(Globals_Game.getNextDetachmentID(), thisTransfer);
-                    }
-
-                    if (adjustDays)
-                    {
-                        // get leader
-                        Character myLeader = Globals_Client.armyToView.getLeader();
-
-                        // adjust days
-                        myLeader.adjustDays(daysTaken);
-
-                        // calculate possible attrition for army
-                        byte attritionChecks = Convert.ToByte(daysTaken / 7);
-                        for (int i = 0; i < attritionChecks; i++)
-                        {
-                            // calculate attrition
-                            double attritionModifer = Globals_Client.armyToView.calcAttrition();
-                            // apply attrition
-                            Globals_Client.armyToView.applyTroopLosses(attritionModifer);
-                        }
+                        toDisplay = "Transfer successful.";
+                        System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION SUCCESSFUL");
                     }
 
                 }
+
                 catch (System.FormatException fe)
                 {
                     if (Globals_Client.showMessages)
@@ -5559,8 +5443,27 @@ namespace hist_mmorpg
                     byte newOddsValue = Convert.ToByte(this.armyOddsTextBox.Text);
 
                     // check and adjust values
-                    Globals_Client.armyToView.adjustAutoLevels(newAggroLevel, newOddsValue);
+                    bool success = Globals_Client.armyToView.adjustAutoLevels(newAggroLevel, newOddsValue);
+
+                    // inform player
+                    string toDisplay = "";
+                    string msgTitle = "";
+                    if (success)
+                    {
+                        toDisplay = "Auto-combat values successfully adjusted.";
+                        msgTitle = "OPERATION SUCCESSFUL";
+                    }
+                    else
+                    {
+                        toDisplay = "I'm afraid there has been a problem adjusting the auto-combat values, my lord.";
+                        msgTitle = "ERROR OCCURRED";
+                    }
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay, msgTitle);
+                    }
                 }
+
                 catch (System.FormatException fe)
                 {
                     if (Globals_Client.showMessages)
