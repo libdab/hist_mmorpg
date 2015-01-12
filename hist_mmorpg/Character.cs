@@ -2437,11 +2437,8 @@ namespace hist_mmorpg
             // base estimate variance
             double ev = 0.05;
 
-            // apply effects of leadership value
+            // apply effects of leadership value (includes 'battle' skill)
             ev = ev + ((10 - this.getLeadershipValue()) * 0.05);
-
-            // factor in skills effect
-            ev = ev - (ev * this.calcSkillEffect("battle"));
 
             return ev;
         }

@@ -206,17 +206,27 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    // set isMaintained
-                    this.isMaintained = true;
+                    // present alternative number and ask for confirmation
+                    toDisplay = "It will cost £" + maintCost + " to maintain this army";
+                    toDisplay += " and you have £" + homeFief.treasury + " in your home treasury.\r\n\r\n";
+                    toDisplay += "Do you wish to proceed?";
+                    DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with operation?", MessageBoxButtons.OKCancel);
 
-                    // deduct funds from treasury
-                    homeFief.treasury -= Convert.ToInt32(maintCost);
-
-                    // display confirmation message
-                    toDisplay += "Army maintained at a cost of £" + maintCost + ".";
-                    if (Globals_Client.showMessages)
+                    // if choose to proceed
+                    if (dialogResult != DialogResult.Cancel)
                     {
-                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                        // set isMaintained
+                        this.isMaintained = true;
+
+                        // deduct funds from treasury
+                        homeFief.treasury -= Convert.ToInt32(maintCost);
+
+                        // display confirmation message
+                        toDisplay = "Army maintained at a cost of £" + maintCost + ".";
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show(toDisplay);
+                        }
                     }
                 }
             }
@@ -421,7 +431,7 @@ namespace hist_mmorpg
             Double myRandomDouble = Globals_Game.myRand.NextDouble() * 100;
 
             // calculate chance of modifier based on army size
-            Double modifierChance = Math.Floor(this.calcArmySize() / (Double)1000);
+            Double modifierChance = (Math.Floor(this.calcArmySize() / (Double)1000) * 3);
 
             // check to see if modifier required
             if (myRandomDouble <= modifierChance)
@@ -802,7 +812,7 @@ namespace hist_mmorpg
         /// <param name="observer">The character making the estimate</param>
         public uint[] getTroopsEstimate(Character observer)
         {
-            uint[] troopNumbers = new uint[6] {0, 0, 0, 0, 0, 0};
+            uint[] troopNumbers = new uint[7] {0, 0, 0, 0, 0, 0, 0};
 
             // get random int (0-2) to decide whether to over- or under-estimate troop number
             int overUnder = Globals_Game.myRand.Next(3);
@@ -1135,6 +1145,9 @@ namespace hist_mmorpg
                     this.days = 90;
                 }
             }
+
+            // reset isMaintained
+            this.isMaintained = false;
 
             return hasDissolved;
         }

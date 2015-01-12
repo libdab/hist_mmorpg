@@ -1790,6 +1790,38 @@ namespace hist_mmorpg
 
             // reset isPillaged
             this.isPillaged = false;
+
+            // update transfers
+            foreach (KeyValuePair<string, string[]> transferEntry in this.troopTransfers)
+            {
+                // create temporary army to check attrition
+                uint[] thisTroops = new uint[] { Convert.ToUInt32(transferEntry.Value[2]), Convert.ToUInt32(transferEntry.Value[3]),
+                            Convert.ToUInt32(transferEntry.Value[4]), Convert.ToUInt32(transferEntry.Value[5]),
+                            Convert.ToUInt32(transferEntry.Value[6]), Convert.ToUInt32(transferEntry.Value[7]),
+                            Convert.ToUInt32(transferEntry.Value[8]) };
+                int days = Convert.ToInt32(transferEntry.Value[9]);
+                Army tempArmy = new Army(Globals_Game.getNextArmyID(), null, transferEntry.Value[0],
+                    days, this.id, trp: thisTroops);
+
+                // attrition checks
+                byte attritionChecks = 0;
+                attritionChecks = Convert.ToByte(days / 7);
+                double attritionModifier = 0;
+
+                for (int i = 0; i < attritionChecks; i++)
+                {
+                    attritionModifier = tempArmy.calcAttrition();
+
+                    // apply attrition
+                    if (attritionModifier > 0)
+                    {
+                        tempArmy.applyTroopLosses(attritionModifier);
+                    }
+                }
+
+                // update detachment days
+                transferEntry.Value[9] = Convert.ToString(90);
+            }
         }
 
         /// <summary>

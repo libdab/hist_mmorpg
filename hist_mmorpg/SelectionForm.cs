@@ -445,7 +445,7 @@ namespace hist_mmorpg
         public string displayArmy(Army a)
         {
             bool isMyArmy = false;
-            uint[] troopNumbers = new uint[6];
+            uint[] troopNumbers = new uint[7];
             uint totalTroops = 0;
             string armyText = "";
 
@@ -1124,8 +1124,9 @@ namespace hist_mmorpg
             // set minDays to thisArmy.days (as default value)
             minDays = thisArmy.days;
 
-            // get leader
+            // get leader and owner
             Character myLeader = thisArmy.getLeader();
+            PlayerCharacter myOwner = thisArmy.getOwner();
 
             // get checked items in listview
             ListView.CheckedListViewItemCollection checkedItems = this.transferListView.CheckedItems;
@@ -1147,7 +1148,8 @@ namespace hist_mmorpg
                 {
                     if (Globals_Client.showMessages)
                     {
-                        System.Windows.Forms.MessageBox.Show("You don't have enough days left for this transfer.  Transfer cancelled.");
+                        toDisplay = "You don't have enough days left for this transfer.";
+                        System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
                     }
                     proceed = false;
                     adjustDays = false;
@@ -1163,9 +1165,42 @@ namespace hist_mmorpg
                         daysTaken = thisArmy.days;
                         if (Globals_Client.showMessages)
                         {
-                            System.Windows.Forms.MessageBox.Show("Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.");
+                            toDisplay = "Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.";
+                            System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
                         }
                         proceed = false;
+                    }
+                    else
+                    {
+                        // make sure collecting army is owned by recipient or donator
+                        foreach (ListViewItem item in checkedItems)
+                        {
+                            // get donating player
+                            PlayerCharacter pcFrom = null;
+                            if (Globals_Game.pcMasterList.ContainsKey(item.SubItems[9].Text))
+                            {
+                                pcFrom = Globals_Game.pcMasterList[item.SubItems[9].Text];
+                            }
+
+                            // get donating player
+                            PlayerCharacter pcFor = null;
+                            if (Globals_Game.pcMasterList.ContainsKey(item.SubItems[10].Text))
+                            {
+                                pcFor = Globals_Game.pcMasterList[item.SubItems[10].Text];
+                            }
+
+                            // check for appropriate collecting player
+                            if ((myOwner != pcFrom) && (myOwner != pcFor))
+                                {
+                                    if (Globals_Client.showMessages)
+                                    {
+                                        toDisplay = "You are not permitted to collect at least one of the selected detachments.";
+                                        System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                    }
+                                    proceed = false;
+                                    adjustDays = false;
+                                }
+                        }
                     }
                 }
 
@@ -1205,14 +1240,6 @@ namespace hist_mmorpg
                             Convert.ToUInt32(item.SubItems[5].Text), Convert.ToUInt32(item.SubItems[6].Text),
                             Convert.ToUInt32(item.SubItems[7].Text) };
 
-                        /*
-                        uint thisTotal = 0;
-                        for (int i = 0; i < thisTroops.Length; i++)
-                        {
-                            thisTroops[i] = Convert.ToUInt32(item.SubItems[i+1].Text);
-                            thisTotal += thisTroops[i];
-                        } */
-
                         // if does have enough days, proceed
                         if (thisDays >= daysTaken)
                         {
@@ -1236,10 +1263,7 @@ namespace hist_mmorpg
                                     // apply attrition
                                     if (attritionModifier > 0)
                                     {
-                                        for (int j = 0; j < totTroopsToAdd.Length; j++)
-                                        {
-                                            tempArmy.applyTroopLosses(attritionModifier);
-                                        }
+                                        tempArmy.applyTroopLosses(attritionModifier);
                                     }
                                 }
                             }

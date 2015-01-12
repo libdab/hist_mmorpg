@@ -243,7 +243,7 @@ namespace hist_mmorpg
                 proceed = false;
                 if (Globals_Client.showMessages)
                 {
-                    System.Windows.Forms.MessageBox.Show(observer.firstName + observer.familyName + " doesn't have enough days for this operation.");
+                    System.Windows.Forms.MessageBox.Show(observer.firstName + " " +  observer.familyName + " doesn't have enough days for this operation.");
                 }
             }
 
@@ -263,12 +263,21 @@ namespace hist_mmorpg
 
                     if (Globals_Client.showMessages)
                     {
-                        System.Windows.Forms.MessageBox.Show("Due to poor execution, you have run out of time for this operation.");
+                        System.Windows.Forms.MessageBox.Show("Due to poor execution, " + observer.firstName + " " + observer.familyName + " has run out of time for this operation.");
                     }
                 }
 
                 else
                 {
+                    // if observer NPC, remove from entourage if necessary
+                    if (observer is NonPlayerCharacter)
+                    {
+                        if ((observer as NonPlayerCharacter).inEntourage)
+                        {
+                            (observer as NonPlayerCharacter).inEntourage = false;
+                        }
+                    }
+
                     // adjust days for recon
                     observer.adjustDays(reconDays);
                 }
