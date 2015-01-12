@@ -1331,7 +1331,7 @@ namespace hist_mmorpg
             uint[] battleValues = this.calculateBattleValue(besieger, defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel));
             double successChance = this.calcVictoryChance(battleValues[0], battleValues[1]) / 2;
 
-            // generate random double 0-100 to see if storm a success
+            // generate random double 0-100 to see if negotiation a success
             double myRandomDouble = Utility_Methods.GetRandomDouble(100);
 
             if (myRandomDouble <= successChance)
@@ -1585,9 +1585,6 @@ namespace hist_mmorpg
             Army defenderGarrison = null;
             Army defenderAdditional = null;
 
-            // create defending force
-            defenderGarrison = this.createDefendingArmy(target);
-
             // check for existence of army in keep
             for (int i = 0; i < target.armies.Count; i++)
             {
@@ -1595,16 +1592,23 @@ namespace hist_mmorpg
                 Army armyInFief = Globals_Game.armyMasterList[target.armies[i]];
 
                 // check is in keep
-                if (armyInFief.getOwner().inKeep)
+                Character armyLeader = armyInFief.getLeader();
+                if (armyLeader != null)
                 {
-                    // check owner is same as that of fief (i.e. can help in siege)
-                    if (armyInFief.owner.Equals(target.owner.charID))
+                    if (armyLeader.inKeep)
                     {
-                        defenderAdditional = armyInFief;
-                        break;
+                        // check owner is same as that of fief (i.e. can help in siege)
+                        if (armyInFief.getOwner() == target.owner)
+                        {
+                            defenderAdditional = armyInFief;
+                            break;
+                        }
                     }
                 }
             }
+
+            // create defending force
+            defenderGarrison = this.createDefendingArmy(target);
 
             // get the minumum days of all army objects involved
             double minDays = Math.Min(attacker.days, defenderGarrison.days);

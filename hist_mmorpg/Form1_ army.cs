@@ -140,7 +140,8 @@ namespace hist_mmorpg
             this.armyDisplayCmbtBtn.Enabled = true;
             this.armyDisplayMgtBtn.Enabled = true;
 
-            // ensure main textbox isn't interactive
+            // ensure main textbox is empty and isn't interactive
+            this.armyTextBox.Text = "";
             this.armyTextBox.ReadOnly = true;
 
             // clear existing items in armies list

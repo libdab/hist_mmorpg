@@ -1452,84 +1452,82 @@ namespace hist_mmorpg
         private void armiesAttackBtn_Click(object sender, EventArgs e)
         {
             bool proceed = true;
+            string toDisplay = "";
 
             // get armies
             Army attacker = this.observer.getArmy();
-            Army defender = Globals_Game.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
+            Army defender = null;
+            if (Globals_Game.armyMasterList.ContainsKey(this.armiesListView.SelectedItems[0].SubItems[0].Text))
+            {
+                defender = Globals_Game.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
+            }
 
-            // check has enough days to give battle (1)
-            if (this.observer.days < 1)
+            // check the observer is leading an army
+            if (attacker == null)
             {
                 if (Globals_Client.showMessages)
                 {
-                    System.Windows.Forms.MessageBox.Show("Your army doesn't have enough days left to give battle.");
+                    toDisplay = "You are not leading an army and so cannot attack.";
+                    System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
                     proceed = false;
                 }
             }
+
             else
             {
-                // SIEGE INVOLVEMENT
-                // check if defending army is the garrison in a siege
-                string siegeID = defender.checkIfSiegeDefenderGarrison();
-                if (!String.IsNullOrWhiteSpace(siegeID))
+                if (defender == null)
                 {
                     if (Globals_Client.showMessages)
                     {
-                        System.Windows.Forms.MessageBox.Show("The defending army is currently being besieged and\r\ncannot be attacked.  Attack cancelled.");
+                        toDisplay = "You are not leading an army and so cannot attack.";
+                        System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
                         proceed = false;
                     }
                 }
 
                 else
                 {
-                    // check if defending army is the additional defender in a siege
-                    siegeID = defender.checkIfSiegeDefenderAdditional();
+                    // check if attacking army is besieging a keep
+                    string siegeID = attacker.checkIfBesieger();
                     if (!String.IsNullOrWhiteSpace(siegeID))
                     {
-                        if (Globals_Client.showMessages)
+                        // display warning and get decision
+                        DialogResult dialogResult = MessageBox.Show("Your army is besieging a keep and this action would end the siege.\r\nClick 'OK' to proceed.", "Proceed with attack?", MessageBoxButtons.OKCancel);
+
+                        // if choose to cancel
+                        if (dialogResult == DialogResult.Cancel)
                         {
-                            System.Windows.Forms.MessageBox.Show("The defending army is currently being besieged and\r\ncannot be attacked.  Attack cancelled.");
-                            proceed = false;
+                            if (Globals_Client.showMessages)
+                            {
+                                toDisplay = "Attack cancelled.";
+                                System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                proceed = false;
+                            }
                         }
-                    }
 
-                    else
-                    {
-                        // check if attacking army is besieging a keep
-                        siegeID = attacker.checkIfBesieger();
-                        if (!String.IsNullOrWhiteSpace(siegeID))
+                        // if choose to proceed
+                        else
                         {
-                            // display warning and get decision
-                            DialogResult dialogResult = MessageBox.Show("Your army is besieging a keep and this action would end the siege.\r\nClick 'OK' to proceed.", "Proceed with attack?", MessageBoxButtons.OKCancel);
+                            Siege thisSiege = null;
+                            thisSiege = Globals_Game.siegeMasterList[siegeID];
 
-                            // if choose to cancel
-                            if (dialogResult == DialogResult.Cancel)
-                            {
-                                if (Globals_Client.showMessages)
-                                {
-                                    System.Windows.Forms.MessageBox.Show("Attack cancelled.");
-                                    proceed = false;
-                                }
-                            }
+                            // construct event description to be passed into siegeEnd
+                            string siegeDescription = "On this day of Our Lord the forces of ";
+                            siegeDescription += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
+                            siegeDescription += " have chosen to abandon the siege of " + thisSiege.getFief().name;
+                            siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
+                            siegeDescription += " retains ownership of the fief.";
 
-                            // if choose to proceed
-                            else
-                            {
-                                Siege thisSiege = null;
-                                thisSiege = Globals_Game.siegeMasterList[siegeID];
-
-                                // construct event description to be passed into siegeEnd
-                                string siegeDescription = "On this day of Our Lord the forces of ";
-                                siegeDescription += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
-                                siegeDescription += " have chosen to abandon the siege of " + thisSiege.getFief().name;
-                                siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
-                                siegeDescription += " retains ownership of the fief.";
-
-                                parent.siegeEnd(thisSiege, siegeDescription);
-                            }
+                            parent.siegeEnd(thisSiege, siegeDescription);
                         }
                     }
                 }
+            }
+
+            if (proceed)
+            {
+                // do various conditional checks
+                proceed = attacker.checksBeforeAttack(defender);
             }
 
             if (proceed)

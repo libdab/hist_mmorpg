@@ -741,7 +741,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates the army's combat value for a combat engagement
+        /// Calculates the army's combat value for a combat engagement (NOTE: doesn't include leadership modifier)
         /// </summary>
         /// <returns>double containing combat value</returns>
         /// <param name="keepLvl">Keep level (if for a keep storm)</param>
@@ -755,15 +755,6 @@ namespace hist_mmorpg
 
             // get nationality (effects combat values)
             string troopNationality = myOwner.nationality.natID;
-            /*
-            if (myOwner.nationality.natID.ToUpper().Equals("E"))
-            {
-                troopNationality = "E";
-            }
-            else
-            {
-                troopNationality = "O";
-            } */
 
             // get combat values for that nationality
             uint[] thisCombatValues = Globals_Server.combatValues[troopNationality];
@@ -778,7 +769,7 @@ namespace hist_mmorpg
             // (1000 foot per level)
             if (keepLvl > 0)
             {
-                cv += (keepLvl * 1000) * thisCombatValues[4];
+                cv += (keepLvl * 1000) * thisCombatValues[5];
             }
 
             // get leader's combat value
@@ -1150,6 +1141,95 @@ namespace hist_mmorpg
             this.isMaintained = false;
 
             return hasDissolved;
+        }
+
+        /// <summary>
+        /// Runs conditional checks prior to the army launching an attack on another army
+        /// </summary>
+        /// <returns>bool indicating whether attack can proceed</returns>
+        /// <param name="targetArmy">The army to be attacked</param>
+        public bool checksBeforeAttack(Army targetArmy)
+        {
+            bool proceed = true;
+            string toDisplay = "";
+
+            // check has enough days to give battle (1)
+            if (this.days < 1)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    toDisplay = "Your army doesn't have enough days left to give battle.";
+                    System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                    proceed = false;
+                }
+            }
+            else
+            {
+                // SIEGE INVOLVEMENT
+                // check if defending army is the garrison in a siege
+                string siegeID = targetArmy.checkIfSiegeDefenderGarrison();
+                if (!String.IsNullOrWhiteSpace(siegeID))
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        toDisplay = "The defending army is currently being besieged and cannot be attacked.";
+                        System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                        proceed = false;
+                    }
+                }
+
+                else
+                {
+                    // check if defending army is the additional defender in a siege
+                    siegeID = targetArmy.checkIfSiegeDefenderAdditional();
+                    if (!String.IsNullOrWhiteSpace(siegeID))
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            toDisplay = "The defending army is currently being besieged and cannot be attacked.";
+                            System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                            proceed = false;
+                        }
+                    }
+
+                    else
+                    {
+                        // check if are attacking your own army
+                        if (this.getOwner() == targetArmy.getOwner())
+                        {
+                            if (Globals_Client.showMessages)
+                            {
+                                toDisplay = "You cannot attack one of your own armies.";
+                                System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                proceed = false;
+                            }
+                        }
+
+                        else
+                        {
+                            // check if attacking king's army
+                            if (this.getOwner() == this.getOwner().getKing())
+                            {
+                                // display warning and get decision
+                                DialogResult dialogResult = MessageBox.Show("You are about to attack an army owned by your king.\r\nClick 'OK' to proceed.", "Proceed with attack?", MessageBoxButtons.OKCancel);
+
+                                // if choose to cancel
+                                if (dialogResult == DialogResult.Cancel)
+                                {
+                                    if (Globals_Client.showMessages)
+                                    {
+                                        toDisplay = "Attack cancelled.";
+                                        System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                        proceed = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return proceed;
         }
 
         /// <summary>

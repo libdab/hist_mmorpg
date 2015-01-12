@@ -1395,8 +1395,10 @@ namespace hist_mmorpg
             tempArmyList.Clear();
 
             // EMPLOYEES/FAMILY
-            foreach (NonPlayerCharacter npc in deceased.myNPCs)
+            for (int i = 0; i < deceased.myNPCs.Count; i++)
             {
+                // get NPC
+                NonPlayerCharacter npc = deceased.myNPCs[i];
 
                 // remove from entourage
                 npc.inEntourage = false;
@@ -1474,9 +1476,9 @@ namespace hist_mmorpg
                             {
                                 // get mother
                                 NonPlayerCharacter mummy = null;
-                                for (int i = 0; i < jEntry.Value.personae.Length; i++)
+                                for (int j = 0; j < jEntry.Value.personae.Length; j++)
                                 {
-                                    string thisPersonae = jEntry.Value.personae[i];
+                                    string thisPersonae = jEntry.Value.personae[j];
                                     string[] thisPersonaeSplit = thisPersonae.Split('|');
 
                                     switch (thisPersonaeSplit[1])
@@ -1525,9 +1527,9 @@ namespace hist_mmorpg
                             {
                                 // get bride
                                 NonPlayerCharacter bride = null;
-                                for (int i = 0; i < jEntry.Value.personae.Length; i++)
+                                for (int k = 0; k < jEntry.Value.personae.Length; k++)
                                 {
-                                    string thisPersonae = jEntry.Value.personae[i];
+                                    string thisPersonae = jEntry.Value.personae[k];
                                     string[] thisPersonaeSplit = thisPersonae.Split('|');
 
                                     switch (thisPersonaeSplit[1])
@@ -2544,7 +2546,25 @@ namespace hist_mmorpg
 
                 // reset DAYS
                 this.days = this.getDaysAllowance();
+
+                // check for army (don't reset its days yet)
+                double armyDays = 0;
+                Army myArmy = this.getArmy();
+
+                // get army days
+                if (myArmy != null)
+                {
+                    armyDays = myArmy.days;
+                }
+
+                // reset character days
                 this.adjustDays(0);
+
+                // reset army days if necessary (to enable attrition checks later)
+                if (myArmy != null)
+                {
+                    myArmy.days = armyDays;
+                }
 
             }
 

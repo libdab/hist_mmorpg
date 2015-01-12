@@ -504,7 +504,7 @@ namespace hist_mmorpg
         public bool updateSiege()
         {
             bool siegeEnded = false;
-            Character besiegerLeader = this.getBesiegingArmy().getLeader();
+            Character besiegerLeader = null;
 
             // check if besieger still in field (i.e. has not been disbanded)
             if (String.IsNullOrWhiteSpace(this.besiegerArmy))
@@ -518,6 +518,8 @@ namespace hist_mmorpg
                 // base allowance
                 double newDays = 90;
 
+                // get besieging leader
+                besiegerLeader = this.getBesiegingArmy().getLeader();
                 if (besiegerLeader != null)
                 {
                     // set days to besieger leader's days (may be effected by skills)
@@ -539,6 +541,7 @@ namespace hist_mmorpg
         {
             // get principle objects
             PlayerCharacter defendingPlayer = this.getDefendingPlayer();
+            Army besiegingArmy = this.getBesiegingArmy();
             Army defenderGarrison = this.getDefenderGarrison();
             Character defenderLeader = defenderGarrison.getLeader();
             PlayerCharacter besiegingPlayer = this.getBesiegingPlayer();
@@ -549,7 +552,11 @@ namespace hist_mmorpg
                 addDefendLeader = defenderAdditional.getLeader();
             }
             Fief besiegedFief = this.getFief();
-            Character besiegingArmyLeader = this.getBesiegingArmy().getLeader();
+            Character besiegingArmyLeader = null;
+            if (besiegingArmy != null)
+            {
+                besiegingArmyLeader = besiegingArmy.getLeader();
+            }
 
             // =================== construct and send JOURNAL ENTRY
             // ID
@@ -560,7 +567,11 @@ namespace hist_mmorpg
             tempPersonae.Add("all|all");
             tempPersonae.Add(defendingPlayer.charID + "|fiefOwner");
             tempPersonae.Add(besiegingPlayer.charID + "|attackerOwner");
-            tempPersonae.Add(besiegingArmyLeader.charID + "|attackerLeader");
+            // get besiegingArmyLeader
+            if (besiegingArmyLeader != null)
+            {
+                tempPersonae.Add(besiegingArmyLeader.charID + "|attackerLeader");
+            }
             // get defenderLeader
             if (defenderLeader != null)
             {

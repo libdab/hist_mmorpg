@@ -1800,8 +1800,8 @@ namespace hist_mmorpg
                             Convert.ToUInt32(transferEntry.Value[6]), Convert.ToUInt32(transferEntry.Value[7]),
                             Convert.ToUInt32(transferEntry.Value[8]) };
                 int days = Convert.ToInt32(transferEntry.Value[9]);
-                Army tempArmy = new Army(Globals_Game.getNextArmyID(), null, transferEntry.Value[0],
-                    days, this.id, trp: thisTroops);
+                string owner = transferEntry.Value[0];
+                Army tempArmy = new Army(Globals_Game.getNextArmyID(), null, owner, days, this.id, trp: thisTroops);
 
                 // attrition checks
                 byte attritionChecks = 0;
@@ -1821,6 +1821,9 @@ namespace hist_mmorpg
 
                 // update detachment days
                 transferEntry.Value[9] = Convert.ToString(90);
+
+                // set tempArmy to null
+                tempArmy = null;
             }
         }
 

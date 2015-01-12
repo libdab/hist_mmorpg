@@ -244,9 +244,15 @@ namespace hist_mmorpg
             this.refreshCharacterContainer();
 
             // TESTING
+
             // create and add army
-            uint[] myArmyTroops2 = new uint[] { 5, 10, 0, 30, 40, 80, 220 };
-            Army myArmy2 = new Army(Globals_Game.getNextArmyID(), Globals_Game.pcMasterList["Char_196"].charID, Globals_Game.pcMasterList["Char_196"].charID, Globals_Game.pcMasterList["Char_196"].days, Globals_Game.pcMasterList["Char_196"].location.id, trp: myArmyTroops2);
+            uint[] myArmyTroops1 = new uint[] { 5, 10, 0, 30, 40, 80, 220 };
+            Army myArmy1 = new Army(Globals_Game.getNextArmyID(), Globals_Game.pcMasterList["Char_196"].charID, Globals_Game.pcMasterList["Char_196"].charID, Globals_Game.pcMasterList["Char_196"].days, Globals_Game.pcMasterList["Char_196"].location.id, trp: myArmyTroops1);
+            myArmy1.addArmy();
+
+            // create and add army
+            uint[] myArmyTroops2 = new uint[] { 2, 5, 0, 15, 20, 40, 110 };
+            Army myArmy2 = new Army(Globals_Game.getNextArmyID(), Globals_Game.pcMasterList["Char_158"].charID, Globals_Game.pcMasterList["Char_158"].charID, Globals_Game.pcMasterList["Char_158"].days, Globals_Game.pcMasterList["Char_158"].location.id, trp: myArmyTroops2, aggr: 1, odds: 2);
             myArmy2.addArmy();
         }
 

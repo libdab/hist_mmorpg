@@ -262,8 +262,8 @@ namespace hist_mmorpg
         /// <param name="retreatDistance">The retreat distance</param>
         public void processRetreat(Army a, int retreatDistance)
         {
-            // get fief to retreat from
-            Fief retreatFrom = a.getLocation();
+            // get starting fief
+            Fief startingFief = a.getLocation();
 
             // get army leader
             Character thisLeader = a.getLeader();
@@ -278,7 +278,7 @@ namespace hist_mmorpg
                 Fief from = a.getLocation();
 
                 // get fief to retreat to
-                Fief target = Globals_Game.gameMap.chooseRandomHex(from, true, thisOwner, retreatFrom);
+                Fief target = Globals_Game.gameMap.chooseRandomHex(from, true, thisOwner, startingFief);
 
                 // get travel cost
                 double travelCost = this.getTravelCost(from, target);
@@ -379,17 +379,25 @@ namespace hist_mmorpg
                 case "pillage":
                     toDisplay += "The fief garrison and militia, led by " + attackerLeader.firstName
                         + " " + attackerLeader.familyName + ", sallied forth to bring the pillaging "
-                        + defender.armyID + ", led by " + defenderLeader.firstName + " "
-                        + defenderLeader.familyName + " and owned by " + defender.getOwner().firstName
-                        + " " + defender.getOwner().familyName + " to battle."
+                        + defender.armyID + ",";
+                    if (defenderLeader != null)
+                    {
+                        toDisplay += " led by " + defenderLeader.firstName + " " + defenderLeader.familyName + " and";
+                    }
+                    toDisplay += " owned by " + defender.getOwner().firstName + " " + defender.getOwner().familyName
+                        + ", to battle."
                         + "\r\n\r\nOutcome: ";
                     break;
                 case "siege":
                     toDisplay += "The fief garrison and militia, led by " + attackerLeader.firstName
                         + " " + attackerLeader.familyName + ", sallied forth to bring the besieging "
-                        + defender.armyID + ", led by " + defenderLeader.firstName + " "
-                        + defenderLeader.familyName + " and owned by " + defender.getOwner().firstName
-                        + " " + defender.getOwner().familyName + " to battle."
+                        + defender.armyID + ",";
+                    if (defenderLeader != null)
+                    {
+                        toDisplay += " led by " + defenderLeader.firstName + " " + defenderLeader.familyName + " and";
+                    }
+                    toDisplay += " owned by " + defender.getOwner().firstName + " " + defender.getOwner().familyName
+                        + ", to battle."
                         + "\r\n\r\nOutcome: ";
                     break;
                 default:
@@ -438,6 +446,17 @@ namespace hist_mmorpg
                     {
                         battleHasCommenced = true;
                     }
+
+                    // if not, check for battle
+                    else
+                    {
+                        battleHasCommenced = this.bringToBattle(battleValues[0], battleValues[1], circumstance);
+
+                        if (!battleHasCommenced)
+                        {
+                            this.processRetreat(defender, 1);
+                        }
+                    }
                 }
 
                 else
@@ -450,6 +469,11 @@ namespace hist_mmorpg
             else
             {
                 battleHasCommenced = this.bringToBattle(battleValues[0], battleValues[1], circumstance);
+
+                if (!battleHasCommenced)
+                {
+                    this.processRetreat(defender, 1);
+                }
             }
 
             if (battleHasCommenced)
@@ -757,7 +781,7 @@ namespace hist_mmorpg
                     }
                 }
                 toDisplay += ".";
-                if (defenderLeaderDead)
+                if ((defenderLeader != null) && (defenderLeaderDead))
                 {
                     toDisplay += " " + defenderLeader.firstName + " " + defenderLeader.familyName + " died due to injuries received.";
                 }
