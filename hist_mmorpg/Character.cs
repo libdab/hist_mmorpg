@@ -2634,10 +2634,14 @@ namespace hist_mmorpg
             // factor in combat skill of character
             injuryPercentChance += 5 - this.combat;
 
-            // ensure is at least 1% chance of injury
+            // ensure chance of injury between 1%-%80
             if (injuryPercentChance < 1)
             {
                 injuryPercentChance = 1;
+            }
+            else if (injuryPercentChance > 80)
+            {
+                injuryPercentChance = 80;
             }
 
             // generate random percentage
@@ -2661,17 +2665,22 @@ namespace hist_mmorpg
                     isDead = true;
                 }
 
-                // check if results in permanent damage
-                if (healthLoss > 4)
+                // if not dead, create ailment
+                else
                 {
-                    minEffect = 1;
+                    // check if results in permanent damage
+                    if (healthLoss > 4)
+                    {
+                        minEffect = 1;
+                    }
+
+                    // create ailment
+                    Ailment myAilment = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, healthLoss, minEffect);
+
+                    // add to character
+                    this.ailments.Add(myAilment.ailmentID, myAilment);
                 }
 
-                // create ailment
-                Ailment myAilment = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, healthLoss, minEffect);
-
-                // add to character
-                this.ailments.Add(myAilment.ailmentID, myAilment);
             }
 
             // =================== if is injured but not dead, create and send JOURNAL ENTRY

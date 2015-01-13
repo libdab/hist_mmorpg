@@ -251,7 +251,7 @@ namespace hist_mmorpg
             myArmy1.addArmy();
 
             // create and add army
-            uint[] myArmyTroops2 = new uint[] { 2, 5, 0, 15, 200, 400, 1110 };
+            uint[] myArmyTroops2 = new uint[] { 5, 10, 0, 30, 40, 80, 2020 };
             Army myArmy2 = new Army(Globals_Game.getNextArmyID(), Globals_Game.pcMasterList["Char_158"].charID, Globals_Game.pcMasterList["Char_158"].charID, Globals_Game.pcMasterList["Char_158"].days, Globals_Game.pcMasterList["Char_158"].location.id, trp: myArmyTroops2, aggr: 1, odds: 2);
             myArmy2.addArmy();
         }

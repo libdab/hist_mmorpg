@@ -168,35 +168,96 @@ namespace hist_mmorpg
         /// Calculates casualties from a battle for both sides
         /// </summary>
         /// <returns>double[] containing percentage loss modifier for each side</returns>
+        /// <param name="attackerTroops">uint containing attacking army troop numbers</param>
+        /// <param name="defenderTroops">uint containing defending army troop numbers</param>
         /// <param name="attackerValue">uint containing attacking army battle value</param>
         /// <param name="defenderValue">uint containing defending army battle value</param>
         /// <param name="attackerVictorious">bool indicating whether attacking army was victorious</param>
-        public double[] calculateBattleCasualties(uint attackerValue, uint defenderValue, bool attackerVictorious)
+        public double[] calculateBattleCasualties(uint attackerTroops, uint defenderTroops, uint attackerValue, uint defenderValue, bool attackerVictorious)
         {
             double[] battleCasualties = new double[2];
-
-            // generate casualty increments
-            double winnerIncrement = Utility_Methods.GetRandomDouble(min: 0.01, max: 0.02);
-            double loserIncrement = Utility_Methods.GetRandomDouble(min: 0.04, max: 0.08);
+            double largeArmyModifier = 0;
+            bool largestWon = true;
 
             // determine highest/lowest battle value
             double maxBV = Math.Max(attackerValue, defenderValue);
             double minBV = Math.Min(attackerValue, defenderValue);
 
-            // derive increment multiplier
-            double incrementMultiplier = maxBV / minBV;
+            // use BVs to determine high mark for base casualty rate of army with smallest battle value (see below)
+            double highCasualtyRate = (maxBV / (maxBV + minBV)) * 100;
 
-            // calculate casualty increment
-            if (attackerVictorious)
+            // determine base casualty rate for army with smallest battle value
+            double smallestModifier = Globals_Game.myRand.Next(10, Convert.ToInt32(highCasualtyRate)) / (double)100;
+
+            // determine if army with largest battle value won
+            if (maxBV == attackerValue)
             {
-                battleCasualties[0] = winnerIncrement * incrementMultiplier;
-                battleCasualties[1] = loserIncrement * incrementMultiplier;
+                if (!attackerVictorious)
+                {
+                    largestWon = false;
+                }
             }
             else
             {
-                battleCasualties[0] = loserIncrement * incrementMultiplier;
-                battleCasualties[1] = winnerIncrement * incrementMultiplier;
+                if (attackerVictorious)
+                {
+                    largestWon = false;
+                }
             }
+
+            // if army with largest battle value won
+            if (largestWon)
+            {
+                // calculate casualty modifier for army with largest battle value
+                // (based on adapted version of Lanchester's Square Law - i.e. largest army loses less troops than smallest)
+                largeArmyModifier = (1 + ((minBV * minBV) / (maxBV * maxBV))) / 2;
+
+                // attacker is large army
+                if (attackerVictorious)
+                {
+                    battleCasualties[1] = smallestModifier;
+                    // determine actual troop losses for largest army based on smallest army losses,
+                    // modified by largeArmyModifier
+                    uint largeArmyLosses = Convert.ToUInt32((defenderTroops * battleCasualties[1]) * largeArmyModifier);
+                    // derive final casualty modifier for largest army
+                    battleCasualties[0] = largeArmyLosses / (double)attackerTroops;
+                }
+                // defender is large army
+                else
+                {
+                    battleCasualties[0] = smallestModifier;
+                    uint largeArmyLosses = Convert.ToUInt32((attackerTroops * battleCasualties[0]) * largeArmyModifier);
+                    battleCasualties[1] = largeArmyLosses / (double)defenderTroops;
+                }
+            }
+
+            // if army with smallest battle value won
+            else
+            {
+                // calculate casualty modifier for army with largest battle value
+                // this ensures its losses will be roughly the same as the smallest army (because it lost)
+                largeArmyModifier = Globals_Game.myRand.Next(80, 121) / (double)100;
+
+                // defender is large army
+                if (attackerVictorious)
+                {
+                    // smallest army losses reduced because they won
+                    battleCasualties[0] = smallestModifier / 2;
+                    // determine actual troop losses for largest army based on smallest army losses,
+                    // modified by largeArmyModifier
+                    uint largeArmyLosses = Convert.ToUInt32((attackerTroops * battleCasualties[0]) * largeArmyModifier);
+                    // derive final casualty modifier for largest army
+                    battleCasualties[1] = largeArmyLosses / (double)defenderTroops;
+                }
+                // attacker is large army
+                else
+                {
+                    battleCasualties[1] = smallestModifier / 2;
+                    uint largeArmyLosses = Convert.ToUInt32((defenderTroops * battleCasualties[1]) * largeArmyModifier);
+                    battleCasualties[0] = largeArmyLosses / (double)attackerTroops;
+                }
+            }
+
 
             return battleCasualties;
         }
@@ -510,7 +571,7 @@ namespace hist_mmorpg
 
                 // CASUALTIES
                 // calculate troop casualties for both sides
-                casualtyModifiers = this.calculateBattleCasualties(battleValues[0], battleValues[1], attackerVictorious);
+                casualtyModifiers = this.calculateBattleCasualties(attackerStartTroops, defenderStartTroops, battleValues[0], battleValues[1], attackerVictorious);
 
                 // check if losing army has disbanded
                 bool attackerDisbanded = false;
