@@ -280,12 +280,7 @@ namespace hist_mmorpg
         public void assignNewLeader(Character newLeader)
         {
             // check if army is involved in a siege
-            Siege mySiege = null;
-            string siegeID = this.checkForSiegeRole();
-            if (!String.IsNullOrWhiteSpace(siegeID))
-            {
-                mySiege = this.getSiege(siegeID);
-            }
+            Siege mySiege = this.getSiege();
 
             // Remove army from current leader
             Character oldLeader = this.getLeader();
@@ -1030,14 +1025,20 @@ namespace hist_mmorpg
         /// Gets the siege object associated with the siegeID provided
         /// </summary>
         /// <returns>The siege</returns>
-        /// <param name="siegeID">The siegeID</param>
-        public Siege getSiege(string siegeID)
+        public Siege getSiege()
         {
             Siege thisSiege = null;
 
-            if (Globals_Game.siegeMasterList.ContainsKey(siegeID))
+            // check for siege ID associated with army
+            string siegeID = this.checkForSiegeRole();
+
+            // get siege
+            if (!String.IsNullOrWhiteSpace(siegeID))
             {
-                thisSiege = Globals_Game.siegeMasterList[siegeID];
+                if (Globals_Game.siegeMasterList.ContainsKey(siegeID))
+                {
+                    thisSiege = Globals_Game.siegeMasterList[siegeID];
+                }
             }
 
             return thisSiege;
@@ -1062,7 +1063,7 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(siegeID))
             {
                 isSiegeDefGarr = true;
-                thisSiege = this.getSiege(siegeID);
+                thisSiege = this.getSiege();
             }
             else
             {
@@ -1071,7 +1072,7 @@ namespace hist_mmorpg
                 if (!String.IsNullOrWhiteSpace(siegeID))
                 {
                     isSiegeDefAdd = true;
-                    thisSiege = this.getSiege(siegeID);
+                    thisSiege = this.getSiege();
                 }
             }
 

@@ -1414,8 +1414,6 @@ namespace hist_mmorpg
             Army besieger = s.getBesiegingArmy();
             Army defenderGarrison = s.getDefenderGarrison();
             Army defenderAdditional = null;
-            Character defenderLeader = defenderGarrison.getLeader();
-            Character attackerLeader = besieger.getLeader();
 
             // check for sallying army
             if (!String.IsNullOrWhiteSpace(s.defenderAdditional))
@@ -1457,6 +1455,9 @@ namespace hist_mmorpg
 
             else
             {
+                Character defenderLeader = defenderGarrison.getLeader();
+                Character attackerLeader = besieger.getLeader();
+
                 // process results of siege round
                 // reduce keep level by 5%
                 double originalKeepLvl = besiegedFief.keepLevel;

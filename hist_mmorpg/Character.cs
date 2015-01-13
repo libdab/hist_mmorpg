@@ -2225,7 +2225,6 @@ namespace hist_mmorpg
 
                 if (thisArmy != null)
                 {
-                    // synchronise days
                     thisArmy.days = this.days;
                 }
             }

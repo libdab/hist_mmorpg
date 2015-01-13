@@ -285,7 +285,7 @@ namespace hist_mmorpg
             }
 
             // if ownership not required, choose from all adjoining fiefs
-            else
+            else if (choices.Count > 0)
             {
                 // choose fief by generating random int between 0 and no. of targets
                 selection = Globals_Game.myRand.Next(0, choices.Count);

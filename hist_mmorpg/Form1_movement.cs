@@ -27,51 +27,55 @@ namespace hist_mmorpg
         /// <param name="ch">Character to move</param>
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
-        public bool moveCharacter(Character ch, Fief target, double cost)
+        /// <param name="siegeCheck">bool indicating whether to check whether the move would end a siege</param>
+        public bool moveCharacter(Character ch, Fief target, double cost, bool siegeCheck = true)
         {
             bool success = false;
             bool proceedWithMove = true;
 
             // check to see if character is leading a besieging army
-            Army myArmy = ch.getArmy();
-            if (myArmy != null)
+            if (siegeCheck)
             {
-                string thisSiegeID = myArmy.checkIfBesieger();
-                if (!String.IsNullOrWhiteSpace(thisSiegeID))
+                Army myArmy = ch.getArmy();
+                if (myArmy != null)
                 {
-                    // give player fair warning of consequences to siege
-                    DialogResult dialogResult = MessageBox.Show("Your army is currently besieging this fief.  Moving will end the siege.\r\nClick 'OK' to proceed.", "Proceed with move?", MessageBoxButtons.OKCancel);
-
-                    // if choose to cancel
-                    if (dialogResult == DialogResult.Cancel)
+                    string thisSiegeID = myArmy.checkIfBesieger();
+                    if (!String.IsNullOrWhiteSpace(thisSiegeID))
                     {
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("Move cancelled.");
-                        }
-                        proceedWithMove = false;
-                    }
+                        // give player fair warning of consequences to siege
+                        DialogResult dialogResult = MessageBox.Show("Your army is currently besieging this fief.  Moving will end the siege.\r\nClick 'OK' to proceed.", "Proceed with move?", MessageBoxButtons.OKCancel);
 
-                    // if choose to proceed
-                    else
-                    {
-                        // end the siege
-                        Siege thisSiege = Globals_Game.siegeMasterList[thisSiegeID];
-                        if (Globals_Client.showMessages)
+                        // if choose to cancel
+                        if (dialogResult == DialogResult.Cancel)
                         {
-                            System.Windows.Forms.MessageBox.Show("Siege (" + thisSiegeID + ") ended.");
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Move cancelled.");
+                            }
+                            proceedWithMove = false;
                         }
 
-                        // construct event description to be passed into siegeEnd
-                        string siegeDescription = "On this day of Our Lord the forces of ";
-                        siegeDescription += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
-                        siegeDescription += " have chosen to abandon the siege of " + thisSiege.getFief().name;
-                        siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
-                        siegeDescription += " retains ownership of the fief.";
+                        // if choose to proceed
+                        else
+                        {
+                            // end the siege
+                            Siege thisSiege = Globals_Game.siegeMasterList[thisSiegeID];
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Siege (" + thisSiegeID + ") ended.");
+                            }
 
-                        this.siegeEnd(thisSiege, siegeDescription);
+                            // construct event description to be passed into siegeEnd
+                            string siegeDescription = "On this day of Our Lord the forces of ";
+                            siegeDescription += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
+                            siegeDescription += " have chosen to abandon the siege of " + thisSiege.getFief().name;
+                            siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
+                            siegeDescription += " retains ownership of the fief.";
+
+                            this.siegeEnd(thisSiege, siegeDescription);
+                        }
+
                     }
-
                 }
             }
 
@@ -374,6 +378,15 @@ namespace hist_mmorpg
         public void campWaitHere(Character ch, byte campDays)
         {
             bool proceed = true;
+            // get army
+            Army thisArmy = null;
+            thisArmy = ch.getArmy();
+            // get siege
+            Siege thisSiege = null;
+            if (thisArmy != null)
+            {
+                thisSiege = thisArmy.getSiege();
+            }
 
             // check has enough days available
             if (ch.days < (Double)campDays)
@@ -398,7 +411,7 @@ namespace hist_mmorpg
                 bool entourageCamp = false;
 
                 // if character is player, camp entourage
-                if (ch == Globals_Client.myPlayerCharacter)
+                if (ch is PlayerCharacter)
                 {
                     entourageCamp = true;
                 }
@@ -406,7 +419,7 @@ namespace hist_mmorpg
                 // if character NOT player
                 else
                 {
-                    // if is in entourage, give player chance to remove prior to camping
+                    // if is in entourage, remove prior to camping
                     if ((ch as NonPlayerCharacter).inEntourage)
                     {
                         if (Globals_Client.showMessages)
@@ -417,48 +430,59 @@ namespace hist_mmorpg
                     }
                 }
 
-                // adjust character's days
-                if (ch is PlayerCharacter)
+                // check for siege
+                // uses different method to adjust days of all objects involved and apply attrition)
+                if (thisSiege != null)
                 {
-                    (ch as PlayerCharacter).adjustDays(campDays);
+                    thisSiege.syncDays(ch.days - campDays);
                 }
+
+                // if no siege
                 else
                 {
-                    ch.adjustDays(campDays);
-                }
-
-                // inform player
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " remains in " + ch.location.name + " for " + campDays + " days.");
-                }
-
-                // check if character is army leader, if so check for army attrition
-                if (!String.IsNullOrWhiteSpace(ch.armyID))
-                {
-                    // get army
-                    Army thisArmy = ch.getArmy();
-
-                    // number of attrition checks
-                    byte attritionChecks = 0;
-                    attritionChecks = Convert.ToByte(campDays / 7);
-                    // total attrition
-                    uint totalAttrition = 0;
-
-                    for (int i = 0; i < attritionChecks; i++)
+                    // adjust character's days
+                    if (ch is PlayerCharacter)
                     {
-                        // calculate attrition
-                        double attritionModifer = thisArmy.calcAttrition();
-                        // apply attrition
-                        totalAttrition += thisArmy.applyTroopLosses(attritionModifer);
+                        (ch as PlayerCharacter).adjustDays(campDays);
+                    }
+                    else
+                    {
+                        ch.adjustDays(campDays);
                     }
 
                     // inform player
-                    if (totalAttrition > 0)
+                    if (Globals_Client.showMessages)
                     {
-                        if (Globals_Client.showMessages)
+                        System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " remains in " + ch.location.name + " for " + campDays + " days.");
+                    }
+
+                    // check if character is army leader, if so check for army attrition
+                    if (thisArmy != null)
+                    {
+                        // number of attrition checks
+                        byte attritionChecks = 0;
+                        attritionChecks = Convert.ToByte(campDays / 7);
+                        // total attrition
+                        uint totalAttrition = 0;
+
+                        for (int i = 0; i < attritionChecks; i++)
                         {
-                            System.Windows.Forms.MessageBox.Show("Army (" + thisArmy.armyID + ") lost " + totalAttrition + " troops due to attrition.");
+                            // calculate attrition
+                            double attritionModifer = thisArmy.calcAttrition();
+                            // apply attrition
+                            if (attritionModifer > 0)
+                            {
+                                totalAttrition += thisArmy.applyTroopLosses(attritionModifer);
+                            }
+                        }
+
+                        // inform player
+                        if (totalAttrition > 0)
+                        {
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Army (" + thisArmy.armyID + ") lost " + totalAttrition + " troops due to attrition.");
+                            }
                         }
                     }
                 }

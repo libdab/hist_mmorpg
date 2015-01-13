@@ -251,7 +251,7 @@ namespace hist_mmorpg
             myArmy1.addArmy();
 
             // create and add army
-            uint[] myArmyTroops2 = new uint[] { 2, 5, 0, 15, 20, 40, 110 };
+            uint[] myArmyTroops2 = new uint[] { 2, 5, 0, 15, 200, 400, 1110 };
             Army myArmy2 = new Army(Globals_Game.getNextArmyID(), Globals_Game.pcMasterList["Char_158"].charID, Globals_Game.pcMasterList["Char_158"].charID, Globals_Game.pcMasterList["Char_158"].days, Globals_Game.pcMasterList["Char_158"].location.id, trp: myArmyTroops2, aggr: 1, odds: 2);
             myArmy2.addArmy();
         }
@@ -5519,8 +5519,20 @@ namespace hist_mmorpg
                     Character thisLeader = Globals_Client.armyToView.getLeader();
 
                     // camp
-                    this.campWaitHere(thisLeader, campDays);
+                    if (thisLeader != null)
+                    {
+                        this.campWaitHere(thisLeader, campDays);
+                    }
+
+                    else
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("You cannot conduct this operation without a leader.", "OPERATION CANCELLED");
+                        }
+                    }
                 }
+
                 catch (System.FormatException fe)
                 {
                     if (Globals_Client.showMessages)

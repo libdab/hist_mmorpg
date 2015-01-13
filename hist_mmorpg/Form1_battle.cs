@@ -280,33 +280,36 @@ namespace hist_mmorpg
                 // get fief to retreat to
                 Fief target = Globals_Game.gameMap.chooseRandomHex(from, true, thisOwner, startingFief);
 
-                // get travel cost
-                double travelCost = this.getTravelCost(from, target);
-
-                // check for army leader (defender may not have had one)
-                if (thisLeader != null)
+                if (target != null)
                 {
-                    // ensure leader has enough days (retreats are immune to running out of days)
-                    if (thisLeader.days < travelCost)
+                    // get travel cost
+                    double travelCost = this.getTravelCost(from, target);
+
+                    // check for army leader (defender may not have had one)
+                    if (thisLeader != null)
                     {
-                        thisLeader.adjustDays(thisLeader.days - travelCost);
+                        // ensure leader has enough days (retreats are immune to running out of days)
+                        if (thisLeader.days < travelCost)
+                        {
+                            thisLeader.adjustDays(thisLeader.days - travelCost);
+                        }
+
+                        // perform retreat
+                        bool success = this.moveCharacter(thisLeader, target, travelCost, false);
                     }
 
-                    // perform retreat
-                    bool success = this.moveCharacter(thisLeader, target, travelCost);
-                }
-
-                // if no leader
-                else
-                {
-                    // ensure army has enough days (retreats are immune to running out of days)
-                    if (a.days < travelCost)
+                    // if no leader
+                    else
                     {
-                        a.days = travelCost;
-                    }
+                        // ensure army has enough days (retreats are immune to running out of days)
+                        if (a.days < travelCost)
+                        {
+                            a.days = travelCost;
+                        }
 
-                    // perform retreat
-                    a.moveWithoutLeader(target, travelCost);
+                        // perform retreat
+                        a.moveWithoutLeader(target, travelCost);
+                    }
                 }
 
             }
@@ -583,7 +586,7 @@ namespace hist_mmorpg
                     }
                     else
                     {
-                        attacker.days--;
+                        defender.days -= 1;
                     }
                 }
 
