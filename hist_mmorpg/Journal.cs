@@ -153,7 +153,7 @@ namespace hist_mmorpg
         /// <param name="entryType">The JournalEntry type</param>
         public List<JournalEntry> getSpecificEntries(string thisPersonID, string role, string entryType)
         {
-            List<JournalEntry> foundEntries = null;
+            List<JournalEntry> foundEntries = new List<JournalEntry>();
             bool entryFound = false;
 
             foreach (KeyValuePair<uint, JournalEntry> jEntry in this.entries)

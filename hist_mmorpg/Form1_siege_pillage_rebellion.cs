@@ -745,7 +745,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // check if fief already pillages
+            // check if fief already pillaged
             // note: not necessary for quell rebellion (get a 'free' pillage)
             if (!circumstance.Equals("quellRebellion"))
             {
@@ -864,6 +864,20 @@ namespace hist_mmorpg
                         }
                     }
                 }
+
+                // check if fief in rebellion
+                if ((circumstance.Equals("siege")) && (proceed))
+                {
+                    if (f.status.Equals('R'))
+                    {
+                        proceed = false;
+
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("You cannot lay siege to a keep if the fief is in rebellion.", "OPERATION CANCELLED");
+                        }
+                    }
+                }
             }
 
             return proceed;
@@ -955,6 +969,7 @@ namespace hist_mmorpg
             return 100 - stormFailurePercent;
         }
 
+        /*
         /// <summary>
         /// Calculates the keep level prior to a storm by attacking forces in a siege
         /// </summary>
@@ -998,7 +1013,7 @@ namespace hist_mmorpg
             }
 
             return keepLvl;
-        }
+        } */
 
         /// <summary>
         /// Processes the storming of the keep by attacking forces in a siege
@@ -1053,7 +1068,7 @@ namespace hist_mmorpg
             string siegeDescription = "";
 
             // get STORM RESULT
-            uint[] battleValues = this.calculateBattleValue(besiegingArmy, defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel));
+            uint[] battleValues = this.calculateBattleValue(besiegingArmy, defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel), true);
             stormSuccess = this.decideBattleVictory(battleValues[0], battleValues[1]);
 
             // KEEP DAMAGE
@@ -1098,11 +1113,11 @@ namespace hist_mmorpg
             // for attacker, add effects of keep level, modified by on storm success
             if (stormSuccess)
             {
-                attackerCasualtyModifier += (0.001 * besiegedFief.keepLevel);
+                attackerCasualtyModifier += (0.005 * besiegedFief.keepLevel);
             }
             else
             {
-                attackerCasualtyModifier += (0.002 * besiegedFief.keepLevel);
+                attackerCasualtyModifier += (0.01 * besiegedFief.keepLevel);
             }
             // apply casualties
             uint attackerCasualties = besiegingArmy.applyTroopLosses(attackerCasualtyModifier);
@@ -1460,7 +1475,7 @@ namespace hist_mmorpg
                 Character attackerLeader = besieger.getLeader();
 
                 // process results of siege round
-                // reduce keep level by 5%
+                // reduce keep level by 8%
                 double originalKeepLvl = besiegedFief.keepLevel;
                 besiegedFief.keepLevel = (besiegedFief.keepLevel * 0.92);
 

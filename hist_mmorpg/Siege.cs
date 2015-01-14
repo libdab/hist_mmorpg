@@ -505,9 +505,16 @@ namespace hist_mmorpg
         {
             bool siegeEnded = false;
             Character besiegerLeader = null;
+            PlayerCharacter besiegerOwner = this.getBesiegingPlayer(); ;
 
             // check if besieger still in field (i.e. has not been disbanded)
             if (String.IsNullOrWhiteSpace(this.besiegerArmy))
+            {
+                siegeEnded = true;
+            }
+
+            // check besieging player still alive
+            else if ((besiegerOwner == null) || (!besiegerOwner.isAlive))
             {
                 siegeEnded = true;
             }

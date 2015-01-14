@@ -886,6 +886,7 @@ namespace hist_mmorpg
         /// <param name="circumstance">string containing the circumstance of the death</param>
         public void processDeath(string circumstance = "natural")
         {
+            Character mySpouse = null;
             NonPlayerCharacter thisHeir = null;
 
             // get role of character
@@ -949,7 +950,7 @@ namespace hist_mmorpg
 
                         // set default aggression and combatOdds levels
                         thisArmy.aggression = 1;
-                        thisArmy.combatOdds = 2;
+                        thisArmy.combatOdds = 4;
                     }
                 }
 
@@ -958,7 +959,7 @@ namespace hist_mmorpg
             // ============== 4. if married, remove from SPOUSE
             if (!String.IsNullOrWhiteSpace(this.spouse))
             {
-                Character mySpouse = this.getSpouse();
+                mySpouse = this.getSpouse();
 
                 if (mySpouse != null)
                 {
@@ -1069,18 +1070,25 @@ namespace hist_mmorpg
 
             }
 
-            // ============== 6. check if PREGNANT, if so remove birth events from Globals_Game.scheduledEvents
+            // ============== 6. check for PREGNANCY events (self or spouse)
+            List<JournalEntry> births = new List<JournalEntry>();
             if (this.isPregnant)
             {
                 // get birth entry in Globals_Game.scheduledEvents
-
-                List<JournalEntry> births = Globals_Game.scheduledEvents.getSpecificEntries(this.charID, "mother", "birth");
-
-                foreach (JournalEntry jEntry in births)
-                {
-                    Globals_Game.scheduledEvents.entries.Remove(jEntry.jEntryID);
-                }
+                births = Globals_Game.scheduledEvents.getSpecificEntries(this.charID, "mother", "birth");
             }
+            else if ((mySpouse != null) && (mySpouse.isPregnant))
+            {
+                // get birth entry in Globals_Game.scheduledEvents
+                births = Globals_Game.scheduledEvents.getSpecificEntries(this.charID, "father", "birth");
+            }
+
+            // remove birth events from Globals_Game.scheduledEvents
+            foreach (JournalEntry jEntry in births)
+            {
+                Globals_Game.scheduledEvents.entries.Remove(jEntry.jEntryID);
+            }
+            births.Clear();
 
             // ============== 7. check and remove from BAILIFF positions
             PlayerCharacter employer = null;
@@ -2399,7 +2407,8 @@ namespace hist_mmorpg
         /// Calculates the character's leadership value (for army leaders)
         /// </summary>
         /// <returns>double containg leadership value</returns>
-        public double getLeadershipValue()
+        /// <param name="isSiegeStorm">bool indicating if the circumstance is a siege storm</param>
+        public double getLeadershipValue(bool isSiegeStorm = false)
         {
             double lv = 0;
 
@@ -2407,7 +2416,19 @@ namespace hist_mmorpg
             lv = (this.combat + this.management + this.calculateStature()) / 3;
 
             // factor in skills effect
-            double combatSkillsMOd = this.calcSkillEffect("battle");
+            double combatSkillsMOd = 0;
+
+            // if is siege, use 'siege' skill
+            if (isSiegeStorm)
+            {
+                combatSkillsMOd = this.calcSkillEffect("siege");
+            }
+            // else use 'battle' skill
+            else
+            {
+                combatSkillsMOd = this.calcSkillEffect("battle");
+            }
+
             if (combatSkillsMOd != 0)
             {
                 lv = lv + (lv * combatSkillsMOd);

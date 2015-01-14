@@ -432,6 +432,8 @@ namespace hist_mmorpg
             this.adminEditSkillNameTextBox = new System.Windows.Forms.TextBox();
             this.label81 = new System.Windows.Forms.Label();
             this.adminEditSkillIdTextBox = new System.Windows.Forms.TextBox();
+            this.murderThisCharacterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.muderCharacterMenuTextBox1 = new System.Windows.Forms.ToolStripTextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -610,9 +612,10 @@ namespace hist_mmorpg
             this.fullToolStripMenuItem,
             this.characterToolStripMenuItem1,
             this.switchPlayerMenuItem,
-            this.addTestJournalEntryToolStripMenuItem});
+            this.addTestJournalEntryToolStripMenuItem,
+            this.murderThisCharacterToolStripMenuItem});
             this.testSeasonalUpdateToolStripMenuItem.Name = "testSeasonalUpdateToolStripMenuItem";
-            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
+            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.testSeasonalUpdateToolStripMenuItem.Text = "Test";
             // 
             // fullToolStripMenuItem
@@ -656,7 +659,7 @@ namespace hist_mmorpg
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -2305,8 +2308,8 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel1
             // 
-            this.armyContainer.Panel1.Controls.Add(this.armyManagementPanel);
             this.armyContainer.Panel1.Controls.Add(this.armyCombatPanel);
+            this.armyContainer.Panel1.Controls.Add(this.armyManagementPanel);
             // 
             // armyContainer.Panel2
             // 
@@ -4805,22 +4808,36 @@ namespace hist_mmorpg
             this.adminEditSkillIdTextBox.Size = new System.Drawing.Size(159, 20);
             this.adminEditSkillIdTextBox.TabIndex = 27;
             // 
+            // murderThisCharacterToolStripMenuItem
+            // 
+            this.murderThisCharacterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.muderCharacterMenuTextBox1});
+            this.murderThisCharacterToolStripMenuItem.Name = "murderThisCharacterToolStripMenuItem";
+            this.murderThisCharacterToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.murderThisCharacterToolStripMenuItem.Text = "Murder this character";
+            this.murderThisCharacterToolStripMenuItem.Click += new System.EventHandler(this.murderThisCharacterToolStripMenuItem_Click);
+            // 
+            // muderCharacterMenuTextBox1
+            // 
+            this.muderCharacterMenuTextBox1.Name = "muderCharacterMenuTextBox1";
+            this.muderCharacterMenuTextBox1.Size = new System.Drawing.Size(100, 23);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
+            this.Controls.Add(this.royalGiftsContainer);
             this.Controls.Add(this.armyContainer);
+            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.siegeContainer);
-            this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.adminEditContainer);
             this.Controls.Add(this.journalContainer);
             this.Controls.Add(this.provinceContainer);
-            this.Controls.Add(this.royalGiftsContainer);
             this.Controls.Add(this.characterContainer);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -5417,6 +5434,8 @@ namespace hist_mmorpg
         private System.Windows.Forms.ToolStripMenuItem viewEntriescurrentYearToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewEntriesALLToolStripMenuItem;
         private System.Windows.Forms.Button fiefAutoAdjustBtn;
+        private System.Windows.Forms.ToolStripMenuItem murderThisCharacterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox muderCharacterMenuTextBox1;
 
     }
 }

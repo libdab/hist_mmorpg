@@ -46,7 +46,7 @@ namespace hist_mmorpg
 
             // initialise game objects
             this.initGameObjects("Char_196", gameID: "fromCSV", objectDataFile: "gameObjects.csv", mapDataFile: "map.csv",
-            start: 1194, king1: "Char_47", king2: "Char_40", herald1: "Char_47", sysAdmin: "Char_47");
+            start: 1194, king1: "Char_47", king2: "Char_40", herald1: "Char_1", sysAdmin: "Char_196");
 
 			// this.ImportFromCSV("gameObjects.csv", bucketID: "fromCSV", synch: true, toDatabase: true);
 			// this.CreateMapArrayFromCSV ("map.csv", bucketID: "fromCSV", toDatabase: true);
@@ -196,6 +196,35 @@ namespace hist_mmorpg
             this.setUpEditSkillEffectList();
 
             // check if royal & overlord menus should be displayed
+            this.initMenuPermissions();
+
+            // =================== TESTING
+            /*
+            // create and add army
+            uint[] myArmyTroops1 = new uint[] { 5, 10, 0, 30, 40, 4000, 6020 };
+            Army myArmy1 = new Army(Globals_Game.getNextArmyID(), Globals_Game.pcMasterList["Char_196"].charID, Globals_Game.pcMasterList["Char_196"].charID, Globals_Game.pcMasterList["Char_196"].days, Globals_Game.pcMasterList["Char_196"].location.id, trp: myArmyTroops1);
+            myArmy1.addArmy(); */
+            
+            // create and add army
+            uint[] myArmyTroops2 = new uint[] { 5, 10, 0, 30, 40, 80, 220 };
+            Army myArmy2 = new Army(Globals_Game.getNextArmyID(), Globals_Game.pcMasterList["Char_158"].charID, Globals_Game.pcMasterList["Char_158"].charID, Globals_Game.pcMasterList["Char_158"].days, Globals_Game.pcMasterList["Char_158"].location.id, trp: myArmyTroops2, aggr: 1, odds: 2);
+            myArmy2.addArmy();
+            /*
+            // create ailment
+            Ailment myAilment = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 1, 0);
+            Globals_Game.pcMasterList["Char_196"].ailments.Add(myAilment.ailmentID, myAilment); */
+            // =================== END TESTING
+
+            // INITIALISE UI DISPLAY
+            this.refreshCharacterContainer();
+        }
+
+        /// <summary>
+        /// Initialises permissions to view client menus (Royal Gifts, Overlord, Admin)
+        /// </summary>
+        public void initMenuPermissions()
+        {
+            // check if royal & overlord menus should be displayed
             if (((Globals_Client.myPlayerCharacter.checkIsKing())
                 || (Globals_Client.myPlayerCharacter.checkIfOverlord()))
                 || (Globals_Client.myPlayerCharacter.checkIsHerald()))
@@ -239,25 +268,6 @@ namespace hist_mmorpg
             {
                 this.adminToolStripMenuItem.Enabled = false;
             }
-
-            // =================== TESTING
-            // create and add army
-            uint[] myArmyTroops1 = new uint[] { 5, 10, 0, 30, 40, 4000, 6020 };
-            Army myArmy1 = new Army(Globals_Game.getNextArmyID(), Globals_Game.pcMasterList["Char_196"].charID, Globals_Game.pcMasterList["Char_196"].charID, Globals_Game.pcMasterList["Char_196"].days, Globals_Game.pcMasterList["Char_196"].location.id, trp: myArmyTroops1);
-            myArmy1.addArmy();
-
-            // create and add army
-            uint[] myArmyTroops2 = new uint[] { 5, 10, 0, 30, 40, 80, 220 };
-            Army myArmy2 = new Army(Globals_Game.getNextArmyID(), Globals_Game.pcMasterList["Char_158"].charID, Globals_Game.pcMasterList["Char_158"].charID, Globals_Game.pcMasterList["Char_158"].days, Globals_Game.pcMasterList["Char_158"].location.id, trp: myArmyTroops2, aggr: 1, odds: 2);
-            myArmy2.addArmy();
-
-            // create ailment
-            Ailment myAilment = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 1, 0);
-            Globals_Game.pcMasterList["Char_196"].ailments.Add(myAilment.ailmentID, myAilment);
-            // =================== END TESTING
-
-            // INITIALISE UI DISPLAY
-            this.refreshCharacterContainer();
         }
 
         /// <summary>
@@ -1574,8 +1584,8 @@ namespace hist_mmorpg
                         }
 
                         // do conditional checks
-                        // death of mother
-                        if (!mummy.isAlive)
+                        // death of mother or father
+                        if ((!mummy.isAlive) || (!daddy.isAlive))
                         {
                             proceed = false;
                         }
@@ -2003,8 +2013,13 @@ namespace hist_mmorpg
             }
             else
             {
+                // switch Globals_Client.myPlayerCharacter
                 Globals_Client.myPlayerCharacter = Globals_Game.pcMasterList[playerID];
+                // set new PC as Globals_Client.charToView
                 Globals_Client.charToView = Globals_Client.myPlayerCharacter;
+                // ensure new PC has correct permissions to view menus
+                this.initMenuPermissions();
+                // refresh and display character information
                 this.refreshCharacterContainer(Globals_Client.charToView);
             }
         }
@@ -4450,7 +4465,7 @@ namespace hist_mmorpg
         private void selfBailiffBtn_Click(object sender, EventArgs e)
         {
             // give player fair warning of bailiff commitments
-            DialogResult dialogResult = MessageBox.Show("Being a bailiff will restrict your movement.  Click 'OK' to proceed.", "Proceed with appointment?", MessageBoxButtons.OKCancel);
+            DialogResult dialogResult = MessageBox.Show("Being a bailiff will restrict your movement (as you need to remain in the fief for 30 days to have any effect).  Click 'OK' to proceed.", "Proceed with appointment?", MessageBoxButtons.OKCancel);
 
             // if choose to cancel
             if (dialogResult == DialogResult.Cancel)
@@ -5600,6 +5615,48 @@ namespace hist_mmorpg
             this.armyContainer.Panel1.Tag = "combat";
             this.armyCombatPanel.BringToFront();
             this.armyListView.Focus();
+        }
+
+        /// <summary>
+        /// Responds to the click event of the murderThisCharacterToolStripMenuItem
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void murderThisCharacterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // get character
+            string charID = this.muderCharacterMenuTextBox1.Text;
+
+            if (String.IsNullOrWhiteSpace(charID))
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("No Character ID entered.  Operation cancelled.");
+                }
+            }
+
+            Character charToMurder = null;
+             if (Globals_Game.pcMasterList.ContainsKey(charID))
+            {
+                charToMurder = Globals_Game.pcMasterList[charID];
+            }
+             else if (Globals_Game.npcMasterList.ContainsKey(charID))
+            {
+                charToMurder = Globals_Game.npcMasterList[charID];
+            }
+
+             if (charToMurder != null)
+             {
+                 charToMurder.processDeath();
+             }
+
+             else
+             {
+                 if (Globals_Client.showMessages)
+                 {
+                     System.Windows.Forms.MessageBox.Show("Character could not be identified.  Operation cancelled.");
+                 }
+             }
         }
 
     }

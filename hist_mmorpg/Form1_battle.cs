@@ -27,7 +27,8 @@ namespace hist_mmorpg
         /// <param name="attacker">The attacking army</param>
         /// <param name="defender">The defending army</param>
         /// <param name="keepLvl">Keep level (if for a keep storm)</param>
-        public uint[] calculateBattleValue(Army attacker, Army defender, int keepLvl = 0)
+        /// <param name="isSiege">bool indicating if the circumstance is a siege storm</param>
+        public uint[] calculateBattleValue(Army attacker, Army defender, int keepLvl = 0, bool isSiegeStorm = false)
         {
             uint[] battleValues = new uint[2];
             double attackerLV = 0;
@@ -38,12 +39,12 @@ namespace hist_mmorpg
             Character defenderLeader = defender.getLeader();
 
             // get leadership values for each army leader
-            attackerLV = attackerLeader.getLeadershipValue();
+            attackerLV = attackerLeader.getLeadershipValue(isSiegeStorm);
 
             // defender may not have leader
             if (defenderLeader != null)
             {
-                defenderLV = defenderLeader.getLeadershipValue();
+                defenderLV = defenderLeader.getLeadershipValue(isSiegeStorm);
             }
             else
             {
@@ -184,11 +185,11 @@ namespace hist_mmorpg
             double minBV = Math.Min(attackerValue, defenderValue);
 
             // use BVs to determine high mark for base casualty rate of army with smallest battle value (see below)
-            double highCasualtyRate = (maxBV / (maxBV + minBV)) * 100;
+            double highCasualtyRate = maxBV / (maxBV + minBV);
 
             // determine base casualty rate for army with smallest battle value
-            double smallestModifier = Globals_Game.myRand.Next(10, Convert.ToInt32(highCasualtyRate)) / (double)100;
-
+            double smallestModifier = Utility_Methods.GetRandomDouble(highCasualtyRate, min: 0.1);
+            
             // determine if army with largest battle value won
             if (maxBV == attackerValue)
             {
@@ -236,7 +237,7 @@ namespace hist_mmorpg
             {
                 // calculate casualty modifier for army with largest battle value
                 // this ensures its losses will be roughly the same as the smallest army (because it lost)
-                largeArmyModifier = Globals_Game.myRand.Next(80, 121) / (double)100;
+                largeArmyModifier = Utility_Methods.GetRandomDouble(1.20, min: 0.8);
 
                 // defender is large army
                 if (attackerVictorious)
