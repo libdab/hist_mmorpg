@@ -240,20 +240,24 @@ namespace hist_mmorpg
                 this.adminToolStripMenuItem.Enabled = false;
             }
 
-            // INITIALISE UI DISPLAY
-            this.refreshCharacterContainer();
-
-            // TESTING
-
+            // =================== TESTING
             // create and add army
-            uint[] myArmyTroops1 = new uint[] { 5, 10, 0, 30, 40, 80, 220 };
+            uint[] myArmyTroops1 = new uint[] { 5, 10, 0, 30, 40, 4000, 6020 };
             Army myArmy1 = new Army(Globals_Game.getNextArmyID(), Globals_Game.pcMasterList["Char_196"].charID, Globals_Game.pcMasterList["Char_196"].charID, Globals_Game.pcMasterList["Char_196"].days, Globals_Game.pcMasterList["Char_196"].location.id, trp: myArmyTroops1);
             myArmy1.addArmy();
 
             // create and add army
-            uint[] myArmyTroops2 = new uint[] { 5, 10, 0, 30, 40, 80, 2020 };
+            uint[] myArmyTroops2 = new uint[] { 5, 10, 0, 30, 40, 80, 220 };
             Army myArmy2 = new Army(Globals_Game.getNextArmyID(), Globals_Game.pcMasterList["Char_158"].charID, Globals_Game.pcMasterList["Char_158"].charID, Globals_Game.pcMasterList["Char_158"].days, Globals_Game.pcMasterList["Char_158"].location.id, trp: myArmyTroops2, aggr: 1, odds: 2);
             myArmy2.addArmy();
+
+            // create ailment
+            Ailment myAilment = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, 1, 0);
+            Globals_Game.pcMasterList["Char_196"].ailments.Add(myAilment.ailmentID, myAilment);
+            // =================== END TESTING
+
+            // INITIALISE UI DISPLAY
+            this.refreshCharacterContainer();
         }
 
         /// <summary>
@@ -1307,7 +1311,7 @@ namespace hist_mmorpg
                     siegeDescription += dissolvedSieges[i].getDefendingPlayer().firstName + " " + dissolvedSieges[i].getDefendingPlayer().familyName + ".";
 
                     // dismantle siege
-                    this.siegeEnd(dissolvedSieges[i], siegeDescription);
+                    this.siegeEnd(dissolvedSieges[i], false, siegeDescription);
                 }
 
                 // clear dissolvedSieges
@@ -2665,7 +2669,7 @@ namespace hist_mmorpg
                     siegeDescription += " retains ownership of the fief.";
 
                     // process siege reduction round
-                    this.siegeEnd(thisSiege, siegeDescription);
+                    this.siegeEnd(thisSiege, false, siegeDescription);
 
                     //refresh screen
                     this.refreshCurrentScreen();

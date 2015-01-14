@@ -412,8 +412,12 @@ namespace hist_mmorpg
         public bool giveBattle(Army attacker, Army defender, string circumstance = "battle")
         {
             string toDisplay = "";
+            string siegeDescription = "";
             bool attackerVictorious = false;
             bool battleHasCommenced = false;
+            bool attackerLeaderDead = false;
+            bool defenderLeaderDead = false;
+            bool siegeRaised = false;
             uint[] battleValues = new uint[2];
             double[] casualtyModifiers = new double[2];
             double statureChange = 0;
@@ -616,10 +620,14 @@ namespace hist_mmorpg
                 // NOTE: the defender in this battle is the attacker in the siege and v.v.
                 if (thisSiege != null)
                 {
-                    // update total defender siege losses
-                    thisSiege.totalCasualtiesDefender += Convert.ToInt32(totalAttackTroopsLost);
-                    // update total attacker siege losses
+                    // update total siege attacker (defender in this battle) losses
                     thisSiege.totalCasualtiesAttacker += Convert.ToInt32(totalDefendTroopsLost);
+
+                    // update total siege defender (attacker in this battle) losses
+                    if (circumstance.Equals("siege"))
+                    {
+                        thisSiege.totalCasualtiesDefender += Convert.ToInt32(totalAttackTroopsLost);
+                    }
                 }
 
                 // get casualty figures (for message)
@@ -687,7 +695,6 @@ namespace hist_mmorpg
                 bool characterDead = false;
 
                 // 1. ATTACKER
-                bool attackerLeaderDead = false;
                 uint friendlyBV = battleValues[0];
                 uint enemyBV = battleValues[1];
 
@@ -733,9 +740,6 @@ namespace hist_mmorpg
                         // assign newLeader (can assign null leader if none found)
                         attacker.assignNewLeader(newLeader);
                     }
-
-                    // process death
-                    attackerLeader.processDeath("injury");
                 }
                 else
                 {
@@ -750,7 +754,6 @@ namespace hist_mmorpg
                 }
 
                 // 2. DEFENDER
-                bool defenderLeaderDead = false;
 
                 // need to check if defending army had a leader
                 if (defenderLeader != null)
@@ -793,9 +796,6 @@ namespace hist_mmorpg
 
                         // assign newLeader (can assign null leader if none found)
                         defender.assignNewLeader(newLeader);
-
-                        // process death
-                        defenderLeader.processDeath("injury");
                     }
                 }
 
@@ -825,7 +825,7 @@ namespace hist_mmorpg
                     }
                 }
                 toDisplay += ".";
-                if (attackerLeaderDead)
+                if ((attackerLeader != null) && (attackerLeaderDead))
                 {
                     toDisplay += " " + attackerLeader.firstName + " " + attackerLeader.familyName + " died due to injuries received.";
                 }
@@ -860,26 +860,52 @@ namespace hist_mmorpg
                 }
 
                 // check for SIEGE RELIEF
-                // attacker (relieving army) victory or defender (besieging army) retreat = relief
-                if ((attackerVictorious) || (retreatDistances[1] > 0))
+                if (thisSiege != null)
                 {
-                    // check to see if defender was besieging the fief keep
-                    if (thisSiege != null)
+                    // attacker (relieving army) victory or defender (besieging army) retreat = relief
+                    if ((attackerVictorious) || (retreatDistances[1] > 0))
                     {
+                        // indicate siege raised
+                        siegeRaised = true;
+
                         // construct event description to be passed into siegeEnd
-                        string siegeDescription = "On this day of Our Lord the forces of ";
+                        siegeDescription = "On this day of Our Lord the forces of ";
                         siegeDescription += attacker.getOwner().firstName + " " + attacker.getOwner().familyName;
                         siegeDescription += " have defeated the forces of " + thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
                         siegeDescription += ", relieving the siege of " + thisSiege.getFief().name + ".";
                         siegeDescription += " " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
                         siegeDescription += " retains ownership of the fief.";
 
-                        // end the siege
-                        this.siegeEnd(thisSiege, siegeDescription);
-
                         // add to message
                         toDisplay += "The siege in " + thisSiege.getFief().name + " has been raised.";
+                    }
 
+                    // check to see if siege raised due to death of siege owner with no heir
+                    else if ((defenderLeaderDead) && ((defenderLeader as PlayerCharacter) == thisSiege.getBesiegingPlayer()))
+                    {
+                        // get siege owner's heir
+                        Character thisHeir = (defenderLeader as PlayerCharacter).getHeir();
+
+                        if (thisHeir == null)
+                        {
+                            // indicate siege raised
+                            siegeRaised = true;
+
+                            // construct event description to be passed into siegeEnd
+                            siegeDescription = "On this day of Our Lord the forces of ";
+                            siegeDescription += attacker.getOwner().firstName + " " + attacker.getOwner().familyName;
+                            siegeDescription += " attacked the forces of " + thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
+                            siegeDescription += ", who was killed during the battle.";
+                            siegeDescription += "  Thus, despite losing the battle, " + attacker.getOwner().firstName + " " + attacker.getOwner().familyName;
+                            siegeDescription += " has succeeded in relieving the siege of " + thisSiege.getFief().name + ".";
+                            siegeDescription += " " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
+                            siegeDescription += " retains ownership of the fief.";
+
+                            // add to message
+                            toDisplay += "The siege in " + thisSiege.getFief().name + " has been raised";
+                            toDisplay += " due to the death of the besieging party, ";
+                            toDisplay += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName + ".";
+                        }
                     }
                 }
 
@@ -963,6 +989,28 @@ namespace hist_mmorpg
             if (Globals_Client.showMessages)
             {
                 System.Windows.Forms.MessageBox.Show(toDisplay, "BATTLE RESULTS");
+            }
+
+            // end siege if appropriate
+            if (siegeRaised)
+            {
+                this.siegeEnd(thisSiege, false, siegeDescription);
+
+                // ensure if siege raised correct value returned to Form1.siegeReductionRound method
+                if (circumstance.Equals("siege"))
+                {
+                    attackerVictorious = true;
+                }
+            }
+
+            // process leader deaths
+            if (defenderLeaderDead)
+            {
+                defenderLeader.processDeath("injury");
+            }
+            else if (attackerLeaderDead)
+            {
+                attackerLeader.processDeath("injury");
             }
 
             // refresh screen

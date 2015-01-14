@@ -536,8 +536,9 @@ namespace hist_mmorpg
         /// <summary>
         /// Ends the siege
         /// </summary>
+        /// <param name="siegeSuccessful">bool indicating whether the siege was successful</param>
         /// <param name="s">String containing circumstances under which the siege ended</param>
-        public void siegeEnd(string circumstance)
+        public void siegeEnd(bool siegeSuccessful, string circumstance = null)
         {
             // get principle objects
             PlayerCharacter defendingPlayer = this.getDefendingPlayer();
@@ -612,8 +613,8 @@ namespace hist_mmorpg
             defenderGarrison.disbandArmy();
             defenderGarrison = null;
 
-            // disband additional defending army
-            if (defenderAdditional != null)
+            // disband additional defending army (but only if siege was successful)
+            if ((defenderAdditional != null) && (siegeSuccessful))
             {
                 defenderAdditional.disbandArmy();
                 defenderAdditional = null;

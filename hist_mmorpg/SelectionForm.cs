@@ -1479,7 +1479,7 @@ namespace hist_mmorpg
                 {
                     if (Globals_Client.showMessages)
                     {
-                        toDisplay = "You are not leading an army and so cannot attack.";
+                        toDisplay = "Error: Defending army could not be identified.";
                         System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
                         proceed = false;
                     }
@@ -1518,7 +1518,7 @@ namespace hist_mmorpg
                             siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
                             siegeDescription += " retains ownership of the fief.";
 
-                            parent.siegeEnd(thisSiege, siegeDescription);
+                            parent.siegeEnd(thisSiege, false, siegeDescription);
                         }
                     }
                 }

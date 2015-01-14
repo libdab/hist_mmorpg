@@ -808,6 +808,16 @@ namespace hist_mmorpg
                 }
             }
 
+            // ensure health 0-maxHealth
+            if (charHealth < 0)
+            {
+                charHealth = 0;
+            }
+            else if (charHealth > maxHealth)
+            {
+                charHealth = maxHealth;
+            }
+
             return charHealth;
         }
 
@@ -1374,7 +1384,7 @@ namespace hist_mmorpg
                     // end siege
                     if (thisSiege != null)
                     {
-                        thisSiege.siegeEnd(null);
+                        thisSiege.siegeEnd(false);
                     }
                 }
                 siegesToEnd.Clear();
@@ -2728,7 +2738,20 @@ namespace hist_mmorpg
                     injuryDescription += ", " + (this as NonPlayerCharacter).getFunction(concernedPlayer) + " of ";
                     injuryDescription += concernedPlayer.firstName + " " + concernedPlayer.familyName + ",";
                 }
-                injuryDescription += " was injured on the field of battle in the fief of ";
+                injuryDescription += " received ";
+                if (healthLoss > 4)
+                {
+                    injuryDescription += "severe ";
+                }
+                else if (healthLoss < 2)
+                {
+                    injuryDescription += "light ";
+                }
+                else
+                {
+                    injuryDescription += "moderate ";
+                }
+                injuryDescription += "injuries on the field of battle in the fief of ";
                 injuryDescription += this.location.name + ".";
 
                 // create and send JOURNAL ENTRY

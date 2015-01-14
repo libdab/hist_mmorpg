@@ -906,11 +906,12 @@ namespace hist_mmorpg
         /// Ends the specified siege
         /// </summary>
         /// <param name="s">Siege to be ended</param>
+        /// <param name="siegeSuccessful">bool indicating whether the siege was successful</param>
         /// <param name="s">String containing circumstances under which the siege ended</param>
-        public void siegeEnd(Siege s, string circumstance)
+        public void siegeEnd(Siege s, bool siegeSuccessful, string circumstance)
         {
             // carry out functions associated with siege end
-            s.siegeEnd(circumstance);
+            s.siegeEnd(siegeSuccessful, circumstance);
 
             // set to null
             s = null;
@@ -1235,7 +1236,7 @@ namespace hist_mmorpg
                 }
 
                 // end the siege
-                this.siegeEnd(s, siegeDescriptionFull);
+                this.siegeEnd(s, true, siegeDescriptionFull);
 
                 // change fief ownership
                 besiegedFief.changeOwnership(attackingPlayer);
@@ -1362,7 +1363,7 @@ namespace hist_mmorpg
                 siegeDescriptionFull += besiegedFief.keepLevel + ".";
 
                 // end the siege
-                this.siegeEnd(s, siegeDescriptionFull);
+                this.siegeEnd(s, true, siegeDescriptionFull);
 
                 // change fief ownership
                 s.getFief().changeOwnership(s.getBesiegingPlayer());

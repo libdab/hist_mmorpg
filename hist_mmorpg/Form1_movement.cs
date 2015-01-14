@@ -72,7 +72,7 @@ namespace hist_mmorpg
                             siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
                             siegeDescription += " retains ownership of the fief.";
 
-                            this.siegeEnd(thisSiege, siegeDescription);
+                            this.siegeEnd(thisSiege, false, siegeDescription);
                         }
 
                     }

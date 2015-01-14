@@ -1022,7 +1022,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Gets the siege object associated with the siegeID provided
+        /// Gets the siege object associated with the army (or null)
         /// </summary>
         /// <returns>The siege</returns>
         public Siege getSiege()
@@ -1239,12 +1239,7 @@ namespace hist_mmorpg
         public void disbandArmy()
         {
             // check for siege involvement
-            string siegeID = this.checkForSiegeRole();
-            Siege thisSiege = null;
-            if (!String.IsNullOrWhiteSpace(siegeID))
-            {
-                thisSiege = Globals_Game.siegeMasterList[siegeID];
-            }
+            Siege thisSiege = this.getSiege();
 
             // remove from siege
             if (thisSiege != null)
@@ -1262,7 +1257,8 @@ namespace hist_mmorpg
                     whichRole = this.checkIfBesieger();
                     if (!String.IsNullOrWhiteSpace(whichRole))
                     {
-                        thisSiege.besiegerArmy = null;
+                        // end siege
+                        thisSiege.siegeEnd(false);
                     }
                 }
             }
