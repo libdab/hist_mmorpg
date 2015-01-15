@@ -881,6 +881,159 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Performs necessary actions for aborting a pregnancy involving the character
+        /// </summary>
+        /// <param name="role">The role of the Character in the pregnancy</param>
+        public void abortPregnancy(string role)
+        {
+            List<JournalEntry> births = new List<JournalEntry>();
+
+            // get birth entry in Globals_Game.scheduledEvents
+            births = Globals_Game.scheduledEvents.getSpecificEntries(this.charID, role, "birth");
+
+            // remove birth events from Globals_Game.scheduledEvents
+            foreach (JournalEntry jEntry in births)
+            {
+                Globals_Game.scheduledEvents.entries.Remove(jEntry.jEntryID);
+            }
+
+            this.isPregnant = false;
+
+            // clear births
+            births.Clear();
+        }
+
+        /// <summary>
+        /// Performs necessary actions for cancelling a marriage involving the character
+        /// </summary>
+        /// <param name="role">The role of the Character in the marriage</param>
+        public void cancelMarriage(string role)
+        {
+            List<JournalEntry> marriages = Globals_Game.scheduledEvents.getSpecificEntries(this.charID, role, "marriage");
+
+            foreach (JournalEntry jEntry in marriages)
+            {
+                // generate marriageCancelled entry
+                bool success = false;
+
+                // get interested parties
+                PlayerCharacter headOfFamilyBride = null;
+                PlayerCharacter headOfFamilyGroom = null;
+                Character bride = null;
+                Character groom = null;
+
+                for (int i = 0; i < jEntry.personae.Length; i++)
+                {
+                    string thisPersonae = jEntry.personae[i];
+                    string[] thisPersonaeSplit = thisPersonae.Split('|');
+
+                    switch (thisPersonaeSplit[1])
+                    {
+                        case "headOfFamilyBride":
+                            headOfFamilyBride = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
+                            break;
+                        case "headOfFamilyGroom":
+                            headOfFamilyGroom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
+                            break;
+                        case "bride":
+                            bride = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
+                            break;
+                        case "groom":
+                            if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                            {
+                                groom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
+                            }
+                            else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                            {
+                                groom = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                // ID
+                uint newEntryID = Globals_Game.getNextJournalEntryID();
+
+                // date
+                uint year = Globals_Game.clock.currentYear;
+                byte season = Globals_Game.clock.currentSeason;
+
+                // personae
+                string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
+                string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
+                string thisBrideEntry = bride.charID + "|bride";
+                string thisGroomEntry = groom.charID + "|groom";
+                string allEntry = "all|all";
+                string[] newEntryPersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, thisBrideEntry, thisGroomEntry, allEntry };
+
+                // type
+                string type = "marriageCancelled";
+
+                // description
+                string description = "On this day of Our Lord the imminent marriage between ";
+                description += groom.firstName + " " + groom.familyName + " and ";
+                description += bride.firstName + " " + bride.familyName;
+                description += " has been CANCELLED due to the sad and untimely death of ";
+                description += this.firstName + " " + this.familyName;
+                description += ". Let the bells fall silent.";
+
+                // create and add a marriageCancelled entry to Globals_Game.pastEvents
+                JournalEntry newEntry = new JournalEntry(newEntryID, year, season, newEntryPersonae, type, descr: description);
+                success = Globals_Game.addPastEvent(newEntry);
+
+                // delete marriage entry in Globals_Game.scheduledEvents
+                Globals_Game.scheduledEvents.entries.Remove(jEntry.jEntryID);
+
+                // remove fiancee entries
+                if (bride != null)
+                {
+                    bride.fiancee = null;
+                }
+                if (groom != null)
+                {
+                    groom.fiancee = null;
+                }
+            }
+
+            // clear marriages
+            marriages.Clear();
+        }
+
+        /// <summary>
+        /// Transfers all of a character's titles back to the owner
+        /// </summary>
+        public void allMyTitlesToOwner()
+        {
+            Place thisPlace = null;
+
+            foreach (string placeID in this.myTitles)
+            {
+                // get place
+                if (Globals_Game.fiefMasterList.ContainsKey(placeID))
+                {
+                    thisPlace = Globals_Game.fiefMasterList[placeID];
+                }
+
+                else if (Globals_Game.provinceMasterList.ContainsKey(placeID))
+                {
+                    thisPlace = Globals_Game.provinceMasterList[placeID];
+                }
+
+                // re-assign title to owner
+                if (thisPlace != null)
+                {
+                    thisPlace.owner.myTitles.Add(placeID);
+                    thisPlace.titleHolder = thisPlace.owner.charID;
+                }
+            }
+
+             // remove from this character
+            this.myTitles.Clear();
+        }
+
+        /// <summary>
         /// Performs necessary actions upon the death of a character
         /// </summary>
         /// <param name="circumstance">string containing the circumstance of the death</param>
@@ -971,124 +1124,46 @@ namespace hist_mmorpg
             // ============== 5. if engaged, remove from FIANCEE and CANCEL MARRIAGE
             if (!String.IsNullOrWhiteSpace(this.fiancee))
             {
+                string marriageRole = "";
                 Character myFiancee = this.getFiancee();
 
                 if (myFiancee != null)
                 {
-                    // remove from fiancee
-                    myFiancee.fiancee = null;
-
                     // get marriage entry in Globals_Game.scheduledEvents
                     // get role
                     if (this.isMale)
                     {
-                        role = "groom";
+                        marriageRole = "groom";
                     }
                     else
                     {
-                        role = "bride";
+                        marriageRole = "bride";
                     }
 
-                    List<JournalEntry> marriages = Globals_Game.scheduledEvents.getSpecificEntries(this.charID, role, "marriage");
+                    // cancel marriage
+                    this.cancelMarriage(marriageRole);
 
-                    foreach (JournalEntry jEntry in marriages)
-                    {
-                        // generate marriageCancelled entry
-                        bool success = false;
-
-                        // get interested parties
-                        PlayerCharacter headOfFamilyBride = null;
-                        PlayerCharacter headOfFamilyGroom = null;
-                        Character bride = null;
-                        Character groom = null;
-
-                        for (int i = 0; i < jEntry.personae.Length; i++)
-                        {
-                            string thisPersonae = jEntry.personae[i];
-                            string[] thisPersonaeSplit = thisPersonae.Split('|');
-
-                            switch (thisPersonaeSplit[1])
-                            {
-                                case "headOfFamilyBride":
-                                    headOfFamilyBride = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
-                                    break;
-                                case "headOfFamilyGroom":
-                                    headOfFamilyGroom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
-                                    break;
-                                case "bride":
-                                    bride = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
-                                    break;
-                                case "groom":
-                                    if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
-                                    {
-                                        groom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
-                                    }
-                                    else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
-                                    {
-                                        groom = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-
-                        // ID
-                        uint newEntryID = Globals_Game.getNextJournalEntryID();
-
-                        // date
-                        uint year = Globals_Game.clock.currentYear;
-                        byte season = Globals_Game.clock.currentSeason;
-
-                        // personae
-                        string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
-                        string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
-                        string thisBrideEntry = bride.charID + "|bride";
-                        string thisGroomEntry = groom.charID + "|groom";
-                        string allEntry = "all|all";
-                        string[] newEntryPersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, thisBrideEntry, thisGroomEntry, allEntry };
-
-                        // type
-                        string type = "marriageCancelled";
-
-                        // description
-                        string description = "On this day of Our Lord the imminent marriage between ";
-                        description += groom.firstName + " " + groom.familyName + " and ";
-                        description += bride.firstName + " " + bride.familyName;
-                        description += " has been CANCELLED due to the sad and untimely death of ";
-                        description += this.firstName + " " + this.familyName;
-                        description += ". Let the bells fall silent.";
-
-                        // create and add a marriageCancelled entry to Globals_Game.pastEvents
-                        JournalEntry newEntry = new JournalEntry(newEntryID, year, season, newEntryPersonae, type, descr: description);
-                        success = Globals_Game.addPastEvent(newEntry);
-
-                        // delete marriage entry in Globals_Game.scheduledEvents
-                        Globals_Game.scheduledEvents.entries.Remove(jEntry.jEntryID);
-                    }
                 }
 
             }
 
             // ============== 6. check for PREGNANCY events (self or spouse)
-            List<JournalEntry> births = new List<JournalEntry>();
+            string pregRole = "";
+
             if (this.isPregnant)
             {
-                // get birth entry in Globals_Game.scheduledEvents
-                births = Globals_Game.scheduledEvents.getSpecificEntries(this.charID, "mother", "birth");
+                pregRole = "mother";
             }
             else if ((mySpouse != null) && (mySpouse.isPregnant))
             {
-                // get birth entry in Globals_Game.scheduledEvents
-                births = Globals_Game.scheduledEvents.getSpecificEntries(this.charID, "father", "birth");
+                pregRole = "father";
             }
 
-            // remove birth events from Globals_Game.scheduledEvents
-            foreach (JournalEntry jEntry in births)
+            if (!String.IsNullOrWhiteSpace(pregRole))
             {
-                Globals_Game.scheduledEvents.entries.Remove(jEntry.jEntryID);
+                // abort pregnancy
+                this.abortPregnancy(pregRole);
             }
-            births.Clear();
 
             // ============== 7. check and remove from BAILIFF positions
             PlayerCharacter employer = null;
@@ -1162,15 +1237,7 @@ namespace hist_mmorpg
             // ============== 10. (NPC) re-assign TITLES to fief owner
             if (this is NonPlayerCharacter)
             {
-                foreach (string fiefID in (this as NonPlayerCharacter).myTitles)
-                {
-                    // get fief
-                    Fief thisFief = Globals_Game.fiefMasterList[fiefID];
-
-                    // re-assign title to fief owner
-                    thisFief.owner.myTitles.Add(fiefID);
-                    thisFief.titleHolder = thisFief.owner.charID;
-                }
+                this.allMyTitlesToOwner();
             }
 
 
@@ -1447,31 +1514,7 @@ namespace hist_mmorpg
                     npc.inKeep = false;
 
                     // titles
-                    foreach (string title in npc.myTitles)
-                    {
-                        // get place
-                        Place thisPlace = null;
-                        if (Globals_Game.fiefMasterList.ContainsKey(title))
-                        {
-                            thisPlace = Globals_Game.fiefMasterList[title];
-                        }
-                        else if (Globals_Game.provinceMasterList.ContainsKey(title))
-                        {
-                            thisPlace = Globals_Game.provinceMasterList[title];
-                        }
-
-                        // transfer title
-                        if (thisPlace != null)
-                        {
-                            if (thisPlace.owner == deceased)
-                            {
-                                thisPlace.titleHolder = king.charID;
-                                king.myTitles.Add(title);
-                            }
-                        }
-                    }
-
-                    npc.myTitles.Clear();
+                    npc.allMyTitlesToOwner();
 
                     // employment as bailiff
                     foreach (Fief fief in deceased.ownedFiefs)
@@ -1483,98 +1526,48 @@ namespace hist_mmorpg
                     }
 
                     // pregnancy
+                    string pregRole = "";
+                    Character mySpouse = npc.getSpouse();
+
                     if (npc.isPregnant)
                     {
-                        int birthEntry = -1;
+                        pregRole = "mother";
+                    }
+                    else if ((mySpouse != null) && (mySpouse.isPregnant))
+                    {
+                        pregRole = "father";
+                    }
 
-                        // iterate through scheduled events
-                        foreach (KeyValuePair<uint, JournalEntry> jEntry in Globals_Game.scheduledEvents.entries)
-                        {
-                            if ((jEntry.Value.type).ToLower().Equals("birth"))
-                            {
-                                // get mother
-                                NonPlayerCharacter mummy = null;
-                                for (int j = 0; j < jEntry.Value.personae.Length; j++)
-                                {
-                                    string thisPersonae = jEntry.Value.personae[j];
-                                    string[] thisPersonaeSplit = thisPersonae.Split('|');
-
-                                    switch (thisPersonaeSplit[1])
-                                    {
-                                        case "mother":
-                                            mummy = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-
-                                if (mummy == npc)
-                                {
-                                    birthEntry = Convert.ToInt32(jEntry.Key);
-                                    break;
-                                }
-                            }
-                        }
-
-                        // remove scheduled birth
-                        if (birthEntry != -1)
-                        {
-                            Globals_Game.scheduledEvents.entries.Remove(Convert.ToUInt32(birthEntry));
-                        }
-
-                        npc.isPregnant = false;
+                    if (!String.IsNullOrWhiteSpace(pregRole))
+                    {
+                        // abort pregnancy
+                        this.abortPregnancy(pregRole);
                     }
 
                     // forthcoming marriage
                     if (!String.IsNullOrWhiteSpace(npc.fiancee))
                     {
-                        // remove fiancee's fiancee
-                        Character thisFiancee = npc.getFiancee();
-                        thisFiancee.fiancee = null;
+                        Character myFiancee = npc.getFiancee();
 
-                        // remove npc's fiancee
-                        npc.fiancee = null;
-
-                        int marriageEntry = -1;
-
-                        // iterate through scheduled events
-                        foreach (KeyValuePair<uint, JournalEntry> jEntry in Globals_Game.scheduledEvents.entries)
+                        if (myFiancee != null)
                         {
-                            if ((jEntry.Value.type).ToLower().Equals("marriage"))
+                            // get marriage entry in Globals_Game.scheduledEvents
+                            // get role
+                            string role = "";
+                            if (npc.isMale)
                             {
-                                // get bride
-                                NonPlayerCharacter bride = null;
-                                for (int k = 0; k < jEntry.Value.personae.Length; k++)
-                                {
-                                    string thisPersonae = jEntry.Value.personae[k];
-                                    string[] thisPersonaeSplit = thisPersonae.Split('|');
-
-                                    switch (thisPersonaeSplit[1])
-                                    {
-                                        case "bride":
-                                            bride = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-
-                                if (bride == npc)
-                                {
-                                    marriageEntry = Convert.ToInt32(jEntry.Key);
-                                    break;
-                                }
+                                role = "groom";
                             }
-                        }
+                            else
+                            {
+                                role = "bride";
+                            }
 
-                        // remove scheduled marriage
-                        if (marriageEntry != -1)
-                        {
-                            Globals_Game.scheduledEvents.entries.Remove(Convert.ToUInt32(marriageEntry));
+                            // cancel marriage
+                            npc.cancelMarriage(role);
+
                         }
                     }
-
                 }
             }
 
@@ -4543,10 +4536,10 @@ namespace hist_mmorpg
                 // get PC's father
                 Character pcFather = pc.getFather();
 
-                if (!String.IsNullOrWhiteSpace(this.father))
+                if (thisFather != null)
                 {
                     // sons & daughters
-                    if (this.father == pc.charID)
+                    if (thisFather == pc)
                     {
                         if (this.isMale)
                         {
@@ -4559,15 +4552,18 @@ namespace hist_mmorpg
                     }
 
                     // brothers and sisters
-                    if (this.father == pc.father)
+                    if (pcFather != null)
                     {
-                        if (this.isMale)
+                        if (thisFather == pcFather)
                         {
-                            myFunction = "Brother";
-                        }
-                        else
-                        {
-                            myFunction = "Sister";
+                            if (this.isMale)
+                            {
+                                myFunction = "Brother";
+                            }
+                            else
+                            {
+                                myFunction = "Sister";
+                            }
                         }
                     }
 
@@ -4604,38 +4600,58 @@ namespace hist_mmorpg
                     }
                 }
 
-                // grandmother
-                if (pcFather != null)
+                // if haven't found function yet
+                if (myFunction.Equals("Family Member"))
                 {
-                    if ((!String.IsNullOrWhiteSpace(pcFather.mother)) && (pcFather.mother.Equals(this.charID)))
+                    // sons and daughters (just in case only mother recorded)
+                    if ((!String.IsNullOrWhiteSpace(this.mother)) && (!String.IsNullOrWhiteSpace(pc.spouse)))
                     {
-                        myFunction = "Grandmother";
+                        if (this.mother == pc.spouse)
+                        {
+                            if (this.isMale)
+                            {
+                                myFunction = "Son";
+                            }
+                            else
+                            {
+                                myFunction = "Daughter";
+                            }
+                        }
                     }
-                }
 
-                if ((!String.IsNullOrWhiteSpace(pc.mother)) && (pc.mother.Equals(this.charID)))
-                {
-                    // mother
-                    myFunction = "Mother";
-                }
-
-                // wife
-                if ((!String.IsNullOrWhiteSpace(this.spouse)) && (this.spouse.Equals(pc.charID)))
-                {
-                    if (this.isMale)
+                    // grandmother
+                    if (pcFather != null)
                     {
-                        myFunction = "Husband";
+                        if ((!String.IsNullOrWhiteSpace(pcFather.mother)) && (pcFather.mother.Equals(this.charID)))
+                        {
+                            myFunction = "Grandmother";
+                        }
                     }
-                    else
-                    {
-                        myFunction = "Wife";
-                    }
-                }
 
-                // check for heir
-                if (this.isHeir)
-                {
-                    myFunction += " & Heir";
+                    if ((!String.IsNullOrWhiteSpace(pc.mother)) && (pc.mother.Equals(this.charID)))
+                    {
+                        // mother
+                        myFunction = "Mother";
+                    }
+
+                    // wife
+                    if ((!String.IsNullOrWhiteSpace(this.spouse)) && (this.spouse.Equals(pc.charID)))
+                    {
+                        if (this.isMale)
+                        {
+                            myFunction = "Husband";
+                        }
+                        else
+                        {
+                            myFunction = "Wife";
+                        }
+                    }
+
+                    // check for heir
+                    if (this.isHeir)
+                    {
+                        myFunction += " & Heir";
+                    }
                 }
             }
 
@@ -4683,7 +4699,7 @@ namespace hist_mmorpg
                 // check for army leadership
                 if (!String.IsNullOrWhiteSpace(this.armyID))
                 {
-                    if (!myResponsibilities.Equals(""))
+                    if (!String.IsNullOrWhiteSpace(myResponsibilities))
                     {
                         myResponsibilities += ". ";
                     }
@@ -4691,7 +4707,7 @@ namespace hist_mmorpg
                 }
 
                 // if employee who isn't bailiff or army leader = 'Unspecified'
-                if (myResponsibilities.Equals(""))
+                if (String.IsNullOrWhiteSpace(myResponsibilities))
                 {
                     if (!String.IsNullOrWhiteSpace(this.employer))
                     {

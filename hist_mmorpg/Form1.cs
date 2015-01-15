@@ -199,11 +199,11 @@ namespace hist_mmorpg
             this.initMenuPermissions();
 
             // =================== TESTING
-            /*
+            
             // create and add army
             uint[] myArmyTroops1 = new uint[] { 5, 10, 0, 30, 40, 4000, 6020 };
             Army myArmy1 = new Army(Globals_Game.getNextArmyID(), Globals_Game.pcMasterList["Char_196"].charID, Globals_Game.pcMasterList["Char_196"].charID, Globals_Game.pcMasterList["Char_196"].days, Globals_Game.pcMasterList["Char_196"].location.id, trp: myArmyTroops1);
-            myArmy1.addArmy(); */
+            myArmy1.addArmy(); 
             
             // create and add army
             uint[] myArmyTroops2 = new uint[] { 5, 10, 0, 30, 40, 80, 220 };
@@ -5128,9 +5128,8 @@ namespace hist_mmorpg
                 {
                     // recruit controls
                     // if player is leading an army but not the one on view, disable 'recruit' button
-                    if (((!String.IsNullOrWhiteSpace(Globals_Client.armyToView.leader))
+                    if ((!String.IsNullOrWhiteSpace(Globals_Client.armyToView.leader))
                         && (!(Globals_Client.armyToView.leader.Equals(Globals_Client.myPlayerCharacter.charID))))
-                        && (!String.IsNullOrWhiteSpace(Globals_Client.charToView.armyID)))
                     {
                         this.armyRecruitBtn.Enabled = false;
                         this.armyRecruitTextBox.Enabled = false;

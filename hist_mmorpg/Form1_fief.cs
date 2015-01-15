@@ -108,6 +108,9 @@ namespace hist_mmorpg
             // ancestral owner's ID
             fiefText += "Ancestral owner (ID): " + f.ancestralOwner.charID + "\r\n";
 
+            // title holder's ID
+            fiefText += "Title holder (ID): " + f.titleHolder + "\r\n";
+
             // bailiff's ID
             fiefText += "Bailiff (ID): ";
             if (f.bailiff != null)
