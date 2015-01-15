@@ -513,11 +513,11 @@ namespace hist_mmorpg
             bool proceed = true;
 
             // check is married
-            if (!String.IsNullOrWhiteSpace(husband.spouse))
-            {
-                // get spouse
-                Character wife = husband.getSpouse();
+            // get spouse
+            Character wife = husband.getSpouse();
 
+            if (wife != null)
+            {
                 // check to make sure is in same fief
                 if (!(wife.location == husband.location))
                 {
@@ -568,20 +568,23 @@ namespace hist_mmorpg
                             else
                             {
                                 // ensure days are synchronised
-                                if (husband.days != minDays)
+                                if (husband.days != wife.days)
                                 {
-                                    if (husband is PlayerCharacter)
+                                    if (husband.days != minDays)
                                     {
-                                        (husband as PlayerCharacter).adjustDays(husband.days - minDays);
+                                        if (husband is PlayerCharacter)
+                                        {
+                                            (husband as PlayerCharacter).adjustDays(husband.days - minDays);
+                                        }
+                                        else
+                                        {
+                                            husband.adjustDays(husband.days - minDays);
+                                        }
                                     }
                                     else
                                     {
-                                        husband.adjustDays(husband.days - minDays);
+                                        wife.adjustDays(wife.days - minDays);
                                     }
-                                }
-                                else
-                                {
-                                    wife.adjustDays(wife.days - minDays);
                                 }
                             }
                         }

@@ -1563,23 +1563,26 @@ namespace hist_mmorpg
                             string thisPersonae = jEntry.Value.personae[i];
                             string[] thisPersonaeSplit = thisPersonae.Split('|');
 
-                            switch (thisPersonaeSplit[1])
+                            if (thisPersonaeSplit.Length > 1)
                             {
-                                case "mother":
-                                    mummy = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
-                                    break;
-                                case "father":
-                                    if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
-                                    {
-                                        daddy = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
-                                    }
-                                    else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
-                                    {
-                                        daddy = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
-                                    }
-                                    break;
-                                default:
-                                    break;
+                                switch (thisPersonaeSplit[1])
+                                {
+                                    case "mother":
+                                        mummy = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
+                                        break;
+                                    case "father":
+                                        if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                        {
+                                            daddy = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
+                                        }
+                                        else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                        {
+                                            daddy = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
                         }
 
@@ -4883,18 +4886,30 @@ namespace hist_mmorpg
             // get spouse
             Character mySpouse = Globals_Client.myPlayerCharacter.getSpouse();
 
-            // perform standard checks
-            if (this.checksBeforePregnancyAttempt(Globals_Client.myPlayerCharacter))
+            if (mySpouse != null)
             {
-                // ensure are both in/out of keep
-                mySpouse.inKeep = Globals_Client.myPlayerCharacter.inKeep;
+                // perform standard checks
+                if (this.checksBeforePregnancyAttempt(Globals_Client.myPlayerCharacter))
+                {
+                    // ensure are both in/out of keep
+                    mySpouse.inKeep = Globals_Client.myPlayerCharacter.inKeep;
 
-                // attempt pregnancy
-                bool pregnant = Globals_Client.myPlayerCharacter.getSpousePregnant(mySpouse);
+                    // attempt pregnancy
+                    bool pregnant = Globals_Client.myPlayerCharacter.getSpousePregnant(mySpouse);
+                }
+
+                // refresh screen
+                this.refreshCurrentScreen();
             }
 
-            // refresh screen
-            this.refreshCurrentScreen();
+            else
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("ERROR: Spouse could not be retrieved.", "ERROR");
+                }
+            }
+
 
         }
 

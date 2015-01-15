@@ -210,13 +210,24 @@ namespace hist_mmorpg
                 {
                     // add entry
                     this.entries.Add(jEntry.jEntryID, jEntry);
-                    success = true;
+
+                    if (this.entries.ContainsKey(jEntry.jEntryID))
+                    {
+                        success = true;
+                    }
+                    else
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Error: JournalEntry not added.", "INSERTION ERROR");
+                        }
+                    }
                 }
                 catch (System.ArgumentException ae)
                 {
                     if (Globals_Client.showMessages)
                     {
-                        System.Windows.Forms.MessageBox.Show(ae.Message + "\r\nPlease check for duplicate jEventID.");
+                        System.Windows.Forms.MessageBox.Show(ae.Message + "\r\nPlease check for duplicate jEventID.", "INSERTION ERROR");
                     }
                 }
             }

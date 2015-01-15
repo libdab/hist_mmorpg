@@ -447,7 +447,35 @@ namespace hist_mmorpg
                 case "respawn":
                     this.charID = Globals_Game.getNextCharID();
                     this.birthDate = new Tuple<uint, byte>(Globals_Game.clock.currentYear - 20, Globals_Game.clock.currentSeason);
-                    this.maxHealth = Globals_Game.myRand.Next(1, 10);
+                    this.maxHealth = Globals_Game.myRand.Next(4, 10);
+                    // vary main stats slightly (virility, management, combat)
+                    this.virility = npc.virility + Globals_Game.myRand.Next(-1, 2);
+                    if (this.virility < 1)
+                    {
+                        this.virility = 1;
+                    }
+                    if (this.virility > 9)
+                    {
+                        this.virility = 9;
+                    }
+                    this.management = npc.management + Globals_Game.myRand.Next(-1, 2);
+                    if (this.management < 1)
+                    {
+                        this.management = 1;
+                    }
+                    if (this.management > 9)
+                    {
+                        this.management = 9;
+                    }
+                    this.combat = npc.combat + Globals_Game.myRand.Next(-1, 2);
+                    if (this.combat < 1)
+                    {
+                        this.combat = 1;
+                    }
+                    if (this.combat > 9)
+                    {
+                        this.combat = 9;
+                    }
                     this.goTo = new Queue<Fief>();
                     this.days = 90;
                     this.statureModifier = 0;
@@ -461,11 +489,15 @@ namespace hist_mmorpg
                     this.armyID = null;
                     this.ailments = new Dictionary<string, Ailment>();
                     this.fiancee = null;
+                    this.location = npc.location;
                     break;
                 case "promote":
                     this.charID = npc.charID;
                     this.birthDate = npc.birthDate;
                     this.maxHealth = npc.maxHealth;
+                    this.virility = npc.virility;
+                    this.management = npc.management;
+                    this.combat = npc.combat;
                     this.goTo = npc.goTo;
                     this.days = npc.days;
                     this.statureModifier = npc.statureModifier;
@@ -507,6 +539,12 @@ namespace hist_mmorpg
                     this.armyID = npc.armyID;
                     this.ailments = npc.ailments;
                     this.fiancee = npc.fiancee;
+                    this.location = npc.location;
+                    if (this.location != null)
+                    {
+                        this.location.charactersInFief.Remove(npc);
+                        this.location.charactersInFief.Add(this);
+                    }
                     break;
                 default:
                     break;
@@ -517,16 +555,12 @@ namespace hist_mmorpg
             this.isMale = npc.isMale;
             this.nationality = npc.nationality;
             this.isAlive = true;
-            this.virility = npc.virility;
             this.language = npc.language;
-            this.management = npc.management;
-            this.combat = npc.combat;
             this.skills = new Tuple<Skill, int>[npc.skills.Length];
             for (int i = 0; i < npc.skills.Length; i++)
             {
                 this.skills[i] = npc.skills[i];
             }
-            this.location = npc.location;
         }
 
         /// <summary>
@@ -883,13 +917,12 @@ namespace hist_mmorpg
         /// <summary>
         /// Performs necessary actions for aborting a pregnancy involving the character
         /// </summary>
-        /// <param name="role">The role of the Character in the pregnancy</param>
-        public void abortPregnancy(string role)
+        public void abortPregnancy()
         {
             List<JournalEntry> births = new List<JournalEntry>();
 
             // get birth entry in Globals_Game.scheduledEvents
-            births = Globals_Game.scheduledEvents.getSpecificEntries(this.charID, role, "birth");
+            births = Globals_Game.scheduledEvents.getSpecificEntries(this.charID, "mother", "birth");
 
             // remove birth events from Globals_Game.scheduledEvents
             foreach (JournalEntry jEntry in births)
@@ -1148,21 +1181,21 @@ namespace hist_mmorpg
             }
 
             // ============== 6. check for PREGNANCY events (self or spouse)
-            string pregRole = "";
+            Character toAbort = null;
 
             if (this.isPregnant)
             {
-                pregRole = "mother";
+                toAbort = this;
             }
             else if ((mySpouse != null) && (mySpouse.isPregnant))
             {
-                pregRole = "father";
+                toAbort = mySpouse;
             }
 
-            if (!String.IsNullOrWhiteSpace(pregRole))
+            if (toAbort != null)
             {
                 // abort pregnancy
-                this.abortPregnancy(pregRole);
+                toAbort.abortPregnancy();
             }
 
             // ============== 7. check and remove from BAILIFF positions
@@ -1526,22 +1559,22 @@ namespace hist_mmorpg
                     }
 
                     // pregnancy
-                    string pregRole = "";
                     Character mySpouse = npc.getSpouse();
+                    Character toAbort = null;
 
                     if (npc.isPregnant)
                     {
-                        pregRole = "mother";
+                        toAbort = npc;
                     }
                     else if ((mySpouse != null) && (mySpouse.isPregnant))
                     {
-                        pregRole = "father";
+                        toAbort = mySpouse;
                     }
 
-                    if (!String.IsNullOrWhiteSpace(pregRole))
+                    if (toAbort != null)
                     {
                         // abort pregnancy
-                        this.abortPregnancy(pregRole);
+                        toAbort.abortPregnancy();
                     }
 
                     // forthcoming marriage
@@ -1689,7 +1722,7 @@ namespace hist_mmorpg
                     }
                 }
 
-                if (!String.IsNullOrWhiteSpace(promotedNPC.myNPCs[i].employer))
+                else if (!String.IsNullOrWhiteSpace(promotedNPC.myNPCs[i].employer))
                 {
                     if (promotedNPC.myNPCs[i].employer.Equals(deceased.charID))
                     {
@@ -1700,7 +1733,8 @@ namespace hist_mmorpg
 
             // ============== 3. change OWNER & ANCESTRALOWNER for FIEFS and set inheritor and promotedNPC LOCATION
             List<string> ancestOwnerChanges = new List<string>();
-            List<string> ownerChanges = new List<string>();
+
+            // NOTE: need to iterate through fiefMasterList 'cos might not own a fief where you are ancestralOwner
             foreach (KeyValuePair<string, Fief> thisFiefEntry in Globals_Game.fiefMasterList)
             {
                 // get fiefs requiring change to ancestralOwner
@@ -1708,22 +1742,6 @@ namespace hist_mmorpg
                 {
                     ancestOwnerChanges.Add(thisFiefEntry.Key);
                 }
-
-                // get fiefs requiring change to owner
-                if (thisFiefEntry.Value.owner == deceased)
-                {
-                    ownerChanges.Add(thisFiefEntry.Key);
-                }
-
-                // set inheritor and promotedNPC location
-				if (thisFiefEntry.Value.charactersInFief.Contains(inheritor))
-				{
-                    // remove inheritor
-					thisFiefEntry.Value.charactersInFief.Remove(inheritor);
-
-                    // add promotedNPC
-                    thisFiefEntry.Value.charactersInFief.Add(promotedNPC);
-				}
             }
 
             // make necessary changes
@@ -1733,21 +1751,26 @@ namespace hist_mmorpg
                 {
                     Globals_Game.fiefMasterList[thisFiefID].ancestralOwner = promotedNPC;
                 }
-
-                foreach (string thisFiefID in ownerChanges)
-                {
-                    Globals_Game.fiefMasterList[thisFiefID].owner = promotedNPC;
-                }
             }
 
 			// ============== 4. change OWNERSHIPCHALLENGES
+            List<OwnershipChallenge> challsToChange = new List<OwnershipChallenge>();
 			foreach (KeyValuePair<string, OwnershipChallenge> challengeEntry in Globals_Game.ownershipChallenges)
 			{
 				if (challengeEntry.Value.getChallenger() == deceased)
 				{
-					challengeEntry.Value.challengerID = promotedNPC.charID;
+                    challsToChange.Add(challengeEntry.Value);
 				}
 			}
+
+            // make necessary changes
+            if (challsToChange.Count > 0)
+            {
+                foreach (OwnershipChallenge thisChallenge in challsToChange)
+                {
+                    Globals_Game.ownershipChallenges[thisChallenge.id].challengerID = promotedNPC.charID;
+                }
+            }
 
 			// ============== 5. change OWNER for ARMIES
             for (int i = 0; i < promotedNPC.myArmies.Count; i++ )
@@ -1759,8 +1782,14 @@ namespace hist_mmorpg
             for (int i = 0; i < promotedNPC.mySieges.Count; i++)
             {
                 // get siege
-                Siege thisSiege = Globals_Game.siegeMasterList[promotedNPC.mySieges[i]];
-                thisSiege.besiegingPlayer = promotedNPC.charID;
+                Siege thisSiege = null;
+                thisSiege = Globals_Game.siegeMasterList[promotedNPC.mySieges[i]];
+
+                // change besiegingPlayer
+                if (thisSiege != null)
+                {
+                    thisSiege.besiegingPlayer = promotedNPC.charID;
+                }
             }
 
             // ============== 7. update GLOBALS_GAME.VICTORYDATA
@@ -1786,7 +1815,7 @@ namespace hist_mmorpg
         /// <param name="oldNPC">Old NonPlayerCharacter</param>
         public bool respawnNPC(NonPlayerCharacter oldNPC)
         {
-            bool success = true;
+            bool success = false;
 
             // LOCATION
             List<string> fiefIDs = new List<string>();
@@ -1819,18 +1848,28 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(newLocationID))
             {
                 // create basic NPC
-                NonPlayerCharacter newNPC = new NonPlayerCharacter(oldNPC);
+                NonPlayerCharacter newNPC = null;
+                newNPC = new NonPlayerCharacter(oldNPC);
+                if (newNPC != null)
+                {
+                    success = true;
 
-                newNPC.location = Globals_Game.fiefMasterList[newLocationID];
-                newNPC.location.charactersInFief.Add(newNPC);
-            }
-
-            else
-            {
-                success = false;
+                    // set location
+                    newNPC.location = Globals_Game.fiefMasterList[newLocationID];
+                    newNPC.location.charactersInFief.Add(newNPC);
+                }
             }
 
             // TODO: FIRSTNAME
+
+            if (!success)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show("Error: NPC " + oldNPC.charID
+                        + " (" + oldNPC.firstName + " " + oldNPC.familyName + ") could not be respawned", "NPC CREATION ERROR");
+                }
+            }
 
             return success;
         }
@@ -2314,7 +2353,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // factor in effect of parent's virility
+            // factor in effect of virility
             // but only if within child-bearing age bracket (14 - 55)
             if ((!(spouseAge < 14)) && (!(spouseAge > 55)))
             {
@@ -2375,11 +2414,7 @@ namespace hist_mmorpg
                 }
 
                 // succeed or fail, deduct a day
-                if (this is PlayerCharacter)
-                {
-                    (this as PlayerCharacter).adjustDays(1);
-                }
-
+                this.adjustDays(1);
                 wife.adjustDays(1);
 
             }
@@ -3004,9 +3039,18 @@ namespace hist_mmorpg
             : base(npc, "promote", pc.myTitles)
         {
             this.outlawed = false;
-            this.purse = 0;
+            this.purse = pc.purse;
             this.myNPCs = pc.myNPCs;
             this.ownedFiefs = pc.ownedFiefs;
+            for (int i = 0; i < this.ownedFiefs.Count; i++ )
+            {
+                this.ownedFiefs[i].owner = this;
+            }
+            this.ownedProvinces = pc.ownedProvinces;
+            for (int i = 0; i < this.ownedProvinces.Count; i++)
+            {
+                this.ownedProvinces[i].owner = this;
+            }
             this.homeFief = pc.homeFief;
             this.ancestralHomeFief = pc.ancestralHomeFief;
             this.playerID = pc.playerID;
@@ -3245,7 +3289,7 @@ namespace hist_mmorpg
                 accepted = false;
                 if (Globals_Client.showMessages)
                 {
-                    System.Windows.Forms.MessageBox.Show("You must improve on your previous offer (£" + npc.lastOffer[this.charID] + ")");
+                    System.Windows.Forms.MessageBox.Show("That's not how haggling works where I come from, my lord.  You must improve on your previous offer (£" + npc.lastOffer[this.charID] + ")");
                 }
             }
 
@@ -3340,6 +3384,45 @@ namespace hist_mmorpg
                     armiesLeader[i].leader = null;
                 }
                 npc.armyID = null;
+            }
+
+            // take back titles, if appropriate
+            if (npc.myTitles.Count > 0)
+            {
+                List<string> titlesToRemove = new List<string>();
+                foreach (string thisTitle in npc.myTitles)
+                {
+                    Fief titleFief = null;
+                    if (Globals_Game.fiefMasterList.ContainsKey(thisTitle))
+                    {
+                        titleFief = Globals_Game.fiefMasterList[thisTitle];
+                    }
+
+                    if (titleFief != null)
+                    {
+                        if (titleFief.owner == this)
+                        {
+                            // fief titleHolder
+                            titleFief.titleHolder = this.charID;
+
+                            // add to PC myTitles
+                            this.myTitles.Add(thisTitle);
+
+                            // mark title for removal
+                            titlesToRemove.Add(thisTitle);
+                        }
+                    }
+                }
+
+                // remove from NPC titles
+                if (titlesToRemove.Count > 0)
+                {
+                    foreach (string thisTitle in titlesToRemove)
+                    {
+                        npc.myTitles.Remove(thisTitle);
+                    }
+                }
+                titlesToRemove.Clear();
             }
 
             // remove from employee list
@@ -4647,6 +4730,16 @@ namespace hist_mmorpg
                         }
                     }
 
+                    // daughter-in-law
+                    Character mySpouse = this.getSpouse();
+                    if (mySpouse != null)
+                    {
+                        if (mySpouse.father.Equals(pc.charID))
+                        {
+                            myFunction = "Daughter-in-law";
+                        }
+                    }
+
                     // check for heir
                     if (this.isHeir)
                     {
@@ -4815,13 +4908,32 @@ namespace hist_mmorpg
             // use maximum of the two salary calculations
             double salary = Math.Max(salary_skills, salary_current);
 
-            // factor in hiring player's stature
+            // factor in hiring PC's stature and current employer's stature (if applicable)
             // (4% reduction in NPC's salary for each stature rank above 4)
+            double statMod = 0;
+
+            // hiring PC
+            double hirerStatMod = 0;
             if (hiringPlayer.calculateStature() > 4)
             {
-                double statMod = 1 - ((hiringPlayer.calculateStature() - 4) * 0.04);
-                salary = salary * statMod;
+                hirerStatMod = (hiringPlayer.calculateStature() - 4) * 0.04;
             }
+
+            // current employer (note: is made negative to counteract hiring PC's stature effect)
+            double emplStatMod = 0;
+            if (this.getEmployer() != null)
+            {
+                if (this.getEmployer().calculateStature() > 4)
+                {
+                    emplStatMod = ((hiringPlayer.calculateStature() - 4) * 0.04) * -1;
+                }
+            }
+
+            // add together the 2 stature modifiers and invert
+            statMod = 1 - (hirerStatMod + emplStatMod);
+
+            // apply to salary
+            salary = salary * statMod;
 
             return Convert.ToUInt32(salary);
         }

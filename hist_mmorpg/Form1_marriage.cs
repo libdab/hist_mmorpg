@@ -29,44 +29,47 @@ namespace hist_mmorpg
         /// <param name="groom">The prospective groom</param>
         public bool proposeMarriage(Character bride, Character groom)
         {
-            bool success = true;
+            bool success = false;
 
             // get interested parties
-            PlayerCharacter headOfFamilyGroom = Globals_Game.pcMasterList[groom.familyID];
-            PlayerCharacter headOfFamilyBride = Globals_Game.pcMasterList[bride.familyID];
+            PlayerCharacter headOfFamilyGroom = groom.getHeadOfFamily();
+            PlayerCharacter headOfFamilyBride = bride.getHeadOfFamily();
 
-            // ID
-            uint proposalID = Globals_Game.getNextJournalEntryID();
-
-            // date
-            uint year = Globals_Game.clock.currentYear;
-            byte season = Globals_Game.clock.currentSeason;
-
-            // personae
-            string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
-            string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
-            string brideEntry = bride.charID + "|bride";
-            string groomEntry = groom.charID + "|groom";
-            string[] myProposalPersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, brideEntry, groomEntry };
-
-
-            // description
-            string description = "On this day of Our Lord a proposal has been made by ";
-            description += headOfFamilyGroom.firstName + " " + headOfFamilyGroom.familyName + " to ";
-            description += headOfFamilyBride.firstName + " " + headOfFamilyBride.familyName + " that ";
-            if (headOfFamilyGroomEntry.Equals(groomEntry))
+            if ((headOfFamilyGroom != null) && (headOfFamilyBride != null))
             {
-                description += "he";
-            }
-            else
-            {
-                description += groom.firstName + " " + groom.familyName;
-            }
-            description += " be betrothed to " + bride.firstName + " " + bride.familyName;
+                // ID
+                uint proposalID = Globals_Game.getNextJournalEntryID();
 
-            // create and send a proposal (journal entry)
-            JournalEntry myProposal = new JournalEntry(proposalID, year, season, myProposalPersonae, "proposalMade", descr: description);
-            success = Globals_Game.addPastEvent(myProposal);
+                // date
+                uint year = Globals_Game.clock.currentYear;
+                byte season = Globals_Game.clock.currentSeason;
+
+                // personae
+                string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
+                string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
+                string groomEntry = groom.charID + "|groom";
+                string brideEntry = bride.charID + "|bride";
+                string[] myProposalPersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, brideEntry, groomEntry };
+
+
+                // description
+                string description = "On this day of Our Lord a proposal has been made by ";
+                description += headOfFamilyGroom.firstName + " " + headOfFamilyGroom.familyName + " to ";
+                description += headOfFamilyBride.firstName + " " + headOfFamilyBride.familyName + " that ";
+                if (headOfFamilyGroomEntry.Equals(groomEntry))
+                {
+                    description += "he";
+                }
+                else
+                {
+                    description += groom.firstName + " " + groom.familyName;
+                }
+                description += " be betrothed to " + bride.firstName + " " + bride.familyName;
+
+                // create and send a proposal (journal entry)
+                JournalEntry myProposal = new JournalEntry(proposalID, year, season, myProposalPersonae, "proposalMade", descr: description);
+                success = Globals_Game.addPastEvent(myProposal);
+            }
 
             return success;
         }
