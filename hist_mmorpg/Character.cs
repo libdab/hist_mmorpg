@@ -1921,7 +1921,16 @@ namespace hist_mmorpg
                     proceed = false;
                     if (Globals_Client.showMessages)
                     {
-                        System.Windows.Forms.MessageBox.Show("Bailiff: The perfidious " + this.nationality.name + " are barred from entering this keep, Mon Seigneur!");
+                        string title = "My Lord";
+                        if (this.nationality.natID.Equals("Sco"))
+                        {
+                            title = "Laddie";
+                        }
+                        else if (this.nationality.natID.Equals("fr"))
+                        {
+                            title = "Mon Seigneur";
+                        }
+                        System.Windows.Forms.MessageBox.Show("Bailiff: The perfidious " + this.nationality.name + " are barred from entering this keep, "+ title + "!");
                     }
                 }
 

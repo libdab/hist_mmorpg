@@ -45,7 +45,7 @@ namespace hist_mmorpg
 			rClient = (RiakClient)rCluster.CreateClient();
 
             // initialise game objects
-            this.initGameObjects("Char_196", gameID: "fromCSV", objectDataFile: "gameObjects.csv", mapDataFile: "map.csv",
+            this.initGameObjects("Char_158", gameID: "fromCSV", objectDataFile: "gameObjects.csv", mapDataFile: "map.csv",
             start: 1194, king1: "Char_47", king2: "Char_40", herald1: "Char_1", sysAdmin: "Char_196");
 
 			// this.ImportFromCSV("gameObjects.csv", bucketID: "fromCSV", synch: true, toDatabase: true);
@@ -4246,6 +4246,16 @@ namespace hist_mmorpg
                     this.houseEntourageBtn.Text = "Add To Entourage";
                 }
 
+                // set text for 'enter/exit keep' button, depending on whether player in/out of keep
+                if (Globals_Client.charToView.inKeep)
+                {
+                    this.houseEnterKeepBtn.Text = "Exit Keep";
+                }
+                else
+                {
+                    this.houseEnterKeepBtn.Text = "Enter Keep";
+                }
+
                 // FAMILY MATTERS CONTROLS
                 // if family selected, enable 'choose heir' button, disbale 'fire' button
                 if ((!String.IsNullOrWhiteSpace(Globals_Client.charToView.familyID)) && (Globals_Client.charToView.familyID.Equals(Globals_Client.myPlayerCharacter.charID)))
@@ -4883,34 +4893,21 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void familyGetSpousePregBtn_Click(object sender, EventArgs e)
         {
-            // get spouse
-            Character mySpouse = Globals_Client.myPlayerCharacter.getSpouse();
-
-            if (mySpouse != null)
+            // perform standard checks
+            if (this.checksBeforePregnancyAttempt(Globals_Client.myPlayerCharacter))
             {
-                // perform standard checks
-                if (this.checksBeforePregnancyAttempt(Globals_Client.myPlayerCharacter))
-                {
-                    // ensure are both in/out of keep
-                    mySpouse.inKeep = Globals_Client.myPlayerCharacter.inKeep;
+                // get spouse
+                Character mySpouse = Globals_Client.myPlayerCharacter.getSpouse();
 
-                    // attempt pregnancy
-                    bool pregnant = Globals_Client.myPlayerCharacter.getSpousePregnant(mySpouse);
-                }
+                // ensure are both in/out of keep
+                mySpouse.inKeep = Globals_Client.myPlayerCharacter.inKeep;
 
-                // refresh screen
-                this.refreshCurrentScreen();
+                // attempt pregnancy
+                bool pregnant = Globals_Client.myPlayerCharacter.getSpousePregnant(mySpouse);
             }
 
-            else
-            {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("ERROR: Spouse could not be retrieved.", "ERROR");
-                }
-            }
-
-
+            // refresh screen
+            this.refreshCurrentScreen();
         }
 
         // ------------------- JOURNAL
@@ -5671,6 +5668,41 @@ namespace hist_mmorpg
                      System.Windows.Forms.MessageBox.Show("Character could not be identified.  Operation cancelled.");
                  }
              }
+        }
+
+        /// <summary>
+        /// Responds to the click event of the houseEnterKeepBtn button
+        /// </summary>
+        /// <param name="sender">The control object that sent the event args</param>
+        /// <param name="e">The event args</param>
+        private void houseEnterKeepBtn_Click(object sender, EventArgs e)
+        {
+            // if player in keep
+            if (Globals_Client.charToView.inKeep)
+            {
+                // exit keep
+                Globals_Client.charToView.exitKeep();
+                // change button text
+                this.houseEnterKeepBtn.Text = "Enter Keep";
+                // refresh display
+                this.refreshTravelContainer();
+            }
+
+            // if player not in keep
+            else
+            {
+                // attempt to enter keep
+                Globals_Client.charToView.enterKeep();
+
+                // if successful
+                if (Globals_Client.charToView.inKeep)
+                {
+                    // change button text
+                    this.houseEnterKeepBtn.Text = "Exit Keep";
+                    // refresh display
+                    this.refreshTravelContainer();
+                }
+            }
         }
 
     }

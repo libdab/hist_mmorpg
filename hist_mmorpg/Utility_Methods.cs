@@ -576,31 +576,49 @@ namespace hist_mmorpg
         /// <summary>
         /// Generates a random skill set for a Character
         /// </summary>
-        /// <returns>Tuple<Skill, int>[] for use with a Character object</returns>
-        public static Tuple<Skill, int>[] generateSkillSet()
+        /// <returns>Tuple(Skill, int)[] for use with a Character object</returns>
+        /// <param name="availSkillKeys">List of skill keys to use when selecting new skills</param>
+        public static Tuple<Skill, int>[] generateSkillSet(List<string> availSkillKeys = null)
         {
+            bool inheritedSkills = true;
+
+            // if no skillKeys passed in, make copy of Globals_Game.skillKeys
+            if (availSkillKeys == null)
+            {
+                inheritedSkills = false;
+                availSkillKeys = new List<string>(Globals_Game.skillKeys);
+            }
 
             // create array of skills between 2-3 in length
-            Tuple<Skill, int>[] skillSet = new Tuple<Skill, int>[Globals_Game.myRand.Next(2, 4)];
+            int arrayLength = 2;
 
-            // populate array of skills with randomly chosen skills
-            // 1) make temporary copy of skillKeys
-            List<string> skillKeysCopy = new List<string>(Globals_Game.skillKeys);
+            if (availSkillKeys.Count > 2)
+            {
+                arrayLength = Globals_Game.myRand.Next(2, 4);
+            }
 
-            // 2) choose random skill, and assign random skill level
+            Tuple<Skill, int>[] skillSet = new Tuple<Skill, int>[arrayLength];
+
+            // choose random skill, and assign skill level
             for (int i = 0; i < skillSet.Length; i++)
             {
                 // choose random skill
-                int randSkill = Globals_Game.myRand.Next(0, skillKeysCopy.Count - 1);
+                int randSkill = Globals_Game.myRand.Next(0, availSkillKeys.Count - 1);
 
-                // assign random skill level
-                int randSkillLevel = Globals_Game.myRand.Next(1, 10);
+                // assign skill level
+                int lowest = 1;
+                // if skillKeys inherited (passed in), lowest level is increased
+                if (inheritedSkills)
+                {
+                    lowest = 3;
+                }
+                int randSkillLevel = Globals_Game.myRand.Next(lowest, 10);
 
                 // create Skill tuple
-                skillSet[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[skillKeysCopy[randSkill]], randSkillLevel);
+                skillSet[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[availSkillKeys[randSkill]], randSkillLevel);
 
-                // remove skill from skillKeysCopy to ensure isn't chosen again
-                skillKeysCopy.RemoveAt(randSkill);
+                // remove skill from availSkillKeys to ensure isn't chosen again
+                availSkillKeys.RemoveAt(randSkill);
             }
 
             return skillSet;

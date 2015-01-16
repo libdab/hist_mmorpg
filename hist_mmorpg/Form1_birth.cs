@@ -183,189 +183,26 @@ namespace hist_mmorpg
         /// <param name="isMale">Whether character is a male</param>
         public Tuple<Skill, int>[] generateSkillSetFromParents(Tuple<Skill, int>[] mummySkills, Tuple<Skill, int>[] daddySkills, bool isMale)
         {
-            // create a List to temporarily hold skills
-            // will convert to array at end of method
-            List<Tuple<Skill, int>> newSkillsList = new List<Tuple<Skill, int>>();
+            // store all unique skillKeys from both parents
+            List<string> uniqueSkillKeys = new List<string>();
 
-            // number of skills to return
-            int numSkills = 0;
-
-            // need to compare parent's skills to see how many match (could effect no. of child skills)
-            int matchingSkills = 0;
-            int totalSkillsAvail = 0;
-
-            // iterate through parents' skills identifying matches
+            // mummy's skills
             for (int i = 0; i < mummySkills.Length; i++)
             {
-                for (int ii = 0; ii < daddySkills.Length; ii++)
-                {
-                    if (mummySkills[i].Item1.skillID.Equals(daddySkills[ii].Item1.skillID))
-                    {
-                        matchingSkills++;
-                    }
-                }
+                uniqueSkillKeys.Add(mummySkills[i].Item1.skillID);
             }
 
-            // get total skill pool available from both parents
-            totalSkillsAvail = (mummySkills.Length + daddySkills.Length) - matchingSkills;
-
-            // if are only 2 skills in total, can only be 2 child skills
-            if (totalSkillsAvail == 2)
+            // daddy's skills
+            for (int i = 0; i < daddySkills.Length; i++)
             {
-                numSkills = 2;
-            }
-            else
-            {
-                // generate random (2-3) to see how many skills child will have
-                numSkills = Globals_Game.myRand.Next(2, 4);
-            }
-
-            // if are only 2 skills in parents' skill pool (i.e. both parents have same skills)
-            // then use highest level skills (enhanced)
-            if (totalSkillsAvail == 2)
-            {
-                for (int i = 0; i < mummySkills.Length; i++)
+                if (!uniqueSkillKeys.Contains(daddySkills[i].Item1.skillID))
                 {
-                    for (int j = 0; j < daddySkills.Length; j++)
-                    {
-                        if (mummySkills[i].Item1.skillID.Equals(daddySkills[j].Item1.skillID))
-                        {
-                            // get highest of duplicate skills' level
-                            int maxLevel = Math.Max(mummySkills[i].Item2, daddySkills[j].Item2);
-
-                            // adjust the skill level upwards
-                            int newSkillLevel = 0;
-                            if (maxLevel > 6)
-                            {
-                                newSkillLevel = 9;
-                            }
-                            else
-                            {
-                                newSkillLevel = maxLevel + 2;
-                            }
-
-                            // creat new skill item
-                            Tuple<Skill, int> mySkill = new Tuple<Skill, int>(mummySkills[i].Item1, newSkillLevel);
-
-                            // add to temporary list
-                            newSkillsList.Add(mySkill);
-
-                            break;
-                        }
-                    }
+                    uniqueSkillKeys.Add(daddySkills[i].Item1.skillID);
                 }
             }
 
-            // if are more than 2 skills in parents' skill pool
-            else
-            {
-                Tuple<Skill, int> mySkill;
-
-                // decide which parent to use first (in case have to choose 2 skills from one parent)
-                Tuple<Skill, int>[] firstSkillSet = null;
-                Tuple<Skill, int>[] lastSkillSet = null;
-
-                // use same sex parent first
-                if (isMale)
-                {
-                    firstSkillSet = daddySkills;
-                    lastSkillSet = mummySkills;
-                }
-                else
-                {
-                    firstSkillSet = mummySkills;
-                    lastSkillSet = daddySkills;
-                }
-
-                // to hold chosen skill
-                int chosenSkill = 0;
-                // to hold previous chosen skill, to allow comparison
-                int PrevChosenSkill = 0;
-
-                // get a skill from the first parent
-                chosenSkill = Globals_Game.myRand.Next(0, firstSkillSet.Length);
-
-                // creat new skill item
-                mySkill = new Tuple<Skill, int>(firstSkillSet[chosenSkill].Item1, firstSkillSet[chosenSkill].Item2);
-                // add to temporary list
-                newSkillsList.Add(mySkill);
-                // record which skill was chosen in case comparison needed
-                PrevChosenSkill = chosenSkill;
-
-                // if child is to have 3 skills
-                if (numSkills == 3)
-                {
-                    do
-                    {
-                        // get another skill from the first parent
-                        chosenSkill = Globals_Game.myRand.Next(0, firstSkillSet.Length);
-
-                        // creat new skill item
-                        mySkill = new Tuple<Skill, int>(firstSkillSet[chosenSkill].Item1, firstSkillSet[chosenSkill].Item2);
-                        // add to temporary list
-                        newSkillsList.Add(mySkill);
-
-                        // do chosen skill doesn't match the first
-                    } while (chosenSkill == PrevChosenSkill);
-
-                }
-
-                // get a skill from the other parent
-                chosenSkill = Globals_Game.myRand.Next(0, lastSkillSet.Length);
-
-                // check to see if already have skill in newSkillsList
-                bool duplicate = false;
-                // to hold any duplicate skill items
-                Tuple<Skill, int> duplicateItem = null;
-
-                // iterate through existing skills list checking for duplicates
-                foreach (Tuple<Skill, int> element in newSkillsList)
-                {
-                    if (lastSkillSet[chosenSkill].Item1.skillID.Equals(element.Item1.skillID))
-                    {
-                        duplicate = true;
-                        // record duplicate skill item
-                        duplicateItem = element;
-                    }
-                }
-
-                // if the last chosen skill was a duplicate
-                if (duplicate)
-                {
-                    // get highest of duplicate skills' level
-                    int maxLevel = Math.Max(duplicateItem.Item2, lastSkillSet[chosenSkill].Item2);
-
-                    // adjust the skill level upwards
-                    int newSkillLevel = 0;
-                    if (maxLevel > 6)
-                    {
-                        newSkillLevel = 9;
-                    }
-                    else
-                    {
-                        newSkillLevel = maxLevel + 2;
-                    }
-
-                    // remove the duplicate item from the list
-                    newSkillsList.Remove(duplicateItem);
-
-                    // create a new skill item with enhanced skill level
-                    mySkill = new Tuple<Skill, int>(duplicateItem.Item1, newSkillLevel);
-                }
-
-                // if the last chosen skill was not a duplicate
-                else
-                {
-                    // copy chosen skill into new skill item
-                    mySkill = new Tuple<Skill, int>(lastSkillSet[chosenSkill].Item1, lastSkillSet[chosenSkill].Item2);
-                }
-
-                // add to temporary list
-                newSkillsList.Add(mySkill);
-            }
-
-            // create new skills array from temporary list
-            Tuple<Skill, int>[] newSkills = newSkillsList.ToArray();
+            // create new skills using uniqueSkillKeys
+            Tuple<Skill, int>[] newSkills = Utility_Methods.generateSkillSet(uniqueSkillKeys);
 
             return newSkills;
         }
@@ -596,7 +433,17 @@ namespace hist_mmorpg
             {
                 if (Globals_Client.showMessages)
                 {
-                    System.Windows.Forms.MessageBox.Show("This man is not married.", "PREGNANCY ATTEMPT CANCELLED");
+                    string whoThisIs = "";
+                    if (husband == Globals_Client.myPlayerCharacter)
+                    {
+                        whoThisIs = "You are ";
+                    }
+                    else
+                    {
+                        whoThisIs = "This man is ";
+                    }
+
+                    System.Windows.Forms.MessageBox.Show(whoThisIs + "not married, my lord.", "PREGNANCY ATTEMPT CANCELLED");
                 }
                 proceed = false;
             }

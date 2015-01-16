@@ -434,6 +434,7 @@ namespace hist_mmorpg
             this.adminEditSkillNameTextBox = new System.Windows.Forms.TextBox();
             this.label81 = new System.Windows.Forms.Label();
             this.adminEditSkillIdTextBox = new System.Windows.Forms.TextBox();
+            this.houseEnterKeepBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -1997,6 +1998,7 @@ namespace hist_mmorpg
             // 
             // houseContainer.Panel1
             // 
+            this.houseContainer.Panel1.Controls.Add(this.houseEnterKeepBtn);
             this.houseContainer.Panel1.Controls.Add(this.label18);
             this.houseContainer.Panel1.Controls.Add(this.houseProposeBrideTextBox);
             this.houseContainer.Panel1.Controls.Add(this.label17);
@@ -2084,7 +2086,7 @@ namespace hist_mmorpg
             // 
             // houseExamineArmiesBtn
             // 
-            this.houseExamineArmiesBtn.Location = new System.Drawing.Point(12, 189);
+            this.houseExamineArmiesBtn.Location = new System.Drawing.Point(12, 218);
             this.houseExamineArmiesBtn.Name = "houseExamineArmiesBtn";
             this.houseExamineArmiesBtn.Size = new System.Drawing.Size(138, 48);
             this.houseExamineArmiesBtn.TabIndex = 44;
@@ -2094,7 +2096,7 @@ namespace hist_mmorpg
             // 
             // houseFireBtn
             // 
-            this.houseFireBtn.Location = new System.Drawing.Point(12, 159);
+            this.houseFireBtn.Location = new System.Drawing.Point(12, 188);
             this.houseFireBtn.Name = "houseFireBtn";
             this.houseFireBtn.Size = new System.Drawing.Size(105, 23);
             this.houseFireBtn.TabIndex = 43;
@@ -2105,7 +2107,7 @@ namespace hist_mmorpg
             // 
             // houseEntourageBtn
             // 
-            this.houseEntourageBtn.Location = new System.Drawing.Point(12, 113);
+            this.houseEntourageBtn.Location = new System.Drawing.Point(12, 142);
             this.houseEntourageBtn.Name = "houseEntourageBtn";
             this.houseEntourageBtn.Size = new System.Drawing.Size(122, 40);
             this.houseEntourageBtn.TabIndex = 42;
@@ -4822,17 +4824,27 @@ namespace hist_mmorpg
             this.adminEditSkillIdTextBox.Size = new System.Drawing.Size(159, 20);
             this.adminEditSkillIdTextBox.TabIndex = 27;
             // 
+            // houseEnterKeepBtn
+            // 
+            this.houseEnterKeepBtn.Location = new System.Drawing.Point(12, 113);
+            this.houseEnterKeepBtn.Name = "houseEnterKeepBtn";
+            this.houseEnterKeepBtn.Size = new System.Drawing.Size(122, 23);
+            this.houseEnterKeepBtn.TabIndex = 52;
+            this.houseEnterKeepBtn.Text = "Enter Keep";
+            this.houseEnterKeepBtn.UseVisualStyleBackColor = true;
+            this.houseEnterKeepBtn.Click += new System.EventHandler(this.houseEnterKeepBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
-            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.houseContainer);
+            this.Controls.Add(this.travelContainer);
+            this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.royalGiftsContainer);
             this.Controls.Add(this.fiefContainer);
-            this.Controls.Add(this.travelContainer);
             this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.adminEditContainer);
@@ -5436,6 +5448,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button fiefAutoAdjustBtn;
         private System.Windows.Forms.ToolStripMenuItem murderThisCharacterToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox muderCharacterMenuTextBox1;
+        private System.Windows.Forms.Button houseEnterKeepBtn;
 
     }
 }
