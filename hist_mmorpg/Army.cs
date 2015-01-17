@@ -279,6 +279,21 @@ namespace hist_mmorpg
         /// <param name="newLeader">The new leader (can be null)</param>
         public void assignNewLeader(Character newLeader)
         {
+            // check if already leader of another army and remove if necessary
+            Army otherArmy = null;
+            if (!String.IsNullOrWhiteSpace(newLeader.armyID))
+            {
+                otherArmy = newLeader.getArmy();
+
+                if (otherArmy != null)
+                {
+                    if (otherArmy != this)
+                    {
+                        otherArmy.leader = null;
+                    }
+                }
+            }
+
             // check if army is involved in a siege
             Siege mySiege = this.getSiege();
 

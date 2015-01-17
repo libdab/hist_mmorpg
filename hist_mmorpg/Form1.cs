@@ -1460,7 +1460,13 @@ namespace hist_mmorpg
                 }
 
                 // CHECK OWNERSHIP CHALLENGES
-                Globals_Game.processOwnershipChallenges();
+                bool refreshMenus = Globals_Game.processOwnershipChallenges();
+
+                // check if menus need to be refreshed (due to ownership changes)
+                if (refreshMenus)
+                {
+                    this.initMenuPermissions();
+                }
             }
 
             // SWITCH ON MESSAGES
@@ -3311,6 +3317,8 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void royalGiftsRevokeTitleBtn_Click(object sender, EventArgs e)
         {
+            bool refreshMenus = false;
+
             // get place type and id from button tag
             Button button = sender as Button;
             string[] placeDetails = button.Tag.ToString().Split('|');
@@ -3353,7 +3361,13 @@ namespace hist_mmorpg
                     // reassign title
                     if (thisProv != null)
                     {
-                        Globals_Client.myPlayerCharacter.grantTitle(Globals_Client.myPlayerCharacter, thisProv);
+                        refreshMenus = Globals_Client.myPlayerCharacter.grantTitle(Globals_Client.myPlayerCharacter, thisProv);
+
+                        // check if menus need to be refreshed (due to ownership changes)
+                        if (refreshMenus)
+                        {
+                            this.initMenuPermissions();
+                        }
 
                         // refresh screen
                         this.refreshCurrentScreen();
@@ -4786,7 +4800,7 @@ namespace hist_mmorpg
 
                 if (targetProv != null)
                 {
-                    targetProv.lodgeOwnershipChallenge();
+                    targetProv.lodgeOwnershipChallenge(Globals_Client.myPlayerCharacter);
                 }
 
                 this.fiefsListView.Focus();

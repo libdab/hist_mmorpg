@@ -2157,6 +2157,218 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Performs conditional checks before granting a gift or postiton of responsibility
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="type">string identify type of grant</param>
+        /// <param name="priorToList">bool indicating if check is prior to listing possible candidates</param>
+        /// <param name="armyID">string containing the army ID (if choosing a leader)</param>
+        public bool checksBeforeGranting(string type, bool priorToList, string armyID = null)
+        {
+            bool proceed = true;
+            string toDisplay = "";
+
+            // get army if appropriate
+            Army armyToLead = null;
+            if (!String.IsNullOrWhiteSpace(armyID))
+            {
+                if (Globals_Game.armyMasterList.ContainsKey(armyID))
+                {
+                    armyToLead = Globals_Game.armyMasterList[armyID];
+                }
+            }
+
+            // royal gifts
+            if (type.Contains("royal"))
+            {
+                // 1. check is PC
+                if (!(this is PlayerCharacter))
+                {
+                    proceed = false;
+                    if (!priorToList)
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            toDisplay = "Only a PlayerCharacter can receive a royal gift.";
+                            System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                        }
+                    }
+                }
+
+                else
+                {
+                    // 2. check is an active player
+                    if (String.IsNullOrWhiteSpace((this as PlayerCharacter).playerID))
+                    {
+                        proceed = false;
+                        if (!priorToList)
+                        {
+                            if (Globals_Client.showMessages)
+                            {
+                                toDisplay = "Only a player can receive a royal gift.";
+                                System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                            }
+                        }
+                    }
+
+                    else
+                    {
+                        // 3. check is not self
+                        if ((this as PlayerCharacter) == Globals_Client.myPlayerCharacter)
+                        {
+                            proceed = false;
+                            if (!priorToList)
+                            {
+                                if (Globals_Client.showMessages)
+                                {
+                                    toDisplay = "You cannot grant a royal gift to yourself.";
+                                    System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // army leaders, bailiffs, fief titles
+            else
+            {
+                // checks for all
+                // 1. check is male
+                if (!this.isMale)
+                {
+                    proceed = false;
+                    if (!priorToList)
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            toDisplay = "The recieving character must be a male.";
+                            System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                        }
+                    }
+                }
+
+                else
+                {
+                    // 2. check is of age
+                    if (this.calcAge() < 14)
+                    {
+                        proceed = false;
+                        if (!priorToList)
+                        {
+                            if (Globals_Client.showMessages)
+                            {
+                                toDisplay = "The recieving character must be of age (14).";
+                                System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                            }
+                        }
+                    }
+
+                    // army leaders
+                    else
+                    {
+                        // 3. army leaders must be in same hex as army
+                        if ((type.Equals("leader")) && (!(this.location.id.Equals(armyToLead.location))))
+                        {
+                            proceed = false;
+                            if (!priorToList)
+                            {
+                                if (Globals_Client.showMessages)
+                                {
+                                    toDisplay = "Army leaders must be in the same hex as the army they are to lead.";
+                                    System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                }
+                            }
+                        }
+
+                        else
+                        {
+                            // 4. check if army leader is already leader of this army
+                            if ((!String.IsNullOrWhiteSpace(this.armyID)) && (!String.IsNullOrWhiteSpace(armyID)))
+                            {
+                                if (this.armyID.Equals(armyID))
+                                {
+                                    proceed = false;
+                                    if (!priorToList)
+                                    {
+                                        if (Globals_Client.showMessages)
+                                        {
+                                            toDisplay = "This character is already leading the selected army.";
+                                            System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // checks to be carried out at the time of selection (i.e. not prior to listing candidates)
+            if (proceed)
+            {
+                if (!priorToList)
+                {
+                    if ((type.Equals("leader")) || (type.Equals("bailiff")))
+                    {
+                        // 1. warn if is currently employed as army leader
+                        if (!String.IsNullOrWhiteSpace(this.armyID))
+                        {
+                            toDisplay = "This character is currently leading an army (" + this.armyID + ").\r\n\r\n";
+                            toDisplay += "Do you wish to proceed with the appointment?";
+                            DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with appointment?", MessageBoxButtons.OKCancel);
+
+                            // if choose to cancel
+                            if (dialogResult == DialogResult.Cancel)
+                            {
+                                proceed = false;
+                                if (Globals_Client.showMessages)
+                                {
+                                    toDisplay = "Appointment cancelled.";
+                                    System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                }
+                            }
+                        }
+
+                        // 2. warn if is currently employed as bailiff
+                        if (proceed)
+                        {
+                            List<Fief> fiefsBailiff = this.getFiefsBailiff();
+                            if (fiefsBailiff.Count > 0)
+                            {
+                                toDisplay = "This character is currently employed as a bailiff (";
+                                for (int i = 0; i < fiefsBailiff.Count; i++)
+                                {
+                                    toDisplay += fiefsBailiff[i].id;
+                                    if (i < fiefsBailiff.Count - 1)
+                                    {
+                                        toDisplay += ", ";
+                                    }
+                                }
+                                toDisplay += ").\r\n\r\n";
+                                toDisplay += "Do you wish to proceed with the appointment?";
+                                DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with appointment?", MessageBoxButtons.OKCancel);
+
+                                // if choose to cancel
+                                if (dialogResult == DialogResult.Cancel)
+                                {
+                                    proceed = false;
+                                    if (Globals_Client.showMessages)
+                                    {
+                                        toDisplay = "Appointment cancelled.";
+                                        System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return proceed;
+        }
+
+        /// <summary>
         /// Allows the character to enter or exit the keep
         /// </summary>
         /// <returns>bool indicating success</returns>
@@ -2880,9 +3092,13 @@ namespace hist_mmorpg
             {
                 employer = (this as PlayerCharacter);
             }
-            else
+            else if (!String.IsNullOrWhiteSpace((this as NonPlayerCharacter).employer))
             {
                 employer = (this as NonPlayerCharacter).getEmployer();
+            }
+            else if (!String.IsNullOrWhiteSpace(this.familyID))
+            {
+                employer = this.getHeadOfFamily();
             }
 
             if (employer != null)
@@ -4219,7 +4435,7 @@ namespace hist_mmorpg
                 oldTitleHolder.myTitles.Remove(titlePlace.id);
             }
 
-            // add title to new owner
+            // add title to new holder
             newTitleHolder.myTitles.Add(titlePlace.id);
             titlePlace.titleHolder = newTitleHolder.charID;
 
@@ -4273,13 +4489,23 @@ namespace hist_mmorpg
             {
                 description += "province";
             }
-            description += " of " + titlePlace.name + " was granted by its owner ";
-            description += placeOwner.firstName + " " + placeOwner.familyName + " to ";
-            description += newTitleHolder.firstName + " " + newTitleHolder.familyName;
-            if ((oldTitleHolder != null) && (oldTitleHolder != placeOwner))
+            description += " of " + titlePlace.name + " was ";
+            if ((newTitleHolder == placeOwner) && (oldTitleHolder != null))
             {
-                description += "; This has necessitated the removal of ";
-                description += oldTitleHolder.firstName + " " + oldTitleHolder.familyName + " from the title";
+                description += "removed by His Royal Highness ";
+                description += this.firstName + " " + this.familyName + " from the previous holder ";
+                description += oldTitleHolder.firstName + " " + oldTitleHolder.familyName;
+            }
+            else
+            {
+                description += "granted by its owner ";
+                description += placeOwner.firstName + " " + placeOwner.familyName + " to ";
+                description += newTitleHolder.firstName + " " + newTitleHolder.familyName;
+                if ((oldTitleHolder != null) && (oldTitleHolder != placeOwner))
+                {
+                    description += "; This has necessitated the removal of ";
+                    description += oldTitleHolder.firstName + " " + oldTitleHolder.familyName + " from the title";
+                }
             }
             description += ".";
 
@@ -4331,10 +4557,10 @@ namespace hist_mmorpg
                         // fief ancestral ownership (only king can give away fief ancestral titles)
                         if (titlePlace is Fief)
                         {
-                            // check if king
-                            if ((titlePlace as Fief).ancestralOwner != (titlePlace as Fief).province.kingdom.owner)
+                            if (titlePlace.owner.charID.Equals((titlePlace as Fief).ancestralOwner.charID))
                             {
-                                if (titlePlace.owner.charID.Equals((titlePlace as Fief).ancestralOwner.charID))
+                                // check if king
+                                if ((titlePlace as Fief).ancestralOwner != (titlePlace as Fief).province.kingdom.owner)
                                 {
                                     toDisplay = "You cannot grant an ancestral title to another character.";
                                     proceed = false;

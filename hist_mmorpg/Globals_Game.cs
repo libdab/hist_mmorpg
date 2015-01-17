@@ -485,13 +485,16 @@ namespace hist_mmorpg
         public static bool addOwnershipChallenge(OwnershipChallenge challenge)
         {
             bool success = true;
+            string toDisplay = "";
 
             if (Globals_Game.checkForExistingChallenge(challenge.placeID))
             {
                 success = false;
                 if (Globals_Client.showMessages)
                 {
-                    System.Windows.Forms.MessageBox.Show("There is already a challenge for the ownership of " + challenge.getPlace().name + ".");
+                    toDisplay = "There is already a challenge for the ownership of " + challenge.getPlace().name + ".";
+                    toDisplay += "  Only one challenge is permissable at a time.";
+                    System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
                 }
             }
 
@@ -506,8 +509,10 @@ namespace hist_mmorpg
         /// <summary>
         /// Processes all challenges in the ownershipChallenges collection
         /// </summary>
-        public static void processOwnershipChallenges()
+        /// <returns>bool indicating at least one place has changed ownership</returns>
+        public static bool processOwnershipChallenges()
         {
+            bool ownershipChanged = false;
             List<OwnershipChallenge> toBeRemoved = new List<OwnershipChallenge>();
             PlayerCharacter challenger = null;
             Place contestedPlace = null;
@@ -652,6 +657,9 @@ namespace hist_mmorpg
 
                             // mark challenge for removal
                             toBeRemoved.Add(challenge.Value);
+
+                            // update ownershipChanged
+                            ownershipChanged = true;
                         }
                     }
 
@@ -720,6 +728,8 @@ namespace hist_mmorpg
                     Globals_Game.ownershipChallenges.Remove(thisChallenge.id);
                 }
             }
+
+            return ownershipChanged;
         }
 
         /// <summary>

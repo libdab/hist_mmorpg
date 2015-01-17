@@ -218,16 +218,6 @@ namespace hist_mmorpg
             // clear existing items in list
             this.npcListView.Items.Clear();
 
-            // if choosing army leader, get army
-            Army myArmy = null;
-            if (this.function.Equals("leader"))
-            {
-                if (!String.IsNullOrWhiteSpace(this.armyID))
-                {
-                    myArmy = Globals_Game.armyMasterList[this.armyID];
-                }
-            }
-
             ListViewItem myCharItem = null;
 
             // for royal gifts, ITERATE THROUGH PLAYERS
@@ -235,39 +225,27 @@ namespace hist_mmorpg
             {
                 foreach (KeyValuePair<string, PlayerCharacter> thisPlayer in Globals_Game.pcMasterList)
                 {
-					addItem = true;
+                    myCharItem = null;
 
-                    // only show 'played' PCs
-                    if (String.IsNullOrWhiteSpace(thisPlayer.Value.playerID))
-					{
-						addItem = false;
-					}
-					else
+                    if (thisPlayer.Value.checksBeforeGranting(this.function, true))
                     {
-                        // don't show this player
-						if (thisPlayer.Value == Globals_Client.myPlayerCharacter)
-						{
-							addItem = false;
-						}
-						else
-                        {
-                            // Create an item and subitems for each character
+                        addItem = true;
 
-                            // name
-                            myCharItem = new ListViewItem(thisPlayer.Value.firstName + " " + thisPlayer.Value.familyName);
+                        // Create an item and subitems for each character
+                        // name
+                        myCharItem = new ListViewItem(thisPlayer.Value.firstName + " " + thisPlayer.Value.familyName);
 
-                            // PC ID
-                            myCharItem.SubItems.Add(thisPlayer.Value.charID);
+                        // PC ID
+                        myCharItem.SubItems.Add(thisPlayer.Value.charID);
 
-                            // player ID
-                            myCharItem.SubItems.Add(thisPlayer.Value.playerID);
+                        // player ID
+                        myCharItem.SubItems.Add(thisPlayer.Value.playerID);
 
-                            // nationality
-                            myCharItem.SubItems.Add(thisPlayer.Value.nationality.name);
-                        }
+                        // nationality
+                        myCharItem.SubItems.Add(thisPlayer.Value.nationality.name);
                     }
 
-					// check for null items
+                    // check for null items
 					if (myCharItem == null)
 					{
 						addItem = false;
@@ -285,24 +263,13 @@ namespace hist_mmorpg
             {
                 for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
                 {
-					addItem = true;
+                    myCharItem = null;
 
-                    // don't display females
-					if (!Globals_Client.myPlayerCharacter.myNPCs [i].isMale)
-					{
-						addItem = false;
-					}
-
-                    // don't display characters not 'of age'
-                    else if (Globals_Client.myPlayerCharacter.myNPCs[i].calcAge() < 14)
+                    if (Globals_Client.myPlayerCharacter.myNPCs[i].checksBeforeGranting(this.function, true, this.armyID))
                     {
-                        addItem = false;
-                    }
+                        addItem = true;
 
-					else
-                    {
                         // Create an item and subitems for each character
-
                         // name
                         myCharItem = new ListViewItem(Globals_Client.myPlayerCharacter.myNPCs[i].firstName + " " + Globals_Client.myPlayerCharacter.myNPCs[i].familyName);
 
@@ -311,18 +278,6 @@ namespace hist_mmorpg
 
                         // location
                         myCharItem.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].location.id);
-
-                        // if appointing leader, only add item to fiefsListView if is in same fief as army
-                        if (this.function.Equals("leader"))
-                        {
-                            if (myArmy != null)
-                            {
-                                if (Globals_Client.myPlayerCharacter.myNPCs[i].location.id != myArmy.location)
-                                {
-                                    addItem = false;
-                                }
-                            }
-                        }
                     }
 
 					// check for null items
@@ -620,6 +575,8 @@ namespace hist_mmorpg
         {
             if (npcListView.SelectedItems.Count > 0)
             {
+                bool refreshMenus = false;
+
                 // if royal gift, get selected PlayerCharacter
                 Character selectedCharacter = null;
                 if (this.function.Contains("royalGift"))
@@ -681,11 +638,17 @@ namespace hist_mmorpg
                 // if appointing a bailiff
                 if (this.function.Equals("bailiff"))
                 {
-                    // set the selected NPC as bailiff
-                    Globals_Client.fiefToView.bailiff = selectedCharacter;
+                    if (selectedCharacter != null)
+                    {
+                        if (selectedCharacter.checksBeforeGranting(this.function, false, this.armyID))
+                        {
+                            // set the selected NPC as bailiff
+                            Globals_Client.fiefToView.bailiff = selectedCharacter;
 
-                    // refresh the fief information (in the main form)
-                    this.parent.refreshFiefContainer(Globals_Client.fiefToView);
+                            // refresh the fief information (in the main form)
+                            this.parent.refreshFiefContainer(Globals_Client.fiefToView);
+                        }
+                    }
                 }
 
                 // if making a royal gift (title)
@@ -695,11 +658,20 @@ namespace hist_mmorpg
                     {
                         if (selectedCharacter != null)
                         {
-                            // set the selected NPC as title holder
-                            Globals_Client.myPlayerCharacter.grantTitle(selectedCharacter, thisPlace);
+                            if (selectedCharacter.checksBeforeGranting(this.function, false))
+                            {
+                                // set the selected NPC as title holder
+                                refreshMenus = Globals_Client.myPlayerCharacter.grantTitle(selectedCharacter, thisPlace);
 
-                            // refresh the fief information (in the main form)
-                            this.parent.refreshCurrentScreen();
+                                // check if menus need to be refreshed (due to ownership changes)
+                                if ((thisPlace is Province) && (refreshMenus))
+                                {
+                                    this.parent.initMenuPermissions();
+                                }
+
+                                // refresh the fief information (in the main form)
+                                this.parent.refreshCurrentScreen();
+                            }
                         }
                     }
                 }
@@ -711,11 +683,14 @@ namespace hist_mmorpg
                     {
                         if (selectedCharacter != null)
                         {
-                            // process the change of ownership
-                            (thisPlace as Fief).changeOwnership((selectedCharacter as PlayerCharacter), "voluntary");
+                            if (selectedCharacter.checksBeforeGranting(this.function, false))
+                            {
+                                // process the change of ownership
+                                (thisPlace as Fief).changeOwnership((selectedCharacter as PlayerCharacter), "voluntary");
 
-                            // refresh the fief information (in the main form)
-                            this.parent.refreshCurrentScreen();
+                                // refresh the fief information (in the main form)
+                                this.parent.refreshCurrentScreen();
+                            }
                         }
                     }
                 }
@@ -727,11 +702,14 @@ namespace hist_mmorpg
                     {
                         if (selectedCharacter != null)
                         {
-                            // process the change of officeHolder
-                            thisPosition.bestowPosition(selectedCharacter as PlayerCharacter);
+                            if (selectedCharacter.checksBeforeGranting(this.function, false))
+                            {
+                                // process the change of officeHolder
+                                thisPosition.bestowPosition(selectedCharacter as PlayerCharacter);
 
-                            // refresh the fief information (in the main form)
-                            this.parent.refreshCurrentScreen();
+                                // refresh the fief information (in the main form)
+                                this.parent.refreshCurrentScreen();
+                            }
                         }
                     }
                 }
@@ -739,34 +717,46 @@ namespace hist_mmorpg
                 // if appointing fief title holder
                 else if (this.function.Equals("titleHolder"))
                 {
-                    // set the selected NPC as title holder
-                    Globals_Client.myPlayerCharacter.grantTitle(selectedCharacter, Globals_Client.fiefToView);
+                    if (selectedCharacter != null)
+                    {
+                        if (selectedCharacter.checksBeforeGranting(this.function, false))
+                        {
+                            // set the selected NPC as title holder
+                            Globals_Client.myPlayerCharacter.grantTitle(selectedCharacter, Globals_Client.fiefToView);
 
-                    // refresh the fief information (in the main form)
-                    this.parent.refreshCurrentScreen();
+                            // refresh the fief information (in the main form)
+                            this.parent.refreshCurrentScreen();
+                        }
+                    }
                 }
 
                 // if appointing an army leader
                 else
                 {
-                    // get army
-                    if (!String.IsNullOrWhiteSpace(this.armyID))
+                    if (selectedCharacter != null)
                     {
-                        if (Globals_Game.armyMasterList.ContainsKey(this.armyID))
+                        if (selectedCharacter.checksBeforeGranting(this.function, false, this.armyID))
                         {
-                            Army thisArmy = Globals_Game.armyMasterList[this.armyID];
+                            // get army
+                            if (!String.IsNullOrWhiteSpace(this.armyID))
+                            {
+                                if (Globals_Game.armyMasterList.ContainsKey(this.armyID))
+                                {
+                                    Army thisArmy = Globals_Game.armyMasterList[this.armyID];
 
-                            thisArmy.assignNewLeader(selectedCharacter);
+                                    thisArmy.assignNewLeader(selectedCharacter);
 
-                            // refresh the army information (in the main form)
-                            this.parent.refreshArmyContainer(thisArmy);
-                        }
-                    }
-                    else
-                    {
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show("No army specified.");
+                                    // refresh the army information (in the main form)
+                                    this.parent.refreshArmyContainer(thisArmy);
+                                }
+                            }
+                            else
+                            {
+                                if (Globals_Client.showMessages)
+                                {
+                                    System.Windows.Forms.MessageBox.Show("No army specified.");
+                                }
+                            }
                         }
                     }
                 }

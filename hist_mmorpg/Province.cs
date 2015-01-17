@@ -63,13 +63,15 @@ namespace hist_mmorpg
         /// <summary>
         /// Processes functions involved in lodging a new ownership challenge
         /// </summary>
-        public void lodgeOwnershipChallenge()
+        /// <param name="challenger">PlayerCharacter challenging for ownership</param>
+        public void lodgeOwnershipChallenge(PlayerCharacter challenger)
         {
             bool proceed = true;
 
             // ensure aren't current owner
-            if (Globals_Client.myPlayerCharacter == this.owner)
+            if (challenger == this.owner)
             {
+                proceed = false;
                 if (Globals_Client.showMessages)
                 {
                     System.Windows.Forms.MessageBox.Show("You already own " + this.name + "!");
@@ -79,7 +81,7 @@ namespace hist_mmorpg
             else
             {
                 // create and send new OwnershipChallenge
-                OwnershipChallenge newChallenge = new OwnershipChallenge(Globals_Game.getNextOwnChallengeID(), Globals_Client.myPlayerCharacter.charID, "province", this.id);
+                OwnershipChallenge newChallenge = new OwnershipChallenge(Globals_Game.getNextOwnChallengeID(), challenger.charID, "province", this.id);
                 proceed = Globals_Game.addOwnershipChallenge(newChallenge);
             }
 
@@ -102,7 +104,7 @@ namespace hist_mmorpg
                 // journal entry personae
                 string allEntry = "all|all";
                 string currentOwnerEntry = currentOwner.charID + "|owner";
-                string challengerEntry = Globals_Client.myPlayerCharacter.charID + "|challenger";
+                string challengerEntry = challenger.charID + "|challenger";
                 string[] entryPersonae = new string[] { currentOwnerEntry, challengerEntry, allEntry };
 
                 // entry type
@@ -110,7 +112,7 @@ namespace hist_mmorpg
 
                 // journal entry description
                 string description = "On this day of Our Lord a challenge for the ownership of " + this.name + " (" + this.id + ")";
-                description += " has COMMENCED.  " + Globals_Client.myPlayerCharacter.firstName + " " + Globals_Client.myPlayerCharacter.familyName + " seeks to rest ownership from ";
+                description += " has COMMENCED.  " + challenger.firstName + " " + challenger.familyName + " seeks to rest ownership from ";
                 description += "the current owner, " + currentOwner.firstName + " " + currentOwner.familyName + ".";
 
                 // create and send a proposal (journal entry)
