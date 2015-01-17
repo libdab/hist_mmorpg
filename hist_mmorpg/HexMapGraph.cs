@@ -307,16 +307,32 @@ namespace hist_mmorpg
         {
             Fief myFief = null;
 
-            // iterate through edges
-            foreach (var e in this.myMap.Edges)
+            // check for correct direction codes
+            string[] correctDirections = new string[6] { "E", "W", "SE", "SW", "NE", "NW" };
+            bool dirCorrect = false;
+            foreach (string correctDir in correctDirections)
             {
-                // if matching source, check tag
-                if (e.Source == f)
+                if (direction.ToUpper().Equals(correctDir))
                 {
-                    // if matching tag, get target
-                    if (e.Tag.Equals(direction))
+                    dirCorrect = true;
+                    break;
+                }
+            }
+
+            // iterate through edges
+            if (dirCorrect)
+            {
+                foreach (var e in this.myMap.Edges)
+                {
+                    // if matching source, check tag
+                    if (e.Source == f)
                     {
-                        myFief = e.Target;
+                        // if matching tag, get target
+                        if (e.Tag.Equals(direction))
+                        {
+                            myFief = e.Target;
+                            break;
+                        }
                     }
                 }
             }

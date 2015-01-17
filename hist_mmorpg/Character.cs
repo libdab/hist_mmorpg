@@ -1559,16 +1559,16 @@ namespace hist_mmorpg
                     }
 
                     // pregnancy
-                    Character mySpouse = npc.getSpouse();
+                    Character npcSpouse = npc.getSpouse();
                     Character toAbort = null;
 
                     if (npc.isPregnant)
                     {
                         toAbort = npc;
                     }
-                    else if ((mySpouse != null) && (mySpouse.isPregnant))
+                    else if ((npcSpouse != null) && (npcSpouse.isPregnant))
                     {
-                        toAbort = mySpouse;
+                        toAbort = npcSpouse;
                     }
 
                     if (toAbort != null)
@@ -1580,9 +1580,9 @@ namespace hist_mmorpg
                     // forthcoming marriage
                     if (!String.IsNullOrWhiteSpace(npc.fiancee))
                     {
-                        Character myFiancee = npc.getFiancee();
+                        Character npcFiancee = npc.getFiancee();
 
-                        if (myFiancee != null)
+                        if (npcFiancee != null)
                         {
                             // get marriage entry in Globals_Game.scheduledEvents
                             // get role
@@ -2157,6 +2157,31 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Allows the character to enter or exit the keep
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        public bool exitEnterKeep()
+        {
+            bool success = false;
+
+            // if in keep
+            if (this.inKeep)
+            {
+                // exit keep
+                success = this.exitKeep();
+            }
+
+            // if not in keep
+            else
+            {
+                // attempt to enter keep
+                success = this.enterKeep();
+            }
+
+            return success;
+        }
+
+        /// <summary>
         /// Moves character to target fief
         /// </summary>
         /// <returns>bool indicating success</returns>
@@ -2402,16 +2427,35 @@ namespace hist_mmorpg
                         birthYear = birthYear + 1;
                     }
                     string[] birthPersonae = new string[] { wife.familyID + "|headOfFamily", wife.charID + "|mother", wife.spouse + "|father" };
+
+                    // create entry
                     JournalEntry birth = new JournalEntry(Globals_Game.getNextJournalEntryID(), birthYear, birthSeason, birthPersonae, "birth");
+                    // add entry
                     Globals_Game.scheduledEvents.entries.Add(birth.jEntryID, birth);
 
-                    // display message of celebration
-                    if (Globals_Client.showMessages)
+                    // check has been added
+                    if (Globals_Game.scheduledEvents.entries.ContainsKey(birth.jEntryID))
                     {
-                        System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + wife.firstName + " " + wife.familyName + " is pregnant!", "PREGNANCY SUCCESSFUL");
+                        success = true;
+
+                        // display message of celebration
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("Let the bells ring out, milord.  " + wife.firstName + " " + wife.familyName + " is pregnant!", "PREGNANCY SUCCESSFUL");
+                        }
                     }
-                    success = true;
+
+                    // if not added
+                    else
+                    {
+                        // display message of celebration
+                        if (Globals_Client.showMessages)
+                        {
+                            System.Windows.Forms.MessageBox.Show("ERROR: birth event not added to Globals_Game.scheduledEvents", "ERROR");
+                        }
+                    }
                 }
+
                 // if attempt not successful
                 else
                 {

@@ -167,6 +167,7 @@ namespace hist_mmorpg
             this.meetingPlaceTextBox = new System.Windows.Forms.TextBox();
             this.meetingPlaceCharsListView = new System.Windows.Forms.ListView();
             this.houseContainer = new System.Windows.Forms.SplitContainer();
+            this.houseEnterKeepBtn = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
             this.houseProposeBrideTextBox = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
@@ -434,7 +435,6 @@ namespace hist_mmorpg
             this.adminEditSkillNameTextBox = new System.Windows.Forms.TextBox();
             this.label81 = new System.Windows.Forms.Label();
             this.adminEditSkillIdTextBox = new System.Windows.Forms.TextBox();
-            this.houseEnterKeepBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -1514,7 +1514,7 @@ namespace hist_mmorpg
             this.travelRouteBtn.Size = new System.Drawing.Size(122, 37);
             this.travelRouteBtn.TabIndex = 12;
             this.travelRouteBtn.Tag = "travel";
-            this.travelRouteBtn.Text = "Take This Exact Route ...";
+            this.travelRouteBtn.Text = "Take This Exact Route ... (NW,E, etc.)";
             this.travelRouteBtn.UseVisualStyleBackColor = true;
             this.travelRouteBtn.Click += new System.EventHandler(this.routeBtn_Click);
             // 
@@ -1808,7 +1808,7 @@ namespace hist_mmorpg
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(132, 183);
+            this.label16.Location = new System.Drawing.Point(132, 198);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(104, 13);
             this.label16.TabIndex = 46;
@@ -1816,14 +1816,14 @@ namespace hist_mmorpg
             // 
             // meetingPlaceProposeTextBox
             // 
-            this.meetingPlaceProposeTextBox.Location = new System.Drawing.Point(132, 203);
+            this.meetingPlaceProposeTextBox.Location = new System.Drawing.Point(132, 218);
             this.meetingPlaceProposeTextBox.Name = "meetingPlaceProposeTextBox";
             this.meetingPlaceProposeTextBox.Size = new System.Drawing.Size(100, 20);
             this.meetingPlaceProposeTextBox.TabIndex = 45;
             // 
             // meetingPlaceProposeBtn
             // 
-            this.meetingPlaceProposeBtn.Location = new System.Drawing.Point(15, 176);
+            this.meetingPlaceProposeBtn.Location = new System.Drawing.Point(15, 191);
             this.meetingPlaceProposeBtn.Name = "meetingPlaceProposeBtn";
             this.meetingPlaceProposeBtn.Size = new System.Drawing.Size(111, 53);
             this.meetingPlaceProposeBtn.TabIndex = 44;
@@ -1834,7 +1834,7 @@ namespace hist_mmorpg
             // 
             // meetingPlaceEntourageBtn
             // 
-            this.meetingPlaceEntourageBtn.Location = new System.Drawing.Point(15, 120);
+            this.meetingPlaceEntourageBtn.Location = new System.Drawing.Point(15, 135);
             this.meetingPlaceEntourageBtn.Name = "meetingPlaceEntourageBtn";
             this.meetingPlaceEntourageBtn.Size = new System.Drawing.Size(111, 44);
             this.meetingPlaceEntourageBtn.TabIndex = 43;
@@ -1854,10 +1854,10 @@ namespace hist_mmorpg
             // 
             this.meetingPlaceRouteBtn.Location = new System.Drawing.Point(15, 72);
             this.meetingPlaceRouteBtn.Name = "meetingPlaceRouteBtn";
-            this.meetingPlaceRouteBtn.Size = new System.Drawing.Size(111, 37);
+            this.meetingPlaceRouteBtn.Size = new System.Drawing.Size(111, 54);
             this.meetingPlaceRouteBtn.TabIndex = 16;
             this.meetingPlaceRouteBtn.Tag = "court";
-            this.meetingPlaceRouteBtn.Text = "Take This Exact Route ...";
+            this.meetingPlaceRouteBtn.Text = "Take This Exact Route ... (NW,E,SE, etc.)";
             this.meetingPlaceRouteBtn.UseVisualStyleBackColor = true;
             this.meetingPlaceRouteBtn.Click += new System.EventHandler(this.routeBtn_Click);
             // 
@@ -2030,6 +2030,16 @@ namespace hist_mmorpg
             this.houseContainer.SplitterDistance = 259;
             this.houseContainer.TabIndex = 7;
             // 
+            // houseEnterKeepBtn
+            // 
+            this.houseEnterKeepBtn.Location = new System.Drawing.Point(12, 125);
+            this.houseEnterKeepBtn.Name = "houseEnterKeepBtn";
+            this.houseEnterKeepBtn.Size = new System.Drawing.Size(122, 23);
+            this.houseEnterKeepBtn.TabIndex = 52;
+            this.houseEnterKeepBtn.Text = "Enter Keep";
+            this.houseEnterKeepBtn.UseVisualStyleBackColor = true;
+            this.houseEnterKeepBtn.Click += new System.EventHandler(this.houseEnterKeepBtn_Click);
+            // 
             // label18
             // 
             this.label18.AutoSize = true;
@@ -2086,7 +2096,7 @@ namespace hist_mmorpg
             // 
             // houseExamineArmiesBtn
             // 
-            this.houseExamineArmiesBtn.Location = new System.Drawing.Point(12, 218);
+            this.houseExamineArmiesBtn.Location = new System.Drawing.Point(12, 230);
             this.houseExamineArmiesBtn.Name = "houseExamineArmiesBtn";
             this.houseExamineArmiesBtn.Size = new System.Drawing.Size(138, 48);
             this.houseExamineArmiesBtn.TabIndex = 44;
@@ -2096,7 +2106,7 @@ namespace hist_mmorpg
             // 
             // houseFireBtn
             // 
-            this.houseFireBtn.Location = new System.Drawing.Point(12, 188);
+            this.houseFireBtn.Location = new System.Drawing.Point(12, 200);
             this.houseFireBtn.Name = "houseFireBtn";
             this.houseFireBtn.Size = new System.Drawing.Size(105, 23);
             this.houseFireBtn.TabIndex = 43;
@@ -2107,7 +2117,7 @@ namespace hist_mmorpg
             // 
             // houseEntourageBtn
             // 
-            this.houseEntourageBtn.Location = new System.Drawing.Point(12, 142);
+            this.houseEntourageBtn.Location = new System.Drawing.Point(12, 154);
             this.houseEntourageBtn.Name = "houseEntourageBtn";
             this.houseEntourageBtn.Size = new System.Drawing.Size(122, 40);
             this.houseEntourageBtn.TabIndex = 42;
@@ -2128,10 +2138,10 @@ namespace hist_mmorpg
             // 
             this.houseRouteBtn.Location = new System.Drawing.Point(12, 70);
             this.houseRouteBtn.Name = "houseRouteBtn";
-            this.houseRouteBtn.Size = new System.Drawing.Size(105, 37);
+            this.houseRouteBtn.Size = new System.Drawing.Size(105, 49);
             this.houseRouteBtn.TabIndex = 40;
             this.houseRouteBtn.Tag = "house";
-            this.houseRouteBtn.Text = "Take This Exact Route ...";
+            this.houseRouteBtn.Text = "Take This Exact Route ... (NW,E,SE, etc.)";
             this.houseRouteBtn.UseVisualStyleBackColor = true;
             this.houseRouteBtn.Click += new System.EventHandler(this.routeBtn_Click);
             // 
@@ -4824,23 +4834,13 @@ namespace hist_mmorpg
             this.adminEditSkillIdTextBox.Size = new System.Drawing.Size(159, 20);
             this.adminEditSkillIdTextBox.TabIndex = 27;
             // 
-            // houseEnterKeepBtn
-            // 
-            this.houseEnterKeepBtn.Location = new System.Drawing.Point(12, 113);
-            this.houseEnterKeepBtn.Name = "houseEnterKeepBtn";
-            this.houseEnterKeepBtn.Size = new System.Drawing.Size(122, 23);
-            this.houseEnterKeepBtn.TabIndex = 52;
-            this.houseEnterKeepBtn.Text = "Enter Keep";
-            this.houseEnterKeepBtn.UseVisualStyleBackColor = true;
-            this.houseEnterKeepBtn.Click += new System.EventHandler(this.houseEnterKeepBtn_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
-            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.travelContainer);
+            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.royalGiftsContainer);

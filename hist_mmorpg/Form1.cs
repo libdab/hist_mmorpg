@@ -3494,32 +3494,16 @@ namespace hist_mmorpg
         /// <param name="e">The event args</param>
         private void enterKeepBtn_Click(object sender, EventArgs e)
         {
-            // if player in keep
-            if (Globals_Client.myPlayerCharacter.inKeep)
+            // attempt to enter/exit keep
+            bool success = Globals_Client.myPlayerCharacter.exitEnterKeep();
+
+            // if successful
+            if (success)
             {
-                // exit keep
-                Globals_Client.myPlayerCharacter.exitKeep();
-                // change button text
-                this.enterKeepBtn.Text = "Enter Keep";
                 // refresh display
                 this.refreshTravelContainer();
             }
 
-            // if player not in keep
-            else
-            {
-                // attempt to enter keep
-                Globals_Client.myPlayerCharacter.enterKeep();
-
-                // if successful
-                if (Globals_Client.myPlayerCharacter.inKeep)
-                {
-                    // change button text
-                    this.enterKeepBtn.Text = "Exit Keep";
-                    // refresh display
-                    this.refreshTravelContainer();
-                }
-            }
         }
 
         /// <summary>
@@ -5676,32 +5660,15 @@ namespace hist_mmorpg
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
         private void houseEnterKeepBtn_Click(object sender, EventArgs e)
-        {
-            // if player in keep
-            if (Globals_Client.charToView.inKeep)
+        {            
+            // attempt to enter/exit keep
+            bool success = Globals_Client.charToView.exitEnterKeep();
+
+            // if successful
+            if (success)
             {
-                // exit keep
-                Globals_Client.charToView.exitKeep();
-                // change button text
-                this.houseEnterKeepBtn.Text = "Enter Keep";
                 // refresh display
-                this.refreshTravelContainer();
-            }
-
-            // if player not in keep
-            else
-            {
-                // attempt to enter keep
-                Globals_Client.charToView.enterKeep();
-
-                // if successful
-                if (Globals_Client.charToView.inKeep)
-                {
-                    // change button text
-                    this.houseEnterKeepBtn.Text = "Exit Keep";
-                    // refresh display
-                    this.refreshTravelContainer();
-                }
+                this.refreshHouseholdDisplay(Globals_Client.charToView as NonPlayerCharacter);
             }
         }
 

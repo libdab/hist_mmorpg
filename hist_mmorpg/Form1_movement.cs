@@ -626,7 +626,7 @@ namespace hist_mmorpg
                 {
                     if (Globals_Client.showMessages)
                     {
-                        System.Windows.Forms.MessageBox.Show("Invalid direction code encountered.  Route halted at " + source.name + " (" + source.id + ")");
+                        System.Windows.Forms.MessageBox.Show("Invalid movement instruction encountered.  Movement will halt at the last correct destination: " + source.name + " (" + source.id + ")");
                     }
                     break;
                 }
