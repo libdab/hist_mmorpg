@@ -516,7 +516,7 @@ namespace hist_mmorpg
                 // check if have already replied
                 if (!this.description.Contains("**"))
                 {
-                    // check if player received proposal
+                    // check if player made or received proposal
                     for (int i = 0; i < this.personae.Length; i++)
                     {
                         string thisPersonae = this.personae[i];

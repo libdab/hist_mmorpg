@@ -2570,21 +2570,24 @@ namespace hist_mmorpg
             double successChance = a.calcArmySize() / (this.population / Convert.ToDouble(1000));
 
             // get army leader
-            Character aLeader = null;
-            if (a.getLeader() != null)
-            {
-                aLeader = a.getLeader();
-            }
+            Character aLeader = a.getLeader();
 
+            // get army owner
+            Character aOwner = a.getOwner();
+
+            // apply any bonus for leadership skills
             if (aLeader != null)
             {
-                // apply any bonus for leadership skills
                 successChance += aLeader.getLeadershipValue();
+            }
 
-                // apply any bonus for ancestral ownership
-                if ((this.owner != this.ancestralOwner) && (aLeader == this.ancestralOwner))
+            // apply any bonus for ancestral ownership
+            if (aOwner != null)
+            {
+                // only if army owner is ancestral owner & current owner isn't
+                if ((aOwner == this.ancestralOwner) && (this.owner != this.ancestralOwner))
                 {
-                    successChance += (aLeader.calculateStature() * 2.22);
+                    successChance += (aOwner.calculateStature() * 2.22);
                 }
             }
 

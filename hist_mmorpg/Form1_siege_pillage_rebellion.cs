@@ -373,7 +373,7 @@ namespace hist_mmorpg
             {
                 thisLoss = 50;
             }
-            // calculate base amount pillaged
+            // calculate base amount pillaged based on fief GDP
             double baseMoneyPillaged = (f.keyStatsCurrent[1] * (thisLoss / 100));
             moneyPillagedTotal = baseMoneyPillaged;
             pillageResults += "- Base Money Pillaged: " + Convert.ToInt32(moneyPillagedTotal) + "\r\n";
@@ -968,52 +968,6 @@ namespace hist_mmorpg
             // return success % (inverse of stormFailurePercent)
             return 100 - stormFailurePercent;
         }
-
-        /*
-        /// <summary>
-        /// Calculates the keep level prior to a storm by attacking forces in a siege
-        /// </summary>
-        /// <returns>double containing keep level</returns>
-        /// <param name="s">The siege</param>
-        public double calcStormKeepLevel(Siege s)
-        {
-            double keepLvl = 0;
-            double keepLvlModifier = 0;
-            Fief besiegedFief = s.getFief();
-            Army attacker = s.getBesiegingArmy();
-            Army defenderGarrison = s.getDefenderGarrison();
-            uint[] battleValues = new uint[2];
-
-            // get basic keep level
-            keepLvl = besiegedFief.keepLevel;
-
-            // get battle values for both armies
-            battleValues = this.calculateBattleValue(attacker, defenderGarrison, Convert.ToInt32(keepLvl));
-
-            // work out keepLvlModifier based on battle values
-            uint maxBV = Math.Max(battleValues[0], battleValues[1]);
-            uint minBV = Math.Min(battleValues[0], battleValues[1]);
-
-            keepLvlModifier = (maxBV / minBV) - 1;
-
-            // ensure keepLvlModifier is 10 max
-            if (keepLvlModifier > 10)
-            {
-                keepLvlModifier = 10;
-            }
-
-            // apply keepLvlModifier depending on which side had highest BV
-            if (maxBV == battleValues[0])
-            {
-                keepLvl -= keepLvlModifier;
-            }
-            else
-            {
-                keepLvl += keepLvlModifier;
-            }
-
-            return keepLvl;
-        } */
 
         /// <summary>
         /// Processes the storming of the keep by attacking forces in a siege

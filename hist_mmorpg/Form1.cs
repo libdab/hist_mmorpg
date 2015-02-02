@@ -46,7 +46,7 @@ namespace hist_mmorpg
 
             // initialise game objects
             this.initGameObjects("Char_158", gameID: "fromCSV", objectDataFile: "gameObjects.csv", mapDataFile: "map.csv",
-            start: 1194, king1: "Char_47", king2: "Char_40", herald1: "Char_1", sysAdmin: "Char_196");
+            start: 1194, king1: "Char_47", king2: "Char_40", herald1: "Char_1", sysAdmin: "Char_158");
 
 			// this.ImportFromCSV("gameObjects.csv", bucketID: "fromCSV", synch: true, toDatabase: true);
 			// this.CreateMapArrayFromCSV ("map.csv", bucketID: "fromCSV", toDatabase: true);
