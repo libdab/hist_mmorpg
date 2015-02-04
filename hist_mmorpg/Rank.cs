@@ -204,7 +204,7 @@ namespace hist_mmorpg
             this.officeHolder = newPositionHolder.charID;
 
             // update stature
-            newPositionHolder.adjustStatureModifier(this.stature);
+            newPositionHolder.AdjustStatureModifier(this.stature);
 
             // CREATE JOURNAL ENTRY
             // get interested parties
@@ -258,7 +258,7 @@ namespace hist_mmorpg
             this.officeHolder = null;
 
             // update stature
-            pc.adjustStatureModifier(this.stature * -1);
+            pc.AdjustStatureModifier(this.stature * -1);
         }
 
         /// <summary>

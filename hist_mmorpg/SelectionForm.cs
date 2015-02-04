@@ -227,7 +227,7 @@ namespace hist_mmorpg
                 {
                     myCharItem = null;
 
-                    if (thisPlayer.Value.checksBeforeGranting(this.function, true))
+                    if (thisPlayer.Value.ChecksBeforeGranting(this.function, true))
                     {
                         addItem = true;
 
@@ -265,7 +265,7 @@ namespace hist_mmorpg
                 {
                     myCharItem = null;
 
-                    if (Globals_Client.myPlayerCharacter.myNPCs[i].checksBeforeGranting(this.function, true, this.armyID))
+                    if (Globals_Client.myPlayerCharacter.myNPCs[i].ChecksBeforeGranting(this.function, true, this.armyID))
                     {
                         addItem = true;
 
@@ -405,7 +405,7 @@ namespace hist_mmorpg
             string armyText = "";
 
             // get owner
-            PlayerCharacter thisOwner = a.getOwner();
+            PlayerCharacter thisOwner = a.GetOwner();
 
             // ID
             armyText += "ID: " + a.armyID + "\r\n\r\n";
@@ -423,7 +423,7 @@ namespace hist_mmorpg
             }
 
             // leader
-            Character armyLeader = a.getLeader();
+            Character armyLeader = a.GetLeader();
             armyText += "Leader: ";
 
             if (armyLeader == null)
@@ -445,7 +445,7 @@ namespace hist_mmorpg
             else
             {
                 // estimated troop numbers if is NOT player's army
-                troopNumbers = a.getTroopsEstimate(observer);
+                troopNumbers = a.GetTroopsEstimate(observer);
             }
 
             armyText += "Troop numbers";
@@ -489,7 +489,7 @@ namespace hist_mmorpg
             charText += "Name: " + thisChar.firstName + " " + thisChar.familyName + "\r\n";
 
             // age
-            charText += "Age: " + thisChar.calcAge() + "\r\n";
+            charText += "Age: " + thisChar.CalcAge() + "\r\n";
 
             // nationality
             charText += "Nationality: " + thisChar.nationality + "\r\n";
@@ -502,12 +502,12 @@ namespace hist_mmorpg
             }
             else
             {
-                charText += thisChar.calculateHealth() + " (max. health: " + thisChar.maxHealth + ")";
+                charText += thisChar.CalculateHealth() + " (max. health: " + thisChar.maxHealth + ")";
             }
             charText += "\r\n";
 
             // any death modifiers (from skills)
-            charText += "  (Death modifier from skills: " + thisChar.calcSkillEffect("death") + ")\r\n";
+            charText += "  (Death modifier from skills: " + thisChar.CalcSkillEffect("death") + ")\r\n";
 
             // location
             charText += "Current location: " + thisChar.location.name + " (" + thisChar.location.province.name + ")\r\n";
@@ -525,8 +525,8 @@ namespace hist_mmorpg
             charText += "Days remaining: " + thisChar.days + "\r\n";
 
             // stature
-            charText += "Stature: " + thisChar.calculateStature() + "\r\n";
-            charText += "  (base stature: " + thisChar.calculateStature(false) + " | modifier: " + thisChar.statureModifier + ")\r\n";
+            charText += "Stature: " + thisChar.CalculateStature() + "\r\n";
+            charText += "  (base stature: " + thisChar.CalculateStature(false) + " | modifier: " + thisChar.statureModifier + ")\r\n";
 
             // management rating
             charText += "Management: " + thisChar.management + "\r\n";
@@ -640,7 +640,7 @@ namespace hist_mmorpg
                 {
                     if (selectedCharacter != null)
                     {
-                        if (selectedCharacter.checksBeforeGranting(this.function, false, this.armyID))
+                        if (selectedCharacter.ChecksBeforeGranting(this.function, false, this.armyID))
                         {
                             // set the selected NPC as bailiff
                             Globals_Client.fiefToView.bailiff = selectedCharacter;
@@ -658,7 +658,7 @@ namespace hist_mmorpg
                     {
                         if (selectedCharacter != null)
                         {
-                            if (selectedCharacter.checksBeforeGranting(this.function, false))
+                            if (selectedCharacter.ChecksBeforeGranting(this.function, false))
                             {
                                 // set the selected NPC as title holder
                                 refreshMenus = Globals_Client.myPlayerCharacter.grantTitle(selectedCharacter, thisPlace);
@@ -683,10 +683,10 @@ namespace hist_mmorpg
                     {
                         if (selectedCharacter != null)
                         {
-                            if (selectedCharacter.checksBeforeGranting(this.function, false))
+                            if (selectedCharacter.ChecksBeforeGranting(this.function, false))
                             {
                                 // process the change of ownership
-                                (thisPlace as Fief).changeOwnership((selectedCharacter as PlayerCharacter), "voluntary");
+                                (thisPlace as Fief).ChangeOwnership((selectedCharacter as PlayerCharacter), "voluntary");
 
                                 // refresh the fief information (in the main form)
                                 this.parent.refreshCurrentScreen();
@@ -702,7 +702,7 @@ namespace hist_mmorpg
                     {
                         if (selectedCharacter != null)
                         {
-                            if (selectedCharacter.checksBeforeGranting(this.function, false))
+                            if (selectedCharacter.ChecksBeforeGranting(this.function, false))
                             {
                                 // process the change of officeHolder
                                 thisPosition.bestowPosition(selectedCharacter as PlayerCharacter);
@@ -719,7 +719,7 @@ namespace hist_mmorpg
                 {
                     if (selectedCharacter != null)
                     {
-                        if (selectedCharacter.checksBeforeGranting(this.function, false))
+                        if (selectedCharacter.ChecksBeforeGranting(this.function, false))
                         {
                             // set the selected NPC as title holder
                             Globals_Client.myPlayerCharacter.grantTitle(selectedCharacter, Globals_Client.fiefToView);
@@ -735,7 +735,7 @@ namespace hist_mmorpg
                 {
                     if (selectedCharacter != null)
                     {
-                        if (selectedCharacter.checksBeforeGranting(this.function, false, this.armyID))
+                        if (selectedCharacter.ChecksBeforeGranting(this.function, false, this.armyID))
                         {
                             // get army
                             if (!String.IsNullOrWhiteSpace(this.armyID))
@@ -744,7 +744,7 @@ namespace hist_mmorpg
                                 {
                                     Army thisArmy = Globals_Game.armyMasterList[this.armyID];
 
-                                    thisArmy.assignNewLeader(selectedCharacter);
+                                    thisArmy.AssignNewLeader(selectedCharacter);
 
                                     // refresh the army information (in the main form)
                                     this.parent.refreshArmyContainer(thisArmy);
@@ -894,7 +894,7 @@ namespace hist_mmorpg
             Army thisArmy = Globals_Game.armyMasterList[this.armyID];
 
             // get fief
-            Fief thisFief = thisArmy.getLocation();
+            Fief thisFief = thisArmy.GetLocation();
 
             // add troop detachments to list
             foreach (KeyValuePair<string, string[]> troopDetachment in thisFief.troopTransfers)
@@ -1115,8 +1115,8 @@ namespace hist_mmorpg
             minDays = thisArmy.days;
 
             // get leader and owner
-            Character myLeader = thisArmy.getLeader();
-            PlayerCharacter myOwner = thisArmy.getOwner();
+            Character myLeader = thisArmy.GetLeader();
+            PlayerCharacter myOwner = thisArmy.GetOwner();
 
             // get checked items in listview
             ListView.CheckedListViewItemCollection checkedItems = this.transferListView.CheckedItems;
@@ -1197,7 +1197,7 @@ namespace hist_mmorpg
                 if (proceed)
                 {
                     // get fief
-                    Fief thisFief = thisArmy.getLocation();
+                    Fief thisFief = thisArmy.GetLocation();
 
                     // check for minimum days
                     foreach (ListViewItem item in checkedItems)
@@ -1248,12 +1248,12 @@ namespace hist_mmorpg
 
                                 for (int i = 0; i < attritionChecks; i++)
                                 {
-                                    attritionModifier = tempArmy.calcAttrition();
+                                    attritionModifier = tempArmy.CalcAttrition();
 
                                     // apply attrition
                                     if (attritionModifier > 0)
                                     {
-                                        tempArmy.applyTroopLosses(attritionModifier);
+                                        tempArmy.ApplyTroopLosses(attritionModifier);
                                     }
                                 }
                             }
@@ -1285,7 +1285,7 @@ namespace hist_mmorpg
                         }
 
                         // adjust days
-                        myLeader.adjustDays(daysTaken);
+                        myLeader.AdjustDays(daysTaken);
 
                         // calculate attrition for army
                         byte attritionChecks = Convert.ToByte(daysTaken / 7);
@@ -1293,10 +1293,10 @@ namespace hist_mmorpg
 
                         for (int i = 0; i < attritionChecks; i++)
                         {
-                            attritionModifier = thisArmy.calcAttrition();
+                            attritionModifier = thisArmy.CalcAttrition();
                             if (attritionModifier > 0)
                             {
-                                thisArmy.applyTroopLosses(attritionModifier);
+                                thisArmy.ApplyTroopLosses(attritionModifier);
                             }
                         }
                     }
@@ -1315,7 +1315,7 @@ namespace hist_mmorpg
                         }
 
                         // adjust days
-                        myLeader.adjustDays(differenceToMin);
+                        myLeader.AdjustDays(differenceToMin);
 
                         // calculate attrition for army (to bring it down to minDays)
                         byte attritionChecks = Convert.ToByte(differenceToMin / 7);
@@ -1323,10 +1323,10 @@ namespace hist_mmorpg
 
                         for (int i = 0; i < attritionChecks; i++)
                         {
-                            attritionModifier = thisArmy.calcAttrition();
+                            attritionModifier = thisArmy.CalcAttrition();
                             if (attritionModifier > 0)
                             {
-                                thisArmy.applyTroopLosses(attritionModifier);
+                                thisArmy.ApplyTroopLosses(attritionModifier);
                             }
                         }
 
@@ -1340,17 +1340,17 @@ namespace hist_mmorpg
                         if (daysTaken > 0)
                         {
                             // adjust days
-                            myLeader.adjustDays(daysTaken);
+                            myLeader.AdjustDays(daysTaken);
 
                             // calculate attrition for army for days taken for transfer
                             attritionChecks = Convert.ToByte(daysTaken / 7);
 
                             for (int i = 0; i < attritionChecks; i++)
                             {
-                                attritionModifier = thisArmy.calcAttrition();
+                                attritionModifier = thisArmy.CalcAttrition();
                                 if (attritionModifier > 0)
                                 {
-                                    thisArmy.applyTroopLosses(attritionModifier);
+                                    thisArmy.ApplyTroopLosses(attritionModifier);
                                 }
                             }
                         }
@@ -1407,7 +1407,7 @@ namespace hist_mmorpg
                 this.armiesTextBox.Text = textToDisplay;
 
                 // get owner of selected army
-                PlayerCharacter otherArmyOwner = otherArmy.getOwner();
+                PlayerCharacter otherArmyOwner = otherArmy.GetOwner();
 
                 // if selected army is not owned by player && observer is an army leader, enable attack button
                 if ((otherArmyOwner != Globals_Client.myPlayerCharacter) && (!String.IsNullOrWhiteSpace(this.observer.armyID)))
@@ -1445,7 +1445,7 @@ namespace hist_mmorpg
             string toDisplay = "";
 
             // get armies
-            Army attacker = this.observer.getArmy();
+            Army attacker = this.observer.GetArmy();
             Army defender = null;
             if (Globals_Game.armyMasterList.ContainsKey(this.armiesListView.SelectedItems[0].SubItems[0].Text))
             {
@@ -1478,7 +1478,7 @@ namespace hist_mmorpg
                 else
                 {
                     // check if attacking army is besieging a keep
-                    string siegeID = attacker.checkIfBesieger();
+                    string siegeID = attacker.CheckIfBesieger();
                     if (!String.IsNullOrWhiteSpace(siegeID))
                     {
                         // display warning and get decision
@@ -1517,13 +1517,13 @@ namespace hist_mmorpg
             if (proceed)
             {
                 // do various conditional checks
-                proceed = attacker.checksBeforeAttack(defender);
+                proceed = attacker.ChecksBeforeAttack(defender);
             }
 
             if (proceed)
             {
                 // let slip the dogs of war
-                parent.giveBattle(attacker, defender);
+                parent.GiveBattle(attacker, defender);
             }
 
             // close form
@@ -1557,7 +1557,7 @@ namespace hist_mmorpg
                     Fief home = Globals_Client.myPlayerCharacter.getHomeFief();
 
                     // get home treasury
-                    int homeTreasury = home.getAvailableTreasury(true);
+                    int homeTreasury = home.GetAvailableTreasury(true);
 
                     // populate transferFundsLabel to show treasury available
                     this.transferFundsLabel.Text = homeTreasury.ToString();
@@ -1598,7 +1598,7 @@ namespace hist_mmorpg
                         if (((fiefFrom != null) && (fiefTo != null)) && (amount > 0))
                         {
                             // make sure are enough funds to cover transfer
-                            if (amount > fiefFrom.getAvailableTreasury(true))
+                            if (amount > fiefFrom.GetAvailableTreasury(true))
                             {
                                 // if not, inform player and adjust amount downwards
                                 if (Globals_Client.showMessages)

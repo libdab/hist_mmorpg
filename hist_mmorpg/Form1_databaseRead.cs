@@ -25,72 +25,72 @@ namespace hist_mmorpg
         /// Reads all objects for a particular game from database
         /// </summary>
         /// <param name="gameID">ID of game (database bucket)</param>
-        public void databaseRead(string gameID)
+        public void DatabaseRead(string gameID)
         {
 
             // ========= load KEY LISTS (to ensure efficient retrieval of specific game objects)
-            this.databaseRead_keyLists(gameID);
+            this.DatabaseRead_keyLists(gameID);
 
             // ========= load CLOCK
-            Globals_Game.clock = this.databaseRead_clock(gameID, "gameClock");
+            Globals_Game.clock = this.DatabaseRead_clock(gameID, "gameClock");
 
             // ========= load GLOBAL_SERVER/GAME DICTIONARIES
-            Globals_Server.combatValues = this.databaseRead_dictStringUint(gameID, "combatValues");
-            Globals_Server.recruitRatios = this.databaseRead_dictStringDouble(gameID, "recruitRatios");
-            Globals_Server.battleProbabilities = this.databaseRead_dictStringDouble(gameID, "battleProbabilities");
-            Globals_Server.gameTypes = this.databaseRead_dictIntString(gameID, "gameTypes");
-            Globals_Game.jEntryPriorities = this.databaseRead_dictStringByte(gameID, "jEntryPriorities");
-            Globals_Game.ownershipChallenges = this.databaseRead_dictStringOwnCh(gameID, "ownershipChallenges");
+            Globals_Server.combatValues = this.DatabaseRead_dictStringUint(gameID, "combatValues");
+            Globals_Server.recruitRatios = this.DatabaseRead_dictStringDouble(gameID, "recruitRatios");
+            Globals_Server.battleProbabilities = this.DatabaseRead_dictStringDouble(gameID, "battleProbabilities");
+            Globals_Server.gameTypes = this.DatabaseRead_dictIntString(gameID, "gameTypes");
+            Globals_Game.jEntryPriorities = this.DatabaseRead_dictStringByte(gameID, "jEntryPriorities");
+            Globals_Game.ownershipChallenges = this.DatabaseRead_dictStringOwnCh(gameID, "ownershipChallenges");
 
             // ========= load GLOBAL_GAME/SERVER newID VARIABLES
             // newCharID
-            Globals_Game.newCharID = this.databaseRead_newIDs(gameID, "newCharID");
+            Globals_Game.newCharID = this.DatabaseRead_newIDs(gameID, "newCharID");
             // newArmyID
-            Globals_Game.newArmyID = this.databaseRead_newIDs(gameID, "newArmyID");
+            Globals_Game.newArmyID = this.DatabaseRead_newIDs(gameID, "newArmyID");
             // newDetachmentID
-            Globals_Game.newDetachmentID = this.databaseRead_newIDs(gameID, "newDetachmentID");
+            Globals_Game.newDetachmentID = this.DatabaseRead_newIDs(gameID, "newDetachmentID");
             // newAilmentID
-            Globals_Game.newAilmentID = this.databaseRead_newIDs(gameID, "newAilmentID");
+            Globals_Game.newAilmentID = this.DatabaseRead_newIDs(gameID, "newAilmentID");
             // newSiegeID
-            Globals_Game.newSiegeID = this.databaseRead_newIDs(gameID, "newSiegeID");
+            Globals_Game.newSiegeID = this.DatabaseRead_newIDs(gameID, "newSiegeID");
             // newJournalEntryID
-            Globals_Game.newJournalEntryID = this.databaseRead_newIDs(gameID, "newJournalEntryID");
+            Globals_Game.newJournalEntryID = this.DatabaseRead_newIDs(gameID, "newJournalEntryID");
             // gameType
-            Globals_Game.gameType = this.databaseRead_newIDs(gameID, "currentVictoryType");
+            Globals_Game.gameType = this.DatabaseRead_newIDs(gameID, "currentVictoryType");
             // duration
-            Globals_Game.duration = this.databaseRead_newIDs(gameID, "duration");
+            Globals_Game.duration = this.DatabaseRead_newIDs(gameID, "duration");
             // startYear
-            Globals_Game.startYear = this.databaseRead_newIDs(gameID, "startYear");
+            Globals_Game.startYear = this.DatabaseRead_newIDs(gameID, "startYear");
             // newGameID
-            Globals_Server.newGameID = this.databaseRead_newIDs(gameID, "newGameID");
+            Globals_Server.newGameID = this.DatabaseRead_newIDs(gameID, "newGameID");
             // newOwnChallengeID
-            Globals_Game.newOwnChallengeID = this.databaseRead_newIDs(gameID, "newOwnChallengeID");
+            Globals_Game.newOwnChallengeID = this.DatabaseRead_newIDs(gameID, "newOwnChallengeID");
 
             // ========= load JOURNALS
-            Globals_Game.scheduledEvents = this.databaseRead_journal(gameID, "serverScheduledEvents");
-            Globals_Game.pastEvents = this.databaseRead_journal(gameID, "serverPastEvents");
-            Globals_Client.myPastEvents = this.databaseRead_journal(gameID, "clientPastEvents");
+            Globals_Game.scheduledEvents = this.DatabaseRead_journal(gameID, "serverScheduledEvents");
+            Globals_Game.pastEvents = this.DatabaseRead_journal(gameID, "serverPastEvents");
+            Globals_Client.myPastEvents = this.DatabaseRead_journal(gameID, "clientPastEvents");
 
             // ========= load victoryData
             foreach (string element in Globals_Game.victoryDataKeys)
             {
-                VictoryData vicData = this.databaseRead_victoryData(gameID, element);
+                VictoryData vicData = this.DatabaseRead_victoryData(gameID, element);
                 // add VictoryData to Globals_Game.victoryData
                 Globals_Game.victoryData.Add(vicData.playerID, vicData);
             }
 
             // ========= read GLOBALS_GAME/CLIENT/SERVER BOOL VARIABLES
-            Globals_Game.loadFromDatabase = this.databaseRead_bool(gameID, "loadFromDatabase");
-            Globals_Game.loadFromCSV = this.databaseRead_bool(gameID, "loadFromCSV");
-            Globals_Game.writeToDatabase = this.databaseRead_bool(gameID, "writeToDatabase");
-            Globals_Game.statureCapInForce = this.databaseRead_bool(gameID, "statureCapInForce");
-            Globals_Client.showMessages = this.databaseRead_bool(gameID, "showMessages");
-            Globals_Client.showDebugMessages = this.databaseRead_bool(gameID, "showDebugMessages");
+            Globals_Game.loadFromDatabase = this.DatabaseRead_bool(gameID, "loadFromDatabase");
+            Globals_Game.loadFromCSV = this.DatabaseRead_bool(gameID, "loadFromCSV");
+            Globals_Game.writeToDatabase = this.DatabaseRead_bool(gameID, "writeToDatabase");
+            Globals_Game.statureCapInForce = this.DatabaseRead_bool(gameID, "statureCapInForce");
+            Globals_Client.showMessages = this.DatabaseRead_bool(gameID, "showMessages");
+            Globals_Client.showDebugMessages = this.DatabaseRead_bool(gameID, "showDebugMessages");
 
             // ========= load SKILLS
             foreach (string element in Globals_Game.skillKeys)
             {
-                Skill skill = this.databaseRead_skill(gameID, element);
+                Skill skill = this.DatabaseRead_skill(gameID, element);
                 // add Skill to skillMasterList
                 Globals_Game.skillMasterList.Add(skill.skillID, skill);
             }
@@ -98,7 +98,7 @@ namespace hist_mmorpg
             // ========= load BASELANGUAGES
             foreach (string element in Globals_Game.baseLangKeys)
             {
-                BaseLanguage bLang = this.databaseRead_baseLanguage(gameID, element);
+                BaseLanguage bLang = this.DatabaseRead_baseLanguage(gameID, element);
                 // add BaseLanguage to baseLanguageMasterList
                 Globals_Game.baseLanguageMasterList.Add(bLang.id, bLang);
             }
@@ -106,7 +106,7 @@ namespace hist_mmorpg
             // ========= load LANGUAGES
             foreach (string element in Globals_Game.langKeys)
             {
-                Language lang = this.databaseRead_language(gameID, element);
+                Language lang = this.DatabaseRead_language(gameID, element);
                 // add Language to languageMasterList
                 Globals_Game.languageMasterList.Add(lang.id, lang);
             }
@@ -114,7 +114,7 @@ namespace hist_mmorpg
             // ========= load NATIONALITY OBJECTS
             foreach (string element in Globals_Game.nationalityKeys)
             {
-                Nationality nat = this.databaseRead_nationality(gameID, element);
+                Nationality nat = this.DatabaseRead_nationality(gameID, element);
                 // add Nationality to nationalityMasterList
                 Globals_Game.nationalityMasterList.Add(nat.natID, nat);
             }
@@ -122,7 +122,7 @@ namespace hist_mmorpg
             // ========= load RANKS
             foreach (byte element in Globals_Game.rankKeys)
             {
-                Rank rank = this.databaseRead_rank(gameID, element.ToString());
+                Rank rank = this.DatabaseRead_rank(gameID, element.ToString());
                 // add Rank to rankMasterList
                 Globals_Game.rankMasterList.Add(rank.id, rank);
             }
@@ -130,7 +130,7 @@ namespace hist_mmorpg
             // ========= load POSITIONS
             foreach (byte element in Globals_Game.positionKeys)
             {
-                Position pos = this.databaseRead_position(gameID, element.ToString());
+                Position pos = this.DatabaseRead_position(gameID, element.ToString());
                 // add Position to positionMasterList
                 Globals_Game.positionMasterList.Add(pos.id, pos);
             }
@@ -138,7 +138,7 @@ namespace hist_mmorpg
             // ========= load SIEGES
             foreach (string element in Globals_Game.siegeKeys)
             {
-                Siege s = this.databaseRead_Siege(gameID, element);
+                Siege s = this.DatabaseRead_Siege(gameID, element);
                 // add Siege to siegeMasterList
                 Globals_Game.siegeMasterList.Add(s.siegeID, s);
             }
@@ -146,7 +146,7 @@ namespace hist_mmorpg
             // ========= load ARMIES
             foreach (string element in Globals_Game.armyKeys)
             {
-                Army a = this.databaseRead_Army(gameID, element);
+                Army a = this.DatabaseRead_Army(gameID, element);
                 // add Army to armyMasterList
                 Globals_Game.armyMasterList.Add(a.armyID, a);
             }
@@ -154,7 +154,7 @@ namespace hist_mmorpg
             // ========= load NPCs
             foreach (string element in Globals_Game.npcKeys)
             {
-                NonPlayerCharacter npc = this.databaseRead_NPC(gameID, element);
+                NonPlayerCharacter npc = this.DatabaseRead_NPC(gameID, element);
                 // add NPC to npcMasterList
                 Globals_Game.npcMasterList.Add(npc.charID, npc);
             }
@@ -162,7 +162,7 @@ namespace hist_mmorpg
             // ========= load PCs
             foreach (string element in Globals_Game.pcKeys)
             {
-                PlayerCharacter pc = this.databaseRead_PC(gameID, element);
+                PlayerCharacter pc = this.DatabaseRead_PC(gameID, element);
                 // add PC to pcMasterList
                 Globals_Game.pcMasterList.Add(pc.charID, pc);
             }
@@ -170,7 +170,7 @@ namespace hist_mmorpg
             // ========= load KINGDOMS
             foreach (string element in Globals_Game.kingKeys)
             {
-                Kingdom king = this.databaseRead_Kingdom(gameID, element);
+                Kingdom king = this.DatabaseRead_Kingdom(gameID, element);
                 // add Kingdom to kingdomMasterList
                 Globals_Game.kingdomMasterList.Add(king.id, king);
             }
@@ -178,7 +178,7 @@ namespace hist_mmorpg
             // ========= load PROVINCES
             foreach (string element in Globals_Game.provKeys)
             {
-                Province prov = this.databaseRead_Province(gameID, element);
+                Province prov = this.DatabaseRead_Province(gameID, element);
                 // add Province to provinceMasterList
                 Globals_Game.provinceMasterList.Add(prov.id, prov);
             }
@@ -186,7 +186,7 @@ namespace hist_mmorpg
             // ========= load TERRAINS
             foreach (string element in Globals_Game.terrKeys)
             {
-                Terrain terr = this.databaseRead_terrain(gameID, element);
+                Terrain terr = this.DatabaseRead_terrain(gameID, element);
                 // add Terrain to terrainMasterList
                 Globals_Game.terrainMasterList.Add(terr.id, terr);
             }
@@ -194,7 +194,7 @@ namespace hist_mmorpg
             // ========= load FIEFS
             foreach (string element in Globals_Game.fiefKeys)
             {
-                Fief f = this.databaseRead_Fief(gameID, element);
+                Fief f = this.DatabaseRead_Fief(gameID, element);
                 // add Fief to fiefMasterList
                 Globals_Game.fiefMasterList.Add(f.id, f);
             }
@@ -210,24 +210,24 @@ namespace hist_mmorpg
             }
 
             // ========= read GLOBALS_GAME/CLIENT CHARACTER VARIABLES
-            Globals_Client.myPlayerCharacter = this.databaseRead_PcVariable(gameID, "myPlayerCharacter");
-            Globals_Game.sysAdmin = this.databaseRead_PcVariable(gameID, "sysAdmin");
-            Globals_Game.kingOne = this.databaseRead_PcVariable(gameID, "kingOne");
-            Globals_Game.kingTwo = this.databaseRead_PcVariable(gameID, "kingTwo");
-            Globals_Game.princeOne = this.databaseRead_PcVariable(gameID, "princeOne");
-            Globals_Game.princeTwo = this.databaseRead_PcVariable(gameID, "princeTwo");
-            Globals_Game.heraldOne = this.databaseRead_PcVariable(gameID, "heraldOne");
-            Globals_Game.heraldTwo = this.databaseRead_PcVariable(gameID, "heraldTwo");
+            Globals_Client.myPlayerCharacter = this.DatabaseRead_PcVariable(gameID, "myPlayerCharacter");
+            Globals_Game.sysAdmin = this.DatabaseRead_PcVariable(gameID, "sysAdmin");
+            Globals_Game.kingOne = this.DatabaseRead_PcVariable(gameID, "kingOne");
+            Globals_Game.kingTwo = this.DatabaseRead_PcVariable(gameID, "kingTwo");
+            Globals_Game.princeOne = this.DatabaseRead_PcVariable(gameID, "princeOne");
+            Globals_Game.princeTwo = this.DatabaseRead_PcVariable(gameID, "princeTwo");
+            Globals_Game.heraldOne = this.DatabaseRead_PcVariable(gameID, "heraldOne");
+            Globals_Game.heraldTwo = this.DatabaseRead_PcVariable(gameID, "heraldTwo");
 
             // ========= load MAP
-            Globals_Game.gameMap = this.databaseRead_map(gameID, "mapEdges");
+            Globals_Game.gameMap = this.DatabaseRead_map(gameID, "mapEdges");
         }
 
         /// <summary>
         /// Reads all key lists from the database
         /// </summary>
         /// <param name="gameID">Game for which key lists to be retrieved</param>
-        public void databaseRead_keyLists(string gameID)
+        public void DatabaseRead_keyLists(string gameID)
         {
             // populate skillKeys
             var skillKeyResult = rClient.Get(gameID, "skillKeys");
@@ -447,7 +447,7 @@ namespace hist_mmorpg
         /// <returns>GameClock object</returns>
         /// <param name="gameID">Game for which clock to be retrieved</param>
         /// <param name="clockID">ID of clock to be retrieved</param>
-        public GameClock databaseRead_clock(string gameID, string clockID)
+        public GameClock DatabaseRead_clock(string gameID, string clockID)
         {
             var clockResult = rClient.Get(gameID, clockID);
             var newClock = new GameClock();
@@ -473,7 +473,7 @@ namespace hist_mmorpg
         /// <returns>Dictionary(string, uint[]) object</returns>
         /// <param name="gameID">Game for which Dictionary to be retrieved</param>
         /// <param name="dictID">ID of Dictionary to be retrieved</param>
-        public Dictionary<string, uint[]> databaseRead_dictStringUint(string gameID, string dictID)
+        public Dictionary<string, uint[]> DatabaseRead_dictStringUint(string gameID, string dictID)
         {
             var dictResult = rClient.Get(gameID, dictID);
             var newDict = new Dictionary<string, uint[]>();
@@ -499,7 +499,7 @@ namespace hist_mmorpg
         /// <returns>Dictionary(string, double[]) object</returns>
         /// <param name="gameID">Game for which Dictionary to be retrieved</param>
         /// <param name="dictID">ID of Dictionary to be retrieved</param>
-        public Dictionary<string, double[]> databaseRead_dictStringDouble(string gameID, string dictID)
+        public Dictionary<string, double[]> DatabaseRead_dictStringDouble(string gameID, string dictID)
         {
             var dictResult = rClient.Get(gameID, dictID);
             var newDict = new Dictionary<string, double[]>();
@@ -525,7 +525,7 @@ namespace hist_mmorpg
         /// <returns>Dictionary(uint, string) object</returns>
         /// <param name="gameID">Game for which Dictionary to be retrieved</param>
         /// <param name="dictID">ID of Dictionary to be retrieved</param>
-        public Dictionary<uint, string> databaseRead_dictIntString(string gameID, string dictID)
+        public Dictionary<uint, string> DatabaseRead_dictIntString(string gameID, string dictID)
         {
             var dictResult = rClient.Get(gameID, dictID);
             var newDict = new Dictionary<uint, string>();
@@ -551,7 +551,7 @@ namespace hist_mmorpg
         /// <returns>Dictionary(string, byte) object</returns>
         /// <param name="gameID">Game for which Dictionary to be retrieved</param>
         /// <param name="dictID">ID of Dictionary to be retrieved</param>
-        public Dictionary<string[], byte> databaseRead_dictStringByte(string gameID, string dictID)
+        public Dictionary<string[], byte> DatabaseRead_dictStringByte(string gameID, string dictID)
         {
             Dictionary<string[], byte> dictOut = new Dictionary<string[], byte>();
             var dictResult = rClient.Get(gameID, dictID);
@@ -600,7 +600,7 @@ namespace hist_mmorpg
         /// <returns>Dictionary(string, OwnershipChallenge) object</returns>
         /// <param name="gameID">Game for which Dictionary to be retrieved</param>
         /// <param name="dictID">ID of Dictionary to be retrieved</param>
-        public Dictionary<string, OwnershipChallenge> databaseRead_dictStringOwnCh(string gameID, string dictID)
+        public Dictionary<string, OwnershipChallenge> DatabaseRead_dictStringOwnCh(string gameID, string dictID)
         {
             Dictionary<string, OwnershipChallenge> dictOut = new Dictionary<string, OwnershipChallenge>();
             var dictResult = rClient.Get(gameID, dictID);
@@ -626,7 +626,7 @@ namespace hist_mmorpg
         /// <returns>uint</returns>
         /// <param name="gameID">Game for which newID variable to be retrieved</param>
         /// <param name="clockID">newID variable to be retrieved</param>
-        public uint databaseRead_newIDs(string gameID, string newID)
+        public uint DatabaseRead_newIDs(string gameID, string newID)
         {
             var newIDResult = rClient.Get(gameID, newID);
             uint newIDout = 0;
@@ -652,7 +652,7 @@ namespace hist_mmorpg
         /// <returns>Journal object</returns>
         /// <param name="gameID">Game for which Journal to be retrieved</param>
         /// <param name="journalID">ID of Journal to be retrieved</param>
-        public Journal databaseRead_journal(string gameID, string journalID)
+        public Journal DatabaseRead_journal(string gameID, string journalID)
         {
             var journalResult = rClient.Get(gameID, journalID);
             var newJournal = new Journal();
@@ -678,7 +678,7 @@ namespace hist_mmorpg
         /// <returns>VictoryData object</returns>
         /// <param name="gameID">Game for which VictoryData to be retrieved</param>
         /// <param name="vicDataID">ID of VictoryData to be retrieved</param>
-        public VictoryData databaseRead_victoryData(string gameID, string vicDataID)
+        public VictoryData DatabaseRead_victoryData(string gameID, string vicDataID)
         {
             var vicDataResult = rClient.Get(gameID, vicDataID);
             var newVictoryData = new VictoryData();
@@ -704,7 +704,7 @@ namespace hist_mmorpg
         /// <returns>Skill object</returns>
         /// <param name="gameID">Game for which skill to be retrieved</param>
         /// <param name="skillID">ID of skill to be retrieved</param>
-        public Skill databaseRead_skill(string gameID, string skillID)
+        public Skill DatabaseRead_skill(string gameID, string skillID)
         {
             var skillResult = rClient.Get(gameID, skillID);
             var newSkill = new Skill();
@@ -730,7 +730,7 @@ namespace hist_mmorpg
         /// <returns>BaseLanguage object</returns>
         /// <param name="gameID">Game for which BaseLanguage to be retrieved</param>
         /// <param name="bLangID">ID of Language to be retrieved</param>
-        public BaseLanguage databaseRead_baseLanguage(string gameID, string bLangID)
+        public BaseLanguage DatabaseRead_baseLanguage(string gameID, string bLangID)
         {
             var bLangResult = rClient.Get(gameID, bLangID);
             var newBaseLang = new BaseLanguage();
@@ -756,7 +756,7 @@ namespace hist_mmorpg
         /// <returns>Language object</returns>
         /// <param name="gameID">Game for which Language to be retrieved</param>
         /// <param name="langID">ID of Language to be retrieved</param>
-        public Language databaseRead_language(string gameID, string langID)
+        public Language DatabaseRead_language(string gameID, string langID)
         {
             var languageResult = rClient.Get(gameID, langID);
             var langSer = new Language_Serialised();
@@ -805,7 +805,7 @@ namespace hist_mmorpg
         /// <returns>Nationality object</returns>
         /// <param name="gameID">Game for which Nationality to be retrieved</param>
         /// <param name="natID">ID of Nationality to be retrieved</param>
-        public Nationality databaseRead_nationality(string gameID, string natID)
+        public Nationality DatabaseRead_nationality(string gameID, string natID)
         {
             var natResult = rClient.Get(gameID, natID);
             var newNat = new Nationality();
@@ -831,7 +831,7 @@ namespace hist_mmorpg
         /// <returns>Rank object</returns>
         /// <param name="gameID">Game for which Rank to be retrieved</param>
         /// <param name="rankID">ID of Rank to be retrieved</param>
-        public Rank databaseRead_rank(string gameID, string rankID)
+        public Rank DatabaseRead_rank(string gameID, string rankID)
         {
             var rankResult = rClient.Get(gameID, rankID);
             var newRank = new Rank();
@@ -857,7 +857,7 @@ namespace hist_mmorpg
         /// <returns>Position object</returns>
         /// <param name="gameID">Game for which Position to be retrieved</param>
         /// <param name="posID">ID of Position to be retrieved</param>
-        public Position databaseRead_position(string gameID, string posID)
+        public Position DatabaseRead_position(string gameID, string posID)
         {
             var posResult = rClient.Get(gameID, posID);
             var posSer = new Position_Serialised();
@@ -909,7 +909,7 @@ namespace hist_mmorpg
         /// <returns>Siege object</returns>
         /// <param name="gameID">Game for which Siege to be retrieved</param>
         /// <param name="siegeID">ID of Siege to be retrieved</param>
-        public Siege databaseRead_Siege(string gameID, string siegeID)
+        public Siege DatabaseRead_Siege(string gameID, string siegeID)
         {
             var siegeResult = rClient.Get(gameID, siegeID);
             Siege mySiege = new Siege();
@@ -936,7 +936,7 @@ namespace hist_mmorpg
         /// <returns>Army object</returns>
         /// <param name="gameID">Game for which Army to be retrieved</param>
         /// <param name="armyID">ID of Army to be retrieved</param>
-        public Army databaseRead_Army(string gameID, string armyID)
+        public Army DatabaseRead_Army(string gameID, string armyID)
         {
             var armyResult = rClient.Get(gameID, armyID);
             Army myArmy = new Army();
@@ -963,7 +963,7 @@ namespace hist_mmorpg
         /// <returns>NonPlayerCharacter object</returns>
         /// <param name="gameID">Game for which NPC to be retrieved</param>
         /// <param name="npcID">ID of NPC to be retrieved</param>
-        public NonPlayerCharacter databaseRead_NPC(string gameID, string npcID)
+        public NonPlayerCharacter DatabaseRead_NPC(string gameID, string npcID)
         {
             var npcResult = rClient.Get(gameID, npcID);
             var npcSer = new NonPlayerCharacter_Serialised();
@@ -1029,7 +1029,7 @@ namespace hist_mmorpg
         /// <returns>PlayerCharacter object</returns>
         /// <param name="gameID">Game for which PC to be retrieved</param>
         /// <param name="pcID">ID of PC to be retrieved</param>
-        public PlayerCharacter databaseRead_PC(string gameID, string pcID)
+        public PlayerCharacter DatabaseRead_PC(string gameID, string pcID)
         {
             var pcResult = rClient.Get(gameID, pcID);
             var pcSer = new PlayerCharacter_Serialised();
@@ -1114,7 +1114,7 @@ namespace hist_mmorpg
         /// <returns>Kingdom object</returns>
         /// <param name="gameID">Game for which Kingdom to be retrieved</param>
         /// <param name="kingID">ID of Kingdom to be retrieved</param>
-        public Kingdom databaseRead_Kingdom(string gameID, string kingID)
+        public Kingdom DatabaseRead_Kingdom(string gameID, string kingID)
         {
             var kingResult = rClient.Get(gameID, kingID);
             var kingSer = new Kingdom_Serialised();
@@ -1206,7 +1206,7 @@ namespace hist_mmorpg
         /// <returns>Province object</returns>
         /// <param name="gameID">Game for which Province to be retrieved</param>
         /// <param name="provID">ID of Province to be retrieved</param>
-        public Province databaseRead_Province(string gameID, string provID)
+        public Province DatabaseRead_Province(string gameID, string provID)
         {
             var provResult = rClient.Get(gameID, provID);
             var provSer = new Province_Serialised();
@@ -1306,7 +1306,7 @@ namespace hist_mmorpg
         /// <returns>Terrain object</returns>
         /// <param name="gameID">Game for which Terrain to be retrieved</param>
         /// <param name="terrID">ID of Terrain to be retrieved</param>
-        public Terrain databaseRead_terrain(string gameID, string terrID)
+        public Terrain DatabaseRead_terrain(string gameID, string terrID)
         {
             var terrainResult = rClient.Get(gameID, terrID);
             var newTerrain = new Terrain();
@@ -1332,7 +1332,7 @@ namespace hist_mmorpg
         /// <returns>Fief object</returns>
         /// <param name="gameID">Game for which Fief to be retrieved</param>
         /// <param name="fiefID">ID of Fief to be retrieved</param>
-        public Fief databaseRead_Fief(string gameID, string fiefID)
+        public Fief DatabaseRead_Fief(string gameID, string fiefID)
         {
             var fiefResult = rClient.Get(gameID, fiefID);
             var fiefSer = new Fief_Serialised();
@@ -1508,7 +1508,7 @@ namespace hist_mmorpg
         /// <returns>PlayerCharacter object</returns>
         /// <param name="gameID">Game for which PlayerCharacter variable to be retrieved</param>
         /// <param name="charVarID">ID of PlayerCharacter variable to be retrieved</param>
-        public PlayerCharacter databaseRead_PcVariable(string gameID, string charVarID)
+        public PlayerCharacter DatabaseRead_PcVariable(string gameID, string charVarID)
         {
             var charVarResult = rClient.Get(gameID, charVarID);
             String pcID = "";
@@ -1542,7 +1542,7 @@ namespace hist_mmorpg
         /// <returns>bool variable</returns>
         /// <param name="gameID">Game for which bool variable to be retrieved</param>
         /// <param name="boolID">ID of bool variable to be retrieved</param>
-        public bool databaseRead_bool(string gameID, string boolID)
+        public bool DatabaseRead_bool(string gameID, string boolID)
         {
             var boolResult = rClient.Get(gameID, boolID);
             bool newBool = true; ;
@@ -1568,7 +1568,7 @@ namespace hist_mmorpg
         /// <returns>HexMapGraph object</returns>
         /// <param name="gameID">Game for which map to be created</param>
         /// <param name="mapEdgesID">ID of map edges collection to be retrieved</param>
-        public HexMapGraph databaseRead_map(string gameID, string mapEdgesID)
+        public HexMapGraph DatabaseRead_map(string gameID, string mapEdgesID)
         {
             var mapResult = rClient.Get(gameID, mapEdgesID);
             List<TaggedEdge<string, string>> edgesList = new List<TaggedEdge<string, string>>();

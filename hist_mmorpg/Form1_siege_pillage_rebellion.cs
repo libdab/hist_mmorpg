@@ -25,7 +25,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>String containing information to display</returns>
         /// <param name="s">Siege for which information is to be displayed</param>
-        public string displaySiegeData(Siege s)
+        public string DisplaySiegeData(Siege s)
         {
             string siegeText = "";
             Fief siegeLocation = s.getFief();
@@ -35,12 +35,12 @@ namespace hist_mmorpg
             PlayerCharacter besiegingPlayer = s.getBesiegingPlayer();
             Army defenderGarrison = s.getDefenderGarrison();
             Army defenderAdditional = s.getDefenderAdditional();
-            Character besiegerLeader = besieger.getLeader();
-            Character defGarrLeader = defenderGarrison.getLeader();
+            Character besiegerLeader = besieger.GetLeader();
+            Character defGarrLeader = defenderGarrison.GetLeader();
             Character defAddLeader = null;
             if (defenderAdditional != null)
             {
-                defAddLeader = defenderAdditional.getLeader();
+                defAddLeader = defenderAdditional.GetLeader();
             }
 
             // ID
@@ -162,8 +162,8 @@ namespace hist_mmorpg
                 /* double keepLvl = this.calcStormKeepLevel(s);
                 double successChance = this.calcStormSuccess(keepLvl); */
                 // get battle values for both armies
-                uint[] battleValues = this.calculateBattleValue(besieger, defenderGarrison, Convert.ToInt32(siegeLocation.keepLevel));
-                double successChance = this.calcVictoryChance(battleValues[0], battleValues[1]);
+                uint[] battleValues = this.CalculateBattleValue(besieger, defenderGarrison, Convert.ToInt32(siegeLocation.keepLevel));
+                double successChance = this.CalcVictoryChance(battleValues[0], battleValues[1]);
                 siegeText += "- storm: " + successChance + "\r\n";
 
                 // chance of negotiated success
@@ -254,10 +254,10 @@ namespace hist_mmorpg
             double pillageMultiplier = 0;
 
             // get army leader
-            Character armyLeader = a.getLeader();
+            Character armyLeader = a.GetLeader();
 
             // get pillaging army owner (receives a proportion of total spoils)
-            PlayerCharacter armyOwner = a.getOwner();
+            PlayerCharacter armyOwner = a.GetOwner();
 
             // get garrison leader (to add to journal entry)
             Character defenderLeader = null;
@@ -267,7 +267,7 @@ namespace hist_mmorpg
             }
 
             // calculate pillageMultiplier (based on no. pillagers per 1000 population)
-            pillageMultiplier = a.calcArmySize() / (f.population / 1000);
+            pillageMultiplier = a.CalcArmySize() / (f.population / 1000);
 
             // calculate days taken for pillage
             double daysTaken = Globals_Game.myRand.Next(7, 16);
@@ -277,7 +277,7 @@ namespace hist_mmorpg
             }
 
             // update army days
-            armyLeader.adjustDays(daysTaken);
+            armyLeader.AdjustDays(daysTaken);
 
             pillageResults += "- Days taken: " + daysTaken + "\r\n";
 
@@ -401,7 +401,7 @@ namespace hist_mmorpg
             }
 
             // check proportion of money pillaged goes to army owner (based on stature)
-            double proportionForOwner = 0.05 * armyOwner.calculateStature();
+            double proportionForOwner = 0.05 * armyOwner.CalculateStature();
             moneyPillagedOwner = (moneyPillagedTotal * proportionForOwner);
             pillageResults += "- Money pillaged by attacking player: " + Convert.ToInt32(moneyPillagedOwner) + "\r\n";
 
@@ -411,11 +411,11 @@ namespace hist_mmorpg
             // apply loss of stature to army owner if fief has same language
             if (armyOwner.language.id == f.language.id)
             {
-                armyOwner.adjustStatureModifier(-0.3);
+                armyOwner.AdjustStatureModifier(-0.3);
             }
             else if (armyOwner.language.baseLanguage.id == f.language.baseLanguage.id)
             {
-                armyOwner.adjustStatureModifier(-0.2);
+                armyOwner.AdjustStatureModifier(-0.2);
             }
 
             // set isPillaged for fief
@@ -528,7 +528,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>The defending army</returns>
         /// <param name="f">The fief being pillaged</param>
-        public Army createDefendingArmy(Fief f)
+        public Army CreateDefendingArmy(Fief f)
         {
             Army defender = null;
             Character armyLeader = null;
@@ -561,10 +561,10 @@ namespace hist_mmorpg
             string thisNationality = f.owner.nationality.natID;
 
             // get size of fief garrison
-            garrisonSize = Convert.ToUInt32(f.getGarrisonSize());
+            garrisonSize = Convert.ToUInt32(f.GetGarrisonSize());
 
             // get size of fief 'militia' responding to emergency
-            militiaSize = Convert.ToUInt32(f.callUpTroops(minProportion: 0.33, maxProportion: 0.66));
+            militiaSize = Convert.ToUInt32(f.CallUpTroops(minProportion: 0.33, maxProportion: 0.66));
 
             // get defending troops based on following troop type proportions:
             // militia = Global_Server.recruitRatios for types 0-4, fill with rabble
@@ -615,7 +615,7 @@ namespace hist_mmorpg
 
             // create temporary army for battle/siege
             defender = new Army("Garrison" + Globals_Game.getNextArmyID(), armyLeaderID, f.owner.charID, armyLeaderDays, f.id, trp: troopsForArmy);
-            defender.addArmy();
+            defender.AddArmy();
 
             return defender;
         }
@@ -649,10 +649,10 @@ namespace hist_mmorpg
             if (bailiffPresent)
             {
                 // create temporary army for battle
-                fiefArmy = this.createDefendingArmy(f);
+                fiefArmy = this.CreateDefendingArmy(f);
 
                 // give battle and get result
-                pillageCancelled = this.giveBattle(fiefArmy, a, circumstance: "pillage");
+                pillageCancelled = this.GiveBattle(fiefArmy, a, circumstance: "pillage");
 
                 if (pillageCancelled)
                 {
@@ -692,7 +692,7 @@ namespace hist_mmorpg
         /// <param name="f">The fief being pillaged/besieged</param>
         /// <param name="a">The pillaging/besieging army</param>
         /// <param name="circumstance">The circumstance - pillage or siege</param>
-        public bool checksBeforePillageSiege(Army a, Fief f, string circumstance = "pillage")
+        public bool ChecksBeforePillageSiege(Army a, Fief f, string circumstance = "pillage")
         {
             bool proceed = true;
             string operation = "";
@@ -701,7 +701,7 @@ namespace hist_mmorpg
             // note: not necessary for quell rebellion
             if (!circumstance.Equals("quellRebellion"))
             {
-                if (f.owner == a.getOwner())
+                if (f.owner == a.GetOwner())
                 {
                     proceed = false;
                     if (circumstance.Equals("pillage"))
@@ -764,7 +764,7 @@ namespace hist_mmorpg
             }
 
             // check if your army has a leader
-            if (a.getLeader() == null)
+            if (a.GetLeader() == null)
             {
                 proceed = false;
 
@@ -835,7 +835,7 @@ namespace hist_mmorpg
                     if (armyInFief.owner.Equals(f.owner.charID))
                     {
                         // army must be outside keep
-                        if (!armyInFief.getLeader().inKeep)
+                        if (!armyInFief.GetLeader().inKeep)
                         {
                             // army must have correct aggression settings
                             if (armyInFief.aggression > 1)
@@ -889,7 +889,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating whether siege operation can proceed</returns>
         /// <param name="s">The siege</param>
         /// <param name="operation">The operation - round or end</param>
-        public bool checksBeforeSiegeOperation(Siege s, string operation = "round")
+        public bool ChecksBeforeSiegeOperation(Siege s, string operation = "round")
         {
             bool proceed = true;
             int daysRequired = 0;
@@ -939,7 +939,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>double containing precentage chance of success</returns>
         /// <param name="keepLvl">The keep level</param>
-        public double calcStormSuccess(double keepLvl)
+        public double CalcStormSuccess(double keepLvl)
         {
             double stormFailurePercent = 0;
 
@@ -983,8 +983,8 @@ namespace hist_mmorpg
             Army defenderGarrison = s.getDefenderGarrison();
             Army defenderAdditional = s.getDefenderAdditional();
             PlayerCharacter attackingPlayer = s.getBesiegingPlayer();
-            Character defenderLeader = defenderGarrison.getLeader();
-            Character attackerLeader = besiegingArmy.getLeader();
+            Character defenderLeader = defenderGarrison.GetLeader();
+            Character attackerLeader = besiegingArmy.GetLeader();
             double statureChange = 0;
 
             // =================== start construction of JOURNAL ENTRY
@@ -1007,7 +1007,7 @@ namespace hist_mmorpg
             Character addDefendLeader = null;
             if (defenderAdditional != null)
             {
-                addDefendLeader = defenderAdditional.getLeader();
+                addDefendLeader = defenderAdditional.GetLeader();
                 if (addDefendLeader != null)
                 {
                     tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
@@ -1022,8 +1022,8 @@ namespace hist_mmorpg
             string siegeDescription = "";
 
             // get STORM RESULT
-            uint[] battleValues = this.calculateBattleValue(besiegingArmy, defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel), true);
-            stormSuccess = this.decideBattleVictory(battleValues[0], battleValues[1]);
+            uint[] battleValues = this.CalculateBattleValue(besiegingArmy, defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel), true);
+            stormSuccess = this.DecideBattleVictory(battleValues[0], battleValues[1]);
 
             // KEEP DAMAGE
             // base damage to keep level (10%)
@@ -1057,7 +1057,7 @@ namespace hist_mmorpg
             defenderCasualtyModifier = defenderCasualtyModifier * (Convert.ToDouble(battleValues[0]) / battleValues[1]);
 
             // apply casualties
-            defenderCasualties += defenderGarrison.applyTroopLosses(defenderCasualtyModifier);
+            defenderCasualties += defenderGarrison.ApplyTroopLosses(defenderCasualtyModifier);
             // update total defender siege losses
             s.totalCasualtiesDefender += Convert.ToInt32(defenderCasualties);
 
@@ -1074,7 +1074,7 @@ namespace hist_mmorpg
                 attackerCasualtyModifier += (0.01 * besiegedFief.keepLevel);
             }
             // apply casualties
-            uint attackerCasualties = besiegingArmy.applyTroopLosses(attackerCasualtyModifier);
+            uint attackerCasualties = besiegingArmy.ApplyTroopLosses(attackerCasualtyModifier);
             // update total attacker siege losses
             s.totalCasualtiesAttacker += Convert.ToInt32(attackerCasualties);
 
@@ -1089,18 +1089,18 @@ namespace hist_mmorpg
                     for (int i = 0; i < (defenderLeader as PlayerCharacter).myNPCs.Count; i++)
                     {
                         NonPlayerCharacter thisNPC = (defenderLeader as PlayerCharacter).myNPCs[i];
-                        characterDead = thisNPC.calculateCombatInjury(defenderCasualtyModifier);
+                        characterDead = thisNPC.CalculateCombatInjury(defenderCasualtyModifier);
 
                         if (characterDead)
                         {
                             // process death
-                            (defenderLeader as PlayerCharacter).myNPCs[i].processDeath("injury");
+                            (defenderLeader as PlayerCharacter).myNPCs[i].ProcessDeath("injury");
                         }
                     }
                 }
 
                 // check defenderLeader
-                characterDead = defenderLeader.calculateCombatInjury(defenderCasualtyModifier);
+                characterDead = defenderLeader.CalculateCombatInjury(defenderCasualtyModifier);
 
                 if (characterDead)
                 {
@@ -1108,7 +1108,7 @@ namespace hist_mmorpg
                     defenderGarrison.leader = null;
 
                     // process death
-                    defenderLeader.processDeath("injury");
+                    defenderLeader.ProcessDeath("injury");
                 }
             }
 
@@ -1208,7 +1208,7 @@ namespace hist_mmorpg
                 this.siegeEnd(s, true, siegeDescriptionFull);
 
                 // change fief ownership
-                besiegedFief.changeOwnership(attackingPlayer);
+                besiegedFief.ChangeOwnership(attackingPlayer);
             }
 
             // storm unsuccessful
@@ -1238,7 +1238,7 @@ namespace hist_mmorpg
             System.Windows.Forms.MessageBox.Show(siegeDescription);
 
             // apply change to besieging player's stature
-            s.getBesiegingPlayer().adjustStatureModifier(statureChange);
+            s.getBesiegingPlayer().AdjustStatureModifier(statureChange);
 
             // refresh screen
             this.refreshCurrentScreen();
@@ -1259,8 +1259,8 @@ namespace hist_mmorpg
             Fief besiegedFief = s.getFief();
             Army besieger = s.getBesiegingArmy();
             Army defenderGarrison = s.getDefenderGarrison();
-            Character defenderLeader = defenderGarrison.getLeader();
-            Character attackerLeader = besieger.getLeader();
+            Character defenderLeader = defenderGarrison.GetLeader();
+            Character attackerLeader = besieger.GetLeader();
             Army defenderAdditional = s.getDefenderAdditional();
 
             // =================== start construction of JOURNAL ENTRY
@@ -1283,7 +1283,7 @@ namespace hist_mmorpg
             Character addDefendLeader = null;
             if (defenderAdditional != null)
             {
-                addDefendLeader = defenderAdditional.getLeader();
+                addDefendLeader = defenderAdditional.GetLeader();
                 if (addDefendLeader != null)
                 {
                     tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
@@ -1298,8 +1298,8 @@ namespace hist_mmorpg
             string siegeDescription = "";
 
             // calculate success chance
-            uint[] battleValues = this.calculateBattleValue(besieger, defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel));
-            double successChance = this.calcVictoryChance(battleValues[0], battleValues[1]) / 2;
+            uint[] battleValues = this.CalculateBattleValue(besieger, defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel));
+            double successChance = this.CalcVictoryChance(battleValues[0], battleValues[1]) / 2;
 
             // generate random double 0-100 to see if negotiation a success
             double myRandomDouble = Utility_Methods.GetRandomDouble(100);
@@ -1314,7 +1314,7 @@ namespace hist_mmorpg
             {
                 // add to winning player's stature
                 double statureIncrease = 0.2 * (s.getFief().population / Convert.ToDouble(10000));
-                s.getBesiegingPlayer().adjustStatureModifier(statureIncrease);
+                s.getBesiegingPlayer().AdjustStatureModifier(statureIncrease);
 
                 // construct event description to be passed into siegeEnd
                 siegeDescription = "On this day of Our Lord the forces of ";
@@ -1335,7 +1335,7 @@ namespace hist_mmorpg
                 this.siegeEnd(s, true, siegeDescriptionFull);
 
                 // change fief ownership
-                s.getFief().changeOwnership(s.getBesiegingPlayer());
+                s.getFief().ChangeOwnership(s.getBesiegingPlayer());
 
             }
 
@@ -1393,13 +1393,13 @@ namespace hist_mmorpg
                 if (defenderAdditional.aggression > 0)
                 {
                     // get odds
-                    int battleOdds = this.getBattleOdds(defenderAdditional, besieger);
+                    int battleOdds = this.GetBattleOdds(defenderAdditional, besieger);
 
                     // if odds OK, give battle
                     if (battleOdds >= defenderAdditional.combatOdds)
                     {
                         // process battle and apply results, if required
-                        siegeRaised = this.giveBattle(defenderAdditional, besieger, circumstance: "siege");
+                        siegeRaised = this.GiveBattle(defenderAdditional, besieger, circumstance: "siege");
 
                         // check for disbandment of defenderAdditional and remove from siege if necessary
                         if (!siegeRaised)
@@ -1425,8 +1425,8 @@ namespace hist_mmorpg
 
             else
             {
-                Character defenderLeader = defenderGarrison.getLeader();
-                Character attackerLeader = besieger.getLeader();
+                Character defenderLeader = defenderGarrison.GetLeader();
+                Character attackerLeader = besieger.GetLeader();
 
                 // process results of siege round
                 // reduce keep level by 8%
@@ -1437,7 +1437,7 @@ namespace hist_mmorpg
                 // NOTE: attrition for both sides is calculated in siege.syncDays
 
                 double combatLosses = 0.01;
-                uint troopsLost = defenderGarrison.applyTroopLosses(combatLosses);
+                uint troopsLost = defenderGarrison.ApplyTroopLosses(combatLosses);
 
                 // check for death of defending PCs/NPCs
                 if (defenderLeader != null)
@@ -1450,18 +1450,18 @@ namespace hist_mmorpg
                         for (int i = 0; i < (defenderLeader as PlayerCharacter).myNPCs.Count; i++)
                         {
                             NonPlayerCharacter thisNPC = (defenderLeader as PlayerCharacter).myNPCs[i];
-                            characterDead = thisNPC.calculateCombatInjury(combatLosses);
+                            characterDead = thisNPC.CalculateCombatInjury(combatLosses);
 
                             if (characterDead)
                             {
                                 // process death
-                                (defenderLeader as PlayerCharacter).myNPCs[i].processDeath("injury");
+                                (defenderLeader as PlayerCharacter).myNPCs[i].ProcessDeath("injury");
                             }
                         }
                     }
 
                     // check defenderLeader
-                    characterDead = defenderLeader.calculateCombatInjury(combatLosses);
+                    characterDead = defenderLeader.CalculateCombatInjury(combatLosses);
 
                     if (characterDead)
                     {
@@ -1469,7 +1469,7 @@ namespace hist_mmorpg
                         defenderGarrison.leader = null;
 
                         // process death
-                        defenderLeader.processDeath("injury");
+                        defenderLeader.ProcessDeath("injury");
                     }
                 }
 
@@ -1504,7 +1504,7 @@ namespace hist_mmorpg
                     Character addDefendLeader = null;
                     if (defenderAdditional != null)
                     {
-                        addDefendLeader = defenderAdditional.getLeader();
+                        addDefendLeader = defenderAdditional.GetLeader();
                         if (addDefendLeader != null)
                         {
                             tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
@@ -1563,13 +1563,13 @@ namespace hist_mmorpg
                 Army armyInFief = Globals_Game.armyMasterList[target.armies[i]];
 
                 // check is in keep
-                Character armyLeader = armyInFief.getLeader();
+                Character armyLeader = armyInFief.GetLeader();
                 if (armyLeader != null)
                 {
                     if (armyLeader.inKeep)
                     {
                         // check owner is same as that of fief (i.e. can help in siege)
-                        if (armyInFief.getOwner() == target.owner)
+                        if (armyInFief.GetOwner() == target.owner)
                         {
                             defenderAdditional = armyInFief;
                             break;
@@ -1579,7 +1579,7 @@ namespace hist_mmorpg
             }
 
             // create defending force
-            defenderGarrison = this.createDefendingArmy(target);
+            defenderGarrison = this.CreateDefendingArmy(target);
 
             // get the minumum days of all army objects involved
             double minDays = Math.Min(attacker.days, defenderGarrison.days);
@@ -1596,7 +1596,7 @@ namespace hist_mmorpg
             }
 
             // create siege object
-            Siege mySiege = new Siege(Globals_Game.getNextSiegeID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, attacker.getOwner().charID, target.owner.charID, attacker.armyID, defenderGarrison.armyID, target.id, minDays, target.keepLevel, defAdd: defAddID);
+            Siege mySiege = new Siege(Globals_Game.getNextSiegeID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, attacker.GetOwner().charID, target.owner.charID, attacker.armyID, defenderGarrison.armyID, target.id, minDays, target.keepLevel, defAdd: defAddID);
 
             // add to master list
             Globals_Game.siegeMasterList.Add(mySiege.siegeID, mySiege);
@@ -1628,9 +1628,9 @@ namespace hist_mmorpg
             tempPersonae.Add("all|all");
             tempPersonae.Add(mySiege.getDefendingPlayer().charID + "|fiefOwner");
             tempPersonae.Add(mySiege.getBesiegingPlayer().charID + "|attackerOwner");
-            tempPersonae.Add(attacker.getLeader().charID + "|attackerLeader");
+            tempPersonae.Add(attacker.GetLeader().charID + "|attackerLeader");
             // get defenderLeader
-            Character defenderLeader = defenderGarrison.getLeader();
+            Character defenderLeader = defenderGarrison.GetLeader();
             if (defenderLeader != null)
             {
                 tempPersonae.Add(defenderLeader.charID + "|defenderGarrisonLeader");
@@ -1639,7 +1639,7 @@ namespace hist_mmorpg
             Character addDefendLeader = null;
             if (defenderAdditional != null)
             {
-                addDefendLeader = defenderAdditional.getLeader();
+                addDefendLeader = defenderAdditional.GetLeader();
                 if (addDefendLeader != null)
                 {
                     tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
@@ -1653,7 +1653,7 @@ namespace hist_mmorpg
             // description
             string siegeDescription = "On this day of Our Lord the forces of ";
             siegeDescription += mySiege.getBesiegingPlayer().firstName + " " + mySiege.getBesiegingPlayer().familyName;
-            siegeDescription += ", led by " + attacker.getLeader().firstName + " " + attacker.getLeader().familyName;
+            siegeDescription += ", led by " + attacker.GetLeader().firstName + " " + attacker.GetLeader().familyName;
             siegeDescription += " laid siege to the keep of " + mySiege.getFief().name;
             siegeDescription += ", owned by " + mySiege.getDefendingPlayer().firstName + " " + mySiege.getDefendingPlayer().familyName;
             if (defenderLeader != null)

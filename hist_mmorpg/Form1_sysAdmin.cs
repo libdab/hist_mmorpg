@@ -28,15 +28,15 @@ namespace hist_mmorpg
         public void refreshCharEdit(Character ch = null)
         {
             // clear previous data
-            this.disableControls(this.adminEditCharContainer.Panel1);
-            this.disableControls(this.adminEditCharPcPanel);
-            this.disableControls(this.adminEditCharNpcPanel);
+            this.DisableControls(this.adminEditCharContainer.Panel1);
+            this.DisableControls(this.adminEditCharPcPanel);
+            this.DisableControls(this.adminEditCharNpcPanel);
 
             // display character data, if provided
             if (ch != null)
             {
                 // enable controls
-                this.enableControls(this.adminEditCharContainer.Panel1);
+                this.EnableControls(this.adminEditCharContainer.Panel1);
 
                 // id
                 this.adminEditCharIDTextBox.Text = ch.charID;
@@ -99,7 +99,7 @@ namespace hist_mmorpg
                 if (ch is PlayerCharacter)
                 {
                     // enable controls
-                    this.enableControls(this.adminEditCharPcPanel);
+                    this.EnableControls(this.adminEditCharPcPanel);
 
                     // playerID
                     if (!String.IsNullOrWhiteSpace((ch as PlayerCharacter).playerID))
@@ -127,7 +127,7 @@ namespace hist_mmorpg
                 else
                 {
                     // enable controls
-                    this.enableControls(this.adminEditCharNpcPanel);
+                    this.EnableControls(this.adminEditCharNpcPanel);
 
                     // wage
                     this.adminEditCharWageTextBox.Text = (ch as NonPlayerCharacter).salary.ToString();
@@ -143,16 +143,16 @@ namespace hist_mmorpg
         public void refreshPlaceEdit(Place p = null)
         {
             // clear previous data
-            this.disableControls(this.adminEditPlaceContainer.Panel1);
-            this.disableControls(this.adminEditFiefPanel);
-            this.disableControls(this.adminEditProvPanel);
-            this.disableControls(this.adminEditKingPanel);
+            this.DisableControls(this.adminEditPlaceContainer.Panel1);
+            this.DisableControls(this.adminEditFiefPanel);
+            this.DisableControls(this.adminEditProvPanel);
+            this.DisableControls(this.adminEditKingPanel);
 
             // display place data, if provided
             if (p != null)
             {
                 // enable controls
-                this.enableControls(this.adminEditPlaceContainer.Panel1);
+                this.EnableControls(this.adminEditPlaceContainer.Panel1);
 
                 // id
                 this.adminEditPlaceIdTextBox.Text = p.id;
@@ -169,7 +169,7 @@ namespace hist_mmorpg
                 if (p is Fief)
                 {
                     // enable controls
-                    this.enableControls(this.adminEditFiefPanel);
+                    this.EnableControls(this.adminEditFiefPanel);
 
                     // province ID
                     this.adminEditFiefProvTextBox.Text = (p as Fief).province.id;
@@ -234,7 +234,7 @@ namespace hist_mmorpg
                 else if (p is Province)
                 {
                     // enable controls
-                    this.enableControls(this.adminEditProvPanel);
+                    this.EnableControls(this.adminEditProvPanel);
 
                     // overlord tax rate
                     this.adminEditProvTaxTextBox.Text = (p as Province).taxRate.ToString();
@@ -246,7 +246,7 @@ namespace hist_mmorpg
                 else
                 {
                     // enable controls
-                    this.enableControls(this.adminEditKingPanel);
+                    this.EnableControls(this.adminEditKingPanel);
 
                     // nationality
                     this.adminEditKingNatTextBox.Text = (p as Kingdom).nationality.natID;
@@ -262,13 +262,13 @@ namespace hist_mmorpg
         public void refreshSkillEdit(Skill s = null)
         {
             // clear previous data
-            this.disableControls(this.adminEditSkillPanel);
+            this.DisableControls(this.adminEditSkillPanel);
 
             // display skill data, if provided
             if (s != null)
             {
                 // enable controls
-                this.enableControls(this.adminEditSkillPanel);
+                this.EnableControls(this.adminEditSkillPanel);
 
                 // id
                 this.adminEditSkillIdTextBox.Text = s.skillID;
@@ -319,13 +319,13 @@ namespace hist_mmorpg
         public void refreshArmyEdit(Army a = null)
         {
             // clear previous data
-            this.disableControls(this.adminEditArmyPanel);
+            this.DisableControls(this.adminEditArmyPanel);
 
             // display army data, if provided
             if (a != null)
             {
                 // enable controls
-                this.enableControls(this.adminEditArmyPanel);
+                this.EnableControls(this.adminEditArmyPanel);
 
                 // id
                 this.adminEditArmyIdTextBox.Text = a.armyID;
@@ -473,7 +473,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="objectType">The type of Character to be saved</param>
-        public bool saveCharEdit(string objectType)
+        public bool saveCharacterEdit(string objectType)
         {
             bool success = false;
             PlayerCharacter thisPC = null;

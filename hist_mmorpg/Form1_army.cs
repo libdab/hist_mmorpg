@@ -25,18 +25,18 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>String containing information to display</returns>
         /// <param name="a">Army for which information is to be displayed</param>
-        public string displayArmyData(Army a)
+        public string DisplayArmyData(Army a)
         {
             string armyText = "";
             uint[] troopNumbers = a.troops;
-            Fief armyLocation = a.getLocation();
+            Fief armyLocation = a.GetLocation();
 
             // check if is garrison in a siege
-            string siegeID = a.checkIfSiegeDefenderGarrison();
+            string siegeID = a.CheckIfSiegeDefenderGarrison();
             if (String.IsNullOrWhiteSpace(siegeID))
             {
                 // check if is additional defender in a siege
-                siegeID = a.checkIfSiegeDefenderAdditional();
+                siegeID = a.CheckIfSiegeDefenderAdditional();
             }
 
             // if is defender in a siege, indicate
@@ -48,7 +48,7 @@ namespace hist_mmorpg
             else
             {
                 // check if is besieger in a siege
-                siegeID = a.checkIfBesieger();
+                siegeID = a.CheckIfBesieger();
 
                 // if is besieger in a siege, indicate
                 if (!String.IsNullOrWhiteSpace(siegeID))
@@ -70,7 +70,7 @@ namespace hist_mmorpg
             armyText += "ID: " + a.armyID + "\r\n\r\n";
 
             // nationality
-            armyText += "Nationality: " + a.getOwner().nationality.name + "\r\n\r\n";
+            armyText += "Nationality: " + a.GetOwner().nationality.name + "\r\n\r\n";
 
             // days left
             armyText += "Days left: " + a.days + "\r\n\r\n";
@@ -79,7 +79,7 @@ namespace hist_mmorpg
             armyText += "Location: " + armyLocation.name + " (Province: " + armyLocation.province.name + ".  Kingdom: " + armyLocation.province.kingdom.name + ")\r\n\r\n";
 
             // leader
-            Character armyLeader = a.getLeader();
+            Character armyLeader = a.GetLeader();
 
             armyText += "Leader: ";
 
@@ -103,12 +103,12 @@ namespace hist_mmorpg
                 armyText += "\r\n";
             }
             armyText += "   ==================\r\n";
-            armyText += " - TOTAL: " + a.calcArmySize() + "\r\n\r\n";
+            armyText += " - TOTAL: " + a.CalcArmySize() + "\r\n\r\n";
 
             // whether is maintained (and at what cost)
             if (a.isMaintained)
             {
-                uint armyCost = a.calcArmySize() * 500;
+                uint armyCost = a.CalcArmySize() * 500;
 
                 armyText += "This army is currently being maintained (at a cost of £" + armyCost + ")\r\n\r\n";
             }
@@ -133,8 +133,8 @@ namespace hist_mmorpg
         public void refreshArmyContainer(Army a = null)
         {
             // disable controls until army selected
-            this.disableControls(this.armyManagementPanel);
-            this.disableControls(this.armyCombatPanel);
+            this.DisableControls(this.armyManagementPanel);
+            this.DisableControls(this.armyCombatPanel);
 
             // always enable switch between management and combat panels
             this.armyDisplayCmbtBtn.Enabled = true;
@@ -156,7 +156,7 @@ namespace hist_mmorpg
                 thisArmy = new ListViewItem(Globals_Client.myPlayerCharacter.myArmies[i].armyID);
 
                 // leader
-                Character armyLeader = Globals_Client.myPlayerCharacter.myArmies[i].getLeader();
+                Character armyLeader = Globals_Client.myPlayerCharacter.myArmies[i].GetLeader();
                 if (armyLeader != null)
                 {
                     thisArmy.SubItems.Add(armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")");
@@ -167,11 +167,11 @@ namespace hist_mmorpg
                 }
 
                 // location
-                Fief armyLocation = Globals_Client.myPlayerCharacter.myArmies[i].getLocation();
+                Fief armyLocation = Globals_Client.myPlayerCharacter.myArmies[i].GetLocation();
                 thisArmy.SubItems.Add(armyLocation.name + " (" + armyLocation.id + ")");
 
                 // size
-                thisArmy.SubItems.Add(Globals_Client.myPlayerCharacter.myArmies[i].calcArmySize().ToString());
+                thisArmy.SubItems.Add(Globals_Client.myPlayerCharacter.myArmies[i].CalcArmySize().ToString());
 
                 if (thisArmy != null)
                 {
@@ -223,7 +223,7 @@ namespace hist_mmorpg
         public void disbandArmy(Army a)
         {
             // carry out functions associated with disband
-            a.disbandArmy();
+            a.DisbandArmy();
 
             // set army to null
             a = null;
@@ -233,7 +233,7 @@ namespace hist_mmorpg
         /// Retrieves details of all armies in observer's current fief
         /// </summary>
         /// <param name="observer">The observer</param>
-        private void examineArmiesInFief(Character observer)
+        private void ExamineArmiesInFief(Character observer)
         {
             bool proceed = true;
             int reconDays = 0;
@@ -260,7 +260,7 @@ namespace hist_mmorpg
                     proceed = false;
 
                     // set days to 0
-                    observer.adjustDays(observer.days);
+                    observer.AdjustDays(observer.days);
 
                     if (Globals_Client.showMessages)
                     {
@@ -280,7 +280,7 @@ namespace hist_mmorpg
                     }
 
                     // adjust days for recon
-                    observer.adjustDays(reconDays);
+                    observer.AdjustDays(reconDays);
                 }
 
             }

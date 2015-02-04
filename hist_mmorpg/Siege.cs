@@ -381,10 +381,10 @@ namespace hist_mmorpg
             this.days = newDays;
 
             // ATTACKING ARMY
-            Character attackerLeader = besieger.getLeader();
+            Character attackerLeader = besieger.GetLeader();
             if (attackerLeader != null)
             {
-                attackerLeader.adjustDays(attackerLeader.days - this.days);
+                attackerLeader.AdjustDays(attackerLeader.days - this.days);
             }
             else
             {
@@ -398,19 +398,19 @@ namespace hist_mmorpg
                 for (int i = 0; i < attritionChecks; i++)
                 {
                     // calculate attrition
-                    double attritionModifer = besieger.calcAttrition();
+                    double attritionModifer = besieger.CalcAttrition();
                     // apply attrition
-                    totalAttackTroopsLost += besieger.applyTroopLosses(attritionModifer);
+                    totalAttackTroopsLost += besieger.ApplyTroopLosses(attritionModifer);
                 }
                 // update total attacker siege losses
                 this.totalCasualtiesAttacker += Convert.ToInt32(totalAttackTroopsLost);
             }
 
             // DEFENDING GARRISON
-            Character garrisonLeader = defenderGarr.getLeader();
+            Character garrisonLeader = defenderGarr.GetLeader();
             if (garrisonLeader != null)
             {
-                garrisonLeader.adjustDays(garrisonLeader.days - this.days);
+                garrisonLeader.AdjustDays(garrisonLeader.days - this.days);
             }
             else
             {
@@ -426,9 +426,9 @@ namespace hist_mmorpg
                     for (int i = 0; i < attritionChecks; i++)
                     {
                         // calculate attrition
-                        double attritionModifer = defenderGarr.calcAttrition();
+                        double attritionModifer = defenderGarr.CalcAttrition();
                         // apply attrition
-                        totalDefendTroopsLost += defenderGarr.applyTroopLosses(attritionModifer);
+                        totalDefendTroopsLost += defenderGarr.ApplyTroopLosses(attritionModifer);
                     }
                     // update total defender siege losses
                     this.totalCasualtiesDefender += Convert.ToInt32(totalDefendTroopsLost);
@@ -438,10 +438,10 @@ namespace hist_mmorpg
             // ADDITIONAL DEFENDING ARMY
             if (defenderAdd != null)
             {
-                Character defAddLeader = defenderAdd.getLeader();
+                Character defAddLeader = defenderAdd.GetLeader();
                 if (defAddLeader != null)
                 {
-                    defAddLeader.adjustDays(defAddLeader.days - this.days);
+                    defAddLeader.AdjustDays(defAddLeader.days - this.days);
                 }
                 else
                 {
@@ -457,9 +457,9 @@ namespace hist_mmorpg
                         for (int i = 0; i < attritionChecks; i++)
                         {
                             // calculate attrition
-                            double attritionModifer = defenderAdd.calcAttrition();
+                            double attritionModifer = defenderAdd.CalcAttrition();
                             // apply attrition
-                            totalDefendTroopsLost += defenderAdd.applyTroopLosses(attritionModifer);
+                            totalDefendTroopsLost += defenderAdd.ApplyTroopLosses(attritionModifer);
                         }
                         // update total defender siege losses
                         this.totalCasualtiesDefender += Convert.ToInt32(totalDefendTroopsLost);
@@ -526,7 +526,7 @@ namespace hist_mmorpg
                 double newDays = 90;
 
                 // get besieging leader
-                besiegerLeader = this.getBesiegingArmy().getLeader();
+                besiegerLeader = this.getBesiegingArmy().GetLeader();
                 if (besiegerLeader != null)
                 {
                     // set days to besieger leader's days (may be effected by skills)
@@ -551,19 +551,19 @@ namespace hist_mmorpg
             PlayerCharacter defendingPlayer = this.getDefendingPlayer();
             Army besiegingArmy = this.getBesiegingArmy();
             Army defenderGarrison = this.getDefenderGarrison();
-            Character defenderLeader = defenderGarrison.getLeader();
+            Character defenderLeader = defenderGarrison.GetLeader();
             PlayerCharacter besiegingPlayer = this.getBesiegingPlayer();
             Army defenderAdditional = this.getDefenderAdditional();
             Character addDefendLeader = null;
             if (defenderAdditional != null)
             {
-                addDefendLeader = defenderAdditional.getLeader();
+                addDefendLeader = defenderAdditional.GetLeader();
             }
             Fief besiegedFief = this.getFief();
             Character besiegingArmyLeader = null;
             if (besiegingArmy != null)
             {
-                besiegingArmyLeader = besiegingArmy.getLeader();
+                besiegingArmyLeader = besiegingArmy.GetLeader();
             }
 
             // =================== construct and send JOURNAL ENTRY
@@ -617,13 +617,13 @@ namespace hist_mmorpg
             Globals_Game.addPastEvent(siegeResult);
 
             // disband garrison
-            defenderGarrison.disbandArmy();
+            defenderGarrison.DisbandArmy();
             defenderGarrison = null;
 
             // disband additional defending army (but only if siege was successful)
             if ((defenderAdditional != null) && (siegeSuccessful))
             {
-                defenderAdditional.disbandArmy();
+                defenderAdditional.DisbandArmy();
                 defenderAdditional = null;
             }
 
@@ -639,7 +639,7 @@ namespace hist_mmorpg
             double daysProportion = 0;
             if (besiegingArmyLeader != null)
             {
-                daysProportion = this.days / besiegingArmyLeader.getDaysAllowance();
+                daysProportion = this.days / besiegingArmyLeader.GetDaysAllowance();
             }
             else
             {
@@ -652,7 +652,7 @@ namespace hist_mmorpg
                 if (thisChar.inKeep)
                 {
                     // reset character's days to reflect days spent in siege
-                    thisChar.days = thisChar.getDaysAllowance() * daysProportion;
+                    thisChar.days = thisChar.GetDaysAllowance() * daysProportion;
                 }
             }
 

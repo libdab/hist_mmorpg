@@ -36,10 +36,10 @@ namespace hist_mmorpg
             // check to see if character is leading a besieging army
             if (siegeCheck)
             {
-                Army myArmy = ch.getArmy();
+                Army myArmy = ch.GetArmy();
                 if (myArmy != null)
                 {
-                    string thisSiegeID = myArmy.checkIfBesieger();
+                    string thisSiegeID = myArmy.CheckIfBesieger();
                     if (!String.IsNullOrWhiteSpace(thisSiegeID))
                     {
                         // give player fair warning of consequences to siege
@@ -82,7 +82,7 @@ namespace hist_mmorpg
             if (proceedWithMove)
             {
                 // move character
-                success = ch.moveCharacter(target, cost);
+                success = ch.MoveCharacter(target, cost);
             }
 
             return success;
@@ -133,7 +133,7 @@ namespace hist_mmorpg
             // if necessary, apply army modifier
             if (!String.IsNullOrWhiteSpace(armyID))
             {
-                cost = cost * Globals_Game.armyMasterList[armyID].calcMovementModifier();
+                cost = cost * Globals_Game.armyMasterList[armyID].CalcMovementModifier();
             }
 
             return cost;
@@ -253,7 +253,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="ch">Character to be moved</param>
-        private bool characterMultiMove(Character ch)
+        private bool CharacterMultiMove(Character ch)
         {
             bool success = false;
             double travelCost = 0;
@@ -341,7 +341,7 @@ namespace hist_mmorpg
                     }
 
                     // perform move
-                    this.characterMultiMove(Globals_Client.charToView);
+                    this.CharacterMultiMove(Globals_Client.charToView);
                 }
 
                 // refresh appropriate screen
@@ -375,17 +375,17 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="ch">The Character who wishes to camp</param>
         /// <param name="campDays">Number of days to camp</param>
-        public void campWaitHere(Character ch, byte campDays)
+        public void CampWaitHere(Character ch, byte campDays)
         {
             bool proceed = true;
             // get army
             Army thisArmy = null;
-            thisArmy = ch.getArmy();
+            thisArmy = ch.GetArmy();
             // get siege
             Siege thisSiege = null;
             if (thisArmy != null)
             {
-                thisSiege = thisArmy.getSiege();
+                thisSiege = thisArmy.GetSiege();
             }
 
             // check has enough days available
@@ -443,11 +443,11 @@ namespace hist_mmorpg
                     // adjust character's days
                     if (ch is PlayerCharacter)
                     {
-                        (ch as PlayerCharacter).adjustDays(campDays);
+                        (ch as PlayerCharacter).AdjustDays(campDays);
                     }
                     else
                     {
-                        ch.adjustDays(campDays);
+                        ch.AdjustDays(campDays);
                     }
 
                     // inform player
@@ -468,11 +468,11 @@ namespace hist_mmorpg
                         for (int i = 0; i < attritionChecks; i++)
                         {
                             // calculate attrition
-                            double attritionModifer = thisArmy.calcAttrition();
+                            double attritionModifer = thisArmy.CalcAttrition();
                             // apply attrition
                             if (attritionModifer > 0)
                             {
-                                totalAttrition += thisArmy.applyTroopLosses(attritionModifer);
+                                totalAttrition += thisArmy.ApplyTroopLosses(attritionModifer);
                             }
                         }
 
@@ -638,7 +638,7 @@ namespace hist_mmorpg
             if (route.Count > 0)
             {
                 Globals_Client.charToView.goTo = route;
-                proceed = this.characterMultiMove(Globals_Client.charToView);
+                proceed = this.CharacterMultiMove(Globals_Client.charToView);
             }
 
             // refresh appropriate screen

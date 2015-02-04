@@ -625,7 +625,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "fiefKeys", fiefKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "fiefKeys", fiefKeyList);
                 }
 
                 else
@@ -641,7 +641,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "provKeys", provKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "provKeys", provKeyList);
                 }
 
                 else
@@ -657,7 +657,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "kingKeys", kingKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "kingKeys", kingKeyList);
                 }
 
                 else
@@ -673,7 +673,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "pcKeys", pcKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "pcKeys", pcKeyList);
                 }
 
                 else
@@ -689,7 +689,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "npcKeys", npcKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "npcKeys", npcKeyList);
                 }
 
                 else
@@ -705,7 +705,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "skillKeys", skillKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "skillKeys", skillKeyList);
                 }
 
                 else
@@ -721,7 +721,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "armyKeys", armyKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "armyKeys", armyKeyList);
                 }
 
                 else
@@ -737,7 +737,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "langKeys", langKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "langKeys", langKeyList);
                 }
 
                 else
@@ -753,7 +753,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "baseLangKeys", baseLangKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "baseLangKeys", baseLangKeyList);
                 }
 
                 else
@@ -769,7 +769,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "nationalityKeys", natKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "nationalityKeys", natKeyList);
                 }
 
                 else
@@ -785,7 +785,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "rankKeys", rankKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "rankKeys", rankKeyList);
                 }
 
                 else
@@ -801,7 +801,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "positionKeys", posKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "positionKeys", posKeyList);
                 }
 
                 else
@@ -817,7 +817,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "siegeKeys", siegeKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "siegeKeys", siegeKeyList);
                 }
 
                 else
@@ -833,7 +833,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.databaseWrite_KeyList(bucketID, "terrKeys", terrKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "terrKeys", terrKeyList);
                 }
 
                 else
@@ -852,7 +852,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Skill> thisEntry in skillMasterList)
                     {
-                        this.databaseWrite_Skill(bucketID, thisEntry.Value);
+                        this.DatabaseWrite_Skill(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -870,7 +870,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, BaseLanguage> thisEntry in baseLanguageMasterList)
                     {
-                        this.databaseWrite_BaseLanguage(bucketID, thisEntry.Value);
+                        this.DatabaseWrite_BaseLanguage(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -888,7 +888,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Nationality> thisEntry in nationalityMasterList)
                     {
-                        this.databaseWrite_Nationality(bucketID, thisEntry.Value);
+                        this.DatabaseWrite_Nationality(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -906,7 +906,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<byte, Rank> thisEntry in rankMasterList)
                     {
-                        this.databaseWrite_Rank(bucketID, thisEntry.Value);
+                        this.DatabaseWrite_Rank(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -924,7 +924,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Terrain> thisEntry in terrainMasterList)
                     {
-                        this.databaseWrite_Terrain(bucketID, thisEntry.Value);
+                        this.DatabaseWrite_Terrain(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -942,7 +942,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Language_Serialised> thisEntry in languageMasterList)
                     {
-                        this.databaseWrite_Language(bucketID, ls: thisEntry.Value);
+                        this.DatabaseWrite_Language(bucketID, ls: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -968,7 +968,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<byte, Position_Serialised> thisEntry in positionMasterList)
                     {
-                        this.databaseWrite_Position(bucketID, ps: thisEntry.Value);
+                        this.DatabaseWrite_Position(bucketID, ps: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -1006,7 +1006,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, Army> thisEntry in armyMasterList)
                         {
-                            this.databaseWrite_Army(bucketID, thisEntry.Value);
+                            this.DatabaseWrite_Army(bucketID, thisEntry.Value);
                         }
                     }
                     // save to game
@@ -1024,7 +1024,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, Siege> thisEntry in siegeMasterList)
                         {
-                            this.databaseWrite_Siege(bucketID, thisEntry.Value);
+                            this.DatabaseWrite_Siege(bucketID, thisEntry.Value);
                         }
                     }
                     // save to game
@@ -1042,7 +1042,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, NonPlayerCharacter_Serialised> thisEntry in npcMasterList)
                         {
-                            this.databaseWrite_NPC(bucketID, npcs: thisEntry.Value);
+                            this.DatabaseWrite_NPC(bucketID, npcs: thisEntry.Value);
                         }
                     }
                     // save to game
@@ -1068,7 +1068,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, PlayerCharacter_Serialised> thisEntry in pcMasterList)
                         {
-                            this.databaseWrite_PC(bucketID, pcs: thisEntry.Value);
+                            this.DatabaseWrite_PC(bucketID, pcs: thisEntry.Value);
                         }
                     }
                     // save to game
@@ -1094,7 +1094,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, Kingdom_Serialised> thisEntry in kingdomMasterList)
                         {
-                            this.databaseWrite_Kingdom(bucketID, ks: thisEntry.Value);
+                            this.DatabaseWrite_Kingdom(bucketID, ks: thisEntry.Value);
                         }
                     }
                     // save to game
@@ -1120,7 +1120,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, Province_Serialised> thisEntry in provinceMasterList)
                         {
-                            this.databaseWrite_Province(bucketID, ps: thisEntry.Value);
+                            this.DatabaseWrite_Province(bucketID, ps: thisEntry.Value);
                         }
                     }
                     // save to game
@@ -1146,7 +1146,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, Fief_Serialised> thisEntry in fiefMasterList)
                         {
-                            this.databaseWrite_Fief(bucketID, fs: thisEntry.Value);
+                            this.DatabaseWrite_Fief(bucketID, fs: thisEntry.Value);
                         }
                     }
                     // save to game
@@ -3411,7 +3411,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Army> thisEntry in armyMasterList)
                     {
-                        this.databaseWrite_Army(bucketID, thisEntry.Value);
+                        this.DatabaseWrite_Army(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3429,7 +3429,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Siege> thisEntry in siegeMasterList)
                     {
-                        this.databaseWrite_Siege(bucketID, thisEntry.Value);
+                        this.DatabaseWrite_Siege(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3447,7 +3447,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, NonPlayerCharacter_Serialised> thisEntry in npcMasterList)
                     {
-                        this.databaseWrite_NPC(bucketID, npcs: thisEntry.Value);
+                        this.DatabaseWrite_NPC(bucketID, npcs: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3489,7 +3489,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, PlayerCharacter_Serialised> thisEntry in pcMasterList)
                     {
-                        this.databaseWrite_PC(bucketID, pcs: thisEntry.Value);
+                        this.DatabaseWrite_PC(bucketID, pcs: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3531,7 +3531,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Kingdom_Serialised> thisEntry in kingdomMasterList)
                     {
-                        this.databaseWrite_Kingdom(bucketID, ks: thisEntry.Value);
+                        this.DatabaseWrite_Kingdom(bucketID, ks: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3557,7 +3557,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Province_Serialised> thisEntry in provinceMasterList)
                     {
-                        this.databaseWrite_Province(bucketID, ps: thisEntry.Value);
+                        this.DatabaseWrite_Province(bucketID, ps: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3583,7 +3583,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Fief_Serialised> thisEntry in fiefMasterList)
                     {
-                        this.databaseWrite_Fief(bucketID, fs: thisEntry.Value);
+                        this.DatabaseWrite_Fief(bucketID, fs: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3600,45 +3600,6 @@ namespace hist_mmorpg
                     }
                 }
             }
-
-            /*
-            // save all objects
-            foreach (KeyValuePair<string, Fief_Serialised> fiefEntry in fiefMasterList)
-            {
-                // save to database
-                this.databaseWrite_Fief(bucketID, fs: fiefEntry.Value);
-            }
-            foreach (KeyValuePair<string, Province_Serialised> provEntry in provinceMasterList)
-            {
-                // save to database
-                this.databaseWrite_Province(bucketID, ps: provEntry.Value);
-            }
-            foreach (KeyValuePair<string, Kingdom_Serialised> kingEntry in kingdomMasterList)
-            {
-                // save to database
-                this.databaseWrite_Kingdom(bucketID, ks: kingEntry.Value);
-            }
-            foreach (KeyValuePair<string, PlayerCharacter_Serialised> pcEntry in pcMasterList)
-            {
-                // save to database
-                this.databaseWrite_PC(bucketID, pcs: pcEntry.Value);
-            }
-            foreach (KeyValuePair<string, NonPlayerCharacter_Serialised> npcEntry in npcMasterList)
-            {
-                // save to database
-                this.databaseWrite_NPC(bucketID, npcs: npcEntry.Value);
-            }
-            foreach (KeyValuePair<string, Siege> siegeEntry in siegeMasterList)
-            {
-                // save to database
-                this.databaseWrite_Siege(bucketID, siegeEntry.Value);
-            }
-            foreach (KeyValuePair<string, Army> armyEntry in armyMasterList)
-            {
-                // save to database
-                this.databaseWrite_Army(bucketID, armyEntry.Value);
-            } */
-
         }
 
         /// <summary>
@@ -3733,7 +3694,7 @@ namespace hist_mmorpg
             if (toDatabase)
             {
                 // save to database
-                this.databaseWrite_MapEdges(bucketID, edges: mapEdges);
+                this.DatabaseWrite_MapEdges(bucketID, edges: mapEdges);
             }
 
             else

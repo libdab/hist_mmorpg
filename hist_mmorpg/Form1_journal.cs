@@ -68,7 +68,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>String containing information to display</returns>
         /// <param name="indexPosition">The index position of the journal entry to be displayed</param>
-        public string displayJournalEntry(int indexPosition)
+        public string DisplayJournalEntry(int indexPosition)
         {
             string jentryText = "";
 
@@ -147,7 +147,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="min">The JournalEntry to be added</param>
-        public bool addMyPastEvent(JournalEntry jEntry)
+        public bool AddMyPastEvent(JournalEntry jEntry)
         {
             bool success = false;
             byte priority = 0;

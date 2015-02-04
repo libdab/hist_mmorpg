@@ -25,7 +25,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>String containing information to display</returns>
         /// <param name="ch">Character whose information is to be displayed</param>
-        public string displayCharacter(Character ch)
+        public string DisplayCharacter(Character ch)
         {
             string charText = "";
             bool isMyNPC = false;
@@ -67,7 +67,7 @@ namespace hist_mmorpg
             charText += "Name: " + ch.firstName + " " + ch.familyName + "\r\n";
 
             // age
-            charText += "Age: " + ch.calcAge() + "\r\n";
+            charText += "Age: " + ch.CalcAge() + "\r\n";
 
             // sex
             charText += "Sex: ";
@@ -105,12 +105,12 @@ namespace hist_mmorpg
                 }
                 else
                 {
-                    charText += ch.calculateHealth() + " (max. health: " + ch.maxHealth + ")";
+                    charText += ch.CalculateHealth() + " (max. health: " + ch.maxHealth + ")";
                 }
                 charText += "\r\n";
 
                 // any death modifiers (from skills)
-                charText += "  (Death modifier from skills: " + ch.calcSkillEffect("death") + ")\r\n";
+                charText += "  (Death modifier from skills: " + ch.CalcSkillEffect("death") + ")\r\n";
 
                 // virility
                 charText += "Virility: " + ch.virility + "\r\n";
@@ -129,8 +129,8 @@ namespace hist_mmorpg
             }
 
             // stature
-            charText += "Stature: " + ch.calculateStature() + "\r\n";
-            charText += "  (base stature: " + ch.calculateStature(false) + " | modifier: " + ch.statureModifier + ")\r\n";
+            charText += "Stature: " + ch.CalculateStature() + "\r\n";
+            charText += "  (base stature: " + ch.CalculateStature(false) + " | modifier: " + ch.statureModifier + ")\r\n";
 
             // management rating
             charText += "Management: " + ch.management + "\r\n";
@@ -265,12 +265,12 @@ namespace hist_mmorpg
             {
                 if (isMyNPC)
                 {
-                    charText += this.displayPlayerCharacter((PlayerCharacter)ch);
+                    charText += this.DisplayPlayerCharacter((PlayerCharacter)ch);
                 }
             }
             else
             {
-                charText += this.displayNonPlayerCharacter((NonPlayerCharacter)ch);
+                charText += this.DisplayNonPlayerCharacter((NonPlayerCharacter)ch);
             }
 
 
@@ -361,7 +361,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>String containing information to display</returns>
         /// <param name="pc">PlayerCharacter whose information is to be displayed</param>
-        public string displayPlayerCharacter(PlayerCharacter pc)
+        public string DisplayPlayerCharacter(PlayerCharacter pc)
         {
             string pcText = "";
 
@@ -410,7 +410,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>String containing information to display</returns>
         /// <param name="npc">NonPlayerCharacter whose information is to be displayed</param>
-        public string displayNonPlayerCharacter(NonPlayerCharacter npc)
+        public string DisplayNonPlayerCharacter(NonPlayerCharacter npc)
         {
             string npcText = "";
 
@@ -458,7 +458,7 @@ namespace hist_mmorpg
 
             // refresh Character display TextBox
             this.characterTextBox.ReadOnly = true;
-            this.characterTextBox.Text = this.displayCharacter(ch);
+            this.characterTextBox.Text = this.DisplayCharacter(ch);
 
             // clear previous entries in Camp TextBox
             this.travelCampDaysTextBox.Text = "";

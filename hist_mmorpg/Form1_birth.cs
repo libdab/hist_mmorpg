@@ -26,7 +26,7 @@ namespace hist_mmorpg
         /// <returns>NonPlayerCharacter or null</returns>
         /// <param name="mummy">The new NPC's mother</param>
         /// <param name="daddy">The new NPC's father</param>
-        public NonPlayerCharacter generateNewNPC(NonPlayerCharacter mummy, Character daddy)
+        public NonPlayerCharacter GenerateNewNPC(NonPlayerCharacter mummy, Character daddy)
         {
             NonPlayerCharacter newNPC = new NonPlayerCharacter();
 
@@ -39,15 +39,15 @@ namespace hist_mmorpg
             // date of birth
             newNPC.birthDate = new Tuple<uint, byte>(Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason);
             // sex
-            newNPC.isMale = this.generateSex();
+            newNPC.isMale = this.GenerateSex();
             // nationality
             newNPC.nationality = daddy.nationality;
             // whether is alive
             newNPC.isAlive = true;
             // maxHealth
-            newNPC.maxHealth = this.generateKeyCharacteristics(mummy.maxHealth, daddy.maxHealth);
+            newNPC.maxHealth = this.GenerateKeyCharacteristics(mummy.maxHealth, daddy.maxHealth);
             // virility
-            newNPC.virility = this.generateKeyCharacteristics(mummy.virility, daddy.virility);
+            newNPC.virility = this.GenerateKeyCharacteristics(mummy.virility, daddy.virility);
             // goTo queue
             newNPC.goTo = new Queue<Fief>();
             // language
@@ -57,11 +57,11 @@ namespace hist_mmorpg
             // stature modifier
             newNPC.statureModifier = 0;
             // management
-            newNPC.management = this.generateKeyCharacteristics(mummy.management, daddy.management);
+            newNPC.management = this.GenerateKeyCharacteristics(mummy.management, daddy.management);
             // combat
-            newNPC.combat = this.generateKeyCharacteristics(mummy.combat, daddy.combat);
+            newNPC.combat = this.GenerateKeyCharacteristics(mummy.combat, daddy.combat);
             // skills
-            newNPC.skills = this.generateSkillSetFromParents(mummy.skills, daddy.skills, newNPC.isMale);
+            newNPC.skills = this.GenerateSkillSetFromParents(mummy.skills, daddy.skills, newNPC.isMale);
             // if in keep
             newNPC.inKeep = mummy.inKeep;
             // if pregnant
@@ -102,7 +102,7 @@ namespace hist_mmorpg
         /// Generates a random sex for a Character
         /// </summary>
         /// <returns>bool indicating whether is male</returns>
-        public bool generateSex()
+        public bool GenerateSex()
         {
             bool isMale = false;
 
@@ -121,7 +121,7 @@ namespace hist_mmorpg
         /// <returns>Double containing characteristic stat</returns>
         /// <param name="mummyStat">The mother's characteristic stat</param>
         /// <param name="daddyStat">The father's characteristic stat</param>
-        public Double generateKeyCharacteristics(Double mummyStat, Double daddyStat)
+        public Double GenerateKeyCharacteristics(Double mummyStat, Double daddyStat)
         {
             Double newStat = 0;
 
@@ -181,7 +181,7 @@ namespace hist_mmorpg
         /// <param name="mummySkills">The mother's skills</param>
         /// <param name="daddySkills">The father's skills</param>
         /// <param name="isMale">Whether character is a male</param>
-        public Tuple<Skill, int>[] generateSkillSetFromParents(Tuple<Skill, int>[] mummySkills, Tuple<Skill, int>[] daddySkills, bool isMale)
+        public Tuple<Skill, int>[] GenerateSkillSetFromParents(Tuple<Skill, int>[] mummySkills, Tuple<Skill, int>[] daddySkills, bool isMale)
         {
             // store all unique skillKeys from both parents
             List<string> uniqueSkillKeys = new List<string>();
@@ -213,18 +213,18 @@ namespace hist_mmorpg
         /// <returns>Boolean indicating character death occurrence</returns>
         /// <param name="mummy">The new NPC's mother</param>
         /// <param name="daddy">The new NPC's father</param>
-        public void giveBirth(NonPlayerCharacter mummy, Character daddy)
+        public void GiveBirth(NonPlayerCharacter mummy, Character daddy)
         {
             string description = "";
 
             // get head of family
-            PlayerCharacter thisHeadOfFamily = daddy.getHeadOfFamily();
+            PlayerCharacter thisHeadOfFamily = daddy.GetHeadOfFamily();
 
             // generate new NPC (baby)
-            NonPlayerCharacter weeBairn = this.generateNewNPC(mummy, daddy);
+            NonPlayerCharacter weeBairn = this.GenerateNewNPC(mummy, daddy);
 
             // check for baby being stillborn
-            bool isStillborn = weeBairn.checkForDeath(true, false, false);
+            bool isStillborn = weeBairn.CheckForDeath(true, false, false);
 
             if (!isStillborn)
             {
@@ -244,7 +244,7 @@ namespace hist_mmorpg
             }
 
             // check for mother dying during childbirth
-            bool mummyDied = mummy.checkForDeath(true, true, isStillborn);
+            bool mummyDied = mummy.CheckForDeath(true, true, isStillborn);
 
             // construct and send JOURNAL ENTRY
 
@@ -327,7 +327,7 @@ namespace hist_mmorpg
             // if appropriate, process mother's death
             if (mummyDied)
             {
-                mummy.processDeath("childbirth");
+                mummy.ProcessDeath("childbirth");
             }
 
 
@@ -345,13 +345,13 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating whether or not to proceed with pregnancy attempt</returns>
         /// <param name="husband">The husband</param>
-        public bool checksBeforePregnancyAttempt(Character husband)
+        public bool ChecksBeforePregnancyAttempt(Character husband)
         {
             bool proceed = true;
 
             // check is married
             // get spouse
-            Character wife = husband.getSpouse();
+            Character wife = husband.GetSpouse();
 
             if (wife != null)
             {
@@ -411,16 +411,16 @@ namespace hist_mmorpg
                                     {
                                         if (husband is PlayerCharacter)
                                         {
-                                            (husband as PlayerCharacter).adjustDays(husband.days - minDays);
+                                            (husband as PlayerCharacter).AdjustDays(husband.days - minDays);
                                         }
                                         else
                                         {
-                                            husband.adjustDays(husband.days - minDays);
+                                            husband.AdjustDays(husband.days - minDays);
                                         }
                                     }
                                     else
                                     {
-                                        wife.adjustDays(wife.days - minDays);
+                                        wife.AdjustDays(wife.days - minDays);
                                     }
                                 }
                             }

@@ -247,7 +247,7 @@ namespace hist_mmorpg
         public void refreshProvinceContainer(Province province = null)
         {
             // disable controls until place selected in ListView
-            this.disableControls(this.provinceContainer.Panel1);
+            this.DisableControls(this.provinceContainer.Panel1);
 
             // clear existing items in places lists
             this.provinceProvListView.Items.Clear();
@@ -347,7 +347,7 @@ namespace hist_mmorpg
                 if (fiefEntry.Value.province == p)
                 {
                     // check for enemy occupation
-                    underOccupation = fiefEntry.Value.checkEnemyOccupation();
+                    underOccupation = fiefEntry.Value.CheckEnemyOccupation();
 
                     // id
                     fiefItem = new ListViewItem(fiefEntry.Value.id);

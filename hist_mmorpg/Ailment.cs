@@ -106,7 +106,7 @@ namespace hist_mmorpg
         /// Updates the ailment, reducing effect where approprite
         /// </summary>
         /// <returns>bool indicating whether ailment should be deleted</returns>
-        public bool updateAilment()
+        public bool UpdateAilment()
         {
             bool deleteAilment = false;
 

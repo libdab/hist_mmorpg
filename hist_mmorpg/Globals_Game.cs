@@ -897,7 +897,7 @@ namespace hist_mmorpg
             if (thisPC != null)
             {
                 // stature
-                this.currentStature = thisPC.calculateStature();
+                this.currentStature = thisPC.CalculateStature();
 
                 // population governed
                 this.currentPopulation = thisPC.getPopulationPercentage();

@@ -83,7 +83,7 @@ namespace hist_mmorpg
             // Fief owner
             textToDisplay += "Owner: " + Globals_Client.myPlayerCharacter.location.owner.firstName + " " + Globals_Client.myPlayerCharacter.location.owner.familyName + "\r\n";
             // Fief overlord
-            textToDisplay += "Overlord: " + Globals_Client.myPlayerCharacter.location.getOverlord().firstName + " " + Globals_Client.myPlayerCharacter.location.getOverlord().familyName + "\r\n";
+            textToDisplay += "Overlord: " + Globals_Client.myPlayerCharacter.location.GetOverlord().firstName + " " + Globals_Client.myPlayerCharacter.location.GetOverlord().familyName + "\r\n";
 
             this.meetingPlaceTextBox.ReadOnly = true;
             this.meetingPlaceTextBox.Text = textToDisplay;
@@ -128,13 +128,13 @@ namespace hist_mmorpg
                                     if ((Globals_Client.myPlayerCharacter.location.charactersInFief[i] as NonPlayerCharacter).salary == 0)
                                     {
                                         // Create an item and subitems for character
-                                        thisCharacterItem = this.createMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
+                                        thisCharacterItem = this.CreateMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
                                     }
                                 }
                                 break;
                             default:
                                 // Create an item and subitems for character
-                                thisCharacterItem = this.createMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
+                                thisCharacterItem = this.CreateMeetingPlaceListItem(Globals_Client.myPlayerCharacter.location.charactersInFief[i]);
                                 break;
                         }
 
@@ -165,7 +165,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="ch">Character whose information is to be displayed</param>
         /// <returns>ListViewItem containing character details</returns>
-        public ListViewItem createMeetingPlaceListItem(Character ch)
+        public ListViewItem CreateMeetingPlaceListItem(Character ch)
         {
             // name
             ListViewItem myItem = new ListViewItem(ch.firstName + " " + ch.familyName);
@@ -192,7 +192,7 @@ namespace hist_mmorpg
             // household
             if (!String.IsNullOrWhiteSpace(ch.familyID))
             {
-                myHousehold = ch.getHeadOfFamily().familyName + " (ID: " + ch.familyID + ")";
+                myHousehold = ch.GetHeadOfFamily().familyName + " (ID: " + ch.familyID + ")";
 
                 if (ch.familyID.Equals(Globals_Client.myPlayerCharacter.charID))
                 {

@@ -28,23 +28,23 @@ namespace hist_mmorpg
         /// <param name="defender">The defending army</param>
         /// <param name="keepLvl">Keep level (if for a keep storm)</param>
         /// <param name="isSiege">bool indicating if the circumstance is a siege storm</param>
-        public uint[] calculateBattleValue(Army attacker, Army defender, int keepLvl = 0, bool isSiegeStorm = false)
+        public uint[] CalculateBattleValue(Army attacker, Army defender, int keepLvl = 0, bool isSiegeStorm = false)
         {
             uint[] battleValues = new uint[2];
             double attackerLV = 0;
             double defenderLV = 0;
 
             // get leaders
-            Character attackerLeader = attacker.getLeader();
-            Character defenderLeader = defender.getLeader();
+            Character attackerLeader = attacker.GetLeader();
+            Character defenderLeader = defender.GetLeader();
 
             // get leadership values for each army leader
-            attackerLV = attackerLeader.getLeadershipValue(isSiegeStorm);
+            attackerLV = attackerLeader.GetLeadershipValue(isSiegeStorm);
 
             // defender may not have leader
             if (defenderLeader != null)
             {
-                defenderLV = defenderLeader.getLeadershipValue(isSiegeStorm);
+                defenderLV = defenderLeader.GetLeadershipValue(isSiegeStorm);
             }
             else
             {
@@ -58,8 +58,8 @@ namespace hist_mmorpg
             double battleModifier = maxLV / minLV;
 
             // get base combat value for each army
-            uint attackerCV = Convert.ToUInt32(attacker.calculateCombatValue());
-            uint defenderCV = Convert.ToUInt32(defender.calculateCombatValue(keepLvl));
+            uint attackerCV = Convert.ToUInt32(attacker.CalculateCombatValue());
+            uint defenderCV = Convert.ToUInt32(defender.CalculateCombatValue(keepLvl));
 
             // apply battle modifer to the army CV corresponding to the highest LV
             if (attackerLV == maxLV)
@@ -85,7 +85,7 @@ namespace hist_mmorpg
         /// <param name="attackerValue">uint containing attacking army battle value</param>
         /// <param name="defenderValue">uint containing defending army battle value</param>
         /// <param name="circumstance">string indicating circumstance of battle</param>
-        public bool bringToBattle(uint attackerValue, uint defenderValue, string circumstance = "battle")
+        public bool BringToBattle(uint attackerValue, uint defenderValue, string circumstance = "battle")
         {
             bool battleHasCommenced = false;
             double[] combatOdds = Globals_Server.battleProbabilities["odds"];
@@ -135,12 +135,12 @@ namespace hist_mmorpg
         /// <returns>bool indicating whether attacking army is victorious</returns>
         /// <param name="attackerValue">uint containing attacking army battle value</param>
         /// <param name="defenderValue">uint containing defending army battle value</param>
-        public bool decideBattleVictory(uint attackerValue, uint defenderValue)
+        public bool DecideBattleVictory(uint attackerValue, uint defenderValue)
         {
             bool attackerVictorious = false;
 
             // calculate chance of victory
-            double attackerVictoryChance = this.calcVictoryChance(attackerValue, defenderValue);
+            double attackerVictoryChance = this.CalcVictoryChance(attackerValue, defenderValue);
 
             // generate random percentage
             int randomPercentage = Globals_Game.myRand.Next(101);
@@ -160,7 +160,7 @@ namespace hist_mmorpg
         /// <returns>double containing percentage chance of victory</returns>
         /// <param name="attackerValue">uint containing attacking army battle value</param>
         /// <param name="defenderValue">uint containing defending army battle value</param>
-        public double calcVictoryChance(uint attackerValue, uint defenderValue)
+        public double CalcVictoryChance(uint attackerValue, uint defenderValue)
         {
             return (attackerValue / (Convert.ToDouble(attackerValue + defenderValue))) * 100;
         }
@@ -174,7 +174,7 @@ namespace hist_mmorpg
         /// <param name="attackerValue">uint containing attacking army battle value</param>
         /// <param name="defenderValue">uint containing defending army battle value</param>
         /// <param name="attackerVictorious">bool indicating whether attacking army was victorious</param>
-        public double[] calculateBattleCasualties(uint attackerTroops, uint defenderTroops, uint attackerValue, uint defenderValue, bool attackerVictorious)
+        public double[] CalculateBattleCasualties(uint attackerTroops, uint defenderTroops, uint attackerValue, uint defenderValue, bool attackerVictorious)
         {
             double[] battleCasualties = new double[2];
             double largeArmyModifier = 0;
@@ -272,7 +272,7 @@ namespace hist_mmorpg
         /// <param name="aCasualties">The attacking army casualty modifier</param>
         /// <param name="dCasualties">The defending army casualty modifier</param>
         /// <param name="attackerVictorious">bool indicating if attacking army was victorious</param>
-        public int[] checkForRetreat(Army attacker, Army defender, double aCasualties, double dCasualties, bool attackerVictorious)
+        public int[] CheckForRetreat(Army attacker, Army defender, double aCasualties, double dCasualties, bool attackerVictorious)
         {
             bool[] hasRetreated = { false, false };
             int[] retreatDistance = { 0, 0 };
@@ -325,19 +325,19 @@ namespace hist_mmorpg
         public void processRetreat(Army a, int retreatDistance)
         {
             // get starting fief
-            Fief startingFief = a.getLocation();
+            Fief startingFief = a.GetLocation();
 
             // get army leader
-            Character thisLeader = a.getLeader();
+            Character thisLeader = a.GetLeader();
 
             // get army owner
-            PlayerCharacter thisOwner = a.getOwner();
+            PlayerCharacter thisOwner = a.GetOwner();
 
             // for each hex in retreatDistance, process retreat
             for (int i = 0; i < retreatDistance; i++)
             {
                 // get current location
-                Fief from = a.getLocation();
+                Fief from = a.GetLocation();
 
                 // get fief to retreat to
                 Fief target = Globals_Game.gameMap.chooseRandomHex(from, true, thisOwner, startingFief);
@@ -353,7 +353,7 @@ namespace hist_mmorpg
                         // ensure leader has enough days (retreats are immune to running out of days)
                         if (thisLeader.days < travelCost)
                         {
-                            thisLeader.adjustDays(thisLeader.days - travelCost);
+                            thisLeader.AdjustDays(thisLeader.days - travelCost);
                         }
 
                         // perform retreat
@@ -370,7 +370,7 @@ namespace hist_mmorpg
                         }
 
                         // perform retreat
-                        a.moveWithoutLeader(target, travelCost);
+                        a.MoveWithoutLeader(target, travelCost);
                     }
                 }
 
@@ -383,7 +383,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>The new leader</returns>
         /// <param name="attacker">List<NonPlayerCharacter> containing candidates for the post</param>
-        public NonPlayerCharacter electNewArmyLeader(List<NonPlayerCharacter> candidates)
+        public NonPlayerCharacter ElectNewArmyLeader(List<NonPlayerCharacter> candidates)
         {
             NonPlayerCharacter newLeader = null;
 
@@ -391,7 +391,7 @@ namespace hist_mmorpg
 
             foreach (NonPlayerCharacter candidate in candidates)
             {
-                double armyLeaderRating = candidate.calcArmyLeadershipRating();
+                double armyLeaderRating = candidate.CalcArmyLeadershipRating();
 
                 if (armyLeaderRating > highestRating)
                 {
@@ -407,10 +407,17 @@ namespace hist_mmorpg
         /// Implements the processes involved in a battle between two armies in the field
         /// </summary>
         /// <returns>bool indicating whether attacking army is victorious</returns>
+        /// <remarks>
+        /// Predicate: assumes attacker has sufficient days
+        /// Predicate: assumes attacker has leader
+        /// Predicate: assumes attacker in same fief as defender
+        /// Predicate: assumes defender not besieged in keep
+        /// Predicate: assumes attacker and defender not same army
+        /// </remarks>
         /// <param name="attacker">The attacking army</param>
         /// <param name="defender">The defending army</param>
         /// <param name="circumstance">string indicating circumstance of battle</param>
-        public bool giveBattle(Army attacker, Army defender, string circumstance = "battle")
+        public bool GiveBattle(Army attacker, Army defender, string circumstance = "battle")
         {
             string toDisplay = "";
             string siegeDescription = "";
@@ -425,7 +432,7 @@ namespace hist_mmorpg
 
             // if applicable, get siege
             Siege thisSiege = null;
-            string thisSiegeID = defender.checkIfBesieger();
+            string thisSiegeID = defender.CheckIfBesieger();
             if (!String.IsNullOrWhiteSpace(thisSiegeID))
             {
                 // get siege
@@ -433,14 +440,14 @@ namespace hist_mmorpg
             }
 
             // get starting troop numbers
-            uint attackerStartTroops = attacker.calcArmySize();
-            uint defenderStartTroops = defender.calcArmySize();
+            uint attackerStartTroops = attacker.CalcArmySize();
+            uint defenderStartTroops = defender.CalcArmySize();
             uint attackerCasualties = 0;
             uint defenderCasualties = 0;
 
             // get leaders
-            Character attackerLeader = attacker.getLeader();
-            Character defenderLeader = defender.getLeader();
+            Character attackerLeader = attacker.GetLeader();
+            Character defenderLeader = defender.GetLeader();
 
             // introductory text for message
             switch (circumstance)
@@ -453,7 +460,7 @@ namespace hist_mmorpg
                     {
                         toDisplay += " led by " + defenderLeader.firstName + " " + defenderLeader.familyName + " and";
                     }
-                    toDisplay += " owned by " + defender.getOwner().firstName + " " + defender.getOwner().familyName
+                    toDisplay += " owned by " + defender.GetOwner().firstName + " " + defender.GetOwner().familyName
                         + ", to battle."
                         + "\r\n\r\nOutcome: ";
                     break;
@@ -465,7 +472,7 @@ namespace hist_mmorpg
                     {
                         toDisplay += " led by " + defenderLeader.firstName + " " + defenderLeader.familyName + " and";
                     }
-                    toDisplay += " owned by " + defender.getOwner().firstName + " " + defender.getOwner().familyName
+                    toDisplay += " owned by " + defender.GetOwner().firstName + " " + defender.GetOwner().familyName
                         + ", to battle."
                         + "\r\n\r\nOutcome: ";
                     break;
@@ -476,20 +483,20 @@ namespace hist_mmorpg
                         toDisplay += " led by " + attackerLeader.firstName + " " + attackerLeader.familyName + " and";
                     }
                     toDisplay += " owned by "
-                        + attacker.getOwner().firstName + " " + attacker.getOwner().familyName
+                        + attacker.GetOwner().firstName + " " + attacker.GetOwner().familyName
                         + ", moved to attack " + defender.armyID + ",";
                     if (defenderLeader != null)
                     {
                         toDisplay += " led by " + defenderLeader.firstName + " " + defenderLeader.familyName + " and";
                     }
-                    toDisplay += " owned by " + defender.getOwner().firstName
-                        + " " + defender.getOwner().familyName + ", in the fief of " + attacker.getLocation().name
+                    toDisplay += " owned by " + defender.GetOwner().firstName
+                        + " " + defender.GetOwner().familyName + ", in the fief of " + attacker.GetLocation().name
                         + "\r\n\r\nOutcome: ";
                     break;
             }
 
             // get battle values for both armies
-            battleValues = this.calculateBattleValue(attacker, defender);
+            battleValues = this.CalculateBattleValue(attacker, defender);
 
             // check if attacker has managed to bring defender to battle
             // case 1: defending army sallies during siege to attack besieger = battle always occurs
@@ -508,7 +515,7 @@ namespace hist_mmorpg
                 if (defender.aggression == 1)
                 {
                     // get odds
-                    int battleOdds = this.getBattleOdds(attacker, defender);
+                    int battleOdds = this.GetBattleOdds(attacker, defender);
 
                     // if odds OK, give battle
                     if (battleOdds <= defender.combatOdds)
@@ -519,7 +526,7 @@ namespace hist_mmorpg
                     // if not, check for battle
                     else
                     {
-                        battleHasCommenced = this.bringToBattle(battleValues[0], battleValues[1], circumstance);
+                        battleHasCommenced = this.BringToBattle(battleValues[0], battleValues[1], circumstance);
 
                         if (!battleHasCommenced)
                         {
@@ -537,7 +544,7 @@ namespace hist_mmorpg
             // otherwise, check to see if the attacker can bring the defender to battle
             else
             {
-                battleHasCommenced = this.bringToBattle(battleValues[0], battleValues[1], circumstance);
+                battleHasCommenced = this.BringToBattle(battleValues[0], battleValues[1], circumstance);
 
                 if (!battleHasCommenced)
                 {
@@ -549,7 +556,7 @@ namespace hist_mmorpg
             {
                 // WHO HAS WON?
                 // calculate if attacker has won
-                attackerVictorious = this.decideBattleVictory(battleValues[0], battleValues[1]);
+                attackerVictorious = this.DecideBattleVictory(battleValues[0], battleValues[1]);
 
                 // UPDATE STATURE
                 // get winner and loser
@@ -567,16 +574,16 @@ namespace hist_mmorpg
                 }
 
                 // calculate and apply winner's stature increase
-                statureChange = 0.8 * (loser.calcArmySize() / Convert.ToDouble(10000));
-                winner.getOwner().adjustStatureModifier(statureChange);
+                statureChange = 0.8 * (loser.CalcArmySize() / Convert.ToDouble(10000));
+                winner.GetOwner().AdjustStatureModifier(statureChange);
 
                 // calculate and apply loser's stature loss
-                statureChange = -0.5 * (winner.calcArmySize() / Convert.ToDouble(10000));
-                loser.getOwner().adjustStatureModifier(statureChange);
+                statureChange = -0.5 * (winner.CalcArmySize() / Convert.ToDouble(10000));
+                loser.GetOwner().AdjustStatureModifier(statureChange);
 
                 // CASUALTIES
                 // calculate troop casualties for both sides
-                casualtyModifiers = this.calculateBattleCasualties(attackerStartTroops, defenderStartTroops, battleValues[0], battleValues[1], attackerVictorious);
+                casualtyModifiers = this.CalculateBattleCasualties(attackerStartTroops, defenderStartTroops, battleValues[0], battleValues[1], attackerVictorious);
 
                 // check if losing army has disbanded
                 bool attackerDisbanded = false;
@@ -591,30 +598,30 @@ namespace hist_mmorpg
                     if (casualtyModifiers[1] >= 0.5)
                     {
                         defenderDisbanded = true;
-                        totalDefendTroopsLost = defender.calcArmySize();
+                        totalDefendTroopsLost = defender.CalcArmySize();
                     }
                     // OR apply troop casualties to losing army
                     else
                     {
-                        totalDefendTroopsLost = defender.applyTroopLosses(casualtyModifiers[1]);
+                        totalDefendTroopsLost = defender.ApplyTroopLosses(casualtyModifiers[1]);
                     }
 
                     // apply troop casualties to winning army
-                    totalAttackTroopsLost = attacker.applyTroopLosses(casualtyModifiers[0]);
+                    totalAttackTroopsLost = attacker.ApplyTroopLosses(casualtyModifiers[0]);
                 }
                 else
                 {
                     if (casualtyModifiers[0] >= 0.5)
                     {
                         attackerDisbanded = true;
-                        totalAttackTroopsLost = attacker.calcArmySize();
+                        totalAttackTroopsLost = attacker.CalcArmySize();
                     }
                     else
                     {
-                        totalAttackTroopsLost = attacker.applyTroopLosses(casualtyModifiers[0]);
+                        totalAttackTroopsLost = attacker.ApplyTroopLosses(casualtyModifiers[0]);
                     }
 
-                    totalDefendTroopsLost = defender.applyTroopLosses(casualtyModifiers[1]);
+                    totalDefendTroopsLost = defender.ApplyTroopLosses(casualtyModifiers[1]);
                 }
 
                 // UPDATE TOTAL SIEGE LOSSES, if appropriate
@@ -648,11 +655,11 @@ namespace hist_mmorpg
                 // NOTE: don't adjust days if is a siege (will be deducted elsewhere)
                 if (!circumstance.Equals("siege"))
                 {
-                    attackerLeader.adjustDays(1);
+                    attackerLeader.AdjustDays(1);
                     // need to check for defender having no leader
                     if (defenderLeader != null)
                     {
-                        defenderLeader.adjustDays(1);
+                        defenderLeader.AdjustDays(1);
                     }
                     else
                     {
@@ -665,7 +672,7 @@ namespace hist_mmorpg
                 Army[] bothSides = { attacker, defender };
 
                 // check if either army needs to retreat
-                int[] retreatDistances = this.checkForRetreat(attacker, defender, casualtyModifiers[0], casualtyModifiers[1], attackerVictorious);
+                int[] retreatDistances = this.CheckForRetreat(attacker, defender, casualtyModifiers[0], casualtyModifiers[1], attackerVictorious);
 
                 // if is pillage or siege, attacking army (the fief's army) doesn't retreat
                 // if is pillage, the defending army (the pillagers) always retreats if has lost
@@ -706,19 +713,19 @@ namespace hist_mmorpg
                     {
                         if ((attackerLeader as PlayerCharacter).myNPCs[i].inEntourage)
                         {
-                            characterDead = (attackerLeader as PlayerCharacter).myNPCs[i].calculateCombatInjury(casualtyModifiers[0]);
+                            characterDead = (attackerLeader as PlayerCharacter).myNPCs[i].CalculateCombatInjury(casualtyModifiers[0]);
                         }
 
                         // process death, if applicable
                         if (characterDead)
                         {
-                            (attackerLeader as PlayerCharacter).myNPCs[i].processDeath("injury");
+                            (attackerLeader as PlayerCharacter).myNPCs[i].ProcessDeath("injury");
                         }
                     }
                 }
 
                 // check army leader
-                attackerLeaderDead = attackerLeader.calculateCombatInjury(casualtyModifiers[0]);
+                attackerLeaderDead = attackerLeader.CalculateCombatInjury(casualtyModifiers[0]);
 
                 // process death, if applicable
                 if (attackerLeaderDead)
@@ -734,12 +741,12 @@ namespace hist_mmorpg
                             if ((attackerLeader as PlayerCharacter).myNPCs.Count > 0)
                             {
                                 // get new leader
-                                newLeader = this.electNewArmyLeader((attackerLeader as PlayerCharacter).myNPCs);
+                                newLeader = this.ElectNewArmyLeader((attackerLeader as PlayerCharacter).myNPCs);
                             }
                         }
 
                         // assign newLeader (can assign null leader if none found)
-                        attacker.assignNewLeader(newLeader);
+                        attacker.AssignNewLeader(newLeader);
                     }
                 }
                 else
@@ -766,19 +773,19 @@ namespace hist_mmorpg
                         {
                             if ((defenderLeader as PlayerCharacter).myNPCs[i].inEntourage)
                             {
-                                characterDead = (defenderLeader as PlayerCharacter).myNPCs[i].calculateCombatInjury(casualtyModifiers[1]);
+                                characterDead = (defenderLeader as PlayerCharacter).myNPCs[i].CalculateCombatInjury(casualtyModifiers[1]);
                             }
 
                             // process death, if applicable
                             if (characterDead)
                             {
-                                (defenderLeader as PlayerCharacter).myNPCs[i].processDeath("injury");
+                                (defenderLeader as PlayerCharacter).myNPCs[i].ProcessDeath("injury");
                             }
                         }
                     }
 
                     // check army leader
-                    defenderLeaderDead = defenderLeader.calculateCombatInjury(casualtyModifiers[1]);
+                    defenderLeaderDead = defenderLeader.CalculateCombatInjury(casualtyModifiers[1]);
 
                     // process death, if applicable
                     if (defenderLeaderDead)
@@ -791,12 +798,12 @@ namespace hist_mmorpg
                             if ((defenderLeader as PlayerCharacter).myNPCs.Count > 0)
                             {
                                 // get new leader
-                                newLeader = this.electNewArmyLeader((defenderLeader as PlayerCharacter).myNPCs);
+                                newLeader = this.ElectNewArmyLeader((defenderLeader as PlayerCharacter).myNPCs);
                             }
                         }
 
                         // assign newLeader (can assign null leader if none found)
-                        defender.assignNewLeader(newLeader);
+                        defender.AssignNewLeader(newLeader);
                     }
                 }
 
@@ -856,7 +863,7 @@ namespace hist_mmorpg
                 {
                     if (attackerVictorious)
                     {
-                        toDisplay += "The pillage in " + attacker.getLocation().name + " has been prevented.";
+                        toDisplay += "The pillage in " + attacker.GetLocation().name + " has been prevented.";
                     }
                 }
 
@@ -871,7 +878,7 @@ namespace hist_mmorpg
 
                         // construct event description to be passed into siegeEnd
                         siegeDescription = "On this day of Our Lord the forces of ";
-                        siegeDescription += attacker.getOwner().firstName + " " + attacker.getOwner().familyName;
+                        siegeDescription += attacker.GetOwner().firstName + " " + attacker.GetOwner().familyName;
                         siegeDescription += " have defeated the forces of " + thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
                         siegeDescription += ", relieving the siege of " + thisSiege.getFief().name + ".";
                         siegeDescription += " " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
@@ -894,10 +901,10 @@ namespace hist_mmorpg
 
                             // construct event description to be passed into siegeEnd
                             siegeDescription = "On this day of Our Lord the forces of ";
-                            siegeDescription += attacker.getOwner().firstName + " " + attacker.getOwner().familyName;
+                            siegeDescription += attacker.GetOwner().firstName + " " + attacker.GetOwner().familyName;
                             siegeDescription += " attacked the forces of " + thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
                             siegeDescription += ", who was killed during the battle.";
-                            siegeDescription += "  Thus, despite losing the battle, " + attacker.getOwner().firstName + " " + attacker.getOwner().familyName;
+                            siegeDescription += "  Thus, despite losing the battle, " + attacker.GetOwner().firstName + " " + attacker.GetOwner().familyName;
                             siegeDescription += " has succeeded in relieving the siege of " + thisSiege.getFief().name + ".";
                             siegeDescription += " " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
                             siegeDescription += " retains ownership of the fief.";
@@ -960,14 +967,14 @@ namespace hist_mmorpg
                 defendLeadTag = "|defenderAgainstSallyLeader";
             }
             List<string> tempPersonae = new List<string>();
-            tempPersonae.Add(defender.getOwner().charID + defendOwnTag);
+            tempPersonae.Add(defender.GetOwner().charID + defendOwnTag);
             tempPersonae.Add(attackerLeader.charID + attackLeadTag);
             if (defenderLeader != null)
             {
                 tempPersonae.Add(defenderLeader.charID + defendLeadTag);
             }
-            tempPersonae.Add(attacker.getOwner().charID + attackOwnTag);
-            tempPersonae.Add(attacker.getLocation().owner.charID + "|fiefOwner");
+            tempPersonae.Add(attacker.GetOwner().charID + attackOwnTag);
+            tempPersonae.Add(attacker.GetLocation().owner.charID + "|fiefOwner");
             if ((!circumstance.Equals("pillage")) && (!circumstance.Equals("siege")))
             {
                 tempPersonae.Add("all|all");
@@ -975,7 +982,7 @@ namespace hist_mmorpg
             string[] battlePersonae = tempPersonae.ToArray();
 
             // location
-            string battleLocation = attacker.getLocation().id;
+            string battleLocation = attacker.GetLocation().id;
 
             // use popup text as description
             string battleDescription = toDisplay;
@@ -1007,11 +1014,11 @@ namespace hist_mmorpg
             // process leader deaths
             if (defenderLeaderDead)
             {
-                defenderLeader.processDeath("injury");
+                defenderLeader.ProcessDeath("injury");
             }
             else if (attackerLeaderDead)
             {
-                attackerLeader.processDeath("injury");
+                attackerLeader.ProcessDeath("injury");
             }
 
             // refresh screen
@@ -1028,11 +1035,11 @@ namespace hist_mmorpg
         /// <returns>int containing battle odds</returns>
         /// <param name="attacker">The attacking army</param>
         /// <param name="defender">The defending army</param>
-        public int getBattleOdds(Army attacker, Army defender)
+        public int GetBattleOdds(Army attacker, Army defender)
         {
             double battleOdds = 0;
 
-            battleOdds = Math.Floor(attacker.calculateCombatValue() / defender.calculateCombatValue());
+            battleOdds = Math.Floor(attacker.CalculateCombatValue() / defender.CalculateCombatValue());
 
             return Convert.ToInt32(battleOdds);
         }

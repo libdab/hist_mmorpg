@@ -25,105 +25,105 @@ namespace hist_mmorpg
         /// Writes all game objects to the database
         /// </summary>
         /// <param name="gameID">ID of game (used for database bucket)</param>
-        public void databaseWrite(string gameID)
+        public void DatabaseWrite(string gameID)
         {
             // ========= write CLOCK
-            this.databaseWrite_Clock(gameID, Globals_Game.clock);
+            this.DatabaseWrite_Clock(gameID, Globals_Game.clock);
 
             // ========= write GLOBALS_SERVER/GAME DICTIONARIES
-            this.databaseWrite_Dictionary(gameID, "combatValues", Globals_Server.combatValues);
-            this.databaseWrite_Dictionary(gameID, "recruitRatios", Globals_Server.recruitRatios);
-            this.databaseWrite_Dictionary(gameID, "battleProbabilities", Globals_Server.battleProbabilities);
-            this.databaseWrite_Dictionary(gameID, "gameTypes", Globals_Server.gameTypes);
-            this.databaseWrite_Dictionary(gameID, "ownershipChallenges", Globals_Game.ownershipChallenges);
+            this.DatabaseWrite_Dictionary(gameID, "combatValues", Globals_Server.combatValues);
+            this.DatabaseWrite_Dictionary(gameID, "recruitRatios", Globals_Server.recruitRatios);
+            this.DatabaseWrite_Dictionary(gameID, "battleProbabilities", Globals_Server.battleProbabilities);
+            this.DatabaseWrite_Dictionary(gameID, "gameTypes", Globals_Server.gameTypes);
+            this.DatabaseWrite_Dictionary(gameID, "ownershipChallenges", Globals_Game.ownershipChallenges);
             // convert jEntryPriorities prior to writing
             Dictionary<string, byte> jEntryPriorities_serialised = this.jEntryPriorities_serialise(Globals_Game.jEntryPriorities);
-            this.databaseWrite_Dictionary(gameID, "jEntryPriorities", jEntryPriorities_serialised);
+            this.DatabaseWrite_Dictionary(gameID, "jEntryPriorities", jEntryPriorities_serialised);
 
             // ========= write JOURNALS
-            this.databaseWrite_Journal(gameID, "serverScheduledEvents", Globals_Game.scheduledEvents);
-            this.databaseWrite_Journal(gameID, "serverPastEvents", Globals_Game.pastEvents);
-            this.databaseWrite_Journal(gameID, "clientPastEvents", Globals_Client.myPastEvents);
+            this.DatabaseWrite_Journal(gameID, "serverScheduledEvents", Globals_Game.scheduledEvents);
+            this.DatabaseWrite_Journal(gameID, "serverPastEvents", Globals_Game.pastEvents);
+            this.DatabaseWrite_Journal(gameID, "clientPastEvents", Globals_Client.myPastEvents);
 
             // ========= write GLOBALS_GAME/CLIENT/SERVER CHARACTER VARIABLES
             // Globals_Client.myPlayerCharacter
             if (Globals_Client.myPlayerCharacter != null)
             {
-                this.databaseWrite_String(gameID, "myPlayerCharacter", Globals_Client.myPlayerCharacter.charID);
+                this.DatabaseWrite_String(gameID, "myPlayerCharacter", Globals_Client.myPlayerCharacter.charID);
             }
             // Globals_Game.sysAdmin
             if (Globals_Game.sysAdmin != null)
             {
-                this.databaseWrite_String(gameID, "sysAdmin", Globals_Game.sysAdmin.charID);
+                this.DatabaseWrite_String(gameID, "sysAdmin", Globals_Game.sysAdmin.charID);
             }
             // Globals_Game.kingOne
             if (Globals_Game.kingOne != null)
             {
-                this.databaseWrite_String(gameID, "kingOne", Globals_Game.kingOne.charID);
+                this.DatabaseWrite_String(gameID, "kingOne", Globals_Game.kingOne.charID);
             }
             // Globals_Game.kingTwo
             if (Globals_Game.kingTwo != null)
             {
-                this.databaseWrite_String(gameID, "kingTwo", Globals_Game.kingTwo.charID);
+                this.DatabaseWrite_String(gameID, "kingTwo", Globals_Game.kingTwo.charID);
             }
             // Globals_Game.princeOne
             if (Globals_Game.princeOne != null)
             {
-                this.databaseWrite_String(gameID, "princeOne", Globals_Game.princeOne.charID);
+                this.DatabaseWrite_String(gameID, "princeOne", Globals_Game.princeOne.charID);
             }
             // Globals_Game.princeTwo
             if (Globals_Game.princeTwo != null)
             {
-                this.databaseWrite_String(gameID, "princeTwo", Globals_Game.princeTwo.charID);
+                this.DatabaseWrite_String(gameID, "princeTwo", Globals_Game.princeTwo.charID);
             }
             // Globals_Game.heraldOne
             if (Globals_Game.heraldOne != null)
             {
-                this.databaseWrite_String(gameID, "heraldOne", Globals_Game.heraldOne.charID);
+                this.DatabaseWrite_String(gameID, "heraldOne", Globals_Game.heraldOne.charID);
             }
             // Globals_Game.heraldTwo
             if (Globals_Game.heraldTwo != null)
             {
-                this.databaseWrite_String(gameID, "heraldTwo", Globals_Game.heraldTwo.charID);
+                this.DatabaseWrite_String(gameID, "heraldTwo", Globals_Game.heraldTwo.charID);
             }
 
             // ========= write GLOBALS_GAME/CLIENT/SERVER newID VARIABLES
             // newCharID
-            this.databaseWrite_newID(gameID, "newCharID", Globals_Game.newCharID);
+            this.DatabaseWrite_newID(gameID, "newCharID", Globals_Game.newCharID);
             // newArmyID
-            this.databaseWrite_newID(gameID, "newArmyID", Globals_Game.newArmyID);
+            this.DatabaseWrite_newID(gameID, "newArmyID", Globals_Game.newArmyID);
             // newDetachmentID
-            this.databaseWrite_newID(gameID, "newDetachmentID", Globals_Game.newDetachmentID);
+            this.DatabaseWrite_newID(gameID, "newDetachmentID", Globals_Game.newDetachmentID);
             // newAilmentID
-            this.databaseWrite_newID(gameID, "newAilmentID", Globals_Game.newAilmentID);
+            this.DatabaseWrite_newID(gameID, "newAilmentID", Globals_Game.newAilmentID);
             // newSiegeID
-            this.databaseWrite_newID(gameID, "newSiegeID", Globals_Game.newSiegeID);
+            this.DatabaseWrite_newID(gameID, "newSiegeID", Globals_Game.newSiegeID);
             // newJournalEntryID
-            this.databaseWrite_newID(gameID, "newJournalEntryID", Globals_Game.newJournalEntryID);
+            this.DatabaseWrite_newID(gameID, "newJournalEntryID", Globals_Game.newJournalEntryID);
             // gameType
-            this.databaseWrite_newID(gameID, "gameType", Globals_Game.gameType);
+            this.DatabaseWrite_newID(gameID, "gameType", Globals_Game.gameType);
             // duration
-            this.databaseWrite_newID(gameID, "duration", Globals_Game.duration);
+            this.DatabaseWrite_newID(gameID, "duration", Globals_Game.duration);
             // startYear
-            this.databaseWrite_newID(gameID, "startYear", Globals_Game.startYear);
+            this.DatabaseWrite_newID(gameID, "startYear", Globals_Game.startYear);
             // newGameID
-            this.databaseWrite_newID(gameID, "newGameID", Globals_Server.newGameID);
+            this.DatabaseWrite_newID(gameID, "newGameID", Globals_Server.newGameID);
             // newOwnChallengeID
-            this.databaseWrite_newID(gameID, "newOwnChallengeID", Globals_Game.newOwnChallengeID);
+            this.DatabaseWrite_newID(gameID, "newOwnChallengeID", Globals_Game.newOwnChallengeID);
 
             // ========= write GLOBALS_GAME/CLIENT/SERVER BOOL VARIABLES
             // Globals_Game.loadFromDatabase
-            this.databaseWrite_Bool(gameID, "loadFromDatabase", Globals_Game.loadFromDatabase);
+            this.DatabaseWrite_Bool(gameID, "loadFromDatabase", Globals_Game.loadFromDatabase);
             // Globals_Game.loadFromCSV
-            this.databaseWrite_Bool(gameID, "loadFromCSV", Globals_Game.loadFromCSV);
+            this.DatabaseWrite_Bool(gameID, "loadFromCSV", Globals_Game.loadFromCSV);
             // Globals_Game.writeToDatabase
-            this.databaseWrite_Bool(gameID, "writeToDatabase", Globals_Game.writeToDatabase);
+            this.DatabaseWrite_Bool(gameID, "writeToDatabase", Globals_Game.writeToDatabase);
             // Globals_Game.statureCapInForce
-            this.databaseWrite_Bool(gameID, "statureCapInForce", Globals_Game.statureCapInForce);
+            this.DatabaseWrite_Bool(gameID, "statureCapInForce", Globals_Game.statureCapInForce);
             // Globals_Client.showMessages
-            this.databaseWrite_Bool(gameID, "showMessages", Globals_Client.showMessages);
+            this.DatabaseWrite_Bool(gameID, "showMessages", Globals_Client.showMessages);
             // Globals_Client.showDebugMessages
-            this.databaseWrite_Bool(gameID, "showDebugMessages", Globals_Client.showDebugMessages);
+            this.DatabaseWrite_Bool(gameID, "showDebugMessages", Globals_Client.showDebugMessages);
 
             // ========= write SKILLS
             // clear existing key list
@@ -135,7 +135,7 @@ namespace hist_mmorpg
             // write each object in skillMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, Skill> pair in Globals_Game.skillMasterList)
             {
-                bool success = this.databaseWrite_Skill(gameID, pair.Value);
+                bool success = this.DatabaseWrite_Skill(gameID, pair.Value);
                 if (success)
                 {
                     Globals_Game.skillKeys.Add(pair.Key);
@@ -143,7 +143,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "skillKeys", Globals_Game.skillKeys);
+            this.DatabaseWrite_KeyList(gameID, "skillKeys", Globals_Game.skillKeys);
 
             // ========= write BASELANGUAGES
             // clear existing key list
@@ -155,7 +155,7 @@ namespace hist_mmorpg
             // write each object in baseLanguageMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, BaseLanguage> pair in Globals_Game.baseLanguageMasterList)
             {
-                bool success = this.databaseWrite_BaseLanguage(gameID, pair.Value);
+                bool success = this.DatabaseWrite_BaseLanguage(gameID, pair.Value);
                 if (success)
                 {
                     Globals_Game.baseLangKeys.Add(pair.Key);
@@ -163,7 +163,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "baseLangKeys", Globals_Game.baseLangKeys);
+            this.DatabaseWrite_KeyList(gameID, "baseLangKeys", Globals_Game.baseLangKeys);
 
             // ========= write LANGUAGES
             // clear existing key list
@@ -175,7 +175,7 @@ namespace hist_mmorpg
             // write each object in languageMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, Language> pair in Globals_Game.languageMasterList)
             {
-                bool success = this.databaseWrite_Language(gameID, l: pair.Value);
+                bool success = this.DatabaseWrite_Language(gameID, l: pair.Value);
                 if (success)
                 {
                     Globals_Game.langKeys.Add(pair.Key);
@@ -183,7 +183,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "langKeys", Globals_Game.langKeys);
+            this.DatabaseWrite_KeyList(gameID, "langKeys", Globals_Game.langKeys);
 
             // ========= write NATIONALITY OBJECTS
             // clear existing key list
@@ -195,7 +195,7 @@ namespace hist_mmorpg
             // write each object in nationalityMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, Nationality> pair in Globals_Game.nationalityMasterList)
             {
-                bool success = this.databaseWrite_Nationality(gameID, pair.Value);
+                bool success = this.DatabaseWrite_Nationality(gameID, pair.Value);
                 if (success)
                 {
                     Globals_Game.nationalityKeys.Add(pair.Key);
@@ -203,7 +203,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "nationalityKeys", Globals_Game.nationalityKeys);
+            this.DatabaseWrite_KeyList(gameID, "nationalityKeys", Globals_Game.nationalityKeys);
 
             // ========= write RANKS
             // clear existing key list
@@ -215,7 +215,7 @@ namespace hist_mmorpg
             // write each object in rankMasterList, whilst also repopulating key list
             foreach (KeyValuePair<byte, Rank> pair in Globals_Game.rankMasterList)
             {
-                bool success = this.databaseWrite_Rank(gameID, pair.Value);
+                bool success = this.DatabaseWrite_Rank(gameID, pair.Value);
                 if (success)
                 {
                     Globals_Game.rankKeys.Add(pair.Key);
@@ -223,7 +223,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "rankKeys", Globals_Game.rankKeys);
+            this.DatabaseWrite_KeyList(gameID, "rankKeys", Globals_Game.rankKeys);
 
             // ========= write POSITIONS
             // clear existing key list
@@ -235,7 +235,7 @@ namespace hist_mmorpg
             // write each object in positionMasterList, whilst also repopulating key list
             foreach (KeyValuePair<byte, Position> pair in Globals_Game.positionMasterList)
             {
-                bool success = this.databaseWrite_Position(gameID, p: pair.Value);
+                bool success = this.DatabaseWrite_Position(gameID, p: pair.Value);
                 if (success)
                 {
                     Globals_Game.positionKeys.Add(pair.Key);
@@ -243,7 +243,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "positionKeys", Globals_Game.positionKeys);
+            this.DatabaseWrite_KeyList(gameID, "positionKeys", Globals_Game.positionKeys);
 
             // ========= write NPCs
             // clear existing key list
@@ -255,7 +255,7 @@ namespace hist_mmorpg
             // write each object in npcMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, NonPlayerCharacter> pair in Globals_Game.npcMasterList)
             {
-                bool success = this.databaseWrite_NPC(gameID, npc: pair.Value);
+                bool success = this.DatabaseWrite_NPC(gameID, npc: pair.Value);
                 if (success)
                 {
                     Globals_Game.npcKeys.Add(pair.Key);
@@ -263,7 +263,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "npcKeys", Globals_Game.npcKeys);
+            this.DatabaseWrite_KeyList(gameID, "npcKeys", Globals_Game.npcKeys);
 
             // ========= write PCs
             // clear existing key list
@@ -275,7 +275,7 @@ namespace hist_mmorpg
             // write each object in pcMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, PlayerCharacter> pair in Globals_Game.pcMasterList)
             {
-                bool success = this.databaseWrite_PC(gameID, pc: pair.Value);
+                bool success = this.DatabaseWrite_PC(gameID, pc: pair.Value);
                 if (success)
                 {
                     Globals_Game.pcKeys.Add(pair.Key);
@@ -283,7 +283,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "pcKeys", Globals_Game.pcKeys);
+            this.DatabaseWrite_KeyList(gameID, "pcKeys", Globals_Game.pcKeys);
 
             // ========= write KINGDOMS
             // clear existing key list
@@ -295,7 +295,7 @@ namespace hist_mmorpg
             // write each object in kingdomMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, Kingdom> pair in Globals_Game.kingdomMasterList)
             {
-                bool success = this.databaseWrite_Kingdom(gameID, k: pair.Value);
+                bool success = this.DatabaseWrite_Kingdom(gameID, k: pair.Value);
                 if (success)
                 {
                     Globals_Game.kingKeys.Add(pair.Key);
@@ -303,7 +303,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "kingKeys", Globals_Game.kingKeys);
+            this.DatabaseWrite_KeyList(gameID, "kingKeys", Globals_Game.kingKeys);
 
             // ========= write PROVINCES
             // clear existing key list
@@ -315,7 +315,7 @@ namespace hist_mmorpg
             // write each object in provinceMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, Province> pair in Globals_Game.provinceMasterList)
             {
-                bool success = this.databaseWrite_Province(gameID, p: pair.Value);
+                bool success = this.DatabaseWrite_Province(gameID, p: pair.Value);
                 if (success)
                 {
                     Globals_Game.provKeys.Add(pair.Key);
@@ -323,7 +323,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "provKeys", Globals_Game.provKeys);
+            this.DatabaseWrite_KeyList(gameID, "provKeys", Globals_Game.provKeys);
 
             // ========= write TERRAINS
             // clear existing key list
@@ -335,7 +335,7 @@ namespace hist_mmorpg
             // write each object in terrainMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, Terrain> pair in Globals_Game.terrainMasterList)
             {
-                bool success = this.databaseWrite_Terrain(gameID, pair.Value);
+                bool success = this.DatabaseWrite_Terrain(gameID, pair.Value);
                 if (success)
                 {
                     Globals_Game.terrKeys.Add(pair.Key);
@@ -343,7 +343,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "terrKeys", Globals_Game.terrKeys);
+            this.DatabaseWrite_KeyList(gameID, "terrKeys", Globals_Game.terrKeys);
 
             // ========= write VICTORYDATA OBJECTS
             // clear existing key list
@@ -355,7 +355,7 @@ namespace hist_mmorpg
             // write each object in victoryData, whilst also repopulating key list
             foreach (KeyValuePair<string, VictoryData> pair in Globals_Game.victoryData)
             {
-                bool success = this.databaseWrite_VictoryData(gameID, pair.Value);
+                bool success = this.DatabaseWrite_VictoryData(gameID, pair.Value);
                 if (success)
                 {
                     Globals_Game.victoryDataKeys.Add(pair.Key);
@@ -363,7 +363,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "victoryDataKeys", Globals_Game.victoryDataKeys);
+            this.DatabaseWrite_KeyList(gameID, "victoryDataKeys", Globals_Game.victoryDataKeys);
 
             // ========= write FIEFS
             // clear existing key list
@@ -375,7 +375,7 @@ namespace hist_mmorpg
             // write each object in fiefMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, Fief> pair in Globals_Game.fiefMasterList)
             {
-                bool success = this.databaseWrite_Fief(gameID, f: pair.Value);
+                bool success = this.DatabaseWrite_Fief(gameID, f: pair.Value);
                 if (success)
                 {
                     Globals_Game.fiefKeys.Add(pair.Key);
@@ -383,7 +383,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "fiefKeys", Globals_Game.fiefKeys);
+            this.DatabaseWrite_KeyList(gameID, "fiefKeys", Globals_Game.fiefKeys);
 
             // ========= write ARMIES
             // clear existing key list
@@ -395,7 +395,7 @@ namespace hist_mmorpg
             // write each object in armyMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, Army> pair in Globals_Game.armyMasterList)
             {
-                bool success = this.databaseWrite_Army(gameID, pair.Value);
+                bool success = this.DatabaseWrite_Army(gameID, pair.Value);
                 if (success)
                 {
                     Globals_Game.armyKeys.Add(pair.Key);
@@ -403,7 +403,7 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "armyKeys", Globals_Game.armyKeys);
+            this.DatabaseWrite_KeyList(gameID, "armyKeys", Globals_Game.armyKeys);
 
             // ========= write SIEGES
             // clear existing key list
@@ -415,7 +415,7 @@ namespace hist_mmorpg
             // write each object in siegeMasterList, whilst also repopulating key list
             foreach (KeyValuePair<string, Siege> pair in Globals_Game.siegeMasterList)
             {
-                bool success = this.databaseWrite_Siege(gameID, pair.Value);
+                bool success = this.DatabaseWrite_Siege(gameID, pair.Value);
                 if (success)
                 {
                     Globals_Game.siegeKeys.Add(pair.Key);
@@ -423,10 +423,10 @@ namespace hist_mmorpg
             }
 
             // write key list to database
-            this.databaseWrite_KeyList(gameID, "siegeKeys", Globals_Game.siegeKeys);
+            this.DatabaseWrite_KeyList(gameID, "siegeKeys", Globals_Game.siegeKeys);
 
             // ========= write MAP (edges collection)
-            this.databaseWrite_MapEdges(gameID, map: Globals_Game.gameMap);
+            this.DatabaseWrite_MapEdges(gameID, map: Globals_Game.gameMap);
 
         }
 
@@ -437,7 +437,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="k">key of key list</param>
         /// <param name="kl">key list to write</param>
-        public bool databaseWrite_KeyList<T>(string gameID, string k, List<T> kl)
+        public bool DatabaseWrite_KeyList<T>(string gameID, string k, List<T> kl)
         {
 
             var rList = new RiakObject(gameID, k, kl);
@@ -460,7 +460,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="gc">GameClock to write</param>
-        public bool databaseWrite_Clock(string gameID, GameClock gc)
+        public bool DatabaseWrite_Clock(string gameID, GameClock gc)
         {
             var rClock = new RiakObject(gameID, "gameClock", gc);
             var putClockResult = rClient.Put(rClock);
@@ -483,7 +483,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="key">Database key to use</param>
         /// <param name="dictionary">Dictionary to write</param>
-        public bool databaseWrite_Dictionary<T>(string gameID, string key, T dictionary)
+        public bool DatabaseWrite_Dictionary<T>(string gameID, string key, T dictionary)
         {
             var rDict = new RiakObject(gameID, key, dictionary);
             var putDictResult = rClient.Put(rDict);
@@ -526,7 +526,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="key">Database key to use</param>
         /// <param name="journal">Journal to write</param>
-        public bool databaseWrite_Journal(string gameID, string key, Journal journal)
+        public bool DatabaseWrite_Journal(string gameID, string key, Journal journal)
         {
             var rJournal = new RiakObject(gameID, key, journal);
             var putJournalResult = rClient.Put(rJournal);
@@ -549,7 +549,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="key">Database key to use</param>
         /// <param name="pcID">string to write</param>
-        public bool databaseWrite_String(string gameID, string key, string pcID)
+        public bool DatabaseWrite_String(string gameID, string key, string pcID)
         {
             pcID = "\"" + pcID + "\"";
 
@@ -574,7 +574,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="key">Database key to use</param>
         /// <param name="newID">newID to write</param>
-        public bool databaseWrite_newID(string gameID, string key, uint newID)
+        public bool DatabaseWrite_newID(string gameID, string key, uint newID)
         {
             var rCharVar = new RiakObject(gameID, key, newID);
             var putCharVarResult = rClient.Put(rCharVar);
@@ -597,7 +597,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="key">Database key to use</param>
         /// <param name="thisBool">bool to write</param>
-        public bool databaseWrite_Bool(string gameID, string key, bool thisBool)
+        public bool DatabaseWrite_Bool(string gameID, string key, bool thisBool)
         {
             var rBool = new RiakObject(gameID, key, thisBool);
             var putBoolResult = rClient.Put(rBool);
@@ -619,7 +619,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="s">Skill to write</param>
-        public bool databaseWrite_Skill(string gameID, Skill s)
+        public bool DatabaseWrite_Skill(string gameID, Skill s)
         {
             var rSkill = new RiakObject(gameID, s.skillID, s);
             var putSkillResult = rClient.Put(rSkill);
@@ -641,7 +641,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="bl">BaseLanguage to write</param>
-        public bool databaseWrite_BaseLanguage(string gameID, BaseLanguage bl)
+        public bool DatabaseWrite_BaseLanguage(string gameID, BaseLanguage bl)
         {
 
             var rBaseLanguage = new RiakObject(gameID, bl.id, bl);
@@ -665,7 +665,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="l">Language to write</param>
         /// <param name="ls">Language_Serialised to write</param>
-        public bool databaseWrite_Language(string gameID, Language l = null, Language_Serialised ls = null)
+        public bool DatabaseWrite_Language(string gameID, Language l = null, Language_Serialised ls = null)
         {
             if (l != null)
             {
@@ -706,7 +706,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="n">Nationality to write</param>
-        public bool databaseWrite_Nationality(string gameID, Nationality n)
+        public bool DatabaseWrite_Nationality(string gameID, Nationality n)
         {
 
             var rNationality = new RiakObject(gameID, n.natID, n);
@@ -729,7 +729,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="r">Rank to write</param>
-        public bool databaseWrite_Rank(string gameID, Rank r)
+        public bool DatabaseWrite_Rank(string gameID, Rank r)
         {
 
             var rRank = new RiakObject(gameID, r.id.ToString(), r);
@@ -753,7 +753,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="p">Position to write</param>
         /// <param name="ps">Position_Serialised to write</param>
-        public bool databaseWrite_Position(string gameID, Position p = null, Position_Serialised ps = null)
+        public bool DatabaseWrite_Position(string gameID, Position p = null, Position_Serialised ps = null)
         {
             if (p != null)
             {
@@ -794,7 +794,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="npc">NonPlayerCharacter to write</param>
         /// <param name="npcs">NonPlayerCharacter_Serialised to write</param>
-        public bool databaseWrite_NPC(string gameID, NonPlayerCharacter npc = null, NonPlayerCharacter_Serialised npcs = null)
+        public bool DatabaseWrite_NPC(string gameID, NonPlayerCharacter npc = null, NonPlayerCharacter_Serialised npcs = null)
         {
             if (npc != null)
             {
@@ -836,7 +836,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="pc">PlayerCharacter to write</param>
         /// <param name="pcs">PlayerCharacter_Serialised to write</param>
-        public bool databaseWrite_PC(string gameID, PlayerCharacter pc = null, PlayerCharacter_Serialised pcs = null)
+        public bool DatabaseWrite_PC(string gameID, PlayerCharacter pc = null, PlayerCharacter_Serialised pcs = null)
         {
             if (pc != null)
             {
@@ -878,7 +878,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="k">Kingdom to write</param>
         /// <param name="ks">Kingdom_Serialised to write</param>
-        public bool databaseWrite_Kingdom(string gameID, Kingdom k = null, Kingdom_Serialised ks = null)
+        public bool DatabaseWrite_Kingdom(string gameID, Kingdom k = null, Kingdom_Serialised ks = null)
         {
             if (k != null)
             {
@@ -919,7 +919,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="p">Province to write</param>
         /// <param name="ps">Province_Serialised to write</param>
-        public bool databaseWrite_Province(string gameID, Province p = null, Province_Serialised ps = null)
+        public bool DatabaseWrite_Province(string gameID, Province p = null, Province_Serialised ps = null)
         {
             if (p != null)
             {
@@ -959,7 +959,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="t">Terrain to write</param>
-        public bool databaseWrite_Terrain(string gameID, Terrain t)
+        public bool DatabaseWrite_Terrain(string gameID, Terrain t)
         {
 
             var rTerrain = new RiakObject(gameID, t.id, t);
@@ -982,7 +982,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="vicDat">VictoryData to write</param>
-        public bool databaseWrite_VictoryData(string gameID, VictoryData vicDat)
+        public bool DatabaseWrite_VictoryData(string gameID, VictoryData vicDat)
         {
 
             var rVictoryData = new RiakObject(gameID, vicDat.playerID, vicDat);
@@ -1006,7 +1006,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="f">Fief to write</param>
         /// <param name="fs">Fief_Serialised to write</param>
-        public bool databaseWrite_Fief(string gameID, Fief f = null, Fief_Serialised fs = null)
+        public bool DatabaseWrite_Fief(string gameID, Fief f = null, Fief_Serialised fs = null)
         {
             if (f != null)
             {
@@ -1046,7 +1046,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="a">Army to write</param>
-        public bool databaseWrite_Army(string gameID, Army a)
+        public bool DatabaseWrite_Army(string gameID, Army a)
         {
             var rArmy = new RiakObject(gameID, a.armyID, a);
             var putArmyResult = rClient.Put(rArmy);
@@ -1068,7 +1068,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="s">Siege to write</param>
-        public bool databaseWrite_Siege(string gameID, Siege s)
+        public bool DatabaseWrite_Siege(string gameID, Siege s)
         {
             var rSiege = new RiakObject(gameID, s.siegeID, s);
             var putSiegeResult = rClient.Put(rSiege);
@@ -1091,7 +1091,7 @@ namespace hist_mmorpg
         /// <param name="gameID">Game (bucket) to write to</param>
         /// <param name="map">HexMapGraph containing edges collection to write</param>
         /// <param name="edges">Edges collection to write</param>
-        public bool databaseWrite_MapEdges(string gameID, HexMapGraph map = null, List<TaggedEdge<string, string>> edges = null)
+        public bool DatabaseWrite_MapEdges(string gameID, HexMapGraph map = null, List<TaggedEdge<string, string>> edges = null)
         {
             if (map != null)
             {

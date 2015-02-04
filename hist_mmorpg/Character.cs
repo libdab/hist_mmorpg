@@ -567,12 +567,13 @@ namespace hist_mmorpg
         /// Calculates character's age
         /// </summary>
         /// <returns>int containing character's age</returns>
-        public int calcAge()
+        public int CalcAge()
         {
             int myAge = 0;
 
             // subtract year of birth from current year
             myAge = Convert.ToByte(Globals_Game.clock.currentYear - this.birthDate.Item1);
+
             // if current season < season of birth, subtract 1 from age (not reached birthday yet)
             if (Globals_Game.clock.currentSeason < this.birthDate.Item2)
             {
@@ -586,7 +587,7 @@ namespace hist_mmorpg
         /// Retrieves character's highest rank
         /// </summary>
         /// <returns>The highest rank</returns>
-        public Rank getHighestRank()
+        public Rank GetHighestRank()
         {
             Rank highestRank = null;
             byte rankValue = 255;
@@ -629,7 +630,7 @@ namespace hist_mmorpg
         /// Retrieves character's highest ranking places
         /// </summary>
         /// <returns>List containing character's highest ranking places</returns>
-        public List<Place> getHighestRankPlace()
+        public List<Place> GetHighestRankPlace()
         {
             List<Place> highestPlaces = new List<Place>();
 
@@ -680,39 +681,39 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Double containing character's base stature</returns>
         /// <param name="type">bool indicating whether to return current stature (or just base)</param>
-        public Double calculateStature(bool currentStature = true)
+        public Double CalculateStature(bool currentStature = true)
         {
             Double stature = 0;
 
             // get stature for character's highest rank
-            List<Place> myHighestPlaces = this.getHighestRankPlace();
+            List<Place> myHighestPlaces = this.GetHighestRankPlace();
             if (myHighestPlaces.Count > 0)
             {
                 stature += myHighestPlaces[0].rank.stature;
             }
 
             // factor in age
-            if (this.calcAge() <= 10)
+            if (this.CalcAge() <= 10)
             {
                 stature += 0;
             }
-            else if ((this.calcAge() > 10) && (this.calcAge() < 21))
+            else if ((this.CalcAge() > 10) && (this.CalcAge() < 21))
             {
                 stature += 0.5;
             }
-            else if (this.calcAge() < 31)
+            else if (this.CalcAge() < 31)
             {
                 stature += 1;
             }
-            else if (this.calcAge() < 41)
+            else if (this.CalcAge() < 41)
             {
                 stature += 2;
             }
-            else if (this.calcAge() < 51)
+            else if (this.CalcAge() < 51)
             {
                 stature += 3;
             }
-            else if (this.calcAge() < 61)
+            else if (this.CalcAge() < 61)
             {
                 stature += 4;
             }
@@ -750,19 +751,19 @@ namespace hist_mmorpg
         /// Adjusts the character's stature modifier
         /// </summary>
         /// <param name="amountToAdd">The amount of stature to add (can be negative)</param>
-        public void adjustStatureModifier(double amountToAdd)
+        public void AdjustStatureModifier(double amountToAdd)
         {
             // check if statureModifier cap is in force
             if (Globals_Game.statureCapInForce)
             {
                 // adjust amountToAdd if required
-                if (this.calculateStature() + amountToAdd > 9)
+                if (this.CalculateStature() + amountToAdd > 9)
                 {
-                    amountToAdd = 9 - this.calculateStature();
+                    amountToAdd = 9 - this.CalculateStature();
                 }
-                else if (this.calculateStature() + amountToAdd < 1)
+                else if (this.CalculateStature() + amountToAdd < 1)
                 {
-                    amountToAdd = (this.calculateStature() - 1) * -1;
+                    amountToAdd = (this.CalculateStature() - 1) * -1;
                 }
             }
 
@@ -773,55 +774,55 @@ namespace hist_mmorpg
         /// Calculates character's base or current health
         /// </summary>
         /// <returns>Double containing character's health</returns>
-        /// <param name="currentHealth">bool indicating whether to return current health</param>
-        public double calculateHealth(bool currentHealth = true)
+        /// <param name="currentHealth">bool indicating whether to return current health (rather than base health)</param>
+        public double CalculateHealth(bool currentHealth = true)
         {
 
             double charHealth = 0;
             double ageModifier = 0;
 
             // calculate health age modifier, based on age
-            if (this.calcAge() < 1)
+            if (this.CalcAge() < 1)
             {
                 ageModifier = 0.25;
             }
-            else if (this.calcAge() < 5)
+            else if (this.CalcAge() < 5)
             {
                 ageModifier = 0.5;
             }
-            else if (this.calcAge() < 10)
+            else if (this.CalcAge() < 10)
             {
                 ageModifier = 0.8;
             }
-            else if (this.calcAge() < 20)
+            else if (this.CalcAge() < 20)
             {
                 ageModifier = 0.9;
             }
-            else if (this.calcAge() < 35)
+            else if (this.CalcAge() < 35)
             {
                 ageModifier = 1;
             }
-            else if (this.calcAge() < 40)
+            else if (this.CalcAge() < 40)
             {
                 ageModifier = 0.95;
             }
-            else if (this.calcAge() < 45)
+            else if (this.CalcAge() < 45)
             {
                 ageModifier = 0.9;
             }
-            else if (this.calcAge() < 50)
+            else if (this.CalcAge() < 50)
             {
                 ageModifier = 0.85;
             }
-            else if (this.calcAge() < 55)
+            else if (this.CalcAge() < 55)
             {
                 ageModifier = 0.75;
             }
-            else if (this.calcAge() < 60)
+            else if (this.CalcAge() < 60)
             {
                 ageModifier = 0.65;
             }
-            else if (this.calcAge() < 70)
+            else if (this.CalcAge() < 70)
             {
                 ageModifier = 0.55;
             }
@@ -842,7 +843,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // ensure health 0-maxHealth
+            // ensure health between 0 and maxHealth
             if (charHealth < 0)
             {
                 charHealth = 0;
@@ -862,10 +863,10 @@ namespace hist_mmorpg
         /// <param name="isBirth">bool indicating whether check is due to birth</param>
         /// <param name="isMother">bool indicating whether (if check is due to birth) character is mother</param>
         /// <param name="isStillborn">bool indicating whether (if check is due to birth) baby was stillborn</param>
-        public Boolean checkForDeath(bool isBirth = false, bool isMother = false, bool isStillborn = false)
+        public Boolean CheckForDeath(bool isBirth = false, bool isMother = false, bool isStillborn = false)
         {
             // Check if chance of death effected by character skills
-            double deathSkillsModifier = this.calcSkillEffect("death");
+            double deathSkillsModifier = this.CalcSkillEffect("death");
 
             // calculate base chance of death
             // chance = 2.8% (2.5% for women) per health level below 10
@@ -879,7 +880,7 @@ namespace hist_mmorpg
                 deathChanceIncrement = 2.5;
             }
 
-            Double deathChance = (10 - this.calculateHealth()) * deathChanceIncrement;
+            Double deathChance = (10 - this.CalculateHealth()) * deathChanceIncrement;
 
             // apply skills modifier (if exists)
             if (deathSkillsModifier != 0)
@@ -917,7 +918,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Performs necessary actions for aborting a pregnancy involving the character
         /// </summary>
-        public void abortPregnancy()
+        public void AbortPregnancy()
         {
             List<JournalEntry> births = new List<JournalEntry>();
 
@@ -940,7 +941,7 @@ namespace hist_mmorpg
         /// Performs necessary actions for cancelling a marriage involving the character
         /// </summary>
         /// <param name="role">The role of the Character in the marriage</param>
-        public void cancelMarriage(string role)
+        public void CancelMarriage(string role)
         {
             List<JournalEntry> marriages = Globals_Game.scheduledEvents.getSpecificEntries(this.charID, role, "marriage");
 
@@ -1037,7 +1038,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Transfers all of a character's titles back to the owner
         /// </summary>
-        public void allMyTitlesToOwner()
+        public void AllMyTitlesToOwner()
         {
             Place thisPlace = null;
 
@@ -1070,7 +1071,7 @@ namespace hist_mmorpg
         /// Performs necessary actions upon the death of a character
         /// </summary>
         /// <param name="circumstance">string containing the circumstance of the death</param>
-        public void processDeath(string circumstance = "natural")
+        public void ProcessDeath(string circumstance = "natural")
         {
             Character mySpouse = null;
             NonPlayerCharacter thisHeir = null;
@@ -1145,7 +1146,7 @@ namespace hist_mmorpg
             // ============== 4. if married, remove from SPOUSE
             if (!String.IsNullOrWhiteSpace(this.spouse))
             {
-                mySpouse = this.getSpouse();
+                mySpouse = this.GetSpouse();
 
                 if (mySpouse != null)
                 {
@@ -1158,7 +1159,7 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(this.fiancee))
             {
                 string marriageRole = "";
-                Character myFiancee = this.getFiancee();
+                Character myFiancee = this.GetFiancee();
 
                 if (myFiancee != null)
                 {
@@ -1174,7 +1175,7 @@ namespace hist_mmorpg
                     }
 
                     // cancel marriage
-                    this.cancelMarriage(marriageRole);
+                    this.CancelMarriage(marriageRole);
 
                 }
 
@@ -1195,7 +1196,7 @@ namespace hist_mmorpg
             if (toAbort != null)
             {
                 // abort pregnancy
-                toAbort.abortPregnancy();
+                toAbort.AbortPregnancy();
             }
 
             // ============== 7. check and remove from BAILIFF positions
@@ -1256,7 +1257,7 @@ namespace hist_mmorpg
                 else if (role.Contains("family"))
                 {
                     // get head of family
-                    headOfFamily = this.getHeadOfFamily();
+                    headOfFamily = this.GetHeadOfFamily();
 
                     if (headOfFamily != null)
                     {
@@ -1270,7 +1271,7 @@ namespace hist_mmorpg
             // ============== 10. (NPC) re-assign TITLES to fief owner
             if (this is NonPlayerCharacter)
             {
-                this.allMyTitlesToOwner();
+                this.AllMyTitlesToOwner();
             }
 
 
@@ -1278,7 +1279,7 @@ namespace hist_mmorpg
             if ((role.Equals("employee")) || (role.Equals("NPC")))
             {
                 // respawn
-                bool respawned = this.respawnNPC(this as NonPlayerCharacter);
+                bool respawned = this.RespawnNPC(this as NonPlayerCharacter);
             }
 
             // ============== 12. (Player or PC) GET HEIR and PROCESS INHERITANCE
@@ -1289,14 +1290,14 @@ namespace hist_mmorpg
 
                 if (thisHeir != null)
                 {
-                    this.processInheritance((this as PlayerCharacter), inheritor: thisHeir);
+                    this.ProcessInheritance((this as PlayerCharacter), inheritor: thisHeir);
                 }
 
                 // if no heir, king inherits
                 else
                 {
                     // process inheritance
-                    this.transferPropertyToKing((this as PlayerCharacter), (this as PlayerCharacter).getKing());
+                    this.TransferPropertyToKing((this as PlayerCharacter), (this as PlayerCharacter).getKing());
                 }
             }
 
@@ -1444,7 +1445,7 @@ namespace hist_mmorpg
         /// Checks if the character is a province overlord
         /// </summary>
         /// <returns>bool indicating if the character is an overlord</returns>
-        public bool checkIfOverlord()
+        public bool CheckIfOverlord()
         {
             bool isOverlord = false;
 
@@ -1468,7 +1469,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="deceased">Deceased PlayerCharacter</param>
         /// <param name="king">The king</param>
-        public void transferPropertyToKing(PlayerCharacter deceased, PlayerCharacter king)
+        public void TransferPropertyToKing(PlayerCharacter deceased, PlayerCharacter king)
         {
             // END SIEGES
             // copy siege IDs into temp list
@@ -1507,7 +1508,7 @@ namespace hist_mmorpg
 
             for (int i = 0; i < tempArmyList.Count; i++ )
             {
-                tempArmyList[i].disbandArmy();
+                tempArmyList[i].DisbandArmy();
                 tempArmyList[i] = null;
             }
             tempArmyList.Clear();
@@ -1547,7 +1548,7 @@ namespace hist_mmorpg
                     npc.inKeep = false;
 
                     // titles
-                    npc.allMyTitlesToOwner();
+                    npc.AllMyTitlesToOwner();
 
                     // employment as bailiff
                     foreach (Fief fief in deceased.ownedFiefs)
@@ -1559,7 +1560,7 @@ namespace hist_mmorpg
                     }
 
                     // pregnancy
-                    Character npcSpouse = npc.getSpouse();
+                    Character npcSpouse = npc.GetSpouse();
                     Character toAbort = null;
 
                     if (npc.isPregnant)
@@ -1574,13 +1575,13 @@ namespace hist_mmorpg
                     if (toAbort != null)
                     {
                         // abort pregnancy
-                        toAbort.abortPregnancy();
+                        toAbort.AbortPregnancy();
                     }
 
                     // forthcoming marriage
                     if (!String.IsNullOrWhiteSpace(npc.fiancee))
                     {
-                        Character npcFiancee = npc.getFiancee();
+                        Character npcFiancee = npc.GetFiancee();
 
                         if (npcFiancee != null)
                         {
@@ -1597,7 +1598,7 @@ namespace hist_mmorpg
                             }
 
                             // cancel marriage
-                            npc.cancelMarriage(role);
+                            npc.CancelMarriage(role);
 
                         }
                     }
@@ -1695,7 +1696,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="inheritor">Inheriting Character</param>
         /// <param name="deceased">Deceased PlayerCharacter</param>
-        public void processInheritance(PlayerCharacter deceased, NonPlayerCharacter inheritor = null)
+        public void ProcessInheritance(PlayerCharacter deceased, NonPlayerCharacter inheritor = null)
         {
             // ============== 1. CREATE NEW PC from NPC (inheritor)
 			// remove inheritor from deceased's myNPCs
@@ -1813,7 +1814,7 @@ namespace hist_mmorpg
         /// Creates new NonPlayerCharacter, based on supplied NonPlayerCharacter
         /// </summary>
         /// <param name="oldNPC">Old NonPlayerCharacter</param>
-        public bool respawnNPC(NonPlayerCharacter oldNPC)
+        public bool RespawnNPC(NonPlayerCharacter oldNPC)
         {
             bool success = false;
 
@@ -1878,7 +1879,7 @@ namespace hist_mmorpg
         /// Enables character to enter keep (if not barred)
         /// </summary>
         /// <returns>bool indicating success</returns>
-        public virtual bool enterKeep()
+        public virtual bool EnterKeep()
         {
             bool proceed = true;
             Army thisArmy = null;
@@ -1887,12 +1888,12 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(this.armyID))
             {
                 // get army
-                thisArmy = this.getArmy();
+                thisArmy = this.GetArmy();
 
                 if (thisArmy != null)
                 {
                     // armies not owned by fief owner not allowed in keep
-                    if (thisArmy.getOwner() != location.owner)
+                    if (thisArmy.GetOwner() != location.owner)
                     {
                         proceed = false;
                         if (Globals_Client.showMessages)
@@ -1902,7 +1903,7 @@ namespace hist_mmorpg
                     }
 
                     // only one friendly field army in keep at a time
-                    else if (this.location.checkFieldArmyInKeep())
+                    else if (this.location.CheckFieldArmyInKeep())
                     {
                         proceed = false;
                         if (Globals_Client.showMessages)
@@ -1969,7 +1970,7 @@ namespace hist_mmorpg
         /// Enables character to exit keep
         /// </summary>
         /// <returns>bool indicating hire-able status</returns>
-        public virtual bool exitKeep()
+        public virtual bool ExitKeep()
         {
             // exit keep
             this.inKeep = false;
@@ -1982,7 +1983,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating hire-able status</returns>
         /// <param name="hiringPC">The potential employer (PlayerCharacter)</param>
-        public bool checkCanHire(PlayerCharacter hiringPC)
+        public bool CheckCanHire(PlayerCharacter hiringPC)
         {
             bool canHire = true;
 
@@ -2008,7 +2009,7 @@ namespace hist_mmorpg
             }
 
             // must be over 13 years of age
-            if (this.calcAge() < 14)
+            if (this.CalcAge() < 14)
             {
                 canHire = false;
             }
@@ -2026,7 +2027,7 @@ namespace hist_mmorpg
         /// Calculates effect of character's management rating on fief income
         /// </summary>
         /// <returns>double containing fief income modifier</returns>
-        public double calcFiefIncMod()
+        public double CalcFiefIncMod()
         {
             double incomeModif = 0;
 
@@ -2043,7 +2044,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>double containing skill effect modifier</returns>
         /// <param name="effect">string specifying which skill effect to calculate</param>
-        public double calcSkillEffect(String effect)
+        public double CalcSkillEffect(String effect)
         {
             double skillEffectModifier = 0;
 
@@ -2076,7 +2077,7 @@ namespace hist_mmorpg
         /// Gets the army being led by the character
         /// </summary>
         /// <returns>The army</returns>
-        public Army getArmy()
+        public Army GetArmy()
         {
             Army thisArmy = null;
 
@@ -2095,7 +2096,7 @@ namespace hist_mmorpg
         /// Gets character's father
         /// </summary>
         /// <returns>The father</returns>
-        public Character getFather()
+        public Character GetFather()
         {
             Character father = null;
 
@@ -2118,7 +2119,7 @@ namespace hist_mmorpg
         /// Gets character's mother
         /// </summary>
         /// <returns>The mother</returns>
-        public Character getMother()
+        public Character GetMother()
         {
             Character mother = null;
 
@@ -2141,7 +2142,7 @@ namespace hist_mmorpg
         /// Gets character's head of family
         /// </summary>
         /// <returns>The head of the family</returns>
-        public PlayerCharacter getHeadOfFamily()
+        public PlayerCharacter GetHeadOfFamily()
         {
             PlayerCharacter headFamily = null;
 
@@ -2163,7 +2164,7 @@ namespace hist_mmorpg
         /// <param name="type">string identify type of grant</param>
         /// <param name="priorToList">bool indicating if check is prior to listing possible candidates</param>
         /// <param name="armyID">string containing the army ID (if choosing a leader)</param>
-        public bool checksBeforeGranting(string type, bool priorToList, string armyID = null)
+        public bool ChecksBeforeGranting(string type, bool priorToList, string armyID = null)
         {
             bool proceed = true;
             string toDisplay = "";
@@ -2251,7 +2252,7 @@ namespace hist_mmorpg
                 else
                 {
                     // 2. check is of age
-                    if (this.calcAge() < 14)
+                    if (this.CalcAge() < 14)
                     {
                         proceed = false;
                         if (!priorToList)
@@ -2333,7 +2334,7 @@ namespace hist_mmorpg
                         // 2. warn if is currently employed as bailiff
                         if (proceed)
                         {
-                            List<Fief> fiefsBailiff = this.getFiefsBailiff();
+                            List<Fief> fiefsBailiff = this.GetFiefsBailiff();
                             if (fiefsBailiff.Count > 0)
                             {
                                 toDisplay = "This character is currently employed as a bailiff (";
@@ -2372,7 +2373,7 @@ namespace hist_mmorpg
         /// Allows the character to enter or exit the keep
         /// </summary>
         /// <returns>bool indicating success</returns>
-        public bool exitEnterKeep()
+        public bool ExitEnterKeep()
         {
             bool success = false;
 
@@ -2380,14 +2381,14 @@ namespace hist_mmorpg
             if (this.inKeep)
             {
                 // exit keep
-                success = this.exitKeep();
+                success = this.ExitKeep();
             }
 
             // if not in keep
             else
             {
                 // attempt to enter keep
-                success = this.enterKeep();
+                success = this.EnterKeep();
             }
 
             return success;
@@ -2399,7 +2400,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
-        public virtual bool moveCharacter(Fief target, double cost)
+        public virtual bool MoveCharacter(Fief target, double cost)
         {
             bool success = false;
 
@@ -2437,26 +2438,26 @@ namespace hist_mmorpg
             if (this.days >= cost)
             {
                 // remove character from current fief's character list
-                this.location.removeCharacter(this);
+                this.location.RemoveCharacter(this);
                 // set location to target fief
                 this.location = target;
                 // add character to target fief's character list
-                this.location.addCharacter(this);
+                this.location.AddCharacter(this);
                 // arrives outside keep
                 this.inKeep = false;
                 // deduct move cost from days left
                 if (this is PlayerCharacter)
                 {
-                    (this as PlayerCharacter).adjustDays(cost);
+                    (this as PlayerCharacter).AdjustDays(cost);
                 }
                 else
                 {
-                    this.adjustDays(cost);
+                    this.AdjustDays(cost);
                 }
                 // check if has accompanying army, if so move it
                 if (!String.IsNullOrWhiteSpace(this.armyID))
                 {
-                    this.getArmy().moveArmy();
+                    this.GetArmy().MoveArmy();
                 }
                 success = true;
             }
@@ -2482,13 +2483,13 @@ namespace hist_mmorpg
         /// Gets the character's full days allowance, including adjustment for skills
         /// </summary>
         /// <returns>Full days allowance</returns>
-        public double getDaysAllowance()
+        public double GetDaysAllowance()
         {
             // base allowance
             double myDays = 90;
 
             // check for time efficiency in skills
-            double timeSkillsMOd = this.calcSkillEffect("time");
+            double timeSkillsMOd = this.CalcSkillEffect("time");
             if (timeSkillsMOd != 0)
             {
                 // apply skill effects
@@ -2502,7 +2503,7 @@ namespace hist_mmorpg
         /// Adjusts the character's remaining days by subtracting the specified number of days
         /// </summary>
         /// <param name="daysToSubtract">Number of days to subtract</param>
-        public virtual void adjustDays(Double daysToSubtract)
+        public virtual void AdjustDays(Double daysToSubtract)
         {
             // adjust character's days
             this.days -= daysToSubtract;
@@ -2517,7 +2518,7 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(this.armyID))
             {
                 // get army
-                Army thisArmy = this.getArmy();
+                Army thisArmy = this.GetArmy();
 
                 if (thisArmy != null)
                 {
@@ -2529,7 +2530,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Uses up the character's remaining days, which will be added to bailiffDaysInFief if appropriate
         /// </summary>
-        public void useUpDays()
+        public void UseUpDays()
         {
             Double remainingDays = this.days;
 
@@ -2537,7 +2538,7 @@ namespace hist_mmorpg
             if (this.location.bailiff == this)
             {
                 this.location.bailiffDaysInFief += remainingDays;
-                this.adjustDays(remainingDays);
+                this.AdjustDays(remainingDays);
             }
         }
 
@@ -2546,7 +2547,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="wife">Character's spouse</param>
-        public bool getSpousePregnant(Character wife)
+        public bool GetSpousePregnant(Character wife)
         {
             bool success = false;
 
@@ -2560,7 +2561,7 @@ namespace hist_mmorpg
             double pregModifier = 0;
 
             // spouse's age
-            int spouseAge = wife.calcAge();
+            int spouseAge = wife.CalcAge();
 
             // calculate base chance of pregnancy, based on age of spouse
             if ((!(spouseAge < 14)) && (!(spouseAge > 55)))
@@ -2679,8 +2680,8 @@ namespace hist_mmorpg
                 }
 
                 // succeed or fail, deduct a day
-                this.adjustDays(1);
-                wife.adjustDays(1);
+                this.AdjustDays(1);
+                wife.AdjustDays(1);
 
             }
             // if pregnancy impossible
@@ -2701,12 +2702,12 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>double containg leadership value</returns>
         /// <param name="isSiegeStorm">bool indicating if the circumstance is a siege storm</param>
-        public double getLeadershipValue(bool isSiegeStorm = false)
+        public double GetLeadershipValue(bool isSiegeStorm = false)
         {
             double lv = 0;
 
             // get base LV
-            lv = (this.combat + this.management + this.calculateStature()) / 3;
+            lv = (this.combat + this.management + this.CalculateStature()) / 3;
 
             // factor in skills effect
             double combatSkillsMOd = 0;
@@ -2714,12 +2715,12 @@ namespace hist_mmorpg
             // if is siege, use 'siege' skill
             if (isSiegeStorm)
             {
-                combatSkillsMOd = this.calcSkillEffect("siege");
+                combatSkillsMOd = this.CalcSkillEffect("siege");
             }
             // else use 'battle' skill
             else
             {
-                combatSkillsMOd = this.calcSkillEffect("battle");
+                combatSkillsMOd = this.CalcSkillEffect("battle");
             }
 
             if (combatSkillsMOd != 0)
@@ -2734,12 +2735,12 @@ namespace hist_mmorpg
         /// Calculates the character's combat value for a combat engagement
         /// </summary>
         /// <returns>double containg combat value</returns>
-        public double getCombatValue()
+        public double GetCombatValue()
         {
             double cv = 0;
 
             // get base CV
-            cv += (this.combat + this.calculateHealth()) / 2;
+            cv += (this.combat + this.CalculateHealth()) / 2;
 
             // factor in armour
             cv += 5;
@@ -2757,13 +2758,13 @@ namespace hist_mmorpg
         /// Calculates the character's estimate variance when estimating the size of an enemy army
         /// </summary>
         /// <returns>double containg estimate variance</returns>
-        public double getEstimateVariance()
+        public double GetEstimateVariance()
         {
             // base estimate variance
             double ev = 0.05;
 
             // apply effects of leadership value (includes 'battle' skill)
-            ev = ev + ((10 - this.getLeadershipValue()) * 0.05);
+            ev = ev + ((10 - this.GetLeadershipValue()) * 0.05);
 
             return ev;
         }
@@ -2772,7 +2773,7 @@ namespace hist_mmorpg
         /// gets the character's spouse
         /// </summary>
         /// <returns>The spouse or null</returns>
-        public Character getSpouse()
+        public Character GetSpouse()
         {
             Character mySpouse = null;
 
@@ -2795,7 +2796,7 @@ namespace hist_mmorpg
         /// gets the character's fiancee
         /// </summary>
         /// <returns>The spouse or null</returns>
-        public Character getFiancee()
+        public Character GetFiancee()
         {
             Character myFiancee = null;
 
@@ -2817,15 +2818,15 @@ namespace hist_mmorpg
         /// <summary>
         /// Updates character data at the end/beginning of the season
         /// </summary>
-        public void updateCharacter()
+        public void UpdateCharacter()
         {
             // check for character DEATH
-            bool characterDead = this.checkForDeath();
+            bool characterDead = this.CheckForDeath();
 
             // if character dead, process death
             if (characterDead)
             {
-                this.processDeath();
+                this.ProcessDeath();
             }
 
             else
@@ -2838,7 +2839,7 @@ namespace hist_mmorpg
                 // iterate through ailments
                 foreach (KeyValuePair<string, Ailment> ailmentEntry in this.ailments)
                 {
-                    isHealed = ailmentEntry.Value.updateAilment();
+                    isHealed = ailmentEntry.Value.UpdateAilment();
 
                     // add to healedAilments if appropriate
                     if (isHealed)
@@ -2868,11 +2869,11 @@ namespace hist_mmorpg
                 }
 
                 // reset DAYS
-                this.days = this.getDaysAllowance();
+                this.days = this.GetDaysAllowance();
 
                 // check for army (don't reset its days yet)
                 double armyDays = 0;
-                Army myArmy = this.getArmy();
+                Army myArmy = this.GetArmy();
 
                 // get army days
                 if (myArmy != null)
@@ -2881,7 +2882,7 @@ namespace hist_mmorpg
                 }
 
                 // reset character days
-                this.adjustDays(0);
+                this.AdjustDays(0);
 
                 // reset army days if necessary (to enable attrition checks later)
                 if (myArmy != null)
@@ -2897,16 +2898,16 @@ namespace hist_mmorpg
         /// Calculates the character's fief management rating (i.e. how good they are at managing a fief)
         /// </summary>
         /// <returns>double containing fief management rating</returns>
-        public double calcFiefManagementRating()
+        public double CalcFiefManagementRating()
         {
             // baseline rating
-            double fiefMgtRating = (this.management + this.calculateStature()) / 2;
+            double fiefMgtRating = (this.management + this.CalculateStature()) / 2;
 
             // check for skills effecting fief loyalty
-            double fiefLoySkill = this.calcSkillEffect("fiefLoy");
+            double fiefLoySkill = this.CalcSkillEffect("fiefLoy");
 
             // check for skills effecting fief expenses
-            double fiefExpSkill = this.calcSkillEffect("fiefExpense");
+            double fiefExpSkill = this.CalcSkillEffect("fiefExpense");
 
             // combine skills into single modifier. Note: fiefExpSkill is * by -1 because 
             // a negative effect on expenses is good, so needs to be normalised
@@ -2922,16 +2923,16 @@ namespace hist_mmorpg
         /// Calculates the character's army leadership rating (i.e. how good they are at leading an army)
         /// </summary>
         /// <returns>double containing army leadership rating</returns>
-        public double calcArmyLeadershipRating()
+        public double CalcArmyLeadershipRating()
         {
             // baseline rating
-            double armyLeaderRating = (this.management + this.calculateStature() + this.combat) / 3;
+            double armyLeaderRating = (this.management + this.CalculateStature() + this.combat) / 3;
 
             // check for skills effecting battle
-            double battleSkills = this.calcSkillEffect("battle");
+            double battleSkills = this.CalcSkillEffect("battle");
 
             // check for skills effecting siege
-            double siegeSkills = this.calcSkillEffect("siege");
+            double siegeSkills = this.CalcSkillEffect("siege");
 
             // combine skills into single modifier 
             double combatSkills = battleSkills + siegeSkills;
@@ -2947,7 +2948,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating whether character has died of injuries</returns>
         /// <param name="armyCasualtyLevel">double indicating friendly army casualty level</param>
-        public bool calculateCombatInjury(double armyCasualtyLevel)
+        public bool CalculateCombatInjury(double armyCasualtyLevel)
         {
             bool isDead = false;
             uint healthLoss = 0;
@@ -2984,7 +2985,7 @@ namespace hist_mmorpg
                 uint minEffect = 0;
 
                 // check if character has died of injuries
-                if (this.calculateHealth() < healthLoss)
+                if (this.CalculateHealth() < healthLoss)
                 {
                     isDead = true;
                 }
@@ -3082,7 +3083,7 @@ namespace hist_mmorpg
         /// Gets the fiefs in which the character is the bailiff
         /// </summary>
         /// <returns>List<Fief> containing the fiefs</returns>
-        public List<Fief> getFiefsBailiff()
+        public List<Fief> GetFiefsBailiff()
         {
             List<Fief> myFiefs = new List<Fief>();
 
@@ -3098,7 +3099,7 @@ namespace hist_mmorpg
             }
             else if (!String.IsNullOrWhiteSpace(this.familyID))
             {
-                employer = this.getHeadOfFamily();
+                employer = this.GetHeadOfFamily();
             }
 
             if (employer != null)
@@ -3120,7 +3121,7 @@ namespace hist_mmorpg
         /// Gets the armies of which the character is the leader
         /// </summary>
         /// <returns>List<Army> containing the armies</returns>
-        public List<Army> getArmiesLeader()
+        public List<Army> GetArmiesLeader()
         {
             List<Army> myArmies = new List<Army>();
 
@@ -3140,7 +3141,7 @@ namespace hist_mmorpg
                 // iterate through armies, searching for character as leader
                 foreach (Army thisArmy in employer.myArmies)
                 {
-                    if (thisArmy.getLeader() == this)
+                    if (thisArmy.GetLeader() == this)
                     {
                         myArmies.Add(thisArmy);
                     }
@@ -3370,10 +3371,10 @@ namespace hist_mmorpg
                     foreach (NonPlayerCharacter son in sons)
                     {
                         // if son is older, assign as heir
-                        if (son.calcAge() > age)
+                        if (son.CalcAge() > age)
                         {
                             heir = son;
-                            age = son.calcAge();
+                            age = son.CalcAge();
                         }
                     }
                 }
@@ -3384,10 +3385,10 @@ namespace hist_mmorpg
                     foreach (NonPlayerCharacter brother in brothers)
                     {
                         // if brother is older, assign as heir
-                        if (brother.calcAge() > age)
+                        if (brother.CalcAge() > age)
                         {
                             heir = brother;
-                            age = brother.calcAge();
+                            age = brother.CalcAge();
                         }
                     }
                 }
@@ -3485,7 +3486,7 @@ namespace hist_mmorpg
             double chance = Utility_Methods.GetRandomDouble(100);
 
             // get 'npcHire' skill effect modifier (increase/decrease chance of offer being accepted)
-            double hireSkills = this.calcSkillEffect("npcHire");
+            double hireSkills = this.CalcSkillEffect("npcHire");
 
             // convert to % to allow easy modification of chance
             hireSkills = (hireSkills * 100);
@@ -3635,7 +3636,7 @@ namespace hist_mmorpg
         public void fireNPC(NonPlayerCharacter npc)
         {
             // remove from bailiff duties
-            List<Fief> fiefsBailiff = npc.getFiefsBailiff();
+            List<Fief> fiefsBailiff = npc.GetFiefsBailiff();
             if (fiefsBailiff.Count > 0)
             {
                 for (int i = 0; i < fiefsBailiff.Count; i++ )
@@ -3645,7 +3646,7 @@ namespace hist_mmorpg
             }
 
             // remove from army duties
-            List<Army> armiesLeader = npc.getArmiesLeader();
+            List<Army> armiesLeader = npc.GetArmiesLeader();
             if (armiesLeader.Count > 0)
             {
                 for (int i = 0; i < armiesLeader.Count; i++ )
@@ -3739,7 +3740,7 @@ namespace hist_mmorpg
             // ensure days of entourage are synched with PC
             if (this.days != myDays)
             {
-                this.adjustDays(0);
+                this.AdjustDays(0);
             }
         }
 
@@ -3789,10 +3790,10 @@ namespace hist_mmorpg
         /// for entourage if PlayerCharacter allowed to enter
         /// </summary>
         /// <returns>bool indicating success</returns>
-        public override bool enterKeep()
+        public override bool EnterKeep()
         {
             // invoke base method for PlayerCharacter
-            bool success = base.enterKeep();
+            bool success = base.EnterKeep();
 
             // if PlayerCharacter enters keep
             if (success)
@@ -3831,10 +3832,10 @@ namespace hist_mmorpg
         /// <summary>
         /// Extends base method allowing PlayerCharacter to exit keep. Then exits entourage.
         /// </summary>
-        public override bool exitKeep()
+        public override bool ExitKeep()
         {
             // invoke base method for PlayerCharacter
-            bool success = base.exitKeep();
+            bool success = base.ExitKeep();
 
             // iterate through employees
             for (int i = 0; i < this.myNPCs.Count; i++)
@@ -3853,10 +3854,10 @@ namespace hist_mmorpg
         /// Extends base method allowing PlayerCharacter to synchronise the days of their entourage
         /// </summary>
         /// <param name="daysToSubtract">Number of days to subtract</param>
-        public override void adjustDays(Double daysToSubtract)
+        public override void AdjustDays(Double daysToSubtract)
         {
             // use base method to subtract days from PlayerCharacter
-            base.adjustDays(daysToSubtract);
+            base.AdjustDays(daysToSubtract);
 
             // iterate through employees
             for (int i = 0; i < this.myNPCs.Count; i++)
@@ -3876,11 +3877,11 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
-        public override bool moveCharacter(Fief target, double cost)
+        public override bool MoveCharacter(Fief target, double cost)
         {
 
             // use base method to move PlayerCharacter
-            bool success = base.moveCharacter(target, cost);
+            bool success = base.MoveCharacter(target, cost);
 
             // if PlayerCharacter move successfull
             if (success)
@@ -3908,11 +3909,11 @@ namespace hist_mmorpg
         public void moveEntourageNPC(Fief target, NonPlayerCharacter npc)
         {
             // remove character from current fief's character list
-            npc.location.removeCharacter(npc);
+            npc.location.RemoveCharacter(npc);
             // set location to target fief
             npc.location = target;
             // add character to target fief's character list
-            npc.location.addCharacter(npc);
+            npc.location.AddCharacter(npc);
             // arrives outside keep
             npc.inKeep = false;
         }
@@ -3979,7 +3980,7 @@ namespace hist_mmorpg
                     else
                     {
                         // 4. check sufficient funds for at least 1 troop
-                        if (!(homeFief.getAvailableTreasury() > indivTroopCost))
+                        if (!(homeFief.GetAvailableTreasury() > indivTroopCost))
                         {
                             proceed = false;
                             if (Globals_Client.showMessages)
@@ -4109,10 +4110,10 @@ namespace hist_mmorpg
 
                 // check to see if can afford the specified number of troops
                 // if can't afford specified number
-                if (!(homeFief.getAvailableTreasury() >= troopCost))
+                if (!(homeFief.GetAvailableTreasury() >= troopCost))
                 {
                     // work out how many troops can afford
-                    double roughNumber = homeFief.getAvailableTreasury() / indivTroopCost;
+                    double roughNumber = homeFief.GetAvailableTreasury() / indivTroopCost;
                     revisedRecruited = Convert.ToInt32(Math.Floor(roughNumber));
 
                     // present alternative number and ask for confirmation
@@ -4141,7 +4142,7 @@ namespace hist_mmorpg
                 if (proceed)
                 {
                     // calculate number of troops responding to call (based on fief population)
-                    troopsRecruited = this.location.callUpTroops(minProportion: 0.4);
+                    troopsRecruited = this.location.CallUpTroops(minProportion: 0.4);
 
                     // adjust if necessary
                     if (troopsRecruited >= number)
@@ -4153,7 +4154,7 @@ namespace hist_mmorpg
 
                         // confirm recruitment
                         toDisplay = troopsRecruited + " men have responded to your call, milord, and they would cost " + troopCost + " to recruit.\r\n\r\n";
-                        toDisplay += "There is " + homeFief.getAvailableTreasury() + " in the home treasury.  Do you wish to proceed with recruitment?";
+                        toDisplay += "There is " + homeFief.GetAvailableTreasury() + " in the home treasury.  Do you wish to proceed with recruitment?";
                         DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with recruitment?", MessageBoxButtons.OKCancel);
 
                         // if choose to cancel
@@ -4179,7 +4180,7 @@ namespace hist_mmorpg
 
                         // confirm recruitment
                         toDisplay = "Only " + troopsRecruited + " men have responded to your call, milord, and they would cost " + troopCost + " to recruit.\r\n\r\n";
-                        toDisplay += "There is " + homeFief.getAvailableTreasury() + " in the home treasury.  Do you wish to proceed with recruitment?";
+                        toDisplay += "There is " + homeFief.GetAvailableTreasury() + " in the home treasury.  Do you wish to proceed with recruitment?";
                         DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with recruitment?", MessageBoxButtons.OKCancel);
 
                         // if choose to cancel
@@ -4206,16 +4207,16 @@ namespace hist_mmorpg
                             // if necessary, exit keep (new armies are created outside keep)
                             if (Globals_Client.myPlayerCharacter.inKeep)
                             {
-                                Globals_Client.myPlayerCharacter.exitKeep();
+                                Globals_Client.myPlayerCharacter.ExitKeep();
                             }
 
                             thisArmy = new Army(Globals_Game.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
-                            thisArmy.addArmy();
+                            thisArmy.AddArmy();
                         }
 
                         else
                         {
-                            thisArmy = this.getArmy();
+                            thisArmy = this.GetArmy();
                         }
 
                         // deduct cost of troops from treasury
@@ -4252,7 +4253,7 @@ namespace hist_mmorpg
             }
 
             // update character's days
-            this.adjustDays(daysUsed);
+            this.AdjustDays(daysUsed);
 
             return troopsRecruited;
         }
@@ -4517,6 +4518,10 @@ namespace hist_mmorpg
         /// <summary>
         /// Transfers the title of a fief or province to another character
         /// </summary>
+        /// <remarks>
+        /// Predicate: assumes newHolder is male
+        /// Predicate: assumes newHolder age 14 or over 
+        /// </remarks>
         /// <returns>bool indicating success</returns>
         /// <param name="newHolder">The character receiving the title</param>
         /// <param name="titlePlace">The place to which the title refers</param>
@@ -4539,7 +4544,7 @@ namespace hist_mmorpg
                 else
                 {
                     // can't give away highest ranking place
-                    List<Place> highestPlaces = this.getHighestRankPlace();
+                    List<Place> highestPlaces = this.GetHighestRankPlace();
                     if (highestPlaces.Count > 0)
                     {
                         if (highestPlaces[0].rank.stature == titlePlace.rank.stature)
@@ -4849,15 +4854,15 @@ namespace hist_mmorpg
                 }
 
                 // calculate age modifier
-                if ((this.calcAge() <= 7))
+                if ((this.CalcAge() <= 7))
                 {
                     ageModifier = 0.25;
                 }
-                else if ((this.calcAge() > 7) && (this.calcAge() <= 14))
+                else if ((this.CalcAge() > 7) && (this.CalcAge() <= 14))
                 {
                     ageModifier = 0.5;
                 }
-                else if ((this.calcAge() > 14) && (this.calcAge() <= 21))
+                else if ((this.CalcAge() > 14) && (this.CalcAge() <= 21))
                 {
                     ageModifier = 0.75;
                 }
@@ -4894,9 +4899,9 @@ namespace hist_mmorpg
                 myFunction = "Family Member";
 
                 // get character's father
-                Character thisFather = this.getFather();
+                Character thisFather = this.GetFather();
                 // get PC's father
-                Character pcFather = pc.getFather();
+                Character pcFather = pc.GetFather();
 
                 if (thisFather != null)
                 {
@@ -5010,7 +5015,7 @@ namespace hist_mmorpg
                     }
 
                     // daughter-in-law
-                    Character mySpouse = this.getSpouse();
+                    Character mySpouse = this.GetSpouse();
                     if (mySpouse != null)
                     {
                         if (mySpouse.father.Equals(pc.charID))
@@ -5104,7 +5109,7 @@ namespace hist_mmorpg
             bool hasBabyName = false;
 
             // look for NPC with age < 1 who has firstname of 'baby'
-            if ((this.calcAge() == age) && ((this.firstName).ToLower().Equals("baby")))
+            if ((this.CalcAge() == age) && ((this.firstName).ToLower().Equals("baby")))
             {
                 hasBabyName = true;
             }
@@ -5140,10 +5145,10 @@ namespace hist_mmorpg
             double basicSalary = 1500;
 
             // get fief management rating
-            double fiefMgtRating = this.calcFiefManagementRating();
+            double fiefMgtRating = this.CalcFiefManagementRating();
 
             // get army leadership rating
-            double armyLeaderRating = this.calcArmyLeadershipRating();
+            double armyLeaderRating = this.CalcArmyLeadershipRating();
 
             // determine lowest of 2 ratings
             double minRating = Math.Min(armyLeaderRating, fiefMgtRating);
@@ -5193,18 +5198,18 @@ namespace hist_mmorpg
 
             // hiring PC
             double hirerStatMod = 0;
-            if (hiringPlayer.calculateStature() > 4)
+            if (hiringPlayer.CalculateStature() > 4)
             {
-                hirerStatMod = (hiringPlayer.calculateStature() - 4) * 0.04;
+                hirerStatMod = (hiringPlayer.CalculateStature() - 4) * 0.04;
             }
 
             // current employer (note: is made negative to counteract hiring PC's stature effect)
             double emplStatMod = 0;
             if (this.getEmployer() != null)
             {
-                if (this.getEmployer().calculateStature() > 4)
+                if (this.getEmployer().CalculateStature() > 4)
                 {
-                    emplStatMod = ((hiringPlayer.calculateStature() - 4) * 0.04) * -1;
+                    emplStatMod = ((hiringPlayer.CalculateStature() - 4) * 0.04) * -1;
                 }
             }
 

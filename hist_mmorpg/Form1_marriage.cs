@@ -32,8 +32,8 @@ namespace hist_mmorpg
             bool success = false;
 
             // get interested parties
-            PlayerCharacter headOfFamilyGroom = groom.getHeadOfFamily();
-            PlayerCharacter headOfFamilyBride = bride.getHeadOfFamily();
+            PlayerCharacter headOfFamilyGroom = groom.GetHeadOfFamily();
+            PlayerCharacter headOfFamilyBride = bride.GetHeadOfFamily();
 
             if ((headOfFamilyGroom != null) && (headOfFamilyBride != null))
             {
@@ -383,13 +383,16 @@ namespace hist_mmorpg
 
                 // check to see if headOfFamilyBride should receive increase in stature
                 // get highest rank for headOfFamilyBride and headOfFamilyGroom
-                Rank brideHighestRank = headOfFamilyBride.getHighestRank();
-                Rank groomHighestRank = headOfFamilyGroom.getHighestRank();
+                Rank brideHighestRank = headOfFamilyBride.GetHighestRank();
+                Rank groomHighestRank = headOfFamilyGroom.GetHighestRank();
 
                 // compare ranks
-                if (groomHighestRank.id < brideHighestRank.id)
+                if ((brideHighestRank != null) && (groomHighestRank != null))
                 {
-                    headOfFamilyBride.adjustStatureModifier((brideHighestRank.id - groomHighestRank.id) * 0.4);
+                    if (groomHighestRank.id < brideHighestRank.id)
+                    {
+                        headOfFamilyBride.AdjustStatureModifier((brideHighestRank.id - groomHighestRank.id) * 0.4);
+                    }
                 }
             }
 
@@ -402,7 +405,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating whether proposal can proceed</returns>
         /// <param name="bride">The prospective bride</param>
         /// <param name="groom">The prospective groom</param>
-        public bool checksBeforeProposal(Character bride, Character groom)
+        public bool ChecksBeforeProposal(Character bride, Character groom)
         {
             bool proceed = true;
             string message = "";
@@ -418,7 +421,7 @@ namespace hist_mmorpg
             // check is of age
             else
             {
-                if (bride.calcAge() < 14)
+                if (bride.CalcAge() < 14)
                 {
                     message = "The prospective bride has yet to come of age.";
                     proceed = false;
@@ -444,7 +447,7 @@ namespace hist_mmorpg
                         else
                         {
                             // check is family member of player
-                            if ((bride.getHeadOfFamily() == null) || (String.IsNullOrWhiteSpace(bride.getHeadOfFamily().playerID)))
+                            if ((bride.GetHeadOfFamily() == null) || (String.IsNullOrWhiteSpace(bride.GetHeadOfFamily().playerID)))
                             {
                                 message = "The prospective bride is not of a suitable family.";
                                 proceed = false;
@@ -461,7 +464,7 @@ namespace hist_mmorpg
                                 else
                                 {
                                     // check is of age
-                                    if (groom.calcAge() < 14)
+                                    if (groom.CalcAge() < 14)
                                     {
                                         message = "The prospective groom has yet to come of age.";
                                         proceed = false;

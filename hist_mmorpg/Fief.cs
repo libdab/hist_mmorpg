@@ -502,7 +502,7 @@ namespace hist_mmorpg
         /// <param name="garr">Proposed garrison expenditure</param>
         /// <param name="infr">Proposed infrastructure expenditure</param>
         /// <param name="kp">Proposed keep expenditure</param>
-        public void adjustExpenditures(double tx, uint off, uint garr, uint infr, uint kp)
+        public void AdjustExpenditures(double tx, uint off, uint garr, uint infr, uint kp)
         {
             // keep track of whether any spends ahve changed
             bool spendChanged = false;
@@ -514,7 +514,7 @@ namespace hist_mmorpg
             double bailiffModif = 0;
 
             // get bailiff modifier (passing in whether bailiffDaysInFief is sufficient)
-            bailiffModif = Globals_Client.fiefToView.calcBailExpModif(Globals_Client.fiefToView.bailiffDaysInFief >= 30);
+            bailiffModif = Globals_Client.fiefToView.CalcBailExpModif(Globals_Client.fiefToView.bailiffDaysInFief >= 30);
 
             if (bailiffModif != 0)
             {
@@ -523,9 +523,9 @@ namespace hist_mmorpg
 
             // check that expenditure can be supported by the treasury
             // if it can't, display a message and cancel the commit
-            if (!Globals_Client.fiefToView.checkExpenditureOK(totalSpend))
+            if (!Globals_Client.fiefToView.CheckExpenditureOK(totalSpend))
             {
-                int difference = Convert.ToInt32(totalSpend - Globals_Client.fiefToView.getAvailableTreasury());
+                int difference = Convert.ToInt32(totalSpend - Globals_Client.fiefToView.GetAvailableTreasury());
                 string toDisplay = "Expenditure adjustment CANCELLED; Your spending would exceed the " + Globals_Client.fiefToView.name + " treasury by " + difference;
                 toDisplay += "\r\n\r\nTo increase expenditure, you must transfer funds from your Home Treasury.";
                 if (Globals_Client.showMessages)
@@ -541,7 +541,7 @@ namespace hist_mmorpg
                 if (tx != this.taxRateNext)
                 {
                     // adjust tax rate
-                    this.adjustTaxRate(tx);
+                    this.AdjustTaxRate(tx);
                     spendChanged = true;
                 }
 
@@ -550,7 +550,7 @@ namespace hist_mmorpg
                 if (off != this.officialsSpendNext)
                 {
                     // adjust officials spend
-                    this.adjustOfficialsSpend(off);
+                    this.AdjustOfficialsSpend(off);
                     spendChanged = true;
                 }
 
@@ -559,7 +559,7 @@ namespace hist_mmorpg
                 if (garr != this.garrisonSpendNext)
                 {
                     // adjust garrison spend
-                    this.adjustGarrisonSpend(garr);
+                    this.AdjustGarrisonSpend(garr);
                     spendChanged = true;
                 }
 
@@ -568,7 +568,7 @@ namespace hist_mmorpg
                 if (infr != this.infrastructureSpendNext)
                 {
                     // adjust infrastructure spend
-                    this.adjustInfraSpend(infr);
+                    this.AdjustInfraSpend(infr);
                     spendChanged = true;
                 }
 
@@ -577,7 +577,7 @@ namespace hist_mmorpg
                 if (kp != this.keepSpendNext)
                 {
                     // adjust keep spend
-                    this.adjustKeepSpend(kp);
+                    this.AdjustKeepSpend(kp);
                     spendChanged = true;
                 }
 
@@ -603,18 +603,18 @@ namespace hist_mmorpg
         /// Calculates fief GDP
         /// </summary>
         /// <returns>uint containing fief GDP</returns>
-        public uint calcNewGDP()
+        public uint CalcNewGDP()
         {
             uint gdp = 0;
             uint fldProd = 0;
             uint indProd = 0;
 
             // calculate production from fields using next season's expenditure
-            fldProd = Convert.ToUInt32((this.calcNewFieldLevel() * 8997));
-			indProd = Convert.ToUInt32(this.calcNewIndustryLevel() * this.calcNewPopulation());
+            fldProd = Convert.ToUInt32((this.CalcNewFieldLevel() * 8997));
+			indProd = Convert.ToUInt32(this.CalcNewIndustryLevel() * this.CalcNewPopulation());
 
             // calculate final gdp
-            gdp = (fldProd + indProd) / (this.calcNewPopulation() / 1000);
+            gdp = (fldProd + indProd) / (this.CalcNewPopulation() / 1000);
 
             gdp = (gdp * 1000);
 
@@ -625,7 +625,7 @@ namespace hist_mmorpg
         /// Calculates fief population increase
         /// </summary>
         /// <returns>uint containing new fief population</returns>
-        public uint calcNewPopulation()
+        public uint CalcNewPopulation()
         {
             uint newPop = Convert.ToUInt32(this.population + (this.population * 0.005));
             return newPop;
@@ -635,7 +635,7 @@ namespace hist_mmorpg
         /// Calculates fief income (NOT including income loss due to unrest/rebellion)
         /// </summary>
         /// <returns>uint containing fief income</returns>
-        public int calcNewIncome()
+        public int CalcNewIncome()
         {
             int fiefBaseIncome = 0;
             int fiefIncome = 0;
@@ -644,21 +644,21 @@ namespace hist_mmorpg
             if (String.IsNullOrWhiteSpace(this.siege))
             {
                 // no siege = use next season's expenditure and tax rate
-                fiefBaseIncome = Convert.ToInt32(this.calcNewGDP() * (this.taxRateNext / 100));
+                fiefBaseIncome = Convert.ToInt32(this.CalcNewGDP() * (this.taxRateNext / 100));
             }
             else
             {
                 // siege = use next season's expenditure and 0% tax rate = no income
-                fiefBaseIncome = Convert.ToInt32(this.calcNewGDP() * 0);
+                fiefBaseIncome = Convert.ToInt32(this.CalcNewGDP() * 0);
             }
 
             fiefIncome = fiefBaseIncome;
 
             // factor in bailiff modifier (also passing whether bailiffDaysInFief is sufficient)
-            fiefIncome = fiefIncome + Convert.ToInt32(fiefBaseIncome * this.calcBlfIncMod(this.bailiffDaysInFief >= 30));
+            fiefIncome = fiefIncome + Convert.ToInt32(fiefBaseIncome * this.CalcBlfIncMod(this.bailiffDaysInFief >= 30));
 
             // factor in officials spend modifier
-            fiefIncome = fiefIncome + Convert.ToInt32(fiefBaseIncome * this.calcOffIncMod());
+            fiefIncome = fiefIncome + Convert.ToInt32(fiefBaseIncome * this.CalcOffIncMod());
 
             // ensure min income = 0
             if (fiefIncome < 0)
@@ -674,7 +674,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>double containing fief family expenses modifier</returns>
         /// <param name="ch">The financial controller (Character)</param>
-        public double calcFamExpenseMod(Character ch = null)
+        public double CalcFamExpenseMod(Character ch = null)
         {
             double famExpMod = 0;
 
@@ -692,7 +692,7 @@ namespace hist_mmorpg
             // factor in financial controller skills
             if (ch != null)
             {
-                double famExpSkillsMod = ch.calcSkillEffect("famExpense");
+                double famExpSkillsMod = ch.CalcSkillEffect("famExpense");
 
                 // apply to famExpMod
                 if (famExpSkillsMod != 0)
@@ -709,7 +709,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>double containing fief income modifier</returns>
         /// <param name="daysInFiefOK">bool specifying whether bailiff has sufficient days in fief</param>
-        public double calcBlfIncMod(bool daysInFiefOK)
+        public double CalcBlfIncMod(bool daysInFiefOK)
         {
             double incomeModif = 0;
 
@@ -722,7 +722,7 @@ namespace hist_mmorpg
             }
             else if (this.bailiff != null)
             {
-                incomeModif = this.bailiff.calcFiefIncMod();
+                incomeModif = this.bailiff.CalcFiefIncMod();
             }
 
             return incomeModif;
@@ -732,12 +732,12 @@ namespace hist_mmorpg
         /// Calculates effect of officials spend on fief income
         /// </summary>
         /// <returns>double containing fief income modifier</returns>
-        public double calcOffIncMod()
+        public double CalcOffIncMod()
         {
             double incomeModif = 0;
 
             // using next season's expenditure and population
-            incomeModif = ((this.officialsSpendNext - ((double)this.calcNewPopulation() * 2)) / (this.calcNewPopulation() * 2)) / 10;
+            incomeModif = ((this.officialsSpendNext - ((double)this.CalcNewPopulation() * 2)) / (this.CalcNewPopulation() * 2)) / 10;
 
             return incomeModif;
         }
@@ -746,7 +746,7 @@ namespace hist_mmorpg
         /// Calculates effect of unrest/rebellion on fief income
         /// </summary>
         /// <returns>double containing fief income modifier</returns>
-        public double calcStatusIncmMod()
+        public double CalcStatusIncmMod()
         {
             double incomeModif = 0;
 
@@ -773,10 +773,10 @@ namespace hist_mmorpg
         /// Calculates overlord taxes
         /// </summary>
         /// <returns>uint containing overlord taxes</returns>
-        public uint calcNewOlordTaxes()
+        public uint CalcNewOlordTaxes()
         {
             // calculate tax, based on income of specified season
-            uint oTaxes = Convert.ToUInt32(this.calcNewIncome() * (this.province.taxRate / 100));
+            uint oTaxes = Convert.ToUInt32(this.CalcNewIncome() * (this.province.taxRate / 100));
             return oTaxes;
         }
 
@@ -784,7 +784,7 @@ namespace hist_mmorpg
         /// Calculates fief expenses
         /// </summary>
         /// <returns>int containing fief expenses</returns>
-        public int calcNewExpenses()
+        public int CalcNewExpenses()
         {
             int fiefExpenses = 0;
 
@@ -795,7 +795,7 @@ namespace hist_mmorpg
             double bailiffModif = 0;
 
             // get bailiff modifier (passing in whether bailiffDaysInFief is sufficient)
-            bailiffModif = this.calcBailExpModif(this.bailiffDaysInFief >= 30);
+            bailiffModif = this.CalcBailExpModif(this.bailiffDaysInFief >= 30);
 
             if (bailiffModif != 0 )
             {
@@ -810,13 +810,13 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>double containing fief expenses modifier</returns>
         /// <param name="daysInFiefOK">bool specifying whether bailiff has sufficient days in fief</param>
-        public double calcBailExpModif(bool daysInFiefOK)
+        public double CalcBailExpModif(bool daysInFiefOK)
         {
             double expSkillsModifier = 0;
 
             if ((this.bailiff != null) && (daysInFiefOK))
             {
-                expSkillsModifier = this.bailiff.calcSkillEffect("fiefExpense");
+                expSkillsModifier = this.bailiff.CalcSkillEffect("fiefExpense");
             }
 
             return expSkillsModifier;
@@ -826,20 +826,20 @@ namespace hist_mmorpg
         /// Calculates fief bottom line
         /// </summary>
         /// <returns>uint containing fief income</returns>
-        public int calcNewBottomLine()
+        public int CalcNewBottomLine()
         {
             int fiefBottomLine = 0;
 
             // factor in effect of fief status on specified season's income
-            int fiefIncome = Convert.ToInt32(this.calcNewIncome() * this.calcStatusIncmMod());
+            int fiefIncome = Convert.ToInt32(this.CalcNewIncome() * this.CalcStatusIncmMod());
 
             // calculate bottom line using specified season's income, and expenses
-            fiefBottomLine = fiefIncome - (int)this.calcNewExpenses() - this.calcFamilyExpenses();
+            fiefBottomLine = fiefIncome - (int)this.CalcNewExpenses() - this.CalcFamilyExpenses();
 
             // check for occupation before deducting overlord taxes
-            if (!this.checkEnemyOccupation())
+            if (!this.CheckEnemyOccupation())
             {
-                fiefBottomLine -= (int)this.calcNewOlordTaxes();
+                fiefBottomLine -= (int)this.CalcNewOlordTaxes();
             }
 
             return fiefBottomLine;
@@ -850,7 +850,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>int containing family expenses</returns>
         /// <param name="season">string specifying whether to calculate for this or next season</param>
-        public int calcFamilyExpenses()
+        public int CalcFamilyExpenses()
         {
             int famExpenses = 0;
             Character thisController = null;
@@ -858,9 +858,21 @@ namespace hist_mmorpg
             // for all fiefs, get bailiff wages
             if (this.bailiff != null)
             {
-                if (this.bailiff != this.owner)
+                // ensure isn't family member (they don't get paid)
+                if (String.IsNullOrWhiteSpace(this.bailiff.familyID))
                 {
-                    famExpenses += Convert.ToInt32((this.bailiff as NonPlayerCharacter).salary);
+                    int bailiffSalary = Convert.ToInt32((this.bailiff as NonPlayerCharacter).salary);
+
+                    // get total no. of fiefs this guy is bailiff in
+                    List<Fief> myFiefs = this.bailiff.GetFiefsBailiff();
+
+                    // if is bailiff in more than this fief, only pay proportion of salary
+                    if (myFiefs.Count > 1)
+                    {
+                        bailiffSalary = bailiffSalary / myFiefs.Count;
+                    }
+
+                    famExpenses += bailiffSalary;
                 }
             }
 
@@ -869,9 +881,9 @@ namespace hist_mmorpg
             if (this == this.owner.getHomeFief())
             {
                 // get whoever has highest management rating
-                if ((!String.IsNullOrWhiteSpace(this.owner.spouse)) && (this.owner.management < this.owner.getSpouse().management))
+                if ((!String.IsNullOrWhiteSpace(this.owner.spouse)) && (this.owner.management < this.owner.GetSpouse().management))
                 {
-                    thisController = this.owner.getSpouse();
+                    thisController = this.owner.GetSpouse();
                 }
                 else
                 {
@@ -918,7 +930,7 @@ namespace hist_mmorpg
             }
 
             // factor in skills and stats of financial controller (player/spouse/bailiff)
-            double famExpModifier = this.calcFamExpenseMod(thisController);
+            double famExpModifier = this.CalcFamExpenseMod(thisController);
 
             // apply to family expenses
             if (famExpModifier != 0)
@@ -933,7 +945,7 @@ namespace hist_mmorpg
         /// Adjusts fief tax rate
         /// </summary>
         /// <param name="tx">double containing new tax rate</param>
-        public void adjustTaxRate(double tx)
+        public void AdjustTaxRate(double tx)
         {
             // ensure max 100 and min 0
             if (tx > 100)
@@ -961,7 +973,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>uint containing maximum permitted expenditure</returns>
         /// <param name="type">string containing type of expenditure</param>
-        public uint getMaxSpend(string type)
+        public uint GetMaxSpend(string type)
         {
             uint maxSpend = 0;
 
@@ -995,7 +1007,7 @@ namespace hist_mmorpg
         /// Adjusts fief officials expenditure
         /// </summary>
         /// <param name="os">uint containing new officials expenditure</param>
-        public void adjustOfficialsSpend(uint os)
+        public void AdjustOfficialsSpend(uint os)
         {
             // ensure min 0
             if (os < 0)
@@ -1008,7 +1020,7 @@ namespace hist_mmorpg
             }
 
             // ensure doesn't exceed max permitted (4 per head of population)
-            uint maxSpend = this.getMaxSpend("officials");
+            uint maxSpend = this.GetMaxSpend("officials");
             if (os > maxSpend)
             {
                 os = maxSpend;
@@ -1025,7 +1037,7 @@ namespace hist_mmorpg
         /// Adjusts fief infrastructure expenditure
         /// </summary>
         /// <param name="infs">uint containing new infrastructure expenditure</param>
-        public void adjustInfraSpend(uint infs)
+        public void AdjustInfraSpend(uint infs)
         {
             // ensure min 0
             if (infs < 0)
@@ -1038,7 +1050,7 @@ namespace hist_mmorpg
             }
 
             // ensure doesn't exceed max permitted (6 per head of population)
-            uint maxSpend = this.getMaxSpend("infrastructure");
+            uint maxSpend = this.GetMaxSpend("infrastructure");
             if (infs > maxSpend)
             {
                 infs = maxSpend;
@@ -1055,7 +1067,7 @@ namespace hist_mmorpg
         /// Adjusts fief garrison expenditure
         /// </summary>
         /// <param name="gs">uint containing new garrison expenditure</param>
-        public void adjustGarrisonSpend(uint gs)
+        public void AdjustGarrisonSpend(uint gs)
         {
             // ensure min 0
             if (gs < 0)
@@ -1068,7 +1080,7 @@ namespace hist_mmorpg
             }
 
             // ensure doesn't exceed max permitted (14 per head of population)
-            uint maxSpend = this.getMaxSpend("garrison");
+            uint maxSpend = this.GetMaxSpend("garrison");
             if (gs > maxSpend)
             {
                 gs = maxSpend;
@@ -1085,7 +1097,7 @@ namespace hist_mmorpg
         /// Adjusts fief keep expenditure
         /// </summary>
         /// <param name="ks">uint containing new keep expenditure</param>
-        public void adjustKeepSpend(uint ks)
+        public void AdjustKeepSpend(uint ks)
         {
             // ensure min 0
             if (ks < 0)
@@ -1098,7 +1110,7 @@ namespace hist_mmorpg
             }
 
             // ensure doesn't exceed max permitted (13 per head of population)
-            uint maxSpend = this.getMaxSpend("keep");
+            uint maxSpend = this.GetMaxSpend("keep");
             if (ks > maxSpend)
             {
                 ks = maxSpend;
@@ -1115,7 +1127,7 @@ namespace hist_mmorpg
         /// Calculates new fief field level (from next season's spend)
         /// </summary>
         /// <returns>double containing new field level</returns>
-        public double calcNewFieldLevel()
+        public double CalcNewFieldLevel()
         {
             double fldLvl = 0;
 
@@ -1143,7 +1155,7 @@ namespace hist_mmorpg
         /// Calculates new fief industry level (from next season's spend)
         /// </summary>
         /// <returns>double containing new industry level</returns>
-        public double calcNewIndustryLevel()
+        public double CalcNewIndustryLevel()
         {
             double indLvl = 0;
 
@@ -1171,7 +1183,7 @@ namespace hist_mmorpg
         /// Calculates new fief keep level (from next season's spend)
         /// </summary>
         /// <returns>double containing new keep level</returns>
-        public double calcNewKeepLevel()
+        public double CalcNewKeepLevel()
         {
             double kpLvl = 0;
 
@@ -1199,7 +1211,7 @@ namespace hist_mmorpg
         /// Calculates new fief loyalty level (i.e. for next season)
         /// </summary>
         /// <returns>double containing new fief loyalty</returns>
-        public double calcNewLoyalty()
+        public double CalcNewLoyalty()
         {
             double newBaseLoy = 0;
             double newLoy = 0;
@@ -1208,10 +1220,10 @@ namespace hist_mmorpg
             newBaseLoy = this.loyalty + (this.loyalty * (((this.taxRateNext - this.taxRate) / 100) * -1));
 
             // calculate effect of surplus 
-            if (this.calcNewBottomLine() > 0)
+            if (this.CalcNewBottomLine() > 0)
             {
                 // loyalty reduced in proportion to surplus divided by income
-                newLoy = newBaseLoy - (this.calcNewBottomLine() / Convert.ToDouble(this.calcNewIncome()));
+                newLoy = newBaseLoy - (this.CalcNewBottomLine() / Convert.ToDouble(this.CalcNewIncome()));
             }
             else
             {
@@ -1219,13 +1231,13 @@ namespace hist_mmorpg
             }
 
             // calculate effect of officials spend
-            newLoy = newLoy + (newBaseLoy * this.calcOffLoyMod());
+            newLoy = newLoy + (newBaseLoy * this.CalcOffLoyMod());
 
             // calculate effect of garrison spend
-            newLoy = newLoy + (newBaseLoy * this.calcGarrLoyMod());
+            newLoy = newLoy + (newBaseLoy * this.CalcGarrLoyMod());
 
             // factor in bailiff modifier (also passing whether bailiffDaysInFief is sufficient)
-            newLoy = newLoy + (newBaseLoy * this.calcBlfLoyAdjusted(this.bailiffDaysInFief >= 30));
+            newLoy = newLoy + (newBaseLoy * this.CalcBlfLoyAdjusted(this.bailiffDaysInFief >= 30));
 
             // ensure loyalty within limits
             if (newLoy < 0)
@@ -1246,7 +1258,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
         /// <param name="daysInFiefOK">bool specifying whether bailiff has sufficient days in fief</param>
-        public double calcBlfLoyAdjusted(bool daysInFiefOK)
+        public double CalcBlfLoyAdjusted(bool daysInFiefOK)
         {
             double loyModif = 0;
             double loySkillModif = 0;
@@ -1259,16 +1271,16 @@ namespace hist_mmorpg
             // if not auto-bailiff and if has served appropriate days in fief
             if ((this.bailiff != null) && (daysInFiefOK))
             {
-                bailStature = this.bailiff.calculateStature();
+                bailStature = this.bailiff.CalculateStature();
                 bailMgmt = this.bailiff.management;
                 bailLang = this.bailiff.language;
             }
 
             // get base bailiff loyalty modifier
-            loyModif = this.calcBaseFiefLoyMod(bailStature, bailMgmt, bailLang);
+            loyModif = this.CalcBaseFiefLoyMod(bailStature, bailMgmt, bailLang);
 
             // check for skill modifier, passing in daysInFief
-            loySkillModif = this.calcBailLoySkillMod(daysInFiefOK);
+            loySkillModif = this.CalcBailLoySkillMod(daysInFiefOK);
 
             loyModif = loyModif + (loyModif * loySkillModif);
 
@@ -1284,7 +1296,7 @@ namespace hist_mmorpg
         /// <param name="stature">Bailiff's stature</param>
         /// <param name="mngt">Bailiff's management rating</param>
         /// <param name="lang">Bailiff's language</param>
-        public double calcBaseFiefLoyMod(double stature, double mngt, Language lang)
+        public double CalcBaseFiefLoyMod(double stature, double mngt, Language lang)
         {
             double loyModif = 0;
             double bailStats = 0;
@@ -1312,13 +1324,13 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
         /// <param name="daysInFiefOK">bool specifying whether bailiff has sufficient days in fief</param>
-        public double calcBailLoySkillMod(bool daysInFiefOK)
+        public double CalcBailLoySkillMod(bool daysInFiefOK)
         {
             double loySkillsModifier = 0;
 
             if ((this.bailiff != null) && (daysInFiefOK))
             {
-                loySkillsModifier = this.bailiff.calcSkillEffect("fiefLoy");
+                loySkillsModifier = this.bailiff.CalcSkillEffect("fiefLoy");
             }
 
             return loySkillsModifier;
@@ -1328,12 +1340,12 @@ namespace hist_mmorpg
         /// Calculates effect of officials spend on fief loyalty
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
-        public double calcOffLoyMod()
+        public double CalcOffLoyMod()
         {
             double loyaltyModif = 0;
 
             // using next season's officials spend and population
-            loyaltyModif = ((this.officialsSpendNext - ((double)this.calcNewPopulation() * 2)) / (this.calcNewPopulation() * 2)) / 10;
+            loyaltyModif = ((this.officialsSpendNext - ((double)this.CalcNewPopulation() * 2)) / (this.CalcNewPopulation() * 2)) / 10;
 
             return loyaltyModif;
         }
@@ -1342,12 +1354,12 @@ namespace hist_mmorpg
         /// Calculates effect of garrison spend on fief loyalty
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
-        public double calcGarrLoyMod()
+        public double CalcGarrLoyMod()
         {
             double loyaltyModif = 0;
 
             // using next season's garrison spend and population
-            loyaltyModif = ((this.garrisonSpendNext - ((double)this.calcNewPopulation() * 7)) / (this.calcNewPopulation() * 7)) / 10;
+            loyaltyModif = ((this.garrisonSpendNext - ((double)this.CalcNewPopulation() * 7)) / (this.CalcNewPopulation() * 7)) / 10;
 
             return loyaltyModif;
         }
@@ -1355,23 +1367,23 @@ namespace hist_mmorpg
         /// <summary>
         /// Validates proposed expenditure levels, auto-adjusting where necessary
         /// </summary>
-        public void validateFiefExpenditure()
+        public void ValidateFiefExpenditure()
         {
             // get total spend
-            uint totalSpend = Convert.ToUInt32(this.calcNewExpenses()); ;
+            uint totalSpend = Convert.ToUInt32(this.CalcNewExpenses()); ;
 
             // check to see if proposed expenditure level doesn't exceed fief treasury
-            bool isOK = this.checkExpenditureOK(totalSpend);
+            bool isOK = this.CheckExpenditureOK(totalSpend);
 
             // if expenditure does exceed fief treasury
             if (!isOK)
             {
                 // get available treasury
-                int availTreasury = this.getAvailableTreasury();
+                int availTreasury = this.GetAvailableTreasury();
                 // calculate amount by which treasury exceeded
                 uint difference = Convert.ToUInt32(totalSpend - availTreasury);
                 // auto-adjust expenditure
-                this.autoAdjustExpenditure(difference);
+                this.AutoAdjustExpenditure(difference);
             }
         }
 
@@ -1379,10 +1391,10 @@ namespace hist_mmorpg
         /// Automatically adjusts expenditure at end of season, if exceeds treasury
         /// </summary>
         /// <param name="difference">The amount by which expenditure exceeds treasury</param>
-        public void autoAdjustExpenditure(uint difference)
+        public void AutoAdjustExpenditure(uint difference)
         {
             // get available treasury
-            int availTreasury = this.getAvailableTreasury();
+            int availTreasury = this.GetAvailableTreasury();
 
             // if treasury empty or in deficit, reduce all expenditure to 0
             if (availTreasury <= 0)
@@ -1633,21 +1645,21 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>int containing amount available</returns>
         /// <param name="deductFiefExpense">bool indicating whether to account for fief expenses in the calculation</param>
-        public int getAvailableTreasury(bool deductFiefExpense = false)
+        public int GetAvailableTreasury(bool deductFiefExpense = false)
         {
             int amountAvail = 0;
 
             // get treasury
             amountAvail = this.treasury;
             // deduct family expenses
-            amountAvail -= this.calcFamilyExpenses();
+            amountAvail -= this.CalcFamilyExpenses();
             // deduct overlord taxes
-            amountAvail -= Convert.ToInt32(this.calcNewOlordTaxes());
+            amountAvail -= Convert.ToInt32(this.CalcNewOlordTaxes());
 
             if (deductFiefExpense)
             {
                 // deduct fief expenditure
-                amountAvail -= this.calcNewExpenses();
+                amountAvail -= this.CalcNewExpenses();
             }
 
             return amountAvail;
@@ -1658,12 +1670,12 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating whether expenditure acceptable</returns>
         /// <param name="totalSpend">proposed total expenditure for next season</param>
-        public bool checkExpenditureOK(uint totalSpend)
+        public bool CheckExpenditureOK(uint totalSpend)
         {
             bool spendLevelOK = true;
 
             // get available treasury
-            int availTreasury = this.getAvailableTreasury();
+            int availTreasury = this.GetAvailableTreasury();
 
             // if there are funds in the treasury
             if (availTreasury > 0)
@@ -1690,7 +1702,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Updates fief data at the end/beginning of the season
         /// </summary>
-        public void updateFief()
+        public void UpdateFief()
         {
             // update previous season's financial data
             this.keyStatsCurrent.CopyTo(this.keyStatsPrevious, 0);
@@ -1702,18 +1714,18 @@ namespace hist_mmorpg
             // update bailiffDaysInFief if appropriate
             if ((this.bailiff != null) && (this.bailiff.days > 0))
             {
-                this.bailiff.useUpDays();
+                this.bailiff.UseUpDays();
             }
 
             // validate fief expenditure against treasury
-            this.validateFiefExpenditure();
+            this.ValidateFiefExpenditure();
 
             // update loyalty level
-            this.keyStatsCurrent[0] = this.calcNewLoyalty();
+            this.keyStatsCurrent[0] = this.CalcNewLoyalty();
             this.loyalty = this.keyStatsCurrent[0];
 
             // update GDP
-            this.keyStatsCurrent[1] = this.calcNewGDP();
+            this.keyStatsCurrent[1] = this.CalcNewGDP();
 
             // update officials spend
             this.keyStatsCurrent[3] = this.officialsSpendNext;
@@ -1728,44 +1740,44 @@ namespace hist_mmorpg
             this.keyStatsCurrent[6] = this.keepSpendNext;
 
             // update keep level (based on next season keep spend)
-            this.keyStatsCurrent[7] = this.calcNewKeepLevel();
+            this.keyStatsCurrent[7] = this.CalcNewKeepLevel();
             this.keepLevel = this.keyStatsCurrent[7];
 
             // update income
-            this.keyStatsCurrent[8] = this.calcNewIncome();
+            this.keyStatsCurrent[8] = this.CalcNewIncome();
 
             // update family expenses
-            this.keyStatsCurrent[9] = this.calcFamilyExpenses();
+            this.keyStatsCurrent[9] = this.CalcFamilyExpenses();
 
             // update total expenses (including bailiff modifiers)
-            this.keyStatsCurrent[10] = this.calcFamilyExpenses() + this.calcNewExpenses();
+            this.keyStatsCurrent[10] = this.CalcFamilyExpenses() + this.CalcNewExpenses();
 
             // update overord taxes
-            this.keyStatsCurrent[11] = this.calcNewOlordTaxes();
+            this.keyStatsCurrent[11] = this.CalcNewOlordTaxes();
 
             // update overord tax rate
             this.keyStatsCurrent[12] = this.province.taxRate;
 
             // update bottom line
-            this.keyStatsCurrent[13] = this.calcNewBottomLine();
+            this.keyStatsCurrent[13] = this.CalcNewBottomLine();
 
             // check for unrest/rebellion
-            this.status = this.checkFiefStatus();
+            this.status = this.CheckFiefStatus();
 
             // update fields level (based on next season infrastructure spend)
-            this.fields = this.calcNewFieldLevel();
+            this.fields = this.CalcNewFieldLevel();
 
             // update industry level (based on next season infrastructure spend)
-            this.industry = this.calcNewIndustryLevel();
+            this.industry = this.CalcNewIndustryLevel();
 
             // update fief treasury with new bottom line
             this.treasury += Convert.ToInt32(this.keyStatsCurrent[13]);
 
             // check for occupation before transfering overlord taxes into overlord's treasury
-            if (!this.checkEnemyOccupation())
+            if (!this.CheckEnemyOccupation())
             {
                 // get overlord
-                PlayerCharacter thisOverlord = this.getOverlord();
+                PlayerCharacter thisOverlord = this.GetOverlord();
                 if (thisOverlord != null)
                 {
                     // get overlord's home fief
@@ -1774,13 +1786,13 @@ namespace hist_mmorpg
                     if (overlordHome != null)
                     {
                         // pay in taxes
-                        overlordHome.treasury += Convert.ToInt32(this.calcNewOlordTaxes());
+                        overlordHome.treasury += Convert.ToInt32(this.CalcNewOlordTaxes());
                     }
                 }
             }
 
             // update population
-            this.population = Convert.ToInt32(this.calcNewPopulation());
+            this.population = Convert.ToInt32(this.CalcNewPopulation());
 
             // reset bailiffDaysInFief
             this.bailiffDaysInFief = 0;
@@ -1810,12 +1822,12 @@ namespace hist_mmorpg
 
                 for (int i = 0; i < attritionChecks; i++)
                 {
-                    attritionModifier = tempArmy.calcAttrition();
+                    attritionModifier = tempArmy.CalcAttrition();
 
                     // apply attrition
                     if (attritionModifier > 0)
                     {
-                        tempArmy.applyTroopLosses(attritionModifier);
+                        tempArmy.ApplyTroopLosses(attritionModifier);
                     }
                 }
 
@@ -1831,7 +1843,7 @@ namespace hist_mmorpg
         /// Checks for transition from calm to unrest/rebellion, or from unrest to calm
         /// </summary>
         /// <returns>char indicating fief status</returns>
-        public char checkFiefStatus()
+        public char CheckFiefStatus()
         {
             char originalStatus = this.status;
  
@@ -1946,7 +1958,7 @@ namespace hist_mmorpg
                 // if necessary, APPLY STATUS LOSS
                 if (this.status.Equals('R'))
                 {
-                    this.owner.adjustStatureModifier(-0.1);
+                    this.owner.AdjustStatureModifier(-0.1);
                 }
 
                 // CREATE JOURNAL ENTRY
@@ -2033,7 +2045,7 @@ namespace hist_mmorpg
         /// Adds character to characters list
         /// </summary>
         /// <param name="ch">Character to be inserted into characters list</param>
-        internal void addCharacter(Character ch)
+        internal void AddCharacter(Character ch)
         {
             // add character
             this.charactersInFief.Add(ch);
@@ -2044,7 +2056,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success/failure</returns>
         /// <param name="ch">Character to be removed from characters list</param>
-        internal bool removeCharacter(Character ch)
+        internal bool RemoveCharacter(Character ch)
         {
             // remove character
             bool success = this.charactersInFief.Remove(ch);
@@ -2056,7 +2068,7 @@ namespace hist_mmorpg
         /// Adds army to armies list
         /// </summary>
         /// <param name="armyID">ID of army to be inserted</param>
-        internal void addArmy(String armyID)
+        internal void AddArmy(String armyID)
         {
             // add army
             this.armies.Add(armyID);
@@ -2067,7 +2079,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success/failure</returns>
         /// <param name="armyID">ID of army to be removed</param>
-        internal bool removeArmy(String armyID)
+        internal bool RemoveArmy(String armyID)
         {
             // remove army
             bool success = this.armies.Remove(armyID);
@@ -2079,7 +2091,7 @@ namespace hist_mmorpg
         /// Bar a specific character from the fief's keep
         /// </summary>
         /// <param name="ch">Character to be barred</param>
-        internal void barCharacter(string ch)
+        internal void BarCharacter(string ch)
         {
             // bar character
             this.barredCharacters.Add(ch);
@@ -2090,7 +2102,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success/failure</returns>
         /// <param name="ch">Character for whom bar to be removed</param>
-        internal bool removeBarCharacter(string ch)
+        internal bool RemoveBarCharacter(string ch)
         {
             // remove character bar
             bool success = this.barredCharacters.Remove(ch);
@@ -2104,10 +2116,10 @@ namespace hist_mmorpg
         /// <returns>int containing number of troops responding to call</returns>
         /// <param name="minProportion">double specifying minimum proportion of total troop number required</param>
         /// <param name="maxProportion">double specifying maximum proportion of total troop number required</param>
-        public int callUpTroops(double minProportion = 0, double maxProportion = 1)
+        public int CallUpTroops(double minProportion = 0, double maxProportion = 1)
         {
             int numberTroops = 0;
-            int maxNumber = this.calcMaxTroops();
+            int maxNumber = this.CalcMaxTroops();
 
             // generate random double between min and max
             double myRandomDouble = Utility_Methods.GetRandomDouble(min: minProportion, max: maxProportion);
@@ -2128,7 +2140,7 @@ namespace hist_mmorpg
         /// Calculates the maximum number of troops available for call up in the fief
         /// </summary>
         /// <returns>int containing maximum number of troops</returns>
-        public int calcMaxTroops()
+        public int CalcMaxTroops()
         {
             return Convert.ToInt32(this.population * 0.05);
         }
@@ -2137,7 +2149,7 @@ namespace hist_mmorpg
         /// Calculates the garrison size for the fief
         /// </summary>
         /// <returns>int containing the garrison size</returns>
-        public int getGarrisonSize()
+        public int GetGarrisonSize()
         {
             int garrisonSize = 0;
 
@@ -2175,7 +2187,7 @@ namespace hist_mmorpg
         /// Gets fief's overlord
         /// </summary>
         /// <returns>The overlord</returns>
-        public PlayerCharacter getOverlord()
+        public PlayerCharacter GetOverlord()
         {
             PlayerCharacter myOverlord = null;
 
@@ -2194,7 +2206,7 @@ namespace hist_mmorpg
         /// Gets the fief's siege object
         /// </summary>
         /// <returns>the siege</returns>
-        public Siege getSiege()
+        public Siege GetSiege()
         {
             Siege mySiege = null;
 
@@ -2230,7 +2242,7 @@ namespace hist_mmorpg
         /// Gets the fief's rightful king (i.e. the king of the kingdom that the fief traditionally belongs to)
         /// </summary>
         /// <returns>The king</returns>
-        public PlayerCharacter getRightfulKing()
+        public PlayerCharacter GetRightfulKing()
         {
             PlayerCharacter thisKing = null;
 
@@ -2246,7 +2258,7 @@ namespace hist_mmorpg
         /// Gets the fief's current king (i.e. the king of the current owner)
         /// </summary>
         /// <returns>The king</returns>
-        public PlayerCharacter getCurrentKing()
+        public PlayerCharacter GetCurrentKing()
         {
             PlayerCharacter thisKing = null;
 
@@ -2269,11 +2281,11 @@ namespace hist_mmorpg
         /// Checks if the fief is under enemy occupation
         /// </summary>
         /// <returns>bool indicating whether is under enemy occupation</returns>
-        public bool checkEnemyOccupation()
+        public bool CheckEnemyOccupation()
         {
             bool isOccupied = false;
 
-            if (this.getRightfulKing() != this.getCurrentKing())
+            if (this.GetRightfulKing() != this.GetCurrentKing())
             {
                 isOccupied = true;
             }
@@ -2285,7 +2297,7 @@ namespace hist_mmorpg
         /// Gets the fief's rightful kingdom (i.e. the kingdom that it traditionally belongs to)
         /// </summary>
         /// <returns>The kingdom</returns>
-        public Kingdom getRightfulKingdom()
+        public Kingdom GetRightfulKingdom()
         {
             Kingdom thisKingdom = null;
 
@@ -2301,7 +2313,7 @@ namespace hist_mmorpg
         /// Gets the fief's current kingdom (i.e. the kingdom of the current owner)
         /// </summary>
         /// <returns>The kingdom</returns>
-        public Kingdom getCurrentKingdom()
+        public Kingdom GetCurrentKingdom()
         {
             Kingdom thisKingdom = null;
 
@@ -2323,7 +2335,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="newOwner">The new owner</param>
         /// <param name="circumstance">The circumstance under which the change of ownership is taking place</param>
-        public bool changeOwnership(PlayerCharacter newOwner, string circumstance = "hostile")
+        public bool ChangeOwnership(PlayerCharacter newOwner, string circumstance = "hostile")
         {
             bool success = true;
 
@@ -2462,7 +2474,7 @@ namespace hist_mmorpg
                 this.bailiffDaysInFief = 0;
 
                 // check for status
-                this.status = this.checkFiefStatus();
+                this.status = this.CheckFiefStatus();
 
                 // make changes to barred characters, etc. if necessary
                 // new owner
@@ -2541,7 +2553,7 @@ namespace hist_mmorpg
         /// Checks to see if there is currently a field army in the fief keep
         /// </summary>
         /// <returns>bool indicating presence of a field army</returns>
-        public bool checkFieldArmyInKeep()
+        public bool CheckFieldArmyInKeep()
         {
             bool armyInKeep = false;
 
@@ -2562,23 +2574,23 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating quell success or failure</returns>
         /// <param name="a">The army trying to quell the rebellion</param>
-        public bool quell_checkSuccess(Army a)
+        public bool Quell_checkSuccess(Army a)
         {
             bool rebellionQuelled = false;
 
             // calculate base chance of success, based on army size and fief population
-            double successChance = a.calcArmySize() / (this.population / Convert.ToDouble(1000));
+            double successChance = a.CalcArmySize() / (this.population / Convert.ToDouble(1000));
 
             // get army leader
-            Character aLeader = a.getLeader();
+            Character aLeader = a.GetLeader();
 
             // get army owner
-            Character aOwner = a.getOwner();
+            Character aOwner = a.GetOwner();
 
             // apply any bonus for leadership skills
             if (aLeader != null)
             {
-                successChance += aLeader.getLeadershipValue();
+                successChance += aLeader.GetLeadershipValue();
             }
 
             // apply any bonus for ancestral ownership
@@ -2587,7 +2599,7 @@ namespace hist_mmorpg
                 // only if army owner is ancestral owner & current owner isn't
                 if ((aOwner == this.ancestralOwner) && (this.owner != this.ancestralOwner))
                 {
-                    successChance += (aOwner.calculateStature() * 2.22);
+                    successChance += (aOwner.CalculateStature() * 2.22);
                 }
             }
 
@@ -2612,18 +2624,18 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating quell success or failure</returns>
         /// <param name="a">The army trying to quell the rebellion</param>
-        public bool quellRebellion(Army a)
+        public bool QuellRebellion(Army a)
         {
             // check to see if quell attempt was successful
-            bool quellSuccessful = this.quell_checkSuccess(a);
+            bool quellSuccessful = this.Quell_checkSuccess(a);
 
             // if quell successful
             if (quellSuccessful)
             {
                 // process change of ownership, if appropriate
-                if (this.owner != a.getOwner())
+                if (this.owner != a.GetOwner())
                 {
-                    this.changeOwnership(a.getOwner());
+                    this.ChangeOwnership(a.GetOwner());
                 }
 
                 // set status
@@ -2637,11 +2649,11 @@ namespace hist_mmorpg
                 // get interested parties
                 bool success = true;
                 PlayerCharacter fiefOwner = this.owner;
-                PlayerCharacter attackerOwner = a.getOwner();
+                PlayerCharacter attackerOwner = a.GetOwner();
                 Character attackerLeader = null;
-                if (a.getLeader() != null)
+                if (a.GetLeader() != null)
                 {
-                    attackerLeader = a.getLeader();
+                    attackerLeader = a.GetLeader();
                 }
 
                 // ID

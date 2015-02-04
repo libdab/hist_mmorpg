@@ -148,16 +148,16 @@ namespace hist_mmorpg
         /// <summary>
         /// Performs functions associated with creating a new army
         /// </summary>
-        public void addArmy()
+        public void AddArmy()
         {
             // get leader
-            Character armyLeader = this.getLeader();
+            Character armyLeader = this.GetLeader();
 
             // get owner
-            PlayerCharacter armyOwner = this.getOwner();
+            PlayerCharacter armyOwner = this.GetOwner();
 
             // get location
-            Fief armyLocation = this.getLocation();
+            Fief armyLocation = this.GetLocation();
 
             // add to armyMasterList
             Globals_Game.armyMasterList.Add(this.armyID, this);
@@ -179,16 +179,16 @@ namespace hist_mmorpg
         /// <summary>
         /// Maintains the specified field army
         /// </summary>
-        public void mantainArmy()
+        public void MantainArmy()
         {
             string toDisplay = "";
 
             // get cost
-            uint maintCost = this.calcArmySize() * 500;
+            uint maintCost = this.CalcArmySize() * 500;
 
             // get available treasury
-            Fief homeFief = this.getOwner().getHomeFief();
-            int availTreas = homeFief.getAvailableTreasury();
+            Fief homeFief = this.GetOwner().getHomeFief();
+            int availTreas = homeFief.GetAvailableTreasury();
 
             // check if army is already maintained
             if (!this.isMaintained)
@@ -238,7 +238,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="newAggroLevel">The new aggression value</param>
         /// <param name="newOddsValue">The new combatOdds value</param>
-        public bool adjustAutoLevels(byte newAggroLevel, byte newOddsValue)
+        public bool AdjustStandingOrders(byte newAggroLevel, byte newOddsValue)
         {
             bool success = true;
 
@@ -274,16 +274,19 @@ namespace hist_mmorpg
 		
         /// <summary>
         /// Assigns a new leader to the army
-        /// NOTE: you CAN assign a null character as leader (i.e. the army becomes leaderless)
         /// </summary>
-        /// <param name="newLeader">The new leader (can be null)</param>
-        public void assignNewLeader(Character newLeader)
+        /// <remarks>
+        /// Predicate: assumes leader is in same fief as army
+        /// NOTE: you CAN assign a null character as leader (i.e. the army becomes leaderless)
+        /// </remarks>
+        /// /// <param name="newLeader">The new leader (can be null)</param>
+        public void AssignNewLeader(Character newLeader)
         {
             // check if already leader of another army and remove if necessary
             Army otherArmy = null;
             if (!String.IsNullOrWhiteSpace(newLeader.armyID))
             {
-                otherArmy = newLeader.getArmy();
+                otherArmy = newLeader.GetArmy();
 
                 if (otherArmy != null)
                 {
@@ -295,10 +298,10 @@ namespace hist_mmorpg
             }
 
             // check if army is involved in a siege
-            Siege mySiege = this.getSiege();
+            Siege mySiege = this.GetSiege();
 
             // Remove army from current leader
-            Character oldLeader = this.getLeader();
+            Character oldLeader = this.GetLeader();
             if (oldLeader != null)
             {
                 oldLeader.armyID = null;
@@ -334,7 +337,7 @@ namespace hist_mmorpg
                 if (newLeader.days != minDays)
                 {
                     // synchronise days
-                    newLeader.adjustDays(difference);
+                    newLeader.AdjustDays(difference);
                 }
                 else
                 {
@@ -347,9 +350,9 @@ namespace hist_mmorpg
                         for (int i = 0; i < attritionChecks; i++)
                         {
                             // calculate attrition
-                            double attritionModifer = this.calcAttrition();
+                            double attritionModifer = this.CalcAttrition();
                             // apply attrition
-                            this.applyTroopLosses(attritionModifer);
+                            this.ApplyTroopLosses(attritionModifer);
                         }
                     }
 
@@ -368,7 +371,7 @@ namespace hist_mmorpg
         /// Calculates total army size
         /// </summary>
         /// <returns>uint containing army size</returns>
-        public uint calcArmySize()
+        public uint CalcArmySize()
         {
             uint armySize = 0;
 
@@ -383,14 +386,17 @@ namespace hist_mmorpg
         /// <summary>
         /// Moves army to another fief
         /// </summary>
+        /// <remarks>
+        /// Predicate: assumes leader has enough days for movement
+        /// </remarks>
         /// <returns>bool indicating success</returns>
         /// <param name="showAttrition">bool indicating whether to display message containing attrition losses</param>
-        public bool moveArmy(bool showAttrition = false)
+        public bool MoveArmy(bool showAttrition = false)
         {
             bool success = false;
 
             // get leader
-            Character myLeader = this.getLeader();
+            Character myLeader = this.GetLeader();
 
             // get old fief
             Fief myOldFief = Globals_Game.fiefMasterList[this.location];
@@ -398,10 +404,10 @@ namespace hist_mmorpg
             Fief myNewFief = Globals_Game.fiefMasterList[myLeader.location.id];
 
             // remove from old fief
-            myOldFief.removeArmy(this.armyID);
+            myOldFief.RemoveArmy(this.armyID);
 
             // add to new fief
-            myNewFief.addArmy(this.armyID);
+            myNewFief.AddArmy(this.armyID);
 
             // change location
             this.location = myLeader.location.id;
@@ -410,9 +416,9 @@ namespace hist_mmorpg
             this.days = myLeader.days;
 
             // calculate attrition
-            double attritionModifer = this.calcAttrition();
+            double attritionModifer = this.CalcAttrition();
             // apply attrition
-            uint troopsLost = this.applyTroopLosses(attritionModifer);
+            uint troopsLost = this.ApplyTroopLosses(attritionModifer);
 
             // inform player of losses
             if (showAttrition)
@@ -433,7 +439,7 @@ namespace hist_mmorpg
         /// Calculates movement modifier for the army
         /// </summary>
         /// <returns>uint containing movement modifier</returns>
-        public uint calcMovementModifier()
+        public uint CalcMovementModifier()
         {
             uint movementMod = 1;
 
@@ -441,7 +447,7 @@ namespace hist_mmorpg
             Double myRandomDouble = Globals_Game.myRand.NextDouble() * 100;
 
             // calculate chance of modifier based on army size
-            Double modifierChance = (Math.Floor(this.calcArmySize() / (Double)1000) * 3);
+            Double modifierChance = (Math.Floor(this.CalcArmySize() / (Double)1000) * 3);
 
             // check to see if modifier required
             if (myRandomDouble <= modifierChance)
@@ -456,9 +462,9 @@ namespace hist_mmorpg
         /// Calculates attrition for the army
         /// </summary>
         /// <returns>double containing casualty modifier to be applied troops</returns>
-        public double calcAttrition()
+        public double CalcAttrition()
         {
-            uint troopNumbers = this.calcArmySize();
+            uint troopNumbers = this.CalcArmySize();
             double casualtyModifier = 0;
             Double attritionChance = 0;
             String toDisplay = "";
@@ -467,10 +473,10 @@ namespace hist_mmorpg
             if (!this.isMaintained)
             {
                 // get fief
-                Fief currentFief = this.getLocation();
+                Fief currentFief = this.GetLocation();
 
                 // get leader
-                Character myLeader = this.getLeader();
+                Character myLeader = this.GetLeader();
 
                 // calculate base chance of attrition
                 attritionChance = (troopNumbers / Convert.ToDouble(currentFief.population)) * 100;
@@ -480,8 +486,8 @@ namespace hist_mmorpg
                 if (myLeader != null)
                 {
                     // apply effect of leader
-                    attritionChance = attritionChance - ((myLeader.calculateStature() + myLeader.management) / 2);
-                    toDisplay += "Leader effect: " + (myLeader.calculateStature() + myLeader.management) / 2 + "\r\n";
+                    attritionChance = attritionChance - ((myLeader.CalculateStature() + myLeader.management) / 2);
+                    toDisplay += "Leader effect: " + (myLeader.CalculateStature() + myLeader.management) / 2 + "\r\n";
                 }
 
                 // factor in effect of season (add 20 if is winter or spring)
@@ -535,9 +541,12 @@ namespace hist_mmorpg
         /// <summary>
         /// Applies troop losses after attrition, battle, siege, etc.
         /// </summary>
+        /// <remarks>
+        /// Predicate: assumes (lossModifier gt 0) && (lossModifier lt 1)
+        /// </remarks>
         /// <returns>uint containing total number of troops lost</returns>
         /// <param name="lossModifier">modifier to be applied to each troop type</param>
-        public uint applyTroopLosses(double lossModifier)
+        public uint ApplyTroopLosses(double lossModifier)
         {
             // keep track of total troops lost
             uint troopsLost = 0;
@@ -555,9 +564,12 @@ namespace hist_mmorpg
         /// <summary>
         /// Creates a detachment from the army's troops and leaves it in the fief
         /// </summary>
+        /// <remarks>
+        /// Predicate: assumes details[0] through details[details.Length-1] contain strings that can be converted to uint
+        /// </remarks>
         /// <returns>bool indicating success of transfer</returns>
         /// <param name="details">string[] containing troop numbers and recipient (ID)</param>
-        public bool createDetachment(string[] details)
+        public bool CreateDetachment(string[] details)
         {
             bool proceed = true;
             bool adjustDays = true;
@@ -661,7 +673,7 @@ namespace hist_mmorpg
                                     // 7. check army has a leader
 
                                     // get leader
-                                    myLeader = this.getLeader();
+                                    myLeader = this.GetLeader();
 
                                     if (myLeader == null)
                                     {
@@ -676,7 +688,7 @@ namespace hist_mmorpg
                                     else
                                     {
                                         // 8. if reduces army to < 100 troops, display warning
-                                        if (((this.calcArmySize() - totalTroopsToTransfer) < 100) && (proceed))
+                                        if (((this.CalcArmySize() - totalTroopsToTransfer) < 100) && (proceed))
                                         {
                                             toDisplay = "This transfer will reduce your army manpower to dangerous levels.  Click OK to proceed.";
                                             DialogResult dialogResult = MessageBox.Show(toDisplay, "Proceed with transfer?", MessageBoxButtons.OKCancel);
@@ -710,7 +722,7 @@ namespace hist_mmorpg
                 }
 
                 // get fief
-                Fief thisFief = this.getLocation();
+                Fief thisFief = this.GetLocation();
 
                 // create transfer entry
                 string[] thisTransfer = new string[10] { this.owner, details[7], details[0], details[1], details[2],
@@ -730,19 +742,19 @@ namespace hist_mmorpg
             if (adjustDays)
             {
                 // adjust days
-                myLeader.adjustDays(daysTaken);
+                myLeader.AdjustDays(daysTaken);
 
                 // calculate possible attrition for army
                 byte attritionChecks = Convert.ToByte(daysTaken / 7);
                 for (int i = 0; i < attritionChecks; i++)
                 {
                     // calculate attrition
-                    double attritionModifer = this.calcAttrition();
+                    double attritionModifer = this.CalcAttrition();
 
                     // apply attrition
                     if (attritionModifer > 0)
                     {
-                        this.applyTroopLosses(attritionModifer);
+                        this.ApplyTroopLosses(attritionModifer);
                     }
                 }
             }
@@ -755,13 +767,13 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>double containing combat value</returns>
         /// <param name="keepLvl">Keep level (if for a keep storm)</param>
-        public double calculateCombatValue(int keepLvl = 0)
+        public double CalculateCombatValue(int keepLvl = 0)
         {
             double cv = 0;
 
             // get leader and owner
-            Character myLeader = this.getLeader();
-            PlayerCharacter myOwner = this.getOwner();
+            Character myLeader = this.GetLeader();
+            PlayerCharacter myOwner = this.GetOwner();
 
             // get nationality (effects combat values)
             string troopNationality = myOwner.nationality.natID;
@@ -785,7 +797,7 @@ namespace hist_mmorpg
             // get leader's combat value
             if (myLeader != null)
             {
-                cv += myLeader.getCombatValue();
+                cv += myLeader.GetCombatValue();
 
                 // if leader is PC, get CV of entourage (male characters only)
                 if (myLeader is PlayerCharacter)
@@ -796,7 +808,7 @@ namespace hist_mmorpg
                         {
                             if ((myLeader as PlayerCharacter).myNPCs[i].isMale)
                             {
-                                cv += (myLeader as PlayerCharacter).myNPCs[i].getCombatValue();
+                                cv += (myLeader as PlayerCharacter).myNPCs[i].GetCombatValue();
                             }
                         }
                     }
@@ -811,34 +823,37 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>uint[] containing estimated troop numbers for all types</returns>
         /// <param name="observer">The character making the estimate</param>
-        public uint[] getTroopsEstimate(Character observer)
+        public uint[] GetTroopsEstimate(Character observer)
         {
             uint[] troopNumbers = new uint[7] {0, 0, 0, 0, 0, 0, 0};
 
-            // get random int (0-2) to decide whether to over- or under-estimate troop number
-            int overUnder = Globals_Game.myRand.Next(3);
-
-            // get observer's estimate variance (based on his leadership value)
-            double estimateVariance = observer.getEstimateVariance();
-
-            // perform estimate for each troop type
-            for (int i = 0; i < troopNumbers.Length; i++)
+            if (observer != null)
             {
-                // get troop number upon which to base estimate
-                troopNumbers[i] = this.troops[i];
+                // get random int (0-2) to decide whether to over- or under-estimate troop number
+                int overUnder = Globals_Game.myRand.Next(3);
 
-                // generate random double between 0 and estimate variance to decide variance in this case
-                double thisVariance = Utility_Methods.GetRandomDouble(estimateVariance);
+                // get observer's estimate variance (based on his leadership value)
+                double estimateVariance = observer.GetEstimateVariance();
 
-                // apply variance (negatively or positively) to troop number
-                // 0 = under-estimate, 1-2 = over-estimate
-                if (overUnder == 0)
+                // perform estimate for each troop type
+                for (int i = 0; i < troopNumbers.Length; i++)
                 {
-                    troopNumbers[i] = troopNumbers[i] - Convert.ToUInt32(troopNumbers[i] * thisVariance);
-                }
-                else
-                {
-                    troopNumbers[i] = troopNumbers[i] + Convert.ToUInt32(troopNumbers[i] * thisVariance);
+                    // get troop number upon which to base estimate
+                    troopNumbers[i] = this.troops[i];
+
+                    // generate random double between 0 and estimate variance to decide variance in this case
+                    double thisVariance = Utility_Methods.GetRandomDouble(estimateVariance);
+
+                    // apply variance (negatively or positively) to troop number
+                    // 0 = under-estimate, 1-2 = over-estimate
+                    if (overUnder == 0)
+                    {
+                        troopNumbers[i] = troopNumbers[i] - Convert.ToUInt32(troopNumbers[i] * thisVariance);
+                    }
+                    else
+                    {
+                        troopNumbers[i] = troopNumbers[i] + Convert.ToUInt32(troopNumbers[i] * thisVariance);
+                    }
                 }
             }
 
@@ -849,7 +864,7 @@ namespace hist_mmorpg
         /// Gets the army's location (fief)
         /// </summary>
         /// <returns>the fief</returns>
-        public Fief getLocation()
+        public Fief GetLocation()
         {
             Fief thisFief = null;
 
@@ -868,7 +883,7 @@ namespace hist_mmorpg
         /// Gets the army's owner
         /// </summary>
         /// <returns>the owner</returns>
-        public PlayerCharacter getOwner()
+        public PlayerCharacter GetOwner()
         {
             PlayerCharacter myOwner = null;
 
@@ -888,7 +903,7 @@ namespace hist_mmorpg
         /// Gets the army's leader
         /// </summary>
         /// <returns>the leader</returns>
-        public Character getLeader()
+        public Character GetLeader()
         {
             Character myLeader = null;
 
@@ -911,12 +926,16 @@ namespace hist_mmorpg
         /// <summary>
         /// Performs functions associated with army move for an army unaccompanied by a leader 
         /// </summary>
+        /// <remarks>
+        /// Predicate: assumes army has no leader
+        /// Predicate: assumes army has sufficient days
+        /// </remarks>
         /// <param name="target">The fief to move to</param>
         /// <param name="travelCost">The cost of moving to target fief</param>
-        public void moveWithoutLeader(Fief target, double travelCost)
+        public void MoveWithoutLeader(Fief target, double travelCost)
         {
             // get current location
-            Fief from = this.getLocation();
+            Fief from = this.GetLocation();
 
             // remove from current fief
             from.armies.Remove(this.armyID);
@@ -931,25 +950,26 @@ namespace hist_mmorpg
             this.days = this.days - travelCost;
 
             // calculate attrition
-            double attritionModifer = this.calcAttrition();
+            double attritionModifer = this.CalcAttrition();
+
             // apply attrition
-            uint troopsLost = this.applyTroopLosses(attritionModifer);
+            uint troopsLost = this.ApplyTroopLosses(attritionModifer);
         }
 
         /// <summary>
         /// Checks to see if army is besieging a fief/keep
         /// </summary>
         /// <returns>string containing the siegeID</returns>
-        public string checkIfBesieger()
+        public string CheckIfBesieger()
         {
             string thisSiegeID = null;
 
             // get fief
-            Fief thisFief = this.getLocation();
+            Fief thisFief = this.GetLocation();
 
             if (!String.IsNullOrWhiteSpace(thisFief.siege))
             {
-                Siege thisSiege = thisFief.getSiege();
+                Siege thisSiege = thisFief.GetSiege();
 
                 // check if this army is besieging army
                 if (thisSiege.getBesiegingArmy() == this)
@@ -965,16 +985,16 @@ namespace hist_mmorpg
         /// Checks to see if army is the defending garrison in a siege
         /// </summary>
         /// <returns>string containing the siegeID</returns>
-        public string checkIfSiegeDefenderGarrison()
+        public string CheckIfSiegeDefenderGarrison()
         {
             string thisSiegeID = null;
 
             // get fief
-            Fief thisFief = this.getLocation();
+            Fief thisFief = this.GetLocation();
 
             if (!String.IsNullOrWhiteSpace(thisFief.siege))
             {
-                Siege thisSiege = thisFief.getSiege();
+                Siege thisSiege = thisFief.GetSiege();
                 if (thisSiege.getDefenderGarrison() == this)
                 {
                     thisSiegeID = thisFief.siege;
@@ -988,16 +1008,16 @@ namespace hist_mmorpg
         /// Checks to see if army is an additional defending army in a siege
         /// </summary>
         /// <returns>string containing the siegeID</returns>
-        public string checkIfSiegeDefenderAdditional()
+        public string CheckIfSiegeDefenderAdditional()
         {
             string thisSiegeID = null;
 
             // get fief
-            Fief thisFief = this.getLocation();
+            Fief thisFief = this.GetLocation();
 
             if (!String.IsNullOrWhiteSpace(thisFief.siege))
             {
-                Siege thisSiege = thisFief.getSiege();
+                Siege thisSiege = thisFief.GetSiege();
                 if (thisSiege.defenderAdditional != null)
                 {
                     if (thisSiege.getDefenderAdditional() == this)
@@ -1014,22 +1034,22 @@ namespace hist_mmorpg
         /// Checks to see if army has any role (defending or besieging) in a siege
         /// </summary>
         /// <returns>string containing the siegeID</returns>
-        public string checkForSiegeRole()
+        public string CheckForSiegeRole()
         {
             string thisSiegeID = null;
 
             // check if army is a defending garrison in a siege
-            thisSiegeID = this.checkIfSiegeDefenderGarrison();
+            thisSiegeID = this.CheckIfSiegeDefenderGarrison();
 
             if (String.IsNullOrWhiteSpace(thisSiegeID))
             {
                 // check if army is an additional defending army in a siege
-                thisSiegeID = this.checkIfSiegeDefenderAdditional();
+                thisSiegeID = this.CheckIfSiegeDefenderAdditional();
 
                 if (String.IsNullOrWhiteSpace(thisSiegeID))
                 {
                     // check if army is besieger in a siege
-                    thisSiegeID = this.checkIfBesieger();
+                    thisSiegeID = this.CheckIfBesieger();
                 }
             }
 
@@ -1040,12 +1060,12 @@ namespace hist_mmorpg
         /// Gets the siege object associated with the army (or null)
         /// </summary>
         /// <returns>The siege</returns>
-        public Siege getSiege()
+        public Siege GetSiege()
         {
             Siege thisSiege = null;
 
             // check for siege ID associated with army
-            string siegeID = this.checkForSiegeRole();
+            string siegeID = this.CheckForSiegeRole();
 
             // get siege
             if (!String.IsNullOrWhiteSpace(siegeID))
@@ -1063,7 +1083,7 @@ namespace hist_mmorpg
         /// Updates army data at the end/beginning of the season
         /// </summary>
         /// <returns>bool indicating if army has dissolved</returns>
-        public bool updateArmy()
+        public bool UpdateArmy()
         {
             bool hasDissolved = false;
             bool attritionApplies = true;
@@ -1074,20 +1094,20 @@ namespace hist_mmorpg
 
             // check for SIEGE INVOLVEMENT
             // check that army is a defending garrison in a siege
-            siegeID = this.checkIfSiegeDefenderGarrison();
+            siegeID = this.CheckIfSiegeDefenderGarrison();
             if (!String.IsNullOrWhiteSpace(siegeID))
             {
                 isSiegeDefGarr = true;
-                thisSiege = this.getSiege();
+                thisSiege = this.GetSiege();
             }
             else
             {
-                siegeID = this.checkIfSiegeDefenderAdditional();
+                siegeID = this.CheckIfSiegeDefenderAdditional();
                 // check that army is an additional defending army in a siege
                 if (!String.IsNullOrWhiteSpace(siegeID))
                 {
                     isSiegeDefAdd = true;
-                    thisSiege = this.getSiege();
+                    thisSiege = this.GetSiege();
                 }
             }
 
@@ -1099,7 +1119,7 @@ namespace hist_mmorpg
             }
 
             // get leader
-            Character myLeader = this.getLeader();
+            Character myLeader = this.GetLeader();
 
             if (attritionApplies)
             {
@@ -1108,9 +1128,9 @@ namespace hist_mmorpg
                 for (int i = 0; i < attritionChecks; i++)
                 {
                     // calculate attrition
-                    double attritionModifer = this.calcAttrition();
+                    double attritionModifer = this.CalcAttrition();
                     // apply attrition
-                    uint troopsLost = this.applyTroopLosses(attritionModifer);
+                    uint troopsLost = this.ApplyTroopLosses(attritionModifer);
 
                     // update siege losses, if applicable
                     if (thisSiege != null)
@@ -1130,11 +1150,11 @@ namespace hist_mmorpg
                 }
             }
 
-            if (!isSiegeDefGarr)
+            if (!((isSiegeDefGarr) || (isSiegeDefAdd)))
             {
                 // check if army dissolves (less than 100 men)
-                // NOTE: defending garrisons do not dissolve in this way
-                if (this.calcArmySize() < 100)
+                // NOTE: siege defenders do not dissolve in this way
+                if (this.CalcArmySize() < 100)
                 {
                     hasDissolved = true;
                 }
@@ -1164,7 +1184,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating whether attack can proceed</returns>
         /// <param name="targetArmy">The army to be attacked</param>
-        public bool checksBeforeAttack(Army targetArmy)
+        public bool ChecksBeforeAttack(Army targetArmy)
         {
             bool proceed = true;
             string toDisplay = "";
@@ -1183,7 +1203,7 @@ namespace hist_mmorpg
             {
                 // SIEGE INVOLVEMENT
                 // check if defending army is the garrison in a siege
-                string siegeID = targetArmy.checkIfSiegeDefenderGarrison();
+                string siegeID = targetArmy.CheckIfSiegeDefenderGarrison();
                 if (!String.IsNullOrWhiteSpace(siegeID))
                 {
                     if (Globals_Client.showMessages)
@@ -1197,7 +1217,7 @@ namespace hist_mmorpg
                 else
                 {
                     // check if defending army is the additional defender in a siege
-                    siegeID = targetArmy.checkIfSiegeDefenderAdditional();
+                    siegeID = targetArmy.CheckIfSiegeDefenderAdditional();
                     if (!String.IsNullOrWhiteSpace(siegeID))
                     {
                         if (Globals_Client.showMessages)
@@ -1211,7 +1231,7 @@ namespace hist_mmorpg
                     else
                     {
                         // check if are attacking your own army
-                        if (this.getOwner() == targetArmy.getOwner())
+                        if (this.GetOwner() == targetArmy.GetOwner())
                         {
                             if (Globals_Client.showMessages)
                             {
@@ -1224,7 +1244,7 @@ namespace hist_mmorpg
                         else
                         {
                             // check if attacking king's army
-                            if (this.getOwner() == this.getOwner().getKing())
+                            if (this.GetOwner() == this.GetOwner().getKing())
                             {
                                 // display warning and get decision
                                 DialogResult dialogResult = MessageBox.Show("You are about to attack an army owned by your king.\r\nClick 'OK' to proceed.", "Proceed with attack?", MessageBoxButtons.OKCancel);
@@ -1251,16 +1271,16 @@ namespace hist_mmorpg
         /// <summary>
         /// Disbands the army
         /// </summary>
-        public void disbandArmy()
+        public void DisbandArmy()
         {
             // check for siege involvement
-            Siege thisSiege = this.getSiege();
+            Siege thisSiege = this.GetSiege();
 
             // remove from siege
             if (thisSiege != null)
             {
                 // check if are additional defending army
-                string whichRole = this.checkIfSiegeDefenderAdditional();
+                string whichRole = this.CheckIfSiegeDefenderAdditional();
                 if (!String.IsNullOrWhiteSpace(whichRole))
                 {
                     thisSiege.defenderAdditional = null;
@@ -1269,7 +1289,7 @@ namespace hist_mmorpg
                 // check if are besieging army
                 else
                 {
-                    whichRole = this.checkIfBesieger();
+                    whichRole = this.CheckIfBesieger();
                     if (!String.IsNullOrWhiteSpace(whichRole))
                     {
                         // end siege
@@ -1279,15 +1299,18 @@ namespace hist_mmorpg
             }
 
             // remove from fief
-            Fief thisFief = this.getLocation();
+            Fief thisFief = this.GetLocation();
             thisFief.armies.Remove(this.armyID);
 
             // remove from owner
-            PlayerCharacter thisOwner = this.getOwner();
-            thisOwner.myArmies.Remove(this);
+            PlayerCharacter thisOwner = this.GetOwner();
+            if (thisOwner != null)
+            {
+                thisOwner.myArmies.Remove(this);
+            }
 
             // remove from leader
-            Character thisLeader = this.getLeader();
+            Character thisLeader = this.GetLeader();
             if (thisLeader != null)
             {
                 thisLeader.armyID = null;
