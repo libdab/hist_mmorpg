@@ -71,10 +71,10 @@ namespace hist_mmorpg
                 || (this.function.Equals("titleHolder")) || (this.function.Contains("royalGift")))
             {
                 // format list display
-                this.setUpNpcList();
+                this.SetUpNpcList();
 
                 // refresh information 
-                this.refreshNPCdisplay();
+                this.RefreshNPCdisplay();
 
                 // show container
                 this.npcContainer.BringToFront();
@@ -83,10 +83,10 @@ namespace hist_mmorpg
             if (this.function.Equals("lockout"))
             {
                 // format list display
-                this.setUpBarredList();
+                this.SetUpBarredList();
 
                 // refresh information 
-                this.refreshBarredDisplay();
+                this.RefreshBarredDisplay();
 
                 // show container
                 this.lockOutContainer.BringToFront();
@@ -95,10 +95,10 @@ namespace hist_mmorpg
             if (this.function.Equals("transferTroops"))
             {
                 // format list display
-                this.setUpTransferList();
+                this.SetUpTransferList();
 
                 // refresh information 
-                this.refreshTransferDisplay();
+                this.RefreshTransferDisplay();
 
                 // show container
                 this.transferContainer.BringToFront();
@@ -107,10 +107,10 @@ namespace hist_mmorpg
             if (this.function.Equals("transferFunds"))
             {
                 // format list display
-                this.setUpTransferFundsList();
+                this.SetUpTransferFundsList();
 
                 // refresh information 
-                this.refreshTransferFundsDisplay();
+                this.RefreshTransferFundsDisplay();
 
                 // show container
                 this.transferFundsContainer.BringToFront();
@@ -119,10 +119,10 @@ namespace hist_mmorpg
             if (this.function.Equals("armies"))
             {
                 // format list display
-                this.setUpArmiesList();
+                this.SetUpArmiesList();
 
                 // refresh information 
-                this.refreshArmiesDisplay();
+                this.RefreshArmiesDisplay();
 
                 // show container
                 this.armiesContainer.BringToFront();
@@ -132,7 +132,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Configures UI display for list of household NPCs
         /// </summary>
-        public void setUpNpcList()
+        public void SetUpNpcList()
         {
             // add necessary columns
             this.npcListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
@@ -190,7 +190,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Configures UI display for list of players
         /// </summary>
-        public void setUpTransferFundsList()
+        public void SetUpTransferFundsList()
         {
             // add necessary columns
             this.transferFundsListView.Columns.Add("PC Name", -2, HorizontalAlignment.Left);
@@ -206,7 +206,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes NPC list
         /// </summary>
-        public void refreshNPCdisplay()
+        public void RefreshNPCdisplay()
         {
             bool addItem = true;
 			List<ListViewItem> itemsToAdd = new List<ListViewItem>();
@@ -304,7 +304,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes transfer funds PC list
         /// </summary>
-        public void refreshTransferFundsDisplay()
+        public void RefreshTransferFundsDisplay()
         {
             // remove any previously displayed characters
             this.transferFundsTextBox.Text = "";
@@ -384,7 +384,7 @@ namespace hist_mmorpg
                     this.chooseNpcBtn.Enabled = true;
 
                     // get details
-                    textToDisplay += this.displayCharacter(charToDisplay);
+                    textToDisplay += this.DisplayCharacter(charToDisplay);
 
                     // display details
                     this.npcDetailsTextBox.Text = textToDisplay;
@@ -397,7 +397,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>String containing information to display</returns>
         /// <param name="a">Army whose information is to be displayed</param>
-        public string displayArmy(Army a)
+        public string DisplayArmy(Army a)
         {
             bool isMyArmy = false;
             uint[] troopNumbers = new uint[7];
@@ -478,7 +478,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>String containing information to display</returns>
         /// <param name="thisChar">Character whose information is to be displayed</param>
-        public string displayCharacter(Character thisChar)
+        public string DisplayCharacter(Character thisChar)
         {
             string charText = "";
 
@@ -544,7 +544,7 @@ namespace hist_mmorpg
             // gather additional NPC-specific information
             if (thisChar is NonPlayerCharacter)
             {
-                charText += this.displayNonPlayerCharacter(thisChar as NonPlayerCharacter);
+                charText += this.DisplayNonPlayerCharacter(thisChar as NonPlayerCharacter);
             }
 
             return charText;
@@ -555,7 +555,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>String containing information to display</returns>
         /// <param name="npc">NonPlayerCharacter whose information is to be displayed</param>
-        public string displayNonPlayerCharacter(NonPlayerCharacter npc)
+        public string DisplayNonPlayerCharacter(NonPlayerCharacter npc)
         {
             string npcText = "";
 
@@ -646,7 +646,7 @@ namespace hist_mmorpg
                             Globals_Client.fiefToView.bailiff = selectedCharacter;
 
                             // refresh the fief information (in the main form)
-                            this.parent.refreshFiefContainer(Globals_Client.fiefToView);
+                            this.parent.RefreshFiefContainer(Globals_Client.fiefToView);
                         }
                     }
                 }
@@ -661,16 +661,16 @@ namespace hist_mmorpg
                             if (selectedCharacter.ChecksBeforeGranting(this.function, false))
                             {
                                 // set the selected NPC as title holder
-                                refreshMenus = Globals_Client.myPlayerCharacter.grantTitle(selectedCharacter, thisPlace);
+                                refreshMenus = Globals_Client.myPlayerCharacter.GrantTitle(selectedCharacter, thisPlace);
 
                                 // check if menus need to be refreshed (due to ownership changes)
                                 if ((thisPlace is Province) && (refreshMenus))
                                 {
-                                    this.parent.initMenuPermissions();
+                                    this.parent.InitMenuPermissions();
                                 }
 
                                 // refresh the fief information (in the main form)
-                                this.parent.refreshCurrentScreen();
+                                this.parent.RefreshCurrentScreen();
                             }
                         }
                     }
@@ -689,7 +689,7 @@ namespace hist_mmorpg
                                 (thisPlace as Fief).ChangeOwnership((selectedCharacter as PlayerCharacter), "voluntary");
 
                                 // refresh the fief information (in the main form)
-                                this.parent.refreshCurrentScreen();
+                                this.parent.RefreshCurrentScreen();
                             }
                         }
                     }
@@ -705,10 +705,10 @@ namespace hist_mmorpg
                             if (selectedCharacter.ChecksBeforeGranting(this.function, false))
                             {
                                 // process the change of officeHolder
-                                thisPosition.bestowPosition(selectedCharacter as PlayerCharacter);
+                                thisPosition.BestowPosition(selectedCharacter as PlayerCharacter);
 
                                 // refresh the fief information (in the main form)
-                                this.parent.refreshCurrentScreen();
+                                this.parent.RefreshCurrentScreen();
                             }
                         }
                     }
@@ -722,10 +722,10 @@ namespace hist_mmorpg
                         if (selectedCharacter.ChecksBeforeGranting(this.function, false))
                         {
                             // set the selected NPC as title holder
-                            Globals_Client.myPlayerCharacter.grantTitle(selectedCharacter, Globals_Client.fiefToView);
+                            Globals_Client.myPlayerCharacter.GrantTitle(selectedCharacter, Globals_Client.fiefToView);
 
                             // refresh the fief information (in the main form)
-                            this.parent.refreshCurrentScreen();
+                            this.parent.RefreshCurrentScreen();
                         }
                     }
                 }
@@ -747,7 +747,7 @@ namespace hist_mmorpg
                                     thisArmy.AssignNewLeader(selectedCharacter);
 
                                     // refresh the army information (in the main form)
-                                    this.parent.refreshArmyContainer(thisArmy);
+                                    this.parent.RefreshArmyContainer(thisArmy);
                                 }
                             }
                             else
@@ -769,7 +769,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Configures UI display for list of barred characters
         /// </summary>
-        public void setUpBarredList()
+        public void SetUpBarredList()
         {
             // add necessary columns (barred characters)
             this.barredCharsListView.Columns.Add("Name", -2, HorizontalAlignment.Left);
@@ -784,7 +784,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes barred characters list
         /// </summary>
-        public void refreshBarredDisplay()
+        public void RefreshBarredDisplay()
         {
             // clear existing items in lists
             this.barredCharsListView.Items.Clear();
@@ -854,7 +854,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Configures UI display for list of troop detachments
         /// </summary>
-        public void setUpTransferList()
+        public void SetUpTransferList()
         {
             // add necessary columns
             this.transferListView.Columns.Add("   ID", -2, HorizontalAlignment.Left);
@@ -873,7 +873,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Configures UI display for list of armies in feif
         /// </summary>
-        public void setUpArmiesList()
+        public void SetUpArmiesList()
         {
             // add necessary columns
             this.armiesListView.Columns.Add("   ID", -2, HorizontalAlignment.Left);
@@ -886,7 +886,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes troop transfer list
         /// </summary>
-       public void refreshTransferDisplay()
+       public void RefreshTransferDisplay()
         {
             ListViewItem thisDetachment = null;
 
@@ -940,7 +940,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes list of armies in fief
         /// </summary>
-        public void refreshArmiesDisplay()
+        public void RefreshArmiesDisplay()
         {
             ListViewItem armyEntry = null;
 
@@ -1011,10 +1011,10 @@ namespace hist_mmorpg
                     }
 
                     // refresh display
-                    this.refreshBarredDisplay();
+                    this.RefreshBarredDisplay();
 
                     // refresh the parent's fief container
-                    this.parent.refreshFiefContainer(Globals_Client.fiefToView);
+                    this.parent.RefreshFiefContainer(Globals_Client.fiefToView);
                 }
 
                 else
@@ -1043,7 +1043,7 @@ namespace hist_mmorpg
                     // remove ID from barred characters
                     Globals_Client.fiefToView.barredCharacters.Remove(this.barredCharsListView.SelectedItems[0].SubItems[1].Text);
                     // refresh display
-                    this.refreshBarredDisplay();
+                    this.RefreshBarredDisplay();
                 }
                 // if selected character is in pcMasterList
                 else if (Globals_Game.npcMasterList.ContainsKey(this.barredCharsListView.SelectedItems[0].SubItems[1].Text))
@@ -1051,7 +1051,7 @@ namespace hist_mmorpg
                     // remove ID from barred characters
                     Globals_Client.fiefToView.barredCharacters.Remove(this.barredCharsListView.SelectedItems[0].SubItems[1].Text);
                     // refresh display
-                    this.refreshBarredDisplay();
+                    this.RefreshBarredDisplay();
                 }
                 // if selected character not found
                 else
@@ -1234,7 +1234,7 @@ namespace hist_mmorpg
                         if (thisDays >= daysTaken)
                         {
                             // create temporary army to check attrition
-                            Army tempArmy = new Army(Globals_Game.getNextArmyID(), null, item.SubItems[9].Text,
+                            Army tempArmy = new Army(Globals_Game.GetNextArmyID(), null, item.SubItems[9].Text,
                                 thisDays, thisArmy.location, trp: thisTroops);
 
                             // compare days to minDays, apply attrition if necessary
@@ -1367,7 +1367,7 @@ namespace hist_mmorpg
                 }
 
                 // refresh the army screen (in the main form) and close form
-                this.parent.refreshArmyContainer(thisArmy);
+                this.parent.RefreshArmyContainer(thisArmy);
                 this.Close();
             }
 
@@ -1401,7 +1401,7 @@ namespace hist_mmorpg
 
                 // get details
                 Army otherArmy = Globals_Game.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
-                textToDisplay += this.displayArmy(otherArmy);
+                textToDisplay += this.DisplayArmy(otherArmy);
 
                 // display details
                 this.armiesTextBox.Text = textToDisplay;
@@ -1503,12 +1503,12 @@ namespace hist_mmorpg
 
                             // construct event description to be passed into siegeEnd
                             string siegeDescription = "On this day of Our Lord the forces of ";
-                            siegeDescription += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
-                            siegeDescription += " have chosen to abandon the siege of " + thisSiege.getFief().name;
-                            siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
+                            siegeDescription += thisSiege.GetBesiegingPlayer().firstName + " " + thisSiege.GetBesiegingPlayer().familyName;
+                            siegeDescription += " have chosen to abandon the siege of " + thisSiege.GetFief().name;
+                            siegeDescription += ". " + thisSiege.GetDefendingPlayer().firstName + " " + thisSiege.GetDefendingPlayer().familyName;
                             siegeDescription += " retains ownership of the fief.";
 
-                            parent.siegeEnd(thisSiege, false, siegeDescription);
+                            parent.SiegeEnd(thisSiege, false, siegeDescription);
                         }
                     }
                 }
@@ -1554,7 +1554,7 @@ namespace hist_mmorpg
                     this.transferFundsTextBox.Enabled = true;
 
                     // get home fief
-                    Fief home = Globals_Client.myPlayerCharacter.getHomeFief();
+                    Fief home = Globals_Client.myPlayerCharacter.GetHomeFief();
 
                     // get home treasury
                     int homeTreasury = home.GetAvailableTreasury(true);
@@ -1587,10 +1587,10 @@ namespace hist_mmorpg
                     if (playerTo != null)
                     {
                         // get home fief
-                        Fief fiefFrom = Globals_Client.myPlayerCharacter.getHomeFief();
+                        Fief fiefFrom = Globals_Client.myPlayerCharacter.GetHomeFief();
 
                         // get playerTo's home fief
-                        Fief fiefTo = playerTo.getHomeFief();
+                        Fief fiefTo = playerTo.GetHomeFief();
 
                         // get amount to transfer
                         int amount = Convert.ToInt32(this.transferFundsTextBox.Text);
@@ -1610,7 +1610,7 @@ namespace hist_mmorpg
                             else
                             {
                                 // make the transfer
-                                this.parent.treasuryTransfer(fiefFrom, fiefTo, amount);
+                                this.parent.TreasuryTransfer(fiefFrom, fiefTo, amount);
 
                                 // close form
                                 this.Close();
@@ -1676,7 +1676,7 @@ namespace hist_mmorpg
             }
 
             // refresh the parent's fief container
-            this.parent.refreshFiefContainer(Globals_Client.fiefToView);
+            this.parent.RefreshFiefContainer(Globals_Client.fiefToView);
         }
     }
 

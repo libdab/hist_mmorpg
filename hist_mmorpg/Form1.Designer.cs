@@ -34,10 +34,8 @@ namespace hist_mmorpg
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testSeasonalUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fullToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.characterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.switchPlayerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.switchPlayerMenuTextBox = new System.Windows.Forms.ToolStripTextBox();
-            this.addTestJournalEntryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.murderThisCharacterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.muderCharacterMenuTextBox1 = new System.Windows.Forms.ToolStripTextBox();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -184,7 +182,6 @@ namespace hist_mmorpg
             this.houseHeirBtn = new System.Windows.Forms.Button();
             this.familyNameChildTextBox = new System.Windows.Forms.TextBox();
             this.familyNameChildButton = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.familyGetSpousePregBtn = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.houseCampDaysLabel = new System.Windows.Forms.Label();
@@ -611,12 +608,10 @@ namespace hist_mmorpg
             // 
             this.testSeasonalUpdateToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fullToolStripMenuItem,
-            this.characterToolStripMenuItem1,
             this.switchPlayerMenuItem,
-            this.addTestJournalEntryToolStripMenuItem,
             this.murderThisCharacterToolStripMenuItem});
             this.testSeasonalUpdateToolStripMenuItem.Name = "testSeasonalUpdateToolStripMenuItem";
-            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
+            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.testSeasonalUpdateToolStripMenuItem.Text = "Test";
             // 
             // fullToolStripMenuItem
@@ -626,14 +621,6 @@ namespace hist_mmorpg
             this.fullToolStripMenuItem.Tag = "";
             this.fullToolStripMenuItem.Text = "Seasonal update";
             this.fullToolStripMenuItem.Click += new System.EventHandler(this.testUpdateMenuItem_Click);
-            // 
-            // characterToolStripMenuItem1
-            // 
-            this.characterToolStripMenuItem1.Name = "characterToolStripMenuItem1";
-            this.characterToolStripMenuItem1.Size = new System.Drawing.Size(191, 22);
-            this.characterToolStripMenuItem1.Tag = "character";
-            this.characterToolStripMenuItem1.Text = "Refresh current screen";
-            this.characterToolStripMenuItem1.Click += new System.EventHandler(this.testRefreshScreen);
             // 
             // switchPlayerMenuItem
             // 
@@ -649,13 +636,6 @@ namespace hist_mmorpg
             // 
             this.switchPlayerMenuTextBox.Name = "switchPlayerMenuTextBox";
             this.switchPlayerMenuTextBox.Size = new System.Drawing.Size(100, 23);
-            // 
-            // addTestJournalEntryToolStripMenuItem
-            // 
-            this.addTestJournalEntryToolStripMenuItem.Name = "addTestJournalEntryToolStripMenuItem";
-            this.addTestJournalEntryToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.addTestJournalEntryToolStripMenuItem.Text = "Add test JournalEntry";
-            this.addTestJournalEntryToolStripMenuItem.Click += new System.EventHandler(this.addTestJournalEntryToolStripMenuItem_Click);
             // 
             // murderThisCharacterToolStripMenuItem
             // 
@@ -1583,7 +1563,7 @@ namespace hist_mmorpg
             this.listOutsideKeepBtn.Tag = "outsideKeep";
             this.listOutsideKeepBtn.Text = "List Those Outside The Keep";
             this.listOutsideKeepBtn.UseVisualStyleBackColor = true;
-            this.listOutsideKeepBtn.Click += new System.EventHandler(this.visitMeetingPlace);
+            this.listOutsideKeepBtn.Click += new System.EventHandler(this.VisitMeetingPlace);
             // 
             // visitTavernBtn
             // 
@@ -1594,7 +1574,7 @@ namespace hist_mmorpg
             this.visitTavernBtn.Tag = "tavern";
             this.visitTavernBtn.Text = "Visit Tavern";
             this.visitTavernBtn.UseVisualStyleBackColor = true;
-            this.visitTavernBtn.Click += new System.EventHandler(this.visitMeetingPlace);
+            this.visitTavernBtn.Click += new System.EventHandler(this.VisitMeetingPlace);
             // 
             // visitCourtBtn1
             // 
@@ -1605,7 +1585,7 @@ namespace hist_mmorpg
             this.visitCourtBtn1.Tag = "court";
             this.visitCourtBtn1.Text = "Visit Court";
             this.visitCourtBtn1.UseVisualStyleBackColor = true;
-            this.visitCourtBtn1.Click += new System.EventHandler(this.visitMeetingPlace);
+            this.visitCourtBtn1.Click += new System.EventHandler(this.VisitMeetingPlace);
             // 
             // enterKeepBtn
             // 
@@ -2015,7 +1995,6 @@ namespace hist_mmorpg
             this.houseContainer.Panel1.Controls.Add(this.houseHeirBtn);
             this.houseContainer.Panel1.Controls.Add(this.familyNameChildTextBox);
             this.houseContainer.Panel1.Controls.Add(this.familyNameChildButton);
-            this.houseContainer.Panel1.Controls.Add(this.button1);
             this.houseContainer.Panel1.Controls.Add(this.familyGetSpousePregBtn);
             this.houseContainer.Panel1.Controls.Add(this.label3);
             this.houseContainer.Panel1.Controls.Add(this.houseCampDaysLabel);
@@ -2192,16 +2171,6 @@ namespace hist_mmorpg
             this.familyNameChildButton.Text = "Name Child";
             this.familyNameChildButton.UseVisualStyleBackColor = true;
             this.familyNameChildButton.Click += new System.EventHandler(this.familyNameChildButton_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(50, 648);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(139, 22);
-            this.button1.TabIndex = 34;
-            this.button1.Text = "My Test Button";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // familyGetSpousePregBtn
             // 
@@ -4839,6 +4808,7 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
+            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.royalGiftsContainer);
             this.Controls.Add(this.provinceContainer);
@@ -4846,7 +4816,6 @@ namespace hist_mmorpg
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.travelContainer);
-            this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.siegeContainer);
             this.Controls.Add(this.adminEditContainer);
             this.Controls.Add(this.journalContainer);
@@ -5131,14 +5100,12 @@ namespace hist_mmorpg
         private System.Windows.Forms.Label fiefTreasTransferLabel;
         private System.Windows.Forms.Button familyGetSpousePregBtn;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox familyNameChildTextBox;
         private System.Windows.Forms.Button familyNameChildButton;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem testSeasonalUpdateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fullToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem characterToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem switchPlayerMenuItem;
         private System.Windows.Forms.Label travelDaysLabel;
         private System.Windows.Forms.Label travelLocationLabel;
@@ -5221,7 +5188,6 @@ namespace hist_mmorpg
         private System.Windows.Forms.Button familyNpcSpousePregBtn;
         private System.Windows.Forms.ToolStripTextBox switchPlayerMenuTextBox;
         private System.Windows.Forms.ToolStripMenuItem viewMyHomeFiefToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem addTestJournalEntryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem journalToolStripMenuItem;
         private System.Windows.Forms.SplitContainer journalContainer;
         private System.Windows.Forms.SplitContainer journalListContainer;

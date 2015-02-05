@@ -357,7 +357,7 @@ namespace hist_mmorpg
                         }
 
                         // perform retreat
-                        bool success = this.moveCharacter(thisLeader, target, travelCost, false);
+                        bool success = this.MoveCharacter(thisLeader, target, travelCost, false);
                     }
 
                     // if no leader
@@ -879,20 +879,20 @@ namespace hist_mmorpg
                         // construct event description to be passed into siegeEnd
                         siegeDescription = "On this day of Our Lord the forces of ";
                         siegeDescription += attacker.GetOwner().firstName + " " + attacker.GetOwner().familyName;
-                        siegeDescription += " have defeated the forces of " + thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
-                        siegeDescription += ", relieving the siege of " + thisSiege.getFief().name + ".";
-                        siegeDescription += " " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
+                        siegeDescription += " have defeated the forces of " + thisSiege.GetBesiegingPlayer().firstName + " " + thisSiege.GetBesiegingPlayer().familyName;
+                        siegeDescription += ", relieving the siege of " + thisSiege.GetFief().name + ".";
+                        siegeDescription += " " + thisSiege.GetDefendingPlayer().firstName + " " + thisSiege.GetDefendingPlayer().familyName;
                         siegeDescription += " retains ownership of the fief.";
 
                         // add to message
-                        toDisplay += "The siege in " + thisSiege.getFief().name + " has been raised.";
+                        toDisplay += "The siege in " + thisSiege.GetFief().name + " has been raised.";
                     }
 
                     // check to see if siege raised due to death of siege owner with no heir
-                    else if ((defenderLeaderDead) && ((defenderLeader as PlayerCharacter) == thisSiege.getBesiegingPlayer()))
+                    else if ((defenderLeaderDead) && ((defenderLeader as PlayerCharacter) == thisSiege.GetBesiegingPlayer()))
                     {
                         // get siege owner's heir
-                        Character thisHeir = (defenderLeader as PlayerCharacter).getHeir();
+                        Character thisHeir = (defenderLeader as PlayerCharacter).GetHeir();
 
                         if (thisHeir == null)
                         {
@@ -902,17 +902,17 @@ namespace hist_mmorpg
                             // construct event description to be passed into siegeEnd
                             siegeDescription = "On this day of Our Lord the forces of ";
                             siegeDescription += attacker.GetOwner().firstName + " " + attacker.GetOwner().familyName;
-                            siegeDescription += " attacked the forces of " + thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
+                            siegeDescription += " attacked the forces of " + thisSiege.GetBesiegingPlayer().firstName + " " + thisSiege.GetBesiegingPlayer().familyName;
                             siegeDescription += ", who was killed during the battle.";
                             siegeDescription += "  Thus, despite losing the battle, " + attacker.GetOwner().firstName + " " + attacker.GetOwner().familyName;
-                            siegeDescription += " has succeeded in relieving the siege of " + thisSiege.getFief().name + ".";
-                            siegeDescription += " " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
+                            siegeDescription += " has succeeded in relieving the siege of " + thisSiege.GetFief().name + ".";
+                            siegeDescription += " " + thisSiege.GetDefendingPlayer().firstName + " " + thisSiege.GetDefendingPlayer().familyName;
                             siegeDescription += " retains ownership of the fief.";
 
                             // add to message
-                            toDisplay += "The siege in " + thisSiege.getFief().name + " has been raised";
+                            toDisplay += "The siege in " + thisSiege.GetFief().name + " has been raised";
                             toDisplay += " due to the death of the besieging party, ";
-                            toDisplay += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName + ".";
+                            toDisplay += thisSiege.GetBesiegingPlayer().firstName + " " + thisSiege.GetBesiegingPlayer().familyName + ".";
                         }
                     }
                 }
@@ -951,7 +951,7 @@ namespace hist_mmorpg
 
             // =================== construct and send JOURNAL ENTRY
             // ID
-            uint entryID = Globals_Game.getNextJournalEntryID();
+            uint entryID = Globals_Game.GetNextJournalEntryID();
 
             // personae
             // personae tags vary depending on circumstance
@@ -991,7 +991,7 @@ namespace hist_mmorpg
             JournalEntry battleResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, battlePersonae, "battle", loc: battleLocation, descr: battleDescription);
 
             // add new journal entry to pastEvents
-            Globals_Game.addPastEvent(battleResult);
+            Globals_Game.AddPastEvent(battleResult);
 
             // display pop-up informational message
             if (Globals_Client.showMessages)
@@ -1002,7 +1002,7 @@ namespace hist_mmorpg
             // end siege if appropriate
             if (siegeRaised)
             {
-                this.siegeEnd(thisSiege, false, siegeDescription);
+                this.SiegeEnd(thisSiege, false, siegeDescription);
 
                 // ensure if siege raised correct value returned to Form1.siegeReductionRound method
                 if (circumstance.Equals("siege"))
@@ -1022,7 +1022,7 @@ namespace hist_mmorpg
             }
 
             // refresh screen
-            this.refreshCurrentScreen();
+            this.RefreshCurrentScreen();
 
             return attackerVictorious;
 

@@ -37,7 +37,7 @@ namespace hist_mmorpg
             this.DatabaseWrite_Dictionary(gameID, "gameTypes", Globals_Server.gameTypes);
             this.DatabaseWrite_Dictionary(gameID, "ownershipChallenges", Globals_Game.ownershipChallenges);
             // convert jEntryPriorities prior to writing
-            Dictionary<string, byte> jEntryPriorities_serialised = this.jEntryPriorities_serialise(Globals_Game.jEntryPriorities);
+            Dictionary<string, byte> jEntryPriorities_serialised = this.JentryPriorities_serialise(Globals_Game.jEntryPriorities);
             this.DatabaseWrite_Dictionary(gameID, "jEntryPriorities", jEntryPriorities_serialised);
 
             // ========= write JOURNALS
@@ -504,7 +504,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Dictionary(string, byte) for database storage</returns>
         /// <param name="dictToConvert">The Dictionary to convert</param>
-        public Dictionary<string, byte> jEntryPriorities_serialise(Dictionary<string[], byte> dictToConvert)
+        public Dictionary<string, byte> JentryPriorities_serialise(Dictionary<string[], byte> dictToConvert)
         {
             Dictionary<string, byte> dictOut = new Dictionary<string, byte>();
 

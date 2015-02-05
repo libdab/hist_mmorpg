@@ -25,7 +25,7 @@ namespace hist_mmorpg
         /// and clearing any previously displayed data
         /// </summary>
         /// <param name="ch">The Character to be displayed</param>
-        public void refreshCharEdit(Character ch = null)
+        public void RefreshCharEdit(Character ch = null)
         {
             // clear previous data
             this.DisableControls(this.adminEditCharContainer.Panel1);
@@ -140,7 +140,7 @@ namespace hist_mmorpg
         /// and clearing any previously displayed data
         /// </summary>
         /// <param name="p">The Place to be displayed</param>
-        public void refreshPlaceEdit(Place p = null)
+        public void RefreshPlaceEdit(Place p = null)
         {
             // clear previous data
             this.DisableControls(this.adminEditPlaceContainer.Panel1);
@@ -259,7 +259,7 @@ namespace hist_mmorpg
         /// and clearing any previously displayed data
         /// </summary>
         /// <param name="s">The Skill to be displayed</param>
-        public void refreshSkillEdit(Skill s = null)
+        public void RefreshSkillEdit(Skill s = null)
         {
             // clear previous data
             this.DisableControls(this.adminEditSkillPanel);
@@ -275,7 +275,7 @@ namespace hist_mmorpg
                 // name
                 this.adminEditSkillNameTextBox.Text = s.name;
                 // effects - iterates through skill effects adding information to ListView
-                this.refreshSkillEffectsList(s.effects);
+                this.RefreshSkillEffectsList(s.effects);
             }
         }
 
@@ -283,7 +283,7 @@ namespace hist_mmorpg
         /// Refreshes the skill effects list on the edit Skill display
         /// </summary>
         /// <param name="effects">The effects to be displayed</param>
-        public void refreshSkillEffectsList(Dictionary<string, Double> effects)
+        public void RefreshSkillEffectsList(Dictionary<string, Double> effects)
         {
             // clear existing data
             this.adminEditSkillEffsListView.Items.Clear();
@@ -360,7 +360,7 @@ namespace hist_mmorpg
         /// Saves the Skill currently being edited in the SysAdmin interface
         /// </summary>
         /// <returns>bool indicating success</returns>
-        public bool saveSkillEdit()
+        public bool SaveSkillEdit()
         {
             bool success = false;
 
@@ -408,7 +408,7 @@ namespace hist_mmorpg
         /// Saves the Army currently being edited in the SysAdmin interface
         /// </summary>
         /// <returns>bool indicating success</returns>
-        public bool saveArmyEdit()
+        public bool SaveArmyEdit()
         {
             bool success = false;
             Army thisArmy = null;
@@ -473,7 +473,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="objectType">The type of Character to be saved</param>
-        public bool saveCharacterEdit(string objectType)
+        public bool SaveCharacterEdit(string objectType)
         {
             bool success = false;
             PlayerCharacter thisPC = null;
@@ -720,7 +720,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="objectType">The type of Place to be saved</param>
-        public bool savePlaceEdit(string objectType)
+        public bool SavePlaceEdit(string objectType)
         {
             bool success = false;
             PlayerCharacter owner = null;

@@ -68,7 +68,7 @@ namespace hist_mmorpg
         /// Gets the name of the language
         /// </summary>
         /// <returns>string containing the name</returns>
-        public string getName()
+        public string GetName()
         {
             return this.baseLanguage.name + " (dialect " + this.dialect + ")";
         }
@@ -101,16 +101,16 @@ namespace hist_mmorpg
             // trim
             id = id.Trim();
 
-            if (!Utility_Methods.validateLanguageID(id, "baseLang"))
+            if (!Utility_Methods.ValidateLanguageID(id, "baseLang"))
             {
                 throw new InvalidDataException("BaseLanguage ID must have the format 'lang_' followed by 1-2 letters");
             }
 
             // NAM
             // trim and ensure 1st is uppercase
-            nam = Utility_Methods.firstCharToUpper(nam.Trim());
+            nam = Utility_Methods.FirstCharToUpper(nam.Trim());
 
-            if (!Utility_Methods.validateName(nam))
+            if (!Utility_Methods.ValidateName(nam))
             {
                 throw new InvalidDataException("BaseLanguage name must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
@@ -186,13 +186,13 @@ namespace hist_mmorpg
                 throw new InvalidDataException("Language_Serialised ID be based on its BaseLanguage ID");
             }
 
-            else if (!Utility_Methods.validateLanguageID(id))
+            else if (!Utility_Methods.ValidateLanguageID(id))
             {
                 throw new InvalidDataException("Language_Serialised ID must have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");
             }
 
             // BLANG
-            if (!Utility_Methods.validateLanguageID(bLang, "baseLang"))
+            if (!Utility_Methods.ValidateLanguageID(bLang, "baseLang"))
             {
                 throw new InvalidDataException("Language_Serialised BaseLanguage ID must have the format 'lang_' followed by 1-2 letters");
             }

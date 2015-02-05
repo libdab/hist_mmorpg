@@ -24,7 +24,7 @@ namespace hist_mmorpg
         /// Refreshes Household display
         /// </summary>
         /// <param name="npc">NonPlayerCharacter to display</param>
-        public void refreshHouseholdDisplay(NonPlayerCharacter npc = null)
+        public void RefreshHouseholdDisplay(NonPlayerCharacter npc = null)
         {
             // set main character display as read only
             this.houseCharTextBox.ReadOnly = true;
@@ -71,10 +71,10 @@ namespace hist_mmorpg
                 houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].charID);
 
                 // function (e.g. employee, son, wife, etc.)
-                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].getFunction(Globals_Client.myPlayerCharacter));
+                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].GetFunction(Globals_Client.myPlayerCharacter));
 
                 // responsibilities (i.e. jobs)
-                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].getResponsibilities(Globals_Client.myPlayerCharacter));
+                houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].GetResponsibilities(Globals_Client.myPlayerCharacter));
 
                 // location
                 houseChar.SubItems.Add(Globals_Client.myPlayerCharacter.myNPCs[i].location.id + " (" + Globals_Client.myPlayerCharacter.myNPCs[i].location.name + ")");
@@ -88,7 +88,7 @@ namespace hist_mmorpg
                 // check if needs to be named
                 if (!String.IsNullOrWhiteSpace(Globals_Client.myPlayerCharacter.myNPCs[i].familyID))
                 {
-                    bool nameRequired = Globals_Client.myPlayerCharacter.myNPCs[i].hasBabyName(0);
+                    bool nameRequired = Globals_Client.myPlayerCharacter.myNPCs[i].HasBabyName(0);
 
                     if (nameRequired)
                     {

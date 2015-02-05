@@ -27,7 +27,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating whether proposal was processed successfully</returns>
         /// <param name="bride">The prospective bride</param>
         /// <param name="groom">The prospective groom</param>
-        public bool proposeMarriage(Character bride, Character groom)
+        public bool ProposeMarriage(Character bride, Character groom)
         {
             bool success = false;
 
@@ -38,7 +38,7 @@ namespace hist_mmorpg
             if ((headOfFamilyGroom != null) && (headOfFamilyBride != null))
             {
                 // ID
-                uint proposalID = Globals_Game.getNextJournalEntryID();
+                uint proposalID = Globals_Game.GetNextJournalEntryID();
 
                 // date
                 uint year = Globals_Game.clock.currentYear;
@@ -68,7 +68,7 @@ namespace hist_mmorpg
 
                 // create and send a proposal (journal entry)
                 JournalEntry myProposal = new JournalEntry(proposalID, year, season, myProposalPersonae, "proposalMade", descr: description);
-                success = Globals_Game.addPastEvent(myProposal);
+                success = Globals_Game.AddPastEvent(myProposal);
             }
 
             return success;
@@ -80,7 +80,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating whether reply was processed successfully</returns>
         /// <param name="jEntry">The proposal</param>
         /// <param name="proposalAccepted">bool indicating whether proposal accepted</param>
-        public bool replyToProposal(JournalEntry jEntry, bool proposalAccepted)
+        public bool ReplyToProposal(JournalEntry jEntry, bool proposalAccepted)
         {
             bool success = true;
 
@@ -122,7 +122,7 @@ namespace hist_mmorpg
             }
 
             // ID
-            uint replyID = Globals_Game.getNextJournalEntryID();
+            uint replyID = Globals_Game.GetNextJournalEntryID();
 
             // date
             uint year = Globals_Game.clock.currentYear;
@@ -171,7 +171,7 @@ namespace hist_mmorpg
 
             // create and send a proposal reply (journal entry)
             JournalEntry myProposalReply = new JournalEntry(replyID, year, season, myReplyPersonae, type, descr: description);
-            success = Globals_Game.addPastEvent(myProposalReply);
+            success = Globals_Game.AddPastEvent(myProposalReply);
 
             if (success)
             {
@@ -190,12 +190,12 @@ namespace hist_mmorpg
                 // if accepted, process engagement
                 if (proposalAccepted)
                 {
-                    this.processEngagement(myProposalReply);
+                    this.ProcessEngagement(myProposalReply);
                 }
             }
 
             // refresh screen
-            this.refreshCurrentScreen();
+            this.RefreshCurrentScreen();
 
             return success;
         }
@@ -205,7 +205,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating whether engagement was processed successfully</returns>
         /// <param name="jEntry">The marriage proposal acceptance</param>
-        public bool processEngagement(JournalEntry jEntry)
+        public bool ProcessEngagement(JournalEntry jEntry)
         {
             bool success = false;
 
@@ -247,7 +247,7 @@ namespace hist_mmorpg
             }
 
             // ID
-            uint replyID = Globals_Game.getNextJournalEntryID();
+            uint replyID = Globals_Game.GetNextJournalEntryID();
 
             // date
             uint year = Globals_Game.clock.currentYear;
@@ -274,7 +274,7 @@ namespace hist_mmorpg
 
             // create and add a marriage entry to the scheduledEvents journal
             JournalEntry marriageEntry = new JournalEntry(replyID, year, season, marriagePersonae, type);
-            success = Globals_Game.addScheduledEvent(marriageEntry);
+            success = Globals_Game.AddScheduledEvent(marriageEntry);
 
             // show bride and groom as engaged
             if (success)
@@ -291,7 +291,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating whether engagement was processed successfully</returns>
         /// <param name="jEntry">The marriage proposal acceptance</param>
-        public bool processMarriage(JournalEntry jEntry)
+        public bool ProcessMarriage(JournalEntry jEntry)
         {
             bool success = false;
 
@@ -333,7 +333,7 @@ namespace hist_mmorpg
             }
 
             // ID
-            uint marriageID = Globals_Game.getNextJournalEntryID();
+            uint marriageID = Globals_Game.GetNextJournalEntryID();
 
             // date
             uint year = Globals_Game.clock.currentYear;
@@ -358,7 +358,7 @@ namespace hist_mmorpg
 
             // create and add a marriage entry to the pastEvents journal
             JournalEntry marriageEntry = new JournalEntry(marriageID, year, season, marriagePersonae, type, descr: description);
-            success = Globals_Game.addPastEvent(marriageEntry);
+            success = Globals_Game.AddPastEvent(marriageEntry);
 
             if (success)
             {

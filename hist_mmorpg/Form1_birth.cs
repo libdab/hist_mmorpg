@@ -31,7 +31,7 @@ namespace hist_mmorpg
             NonPlayerCharacter newNPC = new NonPlayerCharacter();
 
             // charID
-            newNPC.charID = Globals_Game.getNextCharID();
+            newNPC.charID = Globals_Game.GetNextCharID();
             // first name
             newNPC.firstName = "Baby";
             // family name
@@ -202,7 +202,7 @@ namespace hist_mmorpg
             }
 
             // create new skills using uniqueSkillKeys
-            Tuple<Skill, int>[] newSkills = Utility_Methods.generateSkillSet(uniqueSkillKeys);
+            Tuple<Skill, int>[] newSkills = Utility_Methods.GenerateSkillSet(uniqueSkillKeys);
 
             return newSkills;
         }
@@ -319,10 +319,10 @@ namespace hist_mmorpg
             }
 
             // put together new journal entry
-            JournalEntry childbirth = new JournalEntry(Globals_Game.getNextJournalEntryID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, childbirthPersonae, "birth", descr: description);
+            JournalEntry childbirth = new JournalEntry(Globals_Game.GetNextJournalEntryID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, childbirthPersonae, "birth", descr: description);
 
             // add new journal entry to pastEvents
-            Globals_Game.addPastEvent(childbirth);
+            Globals_Game.AddPastEvent(childbirth);
 
             // if appropriate, process mother's death
             if (mummyDied)
@@ -337,7 +337,7 @@ namespace hist_mmorpg
                 System.Windows.Forms.MessageBox.Show(description);
             }
 
-            this.refreshHouseholdDisplay();
+            this.RefreshHouseholdDisplay();
         }
 
         /// <summary>

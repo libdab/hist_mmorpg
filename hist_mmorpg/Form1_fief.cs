@@ -23,7 +23,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes display of PlayerCharacter's list of owned Fiefs
         /// </summary>
-        public void refreshMyFiefs()
+        public void RefreshMyFiefs()
         {
             // clear existing items in list
             this.fiefsListView.Items.Clear();
@@ -91,7 +91,7 @@ namespace hist_mmorpg
 
             // rank
             fiefText += "Title (rank): ";
-            fiefText += f.rank.getName(f.language) + " (" + f.rank.id + ")\r\n";
+            fiefText += f.rank.GetName(f.language) + " (" + f.rank.id + ")\r\n";
 
             // population
             fiefText += "Population: " + f.population + "\r\n";
@@ -156,7 +156,7 @@ namespace hist_mmorpg
             fiefText += "\r\n";
 
             // language
-            fiefText += "Language: " + f.language.getName() + "\r\n";
+            fiefText += "Language: " + f.language.GetName() + "\r\n";
 
             // terrain type
             fiefText += "Terrain: " + f.terrain.description + "\r\n";
@@ -450,7 +450,7 @@ namespace hist_mmorpg
         /// Refreshes main Fief display screen
         /// </summary>
         /// <param name="f">Fief whose information is to be displayed</param>
-        public void refreshFiefContainer(Fief f = null)
+        public void RefreshFiefContainer(Fief f = null)
         {
 			// if fief not specified, default to player's current location
             if (f == null)
@@ -499,7 +499,7 @@ namespace hist_mmorpg
             else
             {
                 // get home fief
-                Fief home = Globals_Client.myPlayerCharacter.getHomeFief();
+                Fief home = Globals_Client.myPlayerCharacter.GetHomeFief();
 
                 // get home treasury
                 int homeTreasury = 0;
@@ -620,7 +620,7 @@ namespace hist_mmorpg
         /// <param name="from">The Fief from which funds are to be transferred</param>
         /// <param name="to">The Fief to which funds are to be transferred</param>
         /// <param name="amount">How much to be transferred</param>
-        public void treasuryTransfer(Fief from, Fief to, int amount)
+        public void TreasuryTransfer(Fief from, Fief to, int amount)
         {
             // subtract from source treasury
             from.treasury = from.treasury - amount;
@@ -629,7 +629,7 @@ namespace hist_mmorpg
             to.treasury = to.treasury + amount;
 
             // refresh fief display
-            this.refreshCurrentScreen();
+            this.RefreshCurrentScreen();
         }
 
         /// <summary>

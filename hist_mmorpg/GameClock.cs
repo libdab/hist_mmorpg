@@ -72,7 +72,7 @@ namespace hist_mmorpg
         /// Calculates travel modifier for season
         /// </summary>
         /// <returns>double containing travel modifier</returns>
-        public double calcSeasonTravMod()
+        public double CalcSeasonTravMod()
         {
             double travelModifier = 0;
 
@@ -99,7 +99,7 @@ namespace hist_mmorpg
         /// Advances GameClock to next season
         /// </summary>
         /// <returns>double containing travel modifier</returns>
-        public void advanceSeason()
+        public void AdvanceSeason()
         {
             if (this.currentSeason == 3)
             {

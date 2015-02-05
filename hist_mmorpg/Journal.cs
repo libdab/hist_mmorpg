@@ -40,7 +40,7 @@ namespace hist_mmorpg
         /// Checks to see if there are any unviewed entries in the journal
         /// </summary>
         /// <returns>bool indicating presence of unviewed entries</returns>
-        public bool checkForUnviewedEntries()
+        public bool CheckForUnviewedEntries()
         {
             bool areUnviewed = false;
 
@@ -62,7 +62,7 @@ namespace hist_mmorpg
         /// <returns>SortedList of JournalEntrys</returns>
         /// <param name="yr">Year to search for</param>
         /// <param name="seas">Season to search for</param>
-        public SortedList<uint, JournalEntry> getEventsOnDate(uint yr = 9999, Byte seas = 99)
+        public SortedList<uint, JournalEntry> GetEventsOnDate(uint yr = 9999, Byte seas = 99)
         {
             SortedList<uint, JournalEntry> matchingEntries = new SortedList<uint, JournalEntry>();
 
@@ -129,7 +129,7 @@ namespace hist_mmorpg
         /// Retrieves all unviewed JournalEntrys
         /// </summary>
         /// <returns>SortedList(uint, JournalEntry) containing relevant entries</returns>
-        public SortedList<uint, JournalEntry> getUnviewedEntries()
+        public SortedList<uint, JournalEntry> GetUnviewedEntries()
         {
             SortedList<uint, JournalEntry> foundEntries = new SortedList<uint,JournalEntry>();
 
@@ -151,7 +151,7 @@ namespace hist_mmorpg
         /// <param name="thisPerson">The ID of the person of interest</param>
         /// <param name="role">The person's role (in personae)</param>
         /// <param name="entryType">The JournalEntry type</param>
-        public List<JournalEntry> getSpecificEntries(string thisPersonID, string role, string entryType)
+        public List<JournalEntry> GetSpecificEntries(string thisPersonID, string role, string entryType)
         {
             List<JournalEntry> foundEntries = new List<JournalEntry>();
             bool entryFound = false;
@@ -200,7 +200,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="min">The JournalEntry to be added</param>
-        public bool addNewEntry(JournalEntry jEntry)
+        public bool AddNewEntry(JournalEntry jEntry)
         {
             bool success = false;
 
@@ -292,7 +292,7 @@ namespace hist_mmorpg
 
             // SEAS
             // check between 0-3
-            if (!Utility_Methods.validateSeason(seas))
+            if (!Utility_Methods.ValidateSeason(seas))
             {
                 throw new InvalidDataException("JournalEntry season must be a byte between 0-3");
             }
@@ -309,7 +309,7 @@ namespace hist_mmorpg
                         // character ID: trim and ensure 1st is uppercase
                         if (!persSplit[0].Contains("all"))
                         {
-                            persSplit[0] = Utility_Methods.firstCharToUpper(persSplit[0].Trim());
+                            persSplit[0] = Utility_Methods.FirstCharToUpper(persSplit[0].Trim());
                         }
                         // trim role
                         persSplit[1] = persSplit[1].Trim();
@@ -317,7 +317,7 @@ namespace hist_mmorpg
                         pers[i] = persSplit[0] + "|" + persSplit[1];
                     }
 
-                    if (!Utility_Methods.validateJentryPersonae(pers[i]))
+                    if (!Utility_Methods.ValidateJentryPersonae(pers[i]))
                     {
                         throw new InvalidDataException("Each JournalEntry personae must consist of 2 sections of letters, divided by '|', the 1st of which must be a valid character ID");
                     }
@@ -336,7 +336,7 @@ namespace hist_mmorpg
                 // trim and ensure is uppercase
                 loc = loc.Trim().ToUpper();
 
-                if (!Utility_Methods.validatePlaceID(loc))
+                if (!Utility_Methods.ValidatePlaceID(loc))
                 {
                     throw new InvalidDataException("JournalEntry location id must be 5 characters long, start with a letter, and end in at least 2 numbers");
                 }
@@ -362,7 +362,7 @@ namespace hist_mmorpg
         /// Returns a string containing the details of a JournalEntry
         /// </summary>
         /// <returns>JournalEntry details</returns>
-        public string getJournalEntryDetails()
+        public string GetJournalEntryDetails()
         {
             string entryText = "";
 
@@ -441,7 +441,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>byte indicating the level of priority</returns>
         /// <param name="jEntry">The JournalEntry</param>
-        public byte checkEventForPriority()
+        public byte CheckEventForPriority()
         {
             byte priority = 0;
 
@@ -481,7 +481,7 @@ namespace hist_mmorpg
         /// Check to see if the JournalEntry is of interest to the player
         /// </summary>
         /// <returns>bool indicating whether the JournalEntry is of interest</returns>
-        public bool checkEventForInterest()
+        public bool CheckEventForInterest()
         {
             bool isOfInterest = false;
 
@@ -506,7 +506,7 @@ namespace hist_mmorpg
         /// Check to see if the JournalEntry requires that the proposal reply controls be enabled
         /// </summary>
         /// <returns>bool indicating whether the controls be enabled</returns>
-        public bool checkForProposalControlsEnabled()
+        public bool CheckForProposalControlsEnabled()
         {
             bool controlsEnabled = false;
 

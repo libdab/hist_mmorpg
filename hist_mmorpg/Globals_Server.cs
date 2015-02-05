@@ -39,7 +39,7 @@ namespace hist_mmorpg
         /// Gets the next available newGameID, then increments it
         /// </summary>
         /// <returns>string containing newGameID</returns>
-        public static string getNextGameID()
+        public static string GetNextGameID()
         {
             string gameID = "Game_" + Globals_Server.newGameID;
             Globals_Server.newGameID++;

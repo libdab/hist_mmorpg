@@ -44,16 +44,16 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             id = id.Trim().ToUpper();
 
-            if (!Utility_Methods.validatePlaceID(id))
+            if (!Utility_Methods.ValidatePlaceID(id))
             {
                 throw new InvalidDataException("Place id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
 
             // NAM
             // trim and ensure 1st is uppercase
-            nam = Utility_Methods.firstCharToUpper(nam.Trim());
+            nam = Utility_Methods.FirstCharToUpper(nam.Trim());
 
-            if (!Utility_Methods.validateName(nam))
+            if (!Utility_Methods.ValidateName(nam))
             {
                 throw new InvalidDataException("Place name must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
@@ -62,9 +62,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(tiHo))
             {
                 // trim and ensure 1st is uppercase
-                tiHo = Utility_Methods.firstCharToUpper(tiHo.Trim());
+                tiHo = Utility_Methods.FirstCharToUpper(tiHo.Trim());
 
-                if (!Utility_Methods.validateCharacterID(tiHo))
+                if (!Utility_Methods.ValidateCharacterID(tiHo))
                 {
                     throw new InvalidDataException("Place titleHolder must have the format 'Char_' followed by some numbers");
                 }
@@ -126,7 +126,7 @@ namespace hist_mmorpg
         /// Gets the place's title holder
         /// </summary>
         /// <returns>The title holder</returns>
-        public Character getTitleHolder()
+        public Character GetTitleHolder()
         {
             Character myTitleHolder = null;
 
@@ -223,16 +223,16 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             id = id.Trim().ToUpper();
 
-            if (!Utility_Methods.validatePlaceID(id))
+            if (!Utility_Methods.ValidatePlaceID(id))
             {
                 throw new InvalidDataException("Place_Serialised id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
 
             // NAM
             // trim and ensure 1st is uppercase
-            nam = Utility_Methods.firstCharToUpper(nam.Trim());
+            nam = Utility_Methods.FirstCharToUpper(nam.Trim());
 
-            if (!Utility_Methods.validateName(nam))
+            if (!Utility_Methods.ValidateName(nam))
             {
                 throw new InvalidDataException("Place_Serialised name must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
@@ -241,9 +241,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(tiHo))
             {
                 // trim and ensure 1st is uppercase
-                tiHo = Utility_Methods.firstCharToUpper(tiHo.Trim());
+                tiHo = Utility_Methods.FirstCharToUpper(tiHo.Trim());
 
-                if (!Utility_Methods.validateCharacterID(tiHo))
+                if (!Utility_Methods.ValidateCharacterID(tiHo))
                 {
                     throw new InvalidDataException("Place_Serialised titleHolder must have the format 'Char_' followed by some numbers");
                 }
@@ -253,9 +253,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(owner))
             {
                 // trim and ensure 1st is uppercase
-                owner = Utility_Methods.firstCharToUpper(owner.Trim());
+                owner = Utility_Methods.FirstCharToUpper(owner.Trim());
 
-                if (!Utility_Methods.validateCharacterID(owner))
+                if (!Utility_Methods.ValidateCharacterID(owner))
                 {
                     throw new InvalidDataException("Place_Serialised owner must have the format 'Char_' followed by some numbers");
                 }

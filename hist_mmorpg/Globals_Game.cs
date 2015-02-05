@@ -266,7 +266,7 @@ namespace hist_mmorpg
         /// Gets the game's end date (year)
         /// </summary>
         /// <returns>uint containing end year</returns>
-        public static uint getGameEndDate()
+        public static uint GetGameEndDate()
         {
             return Globals_Game.startYear + Globals_Game.duration;
         }
@@ -275,7 +275,7 @@ namespace hist_mmorpg
         /// Gets the current scores for all players
         /// </summary>
         /// <returns>SortedList<double, string> containing current scores</returns>
-        public static SortedList<double, string> getCurrentScores()
+        public static SortedList<double, string> GetCurrentScores()
         {
             SortedList<double, string> currentScores = new SortedList<double, string>();
             double thisScore = 0;
@@ -286,10 +286,10 @@ namespace hist_mmorpg
                 thisScore = 0;
 
                 // get score
-                thisScore += scoresEntry.Value.calcStatureScore();
-                thisScore += scoresEntry.Value.calcPopulationScore();
-                thisScore += scoresEntry.Value.calcFiefScore();
-                thisScore += scoresEntry.Value.calcMoneyScore();
+                thisScore += scoresEntry.Value.CalcStatureScore();
+                thisScore += scoresEntry.Value.CalcPopulationScore();
+                thisScore += scoresEntry.Value.CalcFiefScore();
+                thisScore += scoresEntry.Value.CalcMoneyScore();
 
                 // add to list
                 currentScores.Add(thisScore, scoresEntry.Value.playerID);
@@ -302,7 +302,7 @@ namespace hist_mmorpg
         /// Gets the total money owned by all PlayerCharacters in the game
         /// </summary>
         /// <returns>int containing total money</returns>
-        public static int getTotalMoney()
+        public static int GetTotalMoney()
         {
             int totMoney = 0;
 
@@ -318,7 +318,7 @@ namespace hist_mmorpg
         /// Gets the total population for all fiefs in the game
         /// </summary>
         /// <returns>int containing total population</returns>
-        public static int getTotalPopulation()
+        public static int GetTotalPopulation()
         {
             int totPop = 0;
 
@@ -334,7 +334,7 @@ namespace hist_mmorpg
         /// Gets the total number of fiefs in the game
         /// </summary>
         /// <returns>int containing number of fiefs</returns>
-        public static int getTotalFiefs()
+        public static int GetTotalFiefs()
         {
             return Globals_Game.fiefMasterList.Count;
         }
@@ -343,7 +343,7 @@ namespace hist_mmorpg
         /// Gets the next available newCharID, then increments it
         /// </summary>
         /// <returns>string containing newCharID</returns>
-        public static string getNextCharID()
+        public static string GetNextCharID()
         {
             string charID = "Char_" + Globals_Game.newCharID;
             Globals_Game.newCharID++;
@@ -354,7 +354,7 @@ namespace hist_mmorpg
         /// Gets the next available newArmyID, then increments it
         /// </summary>
         /// <returns>string containing newArmyID</returns>
-        public static string getNextArmyID()
+        public static string GetNextArmyID()
         {
             string armyID = "Army_" + Globals_Game.newArmyID;
             Globals_Game.newArmyID++;
@@ -365,7 +365,7 @@ namespace hist_mmorpg
         /// Gets the next available newDetachmentID, then increments it
         /// </summary>
         /// <returns>string containing newDetachmentID</returns>
-        public static string getNextDetachmentID()
+        public static string GetNextDetachmentID()
         {
             string detachmentID = "Det_" + Globals_Game.newDetachmentID;
             Globals_Game.newDetachmentID++;
@@ -376,7 +376,7 @@ namespace hist_mmorpg
         /// Gets the next available newAilmentID, then increments it
         /// </summary>
         /// <returns>string containing newAilmentID</returns>
-        public static string getNextAilmentID()
+        public static string GetNextAilmentID()
         {
             string ailmentID = "Ail_" + Globals_Game.newAilmentID;
             Globals_Game.newAilmentID++;
@@ -387,7 +387,7 @@ namespace hist_mmorpg
         /// Gets the next available newSiegeID, then increments it
         /// </summary>
         /// <returns>string containing newSiegeID</returns>
-        public static string getNextSiegeID()
+        public static string GetNextSiegeID()
         {
             string siegeID = "Siege_" + Globals_Game.newSiegeID;
             Globals_Game.newSiegeID++;
@@ -398,7 +398,7 @@ namespace hist_mmorpg
         /// Gets the next available newJournalEntryID, then increments it
         /// </summary>
         /// <returns>uint containing newJournalEntryID</returns>
-        public static uint getNextJournalEntryID()
+        public static uint GetNextJournalEntryID()
         {
             uint newID = 0;
 
@@ -416,11 +416,11 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="min">The JournalEntry to be added</param>
-        public static bool addScheduledEvent(JournalEntry jEvent)
+        public static bool AddScheduledEvent(JournalEntry jEvent)
         {
             bool success = false;
 
-            success = Globals_Game.scheduledEvents.addNewEntry(jEvent);
+            success = Globals_Game.scheduledEvents.AddNewEntry(jEvent);
 
             return success;
 
@@ -431,14 +431,14 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="min">The JournalEntry to be added</param>
-        public static bool addPastEvent(JournalEntry jEvent)
+        public static bool AddPastEvent(JournalEntry jEvent)
         {
             bool success = false;
 
-            success = Globals_Game.pastEvents.addNewEntry(jEvent);
+            success = Globals_Game.pastEvents.AddNewEntry(jEvent);
             if (success)
             {
-                Globals_Game.notifyObservers("newEvent|" + jEvent.jEntryID);
+                Globals_Game.NotifyObservers("newEvent|" + jEvent.jEntryID);
             }
 
             return success;
@@ -449,7 +449,7 @@ namespace hist_mmorpg
         /// Gets the next available newOwnChallengeID, then increments it
         /// </summary>
         /// <returns>string containing newOwnChallengeID</returns>
-        public static string getNextOwnChallengeID()
+        public static string GetNextOwnChallengeID()
         {
             string challengeID = "Challenge_" + Globals_Game.newOwnChallengeID;
             Globals_Game.newOwnChallengeID++;
@@ -461,7 +461,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating the existence of a challenge</returns>
         /// <param name="placeID">ID of Place for new challenge</param>
-        public static bool checkForExistingChallenge(string newPlaceID)
+        public static bool CheckForExistingChallenge(string newPlaceID)
         {
             bool isExistingChallenge = false;
 
@@ -482,17 +482,17 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="challenge">OwnershipChallenge to be added</param>
-        public static bool addOwnershipChallenge(OwnershipChallenge challenge)
+        public static bool AddOwnershipChallenge(OwnershipChallenge challenge)
         {
             bool success = true;
             string toDisplay = "";
 
-            if (Globals_Game.checkForExistingChallenge(challenge.placeID))
+            if (Globals_Game.CheckForExistingChallenge(challenge.placeID))
             {
                 success = false;
                 if (Globals_Client.showMessages)
                 {
-                    toDisplay = "There is already a challenge for the ownership of " + challenge.getPlace().name + ".";
+                    toDisplay = "There is already a challenge for the ownership of " + challenge.GetPlace().name + ".";
                     toDisplay += "  Only one challenge is permissable at a time.";
                     System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
                 }
@@ -510,7 +510,7 @@ namespace hist_mmorpg
         /// Processes all challenges in the ownershipChallenges collection
         /// </summary>
         /// <returns>bool indicating at least one place has changed ownership</returns>
-        public static bool processOwnershipChallenges()
+        public static bool ProcessOwnershipChallenges()
         {
             bool ownershipChanged = false;
             List<OwnershipChallenge> toBeRemoved = new List<OwnershipChallenge>();
@@ -521,8 +521,8 @@ namespace hist_mmorpg
             foreach (KeyValuePair<string, OwnershipChallenge> challenge in Globals_Game.ownershipChallenges)
             {
                 // get challenger and place
-                challenger = challenge.Value.getChallenger();
-                contestedPlace = challenge.Value.getPlace();
+                challenger = challenge.Value.GetChallenger();
+                contestedPlace = challenge.Value.GetPlace();
 
                 // prepare JOURNAL ENTRY
                 bool createJournalEntry = false;
@@ -584,7 +584,7 @@ namespace hist_mmorpg
                         // iterate through all provinces
                         foreach (KeyValuePair<string, Province> provEntry in Globals_Game.provinceMasterList)
                         {
-                            if (provEntry.Value.getCurrentKingdom().id.Equals(contestedPlace.id))
+                            if (provEntry.Value.GetCurrentKingdom().id.Equals(contestedPlace.id))
                             {
                                 // update total provinces in kingdom
                                 totalParts++;
@@ -615,7 +615,7 @@ namespace hist_mmorpg
                             if (challenge.Value.placeType.Equals("province"))
                             {
                                 // process success
-                                (contestedPlace as Province).transferOwnership(challenger);
+                                (contestedPlace as Province).TransferOwnership(challenger);
                                 createJournalEntry = true;
 
                                 // journal entry personae
@@ -637,7 +637,7 @@ namespace hist_mmorpg
                             else if (challenge.Value.placeType.Equals("kingdom"))
                             {
                                 // process success
-                                (contestedPlace as Kingdom).transferOwnership(challenger);
+                                (contestedPlace as Kingdom).TransferOwnership(challenger);
                                 createJournalEntry = true;
 
                                 // journal entry personae
@@ -712,10 +712,10 @@ namespace hist_mmorpg
                     if (createJournalEntry)
                     {
                         // entry ID
-                        uint entryID = Globals_Game.getNextJournalEntryID();
+                        uint entryID = Globals_Game.GetNextJournalEntryID();
 
                         JournalEntry myEntry = new JournalEntry(entryID, year, season, entryPersonae, entryType, descr: description, loc: entryLoc);
-                        Globals_Game.addPastEvent(myEntry);
+                        Globals_Game.AddPastEvent(myEntry);
                     }
                 }
             }
@@ -736,7 +736,7 @@ namespace hist_mmorpg
         /// Adds an observer (Form1 object) to the list of registered observers
         /// </summary>
         /// <param name="obs">Observer to be added</param>
-        public static void registerObserver(Form1 obs)
+        public static void RegisterObserver(Form1 obs)
         {
             // add new observer to list
             registeredObservers.Add(obs);
@@ -746,7 +746,7 @@ namespace hist_mmorpg
         /// Removes an observer (Form1 object) from the list of registered observers
         /// </summary>
         /// <param name="obs">Observer to be removed</param>
-        public static void removeObserver(Form1 obs)
+        public static void RemoveObserver(Form1 obs)
         {
             // remove observer from list
             registeredObservers.Remove(obs);
@@ -757,14 +757,14 @@ namespace hist_mmorpg
         /// that a change has occured to the data
         /// </summary>
         /// <param name="info">String indicating the nature of the change</param>
-        public static void notifyObservers(String info)
+        public static void NotifyObservers(String info)
         {
             // iterate through list of observers
             foreach (Form1 obs in registeredObservers)
             {
                 // call observer's update method to perform the required actions
                 // based on the string passed
-                obs.update(info);
+                obs.Update(info);
             }
         }
     }
@@ -830,33 +830,33 @@ namespace hist_mmorpg
 
             // PC
             // trim and ensure 1st is uppercase
-            pc = Utility_Methods.firstCharToUpper(pc.Trim());
+            pc = Utility_Methods.FirstCharToUpper(pc.Trim());
 
-            if (!Utility_Methods.validateCharacterID(pc))
+            if (!Utility_Methods.ValidateCharacterID(pc))
             {
                 throw new InvalidDataException("VictoryData playerCharacterID must have the format 'Char_' followed by some numbers");
             }
 
             // STAT
-            if (!Utility_Methods.validateCharacterStat(stat, 0))
+            if (!Utility_Methods.ValidateCharacterStat(stat, 0))
             {
                 throw new InvalidDataException("VictoryData startStature must be a double between 0-9");
             }
 
             // POP
-            if (!Utility_Methods.validatePercentage(pop))
+            if (!Utility_Methods.ValidatePercentage(pop))
             {
                 throw new InvalidDataException("VictoryData startPopulation must be a double between 0 and 100");
             }
 
             // FIEFS
-            if (!Utility_Methods.validatePercentage(fiefs))
+            if (!Utility_Methods.ValidatePercentage(fiefs))
             {
                 throw new InvalidDataException("VictoryData startFiefs must be a double between 0 and 100");
             }
 
             // MONEY
-            if (!Utility_Methods.validatePercentage(money))
+            if (!Utility_Methods.ValidatePercentage(money))
             {
                 throw new InvalidDataException("VictoryData startMoney must be a double between 0 and 100");
             }
@@ -884,7 +884,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Updates the current data
         /// </summary>
-        public void updateData()
+        public void UpdateData()
         {
             // get PlayerCharacter
             PlayerCharacter thisPC = null;
@@ -900,13 +900,13 @@ namespace hist_mmorpg
                 this.currentStature = thisPC.CalculateStature();
 
                 // population governed
-                this.currentPopulation = thisPC.getPopulationPercentage();
+                this.currentPopulation = thisPC.GetPopulationPercentage();
 
                 // fiefs owned
-                this.currentFiefs = thisPC.getFiefsPercentage();
+                this.currentFiefs = thisPC.GetFiefsPercentage();
 
                 // money
-                this.currentMoney = thisPC.getMoneyPercentage();
+                this.currentMoney = thisPC.GetMoneyPercentage();
             }
         }
         
@@ -914,7 +914,7 @@ namespace hist_mmorpg
         /// Calculates the current stature score
         /// </summary>
         /// <returns>double containing the stature score</returns>
-        public double calcStatureScore()
+        public double CalcStatureScore()
         {
             double statScore = 0;
 
@@ -927,7 +927,7 @@ namespace hist_mmorpg
         /// Calculates the current population  score
         /// </summary>
         /// <returns>double containing the population score</returns>
-        public double calcPopulationScore()
+        public double CalcPopulationScore()
         {
             double popScore = 0;
 
@@ -940,7 +940,7 @@ namespace hist_mmorpg
         /// Calculates the current fief score
         /// </summary>
         /// <returns>double containing the fief score</returns>
-        public double calcFiefScore()
+        public double CalcFiefScore()
         {
             double fiefScore = 0;
 
@@ -953,7 +953,7 @@ namespace hist_mmorpg
         /// Calculates the current money score
         /// </summary>
         /// <returns>double containing the money score</returns>
-        public double calcMoneyScore()
+        public double CalcMoneyScore()
         {
             double moneyScore = 0;
 
@@ -1002,18 +1002,18 @@ namespace hist_mmorpg
 
             // ID
             // trim and ensure 1st is uppercase
-            chalID = Utility_Methods.firstCharToUpper(chalID.Trim());
+            chalID = Utility_Methods.FirstCharToUpper(chalID.Trim());
 
-            if (!Utility_Methods.validateChallengeID(chalID))
+            if (!Utility_Methods.ValidateChallengeID(chalID))
             {
                 throw new InvalidDataException("OwnershipChallenge id must have the format 'Challenge_' followed by some numbers");
             }
 
             // CHID
             // trim and ensure 1st is uppercase
-            chID = Utility_Methods.firstCharToUpper(chID.Trim());
+            chID = Utility_Methods.FirstCharToUpper(chID.Trim());
 
-            if (!Utility_Methods.validateCharacterID(chID))
+            if (!Utility_Methods.ValidateCharacterID(chID))
             {
                 throw new InvalidDataException("OwnershipChallenge challenger id must have the format 'Char_' followed by some numbers");
             }
@@ -1031,7 +1031,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             place = place.Trim().ToUpper();
 
-            if (!Utility_Methods.validatePlaceID(place))
+            if (!Utility_Methods.ValidatePlaceID(place))
             {
                 throw new InvalidDataException("OwnershipChallenge place id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -1047,7 +1047,7 @@ namespace hist_mmorpg
         /// Gets the PlayerCharacter who has issued the challenge
         /// </summary>
         /// <returns>The challenger (PlayerCharacter)</returns>
-        public PlayerCharacter getChallenger()
+        public PlayerCharacter GetChallenger()
         {
             PlayerCharacter challenger = null;
 
@@ -1066,7 +1066,7 @@ namespace hist_mmorpg
         /// Gets the Place being contested
         /// </summary>
         /// <returns>The Place</returns>
-        public Place getPlace()
+        public Place GetPlace()
         {
             Place contestedPlace = null;
 
@@ -1097,7 +1097,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Increments the season counter
         /// </summary>
-        public void incrementCounter()
+        public void IncrementCounter()
         {
             this.counter++;
         }

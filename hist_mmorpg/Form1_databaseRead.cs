@@ -204,7 +204,7 @@ namespace hist_mmorpg
             {
                 for (int i = 0; i < Globals_Game.goToList.Count; i++)
                 {
-                    this.populate_goTo(Globals_Game.goToList[i]);
+                    this.Populate_goTo(Globals_Game.goToList[i]);
                 }
                 Globals_Game.goToList.Clear();
             }
@@ -560,7 +560,7 @@ namespace hist_mmorpg
             if (dictResult.IsSuccess)
             {
                 tempDict = dictResult.Value.GetObject<Dictionary<string, byte>>();
-                dictOut = this.jEntryPriorities_deserialise(tempDict);
+                dictOut = this.JentryPriorities_deserialise(tempDict);
             }
             else
             {
@@ -578,7 +578,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Dictionary<string[], byte> for game use</returns>
         /// <param name="dictToConvert">The Dictionary to convert</param>
-        public Dictionary<string[], byte> jEntryPriorities_deserialise(Dictionary<string, byte> dictToConvert)
+        public Dictionary<string[], byte> JentryPriorities_deserialise(Dictionary<string, byte> dictToConvert)
         {
             Dictionary<string[], byte> dictOut = new Dictionary<string[], byte>();
 
@@ -1462,7 +1462,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="cs">Character_Serialised containing goTo Queue</param>
-        public bool populate_goTo(Character_Serialised cs)
+        public bool Populate_goTo(Character_Serialised cs)
         {
             bool success = false;
             Character myCh = null;

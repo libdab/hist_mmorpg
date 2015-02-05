@@ -26,10 +26,10 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="place">string specifying whether court, tavern, outside keep</param>
         /// <param name="ch">The Character to display</param>
-        public void refreshMeetingPlaceDisplay(string place, Character ch = null)
+        public void RefreshMeetingPlaceDisplay(string place, Character ch = null)
         {
             // refresh general information
-            this.meetingPlaceDisplayText();
+            this.MeetingPlaceDisplayText();
 
             // remove any previously displayed characters
             this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
@@ -67,13 +67,13 @@ namespace hist_mmorpg
                     break;
             }
             // refresh list of characters
-            this.meetingPlaceDisplayList(place, ch);
+            this.MeetingPlaceDisplayList(place, ch);
         }
 
         /// <summary>
         /// Refreshes general information displayed in Court, Tavern, outside keep
         /// </summary>
-        public void meetingPlaceDisplayText()
+        public void MeetingPlaceDisplayText()
         {
             string textToDisplay = "";
             // date/season and main character's days left
@@ -94,7 +94,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="place">String specifying whether court, tavern, outside keep</param>
         /// <param name="ch">The Character to display</param>
-        public void meetingPlaceDisplayList(string place, Character ch = null)
+        public void MeetingPlaceDisplayList(string place, Character ch = null)
         {
             // clear existing items in list
             this.meetingPlaceCharsListView.Items.Clear();
@@ -201,7 +201,7 @@ namespace hist_mmorpg
             }
             else if (!String.IsNullOrWhiteSpace((ch as NonPlayerCharacter).employer))
             {
-                myHousehold = (ch as NonPlayerCharacter).getEmployer().familyName + " (ID: " + (ch as NonPlayerCharacter).employer + ")";
+                myHousehold = (ch as NonPlayerCharacter).GetEmployer().familyName + " (ID: " + (ch as NonPlayerCharacter).employer + ")";
             }
 
             myItem.SubItems.Add(myHousehold);

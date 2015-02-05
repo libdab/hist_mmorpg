@@ -27,7 +27,7 @@ namespace hist_mmorpg
         /// Populates Globals_Client.eventSetToView with the appropriate JournalEvent set
         /// </summary>
         /// <param name="setScope">The JournalEvent set to fetch</param>
-        private void viewJournalEntries(string setScope)
+        private void ViewJournalEntries(string setScope)
         {
             // get current season and year
             uint thisYear = Globals_Game.clock.currentYear;
@@ -37,19 +37,19 @@ namespace hist_mmorpg
             {
                 // get entries for current year
                 case "year":
-                    Globals_Client.eventSetToView = Globals_Client.myPastEvents.getEventsOnDate(yr: thisYear);
+                    Globals_Client.eventSetToView = Globals_Client.myPastEvents.GetEventsOnDate(yr: thisYear);
                     break;
                 // get entries for current season
                 case "season":
-                    Globals_Client.eventSetToView = Globals_Client.myPastEvents.getEventsOnDate(yr: thisYear, seas: thisSeason);
+                    Globals_Client.eventSetToView = Globals_Client.myPastEvents.GetEventsOnDate(yr: thisYear, seas: thisSeason);
                     break;
                 // get unread entries
                 case "unread":
-                    Globals_Client.eventSetToView = Globals_Client.myPastEvents.getUnviewedEntries();
+                    Globals_Client.eventSetToView = Globals_Client.myPastEvents.GetUnviewedEntries();
                     break;
                 // get all entries
                 default:
-                    Globals_Client.eventSetToView = Globals_Client.myPastEvents.getEventsOnDate();
+                    Globals_Client.eventSetToView = Globals_Client.myPastEvents.GetEventsOnDate();
                     break;
             }
 
@@ -60,7 +60,7 @@ namespace hist_mmorpg
             Globals_Client.jEntryToView = -1;
 
             // display journal screen
-            this.refreshJournalContainer();
+            this.RefreshJournalContainer();
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace hist_mmorpg
             JournalEntry thisJentry = Globals_Client.eventSetToView.ElementAt(indexPosition).Value;
 
             // get text
-            jentryText = thisJentry.getJournalEntryDetails();
+            jentryText = thisJentry.GetJournalEntryDetails();
 
             return jentryText;
         }
@@ -85,7 +85,7 @@ namespace hist_mmorpg
         /// Refreshes main journal display screen
         /// </summary>
         /// <param name="a">JournalEntry to be displayed</param>
-        public void refreshJournalContainer(int jEntryIndex = -1)
+        public void RefreshJournalContainer(int jEntryIndex = -1)
         {
             // get JournalEntry
             JournalEntry jEntryPassedIn = null;
@@ -135,7 +135,7 @@ namespace hist_mmorpg
             }
 
             // switch off 'unread entries' alert
-            this.setJournalAlert(false);
+            this.SetJournalAlert(false);
 
             Globals_Client.containerToView = this.journalContainer;
             Globals_Client.containerToView.BringToFront();
@@ -152,15 +152,15 @@ namespace hist_mmorpg
             bool success = false;
             byte priority = 0;
 
-            success = Globals_Client.myPastEvents.addNewEntry(jEntry);
+            success = Globals_Client.myPastEvents.AddNewEntry(jEntry);
 
             if (success)
             {
                 // check for entry priority
-                priority = jEntry.checkEventForPriority();
+                priority = jEntry.CheckEventForPriority();
 
                 // set alert
-                this.setJournalAlert(true, priority);
+                this.SetJournalAlert(true, priority);
             }
 
             return success;
@@ -173,7 +173,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="setAlert">The desired bool value</param>
         /// <param name="newPriority">The desired priority</param>
-        public void setJournalAlert(bool setAlert, byte newPriority = 0)
+        public void SetJournalAlert(bool setAlert, byte newPriority = 0)
         {
             // set Journal menu alert (BackColor) and priority as appropriate
             if (!setAlert)

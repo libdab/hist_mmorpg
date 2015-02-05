@@ -30,7 +30,7 @@ namespace hist_mmorpg
             // VALIDATION
 
             // OTAX
-            if (!Utility_Methods.validatePercentage(otax))
+            if (!Utility_Methods.ValidatePercentage(otax))
             {
                 throw new InvalidDataException("Province taxrate must be a double between 0 and 100");
             }
@@ -64,7 +64,7 @@ namespace hist_mmorpg
         /// Processes functions involved in lodging a new ownership challenge
         /// </summary>
         /// <param name="challenger">PlayerCharacter challenging for ownership</param>
-        public void lodgeOwnershipChallenge(PlayerCharacter challenger)
+        public void LodgeOwnershipChallenge(PlayerCharacter challenger)
         {
             bool proceed = true;
 
@@ -81,8 +81,8 @@ namespace hist_mmorpg
             else
             {
                 // create and send new OwnershipChallenge
-                OwnershipChallenge newChallenge = new OwnershipChallenge(Globals_Game.getNextOwnChallengeID(), challenger.charID, "province", this.id);
-                proceed = Globals_Game.addOwnershipChallenge(newChallenge);
+                OwnershipChallenge newChallenge = new OwnershipChallenge(Globals_Game.GetNextOwnChallengeID(), challenger.charID, "province", this.id);
+                proceed = Globals_Game.AddOwnershipChallenge(newChallenge);
             }
 
             if (proceed)
@@ -92,7 +92,7 @@ namespace hist_mmorpg
                 PlayerCharacter currentOwner = this.owner;
 
                 // ID
-                uint entryID = Globals_Game.getNextJournalEntryID();
+                uint entryID = Globals_Game.GetNextJournalEntryID();
 
                 // date
                 uint year = Globals_Game.clock.currentYear;
@@ -117,7 +117,7 @@ namespace hist_mmorpg
 
                 // create and send a proposal (journal entry)
                 JournalEntry myEntry = new JournalEntry(entryID, year, season, entryPersonae, entryType, descr: description, loc: entryLoc);
-                Globals_Game.addPastEvent(myEntry);
+                Globals_Game.AddPastEvent(myEntry);
             }
         }
 
@@ -125,7 +125,7 @@ namespace hist_mmorpg
         /// Adjusts province tax rate
         /// </summary>
         /// <param name="tx">double containing new tax rate</param>
-        public void adjustTaxRate(double tx)
+        public void AdjustTaxRate(double tx)
         {
             // ensure max 100 and min 0
             if (tx > 100)
@@ -152,7 +152,7 @@ namespace hist_mmorpg
         /// Gets the province's rightful kingdom (i.e. the kingdom that it traditionally belongs to)
         /// </summary>
         /// <returns>The kingdom</returns>
-        public Kingdom getRightfulKingdom()
+        public Kingdom GetRightfulKingdom()
         {
             Kingdom thisKingdom = null;
 
@@ -168,7 +168,7 @@ namespace hist_mmorpg
         /// Gets the province's current kingdom (i.e. the kingdom of the current owner)
         /// </summary>
         /// <returns>The kingdom</returns>
-        public Kingdom getCurrentKingdom()
+        public Kingdom GetCurrentKingdom()
         {
             Kingdom thisKingdom = null;
 
@@ -188,10 +188,10 @@ namespace hist_mmorpg
         /// Transfers ownership of the province to the specified PlayerCharacter
         /// </summary>
         /// <param name="newOwner">The new owner</param>
-        public void transferOwnership(PlayerCharacter newOwner)
+        public void TransferOwnership(PlayerCharacter newOwner)
         {
             // get current title holder
-            Character titleHolder = this.getTitleHolder();
+            Character titleHolder = this.GetTitleHolder();
 
             // remove from current title holder's titles
             titleHolder.myTitles.Remove(this.id);
@@ -252,7 +252,7 @@ namespace hist_mmorpg
             // VALIDATION
 
             // OTAX
-            if (!Utility_Methods.validatePercentage(otax))
+            if (!Utility_Methods.ValidatePercentage(otax))
             {
                 throw new InvalidDataException("Province_Serialised taxrate must be a double between 0 and 100");
             }
@@ -261,7 +261,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             king = king.Trim().ToUpper();
 
-            if (!Utility_Methods.validatePlaceID(king))
+            if (!Utility_Methods.ValidatePlaceID(king))
             {
                 throw new InvalidDataException("Province_Serialised kingdom ID must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }

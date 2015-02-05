@@ -28,7 +28,7 @@ namespace hist_mmorpg
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
         /// <param name="siegeCheck">bool indicating whether to check whether the move would end a siege</param>
-        public bool moveCharacter(Character ch, Fief target, double cost, bool siegeCheck = true)
+        public bool MoveCharacter(Character ch, Fief target, double cost, bool siegeCheck = true)
         {
             bool success = false;
             bool proceedWithMove = true;
@@ -67,12 +67,12 @@ namespace hist_mmorpg
 
                             // construct event description to be passed into siegeEnd
                             string siegeDescription = "On this day of Our Lord the forces of ";
-                            siegeDescription += thisSiege.getBesiegingPlayer().firstName + " " + thisSiege.getBesiegingPlayer().familyName;
-                            siegeDescription += " have chosen to abandon the siege of " + thisSiege.getFief().name;
-                            siegeDescription += ". " + thisSiege.getDefendingPlayer().firstName + " " + thisSiege.getDefendingPlayer().familyName;
+                            siegeDescription += thisSiege.GetBesiegingPlayer().firstName + " " + thisSiege.GetBesiegingPlayer().familyName;
+                            siegeDescription += " have chosen to abandon the siege of " + thisSiege.GetFief().name;
+                            siegeDescription += ". " + thisSiege.GetDefendingPlayer().firstName + " " + thisSiege.GetDefendingPlayer().familyName;
                             siegeDescription += " retains ownership of the fief.";
 
-                            this.siegeEnd(thisSiege, false, siegeDescription);
+                            this.SiegeEnd(thisSiege, false, siegeDescription);
                         }
 
                     }
@@ -93,7 +93,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="npc">NPC to move</param>
-        public bool randomMoveNPC(NonPlayerCharacter npc)
+        public bool RandomMoveNPC(NonPlayerCharacter npc)
         {
             bool success = false;
 
@@ -109,7 +109,7 @@ namespace hist_mmorpg
                 double travelCost = this.getTravelCost(npc.location, target);
 
                 // perform move
-                success = this.moveCharacter(npc, target, travelCost);
+                success = this.MoveCharacter(npc, target, travelCost);
             }
 
             return success;
@@ -128,7 +128,7 @@ namespace hist_mmorpg
             cost = (source.terrain.travelCost + target.terrain.travelCost) / 2;
 
             // apply season modifier
-            cost = cost * Globals_Game.clock.calcSeasonTravMod();
+            cost = cost * Globals_Game.clock.CalcSeasonTravMod();
 
             // if necessary, apply army modifier
             if (!String.IsNullOrWhiteSpace(armyID))
@@ -142,7 +142,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes travel display screen
         /// </summary>
-        private void refreshTravelContainer()
+        private void RefreshTravelContainer()
         {
             // get current fief
             Fief thisFief = Globals_Client.myPlayerCharacter.location;
@@ -158,7 +158,7 @@ namespace hist_mmorpg
             for (int i = 0; i < directions.Length; i++)
             {
                 // retrieve target fief for that direction
-                Fief target = Globals_Game.gameMap.getFief(thisFief, directions[i]);
+                Fief target = Globals_Game.gameMap.GetFief(thisFief, directions[i]);
                 // display fief details and travel cost
                 if (target != null)
                 {
@@ -264,7 +264,7 @@ namespace hist_mmorpg
                 // get travel cost
                 travelCost = this.getTravelCost(ch.location, ch.goTo.Peek(), ch.armyID);
                 // attempt to move character
-                success = this.moveCharacter(ch, ch.goTo.Peek(), travelCost);
+                success = this.MoveCharacter(ch, ch.goTo.Peek(), travelCost);
                 // if move successfull, remove fief from goTo queue
                 if (success)
                 {
@@ -294,7 +294,7 @@ namespace hist_mmorpg
         /// Moves a character to a specified fief using the shortest path
         /// </summary>
         /// <param name="whichScreen">String indicating on which screen the movement command occurred</param>
-        public void moveTo(string whichScreen)
+        public void MoveTo(string whichScreen)
         {
             // get appropriate TextBox and remove from entourage, if necessary
             TextBox myTextBox = null;
@@ -303,7 +303,7 @@ namespace hist_mmorpg
                 myTextBox = this.meetingPlaceMoveToTextBox;
                 if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
                 {
-                    Globals_Client.myPlayerCharacter.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
+                    Globals_Client.myPlayerCharacter.RemoveFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
                 }
             }
             else if (whichScreen.Equals("house"))
@@ -311,7 +311,7 @@ namespace hist_mmorpg
                 myTextBox = this.houseMoveToTextBox;
                 if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
                 {
-                    Globals_Client.myPlayerCharacter.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
+                    Globals_Client.myPlayerCharacter.RemoveFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
                 }
             }
             else if (whichScreen.Equals("travel"))
@@ -326,7 +326,7 @@ namespace hist_mmorpg
                 Fief target = Globals_Game.fiefMasterList[myTextBox.Text.ToUpper()];
 
                 // obtains goTo queue for shortest path to target
-                Globals_Client.charToView.goTo = Globals_Game.gameMap.getShortestPath(Globals_Client.charToView.location, target);
+                Globals_Client.charToView.goTo = Globals_Game.gameMap.GetShortestPath(Globals_Client.charToView.location, target);
 
                 // if retrieve valid path
                 if (Globals_Client.charToView.goTo.Count > 0)
@@ -347,15 +347,15 @@ namespace hist_mmorpg
                 // refresh appropriate screen
                 if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
                 {
-                    this.refreshMeetingPlaceDisplay(whichScreen); ;
+                    this.RefreshMeetingPlaceDisplay(whichScreen); ;
                 }
                 else if (whichScreen.Equals("house"))
                 {
-                    this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
+                    this.RefreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
                 }
                 else if (whichScreen.Equals("travel"))
                 {
-                    this.refreshTravelContainer();
+                    this.RefreshTravelContainer();
                 }
 
             }
@@ -426,7 +426,7 @@ namespace hist_mmorpg
                         {
                             System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " has been removed from your entourage.");
                         }
-                        Globals_Client.myPlayerCharacter.removeFromEntourage((ch as NonPlayerCharacter));
+                        Globals_Client.myPlayerCharacter.RemoveFromEntourage((ch as NonPlayerCharacter));
                     }
                 }
 
@@ -434,7 +434,7 @@ namespace hist_mmorpg
                 // uses different method to adjust days of all objects involved and apply attrition)
                 if (thisSiege != null)
                 {
-                    thisSiege.syncDays(ch.days - campDays);
+                    thisSiege.SyncSiegeDays(ch.days - campDays);
                 }
 
                 // if no siege
@@ -552,11 +552,11 @@ namespace hist_mmorpg
             {
                 if (ch == Globals_Client.myPlayerCharacter)
                 {
-                    this.refreshTravelContainer();
+                    this.RefreshTravelContainer();
                 }
                 else
                 {
-                    this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
+                    this.RefreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
                 }
             }
 
@@ -566,7 +566,7 @@ namespace hist_mmorpg
         /// Allows a character to be moved along a specific route by using direction codes
         /// </summary>
         /// <param name="whichScreen">String indicating on which screen the movement command occurred</param>
-        public void takeThisRoute(string whichScreen)
+        public void TakeThisRoute(string whichScreen)
         {
             bool proceed;
             Fief source = null;
@@ -580,7 +580,7 @@ namespace hist_mmorpg
                 myTextBox = this.meetingPlaceRouteTextBox;
                 if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
                 {
-                    Globals_Client.myPlayerCharacter.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
+                    Globals_Client.myPlayerCharacter.RemoveFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
                 }
             }
             else if (whichScreen.Equals("house"))
@@ -588,7 +588,7 @@ namespace hist_mmorpg
                 myTextBox = this.houseRouteTextBox;
                 if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
                 {
-                    Globals_Client.myPlayerCharacter.removeFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
+                    Globals_Client.myPlayerCharacter.RemoveFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
                 }
             }
             else if (whichScreen.Equals("travel"))
@@ -614,7 +614,7 @@ namespace hist_mmorpg
                 }
 
                 // get the target fief
-                target = Globals_Game.gameMap.getFief(source, directions[i].ToUpper());
+                target = Globals_Game.gameMap.GetFief(source, directions[i].ToUpper());
 
                 // if target successfully acquired, add to queue
                 if (target != null)
@@ -642,7 +642,7 @@ namespace hist_mmorpg
             }
 
             // refresh appropriate screen
-            this.refreshCurrentScreen();
+            this.RefreshCurrentScreen();
         }
     }
 }

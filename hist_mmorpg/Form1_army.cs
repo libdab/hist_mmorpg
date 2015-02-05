@@ -130,7 +130,7 @@ namespace hist_mmorpg
         /// Refreshes main Army display screen
         /// </summary>
         /// <param name="a">Army whose information is to be displayed</param>
-        public void refreshArmyContainer(Army a = null)
+        public void RefreshArmyContainer(Army a = null)
         {
             // disable controls until army selected
             this.DisableControls(this.armyManagementPanel);
@@ -288,15 +288,15 @@ namespace hist_mmorpg
             // refresh display
             if (Globals_Client.containerToView == this.armyContainer)
             {
-                this.refreshArmyContainer(Globals_Client.armyToView);
+                this.RefreshArmyContainer(Globals_Client.armyToView);
             }
             else if (Globals_Client.containerToView == this.houseContainer)
             {
-                this.refreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
+                this.RefreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
             }
             else if (Globals_Client.containerToView == this.travelContainer)
             {
-                this.refreshTravelContainer();
+                this.RefreshTravelContainer();
             }
 
             if (proceed)

@@ -73,9 +73,9 @@ namespace hist_mmorpg
 
             // ID
             // trim and ensure 1st is uppercase
-            id = Utility_Methods.firstCharToUpper(id.Trim());
+            id = Utility_Methods.FirstCharToUpper(id.Trim());
 
-            if (!Utility_Methods.validateArmyID(id))
+            if (!Utility_Methods.ValidateArmyID(id))
             {
                 throw new InvalidDataException("Army ID must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
             }
@@ -84,9 +84,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(ldr))
             {
                 // trim and ensure 1st is uppercase
-                ldr = Utility_Methods.firstCharToUpper(ldr.Trim());
+                ldr = Utility_Methods.FirstCharToUpper(ldr.Trim());
 
-                if (!Utility_Methods.validateCharacterID(ldr))
+                if (!Utility_Methods.ValidateCharacterID(ldr))
                 {
                     throw new InvalidDataException("Army leader ID must have the format 'Char_' followed by some numbers");
                 }
@@ -94,15 +94,15 @@ namespace hist_mmorpg
 
             // OWN
             // trim and ensure 1st is uppercase
-            own = Utility_Methods.firstCharToUpper(own.Trim());
+            own = Utility_Methods.FirstCharToUpper(own.Trim());
 
-            if (!Utility_Methods.validateCharacterID(own))
+            if (!Utility_Methods.ValidateCharacterID(own))
             {
                 throw new InvalidDataException("Army owner id must have the format 'Char_' followed by some numbers");
             }
 
             // DAY
-            if (!Utility_Methods.validateDays(day))
+            if (!Utility_Methods.ValidateDays(day))
             {
                 throw new InvalidDataException("Army days must be a double between 0-109");
             }
@@ -111,7 +111,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             loc = loc.Trim().ToUpper();
 
-            if (!Utility_Methods.validatePlaceID(loc))
+            if (!Utility_Methods.ValidatePlaceID(loc))
             {
                 throw new InvalidDataException("Army location id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -187,7 +187,7 @@ namespace hist_mmorpg
             uint maintCost = this.CalcArmySize() * 500;
 
             // get available treasury
-            Fief homeFief = this.GetOwner().getHomeFief();
+            Fief homeFief = this.GetOwner().GetHomeFief();
             int availTreas = homeFief.GetAvailableTreasury();
 
             // check if army is already maintained
@@ -359,7 +359,7 @@ namespace hist_mmorpg
                     // if army is involved in siege, attrition applied at siege level
                     else
                     {
-                        mySiege.syncDays(newLeader.days);
+                        mySiege.SyncSiegeDays(newLeader.days);
                     }
 
                 }
@@ -729,7 +729,7 @@ namespace hist_mmorpg
                             details[3], details[4], details[5], details[6], (this.days - daysTaken).ToString() };
 
                 // add to fief's troopTransfers list
-                string tranferID = Globals_Game.getNextDetachmentID();
+                string tranferID = Globals_Game.GetNextDetachmentID();
                 thisFief.troopTransfers.Add(tranferID, thisTransfer);
 
                 // check detachment added to troopTransfers
@@ -972,7 +972,7 @@ namespace hist_mmorpg
                 Siege thisSiege = thisFief.GetSiege();
 
                 // check if this army is besieging army
-                if (thisSiege.getBesiegingArmy() == this)
+                if (thisSiege.GetBesiegingArmy() == this)
                 {
                     thisSiegeID = thisFief.siege;
                 }
@@ -995,7 +995,7 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(thisFief.siege))
             {
                 Siege thisSiege = thisFief.GetSiege();
-                if (thisSiege.getDefenderGarrison() == this)
+                if (thisSiege.GetDefenderGarrison() == this)
                 {
                     thisSiegeID = thisFief.siege;
                 }
@@ -1020,7 +1020,7 @@ namespace hist_mmorpg
                 Siege thisSiege = thisFief.GetSiege();
                 if (thisSiege.defenderAdditional != null)
                 {
-                    if (thisSiege.getDefenderAdditional() == this)
+                    if (thisSiege.GetDefenderAdditional() == this)
                     {
                         thisSiegeID = thisFief.siege;
                     }
@@ -1115,7 +1115,7 @@ namespace hist_mmorpg
             // (based on besieged fief bailiff management rating)
             if ((isSiegeDefGarr) || (isSiegeDefAdd))
             {
-                attritionApplies = thisSiege.checkAttritionApplies();
+                attritionApplies = thisSiege.CheckAttritionApplies();
             }
 
             // get leader
@@ -1244,7 +1244,7 @@ namespace hist_mmorpg
                         else
                         {
                             // check if attacking king's army
-                            if (this.GetOwner() == this.GetOwner().getKing())
+                            if (this.GetOwner() == this.GetOwner().GetKing())
                             {
                                 // display warning and get decision
                                 DialogResult dialogResult = MessageBox.Show("You are about to attack an army owned by your king.\r\nClick 'OK' to proceed.", "Proceed with attack?", MessageBoxButtons.OKCancel);
@@ -1293,7 +1293,7 @@ namespace hist_mmorpg
                     if (!String.IsNullOrWhiteSpace(whichRole))
                     {
                         // end siege
-                        thisSiege.siegeEnd(false);
+                        thisSiege.SiegeEnd(false);
                     }
                 }
             }

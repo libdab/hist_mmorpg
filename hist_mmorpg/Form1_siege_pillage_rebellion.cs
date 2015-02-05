@@ -28,13 +28,13 @@ namespace hist_mmorpg
         public string DisplaySiegeData(Siege s)
         {
             string siegeText = "";
-            Fief siegeLocation = s.getFief();
+            Fief siegeLocation = s.GetFief();
             PlayerCharacter fiefOwner = siegeLocation.owner;
             bool isDefender = (fiefOwner == Globals_Client.myPlayerCharacter);
-            Army besieger = s.getBesiegingArmy();
-            PlayerCharacter besiegingPlayer = s.getBesiegingPlayer();
-            Army defenderGarrison = s.getDefenderGarrison();
-            Army defenderAdditional = s.getDefenderAdditional();
+            Army besieger = s.GetBesiegingArmy();
+            PlayerCharacter besiegingPlayer = s.GetBesiegingPlayer();
+            Army defenderGarrison = s.GetDefenderGarrison();
+            Army defenderAdditional = s.GetDefenderAdditional();
             Character besiegerLeader = besieger.GetLeader();
             Character defGarrLeader = defenderGarrison.GetLeader();
             Character defAddLeader = null;
@@ -177,7 +177,7 @@ namespace hist_mmorpg
         /// Refreshes main Siege display screen
         /// </summary>
         /// <param name="s">Siege whose information is to be displayed</param>
-        public void refreshSiegeContainer(Siege s = null)
+        public void RefreshSiegeContainer(Siege s = null)
         {
 
             // clear existing information
@@ -199,7 +199,7 @@ namespace hist_mmorpg
             for (int i = 0; i < Globals_Client.myPlayerCharacter.mySieges.Count; i++)
             {
                 ListViewItem thisSiegeItem = null;
-                Siege thisSiege = Globals_Client.myPlayerCharacter.getSiege(Globals_Client.myPlayerCharacter.mySieges[i]);
+                Siege thisSiege = Globals_Client.myPlayerCharacter.GetSiege(Globals_Client.myPlayerCharacter.mySieges[i]);
 
                 if (thisSiege != null)
                 {
@@ -207,16 +207,16 @@ namespace hist_mmorpg
                     thisSiegeItem = new ListViewItem(thisSiege.siegeID);
 
                     // fief
-                    Fief siegeLocation = thisSiege.getFief();
+                    Fief siegeLocation = thisSiege.GetFief();
                     thisSiegeItem.SubItems.Add(siegeLocation.name + " (" + siegeLocation.id + ")");
 
                     // defender
-                    PlayerCharacter defendingPlayer = thisSiege.getDefendingPlayer();
+                    PlayerCharacter defendingPlayer = thisSiege.GetDefendingPlayer();
                     thisSiegeItem.SubItems.Add(defendingPlayer.firstName + " " + defendingPlayer.familyName + " (" + defendingPlayer.charID + ")");
 
                     // besieger
-                    Army besiegingArmy = thisSiege.getBesiegingArmy();
-                    PlayerCharacter besieger = thisSiege.getBesiegingPlayer();
+                    Army besiegingArmy = thisSiege.GetBesiegingArmy();
+                    PlayerCharacter besieger = thisSiege.GetBesiegingPlayer();
                     thisSiegeItem.SubItems.Add(besieger.firstName + " " + besieger.familyName + " (" + besieger.charID + ")");
 
                     if (thisSiegeItem != null)
@@ -245,7 +245,7 @@ namespace hist_mmorpg
         /// <param name="f">The fief being pillaged</param>
         /// <param name="a">The pillaging army</param>
         /// <param name="circumstance">The circumstance under which the fief is being pillaged</param>
-        public void processPillage(Fief f, Army a, string circumstance = "pillage")
+        public void ProcessPillage(Fief f, Army a, string circumstance = "pillage")
         {
             string pillageResults = "";
             double thisLoss = 0;
@@ -406,7 +406,7 @@ namespace hist_mmorpg
             pillageResults += "- Money pillaged by attacking player: " + Convert.ToInt32(moneyPillagedOwner) + "\r\n";
 
             // apply to army owner's home fief treasury
-            armyOwner.getHomeFief().treasury += Convert.ToInt32(moneyPillagedOwner);
+            armyOwner.GetHomeFief().treasury += Convert.ToInt32(moneyPillagedOwner);
 
             // apply loss of stature to army owner if fief has same language
             if (armyOwner.language.id == f.language.id)
@@ -423,7 +423,7 @@ namespace hist_mmorpg
 
             // =================== construct and send JOURNAL ENTRY
             // ID
-            uint entryID = Globals_Game.getNextJournalEntryID();
+            uint entryID = Globals_Game.GetNextJournalEntryID();
 
             // personae
             List<string> tempPersonae = new List<string>();
@@ -501,7 +501,7 @@ namespace hist_mmorpg
             JournalEntry pillageEntry = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, pillagePersonae, type, loc: pillageLocation, descr: pillageDescription);
 
             // add new journal entry to pastEvents
-            Globals_Game.addPastEvent(pillageEntry);
+            Globals_Game.AddPastEvent(pillageEntry);
 
             // show message
             if (Globals_Client.showMessages)
@@ -614,7 +614,7 @@ namespace hist_mmorpg
             }
 
             // create temporary army for battle/siege
-            defender = new Army("Garrison" + Globals_Game.getNextArmyID(), armyLeaderID, f.owner.charID, armyLeaderDays, f.id, trp: troopsForArmy);
+            defender = new Army("Garrison" + Globals_Game.GetNextArmyID(), armyLeaderID, f.owner.charID, armyLeaderDays, f.id, trp: troopsForArmy);
             defender.AddArmy();
 
             return defender;
@@ -625,7 +625,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="a">The pillaging army</param>
         /// <param name="f">The fief being pillaged</param>
-        public void pillageFief(Army a, Fief f)
+        public void PillageFief(Army a, Fief f)
         {
             bool pillageCancelled = false;
             bool bailiffPresent = false;
@@ -680,7 +680,7 @@ namespace hist_mmorpg
             if (!pillageCancelled)
             {
                 // process pillage
-                this.processPillage(f, a);
+                this.ProcessPillage(f, a);
             }
 
         }
@@ -922,16 +922,16 @@ namespace hist_mmorpg
         /// <param name="s">Siege to be ended</param>
         /// <param name="siegeSuccessful">bool indicating whether the siege was successful</param>
         /// <param name="s">String containing circumstances under which the siege ended</param>
-        public void siegeEnd(Siege s, bool siegeSuccessful, string circumstance)
+        public void SiegeEnd(Siege s, bool siegeSuccessful, string circumstance)
         {
             // carry out functions associated with siege end
-            s.siegeEnd(siegeSuccessful, circumstance);
+            s.SiegeEnd(siegeSuccessful, circumstance);
 
             // set to null
             s = null;
 
             // refresh screen
-            this.refreshCurrentScreen();
+            this.RefreshCurrentScreen();
         }
 
         /// <summary>
@@ -975,26 +975,26 @@ namespace hist_mmorpg
         /// <param name="s">The siege</param>
         /// <param name="defenderCasualties">Defender casualties sustained during the reduction phase</param>
         /// <param name="originalKeepLvl">Keep level prior to the reduction phase</param>
-        public void siegeStormRound(Siege s, uint defenderCasualties, double originalKeepLvl)
+        public void SiegeStormRound(Siege s, uint defenderCasualties, double originalKeepLvl)
         {
             bool stormSuccess = false;
-            Fief besiegedFief = s.getFief();
-            Army besiegingArmy = s.getBesiegingArmy();
-            Army defenderGarrison = s.getDefenderGarrison();
-            Army defenderAdditional = s.getDefenderAdditional();
-            PlayerCharacter attackingPlayer = s.getBesiegingPlayer();
+            Fief besiegedFief = s.GetFief();
+            Army besiegingArmy = s.GetBesiegingArmy();
+            Army defenderGarrison = s.GetDefenderGarrison();
+            Army defenderAdditional = s.GetDefenderAdditional();
+            PlayerCharacter attackingPlayer = s.GetBesiegingPlayer();
             Character defenderLeader = defenderGarrison.GetLeader();
             Character attackerLeader = besiegingArmy.GetLeader();
             double statureChange = 0;
 
             // =================== start construction of JOURNAL ENTRY
             // ID
-            uint entryID = Globals_Game.getNextJournalEntryID();
+            uint entryID = Globals_Game.GetNextJournalEntryID();
 
             // personae
             List<string> tempPersonae = new List<string>();
-            tempPersonae.Add(s.getDefendingPlayer().charID + "|fiefOwner");
-            tempPersonae.Add(s.getBesiegingPlayer().charID + "|attackerOwner");
+            tempPersonae.Add(s.GetDefendingPlayer().charID + "|fiefOwner");
+            tempPersonae.Add(s.GetBesiegingPlayer().charID + "|attackerOwner");
             if (attackerLeader != null)
             {
                 tempPersonae.Add(attackerLeader.charID + "|attackerLeader");
@@ -1016,7 +1016,7 @@ namespace hist_mmorpg
             string[] siegePersonae = tempPersonae.ToArray();
 
             // location
-            string siegeLocation = s.getFief().id;
+            string siegeLocation = s.GetFief().id;
 
             // description
             string siegeDescription = "";
@@ -1115,7 +1115,7 @@ namespace hist_mmorpg
             if (stormSuccess)
             {
                 // pillage fief
-                this.processPillage(besiegedFief, besiegingArmy);
+                this.ProcessPillage(besiegedFief, besiegingArmy);
 
                 // CAPTIVES
                 // identify captives - fief owner, his family, and any PCs of enemy nationality
@@ -1127,7 +1127,7 @@ namespace hist_mmorpg
                         // fief owner and his family
                         if (!String.IsNullOrWhiteSpace(thisCharacter.familyID))
                         {
-                            if (thisCharacter.familyID.Equals(s.getDefendingPlayer().charID))
+                            if (thisCharacter.familyID.Equals(s.GetDefendingPlayer().charID))
                             {
                                 captives.Add(thisCharacter);
                             }
@@ -1153,40 +1153,40 @@ namespace hist_mmorpg
                     if (thisCharacter is PlayerCharacter)
                     {
                         // calculate ransom (10% of total GDP)
-                        thisRansom = Convert.ToInt32(((thisCharacter as PlayerCharacter).getTotalGDP() * 0.1));
+                        thisRansom = Convert.ToInt32(((thisCharacter as PlayerCharacter).GetTotalGDP() * 0.1));
                         // remove from captive's home treasury
-                        (thisCharacter as PlayerCharacter).getHomeFief().treasury -= thisRansom;
+                        (thisCharacter as PlayerCharacter).GetHomeFief().treasury -= thisRansom;
                     }
                     // NPCs (family of fief's old owner)
                     else
                     {
                         // calculate ransom (family allowance)
-                        string thisFunction = (thisCharacter as NonPlayerCharacter).getFunction(s.getDefendingPlayer());
-                        thisRansom = Convert.ToInt32((thisCharacter as NonPlayerCharacter).calcFamilyAllowance(thisFunction));
+                        string thisFunction = (thisCharacter as NonPlayerCharacter).GetFunction(s.GetDefendingPlayer());
+                        thisRansom = Convert.ToInt32((thisCharacter as NonPlayerCharacter).CalcFamilyAllowance(thisFunction));
                         // remove from head of family's home treasury
-                        s.getDefendingPlayer().getHomeFief().treasury -= thisRansom;
+                        s.GetDefendingPlayer().GetHomeFief().treasury -= thisRansom;
                     }
 
                     // add to besieger's home treasury
-                    attackingPlayer.getHomeFief().treasury += thisRansom;
+                    attackingPlayer.GetHomeFief().treasury += thisRansom;
                     totalRansom += thisRansom;
                 }
 
                 // calculate change to besieging player's stature
-                statureChange = 0.1 * (s.getFief().population / Convert.ToDouble(10000));
+                statureChange = 0.1 * (s.GetFief().population / Convert.ToDouble(10000));
 
                 // construct event description
                 siegeDescription = "On this day of Our Lord the forces of ";
-                siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
-                siegeDescription += " SUCCESSFULLY stormed the keep of " + s.getFief().name + ".";
+                siegeDescription += s.GetBesiegingPlayer().firstName + " " + s.GetBesiegingPlayer().familyName;
+                siegeDescription += " SUCCESSFULLY stormed the keep of " + s.GetFief().name + ".";
 
                 // create more detailed description for siegeEnd
                 string siegeDescriptionFull = siegeDescription;
                 siegeDescriptionFull += "\r\n\r\nTotal casualties numbered " + attackerCasualties + " for the attacking forces ";
                 siegeDescriptionFull += "and " + defenderCasualties + " for the defending forces";
                 siegeDescriptionFull += ".\r\n\r\nThe ownership of this fief has now passed from ";
-                siegeDescriptionFull += s.getDefendingPlayer().firstName + " " + s.getDefendingPlayer().familyName;
-                siegeDescriptionFull += " to " + s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                siegeDescriptionFull += s.GetDefendingPlayer().firstName + " " + s.GetDefendingPlayer().familyName;
+                siegeDescriptionFull += " to " + s.GetBesiegingPlayer().firstName + " " + s.GetBesiegingPlayer().familyName;
                 siegeDescriptionFull += " who has also earned an increase of " + statureChange + " stature.";
                 // details of ransoms
                 if (totalRansom > 0)
@@ -1205,7 +1205,7 @@ namespace hist_mmorpg
                 }
 
                 // end the siege
-                this.siegeEnd(s, true, siegeDescriptionFull);
+                this.SiegeEnd(s, true, siegeDescriptionFull);
 
                 // change fief ownership
                 besiegedFief.ChangeOwnership(attackingPlayer);
@@ -1215,33 +1215,33 @@ namespace hist_mmorpg
             else
             {
                 // calculate change to besieging player's stature
-                statureChange = -0.2 * (Convert.ToDouble(s.getFief().population) / 10000);
+                statureChange = -0.2 * (Convert.ToDouble(s.GetFief().population) / 10000);
 
                 // description
                 siegeDescription = "On this day of Our Lord the forces of ";
-                siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
-                siegeDescription += " were UNSUCCESSFULL in their attempt to storm the keep of " + s.getFief().name;
+                siegeDescription += s.GetBesiegingPlayer().firstName + " " + s.GetBesiegingPlayer().familyName;
+                siegeDescription += " were UNSUCCESSFULL in their attempt to storm the keep of " + s.GetFief().name;
                 siegeDescription += ".\r\n\r\nTotal casualties numbered " + attackerCasualties + " for the attacking forces ";
                 siegeDescription += "and " + defenderCasualties + " for the defending forces";
                 siegeDescription += ". In addition the keep level was reduced from " + originalKeepLvl + " to ";
                 siegeDescription += besiegedFief.keepLevel + ".\r\n\r\nThis failure has resulted in a loss of ";
-                siegeDescription += statureChange + " for " + s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                siegeDescription += statureChange + " for " + s.GetBesiegingPlayer().firstName + " " + s.GetBesiegingPlayer().familyName;
             }
 
             // create and send JOURNAL ENTRY
             JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siegeStorm", loc: siegeLocation, descr: siegeDescription);
 
             // add new journal entry to pastEvents
-            Globals_Game.addPastEvent(siegeResult);
+            Globals_Game.AddPastEvent(siegeResult);
 
             // inform player of result
             System.Windows.Forms.MessageBox.Show(siegeDescription);
 
             // apply change to besieging player's stature
-            s.getBesiegingPlayer().AdjustStatureModifier(statureChange);
+            s.GetBesiegingPlayer().AdjustStatureModifier(statureChange);
 
             // refresh screen
-            this.refreshCurrentScreen();
+            this.RefreshCurrentScreen();
         }
 
         /// <summary>
@@ -1251,26 +1251,26 @@ namespace hist_mmorpg
         /// <param name="s">The siege</param>
         /// <param name="defenderCasualties">Defender casualties sustained during the reduction phase</param>
         /// <param name="originalKeepLvl">Keep level prior to the reduction phase</param>
-        public bool siegeNegotiationRound(Siege s, uint defenderCasualties, double originalKeepLvl)
+        public bool SiegeNegotiationRound(Siege s, uint defenderCasualties, double originalKeepLvl)
         {
             bool negotiateSuccess = false;
 
             // get required objects
-            Fief besiegedFief = s.getFief();
-            Army besieger = s.getBesiegingArmy();
-            Army defenderGarrison = s.getDefenderGarrison();
+            Fief besiegedFief = s.GetFief();
+            Army besieger = s.GetBesiegingArmy();
+            Army defenderGarrison = s.GetDefenderGarrison();
             Character defenderLeader = defenderGarrison.GetLeader();
             Character attackerLeader = besieger.GetLeader();
-            Army defenderAdditional = s.getDefenderAdditional();
+            Army defenderAdditional = s.GetDefenderAdditional();
 
             // =================== start construction of JOURNAL ENTRY
             // ID
-            uint entryID = Globals_Game.getNextJournalEntryID();
+            uint entryID = Globals_Game.GetNextJournalEntryID();
 
             // personae
             List<string> tempPersonae = new List<string>();
-            tempPersonae.Add(s.getDefendingPlayer().charID + "|fiefOwner");
-            tempPersonae.Add(s.getBesiegingPlayer().charID + "|attackerOwner");
+            tempPersonae.Add(s.GetDefendingPlayer().charID + "|fiefOwner");
+            tempPersonae.Add(s.GetBesiegingPlayer().charID + "|attackerOwner");
             if (attackerLeader != null)
             {
                 tempPersonae.Add(attackerLeader.charID + "|attackerLeader");
@@ -1292,7 +1292,7 @@ namespace hist_mmorpg
             string[] siegePersonae = tempPersonae.ToArray();
 
             // location
-            string siegeLocation = s.getFief().id;
+            string siegeLocation = s.GetFief().id;
 
             // description
             string siegeDescription = "";
@@ -1313,29 +1313,29 @@ namespace hist_mmorpg
             if (negotiateSuccess)
             {
                 // add to winning player's stature
-                double statureIncrease = 0.2 * (s.getFief().population / Convert.ToDouble(10000));
-                s.getBesiegingPlayer().AdjustStatureModifier(statureIncrease);
+                double statureIncrease = 0.2 * (s.GetFief().population / Convert.ToDouble(10000));
+                s.GetBesiegingPlayer().AdjustStatureModifier(statureIncrease);
 
                 // construct event description to be passed into siegeEnd
                 siegeDescription = "On this day of Our Lord the forces of ";
-                siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
-                siegeDescription += " SUCCESSFULLY negotiated an end to the siege of " + s.getFief().name + ".";
+                siegeDescription += s.GetBesiegingPlayer().firstName + " " + s.GetBesiegingPlayer().familyName;
+                siegeDescription += " SUCCESSFULLY negotiated an end to the siege of " + s.GetFief().name + ".";
 
                 // create more detailed description for siegeEnd
                 string siegeDescriptionFull = siegeDescription;
                 siegeDescriptionFull += "\r\n\r\nThe ownership of this fief has now passed from ";
-                siegeDescriptionFull += s.getDefendingPlayer().firstName + " " + s.getDefendingPlayer().familyName;
-                siegeDescriptionFull += " to " + s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                siegeDescriptionFull += s.GetDefendingPlayer().firstName + " " + s.GetDefendingPlayer().familyName;
+                siegeDescriptionFull += " to " + s.GetBesiegingPlayer().firstName + " " + s.GetBesiegingPlayer().familyName;
                 siegeDescriptionFull += " who has also earned an increase of " + statureIncrease + " stature.";
                 siegeDescriptionFull += "\r\n\r\nTotal casualties during this round numbered " + defenderCasualties + " for the defending forces";
                 siegeDescriptionFull += ". In addition the keep level was reduced from " + originalKeepLvl + " to ";
                 siegeDescriptionFull += besiegedFief.keepLevel + ".";
 
                 // end the siege
-                this.siegeEnd(s, true, siegeDescriptionFull);
+                this.SiegeEnd(s, true, siegeDescriptionFull);
 
                 // change fief ownership
-                s.getFief().ChangeOwnership(s.getBesiegingPlayer());
+                s.GetFief().ChangeOwnership(s.GetBesiegingPlayer());
 
             }
 
@@ -1344,8 +1344,8 @@ namespace hist_mmorpg
             {
                 // construct event description to be passed into siegeEnd
                 siegeDescription = "On this day of Our Lord the forces of ";
-                siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
-                siegeDescription += " FAILED to negotiate an end to the siege of " + s.getFief().name + ".";
+                siegeDescription += s.GetBesiegingPlayer().firstName + " " + s.GetBesiegingPlayer().familyName;
+                siegeDescription += " FAILED to negotiate an end to the siege of " + s.GetFief().name + ".";
                 siegeDescription += "\r\n\r\nTotal casualties during this round numbered " + defenderCasualties + " for the defending forces";
                 siegeDescription += ". In addition the keep level was reduced from " + originalKeepLvl + " to ";
                 siegeDescription += besiegedFief.keepLevel + ".";
@@ -1355,7 +1355,7 @@ namespace hist_mmorpg
             JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siegeStorm", loc: siegeLocation, descr: siegeDescription);
 
             // add new journal entry to pastEvents
-            Globals_Game.addPastEvent(siegeResult);
+            Globals_Game.AddPastEvent(siegeResult);
 
             // update total defender siege losses
             s.totalCasualtiesDefender += Convert.ToInt32(defenderCasualties);
@@ -1367,7 +1367,7 @@ namespace hist_mmorpg
             }
 
             // refresh screen
-            this.refreshCurrentScreen();
+            this.RefreshCurrentScreen();
 
             return negotiateSuccess;
         }
@@ -1377,18 +1377,18 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="s">The siege</param>
         /// <param name="type">The type of round - storm, negotiate, reduction (default)</param>
-        public void siegeReductionRound(Siege s, string type = "reduction")
+        public void SiegeReductionRound(Siege s, string type = "reduction")
         {
             bool siegeRaised = false;
-            Fief besiegedFief = s.getFief();
-            Army besieger = s.getBesiegingArmy();
-            Army defenderGarrison = s.getDefenderGarrison();
+            Fief besiegedFief = s.GetFief();
+            Army besieger = s.GetBesiegingArmy();
+            Army defenderGarrison = s.GetDefenderGarrison();
             Army defenderAdditional = null;
 
             // check for sallying army
             if (!String.IsNullOrWhiteSpace(s.defenderAdditional))
             {
-                defenderAdditional = s.getDefenderAdditional();
+                defenderAdditional = s.GetDefenderAdditional();
 
                 if (defenderAdditional.aggression > 0)
                 {
@@ -1477,7 +1477,7 @@ namespace hist_mmorpg
                 s.totalDays += 10;
 
                 // synchronise days
-                s.syncDays(s.days - 10);
+                s.SyncSiegeDays(s.days - 10);
 
                 if (type.Equals("reduction"))
                 {
@@ -1486,12 +1486,12 @@ namespace hist_mmorpg
 
                     // =================== construct and send JOURNAL ENTRY
                     // ID
-                    uint entryID = Globals_Game.getNextJournalEntryID();
+                    uint entryID = Globals_Game.GetNextJournalEntryID();
 
                     // personae
                     List<string> tempPersonae = new List<string>();
-                    tempPersonae.Add(s.getDefendingPlayer().charID + "|fiefOwner");
-                    tempPersonae.Add(s.getBesiegingPlayer().charID + "|attackerOwner");
+                    tempPersonae.Add(s.GetDefendingPlayer().charID + "|fiefOwner");
+                    tempPersonae.Add(s.GetBesiegingPlayer().charID + "|attackerOwner");
                     if (attackerLeader != null)
                     {
                         tempPersonae.Add(attackerLeader.charID + "|attackerLeader");
@@ -1513,11 +1513,11 @@ namespace hist_mmorpg
                     string[] siegePersonae = tempPersonae.ToArray();
 
                     // location
-                    string siegeLocation = s.getFief().id;
+                    string siegeLocation = s.GetFief().id;
 
                     // use popup text as description
-                    string siegeDescription = "On this day of Our Lord the siege of " + s.getFief().name + " by ";
-                    siegeDescription += s.getBesiegingPlayer().firstName + " " + s.getBesiegingPlayer().familyName;
+                    string siegeDescription = "On this day of Our Lord the siege of " + s.GetFief().name + " by ";
+                    siegeDescription += s.GetBesiegingPlayer().firstName + " " + s.GetBesiegingPlayer().familyName;
                     siegeDescription += " continued.  The besieged garrison lost a total of " + troopsLost + " troops, ";
                     siegeDescription += " and the keep level was reduced from " + originalKeepLvl + " to ";
                     siegeDescription += besiegedFief.keepLevel + ".";
@@ -1526,23 +1526,23 @@ namespace hist_mmorpg
                     JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siegeReduction", loc: siegeLocation, descr: siegeDescription);
 
                     // add new journal entry to pastEvents
-                    Globals_Game.addPastEvent(siegeResult);
+                    Globals_Game.AddPastEvent(siegeResult);
                 }
 
                 if (type.Equals("storm"))
                 {
-                    this.siegeStormRound(s, troopsLost, originalKeepLvl);
+                    this.SiegeStormRound(s, troopsLost, originalKeepLvl);
                 }
                 else if (type.Equals("negotiation"))
                 {
-                    this.siegeNegotiationRound(s, troopsLost, originalKeepLvl);
+                    this.SiegeNegotiationRound(s, troopsLost, originalKeepLvl);
                 }
             }
 
             if (type.Equals("reduction"))
             {
                 // refresh screen
-                this.refreshCurrentScreen();
+                this.RefreshCurrentScreen();
             }
 
         }
@@ -1551,7 +1551,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="attacker">The attacking army</param>
         /// <param name="target">The fief to be besieged</param>
-        public void siegeStart(Army attacker, Fief target)
+        public void SiegeStart(Army attacker, Fief target)
         {
             Army defenderGarrison = null;
             Army defenderAdditional = null;
@@ -1596,14 +1596,14 @@ namespace hist_mmorpg
             }
 
             // create siege object
-            Siege mySiege = new Siege(Globals_Game.getNextSiegeID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, attacker.GetOwner().charID, target.owner.charID, attacker.armyID, defenderGarrison.armyID, target.id, minDays, target.keepLevel, defAdd: defAddID);
+            Siege mySiege = new Siege(Globals_Game.GetNextSiegeID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, attacker.GetOwner().charID, target.owner.charID, attacker.armyID, defenderGarrison.armyID, target.id, minDays, target.keepLevel, defAdd: defAddID);
 
             // add to master list
             Globals_Game.siegeMasterList.Add(mySiege.siegeID, mySiege);
 
             // add to siege owners
-            mySiege.getBesiegingPlayer().mySieges.Add(mySiege.siegeID);
-            mySiege.getDefendingPlayer().mySieges.Add(mySiege.siegeID);
+            mySiege.GetBesiegingPlayer().mySieges.Add(mySiege.siegeID);
+            mySiege.GetDefendingPlayer().mySieges.Add(mySiege.siegeID);
 
             // add to fief
             target.siege = mySiege.siegeID;
@@ -1617,17 +1617,17 @@ namespace hist_mmorpg
             mySiege.totalDays++;
 
             // sychronise days
-            mySiege.syncDays(mySiege.days - 1);
+            mySiege.SyncSiegeDays(mySiege.days - 1);
 
             // =================== construct and send JOURNAL ENTRY
             // ID
-            uint entryID = Globals_Game.getNextJournalEntryID();
+            uint entryID = Globals_Game.GetNextJournalEntryID();
 
             // personae
             List<string> tempPersonae = new List<string>();
             tempPersonae.Add("all|all");
-            tempPersonae.Add(mySiege.getDefendingPlayer().charID + "|fiefOwner");
-            tempPersonae.Add(mySiege.getBesiegingPlayer().charID + "|attackerOwner");
+            tempPersonae.Add(mySiege.GetDefendingPlayer().charID + "|fiefOwner");
+            tempPersonae.Add(mySiege.GetBesiegingPlayer().charID + "|attackerOwner");
             tempPersonae.Add(attacker.GetLeader().charID + "|attackerLeader");
             // get defenderLeader
             Character defenderLeader = defenderGarrison.GetLeader();
@@ -1648,14 +1648,14 @@ namespace hist_mmorpg
             string[] siegePersonae = tempPersonae.ToArray();
 
             // location
-            string siegeLocation = mySiege.getFief().id;
+            string siegeLocation = mySiege.GetFief().id;
 
             // description
             string siegeDescription = "On this day of Our Lord the forces of ";
-            siegeDescription += mySiege.getBesiegingPlayer().firstName + " " + mySiege.getBesiegingPlayer().familyName;
+            siegeDescription += mySiege.GetBesiegingPlayer().firstName + " " + mySiege.GetBesiegingPlayer().familyName;
             siegeDescription += ", led by " + attacker.GetLeader().firstName + " " + attacker.GetLeader().familyName;
-            siegeDescription += " laid siege to the keep of " + mySiege.getFief().name;
-            siegeDescription += ", owned by " + mySiege.getDefendingPlayer().firstName + " " + mySiege.getDefendingPlayer().familyName;
+            siegeDescription += " laid siege to the keep of " + mySiege.GetFief().name;
+            siegeDescription += ", owned by " + mySiege.GetDefendingPlayer().firstName + " " + mySiege.GetDefendingPlayer().familyName;
             if (defenderLeader != null)
             {
                 siegeDescription += ". The defending garrison is led by " + defenderLeader.firstName + " " + defenderLeader.familyName;
@@ -1670,10 +1670,10 @@ namespace hist_mmorpg
             JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siege", loc: siegeLocation, descr: siegeDescription);
 
             // add new journal entry to pastEvents
-            Globals_Game.addPastEvent(siegeResult);
+            Globals_Game.AddPastEvent(siegeResult);
 
             // display siege in siege screen
-            this.refreshSiegeContainer(mySiege);
+            this.RefreshSiegeContainer(mySiege);
         }
     }
 }

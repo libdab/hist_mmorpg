@@ -48,7 +48,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Processes functions involved in lodging a new ownership (and kingship) challenge
         /// </summary>
-        public void lodgeOwnershipChallenge()
+        public void LodgeOwnershipChallenge()
         {
             bool proceed = true;
 
@@ -64,8 +64,8 @@ namespace hist_mmorpg
             else
             {
                 // create and send new OwnershipChallenge
-                OwnershipChallenge newChallenge = new OwnershipChallenge(Globals_Game.getNextOwnChallengeID(), Globals_Client.myPlayerCharacter.charID, "kingdom", this.id);
-                proceed = Globals_Game.addOwnershipChallenge(newChallenge);
+                OwnershipChallenge newChallenge = new OwnershipChallenge(Globals_Game.GetNextOwnChallengeID(), Globals_Client.myPlayerCharacter.charID, "kingdom", this.id);
+                proceed = Globals_Game.AddOwnershipChallenge(newChallenge);
             }
 
             if (proceed)
@@ -75,7 +75,7 @@ namespace hist_mmorpg
                 PlayerCharacter currentOwner = this.owner;
 
                 // ID
-                uint entryID = Globals_Game.getNextJournalEntryID();
+                uint entryID = Globals_Game.GetNextJournalEntryID();
 
                 // date
                 uint year = Globals_Game.clock.currentYear;
@@ -100,7 +100,7 @@ namespace hist_mmorpg
 
                 // create and send a proposal (journal entry)
                 JournalEntry myEntry = new JournalEntry(entryID, year, season, entryPersonae, entryType, descr: description, loc: entryLoc);
-                Globals_Game.addPastEvent(myEntry);
+                Globals_Game.AddPastEvent(myEntry);
             }
         }
 
@@ -108,10 +108,10 @@ namespace hist_mmorpg
         /// Transfers ownership of the kingdom (and the kingship) to the specified PlayerCharacter
         /// </summary>
         /// <param name="newOwner">The new owner</param>
-        public void transferOwnership(PlayerCharacter newOwner)
+        public void TransferOwnership(PlayerCharacter newOwner)
         {
             // get current title holder
-            Character titleHolder = this.getTitleHolder();
+            Character titleHolder = this.GetTitleHolder();
 
             // remove from current title holder's titles
             titleHolder.myTitles.Remove(this.id);
@@ -178,9 +178,9 @@ namespace hist_mmorpg
 
             // NAT
             // trim and ensure 1st is uppercase
-            nat = Utility_Methods.firstCharToUpper(nat.Trim());
+            nat = Utility_Methods.FirstCharToUpper(nat.Trim());
 
-            if (!Utility_Methods.validateNationalityID(nat))
+            if (!Utility_Methods.ValidateNationalityID(nat))
             {
                 throw new InvalidDataException("Kingdom_Serialised nationality ID must be 1-3 characters long, and consist entirely of letters");
             }

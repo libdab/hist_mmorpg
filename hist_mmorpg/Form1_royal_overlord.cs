@@ -23,17 +23,17 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes royal gifts display
         /// </summary>
-        public void refreshRoyalGiftsContainer()
+        public void RefreshRoyalGiftsContainer()
         {
             // get PlayerCharacter (to allow for herald viewing king's finances)
             PlayerCharacter thisKing = null;
-            if (Globals_Client.myPlayerCharacter.checkIsKing())
+            if (Globals_Client.myPlayerCharacter.CheckIsKing())
             {
                 thisKing = Globals_Client.myPlayerCharacter;
             }
-            else if (Globals_Client.myPlayerCharacter.checkIsHerald())
+            else if (Globals_Client.myPlayerCharacter.CheckIsHerald())
             {
-                thisKing = Globals_Client.myPlayerCharacter.getKing();
+                thisKing = Globals_Client.myPlayerCharacter.GetKing();
             }
 
             if (thisKing != null)
@@ -200,7 +200,7 @@ namespace hist_mmorpg
                         posItem = new ListViewItem(thisPos.Value.id.ToString());
 
                         // name
-                        posItem.SubItems.Add(thisPos.Value.getName(thisKing.language));
+                        posItem.SubItems.Add(thisPos.Value.GetName(thisKing.language));
 
                         // stature
                         posItem.SubItems.Add(thisPos.Value.stature.ToString());
@@ -244,7 +244,7 @@ namespace hist_mmorpg
         /// Refreshes overlord province management display
         /// </summary>
         /// <param name="province">Province to display</param>
-        public void refreshProvinceContainer(Province province = null)
+        public void RefreshProvinceContainer(Province province = null)
         {
             // disable controls until place selected in ListView
             this.DisableControls(this.provinceContainer.Panel1);
@@ -303,10 +303,10 @@ namespace hist_mmorpg
                     }
 
                     // kingdom ID
-                    provItem.SubItems.Add(thisProvince.getCurrentKingdom().id);
+                    provItem.SubItems.Add(thisProvince.GetCurrentKingdom().id);
 
                     // kingdom name
-                    provItem.SubItems.Add(thisProvince.getCurrentKingdom().name);
+                    provItem.SubItems.Add(thisProvince.GetCurrentKingdom().name);
 
                     // see if province to view has been passed in
                     if (province != null)
@@ -333,7 +333,7 @@ namespace hist_mmorpg
         /// <summary>
         /// Refreshes information the fief list in the overlord's province management display
         /// </summary>
-        public void refreshProvinceFiefList(Province p)
+        public void RefreshProvinceFiefList(Province p)
         {
             bool underOccupation = false;
 

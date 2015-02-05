@@ -25,7 +25,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="objectDataFile">Name of file containing game object CSV data</param>
         /// <param name="mapDataFile">Name of file containing map CSV data</param>
-        public void newGameFromCSV(string objectDataFile, string mapDataFile, uint start = 1337)
+        public void NewGameFromCSV(string objectDataFile, string mapDataFile, uint start = 1337)
         {
             // create GameClock
             Globals_Game.clock = new GameClock("clock_1", start);
@@ -273,7 +273,7 @@ namespace hist_mmorpg
                     if (lineParts[0].Equals("fief"))
                     {
                         Fief_Serialised thisFiefSer = null;
-                        thisFiefSer = this.importFromCSV_Fief(lineParts, lineNum);
+                        thisFiefSer = this.ImportFromCSV_Fief(lineParts, lineNum);
 
                         if (thisFiefSer != null)
                         {
@@ -296,7 +296,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("province"))
                     {
                         Province_Serialised thisProvSer = null;
-                        thisProvSer = this.importFromCSV_Prov(lineParts, lineNum);
+                        thisProvSer = this.ImportFromCSV_Prov(lineParts, lineNum);
 
                         if (thisProvSer != null)
                         {
@@ -319,7 +319,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("kingdom"))
                     {
                         Kingdom_Serialised thisKingSer = null;
-                        thisKingSer = this.importFromCSV_Kingdom(lineParts, lineNum);
+                        thisKingSer = this.ImportFromCSV_Kingdom(lineParts, lineNum);
 
                         if (thisKingSer != null)
                         {
@@ -342,7 +342,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("pc"))
                     {
                         PlayerCharacter_Serialised thisPcSer = null;
-                        thisPcSer = this.importFromCSV_PC(lineParts, lineNum);
+                        thisPcSer = this.ImportFromCSV_PC(lineParts, lineNum);
 
                         if (thisPcSer != null)
                         {
@@ -389,7 +389,7 @@ namespace hist_mmorpg
                     {
                         Skill thisSkill = null;
 
-                        thisSkill = this.importFromCSV_Skill(lineParts, lineNum);
+                        thisSkill = this.ImportFromCSV_Skill(lineParts, lineNum);
 
                         if (thisSkill != null)
                         {
@@ -412,7 +412,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("army"))
                     {
                         Army thisArmy = null;
-                        thisArmy = this.importFromCSV_Army(lineParts, lineNum);
+                        thisArmy = this.ImportFromCSV_Army(lineParts, lineNum);
 
                         if (thisArmy != null)
                         {
@@ -435,7 +435,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("language"))
                     {
                         Language_Serialised thisLangSer = null;
-                        thisLangSer = this.importFromCSV_Language(lineParts, lineNum);
+                        thisLangSer = this.ImportFromCSV_Language(lineParts, lineNum);
 
                         if (thisLangSer != null)
                         {
@@ -458,7 +458,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("baseLanguage"))
                     {
                         BaseLanguage thisBaseLang = null;
-                        thisBaseLang = this.importFromCSV_BaseLanguage(lineParts, lineNum);
+                        thisBaseLang = this.ImportFromCSV_BaseLanguage(lineParts, lineNum);
 
                         if (thisBaseLang != null)
                         {
@@ -481,7 +481,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("nationality"))
                     {
                         Nationality thisNat = null;
-                        thisNat = this.importFromCSV_Nationality(lineParts, lineNum);
+                        thisNat = this.ImportFromCSV_Nationality(lineParts, lineNum);
 
                         if (thisNat != null)
                         {
@@ -505,7 +505,7 @@ namespace hist_mmorpg
                     {
                         Rank thisRank = null;
 
-                        thisRank = this.importFromCSV_Rank(lineParts, lineNum);
+                        thisRank = this.ImportFromCSV_Rank(lineParts, lineNum);
 
                         if (thisRank != null)
                         {
@@ -528,7 +528,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("position"))
                     {
                         Position_Serialised thisPosSer = null;
-                        thisPosSer = this.importFromCSV_Position(lineParts, lineNum);
+                        thisPosSer = this.ImportFromCSV_Position(lineParts, lineNum);
 
                         if (thisPosSer != null)
                         {
@@ -551,7 +551,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("siege"))
                     {
                         Siege thisSiege = null;
-                        thisSiege = this.importFromCSV_Siege(lineParts, lineNum);
+                        thisSiege = this.ImportFromCSV_Siege(lineParts, lineNum);
 
                         if (thisSiege != null)
                         {
@@ -574,7 +574,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("terrain"))
                     {
                         Terrain thisTerr = null;
-                        thisTerr = this.importFromCSV_Terrain(lineParts, lineNum);
+                        thisTerr = this.ImportFromCSV_Terrain(lineParts, lineNum);
 
                         if (thisTerr != null)
                         {
@@ -604,11 +604,11 @@ namespace hist_mmorpg
                 catch (InvalidDataException ide)
                 {
                     // create and add sysAdmin JournalEntry
-                    JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                    JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                     if (importErrorEntry != null)
                     {
                         importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                        Globals_Game.addPastEvent(importErrorEntry);
+                        Globals_Game.AddPastEvent(importErrorEntry);
                     }
 
                     if (Globals_Client.showDebugMessages)
@@ -1173,7 +1173,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Fief_Serialised object</returns>
         /// <param name="fiefData">string[] holding source data</param>
-        public Fief_Serialised importFromCSV_Fief(string[] fiefData, int lineNum)
+        public Fief_Serialised ImportFromCSV_Fief(string[] fiefData, int lineNum)
         {
             Fief_Serialised thisFiefSer = null;
 
@@ -1323,11 +1323,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1339,11 +1339,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1355,11 +1355,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1371,11 +1371,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1393,7 +1393,7 @@ namespace hist_mmorpg
         /// <returns>Province_Serialised object</returns>
         /// <param name="provData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Province_Serialised importFromCSV_Prov(string[] provData, int lineNum)
+        public Province_Serialised ImportFromCSV_Prov(string[] provData, int lineNum)
         {
             Province_Serialised thisProvSer = null;
 
@@ -1429,11 +1429,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1445,11 +1445,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1461,11 +1461,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1477,11 +1477,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1499,7 +1499,7 @@ namespace hist_mmorpg
         /// <returns>Kingdom_Serialised object</returns>
         /// <param name="kingData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Kingdom_Serialised importFromCSV_Kingdom(string[] kingData, int lineNum)
+        public Kingdom_Serialised ImportFromCSV_Kingdom(string[] kingData, int lineNum)
         {
             Kingdom_Serialised thisKingSer = null;
 
@@ -1531,11 +1531,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1547,11 +1547,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1563,11 +1563,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1579,11 +1579,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1601,7 +1601,7 @@ namespace hist_mmorpg
         /// <returns>PlayerCharacter_Serialised object</returns>
         /// <param name="pcData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public PlayerCharacter_Serialised importFromCSV_PC(string[] pcData, int lineNum)
+        public PlayerCharacter_Serialised ImportFromCSV_PC(string[] pcData, int lineNum)
         {
             PlayerCharacter_Serialised thisPcSer = null;
 
@@ -1766,7 +1766,7 @@ namespace hist_mmorpg
                 {
                     if (Globals_Game.skillMasterList.Count > 2)
                     {
-                        Tuple<Skill, int>[] generatedSkills = Utility_Methods.generateSkillSet();
+                        Tuple<Skill, int>[] generatedSkills = Utility_Methods.GenerateSkillSet();
 
                         // convert to format for saving to database
                         skills = new Tuple<String, int>[generatedSkills.Length];
@@ -1821,11 +1821,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1837,11 +1837,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1853,11 +1853,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1869,11 +1869,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -1964,7 +1964,7 @@ namespace hist_mmorpg
                 {
                     if (Globals_Game.skillMasterList.Count > 2)
                     {
-                        Tuple<Skill, int>[] generatedSkills = Utility_Methods.generateSkillSet();
+                        Tuple<Skill, int>[] generatedSkills = Utility_Methods.GenerateSkillSet();
 
                         // convert to format for saving to database
                         skills = new Tuple<String, int>[generatedSkills.Length];
@@ -2018,11 +2018,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2034,11 +2034,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2050,11 +2050,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2066,11 +2066,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2088,7 +2088,7 @@ namespace hist_mmorpg
         /// <returns>Skill object</returns>
         /// <param name="skillData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Skill importFromCSV_Skill(string[] skillData, int lineNum)
+        public Skill ImportFromCSV_Skill(string[] skillData, int lineNum)
         {
             Skill thisSkill = null;
 
@@ -2143,11 +2143,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2159,11 +2159,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2175,11 +2175,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2191,11 +2191,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2213,7 +2213,7 @@ namespace hist_mmorpg
         /// <returns>Army object</returns>
         /// <param name="armyData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Army importFromCSV_Army(string[] armyData, int lineNum)
+        public Army ImportFromCSV_Army(string[] armyData, int lineNum)
         {
             Army thisArmy = null;
 
@@ -2254,11 +2254,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2270,11 +2270,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2286,11 +2286,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2302,11 +2302,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2324,7 +2324,7 @@ namespace hist_mmorpg
         /// <returns>Language_Serialised object</returns>
         /// <param name="langData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Language_Serialised importFromCSV_Language(string[] langData, int lineNum)
+        public Language_Serialised ImportFromCSV_Language(string[] langData, int lineNum)
         {
             Language_Serialised thisLangSer = null;
 
@@ -2342,11 +2342,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2358,11 +2358,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2374,11 +2374,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2390,11 +2390,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2412,7 +2412,7 @@ namespace hist_mmorpg
         /// <returns>BaseLanguage object</returns>
         /// <param name="baseLangData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public BaseLanguage importFromCSV_BaseLanguage(string[] baseLangData, int lineNum)
+        public BaseLanguage ImportFromCSV_BaseLanguage(string[] baseLangData, int lineNum)
         {
             BaseLanguage thisBaseLang = null;
 
@@ -2430,11 +2430,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2446,11 +2446,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2462,11 +2462,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2478,11 +2478,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2500,7 +2500,7 @@ namespace hist_mmorpg
         /// <returns>Nationality object</returns>
         /// <param name="natData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Nationality importFromCSV_Nationality(string[] natData, int lineNum)
+        public Nationality ImportFromCSV_Nationality(string[] natData, int lineNum)
         {
             Nationality thisNat = null;
 
@@ -2518,11 +2518,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2534,11 +2534,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2550,11 +2550,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2566,11 +2566,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2588,7 +2588,7 @@ namespace hist_mmorpg
         /// <returns>Rank object</returns>
         /// <param name="rankData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Rank importFromCSV_Rank(string[] rankData, int lineNum)
+        public Rank ImportFromCSV_Rank(string[] rankData, int lineNum)
         {
             Rank thisRank = null;
 
@@ -2645,11 +2645,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2661,11 +2661,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2677,11 +2677,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2693,11 +2693,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2715,7 +2715,7 @@ namespace hist_mmorpg
         /// <returns>Position_Serialised object</returns>
         /// <param name="posData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Position_Serialised importFromCSV_Position(string[] posData, int lineNum)
+        public Position_Serialised ImportFromCSV_Position(string[] posData, int lineNum)
         {
             Position_Serialised thisPosSer = null;
 
@@ -2772,11 +2772,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2788,11 +2788,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2804,11 +2804,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2820,11 +2820,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2842,7 +2842,7 @@ namespace hist_mmorpg
         /// <returns>Siege object</returns>
         /// <param name="siegeData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Siege importFromCSV_Siege(string[] siegeData, int lineNum)
+        public Siege ImportFromCSV_Siege(string[] siegeData, int lineNum)
         {
             Siege thisSiege = null;
 
@@ -2900,11 +2900,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2916,11 +2916,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2932,11 +2932,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2948,11 +2948,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -2970,7 +2970,7 @@ namespace hist_mmorpg
         /// <returns>Terrain object</returns>
         /// <param name="terrData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Terrain importFromCSV_Terrain(string[] terrData, int lineNum)
+        public Terrain ImportFromCSV_Terrain(string[] terrData, int lineNum)
         {
             Terrain thisTerr = null;
 
@@ -2988,11 +2988,11 @@ namespace hist_mmorpg
             catch (FormatException fe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + fe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -3004,11 +3004,11 @@ namespace hist_mmorpg
             catch (ArgumentOutOfRangeException aoore)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + aoore.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -3020,11 +3020,11 @@ namespace hist_mmorpg
             catch (InvalidDataException ide)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + ide.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -3036,11 +3036,11 @@ namespace hist_mmorpg
             catch (OverflowException oe)
             {
                 // create and add sysAdmin JournalEntry
-                JournalEntry importErrorEntry = Utility_Methods.createSysAdminJentry();
+                JournalEntry importErrorEntry = Utility_Methods.CreateSysAdminJentry();
                 if (importErrorEntry != null)
                 {
                     importErrorEntry.description = "Line " + lineNum + ": " + oe.Message;
-                    Globals_Game.addPastEvent(importErrorEntry);
+                    Globals_Game.AddPastEvent(importErrorEntry);
                 }
 
                 if (Globals_Client.showDebugMessages)
@@ -3461,7 +3461,7 @@ namespace hist_mmorpg
                         {
                             if (Globals_Game.skillMasterList.Count > 2)
                             {
-                                Tuple<Skill, int>[] generatedSkills = Utility_Methods.generateSkillSet();
+                                Tuple<Skill, int>[] generatedSkills = Utility_Methods.GenerateSkillSet();
 
                                 // convert to format for saving to database
                                 thisEntry.Value.skills = new Tuple<String, int>[generatedSkills.Length];
@@ -3503,7 +3503,7 @@ namespace hist_mmorpg
                         {
                             if (Globals_Game.skillMasterList.Count > 2)
                             {
-                                Tuple<Skill, int>[] generatedSkills = Utility_Methods.generateSkillSet();
+                                Tuple<Skill, int>[] generatedSkills = Utility_Methods.GenerateSkillSet();
 
                                 // convert to format for saving to database
                                 thisEntry.Value.skills = new Tuple<String, int>[generatedSkills.Length];

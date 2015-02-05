@@ -98,51 +98,51 @@ namespace hist_mmorpg
 
             // ID
             // trim and ensure 1st is uppercase
-            id = Utility_Methods.firstCharToUpper(id.Trim());
+            id = Utility_Methods.FirstCharToUpper(id.Trim());
 
-            if (!Utility_Methods.validateSiegeID(id))
+            if (!Utility_Methods.ValidateSiegeID(id))
             {
                 throw new InvalidDataException("Siege ID must have the format 'Siege_' followed by some numbers");
             }
 
             // STARTSEAS
-            if (!Utility_Methods.validateSeason(startSeas))
+            if (!Utility_Methods.ValidateSeason(startSeas))
             {
                 throw new InvalidDataException("Siege startSeason must be a byte between 0-3");
             }
 
             // BSGPLAYER
             // trim and ensure 1st is uppercase
-            bsgPlayer = Utility_Methods.firstCharToUpper(bsgPlayer.Trim());
+            bsgPlayer = Utility_Methods.FirstCharToUpper(bsgPlayer.Trim());
 
-            if (!Utility_Methods.validateCharacterID(bsgPlayer))
+            if (!Utility_Methods.ValidateCharacterID(bsgPlayer))
             {
                 throw new InvalidDataException("Siege besiegingPlayer id must have the format 'Char_' followed by some numbers");
             }
 
             // DEFPLAYER
             // trim and ensure 1st is uppercase
-            defPlayer = Utility_Methods.firstCharToUpper(defPlayer.Trim());
+            defPlayer = Utility_Methods.FirstCharToUpper(defPlayer.Trim());
 
-            if (!Utility_Methods.validateCharacterID(defPlayer))
+            if (!Utility_Methods.ValidateCharacterID(defPlayer))
             {
                 throw new InvalidDataException("Siege defendingPlayer id must have the format 'Char_' followed by some numbers");
             }
 
             // BSGARMY
             // trim and ensure 1st is uppercase
-            bsgArmy = Utility_Methods.firstCharToUpper(bsgArmy.Trim());
+            bsgArmy = Utility_Methods.FirstCharToUpper(bsgArmy.Trim());
 
-            if (!Utility_Methods.validateArmyID(bsgArmy))
+            if (!Utility_Methods.ValidateArmyID(bsgArmy))
             {
                 throw new InvalidDataException("Siege besiegingArmy id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
             }
 
             // DEFGARR
             // trim and ensure 1st is uppercase
-            defGarr = Utility_Methods.firstCharToUpper(defGarr.Trim());
+            defGarr = Utility_Methods.FirstCharToUpper(defGarr.Trim());
 
-            if (!Utility_Methods.validateArmyID(defGarr))
+            if (!Utility_Methods.ValidateArmyID(defGarr))
             {
                 throw new InvalidDataException("Siege defendingGarrison id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
             }
@@ -151,19 +151,19 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             fief = fief.Trim().ToUpper();
 
-            if (!Utility_Methods.validatePlaceID(fief))
+            if (!Utility_Methods.ValidatePlaceID(fief))
             {
                 throw new InvalidDataException("Siege fief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
 
             // DAY
-            if (!Utility_Methods.validateDays(day))
+            if (!Utility_Methods.ValidateDays(day))
             {
                 throw new InvalidDataException("Siege days must be a double between 0-109");
             }
 
             // KPLVL
-            if (!Utility_Methods.validateFiefDouble(kpLvl))
+            if (!Utility_Methods.ValidateFiefDouble(kpLvl))
             {
                 throw new InvalidDataException("Siege startKeepLevel must be a double >= 0");
             }
@@ -190,9 +190,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(defAdd))
             {
                 // trim and ensure 1st is uppercase
-                defAdd = Utility_Methods.firstCharToUpper(defAdd.Trim());
+                defAdd = Utility_Methods.FirstCharToUpper(defAdd.Trim());
 
-                if (!Utility_Methods.validateArmyID(defAdd))
+                if (!Utility_Methods.ValidateArmyID(defAdd))
                 {
                     throw new InvalidDataException("Siege defenderAdditonal id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
                 }
@@ -234,7 +234,7 @@ namespace hist_mmorpg
         /// Gets the fief being besieged
         /// </summary>
         /// <returns>The besieged fief</returns>
-        public Fief getFief()
+        public Fief GetFief()
         {
             Fief besiegedFief = null;
 
@@ -253,7 +253,7 @@ namespace hist_mmorpg
         /// Gets the besieging army
         /// </summary>
         /// <returns>The besieging army</returns>
-        public Army getBesiegingArmy()
+        public Army GetBesiegingArmy()
         {
             Army besieger = null;
 
@@ -272,7 +272,7 @@ namespace hist_mmorpg
         /// Gets the defending garrison
         /// </summary>
         /// <returns>The defending garrison (Army)</returns>
-        public Army getDefenderGarrison()
+        public Army GetDefenderGarrison()
         {
             Army defenderGarrison = null;
 
@@ -291,7 +291,7 @@ namespace hist_mmorpg
         /// Gets the additional defending army
         /// </summary>
         /// <returns>The additional defending army</returns>
-        public Army getDefenderAdditional()
+        public Army GetDefenderAdditional()
         {
             Army thisDefenderAdditional = null;
 
@@ -310,7 +310,7 @@ namespace hist_mmorpg
         /// Gets the defending player
         /// </summary>
         /// <returns>The defending player</returns>
-        public PlayerCharacter getDefendingPlayer()
+        public PlayerCharacter GetDefendingPlayer()
         {
             PlayerCharacter defendingPlyr = null;
 
@@ -329,7 +329,7 @@ namespace hist_mmorpg
         /// Gets the besieging player
         /// </summary>
         /// <returns>The besieging player</returns>
-        public PlayerCharacter getBesiegingPlayer()
+        public PlayerCharacter GetBesiegingPlayer()
         {
             PlayerCharacter besiegingPlyr = null;
 
@@ -349,11 +349,11 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="newDays">double indicating new value for days</param>
         /// <param name="checkForAttrition">bool indicating whether to check for attrition</param>
-        public void syncDays(double newDays, bool checkForAttrition = true)
+        public void SyncSiegeDays(double newDays, bool checkForAttrition = true)
         {
-            Army besieger = this.getBesiegingArmy();
-            Army defenderGarr = this.getDefenderGarrison();
-            Army defenderAdd = this.getDefenderAdditional();
+            Army besieger = this.GetBesiegingArmy();
+            Army defenderGarr = this.GetDefenderGarrison();
+            Army defenderAdd = this.GetDefenderAdditional();
             bool defenderAttritonApplies = false;
             byte attritionChecks = 0;
             double difference = 0;
@@ -372,7 +372,7 @@ namespace hist_mmorpg
                     attritionChecks = Convert.ToByte(difference / 7);
 
                     // check if attrition has kicked in for defending forces
-                    defenderAttritonApplies = this.checkAttritionApplies();
+                    defenderAttritonApplies = this.CheckAttritionApplies();
                 }
 
             }
@@ -472,10 +472,10 @@ namespace hist_mmorpg
         /// Checks to see if attrition applies to the defending forces (based on bailiff management rating)
         /// </summary>
         /// <returns>bool indicating whether attrition applies</returns>
-        public bool checkAttritionApplies()
+        public bool CheckAttritionApplies()
         {
             bool attritionApplies = false;
-            Character thisBailiff = this.getFief().bailiff;
+            Character thisBailiff = this.GetFief().bailiff;
             double bailiffManagement = 0;
 
             // get bailiff's management rating
@@ -501,11 +501,11 @@ namespace hist_mmorpg
         /// Updates siege at the end/beginning of the season
         /// </summary>
         /// <returns>bool indicating whether the siege has been dismantled</returns>
-        public bool updateSiege()
+        public bool UpdateSiege()
         {
             bool siegeEnded = false;
             Character besiegerLeader = null;
-            PlayerCharacter besiegerOwner = this.getBesiegingPlayer(); ;
+            PlayerCharacter besiegerOwner = this.GetBesiegingPlayer(); ;
 
             // check if besieger still in field (i.e. has not been disbanded)
             if (String.IsNullOrWhiteSpace(this.besiegerArmy))
@@ -526,7 +526,7 @@ namespace hist_mmorpg
                 double newDays = 90;
 
                 // get besieging leader
-                besiegerLeader = this.getBesiegingArmy().GetLeader();
+                besiegerLeader = this.GetBesiegingArmy().GetLeader();
                 if (besiegerLeader != null)
                 {
                     // set days to besieger leader's days (may be effected by skills)
@@ -534,7 +534,7 @@ namespace hist_mmorpg
                 }
 
                 // synchronise days of all component objects
-                this.syncDays(newDays, false);
+                this.SyncSiegeDays(newDays, false);
             }
 
             return siegeEnded;
@@ -545,21 +545,21 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="siegeSuccessful">bool indicating whether the siege was successful</param>
         /// <param name="s">String containing circumstances under which the siege ended</param>
-        public void siegeEnd(bool siegeSuccessful, string circumstance = null)
+        public void SiegeEnd(bool siegeSuccessful, string circumstance = null)
         {
             // get principle objects
-            PlayerCharacter defendingPlayer = this.getDefendingPlayer();
-            Army besiegingArmy = this.getBesiegingArmy();
-            Army defenderGarrison = this.getDefenderGarrison();
+            PlayerCharacter defendingPlayer = this.GetDefendingPlayer();
+            Army besiegingArmy = this.GetBesiegingArmy();
+            Army defenderGarrison = this.GetDefenderGarrison();
             Character defenderLeader = defenderGarrison.GetLeader();
-            PlayerCharacter besiegingPlayer = this.getBesiegingPlayer();
-            Army defenderAdditional = this.getDefenderAdditional();
+            PlayerCharacter besiegingPlayer = this.GetBesiegingPlayer();
+            Army defenderAdditional = this.GetDefenderAdditional();
             Character addDefendLeader = null;
             if (defenderAdditional != null)
             {
                 addDefendLeader = defenderAdditional.GetLeader();
             }
-            Fief besiegedFief = this.getFief();
+            Fief besiegedFief = this.GetFief();
             Character besiegingArmyLeader = null;
             if (besiegingArmy != null)
             {
@@ -568,7 +568,7 @@ namespace hist_mmorpg
 
             // =================== construct and send JOURNAL ENTRY
             // ID
-            uint entryID = Globals_Game.getNextJournalEntryID();
+            uint entryID = Globals_Game.GetNextJournalEntryID();
 
             // personae
             List<string> tempPersonae = new List<string>();
@@ -614,7 +614,7 @@ namespace hist_mmorpg
             JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siegeEnd", loc: siegeLocation, descr: siegeDescription);
 
             // add new journal entry to pastEvents
-            Globals_Game.addPastEvent(siegeResult);
+            Globals_Game.AddPastEvent(siegeResult);
 
             // disband garrison
             defenderGarrison.DisbandArmy();

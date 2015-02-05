@@ -160,18 +160,18 @@ namespace hist_mmorpg
 
             // ID
             // trim and ensure 1st is uppercase
-            id = Utility_Methods.firstCharToUpper(id.Trim());
+            id = Utility_Methods.FirstCharToUpper(id.Trim());
 
-            if (!Utility_Methods.validateCharacterID(id))
+            if (!Utility_Methods.ValidateCharacterID(id))
             {
                 throw new InvalidDataException("Character id must have the format 'Char_' followed by some numbers");
             }
 
             // FIRSTNAM
             // trim and ensure 1st is uppercase
-            firstNam = Utility_Methods.firstCharToUpper(firstNam.Trim());
+            firstNam = Utility_Methods.FirstCharToUpper(firstNam.Trim());
 
-            if (!Utility_Methods.validateName(firstNam))
+            if (!Utility_Methods.ValidateName(firstNam))
             {
 				throw new InvalidDataException("Character firstname must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
@@ -180,49 +180,49 @@ namespace hist_mmorpg
             // trim
             famNam = famNam.Trim();
 
-            if (!Utility_Methods.validateName(famNam))
+            if (!Utility_Methods.ValidateName(famNam))
             {
                 throw new InvalidDataException("Character family name must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // DOB
-            if (!Utility_Methods.validateSeason(dob.Item2))
+            if (!Utility_Methods.ValidateSeason(dob.Item2))
             {
                 throw new InvalidDataException("Character date-of-birth season must be a byte between 0-3");
             }
 
             // MXHEA
-            if (!Utility_Methods.validateCharacterStat(mxHea))
+            if (!Utility_Methods.ValidateCharacterStat(mxHea))
             {
                 throw new InvalidDataException("Character maxHealth must be a double between 1-9");
             }
 
             // VIR
-            if (!Utility_Methods.validateCharacterStat(vir))
+            if (!Utility_Methods.ValidateCharacterStat(vir))
             {
                 throw new InvalidDataException("Character virility must be a double between 1-9");
             }
 
             // DAYS
-            if (!Utility_Methods.validateDays(day))
+            if (!Utility_Methods.ValidateDays(day))
             {
                 throw new InvalidDataException("Character days must be a double between 0-109");
             }
 
             // STAT
-            if (!Utility_Methods.validateCharacterStat(stat, 0))
+            if (!Utility_Methods.ValidateCharacterStat(stat, 0))
             {
                 throw new InvalidDataException("Character stature must be a double between 0-9");
             }
 
             // MNGMNT
-            if (!Utility_Methods.validateCharacterStat(mngmnt))
+            if (!Utility_Methods.ValidateCharacterStat(mngmnt))
             {
                 throw new InvalidDataException("Character management must be a double between 1-9");
             }
 
             // CBT
-            if (!Utility_Methods.validateCharacterStat(cbt))
+            if (!Utility_Methods.ValidateCharacterStat(cbt))
             {
                 throw new InvalidDataException("Character combat must be a double between 1-9");
             }
@@ -230,7 +230,7 @@ namespace hist_mmorpg
             // SKL
             for (int i = 0; i < skl.Length; i++)
             {
-                if (!Utility_Methods.validateCharacterStat(Convert.ToDouble(skl[i].Item2)))
+                if (!Utility_Methods.ValidateCharacterStat(Convert.ToDouble(skl[i].Item2)))
                 {
                     throw new InvalidDataException("Character skill level must be an integer between 1-9");
                 }
@@ -249,9 +249,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(famID))
             {
                 // trim and ensure 1st is uppercase
-                famID = Utility_Methods.firstCharToUpper(famID.Trim());
+                famID = Utility_Methods.FirstCharToUpper(famID.Trim());
 
-                if (!Utility_Methods.validateCharacterID(famID))
+                if (!Utility_Methods.ValidateCharacterID(famID))
                 {
                     throw new InvalidDataException("Character family id must have the format 'Char_' followed by some numbers");
                 }
@@ -261,9 +261,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(sp))
             {
                 // trim and ensure 1st is uppercase
-                sp = Utility_Methods.firstCharToUpper(sp.Trim());
+                sp = Utility_Methods.FirstCharToUpper(sp.Trim());
 
-                if (!Utility_Methods.validateCharacterID(sp))
+                if (!Utility_Methods.ValidateCharacterID(sp))
                 {
                     throw new InvalidDataException("Character spouse id must have the format 'Char_' followed by some numbers");
                 }
@@ -273,9 +273,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(fath))
             {
                 // trim and ensure 1st is uppercase
-                fath = Utility_Methods.firstCharToUpper(fath.Trim());
+                fath = Utility_Methods.FirstCharToUpper(fath.Trim());
 
-                if (!Utility_Methods.validateCharacterID(fath))
+                if (!Utility_Methods.ValidateCharacterID(fath))
                 {
                     throw new InvalidDataException("Character father id must have the format 'Char_' followed by some numbers");
                 }
@@ -285,9 +285,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(moth))
             {
                 // trim and ensure 1st is uppercase
-                moth = Utility_Methods.firstCharToUpper(moth.Trim());
+                moth = Utility_Methods.FirstCharToUpper(moth.Trim());
 
-                if (!Utility_Methods.validateCharacterID(moth))
+                if (!Utility_Methods.ValidateCharacterID(moth))
                 {
                     throw new InvalidDataException("Character mother id must have the format 'Char_' followed by some numbers");
                 }
@@ -299,7 +299,7 @@ namespace hist_mmorpg
                 // trim and ensure is uppercase
                 myTi[i] = myTi[i].Trim().ToUpper();
 
-                if (!Utility_Methods.validatePlaceID(myTi[i]))
+                if (!Utility_Methods.ValidatePlaceID(myTi[i]))
                 {
                     throw new InvalidDataException("All Character title IDs must be 5 characters long, start with a letter, and end in at least 2 numbers");
                 }
@@ -309,9 +309,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(fia))
             {
                 // trim and ensure 1st is uppercase
-                fia = Utility_Methods.firstCharToUpper(fia.Trim());
+                fia = Utility_Methods.FirstCharToUpper(fia.Trim());
 
-                if (!Utility_Methods.validateCharacterID(fia))
+                if (!Utility_Methods.ValidateCharacterID(fia))
                 {
                     throw new InvalidDataException("Character fiancee id must have the format 'Char_' followed by some numbers");
                 }
@@ -327,9 +327,9 @@ namespace hist_mmorpg
                     for (int i = 0; i < myAils.Length; i++)
                     {
                         // trim and ensure 1st is uppercase
-                        myAils[i] = Utility_Methods.firstCharToUpper(myAils[i].Trim());
+                        myAils[i] = Utility_Methods.FirstCharToUpper(myAils[i].Trim());
 
-                        if (!Utility_Methods.validateAilmentID(myAils[i]))
+                        if (!Utility_Methods.ValidateAilmentID(myAils[i]))
                         {
                             throw new InvalidDataException("All IDs in Character ailments must have the format 'Ail_' followed by some numbers");
                         }
@@ -341,9 +341,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(aID))
             {
                 // trim and ensure 1st is uppercase
-                aID = Utility_Methods.firstCharToUpper(aID.Trim());
+                aID = Utility_Methods.FirstCharToUpper(aID.Trim());
 
-                if (!Utility_Methods.validateArmyID(aID))
+                if (!Utility_Methods.ValidateArmyID(aID))
                 {
                     throw new InvalidDataException("Character army id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
                 }
@@ -445,7 +445,7 @@ namespace hist_mmorpg
             switch (circumstance)
             {
                 case "respawn":
-                    this.charID = Globals_Game.getNextCharID();
+                    this.charID = Globals_Game.GetNextCharID();
                     this.birthDate = new Tuple<uint, byte>(Globals_Game.clock.currentYear - 20, Globals_Game.clock.currentSeason);
                     this.maxHealth = Globals_Game.myRand.Next(4, 10);
                     // vary main stats slightly (virility, management, combat)
@@ -923,7 +923,7 @@ namespace hist_mmorpg
             List<JournalEntry> births = new List<JournalEntry>();
 
             // get birth entry in Globals_Game.scheduledEvents
-            births = Globals_Game.scheduledEvents.getSpecificEntries(this.charID, "mother", "birth");
+            births = Globals_Game.scheduledEvents.GetSpecificEntries(this.charID, "mother", "birth");
 
             // remove birth events from Globals_Game.scheduledEvents
             foreach (JournalEntry jEntry in births)
@@ -943,7 +943,7 @@ namespace hist_mmorpg
         /// <param name="role">The role of the Character in the marriage</param>
         public void CancelMarriage(string role)
         {
-            List<JournalEntry> marriages = Globals_Game.scheduledEvents.getSpecificEntries(this.charID, role, "marriage");
+            List<JournalEntry> marriages = Globals_Game.scheduledEvents.GetSpecificEntries(this.charID, role, "marriage");
 
             foreach (JournalEntry jEntry in marriages)
             {
@@ -988,7 +988,7 @@ namespace hist_mmorpg
                 }
 
                 // ID
-                uint newEntryID = Globals_Game.getNextJournalEntryID();
+                uint newEntryID = Globals_Game.GetNextJournalEntryID();
 
                 // date
                 uint year = Globals_Game.clock.currentYear;
@@ -1015,7 +1015,7 @@ namespace hist_mmorpg
 
                 // create and add a marriageCancelled entry to Globals_Game.pastEvents
                 JournalEntry newEntry = new JournalEntry(newEntryID, year, season, newEntryPersonae, type, descr: description);
-                success = Globals_Game.addPastEvent(newEntry);
+                success = Globals_Game.AddPastEvent(newEntry);
 
                 // delete marriage entry in Globals_Game.scheduledEvents
                 Globals_Game.scheduledEvents.entries.Remove(jEntry.jEntryID);
@@ -1211,7 +1211,7 @@ namespace hist_mmorpg
                 if (!String.IsNullOrWhiteSpace((this as NonPlayerCharacter).employer))
                 {
                     // get boss
-                    employer = (this as NonPlayerCharacter).getEmployer();
+                    employer = (this as NonPlayerCharacter).GetEmployer();
                 }
 
             }
@@ -1235,9 +1235,9 @@ namespace hist_mmorpg
                 foreach (KeyValuePair<byte, Position> posEntry in Globals_Game.positionMasterList)
                 {
                     // if deceased character is office holder, remove from office
-                    if (posEntry.Value.getOfficeHolder() == this)
+                    if (posEntry.Value.GetOfficeHolder() == this)
                     {
-                        posEntry.Value.removeFromOffice(this as PlayerCharacter);
+                        posEntry.Value.RemoveFromOffice(this as PlayerCharacter);
                     }
                 }
             }
@@ -1286,7 +1286,7 @@ namespace hist_mmorpg
             else if ((role.Equals("player")) || (role.Equals("PC")))
             {
                 // get heir
-                thisHeir = (this as PlayerCharacter).getHeir();
+                thisHeir = (this as PlayerCharacter).GetHeir();
 
                 if (thisHeir != null)
                 {
@@ -1297,7 +1297,7 @@ namespace hist_mmorpg
                 else
                 {
                     // process inheritance
-                    this.TransferPropertyToKing((this as PlayerCharacter), (this as PlayerCharacter).getKing());
+                    this.TransferPropertyToKing((this as PlayerCharacter), (this as PlayerCharacter).GetKing());
                 }
             }
 
@@ -1307,7 +1307,7 @@ namespace hist_mmorpg
                 bool success = false;
 
                 // ID
-                uint deathEntryID = Globals_Game.getNextJournalEntryID();
+                uint deathEntryID = Globals_Game.GetNextJournalEntryID();
 
                 // date
                 uint year = Globals_Game.clock.currentYear;
@@ -1344,7 +1344,7 @@ namespace hist_mmorpg
                     }
 
                     // description
-                    description += ", " + (this as NonPlayerCharacter).getFunction(headOfFamily) + " of ";
+                    description += ", " + (this as NonPlayerCharacter).GetFunction(headOfFamily) + " of ";
                     description += headOfFamily.firstName + " " + headOfFamily.familyName;
                 }
 
@@ -1421,7 +1421,7 @@ namespace hist_mmorpg
                     // have an heir
                     if (thisHeir != null)
                     {
-                        description += " He is succeeded by his " + thisHeir.getFunction(this as PlayerCharacter);
+                        description += " He is succeeded by his " + thisHeir.GetFunction(this as PlayerCharacter);
                         description += " " + thisHeir.firstName + " " + thisHeir.familyName + ".";
                     }
 
@@ -1436,7 +1436,7 @@ namespace hist_mmorpg
 
                 // create and add a death entry to Globals_Game.pastEvents
                 JournalEntry deathEntry = new JournalEntry(deathEntryID, year, season, deathPersonae, type, descr: description);
-                success = Globals_Game.addPastEvent(deathEntry);
+                success = Globals_Game.AddPastEvent(deathEntry);
             }
 
         }
@@ -1493,7 +1493,7 @@ namespace hist_mmorpg
                     // end siege
                     if (thisSiege != null)
                     {
-                        thisSiege.siegeEnd(false);
+                        thisSiege.SiegeEnd(false);
                     }
                 }
                 siegesToEnd.Clear();
@@ -1663,7 +1663,7 @@ namespace hist_mmorpg
 			List<OwnershipChallenge> toRemove = new List<OwnershipChallenge> ();
 			foreach (KeyValuePair<string, OwnershipChallenge> challengeEntry in Globals_Game.ownershipChallenges)
 			{
-				if (challengeEntry.Value.getChallenger() == deceased)
+				if (challengeEntry.Value.GetChallenger() == deceased)
 				{
 					toRemove.Add(challengeEntry.Value);
 				}
@@ -1758,7 +1758,7 @@ namespace hist_mmorpg
             List<OwnershipChallenge> challsToChange = new List<OwnershipChallenge>();
 			foreach (KeyValuePair<string, OwnershipChallenge> challengeEntry in Globals_Game.ownershipChallenges)
 			{
-				if (challengeEntry.Value.getChallenger() == deceased)
+				if (challengeEntry.Value.GetChallenger() == deceased)
 				{
                     challsToChange.Add(challengeEntry.Value);
 				}
@@ -2642,7 +2642,7 @@ namespace hist_mmorpg
                     string[] birthPersonae = new string[] { wife.familyID + "|headOfFamily", wife.charID + "|mother", wife.spouse + "|father" };
 
                     // create entry
-                    JournalEntry birth = new JournalEntry(Globals_Game.getNextJournalEntryID(), birthYear, birthSeason, birthPersonae, "birth");
+                    JournalEntry birth = new JournalEntry(Globals_Game.GetNextJournalEntryID(), birthYear, birthSeason, birthPersonae, "birth");
                     // add entry
                     Globals_Game.scheduledEvents.entries.Add(birth.jEntryID, birth);
 
@@ -2865,7 +2865,7 @@ namespace hist_mmorpg
                 if (this is NonPlayerCharacter)
                 {
                     // check for naming requirement and, if so, assign regent's first name
-                    (this as NonPlayerCharacter).checkNeedsNaming();
+                    (this as NonPlayerCharacter).CheckNeedsNaming();
                 }
 
                 // reset DAYS
@@ -3000,7 +3000,7 @@ namespace hist_mmorpg
                     }
 
                     // create ailment
-                    Ailment myAilment = new Ailment(Globals_Game.getNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, healthLoss, minEffect);
+                    Ailment myAilment = new Ailment(Globals_Game.GetNextAilmentID(), "Battlefield injury", Globals_Game.clock.seasons[Globals_Game.clock.currentSeason] + ", " + Globals_Game.clock.currentYear, healthLoss, minEffect);
 
                     // add to character
                     this.ailments.Add(myAilment.ailmentID, myAilment);
@@ -3012,7 +3012,7 @@ namespace hist_mmorpg
             if ((!isDead) && (healthLoss > 0))
             {
                 // ID
-                uint entryID = Globals_Game.getNextJournalEntryID();
+                uint entryID = Globals_Game.GetNextJournalEntryID();
 
                 // personae
                 PlayerCharacter concernedPlayer = null;
@@ -3024,7 +3024,7 @@ namespace hist_mmorpg
                 {
                     if (!String.IsNullOrWhiteSpace(this.familyID))
                     {
-                        concernedPlayer = (this as NonPlayerCharacter).getHeadOfFamily();
+                        concernedPlayer = (this as NonPlayerCharacter).GetHeadOfFamily();
                         if (concernedPlayer != null)
                         {
                             tempPersonae.Add(concernedPlayer.charID + "|headOfFamily");
@@ -3033,7 +3033,7 @@ namespace hist_mmorpg
 
                     else if (!String.IsNullOrWhiteSpace((this as NonPlayerCharacter).employer))
                     {
-                        concernedPlayer = (this as NonPlayerCharacter).getEmployer();
+                        concernedPlayer = (this as NonPlayerCharacter).GetEmployer();
                         if (concernedPlayer != null)
                         {
                             tempPersonae.Add(concernedPlayer.charID + "|employer");
@@ -3050,7 +3050,7 @@ namespace hist_mmorpg
                 injuryDescription += this.firstName + " " + this.familyName;
                 if (concernedPlayer != null)
                 {
-                    injuryDescription += ", " + (this as NonPlayerCharacter).getFunction(concernedPlayer) + " of ";
+                    injuryDescription += ", " + (this as NonPlayerCharacter).GetFunction(concernedPlayer) + " of ";
                     injuryDescription += concernedPlayer.firstName + " " + concernedPlayer.familyName + ",";
                 }
                 injuryDescription += " received ";
@@ -3073,7 +3073,7 @@ namespace hist_mmorpg
                 JournalEntry injuryEntry = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, injuryPersonae, "injury", loc: injuryLocation, descr: injuryDescription);
 
                 // add new journal entry to pastEvents
-                Globals_Game.addPastEvent(injuryEntry);
+                Globals_Game.AddPastEvent(injuryEntry);
             }
 
             return isDead;
@@ -3095,7 +3095,7 @@ namespace hist_mmorpg
             }
             else if (!String.IsNullOrWhiteSpace((this as NonPlayerCharacter).employer))
             {
-                employer = (this as NonPlayerCharacter).getEmployer();
+                employer = (this as NonPlayerCharacter).GetEmployer();
             }
             else if (!String.IsNullOrWhiteSpace(this.familyID))
             {
@@ -3133,7 +3133,7 @@ namespace hist_mmorpg
             }
             else
             {
-                employer = (this as NonPlayerCharacter).getEmployer();
+                employer = (this as NonPlayerCharacter).GetEmployer();
             }
 
             if (employer != null)
@@ -3225,7 +3225,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             home = home.Trim().ToUpper();
 
-            if (!Utility_Methods.validatePlaceID(home))
+            if (!Utility_Methods.ValidatePlaceID(home))
             {
                 throw new InvalidDataException("PlayerCharacter homeFief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -3234,7 +3234,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             ancHome = ancHome.Trim().ToUpper();
 
-            if (!Utility_Methods.validatePlaceID(ancHome))
+            if (!Utility_Methods.ValidatePlaceID(ancHome))
             {
                 throw new InvalidDataException("PlayerCharacter ancestral homeFief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -3245,9 +3245,9 @@ namespace hist_mmorpg
                 for (int i = 0; i < myS.Count; i++ )
                 {
                     // trim and ensure 1st is uppercase
-                    myS[i] = Utility_Methods.firstCharToUpper(myS[i].Trim());
+                    myS[i] = Utility_Methods.FirstCharToUpper(myS[i].Trim());
 
-                    if (!Utility_Methods.validateSiegeID(myS[i]))
+                    if (!Utility_Methods.ValidateSiegeID(myS[i]))
                     {
                         throw new InvalidDataException("All PlayerCharacter siege IDs must have the format 'Siege_' followed by some numbers");
                     }
@@ -3332,7 +3332,7 @@ namespace hist_mmorpg
         /// Identifies and returns the PlayerCharacter's heir
         /// </summary>
         /// <returns>The heir (NonPlayerCharacter)</returns>
-        public NonPlayerCharacter getHeir()
+        public NonPlayerCharacter GetHeir()
         {
             NonPlayerCharacter heir = null;
             List<NonPlayerCharacter> sons = new List<NonPlayerCharacter>();
@@ -3348,13 +3348,13 @@ namespace hist_mmorpg
                 }
 
                 // take note of sons
-                else if (npc.getFunction(this).Equals("Son"))
+                else if (npc.GetFunction(this).Equals("Son"))
                 {
                     sons.Add(npc);
                 }
 
                 // take note of brothers
-                else if (npc.getFunction(this).Equals("Brother"))
+                else if (npc.GetFunction(this).Equals("Brother"))
                 {
                     brothers.Add(npc);
                 }
@@ -3411,7 +3411,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>The siege object</returns>
         /// <param name="id">The siegeID of the siege</param>
-        public Siege getSiege(string id)
+        public Siege GetSiege(string id)
         {
             Siege thisSiege = null;
 
@@ -3427,7 +3427,7 @@ namespace hist_mmorpg
         /// Returns the current total GDP for all fiefs owned by the PlayerCharacter
         /// </summary>
         /// <returns>The current total GDP</returns>
-        public int getTotalGDP()
+        public int GetTotalGDP()
         {
             int totalGDP = 0;
 
@@ -3443,7 +3443,7 @@ namespace hist_mmorpg
         /// Finds the highest ranking fief(s) in the PlayerCharacter's owned fiefs
         /// </summary>
         /// <returns>A list containing the highest ranking fief(s)</returns>
-        public List<Fief> getHighestRankingFief()
+        public List<Fief> GetHighestRankingFief()
         {
             List<Fief> highestFiefs = new List<Fief>();
             int highestRank = 0;
@@ -3475,12 +3475,12 @@ namespace hist_mmorpg
         /// <returns>bool indicating acceptance of offer</returns>
         /// <param name="npc">NPC receiving offer</param>
         /// <param name="offer">Proposed wage</param>
-        public bool processEmployOffer(NonPlayerCharacter npc, uint offer)
+        public bool ProcessEmployOffer(NonPlayerCharacter npc, uint offer)
         {
             bool accepted = false;
 
             // get NPC's potential salary
-            double potentialSalary = npc.calcSalary(this);
+            double potentialSalary = npc.CalcSalary(this);
 
             // generate random (0 - 100) to see if accepts offer
             double chance = Utility_Methods.GetRandomDouble(100);
@@ -3588,7 +3588,7 @@ namespace hist_mmorpg
             if (accepted)
             {
                 // hire this NPC
-                this.hireNPC(npc, offer);
+                this.HireNPC(npc, offer);
             }
 
             return accepted;
@@ -3599,7 +3599,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="npc">NPC to hire</param>
         /// <param name="wage">NPC's wage</param>
-        public void hireNPC(NonPlayerCharacter npc, uint wage)
+        public void HireNPC(NonPlayerCharacter npc, uint wage)
         {
             // if was in employ of another PC, fire from that position
             if (!String.IsNullOrWhiteSpace(npc.employer))
@@ -3607,11 +3607,11 @@ namespace hist_mmorpg
                 if (!npc.employer.Equals(this.charID))
                 {
                     // get previous employer
-                    PlayerCharacter oldBoss = npc.getEmployer();
+                    PlayerCharacter oldBoss = npc.GetEmployer();
 
                     if (oldBoss != null)
                     {
-                        oldBoss.fireNPC(npc);
+                        oldBoss.FireNPC(npc);
                     }
                 }
             }
@@ -3633,7 +3633,7 @@ namespace hist_mmorpg
         /// Fire an NPC
         /// </summary>
         /// <param name="npc">NPC to fire</param>
-        public void fireNPC(NonPlayerCharacter npc)
+        public void FireNPC(NonPlayerCharacter npc)
         {
             // remove from bailiff duties
             List<Fief> fiefsBailiff = npc.GetFiefsBailiff();
@@ -3718,7 +3718,7 @@ namespace hist_mmorpg
         /// Adds an NPC to the character's entourage
         /// </summary>
         /// <param name="npc">NPC to be added</param>
-        public void addToEntourage(NonPlayerCharacter npc)
+        public void AddToEntourage(NonPlayerCharacter npc)
         {
             // if NPC has entries in goTo, clear
             if (npc.goTo.Count > 0)
@@ -3748,7 +3748,7 @@ namespace hist_mmorpg
         /// Removes an NPC from the character's entourage
         /// </summary>
         /// <param name="npc">NPC to be removed</param>
-        public void removeFromEntourage(NonPlayerCharacter npc)
+        public void RemoveFromEntourage(NonPlayerCharacter npc)
         {
             //remove from entourage
             npc.inEntourage = false;
@@ -3758,7 +3758,7 @@ namespace hist_mmorpg
         /// Adds a Fief to the character's list of owned fiefs
         /// </summary>
         /// <param name="f">Fief to be added</param>
-        public void addToOwnedFiefs(Fief f)
+        public void AddToOwnedFiefs(Fief f)
         {
             // add fief
             this.ownedFiefs.Add(f);
@@ -3768,7 +3768,7 @@ namespace hist_mmorpg
         /// Adds a Province to the character's list of owned provinces
         /// </summary>
         /// <param name="p">Province to be added</param>
-        public void addToOwnedProvinces(Province p)
+        public void AddToOwnedProvinces(Province p)
         {
             // add fief
             this.ownedProvinces.Add(p);
@@ -3778,7 +3778,7 @@ namespace hist_mmorpg
         /// Removes a Fief from the character's list of owned fiefs
         /// </summary>
         /// <param name="f">Fief to be removed</param>
-        public void removeFromOwnedFiefs(Fief f)
+        public void RemoveFromOwnedFiefs(Fief f)
         {
             // remove fief
             this.ownedFiefs.Remove(f);
@@ -3892,7 +3892,7 @@ namespace hist_mmorpg
                     // if employee in entourage, move employee
                     if (this.myNPCs[i].inEntourage)
                     {
-                        this.moveEntourageNPC(target, this.myNPCs[i]);
+                        this.MoveEntourageNPC(target, this.myNPCs[i]);
                     }
                 }
             }
@@ -3906,7 +3906,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="target">Target fief</param>
         /// <param name="npc">NonPlayerCharacter to move</param>
-        public void moveEntourageNPC(Fief target, NonPlayerCharacter npc)
+        public void MoveEntourageNPC(Fief target, NonPlayerCharacter npc)
         {
             // remove character from current fief's character list
             npc.location.RemoveCharacter(npc);
@@ -3922,14 +3922,14 @@ namespace hist_mmorpg
         /// Carries out conditional checks prior to recruitment
         /// </summary>
         /// <returns>bool indicating whether recruitment can proceed</returns>
-        public bool checksBeforeRecruitment()
+        public bool ChecksBeforeRecruitment()
         {
             bool proceed = true;
             int indivTroopCost = 0;
             string toDisplay = "";
 
             // get home fief
-            Fief homeFief = this.getHomeFief();
+            Fief homeFief = this.GetHomeFief();
 
             // calculate cost of individual soldier
             if (this.location.ancestralOwner == this)
@@ -4047,7 +4047,7 @@ namespace hist_mmorpg
         /// <returns>uint containing number of troops recruited</returns>
         /// <param name="number">How many troops to recruit</param>
         /// <param name="armyExists">bool indicating whether the army already exists</param>
-        public int recruitTroops(uint number, bool armyExists)
+        public int RecruitTroops(uint number, bool armyExists)
         {
             // used to record outcome of various checks
             bool proceed = true;
@@ -4062,7 +4062,7 @@ namespace hist_mmorpg
             int daysUsed = 0;
 
             // get home fief
-            Fief homeFief = this.getHomeFief();
+            Fief homeFief = this.GetHomeFief();
 
             // get army
             Army thisArmy = null;
@@ -4081,7 +4081,7 @@ namespace hist_mmorpg
             string toDisplay = "";
 
             // various checks to see whether to proceed
-            proceed = this.checksBeforeRecruitment();
+            proceed = this.ChecksBeforeRecruitment();
 
             // if have not passed all of checks above, return
             if (!proceed)
@@ -4210,7 +4210,7 @@ namespace hist_mmorpg
                                 Globals_Client.myPlayerCharacter.ExitKeep();
                             }
 
-                            thisArmy = new Army(Globals_Game.getNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
+                            thisArmy = new Army(Globals_Game.GetNextArmyID(), Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.charID, Globals_Client.myPlayerCharacter.days, Globals_Client.myPlayerCharacter.location.id);
                             thisArmy.AddArmy();
                         }
 
@@ -4262,7 +4262,7 @@ namespace hist_mmorpg
         /// Gets character's kingdom
         /// </summary>
         /// <returns>The kingdom</returns>
-        public Kingdom getKingdom()
+        public Kingdom GetKingdom()
         {
             Kingdom myKingdom = null;
 
@@ -4283,10 +4283,10 @@ namespace hist_mmorpg
         /// Gets PlayerCharacter's king
         /// </summary>
         /// <returns>The king</returns>
-        public PlayerCharacter getKing()
+        public PlayerCharacter GetKing()
         {
             PlayerCharacter myKing = null;
-            Kingdom myKingdom = this.getKingdom();
+            Kingdom myKingdom = this.GetKingdom();
 
             if (myKingdom != null)
             {
@@ -4303,12 +4303,12 @@ namespace hist_mmorpg
         /// Gets character's queen
         /// </summary>
         /// <returns>The queen</returns>
-        public NonPlayerCharacter getQueen()
+        public NonPlayerCharacter GetQueen()
         {
             NonPlayerCharacter myQueen = null;
 
             // get king
-            PlayerCharacter myKing = this.getKing();
+            PlayerCharacter myKing = this.GetKing();
 
             if (myKing != null)
             {
@@ -4329,7 +4329,7 @@ namespace hist_mmorpg
         /// Check to see if the PlayerCharacter is a king
         /// </summary>
         /// <returns>bool indicating whether is a king</returns>
-        public bool checkIsKing()
+        public bool CheckIsKing()
         {
             bool isKing = false;
 
@@ -4345,7 +4345,7 @@ namespace hist_mmorpg
         /// Check to see if the PlayerCharacter is a prince
         /// </summary>
         /// <returns>bool indicating whether is a prince</returns>
-        public bool checkIsPrince()
+        public bool CheckIsPrince()
         {
             bool isPrince = false;
 
@@ -4361,7 +4361,7 @@ namespace hist_mmorpg
         /// Check to see if the PlayerCharacter is a herald
         /// </summary>
         /// <returns>bool indicating whether is a herald</returns>
-        public bool checkIsHerald()
+        public bool CheckIsHerald()
         {
             bool isHerald = false;
 
@@ -4377,7 +4377,7 @@ namespace hist_mmorpg
         /// Check to see if the PlayerCharacter is a sysAdmin
         /// </summary>
         /// <returns>bool indicating whether is a sysAdmin</returns>
-        public bool checkIsSysAdmin()
+        public bool CheckIsSysAdmin()
         {
             return (this == Globals_Game.sysAdmin);
         }
@@ -4386,7 +4386,7 @@ namespace hist_mmorpg
         /// Returns the PlayerCharacter's home fief
         /// </summary>
         /// <returns>The home fief</returns>
-        public Fief getHomeFief()
+        public Fief GetHomeFief()
         {
             Fief thisHomeFief = null;
 
@@ -4405,7 +4405,7 @@ namespace hist_mmorpg
         /// Returns the PlayerCharacter's ancestral home fief
         /// </summary>
         /// <returns>The ancestral home fief</returns>
-        public Fief getAncestralHome()
+        public Fief GetAncestralHome()
         {
             Fief ancestralHome = null;
 
@@ -4426,9 +4426,9 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="newTitleHolder">The new title holder</param>
         /// <param name="titlePlace">The place to which the title refers</param>
-        public void transferTitle(Character newTitleHolder, Place titlePlace)
+        public void TransferTitle(Character newTitleHolder, Place titlePlace)
         {
-            Character oldTitleHolder = titlePlace.getTitleHolder();
+            Character oldTitleHolder = titlePlace.GetTitleHolder();
 
             // remove title from existing holder
             if (oldTitleHolder != null)
@@ -4446,7 +4446,7 @@ namespace hist_mmorpg
             PlayerCharacter placeOwner = titlePlace.owner;
 
             // ID
-            uint entryID = Globals_Game.getNextJournalEntryID();
+            uint entryID = Globals_Game.GetNextJournalEntryID();
 
             // date
             uint year = Globals_Game.clock.currentYear;
@@ -4512,7 +4512,7 @@ namespace hist_mmorpg
 
             // create and add a journal entry to the pastEvents journal
             JournalEntry thisEntry = new JournalEntry(entryID, year, season, thisPersonae, type, loc: location, descr: description);
-            success = Globals_Game.addPastEvent(thisEntry);
+            success = Globals_Game.AddPastEvent(thisEntry);
         }
 
         /// <summary>
@@ -4525,7 +4525,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="newHolder">The character receiving the title</param>
         /// <param name="titlePlace">The place to which the title refers</param>
-        public bool grantTitle(Character newHolder, Place titlePlace)
+        public bool GrantTitle(Character newHolder, Place titlePlace)
         {
             bool proceed = true;
             string toDisplay = "";
@@ -4587,7 +4587,7 @@ namespace hist_mmorpg
 
                 if (proceed)
                 {
-                    this.transferTitle(newHolder, titlePlace);
+                    this.TransferTitle(newHolder, titlePlace);
                 }
                 else
                 {
@@ -4605,7 +4605,7 @@ namespace hist_mmorpg
         /// Gets the total population of fiefs governed by the PlayerCharacter
         /// </summary>
         /// <returns>int containing total population</returns>
-        public int getMyPopulation()
+        public int GetMyPopulation()
         {
             int totalPop = 0;
 
@@ -4621,11 +4621,11 @@ namespace hist_mmorpg
         /// Gets the percentage of population in the game governed by the PlayerCharacter
         /// </summary>
         /// <returns>double containing percentage of population governed</returns>
-        public double getPopulationPercentage()
+        public double GetPopulationPercentage()
         {
             double popPercent = 0;
 
-            popPercent = (Convert.ToDouble(this.getMyPopulation()) / Globals_Game.getTotalPopulation()) * 100;
+            popPercent = (Convert.ToDouble(this.GetMyPopulation()) / Globals_Game.GetTotalPopulation()) * 100;
 
             return popPercent;
         }
@@ -4634,11 +4634,11 @@ namespace hist_mmorpg
         /// Gets the percentage of total fiefs in the game owned by the PlayerCharacter
         /// </summary>
         /// <returns>double containing percentage of total fiefs owned</returns>
-        public double getFiefsPercentage()
+        public double GetFiefsPercentage()
         {
             double fiefPercent = 0;
 
-            fiefPercent = (Convert.ToDouble(this.ownedFiefs.Count) / Globals_Game.getTotalFiefs()) * 100;
+            fiefPercent = (Convert.ToDouble(this.ownedFiefs.Count) / Globals_Game.GetTotalFiefs()) * 100;
 
             return fiefPercent;
         }
@@ -4647,11 +4647,11 @@ namespace hist_mmorpg
         /// Gets the percentage of total money in the game owned by the PlayerCharacter
         /// </summary>
         /// <returns>double containing percentage of total money owned</returns>
-        public double getMoneyPercentage()
+        public double GetMoneyPercentage()
         {
             double moneyPercent = 0;
 
-            moneyPercent = (Convert.ToDouble(this.getMyMoney()) / Globals_Game.getTotalMoney()) * 100;
+            moneyPercent = (Convert.ToDouble(this.GetMyMoney()) / Globals_Game.GetTotalMoney()) * 100;
 
             return moneyPercent;
         }
@@ -4660,7 +4660,7 @@ namespace hist_mmorpg
         /// Calculates the total funds currently owned by the PlayerCharacter
         /// </summary>
         /// <returns>int containing the total funds</returns>
-        public int getMyMoney()
+        public int GetMyMoney()
         {
             int totalFunds = 0;
 
@@ -4719,14 +4719,14 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(empl))
             {
                 // trim and ensure 1st is uppercase
-                empl = Utility_Methods.firstCharToUpper(empl.Trim());
+                empl = Utility_Methods.FirstCharToUpper(empl.Trim());
 
                 if (!String.IsNullOrWhiteSpace(famID))
                 {
                     throw new InvalidDataException("A NonPlayerCharacter with a familyID cannot have an employer ID");
                 }
 
-                else if (!Utility_Methods.validateCharacterID(empl))
+                else if (!Utility_Methods.ValidateCharacterID(empl))
                 {
                     throw new InvalidDataException("NonPlayerCharacter employer ID must have the format 'Char_' followed by some numbers");
                 }
@@ -4785,7 +4785,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating NonPlayerCharacter's suitability as heir</returns>
         /// <param name="pc">The PlayerCharacter who is choosing the heir</param>
-        public bool checksForHeir(PlayerCharacter pc)
+        public bool ChecksForHeir(PlayerCharacter pc)
         {
             bool suitableHeir = true;
 
@@ -4824,7 +4824,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>uint containing family allowance</returns>
         /// <param name="func">NPC's function</param>
-        public uint calcFamilyAllowance(String func)
+        public uint CalcFamilyAllowance(String func)
         {
             uint famAllowance = 0;
             double ageModifier = 1;
@@ -4879,7 +4879,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>String containing NPC function</returns>
         /// <param name="pc">PlayerCharacter with whom NPC has relationship</param>
-        public String getFunction(PlayerCharacter pc)
+        public String GetFunction(PlayerCharacter pc)
         {
             String myFunction = "";
 
@@ -5040,7 +5040,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>String containing NPC responsibilities</returns>
         /// <param name="pc">PlayerCharacter by whom NPC is employed</param>
-        public String getResponsibilities(PlayerCharacter pc)
+        public String GetResponsibilities(PlayerCharacter pc)
         {
             String myResponsibilities = "";
             List<Fief> bailiffDuties = new List<Fief>();
@@ -5104,7 +5104,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating whether NPC needs naming</returns>
         /// <param name="age">NPC age to check for</param>
-        public bool hasBabyName(byte age)
+        public bool HasBabyName(byte age)
         {
             bool hasBabyName = false;
 
@@ -5121,7 +5121,7 @@ namespace hist_mmorpg
         /// Calculates the potential salary (per season) for the NonPlayerCharacter, based on his current salary
         /// </summary>
         /// <returns>double containing salary</returns>
-        public double calcSalary_BaseOnCurrent()
+        public double CalcSalary_BaseOnCurrent()
         {
             double salary = 0;
 
@@ -5139,7 +5139,7 @@ namespace hist_mmorpg
         /// Calculates the potential salary (per season) for the NonPlayerCharacter, based on his skills
         /// </summary>
         /// <returns>uint containing salary</returns>
-        public double calcSalary_BaseOnSkills()
+        public double CalcSalary_BaseOnSkills()
         {
             double salary = 0;
             double basicSalary = 1500;
@@ -5177,16 +5177,16 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>uint containing salary</returns>
         /// <param name="hiringPlayer">Hiring player</param>
-        public uint calcSalary(PlayerCharacter hiringPlayer)
+        public uint CalcSalary(PlayerCharacter hiringPlayer)
         {
             // get potential salary based on NPC's skills
-            double salary_skills = this.calcSalary_BaseOnSkills();
+            double salary_skills = this.CalcSalary_BaseOnSkills();
 
             // get potential salary based on NPC's current salary
             double salary_current = 0;
             if (this.salary > 0)
             {
-                salary_current = this.calcSalary_BaseOnCurrent();
+                salary_current = this.CalcSalary_BaseOnCurrent();
             }
 
             // use maximum of the two salary calculations
@@ -5205,9 +5205,9 @@ namespace hist_mmorpg
 
             // current employer (note: is made negative to counteract hiring PC's stature effect)
             double emplStatMod = 0;
-            if (this.getEmployer() != null)
+            if (this.GetEmployer() != null)
             {
-                if (this.getEmployer().CalculateStature() > 4)
+                if (this.GetEmployer().CalculateStature() > 4)
                 {
                     emplStatMod = ((hiringPlayer.CalculateStature() - 4) * 0.04) * -1;
                 }
@@ -5226,7 +5226,7 @@ namespace hist_mmorpg
         /// Gets the character's head of family
         /// </summary>
         /// <returns>The head of family or null</returns>
-        public PlayerCharacter getHeadOfFamily()
+        public PlayerCharacter GetHeadOfFamily()
         {
             PlayerCharacter myHeadOfFamily = null;
 
@@ -5245,7 +5245,7 @@ namespace hist_mmorpg
         /// Gets character's kingdom
         /// </summary>
         /// <returns>The kingdom</returns>
-        public Kingdom getKingdom()
+        public Kingdom GetKingdom()
         {
             Kingdom myKingdom = null;
             Character nationalitySource = null;
@@ -5254,13 +5254,13 @@ namespace hist_mmorpg
             // head of family
             if (!String.IsNullOrWhiteSpace(this.familyID))
             {
-                nationalitySource = this.getHeadOfFamily();
+                nationalitySource = this.GetHeadOfFamily();
             }
 
             // employer
             else if (!String.IsNullOrWhiteSpace(this.employer))
             {
-                nationalitySource = this.getEmployer();
+                nationalitySource = this.GetEmployer();
             }
 
             // self
@@ -5286,12 +5286,12 @@ namespace hist_mmorpg
         /// Gets character's king
         /// </summary>
         /// <returns>The king</returns>
-        public PlayerCharacter getKing()
+        public PlayerCharacter GetKing()
         {
             PlayerCharacter myKing = null;
 
             // get kingdom
-            Kingdom myKingdom = this.getKingdom();
+            Kingdom myKingdom = this.GetKingdom();
 
             // get king with matching nationality
             if (myKingdom != null)
@@ -5309,12 +5309,12 @@ namespace hist_mmorpg
         /// Gets character's queen
         /// </summary>
         /// <returns>The queen</returns>
-        public NonPlayerCharacter getQueen()
+        public NonPlayerCharacter GetQueen()
         {
             NonPlayerCharacter myQueen = null;
 
             // get king
-            PlayerCharacter myKing = this.getKing();
+            PlayerCharacter myKing = this.GetKing();
 
             if (myKing != null)
             {
@@ -5335,7 +5335,7 @@ namespace hist_mmorpg
         /// Gets the character's employer
         /// </summary>
         /// <returns>The employer or null</returns>
-        public PlayerCharacter getEmployer()
+        public PlayerCharacter GetEmployer()
         {
             PlayerCharacter myEmployer = null;
 
@@ -5353,27 +5353,27 @@ namespace hist_mmorpg
         /// <summary>
         /// Checks to see if the character needs to be named and, if so, assigns regent's first name
         /// </summary>
-        public void checkNeedsNaming()
+        public void CheckNeedsNaming()
         {
             // if (age >= 1) && (firstName.Equals("Baby")), character firstname = king's/queen's
             if (!String.IsNullOrWhiteSpace(this.familyID))
             {
-                if (this.hasBabyName(1))
+                if (this.HasBabyName(1))
                 {
                     // boys = try to get king's firstName 
                     if (this.isMale)
                     {
-                        if (this.getKing() != null)
+                        if (this.GetKing() != null)
                         {
-                            this.firstName = this.getKing().firstName;
+                            this.firstName = this.GetKing().firstName;
                         }
                     }
                     else
                     {
                         // girls = try to get queen's firstName 
-                        if (this.getQueen() != null)
+                        if (this.GetQueen() != null)
                         {
-                            this.firstName = this.getQueen().firstName;
+                            this.firstName = this.GetQueen().firstName;
                         }
                     }
                 }
@@ -5597,18 +5597,18 @@ namespace hist_mmorpg
 
             // ID
             // trim and ensure 1st is uppercase
-            id = Utility_Methods.firstCharToUpper(id.Trim());
+            id = Utility_Methods.FirstCharToUpper(id.Trim());
 
-            if (!Utility_Methods.validateCharacterID(id))
+            if (!Utility_Methods.ValidateCharacterID(id))
             {
                 throw new InvalidDataException("Character_Serialised id must have the format 'Char_' followed by some numbers");
             }
 
             // FIRSTNAM
             // trim and ensure 1st is uppercase
-            firstNam = Utility_Methods.firstCharToUpper(firstNam.Trim());
+            firstNam = Utility_Methods.FirstCharToUpper(firstNam.Trim());
 
-            if (!Utility_Methods.validateName(firstNam))
+            if (!Utility_Methods.ValidateName(firstNam))
             {
                 throw new InvalidDataException("Character_Serialised firstname must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
@@ -5617,34 +5617,34 @@ namespace hist_mmorpg
             // trim
             famNam = famNam.Trim();
 
-            if (!Utility_Methods.validateName(famNam))
+            if (!Utility_Methods.ValidateName(famNam))
             {
                 throw new InvalidDataException("Character_Serialised family name must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // DOB
-            if (!Utility_Methods.validateSeason(dob.Item2))
+            if (!Utility_Methods.ValidateSeason(dob.Item2))
             {
                 throw new InvalidDataException("Character_Serialised date-of-birth season must be a byte between 0-3");
             }
 
             // NAT
             // trim and ensure 1st is uppercase
-            nat = Utility_Methods.firstCharToUpper(nat.Trim());
+            nat = Utility_Methods.FirstCharToUpper(nat.Trim());
 
-            if (!Utility_Methods.validateNationalityID(nat))
+            if (!Utility_Methods.ValidateNationalityID(nat))
             {
                 throw new InvalidDataException("Character_Serialised nationality ID must be 1-3 characters long, and consist entirely of letters");
             }
 
             // MXHEA
-            if (!Utility_Methods.validateCharacterStat(mxHea))
+            if (!Utility_Methods.ValidateCharacterStat(mxHea))
             {
                 throw new InvalidDataException("Character_Serialised maxHealth must be a double between 1-9");
             }
 
             // VIR
-            if (!Utility_Methods.validateCharacterStat(vir))
+            if (!Utility_Methods.ValidateCharacterStat(vir))
             {
                 throw new InvalidDataException("Character_Serialised virility must be a double between 1-9");
             }
@@ -5658,7 +5658,7 @@ namespace hist_mmorpg
                     // trim and ensure is uppercase
                     goQueue[i] = goQueue[i].Trim().ToUpper();
 
-                    if (!Utility_Methods.validatePlaceID(goQueue[i]))
+                    if (!Utility_Methods.ValidatePlaceID(goQueue[i]))
                     {
                         throw new InvalidDataException("All IDs in Character_Serialised goTo queue must be 5 characters long, start with a letter, and end in at least 2 numbers");
                     }
@@ -5668,31 +5668,31 @@ namespace hist_mmorpg
             // LANG
             // trim
             lang = lang.Trim();
-            if (!Utility_Methods.validateLanguageID(lang))
+            if (!Utility_Methods.ValidateLanguageID(lang))
             {
                 throw new InvalidDataException("Character_Serialised language ID must have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");
             }
 
             // DAYS
-            if (!Utility_Methods.validateDays(day))
+            if (!Utility_Methods.ValidateDays(day))
             {
                 throw new InvalidDataException("Character_Serialised days must be a double between 0-109");
             }
 
             // STAT
-            if (!Utility_Methods.validateCharacterStat(stat, 0))
+            if (!Utility_Methods.ValidateCharacterStat(stat, 0))
             {
                 throw new InvalidDataException("Character_Serialised stature must be a double between 0-9");
             }
 
             // MNGMNT
-            if (!Utility_Methods.validateCharacterStat(mngmnt))
+            if (!Utility_Methods.ValidateCharacterStat(mngmnt))
             {
                 throw new InvalidDataException("Character_Serialised management must be a double between 1-9");
             }
 
             // CBT
-            if (!Utility_Methods.validateCharacterStat(cbt))
+            if (!Utility_Methods.ValidateCharacterStat(cbt))
             {
                 throw new InvalidDataException("Character_Serialised combat must be a double between 1-9");
             }
@@ -5700,12 +5700,12 @@ namespace hist_mmorpg
             // SKL
             for (int i = 0; i < skl.Length; i++)
             {
-                if (!Utility_Methods.validateSkillID(skl[i].Item1))
+                if (!Utility_Methods.ValidateSkillID(skl[i].Item1))
                 {
                     throw new InvalidDataException("Character_Serialised skill ID must have the format 'skill_' followed by some numbers");
                 }
 
-                else if (!Utility_Methods.validateCharacterStat(Convert.ToDouble(skl[i].Item2)))
+                else if (!Utility_Methods.ValidateCharacterStat(Convert.ToDouble(skl[i].Item2)))
                 {
                     throw new InvalidDataException("Character_Serialised skill level must be an integer between 1-9");
                 }
@@ -5724,9 +5724,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(famID))
             {
                 // trim and ensure 1st is uppercase
-                famID = Utility_Methods.firstCharToUpper(famID.Trim());
+                famID = Utility_Methods.FirstCharToUpper(famID.Trim());
 
-                if (!Utility_Methods.validateCharacterID(famID))
+                if (!Utility_Methods.ValidateCharacterID(famID))
                 {
                     throw new InvalidDataException("Character_Serialised family id must have the format 'Char_' followed by some numbers");
                 }
@@ -5736,9 +5736,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(sp))
             {
                 // trim and ensure 1st is uppercase
-                sp = Utility_Methods.firstCharToUpper(sp.Trim());
+                sp = Utility_Methods.FirstCharToUpper(sp.Trim());
 
-                if (!Utility_Methods.validateCharacterID(sp))
+                if (!Utility_Methods.ValidateCharacterID(sp))
                 {
                     throw new InvalidDataException("Character_Serialised spouse id must have the format 'Char_' followed by some numbers");
                 }
@@ -5748,9 +5748,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(fath))
             {
                 // trim and ensure 1st is uppercase
-                fath = Utility_Methods.firstCharToUpper(fath.Trim());
+                fath = Utility_Methods.FirstCharToUpper(fath.Trim());
 
-                if (!Utility_Methods.validateCharacterID(fath))
+                if (!Utility_Methods.ValidateCharacterID(fath))
                 {
                     throw new InvalidDataException("Character_Serialised father id must have the format 'Char_' followed by some numbers");
                 }
@@ -5760,9 +5760,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(moth))
             {
                 // trim and ensure 1st is uppercase
-                moth = Utility_Methods.firstCharToUpper(moth.Trim());
+                moth = Utility_Methods.FirstCharToUpper(moth.Trim());
 
-                if (!Utility_Methods.validateCharacterID(moth))
+                if (!Utility_Methods.ValidateCharacterID(moth))
                 {
                     throw new InvalidDataException("Character_Serialised mother id must have the format 'Char_' followed by some numbers");
                 }
@@ -5774,7 +5774,7 @@ namespace hist_mmorpg
                 // trim and ensure is uppercase
                 myTi[i] = myTi[i].Trim().ToUpper();
 
-                if (!Utility_Methods.validatePlaceID(myTi[i]))
+                if (!Utility_Methods.ValidatePlaceID(myTi[i]))
                 {
                     throw new InvalidDataException("All Character_Serialised title IDs must be 5 characters long, start with a letter, and end in at least 2 numbers");
                 }
@@ -5784,9 +5784,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(fia))
             {
                 // trim and ensure 1st is uppercase
-                fia = Utility_Methods.firstCharToUpper(fia.Trim());
+                fia = Utility_Methods.FirstCharToUpper(fia.Trim());
 
-                if (!Utility_Methods.validateCharacterID(fia))
+                if (!Utility_Methods.ValidateCharacterID(fia))
                 {
                     throw new InvalidDataException("Character_Serialised fiancee id must have the format 'Char_' followed by some numbers");
                 }
@@ -5802,7 +5802,7 @@ namespace hist_mmorpg
                     // trim and ensure is uppercase
                     myAils[i] = myAils[i].Trim().ToUpper();
 
-                    if (!Utility_Methods.validateAilmentID(myAils[i]))
+                    if (!Utility_Methods.ValidateAilmentID(myAils[i]))
                     {
                         throw new InvalidDataException("All IDs in Character_Serialised ailments must have the format 'Ail_' followed by some numbers");
                     }
@@ -5813,7 +5813,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             loc = loc.Trim().ToUpper();
 
-            if (!Utility_Methods.validatePlaceID(loc))
+            if (!Utility_Methods.ValidatePlaceID(loc))
             {
                 throw new InvalidDataException("Character_Serialised location id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -5822,9 +5822,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(aID))
             {
                 // trim and ensure 1st is uppercase
-                aID = Utility_Methods.firstCharToUpper(aID.Trim());
+                aID = Utility_Methods.FirstCharToUpper(aID.Trim());
 
-                if (!Utility_Methods.validateArmyID(aID))
+                if (!Utility_Methods.ValidateArmyID(aID))
                 {
                     throw new InvalidDataException("Character_Serialised army id must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
                 }
@@ -5983,9 +5983,9 @@ namespace hist_mmorpg
                 for (int i = 0; i < npcs.Count; i++ )
                 {
                     // trim and ensure 1st is uppercase
-                    npcs[i] = Utility_Methods.firstCharToUpper(npcs[i].Trim());
+                    npcs[i] = Utility_Methods.FirstCharToUpper(npcs[i].Trim());
 
-                    if (!Utility_Methods.validateCharacterID(npcs[i]))
+                    if (!Utility_Methods.ValidateCharacterID(npcs[i]))
                     {
                         throw new InvalidDataException("All PlayerCharacter_Serialised myNPC IDs must have the format 'Char_' followed by some numbers");
                     }
@@ -6000,7 +6000,7 @@ namespace hist_mmorpg
                     // trim and ensure is uppercase
                     ownedF[i] = ownedF[i].Trim().ToUpper();
 
-                    if (!Utility_Methods.validatePlaceID(ownedF[i]))
+                    if (!Utility_Methods.ValidatePlaceID(ownedF[i]))
                     {
                         throw new InvalidDataException("All PlayerCharacter_Serialised ownedFief IDs must be 5 characters long, start with a letter, and end in at least 2 numbers");
                     }
@@ -6015,7 +6015,7 @@ namespace hist_mmorpg
                     // trim and ensure is uppercase
                     ownedP[i] = ownedP[i].Trim().ToUpper();
 
-                    if (!Utility_Methods.validatePlaceID(ownedP[i]))
+                    if (!Utility_Methods.ValidatePlaceID(ownedP[i]))
                     {
                         throw new InvalidDataException("All PlayerCharacter_Serialised ownedProvince IDs must be 5 characters long, start with a letter, and end in at least 2 numbers");
                     }
@@ -6026,7 +6026,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             home = home.Trim().ToUpper();
 
-            if (!Utility_Methods.validatePlaceID(home))
+            if (!Utility_Methods.ValidatePlaceID(home))
             {
                 throw new InvalidDataException("PlayerCharacter_Serialised homeFief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -6035,7 +6035,7 @@ namespace hist_mmorpg
             // trim and ensure is uppercase
             ancHome = ancHome.Trim().ToUpper();
 
-            if (!Utility_Methods.validatePlaceID(ancHome))
+            if (!Utility_Methods.ValidatePlaceID(ancHome))
             {
                 throw new InvalidDataException("PlayerCharacter_Serialised ancestral homeFief id must be 5 characters long, start with a letter, and end in at least 2 numbers");
             }
@@ -6046,9 +6046,9 @@ namespace hist_mmorpg
                 for (int i = 0; i < myA.Count; i++)
                 {
                     // trim and ensure 1st is uppercase
-                    myA[i] = Utility_Methods.firstCharToUpper(myA[i].Trim());
+                    myA[i] = Utility_Methods.FirstCharToUpper(myA[i].Trim());
 
-                    if (!Utility_Methods.validateArmyID(myA[i]))
+                    if (!Utility_Methods.ValidateArmyID(myA[i]))
                     {
                         throw new InvalidDataException("All PlayerCharacter_Serialised army IDs must have the format 'Army_' or 'GarrisonArmy_' followed by some numbers");
                     }
@@ -6061,9 +6061,9 @@ namespace hist_mmorpg
                 for (int i = 0; i < myS.Count; i++)
                 {
                     // trim and ensure 1st is uppercase
-                    myS[i] = Utility_Methods.firstCharToUpper(myS[i].Trim());
+                    myS[i] = Utility_Methods.FirstCharToUpper(myS[i].Trim());
 
-                    if (!Utility_Methods.validateSiegeID(myS[i]))
+                    if (!Utility_Methods.ValidateSiegeID(myS[i]))
                     {
                         throw new InvalidDataException("All PlayerCharacter_Serialised siege IDs must have the format 'Siege_' followed by some numbers");
                     }
@@ -6156,14 +6156,14 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(empl))
             {
                 // trim and ensure 1st is uppercase
-                empl = Utility_Methods.firstCharToUpper(empl.Trim());
+                empl = Utility_Methods.FirstCharToUpper(empl.Trim());
 
                 if (!String.IsNullOrWhiteSpace(famID))
                 {
                     throw new InvalidDataException("A NonPlayerCharacter with a familyID cannot have an employer ID");
                 }
 
-                if (!Utility_Methods.validateCharacterID(empl))
+                if (!Utility_Methods.ValidateCharacterID(empl))
                 {
                     throw new InvalidDataException("NonPlayerCharacter employer ID must have the format 'Char_' followed by some numbers");
                 }

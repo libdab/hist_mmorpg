@@ -37,16 +37,16 @@ namespace hist_mmorpg
             // trim
             id = id.Trim();
 
-            if (!Utility_Methods.validateSkillID(id))
+            if (!Utility_Methods.ValidateSkillID(id))
             {
                 throw new InvalidDataException("Skill ID must have the format 'skill_' followed by some numbers");
             }
 
             // NAM
             // trim and ensure 1st is uppercase
-            nam = Utility_Methods.firstCharToUpper(nam.Trim());
+            nam = Utility_Methods.FirstCharToUpper(nam.Trim());
 
-            if (!Utility_Methods.validateName(nam))
+            if (!Utility_Methods.ValidateName(nam))
             {
                 throw new InvalidDataException("Skill name must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
@@ -58,7 +58,7 @@ namespace hist_mmorpg
 
             for (int i = 0; i < effNames.Length; i++ )
             {
-                if (!Utility_Methods.validateName(effNames[i]))
+                if (!Utility_Methods.ValidateName(effNames[i]))
                 {
                     throw new InvalidDataException("All Skill effect names must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
                 }

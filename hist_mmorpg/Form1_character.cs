@@ -87,11 +87,11 @@ namespace hist_mmorpg
             if (ch is PlayerCharacter)
             {
                 // home fief
-                Fief homeFief = (ch as PlayerCharacter).getHomeFief();
+                Fief homeFief = (ch as PlayerCharacter).GetHomeFief();
                 charText += "Home fief: " + homeFief.name + " (" + homeFief.id + ")\r\n";
 
                 // ancestral home fief
-                Fief ancHomeFief = (ch as PlayerCharacter).getAncestralHome();
+                Fief ancHomeFief = (ch as PlayerCharacter).GetAncestralHome();
                 charText += "Ancestral Home fief: " + ancHomeFief.name + " (" + ancHomeFief.id + ")\r\n";
             }
 
@@ -120,7 +120,7 @@ namespace hist_mmorpg
             charText += "Current location: " + ch.location.name + " (" + ch.location.province.name + ")\r\n";
 
             // language
-            charText += "Language: " + ch.language.getName() + "\r\n";
+            charText += "Language: " + ch.language.GetName() + "\r\n";
 
             if (isMyNPC)
             {
@@ -293,7 +293,7 @@ namespace hist_mmorpg
                     if (thisPlace != null)
                     {
                         // get correct title
-                        charText += thisPlace.rank.getName(ch.language).ToUpper() + " (rank " + thisPlace.rank.id + ") of ";
+                        charText += thisPlace.rank.GetName(ch.language).ToUpper() + " (rank " + thisPlace.rank.id + ") of ";
                         // get kingdom details
                         charText += thisPlace.name + " (" + titleEntry + ")\r\n";
                     }
@@ -316,7 +316,7 @@ namespace hist_mmorpg
                     if (thisPlace != null)
                     {
                         // get correct title
-                        charText += thisPlace.rank.getName(ch.language) + " (rank " + thisPlace.rank.id + ") of ";
+                        charText += thisPlace.rank.GetName(ch.language) + " (rank " + thisPlace.rank.id + ") of ";
 
                         // get province details
                         charText += thisPlace.name + " (" + titleEntry + ")\r\n";
@@ -346,7 +346,7 @@ namespace hist_mmorpg
                     if (thisPlace != null)
                     {
                         // get correct title
-                        charText += thisPlace.rank.getName((thisPlace as Fief).language) + " (rank " + thisPlace.rank.id + ") of ";
+                        charText += thisPlace.rank.GetName((thisPlace as Fief).language) + " (rank " + thisPlace.rank.id + ") of ";
                         // get fief details
                         charText += thisPlace.name + " (" + titleEntry + ")\r\n";
                     }
@@ -423,7 +423,7 @@ namespace hist_mmorpg
             // estimated salary level (if character is male)
             if (npc.isMale)
             {
-                npcText += "Potential salary: " + npc.calcSalary(Globals_Client.myPlayerCharacter) + "\r\n";
+                npcText += "Potential salary: " + npc.CalcSalary(Globals_Client.myPlayerCharacter) + "\r\n";
 
                 // most recent salary offer from player (if any)
                 npcText += "Last offer from this PC: ";
@@ -448,7 +448,7 @@ namespace hist_mmorpg
         /// Refreshes main Character display screen
         /// </summary>
         /// <param name="ch">Character whose information is to be displayed</param>
-        public void refreshCharacterContainer(Character ch = null)
+        public void RefreshCharacterContainer(Character ch = null)
         {
             // if character not specified, default to player
             if (ch == null)

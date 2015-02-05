@@ -75,7 +75,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>string containing the name</returns>
         /// <param name="l">The Language to be used</param>
-        public string getName(Language l)
+        public string GetName(Language l)
         {
             string rankName = null;
             bool nameFound = false;
@@ -146,9 +146,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(holder))
             {
                 // trim and ensure 1st is uppercase
-                holder = Utility_Methods.firstCharToUpper(holder.Trim());
+                holder = Utility_Methods.FirstCharToUpper(holder.Trim());
 
-                if (!Utility_Methods.validateCharacterID(holder))
+                if (!Utility_Methods.ValidateCharacterID(holder))
                 {
                     throw new InvalidDataException("Position officeHolder id must have the format 'Char_' followed by some numbers");
                 }
@@ -183,7 +183,7 @@ namespace hist_mmorpg
         /// Inserts the supplied PlayerCharacter's ID into the Position's officeHolder variable 
         /// </summary>
         /// <param name="newPositionHolder">PlayerCharacter being assigned to the Position</param>
-        public void bestowPosition(PlayerCharacter newPositionHolder)
+        public void BestowPosition(PlayerCharacter newPositionHolder)
         {
             PlayerCharacter oldPositionHolder = null;
 
@@ -197,7 +197,7 @@ namespace hist_mmorpg
                 }
 
                 // remove from position
-                this.removeFromOffice(oldPositionHolder);
+                this.RemoveFromOffice(oldPositionHolder);
             }
 
             // assign position
@@ -209,10 +209,10 @@ namespace hist_mmorpg
             // CREATE JOURNAL ENTRY
             // get interested parties
             bool success = true;
-            PlayerCharacter king = this.getKingdom().owner;
+            PlayerCharacter king = this.GetKingdom().owner;
 
             // ID
-            uint entryID = Globals_Game.getNextJournalEntryID();
+            uint entryID = Globals_Game.GetNextJournalEntryID();
 
             // date
             uint year = Globals_Game.clock.currentYear;
@@ -245,14 +245,14 @@ namespace hist_mmorpg
 
             // create and add a journal entry to the pastEvents journal
             JournalEntry thisEntry = new JournalEntry(entryID, year, season, thisPersonae, type, descr: description);
-            success = Globals_Game.addPastEvent(thisEntry);
+            success = Globals_Game.AddPastEvent(thisEntry);
         }
 
         /// <summary>
         /// Removes the supplied PlayerCharacter's ID from the Position's officeHolder variable 
         /// </summary>
         /// <param name="pc">PlayerCharacter being removed from the Position</param>
-        public void removeFromOffice(PlayerCharacter pc)
+        public void RemoveFromOffice(PlayerCharacter pc)
         {
             // remove from position
             this.officeHolder = null;
@@ -265,7 +265,7 @@ namespace hist_mmorpg
         /// Gets the Kingdom associated with the position 
         /// </summary>
         /// <returns>The Kingdom</returns>
-        public Kingdom getKingdom()
+        public Kingdom GetKingdom()
         {
             Kingdom thisKingdom = null;
 
@@ -285,7 +285,7 @@ namespace hist_mmorpg
         /// Gets the position's current office holder
         /// </summary>
         /// <returns>The office holder (PlayerCharacter)</returns>
-        public PlayerCharacter getOfficeHolder()
+        public PlayerCharacter GetOfficeHolder()
         {
             PlayerCharacter holder = null;
 
@@ -364,9 +364,9 @@ namespace hist_mmorpg
             if (!String.IsNullOrWhiteSpace(holder))
             {
                 // trim and ensure 1st is uppercase
-                holder = Utility_Methods.firstCharToUpper(holder.Trim());
+                holder = Utility_Methods.FirstCharToUpper(holder.Trim());
 
-                if (!Utility_Methods.validateCharacterID(holder))
+                if (!Utility_Methods.ValidateCharacterID(holder))
                 {
                     throw new InvalidDataException("Position_Serialised officeHolder id must have the format 'Char_' followed by some numbers");
                 }
@@ -374,9 +374,9 @@ namespace hist_mmorpg
 
             // NAT
             // trim and ensure 1st is uppercase
-            nat = Utility_Methods.firstCharToUpper(nat.Trim());
+            nat = Utility_Methods.FirstCharToUpper(nat.Trim());
 
-            if (!Utility_Methods.validateNationalityID(nat))
+            if (!Utility_Methods.ValidateNationalityID(nat))
             {
                 throw new InvalidDataException("Position_Serialised nationality ID must be 1-3 characters long, and consist entirely of letters");
             }
@@ -424,16 +424,16 @@ namespace hist_mmorpg
             // trim
             lang = lang.Trim();
 
-            if ((!Utility_Methods.validateLanguageID(lang)) && (!lang.Equals("generic")))
+            if ((!Utility_Methods.ValidateLanguageID(lang)) && (!lang.Equals("generic")))
             {
                 throw new InvalidDataException("TitleName langID must either be 'generic' or have the format 'lang_' followed by 1-2 letters, ending in 1-2 numbers");
             }
 
             // NAM
             // trim and ensure 1st is uppercase
-            nam = Utility_Methods.firstCharToUpper(nam.Trim());
+            nam = Utility_Methods.FirstCharToUpper(nam.Trim());
 
-            if (!Utility_Methods.validateName(nam))
+            if (!Utility_Methods.ValidateName(nam))
             {
                 throw new InvalidDataException("TitleName name must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }

@@ -52,7 +52,7 @@ namespace hist_mmorpg
             // populate costs, based on target and source terrain costs of each edge
             foreach (var e in this.myMap.Edges)
 			{
-				this.addCost (e, (e.Source.terrain.travelCost + e.Target.terrain.travelCost) / 2);
+				this.AddCost (e, (e.Source.terrain.travelCost + e.Target.terrain.travelCost) / 2);
 			}
 		}
 
@@ -73,12 +73,12 @@ namespace hist_mmorpg
         /// <param name="t">Target hex (Fief)</param>
         /// <param name="tag">String tag for route</param>
         /// <param name="cost">Cost for route</param>
-        public bool addHexesAndRoute(Fief s, Fief t, string tag, double cost)
+        public bool AddHexesAndRoute(Fief s, Fief t, string tag, double cost)
         {
             bool success = false;
 
             // create route
-            TaggedEdge<Fief, string> myEdge = this.createEdge(s, t, tag);
+            TaggedEdge<Fief, string> myEdge = this.CreateEdge(s, t, tag);
 
             // use route as source to add route and hex to graph
             success = this.myMap.AddVerticesAndEdge(myEdge);
@@ -86,7 +86,7 @@ namespace hist_mmorpg
             // if successful, add route cost
             if (success)
             {
-                this.addCost(myEdge, cost);
+                this.AddCost(myEdge, cost);
             }
 
             return success;
@@ -100,17 +100,17 @@ namespace hist_mmorpg
         /// <param name="t">Target hex (Fief)</param>
         /// <param name="tag">String tag for route</param>
         /// <param name="cost">Cost for route</param>
-        public bool addRoute(Fief s, Fief t, string tag, double cost)
+        public bool AddRoute(Fief s, Fief t, string tag, double cost)
         {
             bool success = false;
             // create route
-            TaggedEdge<Fief, string> myEdge = this.createEdge(s, t, tag);
+            TaggedEdge<Fief, string> myEdge = this.CreateEdge(s, t, tag);
             // add route
             success = this.myMap.AddEdge(myEdge);
             // if successful, add route cost
             if (success)
             {
-                this.addCost(myEdge, cost);
+                this.AddCost(myEdge, cost);
             }
             return success;
         }
@@ -121,7 +121,7 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="s">Source hex (Fief)</param>
         /// <param name="tag">String tag for route</param>
-        public bool removeRoute(Fief s, string tag)
+        public bool RemoveRoute(Fief s, string tag)
         {
             bool success = false;
             // iterate through routes
@@ -137,7 +137,7 @@ namespace hist_mmorpg
                         // if route successfully removed, remove cost
                         if (success)
                         {
-                            this.removeCost(e);
+                            this.RemoveCost(e);
                         }
                         break;
                     }
@@ -152,7 +152,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="f">Hex (Fief) to add</param>
-        public bool addHex(Fief f)
+        public bool AddHex(Fief f)
         {
             bool success = false;
             // add hex
@@ -165,7 +165,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="f">Hex (Fief) to remove</param>
-        public bool removeHex(Fief f)
+        public bool RemoveHex(Fief f)
         {
             bool success = false;
             // remove hex
@@ -178,7 +178,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="e">Route (edge)</param>
         /// <param name="cost">Route cost to add</param>
-        public void addCost(TaggedEdge<Fief, string> e, double cost)
+        public void AddCost(TaggedEdge<Fief, string> e, double cost)
         {
             // add cost
             costs.Add(e, cost);
@@ -189,7 +189,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="e">Route (edge)</param>
-        public bool removeCost(TaggedEdge<Fief, string> e)
+        public bool RemoveCost(TaggedEdge<Fief, string> e)
         {
             // remove cost
             bool success = costs.Remove(e);
@@ -204,7 +204,7 @@ namespace hist_mmorpg
         /// <param name="s">Source hex (Fief)</param>
         /// <param name="t">Target hex (Fief)</param>
         /// <param name="tag">String tag for route</param>
-        public TaggedEdge<Fief, string> createEdge(Fief s, Fief t, string tag)
+        public TaggedEdge<Fief, string> CreateEdge(Fief s, Fief t, string tag)
         {
             // create route
             TaggedEdge<Fief, string> myEdge = new TaggedEdge<Fief, string>(s, t, tag);
@@ -303,7 +303,7 @@ namespace hist_mmorpg
         /// <returns>Fief to move to (or null)</returns>
         /// <param name="f">Current location of NPC</param>
         /// <param name="f">Direction to move (route tag)</param>
-        public Fief getFief(Fief f, string direction)
+        public Fief GetFief(Fief f, string direction)
         {
             Fief myFief = null;
 
@@ -347,7 +347,7 @@ namespace hist_mmorpg
         /// <returns>Queue of Fiefs to move to</returns>
         /// <param name="from">Source Fief</param>
         /// <param name="to">Target Fief</param>
-        public Queue<Fief> getShortestPath(Fief @from, Fief to)
+        public Queue<Fief> GetShortestPath(Fief @from, Fief to)
         {
             Queue<Fief> pathNodes = new Queue<Fief>();
             var edgeCost = AlgorithmExtensions.GetIndexer(costs);
@@ -375,7 +375,7 @@ namespace hist_mmorpg
         /// <returns>String to display</returns>
         /// <param name="from">Source Fief</param>
         /// <param name="to">Target Fief</param>
-        public string getShortestPathString(Fief @from, Fief to)
+        public string GetShortestPathString(Fief @from, Fief to)
         {
             string output = "";
             var edgeCost = AlgorithmExtensions.GetIndexer(costs);
