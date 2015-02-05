@@ -87,12 +87,12 @@ namespace hist_mmorpg
             Globals_Client.showMessages = this.DatabaseRead_bool(gameID, "showMessages");
             Globals_Client.showDebugMessages = this.DatabaseRead_bool(gameID, "showDebugMessages");
 
-            // ========= load SKILLS
-            foreach (string element in Globals_Game.skillKeys)
+            // ========= load TRAITS
+            foreach (string element in Globals_Game.traitKeys)
             {
-                Skill skill = this.DatabaseRead_skill(gameID, element);
-                // add Skill to skillMasterList
-                Globals_Game.skillMasterList.Add(skill.skillID, skill);
+                Trait trait = this.DatabaseRead_trait(gameID, element);
+                // add Trait to traitMasterList
+                Globals_Game.traitMasterList.Add(trait.id, trait);
             }
 
             // ========= load BASELANGUAGES
@@ -229,17 +229,17 @@ namespace hist_mmorpg
         /// <param name="gameID">Game for which key lists to be retrieved</param>
         public void DatabaseRead_keyLists(string gameID)
         {
-            // populate skillKeys
-            var skillKeyResult = rClient.Get(gameID, "skillKeys");
-            if (skillKeyResult.IsSuccess)
+            // populate traitKeys
+            var traitKeyResult = rClient.Get(gameID, "traitKeys");
+            if (traitKeyResult.IsSuccess)
             {
-                Globals_Game.skillKeys = skillKeyResult.Value.GetObject<List<string>>();
+                Globals_Game.traitKeys = traitKeyResult.Value.GetObject<List<string>>();
             }
             else
             {
                 if (Globals_Client.showMessages)
                 {
-                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve skillKeys from database.");
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve traitKeys from database.");
                 }
             }
 
@@ -699,29 +699,29 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Reads a Skill object from the database
+        /// Reads a Trait object from the database
         /// </summary>
-        /// <returns>Skill object</returns>
-        /// <param name="gameID">Game for which skill to be retrieved</param>
-        /// <param name="skillID">ID of skill to be retrieved</param>
-        public Skill DatabaseRead_skill(string gameID, string skillID)
+        /// <returns>Trait object</returns>
+        /// <param name="gameID">Game for which trait to be retrieved</param>
+        /// <param name="traitID">ID of trait to be retrieved</param>
+        public Trait DatabaseRead_trait(string gameID, string traitID)
         {
-            var skillResult = rClient.Get(gameID, skillID);
-            var newSkill = new Skill();
+            var traitResult = rClient.Get(gameID, traitID);
+            var newTrait = new Trait();
 
-            if (skillResult.IsSuccess)
+            if (traitResult.IsSuccess)
             {
-                newSkill = skillResult.Value.GetObject<Skill>();
+                newTrait = traitResult.Value.GetObject<Trait>();
             }
             else
             {
                 if (Globals_Client.showMessages)
                 {
-                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve skill " + skillID);
+                    System.Windows.Forms.MessageBox.Show("InitialDBload: Unable to retrieve trait " + traitID);
                 }
             }
 
-            return newSkill;
+            return newTrait;
         }
 
         /// <summary>
@@ -1011,12 +1011,12 @@ namespace hist_mmorpg
             // insert nationality
             npcOut.nationality = Globals_Game.nationalityMasterList[npcs.nationality];
 
-            // insert skills
-            if (npcs.skills.Length > 0)
+            // insert traits
+            if (npcs.traits.Length > 0)
             {
-                for (int i = 0; i < npcs.skills.Length; i++)
+                for (int i = 0; i < npcs.traits.Length; i++)
                 {
-                    npcOut.skills[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[npcs.skills[i].Item1], npcs.skills[i].Item2);
+                    npcOut.traits[i] = new Tuple<Trait, int>(Globals_Game.traitMasterList[npcs.traits[i].Item1], npcs.traits[i].Item2);
                 }
             }
 
@@ -1078,12 +1078,12 @@ namespace hist_mmorpg
             // insert nationality
             pcOut.nationality = Globals_Game.nationalityMasterList[pcs.nationality];
 
-            // insert skills
-            if (pcs.skills.Length > 0)
+            // insert traits
+            if (pcs.traits.Length > 0)
             {
-                for (int i = 0; i < pcs.skills.Length; i++)
+                for (int i = 0; i < pcs.traits.Length; i++)
                 {
-                    pcOut.skills[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[pcs.skills[i].Item1], pcs.skills[i].Item2);
+                    pcOut.traits[i] = new Tuple<Trait, int>(Globals_Game.traitMasterList[pcs.traits[i].Item1], pcs.traits[i].Item2);
                 }
             }
 

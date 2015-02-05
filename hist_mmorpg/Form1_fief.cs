@@ -398,7 +398,7 @@ namespace hist_mmorpg
                 fiefText += "  (including Officials spend loyalty modifier: " + f.CalcOffLoyMod() + ")\r\n";
                 fiefText += "  (including Garrison spend loyalty modifier: " + f.CalcGarrLoyMod() + ")\r\n";
                 fiefText += "  (including Bailiff loyalty modifier: " + f.CalcBlfLoyAdjusted(f.bailiffDaysInFief >= 30) + ")\r\n";
-                fiefText += "    (which itself may include a Bailiff fiefLoy skills modifier: " + f.CalcBailLoySkillMod(f.bailiffDaysInFief >= 30) + ")\r\n\r\n";
+                fiefText += "    (which itself may include a Bailiff fiefLoy traits modifier: " + f.CalcBailLoyTraitMod(f.bailiffDaysInFief >= 30) + ")\r\n\r\n";
 
                 // GDP
                 fiefText += "GDP: " + f.CalcNewGDP() + "\r\n\r\n";

@@ -150,7 +150,7 @@
       <DependentUpon>SelectionForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Siege.cs" />
-    <Compile Include="Skill.cs" />
+    <Compile Include="Trait.cs" />
     <Compile Include="Terrain.cs" />
     <Compile Include="Utility_Methods.cs" />
     <EmbeddedResource Include="Form1.resx">

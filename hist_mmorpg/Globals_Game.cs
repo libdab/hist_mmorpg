@@ -129,13 +129,13 @@ namespace hist_mmorpg
         /// </summary>
         public static List<String> langKeys = new List<String>();
         /// <summary>
-        /// Holds all Skill objects
+        /// Holds all Trait objects
         /// </summary>
-        public static Dictionary<string, Skill> skillMasterList = new Dictionary<string, Skill>();
+        public static Dictionary<string, Trait> traitMasterList = new Dictionary<string, Trait>();
         /// <summary>
-        /// Holds keys for Skill objects (used when retrieving from database)
+        /// Holds keys for Trait objects (used when retrieving from database)
         /// </summary>
-        public static List<String> skillKeys = new List<String>();
+        public static List<String> traitKeys = new List<String>();
         /// <summary>
         /// Holds all army objects
         /// </summary>

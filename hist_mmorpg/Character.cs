@@ -74,9 +74,9 @@ namespace hist_mmorpg
         /// </summary>
         public Double combat { get; set; }
         /// <summary>
-        /// Array holding character's skills
+        /// Array holding character's traits
         /// </summary>
-        public Tuple<Skill, int>[] skills { get; set; }
+        public Tuple<Trait, int>[] traits { get; set; }
         /// <summary>
         /// bool indicating if character is in the keep
         /// </summary>
@@ -140,7 +140,7 @@ namespace hist_mmorpg
         /// <param name="stat">Double holding character stature rating</param>
         /// <param name="mngmnt">Double holding character management rating</param>
         /// <param name="cbt">Double holding character combat rating</param>
-        /// <param name="skl">Array containing character's skills</param>
+        /// <param name="trt">Array containing character's traits</param>
         /// <param name="inK">bool indicating if character is in the keep</param>
         /// <param name="preg">bool holding character pregnancy status</param>
         /// <param name="famID">String holding charID of head of family with which character associated</param>
@@ -153,7 +153,7 @@ namespace hist_mmorpg
         /// <param name="aID">String holding armyID of army character is leading</param>
         /// <param name="ails">Dictionary<string, Ailment> holding ailments effecting character's health</param>
         public Character(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, Nationality nat, bool alive, Double mxHea, Double vir,
-            Queue<Fief> go, Language lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg,
+            Queue<Fief> go, Language lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Trait, int>[] trt, bool inK, bool preg,
             String famID, String sp, String fath, String moth, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null)
         {
             // VALIDATION
@@ -228,11 +228,11 @@ namespace hist_mmorpg
             }
 
             // SKL
-            for (int i = 0; i < skl.Length; i++)
+            for (int i = 0; i < trt.Length; i++)
             {
-                if (!Utility_Methods.ValidateCharacterStat(Convert.ToDouble(skl[i].Item2)))
+                if (!Utility_Methods.ValidateCharacterStat(Convert.ToDouble(trt[i].Item2)))
                 {
-                    throw new InvalidDataException("Character skill level must be an integer between 1-9");
+                    throw new InvalidDataException("Character trait level must be an integer between 1-9");
                 }
             }
 
@@ -364,7 +364,7 @@ namespace hist_mmorpg
             this.statureModifier = stat;
             this.management = mngmnt;
             this.combat = cbt;
-            this.skills = skl;
+            this.traits = trt;
             this.inKeep = inK;
             this.isPregnant = preg;
 			this.location = loc;
@@ -419,7 +419,7 @@ namespace hist_mmorpg
 				this.management = charToUse.management;
 				this.combat = charToUse.combat;
                 // create empty array, to be populated later
-                this.skills = new Tuple<Skill, int>[charToUse.skills.Length];
+                this.traits = new Tuple<Trait, int>[charToUse.traits.Length];
 				this.inKeep = charToUse.inKeep;
 				this.isPregnant = charToUse.isPregnant;
                 this.spouse = charToUse.spouse;
@@ -556,10 +556,10 @@ namespace hist_mmorpg
             this.nationality = npc.nationality;
             this.isAlive = true;
             this.language = npc.language;
-            this.skills = new Tuple<Skill, int>[npc.skills.Length];
-            for (int i = 0; i < npc.skills.Length; i++)
+            this.traits = new Tuple<Trait, int>[npc.traits.Length];
+            for (int i = 0; i < npc.traits.Length; i++)
             {
-                this.skills[i] = npc.skills[i];
+                this.traits[i] = npc.traits[i];
             }
         }
 
@@ -865,8 +865,8 @@ namespace hist_mmorpg
         /// <param name="isStillborn">bool indicating whether (if check is due to birth) baby was stillborn</param>
         public Boolean CheckForDeath(bool isBirth = false, bool isMother = false, bool isStillborn = false)
         {
-            // Check if chance of death effected by character skills
-            double deathSkillsModifier = this.CalcSkillEffect("death");
+            // Check if chance of death effected by character traits
+            double deathTraitsModifier = this.CalcTraitEffect("death");
 
             // calculate base chance of death
             // chance = 2.8% (2.5% for women) per health level below 10
@@ -882,10 +882,10 @@ namespace hist_mmorpg
 
             Double deathChance = (10 - this.CalculateHealth()) * deathChanceIncrement;
 
-            // apply skills modifier (if exists)
-            if (deathSkillsModifier != 0)
+            // apply traits modifier (if exists)
+            if (deathTraitsModifier != 0)
             {
-                deathChance = deathChance + (deathChance * deathSkillsModifier);
+                deathChance = deathChance + (deathChance * deathTraitsModifier);
             }
 
             // factor in birth event if appropriate
@@ -2040,37 +2040,37 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates effect of a particular skill effect
+        /// Calculates effect of a particular trait effect
         /// </summary>
-        /// <returns>double containing skill effect modifier</returns>
-        /// <param name="effect">string specifying which skill effect to calculate</param>
-        public double CalcSkillEffect(String effect)
+        /// <returns>double containing trait effect modifier</returns>
+        /// <param name="effect">string specifying which trait effect to calculate</param>
+        public double CalcTraitEffect(String effect)
         {
-            double skillEffectModifier = 0;
+            double traitEffectModifier = 0;
 
-            // iterate through skills
-            for (int i = 0; i < this.skills.Length; i++)
+            // iterate through traits
+            for (int i = 0; i < this.traits.Length; i++)
             {
-                // iterate through skill effects, looking for effect
-                foreach (KeyValuePair<string, double> entry in this.skills[i].Item1.effects)
+                // iterate through trait effects, looking for effect
+                foreach (KeyValuePair<string, double> entry in this.traits[i].Item1.effects)
                 {
                     // if present, update total modifier
                     if (entry.Key.Equals(effect))
                     {
-                        // get this particular modifer (based on character's skill level)
+                        // get this particular modifer (based on character's trait level)
                         // and round up if necessary (i.e. to get the full effect)
-                        double thisModifier = (this.skills[i].Item2 * 0.111);
-                        if (this.skills[i].Item2 == 9)
+                        double thisModifier = (this.traits[i].Item2 * 0.111);
+                        if (this.traits[i].Item2 == 9)
                         {
                             thisModifier = 1;
                         }
                         // add to exisiting total modifier
-                        skillEffectModifier += (entry.Value * thisModifier);
+                        traitEffectModifier += (entry.Value * thisModifier);
                     }
                 }
             }
 
-            return skillEffectModifier;
+            return traitEffectModifier;
         }
 
         /// <summary>
@@ -2480,7 +2480,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Gets the character's full days allowance, including adjustment for skills
+        /// Gets the character's full days allowance, including adjustment for traits
         /// </summary>
         /// <returns>Full days allowance</returns>
         public double GetDaysAllowance()
@@ -2488,12 +2488,12 @@ namespace hist_mmorpg
             // base allowance
             double myDays = 90;
 
-            // check for time efficiency in skills
-            double timeSkillsMOd = this.CalcSkillEffect("time");
-            if (timeSkillsMOd != 0)
+            // check for time efficiency in traits
+            double timeTraitsMOd = this.CalcTraitEffect("time");
+            if (timeTraitsMOd != 0)
             {
-                // apply skill effects
-                myDays = myDays + (myDays * timeSkillsMOd);
+                // apply trait effects
+                myDays = myDays + (myDays * timeTraitsMOd);
             }
 
             return myDays;
@@ -2709,23 +2709,23 @@ namespace hist_mmorpg
             // get base LV
             lv = (this.combat + this.management + this.CalculateStature()) / 3;
 
-            // factor in skills effect
-            double combatSkillsMOd = 0;
+            // factor in traits effect
+            double combatTraitsMod = 0;
 
-            // if is siege, use 'siege' skill
+            // if is siege, use 'siege' trait
             if (isSiegeStorm)
             {
-                combatSkillsMOd = this.CalcSkillEffect("siege");
+                combatTraitsMod = this.CalcTraitEffect("siege");
             }
-            // else use 'battle' skill
+            // else use 'battle' trait
             else
             {
-                combatSkillsMOd = this.CalcSkillEffect("battle");
+                combatTraitsMod = this.CalcTraitEffect("battle");
             }
 
-            if (combatSkillsMOd != 0)
+            if (combatTraitsMod != 0)
             {
-                lv = lv + (lv * combatSkillsMOd);
+                lv = lv + (lv * combatTraitsMod);
             }
 
             return lv;
@@ -2763,7 +2763,7 @@ namespace hist_mmorpg
             // base estimate variance
             double ev = 0.05;
 
-            // apply effects of leadership value (includes 'battle' skill)
+            // apply effects of leadership value (includes 'battle' trait)
             ev = ev + ((10 - this.GetLeadershipValue()) * 0.05);
 
             return ev;
@@ -2903,18 +2903,18 @@ namespace hist_mmorpg
             // baseline rating
             double fiefMgtRating = (this.management + this.CalculateStature()) / 2;
 
-            // check for skills effecting fief loyalty
-            double fiefLoySkill = this.CalcSkillEffect("fiefLoy");
+            // check for traits effecting fief loyalty
+            double fiefLoyTrait = this.CalcTraitEffect("fiefLoy");
 
-            // check for skills effecting fief expenses
-            double fiefExpSkill = this.CalcSkillEffect("fiefExpense");
+            // check for traits effecting fief expenses
+            double fiefExpTrait = this.CalcTraitEffect("fiefExpense");
 
-            // combine skills into single modifier. Note: fiefExpSkill is * by -1 because 
+            // combine traits into single modifier. Note: fiefExpTrait is * by -1 because 
             // a negative effect on expenses is good, so needs to be normalised
-            double mgtSkills = (fiefLoySkill + (-1 * fiefExpSkill));
+            double mgtTraits = (fiefLoyTrait + (-1 * fiefExpTrait));
 
             // calculate final fief management rating
-            fiefMgtRating += (fiefMgtRating * mgtSkills);
+            fiefMgtRating += (fiefMgtRating * mgtTraits);
 
             return fiefMgtRating;
         }
@@ -2928,17 +2928,17 @@ namespace hist_mmorpg
             // baseline rating
             double armyLeaderRating = (this.management + this.CalculateStature() + this.combat) / 3;
 
-            // check for skills effecting battle
-            double battleSkills = this.CalcSkillEffect("battle");
+            // check for traits effecting battle
+            double battleTraits = this.CalcTraitEffect("battle");
 
-            // check for skills effecting siege
-            double siegeSkills = this.CalcSkillEffect("siege");
+            // check for traits effecting siege
+            double siegeTraits = this.CalcTraitEffect("siege");
 
-            // combine skills into single modifier 
-            double combatSkills = battleSkills + siegeSkills;
+            // combine traits into single modifier 
+            double combatTraits = battleTraits + siegeTraits;
 
             // calculate final combat rating
-            armyLeaderRating += (armyLeaderRating * combatSkills);
+            armyLeaderRating += (armyLeaderRating * combatTraits);
 
             return armyLeaderRating;
         }
@@ -2956,7 +2956,7 @@ namespace hist_mmorpg
             // calculate base chance of injury (based on armyCasualtyLevel)
             double injuryPercentChance = (armyCasualtyLevel * 100);
 
-            // factor in combat skill of character
+            // factor in combat trait of character
             injuryPercentChance += 5 - this.combat;
 
             // ensure chance of injury between 1%-%80
@@ -3214,10 +3214,10 @@ namespace hist_mmorpg
         /// <param name="myA">List(Army) holding character's armies</param>
         /// <param name="myS">List(string) holding character's sieges (siegeIDs)</param>
         public PlayerCharacter(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, Nationality nat, bool alive, Double mxHea, Double vir,
-            Queue<Fief> go, Language lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
+            Queue<Fief> go, Language lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Trait, int>[] trt, bool inK, bool preg, String famID,
             String sp, String fath, String moth, bool outl, uint pur, List<NonPlayerCharacter> npcs, List<Fief> ownedF, List<Province> ownedP, String home, String ancHome, List<String> myTi, List<Army> myA,
             List<string> myS, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null, String pID = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc, aID)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, trt, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc, aID)
         {
             // VALIDATION
 
@@ -3485,14 +3485,14 @@ namespace hist_mmorpg
             // generate random (0 - 100) to see if accepts offer
             double chance = Utility_Methods.GetRandomDouble(100);
 
-            // get 'npcHire' skill effect modifier (increase/decrease chance of offer being accepted)
-            double hireSkills = this.CalcSkillEffect("npcHire");
+            // get 'npcHire' trait effect modifier (increase/decrease chance of offer being accepted)
+            double hireTraits = this.CalcTraitEffect("npcHire");
 
             // convert to % to allow easy modification of chance
-            hireSkills = (hireSkills * 100);
+            hireTraits = (hireTraits * 100);
 
             // apply to chance
-            chance = (chance + (hireSkills * -1));
+            chance = (chance + (hireTraits * -1));
 
             // ensure chance is a valid %
             if (chance < 0)
@@ -4709,9 +4709,9 @@ namespace hist_mmorpg
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
         /// <param name="isH">bool denoting if is player's heir</param>
         public NonPlayerCharacter(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, Nationality nat, bool alive, Double mxHea, Double vir,
-            Queue<Fief> go, Language lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Skill, int>[] skl, bool inK, bool preg, String famID,
+            Queue<Fief> go, Language lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<Trait, int>[] trt, bool inK, bool preg, String famID,
             String sp, String fath, String moth, uint sal, bool inEnt, bool isH, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, Fief loc = null, String aID = null, String empl = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc, aID)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, trt, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc, aID)
         {
             // VALIDATION
 
@@ -5136,10 +5136,10 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates the potential salary (per season) for the NonPlayerCharacter, based on his skills
+        /// Calculates the potential salary (per season) for the NonPlayerCharacter, based on his traits
         /// </summary>
         /// <returns>uint containing salary</returns>
-        public double CalcSalary_BaseOnSkills()
+        public double CalcSalary_BaseOnTraits()
         {
             double salary = 0;
             double basicSalary = 1500;
@@ -5179,8 +5179,8 @@ namespace hist_mmorpg
         /// <param name="hiringPlayer">Hiring player</param>
         public uint CalcSalary(PlayerCharacter hiringPlayer)
         {
-            // get potential salary based on NPC's skills
-            double salary_skills = this.CalcSalary_BaseOnSkills();
+            // get potential salary based on NPC's traits
+            double salary_traits = this.CalcSalary_BaseOnTraits();
 
             // get potential salary based on NPC's current salary
             double salary_current = 0;
@@ -5190,7 +5190,7 @@ namespace hist_mmorpg
             }
 
             // use maximum of the two salary calculations
-            double salary = Math.Max(salary_skills, salary_current);
+            double salary = Math.Max(salary_traits, salary_current);
 
             // factor in hiring PC's stature and current employer's stature (if applicable)
             // (4% reduction in NPC's salary for each stature rank above 4)
@@ -5449,9 +5449,9 @@ namespace hist_mmorpg
 		/// </summary>
 		public Double combat { get; set; }
 		/// <summary>
-		/// Array holding character's skills (skillID)
+        /// Array holding character's traits (ID)
 		/// </summary>
-		public Tuple<String, int>[] skills { get; set; }
+		public Tuple<String, int>[] traits { get; set; }
 		/// <summary>
 		/// bool indicating if character is in the keep
 		/// </summary>
@@ -5539,10 +5539,10 @@ namespace hist_mmorpg
 				this.statureModifier = charToUse.statureModifier;
 				this.management = charToUse.management;
 				this.combat = charToUse.combat;
-				this.skills = new Tuple<String, int>[charToUse.skills.Length];
-				for (int i = 0; i < charToUse.skills.Length; i++)
+				this.traits = new Tuple<String, int>[charToUse.traits.Length];
+				for (int i = 0; i < charToUse.traits.Length; i++)
 				{
-					this.skills [i] = new Tuple<string,int>(charToUse.skills [i].Item1.skillID, charToUse.skills [i].Item2);
+					this.traits [i] = new Tuple<string,int>(charToUse.traits [i].Item1.id, charToUse.traits [i].Item2);
 				}
 				this.inKeep = charToUse.inKeep;
 				this.isPregnant = charToUse.isPregnant;
@@ -5577,7 +5577,7 @@ namespace hist_mmorpg
         /// <param name="stat">Double holding character stature rating</param>
         /// <param name="mngmnt">Double holding character management rating</param>
         /// <param name="cbt">Double holding character combat rating</param>
-        /// <param name="skl">string array containing character's skills (id)</param>
+        /// <param name="trt">string array containing character's traits (id)</param>
         /// <param name="inK">bool indicating if character is in the keep</param>
         /// <param name="preg">bool holding character pregnancy status</param>
         /// <param name="famID">String holding charID of head of family with which character associated</param>
@@ -5590,7 +5590,7 @@ namespace hist_mmorpg
         /// <param name="aID">String holding armyID of army character is leading</param>
         /// <param name="ails">Dictionary (string, Ailment) holding ailments effecting character's health</param>
         public Character_Serialised(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, string nat, bool alive, Double mxHea, Double vir,
-            List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] skl, bool inK, bool preg,
+            List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] trt, bool inK, bool preg,
             String famID, String sp, String fath, String moth, List<String> myTi, string fia, Dictionary<string, Ailment> ails = null, string loc = null, String aID = null)
         {
             // VALIDATION
@@ -5697,17 +5697,17 @@ namespace hist_mmorpg
                 throw new InvalidDataException("Character_Serialised combat must be a double between 1-9");
             }
 
-            // SKL
-            for (int i = 0; i < skl.Length; i++)
+            // TRT
+            for (int i = 0; i < trt.Length; i++)
             {
-                if (!Utility_Methods.ValidateSkillID(skl[i].Item1))
+                if (!Utility_Methods.ValidateTraitID(trt[i].Item1))
                 {
-                    throw new InvalidDataException("Character_Serialised skill ID must have the format 'skill_' followed by some numbers");
+                    throw new InvalidDataException("Character_Serialised trait ID must have the format 'trait_' followed by some numbers");
                 }
 
-                else if (!Utility_Methods.ValidateCharacterStat(Convert.ToDouble(skl[i].Item2)))
+                else if (!Utility_Methods.ValidateCharacterStat(Convert.ToDouble(trt[i].Item2)))
                 {
-                    throw new InvalidDataException("Character_Serialised skill level must be an integer between 1-9");
+                    throw new InvalidDataException("Character_Serialised trait level must be an integer between 1-9");
                 }
             }
 
@@ -5845,7 +5845,7 @@ namespace hist_mmorpg
             this.statureModifier = stat;
             this.management = mngmnt;
             this.combat = cbt;
-            this.skills = skl;
+            this.traits = trt;
             this.inKeep = inK;
             this.isPregnant = preg;
 			this.location = loc;
@@ -5970,10 +5970,10 @@ namespace hist_mmorpg
         /// <param name="myA">List (string) holding character's armies (id)</param>
         /// <param name="myS">List<string> holding character's sieges (id)</param>
         public PlayerCharacter_Serialised(string id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, string nat, bool alive, Double mxHea, Double vir,
-            List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] skl, bool inK, bool preg, String famID,
+            List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] trt, bool inK, bool preg, String famID,
             String sp, String fath, String moth, List<String> myTi, string fia, bool outl, uint pur, List<string> npcs, List<string> ownedF, List<string> ownedP, String home, String ancHome, List<string> myA,
             List<string> myS, Dictionary<string, Ailment> ails = null, string loc = null, String aID = null, String pID = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc, aID)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, trt, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc, aID)
         {
             // VALIDATION
 
@@ -6146,9 +6146,9 @@ namespace hist_mmorpg
         /// <param name="inEnt">bool denoting if in employer's entourage</param>
         /// <param name="isH">bool denoting if is player's heir</param>
         public NonPlayerCharacter_Serialised(String id, String firstNam, String famNam, Tuple<uint, byte> dob, bool isM, string nat, bool alive, Double mxHea, Double vir,
-            List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] skl, bool inK, bool preg, String famID,
+            List<string> go, string lang, double day, Double stat, Double mngmnt, Double cbt, Tuple<string, int>[] trt, bool inK, bool preg, String famID,
             String sp, String fath, String moth, List<String> myTi, string fia, uint sal, bool inEnt, bool isH, Dictionary<string, Ailment> ails = null, string loc = null, String aID = null, String empl = null)
-            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, skl, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc, aID)
+            : base(id, firstNam, famNam, dob, isM, nat, alive, mxHea, vir, go, lang, day, stat, mngmnt, cbt, trt, inK, preg, famID, sp, fath, moth, myTi, fia, ails, loc, aID)
         {
             // VALIDATION
 

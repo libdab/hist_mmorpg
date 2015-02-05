@@ -6,30 +6,30 @@ using System.Text;
 namespace hist_mmorpg
 {
     /// <summary>
-    /// Class storing data on a Skill
+    /// Class storing data on a Trait
     /// </summary>
-    public class Skill
+    public class Trait
     {
 		/// <summary>
-		/// Holds skill ID
+        /// Holds trait ID
 		/// </summary>
-		public String skillID { get; set; }
+		public String id { get; set; }
         /// <summary>
-        /// Holds skill name
+        /// Holds strait name
         /// </summary>
         public String name { get; set; }
         /// <summary>
-        /// Holds skill effects
+        /// Holds trait effects
         /// </summary>
         public Dictionary<string, double> effects;
 
         /// <summary>
-        /// Constructor for Skill
+        /// Constructor for Trait
         /// </summary>
-		/// <param name="id">String holding skill ID</param>
-		/// <param name="nam">String holding skill name</param>
-        /// <param name="effs">Dictionary(string, double) holding skill effects</param>
-        public Skill(String id, String nam, Dictionary<string, double> effs)
+        /// <param name="id">String holding trait ID</param>
+        /// <param name="nam">String holding trait name</param>
+        /// <param name="effs">Dictionary(string, double) holding trait effects</param>
+        public Trait(String id, String nam, Dictionary<string, double> effs)
         {
             // VALIDATION
 
@@ -37,9 +37,9 @@ namespace hist_mmorpg
             // trim
             id = id.Trim();
 
-            if (!Utility_Methods.ValidateSkillID(id))
+            if (!Utility_Methods.ValidateTraitID(id))
             {
-                throw new InvalidDataException("Skill ID must have the format 'skill_' followed by some numbers");
+                throw new InvalidDataException("Trait ID must have the format 'trait_' followed by some numbers");
             }
 
             // NAM
@@ -48,7 +48,7 @@ namespace hist_mmorpg
 
             if (!Utility_Methods.ValidateName(nam))
             {
-                throw new InvalidDataException("Skill name must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
+                throw new InvalidDataException("Trait name must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
             }
 
             // EFFS
@@ -60,7 +60,7 @@ namespace hist_mmorpg
             {
                 if (!Utility_Methods.ValidateName(effNames[i]))
                 {
-                    throw new InvalidDataException("All Skill effect names must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
+                    throw new InvalidDataException("All Trait effect names must be 1-40 characters long and contain only valid characters (a-z and ') or spaces");
                 }
             }
 
@@ -72,21 +72,21 @@ namespace hist_mmorpg
             {
                 if ((effVals[i] < -0.99) || (effVals[i] > 0.99))
                 {
-                    throw new InvalidDataException("All Skill effect values must be doubles between -0.99 and 0.99");
+                    throw new InvalidDataException("All Trait effect values must be doubles between -0.99 and 0.99");
                 }
             }
 
-			this.skillID = id;
+			this.id = id;
 			this.name = nam;
             this.effects = effs;
 
         }
 
         /// <summary>
-        /// Constructor for Skill taking no parameters.
+        /// Constructor for Trait taking no parameters.
         /// For use when de-serialising.
         /// </summary>
-        public Skill()
+        public Trait()
 		{
 		}
     }

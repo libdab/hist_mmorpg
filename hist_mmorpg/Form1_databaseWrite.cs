@@ -125,25 +125,25 @@ namespace hist_mmorpg
             // Globals_Client.showDebugMessages
             this.DatabaseWrite_Bool(gameID, "showDebugMessages", Globals_Client.showDebugMessages);
 
-            // ========= write SKILLS
+            // ========= write TRAITS
             // clear existing key list
-            if (Globals_Game.skillKeys.Count > 0)
+            if (Globals_Game.traitKeys.Count > 0)
             {
-                Globals_Game.skillKeys.Clear();
+                Globals_Game.traitKeys.Clear();
             }
 
-            // write each object in skillMasterList, whilst also repopulating key list
-            foreach (KeyValuePair<string, Skill> pair in Globals_Game.skillMasterList)
+            // write each object in traitMasterList, whilst also repopulating key list
+            foreach (KeyValuePair<string, Trait> pair in Globals_Game.traitMasterList)
             {
-                bool success = this.DatabaseWrite_Skill(gameID, pair.Value);
+                bool success = this.DatabaseWrite_Trait(gameID, pair.Value);
                 if (success)
                 {
-                    Globals_Game.skillKeys.Add(pair.Key);
+                    Globals_Game.traitKeys.Add(pair.Key);
                 }
             }
 
             // write key list to database
-            this.DatabaseWrite_KeyList(gameID, "skillKeys", Globals_Game.skillKeys);
+            this.DatabaseWrite_KeyList(gameID, "traitKeys", Globals_Game.traitKeys);
 
             // ========= write BASELANGUAGES
             // clear existing key list
@@ -614,25 +614,25 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Writes a Skill object to the database
+        /// Writes aTtrait object to the database
         /// </summary>
         /// <returns>bool indicating success</returns>
         /// <param name="gameID">Game (bucket) to write to</param>
-        /// <param name="s">Skill to write</param>
-        public bool DatabaseWrite_Skill(string gameID, Skill s)
+        /// <param name="t">Trait to write</param>
+        public bool DatabaseWrite_Trait(string gameID, Trait t)
         {
-            var rSkill = new RiakObject(gameID, s.skillID, s);
-            var putSkillResult = rClient.Put(rSkill);
+            var rTrait = new RiakObject(gameID, t.id, t);
+            var putTraitResult = rClient.Put(rTrait);
 
-            if (!putSkillResult.IsSuccess)
+            if (!putTraitResult.IsSuccess)
             {
                 if (Globals_Client.showMessages)
                 {
-                    System.Windows.Forms.MessageBox.Show("Write failed: Skill " + rSkill.Key + " to bucket " + rSkill.Bucket);
+                    System.Windows.Forms.MessageBox.Show("Write failed: Trait " + rTrait.Key + " to bucket " + rTrait.Bucket);
                 }
             }
 
-            return putSkillResult.IsSuccess;
+            return putTraitResult.IsSuccess;
         }
 
         /// <summary>

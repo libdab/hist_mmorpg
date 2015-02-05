@@ -73,15 +73,15 @@ namespace hist_mmorpg
                 this.admineditCharManTextBox.Text = ch.management.ToString();
                 // combat
                 this.admineditCharComTextBox.Text = ch.combat.ToString();
-                // skills
-                this.adminEditCharSkNameTextBox1.Text = ch.skills[0].Item1.skillID;
-                this.adminEditCharSkLvlTextBox1.Text = ch.skills[0].Item2.ToString();
-                this.adminEditCharSkNameTextBox2.Text = ch.skills[1].Item1.skillID;
-                this.adminEditCharSkLvlTextBox2.Text = ch.skills[1].Item2.ToString();
-                if (ch.skills.Length > 2)
+                // traits
+                this.adminEditCharSkNameTextBox1.Text = ch.traits[0].Item1.id;
+                this.adminEditCharSkLvlTextBox1.Text = ch.traits[0].Item2.ToString();
+                this.adminEditCharSkNameTextBox2.Text = ch.traits[1].Item1.id;
+                this.adminEditCharSkLvlTextBox2.Text = ch.traits[1].Item2.ToString();
+                if (ch.traits.Length > 2)
                 {
-                    this.adminEditCharSkNameTextBox3.Text = ch.skills[2].Item1.skillID;
-                    this.adminEditCharSkLvlTextBox3.Text = ch.skills[2].Item2.ToString();
+                    this.adminEditCharSkNameTextBox3.Text = ch.traits[2].Item1.id;
+                    this.adminEditCharSkLvlTextBox3.Text = ch.traits[2].Item2.ToString();
                 }
                 // location
                 this.adminEditCharLocTextBox.Text = ch.location.id;
@@ -255,56 +255,56 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Refreshes the edit Skill display, displaying details of the specified Skill
+        /// Refreshes the edit Trait display, displaying details of the specified Trait
         /// and clearing any previously displayed data
         /// </summary>
-        /// <param name="s">The Skill to be displayed</param>
-        public void RefreshSkillEdit(Skill s = null)
+        /// <param name="t">The Trait to be displayed</param>
+        public void RefreshTraitEdit(Trait t = null)
         {
             // clear previous data
-            this.DisableControls(this.adminEditSkillPanel);
+            this.DisableControls(this.adminEditTraitPanel);
 
-            // display skill data, if provided
-            if (s != null)
+            // display trait data, if provided
+            if (t != null)
             {
                 // enable controls
-                this.EnableControls(this.adminEditSkillPanel);
+                this.EnableControls(this.adminEditTraitPanel);
 
                 // id
-                this.adminEditSkillIdTextBox.Text = s.skillID;
+                this.adminEditTraitIdTextBox.Text = t.id;
                 // name
-                this.adminEditSkillNameTextBox.Text = s.name;
-                // effects - iterates through skill effects adding information to ListView
-                this.RefreshSkillEffectsList(s.effects);
+                this.adminEditTraitNameTextBox.Text = t.name;
+                // effects - iterates through trait effects adding information to ListView
+                this.RefreshTraitEffectsList(t.effects);
             }
         }
 
         /// <summary>
-        /// Refreshes the skill effects list on the edit Skill display
+        /// Refreshes the trait effects list on the edit Trait display
         /// </summary>
         /// <param name="effects">The effects to be displayed</param>
-        public void RefreshSkillEffectsList(Dictionary<string, Double> effects)
+        public void RefreshTraitEffectsList(Dictionary<string, Double> effects)
         {
             // clear existing data
-            this.adminEditSkillEffsListView.Items.Clear();
+            this.adminEditTraitEffsListView.Items.Clear();
 
             if (effects.Count > 0)
             {
-                // iterate through skill effects adding information to ListView
+                // iterate through trait effects adding information to ListView
                 foreach (KeyValuePair<string, double> effectEntry in effects)
                 {
-                    ListViewItem skillItem = null;
+                    ListViewItem traitItem = null;
 
                     // effect name
-                    skillItem = new ListViewItem(effectEntry.Key);
+                    traitItem = new ListViewItem(effectEntry.Key);
 
                     // effect level
-                    skillItem.SubItems.Add(effectEntry.Value.ToString());
+                    traitItem.SubItems.Add(effectEntry.Value.ToString());
 
-                    if (skillItem != null)
+                    if (traitItem != null)
                     {
                         // add item to ListView
-                        this.adminEditSkillEffsListView.Items.Add(skillItem);
+                        this.adminEditTraitEffsListView.Items.Add(traitItem);
                     }
 
                 }
@@ -357,31 +357,31 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Saves the Skill currently being edited in the SysAdmin interface
+        /// Saves the Trait currently being edited in the SysAdmin interface
         /// </summary>
         /// <returns>bool indicating success</returns>
-        public bool SaveSkillEdit()
+        public bool SaveTraitEdit()
         {
             bool success = false;
 
             try
             {
                 // get data from edit form
-                string id = this.adminEditSkillIdTextBox.Text;
-                string name = this.adminEditSkillNameTextBox.Text;
+                string id = this.adminEditTraitIdTextBox.Text;
+                string name = this.adminEditTraitNameTextBox.Text;
                 Dictionary<string, double> effects = new Dictionary<string, double>();
 
-                for (int i = 0; i < this.adminEditSkillEffsListView.Items.Count; i++)
+                for (int i = 0; i < this.adminEditTraitEffsListView.Items.Count; i++)
                 {
-                    effects.Add(this.adminEditSkillEffsListView.Items[i].SubItems[0].Text,
-                        Convert.ToDouble(this.adminEditSkillEffsListView.Items[i].SubItems[1].Text));
+                    effects.Add(this.adminEditTraitEffsListView.Items[i].SubItems[0].Text,
+                        Convert.ToDouble(this.adminEditTraitEffsListView.Items[i].SubItems[1].Text));
                 }
 
-                // create new skill
-                Skill thisSkill = new Skill(id, name, effects);
+                // create new trait
+                Trait thisTrait = new Trait(id, name, effects);
 
-                // replace existing skill in skillMasterList
-                Globals_Game.skillMasterList[id] = thisSkill;
+                // replace existing trait in traitMasterList
+                Globals_Game.traitMasterList[id] = thisTrait;
 
                 success = true;
 
@@ -481,9 +481,9 @@ namespace hist_mmorpg
             Character charToSave = null;
             Nationality thisNat = null;
             Language thisLang = null;
-            Skill thisSkill1 = null;
-            Skill thisSkill2 = null;
-            Skill thisSkill3 = null;
+            Trait thisTrait1 = null;
+            Trait thisTrait2 = null;
+            Trait thisTrait3 = null;
             Fief thisFief = null;
 
             try
@@ -622,56 +622,56 @@ namespace hist_mmorpg
                     double com = Convert.ToDouble(this.admineditCharComTextBox.Text);
                     charToSave.combat = com;
 
-                    // skills
-                    string skill1id = this.adminEditCharSkNameTextBox1.Text;
-                    if (Globals_Game.skillMasterList.ContainsKey(skill1id))
+                    // traits
+                    string trait1id = this.adminEditCharSkNameTextBox1.Text;
+                    if (Globals_Game.traitMasterList.ContainsKey(trait1id))
                     {
-                        thisSkill1 = Globals_Game.skillMasterList[skill1id];
+                        thisTrait1 = Globals_Game.traitMasterList[trait1id];
                     }
-                    string skill2id = this.adminEditCharSkNameTextBox2.Text;
-                    if (Globals_Game.skillMasterList.ContainsKey(skill2id))
+                    string trait2id = this.adminEditCharSkNameTextBox2.Text;
+                    if (Globals_Game.traitMasterList.ContainsKey(trait2id))
                     {
-                        thisSkill2 = Globals_Game.skillMasterList[skill2id];
+                        thisTrait2 = Globals_Game.traitMasterList[trait2id];
                     }
-                    string skill3id = this.adminEditCharSkNameTextBox3.Text;
-                    if (Globals_Game.skillMasterList.ContainsKey(skill3id))
+                    string trait3id = this.adminEditCharSkNameTextBox3.Text;
+                    if (Globals_Game.traitMasterList.ContainsKey(trait3id))
                     {
-                        thisSkill3 = Globals_Game.skillMasterList[skill3id];
+                        thisTrait3 = Globals_Game.traitMasterList[trait3id];
                     }
-                    int skill1Lvl = 0;
+                    int trait1Lvl = 0;
                     if (!String.IsNullOrWhiteSpace(this.adminEditCharSkLvlTextBox1.Text))
                     {
-                        skill1Lvl = Convert.ToInt32(this.adminEditCharSkLvlTextBox1.Text);
+                        trait1Lvl = Convert.ToInt32(this.adminEditCharSkLvlTextBox1.Text);
                     }
-                    int skill2Lvl = 0;
+                    int trait2Lvl = 0;
                     if (!String.IsNullOrWhiteSpace(this.adminEditCharSkLvlTextBox2.Text))
                     {
-                        skill2Lvl = Convert.ToInt32(this.adminEditCharSkLvlTextBox2.Text);
+                        trait2Lvl = Convert.ToInt32(this.adminEditCharSkLvlTextBox2.Text);
                     }
-                    int skill3Lvl = 0;
+                    int trait3Lvl = 0;
                     if (!String.IsNullOrWhiteSpace(this.adminEditCharSkLvlTextBox3.Text))
                     {
-                        skill3Lvl = Convert.ToInt32(this.adminEditCharSkLvlTextBox3.Text);
+                        trait3Lvl = Convert.ToInt32(this.adminEditCharSkLvlTextBox3.Text);
                     }
-                    List<Tuple<Skill, int>> tempSkills = new List<Tuple<Skill, int>>();
-                    if ((thisSkill1 != null) && ((skill1Lvl >= 1) && (skill1Lvl <= 9)))
+                    List<Tuple<Trait, int>> tempTraits = new List<Tuple<Trait, int>>();
+                    if ((thisTrait1 != null) && ((trait1Lvl >= 1) && (trait1Lvl <= 9)))
                     {
-                        Tuple<Skill, int> thisTuple = new Tuple<Skill, int>(thisSkill1, skill1Lvl);
-                        tempSkills.Add(thisTuple);
+                        Tuple<Trait, int> thisTuple = new Tuple<Trait, int>(thisTrait1, trait1Lvl);
+                        tempTraits.Add(thisTuple);
                     }
-                    if ((thisSkill2 != null) && ((skill2Lvl >= 1) && (skill2Lvl <= 9)))
+                    if ((thisTrait2 != null) && ((trait2Lvl >= 1) && (trait2Lvl <= 9)))
                     {
-                        Tuple<Skill, int> thisTuple = new Tuple<Skill, int>(thisSkill2, skill2Lvl);
-                        tempSkills.Add(thisTuple);
+                        Tuple<Trait, int> thisTuple = new Tuple<Trait, int>(thisTrait2, trait2Lvl);
+                        tempTraits.Add(thisTuple);
                     }
-                    if ((thisSkill3 != null) && ((skill3Lvl >= 1) && (skill3Lvl <= 9)))
+                    if ((thisTrait3 != null) && ((trait3Lvl >= 1) && (trait3Lvl <= 9)))
                     {
-                        Tuple<Skill, int> thisTuple = new Tuple<Skill, int>(thisSkill3, skill3Lvl);
-                        tempSkills.Add(thisTuple);
+                        Tuple<Trait, int> thisTuple = new Tuple<Trait, int>(thisTrait3, trait3Lvl);
+                        tempTraits.Add(thisTuple);
                     }
-                    if (tempSkills.Count >= 2)
+                    if (tempTraits.Count >= 2)
                     {
-                        charToSave.skills = tempSkills.ToArray();
+                        charToSave.traits = tempTraits.ToArray();
                     }
 
                     // location

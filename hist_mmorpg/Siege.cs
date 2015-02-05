@@ -529,7 +529,7 @@ namespace hist_mmorpg
                 besiegerLeader = this.GetBesiegingArmy().GetLeader();
                 if (besiegerLeader != null)
                 {
-                    // set days to besieger leader's days (may be effected by skills)
+                    // set days to besieger leader's days (may be effected by traits)
                     newDays = besiegerLeader.days;
                 }
 
@@ -634,7 +634,7 @@ namespace hist_mmorpg
             // remove from fief
             besiegedFief.siege = null;
 
-            // sync days of all effected objects (to remove influence of attacking leader's skills)
+            // sync days of all effected objects (to remove influence of attacking leader's traits)
             // work out proportion of seasonal allowance remaining
             double daysProportion = 0;
             if (besiegingArmyLeader != null)

@@ -154,11 +154,11 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Checks that a Skill id is in the correct format
+        /// Checks that a Trait id is in the correct format
         /// </summary>
         /// <returns>bool indicating whether the id is valid</returns>
         /// <param name="id">The id to be validated</param>
-        public static bool ValidateSkillID(string id)
+        public static bool ValidateTraitID(string id)
         {
             bool isValid = true;
 
@@ -169,8 +169,8 @@ namespace hist_mmorpg
                 isValid = false;
             }
 
-            // must start with 'skill'
-            else if (!idSplit[0].Equals("skill"))
+            // must start with 'trait'
+            else if (!idSplit[0].Equals("trait"))
             {
                 isValid = false;
             }
@@ -203,7 +203,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Checks that a character statistic (combat, management, stature, virility, maxHealth, skill level) is in the correct range
+        /// Checks that a character statistic (combat, management, stature, virility, maxHealth, trait level) is in the correct range
         /// </summary>
         /// <returns>bool indicating whether the statistic is valid</returns>
         /// <param name="stat">The statistic to be validated</param>
@@ -574,54 +574,54 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Generates a random skill set for a Character
+        /// Generates a random trait set for a Character
         /// </summary>
-        /// <returns>Tuple(Skill, int)[] for use with a Character object</returns>
-        /// <param name="availSkillKeys">List of skill keys to use when selecting new skills</param>
-        public static Tuple<Skill, int>[] GenerateSkillSet(List<string> availSkillKeys = null)
+        /// <returns>Tuple(Trait, int)[] for use with a Character object</returns>
+        /// <param name="availTraitKeys">List of trait keys to use when selecting new traits</param>
+        public static Tuple<Trait, int>[] GenerateTraitSet(List<string> availTraitKeys = null)
         {
-            bool inheritedSkills = true;
+            bool inheritedTraits = true;
 
-            // if no skillKeys passed in, make copy of Globals_Game.skillKeys
-            if (availSkillKeys == null)
+            // if no traitKeys passed in, make copy of Globals_Game.traitKeys
+            if (availTraitKeys == null)
             {
-                inheritedSkills = false;
-                availSkillKeys = new List<string>(Globals_Game.skillKeys);
+                inheritedTraits = false;
+                availTraitKeys = new List<string>(Globals_Game.traitKeys);
             }
 
-            // create array of skills between 2-3 in length
+            // create array of traits between 2-3 in length
             int arrayLength = 2;
 
-            if (availSkillKeys.Count > 2)
+            if (availTraitKeys.Count > 2)
             {
                 arrayLength = Globals_Game.myRand.Next(2, 4);
             }
 
-            Tuple<Skill, int>[] skillSet = new Tuple<Skill, int>[arrayLength];
+            Tuple<Trait, int>[] traitSet = new Tuple<Trait, int>[arrayLength];
 
-            // choose random skill, and assign skill level
-            for (int i = 0; i < skillSet.Length; i++)
+            // choose random trait, and assign trait level
+            for (int i = 0; i < traitSet.Length; i++)
             {
-                // choose random skill
-                int randSkill = Globals_Game.myRand.Next(0, availSkillKeys.Count - 1);
+                // choose random trait
+                int randTrait = Globals_Game.myRand.Next(0, availTraitKeys.Count - 1);
 
-                // assign skill level
+                // assign trait level
                 int lowest = 1;
-                // if skillKeys inherited (passed in), lowest level is increased
-                if (inheritedSkills)
+                // if traitKeys inherited (passed in), lowest level is increased
+                if (inheritedTraits)
                 {
                     lowest = 3;
                 }
-                int randSkillLevel = Globals_Game.myRand.Next(lowest, 10);
+                int randTraitLevel = Globals_Game.myRand.Next(lowest, 10);
 
-                // create Skill tuple
-                skillSet[i] = new Tuple<Skill, int>(Globals_Game.skillMasterList[availSkillKeys[randSkill]], randSkillLevel);
+                // create Trait tuple
+                traitSet[i] = new Tuple<Trait, int>(Globals_Game.traitMasterList[availTraitKeys[randTrait]], randTraitLevel);
 
-                // remove skill from availSkillKeys to ensure isn't chosen again
-                availSkillKeys.RemoveAt(randSkill);
+                // remove trait from availTraitKeys to ensure isn't chosen again
+                availTraitKeys.RemoveAt(randTrait);
             }
 
-            return skillSet;
+            return traitSet;
 
         }
 

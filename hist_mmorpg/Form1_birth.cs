@@ -60,8 +60,8 @@ namespace hist_mmorpg
             newNPC.management = this.GenerateKeyCharacteristics(mummy.management, daddy.management);
             // combat
             newNPC.combat = this.GenerateKeyCharacteristics(mummy.combat, daddy.combat);
-            // skills
-            newNPC.skills = this.GenerateSkillSetFromParents(mummy.skills, daddy.skills, newNPC.isMale);
+            // traits
+            newNPC.traits = this.GenerateTraitSetFromParents(mummy.traits, daddy.traits, newNPC.isMale);
             // if in keep
             newNPC.inKeep = mummy.inKeep;
             // if pregnant
@@ -175,36 +175,36 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Generates a skill set for a Character, based on parent skills
+        /// Generates a trait set for a Character, based on parent traits
         /// </summary>
-        /// <returns>Array containing skill set</returns>
-        /// <param name="mummySkills">The mother's skills</param>
-        /// <param name="daddySkills">The father's skills</param>
+        /// <returns>Array containing trait set</returns>
+        /// <param name="mummyTraits">The mother's traits</param>
+        /// <param name="daddyTraits">The father's traits</param>
         /// <param name="isMale">Whether character is a male</param>
-        public Tuple<Skill, int>[] GenerateSkillSetFromParents(Tuple<Skill, int>[] mummySkills, Tuple<Skill, int>[] daddySkills, bool isMale)
+        public Tuple<Trait, int>[] GenerateTraitSetFromParents(Tuple<Trait, int>[] mummyTraits, Tuple<Trait, int>[] daddyTraits, bool isMale)
         {
-            // store all unique skillKeys from both parents
-            List<string> uniqueSkillKeys = new List<string>();
+            // store all unique traitKeys from both parents
+            List<string> uniqueTraitKeys = new List<string>();
 
-            // mummy's skills
-            for (int i = 0; i < mummySkills.Length; i++)
+            // mummy's traits
+            for (int i = 0; i < mummyTraits.Length; i++)
             {
-                uniqueSkillKeys.Add(mummySkills[i].Item1.skillID);
+                uniqueTraitKeys.Add(mummyTraits[i].Item1.id);
             }
 
-            // daddy's skills
-            for (int i = 0; i < daddySkills.Length; i++)
+            // daddy's traits
+            for (int i = 0; i < daddyTraits.Length; i++)
             {
-                if (!uniqueSkillKeys.Contains(daddySkills[i].Item1.skillID))
+                if (!uniqueTraitKeys.Contains(daddyTraits[i].Item1.id))
                 {
-                    uniqueSkillKeys.Add(daddySkills[i].Item1.skillID);
+                    uniqueTraitKeys.Add(daddyTraits[i].Item1.id);
                 }
             }
 
-            // create new skills using uniqueSkillKeys
-            Tuple<Skill, int>[] newSkills = Utility_Methods.GenerateSkillSet(uniqueSkillKeys);
+            // create new traits using uniqueTraitKeys
+            Tuple<Trait, int>[] newTraits = Utility_Methods.GenerateTraitSet(uniqueTraitKeys);
 
-            return newSkills;
+            return newTraits;
         }
 
         /// <summary>

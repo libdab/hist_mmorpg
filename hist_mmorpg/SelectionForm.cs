@@ -506,8 +506,8 @@ namespace hist_mmorpg
             }
             charText += "\r\n";
 
-            // any death modifiers (from skills)
-            charText += "  (Death modifier from skills: " + thisChar.CalcSkillEffect("death") + ")\r\n";
+            // any death modifiers (from traits)
+            charText += "  (Death modifier from traits: " + thisChar.CalcTraitEffect("death") + ")\r\n";
 
             // location
             charText += "Current location: " + thisChar.location.name + " (" + thisChar.location.province.name + ")\r\n";
@@ -534,11 +534,11 @@ namespace hist_mmorpg
             // combat rating
             charText += "Combat: " + thisChar.combat + "\r\n";
 
-            // skills list
-            charText += "Skills:\r\n";
-            for (int i = 0; i < thisChar.skills.Length; i++)
+            // traits list
+            charText += "Traits:\r\n";
+            for (int i = 0; i < thisChar.traits.Length; i++)
             {
-                charText += "  - " + thisChar.skills[i].Item1.name + " (level " + thisChar.skills[i].Item2 + ")\r\n";
+                charText += "  - " + thisChar.traits[i].Item1.name + " (level " + thisChar.traits[i].Item2 + ")\r\n";
             }
 
             // gather additional NPC-specific information

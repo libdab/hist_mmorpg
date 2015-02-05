@@ -209,7 +209,7 @@ namespace hist_mmorpg
             List<string> kingKeyList = new List<string>();
             List<string> pcKeyList = new List<string>();
             List<string> npcKeyList = new List<string>();
-            List<string> skillKeyList = new List<string>();
+            List<string> traitKeyList = new List<string>();
             List<string> armyKeyList = new List<string>();
             List<string> langKeyList = new List<string>();
             List<string> baseLangKeyList = new List<string>();
@@ -229,7 +229,7 @@ namespace hist_mmorpg
             Dictionary<string, Army> armyMasterList = new Dictionary<string, Army>();
             Dictionary<string, BaseLanguage> baseLanguageMasterList = new Dictionary<string, BaseLanguage>();
             Dictionary<string, Language_Serialised> languageMasterList = new Dictionary<string, Language_Serialised>();
-            Dictionary<string, Skill> skillMasterList = new Dictionary<string, Skill>();
+            Dictionary<string, Trait> traitMasterList = new Dictionary<string, Trait>();
             Dictionary<string, Nationality> nationalityMasterList = new Dictionary<string, Nationality>();
             Dictionary<byte, Rank> rankMasterList = new Dictionary<byte, Rank>();
             Dictionary<byte, Position_Serialised> positionMasterList = new Dictionary<byte, Position_Serialised>();
@@ -385,26 +385,26 @@ namespace hist_mmorpg
                         }
                     }
 
-                    else if (lineParts[0].Equals("skill"))
+                    else if (lineParts[0].Equals("trait"))
                     {
-                        Skill thisSkill = null;
+                        Trait thisTrait = null;
 
-                        thisSkill = this.ImportFromCSV_Skill(lineParts, lineNum);
+                        thisTrait = this.ImportFromCSV_Trait(lineParts, lineNum);
 
-                        if (thisSkill != null)
+                        if (thisTrait != null)
                         {
                             // add object to masterList
-                            skillMasterList.Add(thisSkill.skillID, thisSkill);
+                            traitMasterList.Add(thisTrait.id, thisTrait);
 
                             // add key to keylist
-                            skillKeyList.Add(thisSkill.skillID);
+                            traitKeyList.Add(thisTrait.id);
                         }
                         else
                         {
                             inputFileError = true;
                             if (Globals_Client.showDebugMessages)
                             {
-                                MessageBox.Show("Unable to create Skill object: " + lineParts[1]);
+                                MessageBox.Show("Unable to create Trait object: " + lineParts[1]);
                             }
                         }
                     }
@@ -699,19 +699,19 @@ namespace hist_mmorpg
                 }
             }
 
-            // skills
-            if (skillKeyList.Count > 0)
+            // traits
+            if (traitKeyList.Count > 0)
             {
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "skillKeys", skillKeyList);
+                    this.DatabaseWrite_KeyList(bucketID, "traitKeys", traitKeyList);
                 }
 
                 else
                 {
                     // save to game
-                    Globals_Game.skillKeys = skillKeyList;
+                    Globals_Game.traitKeys = traitKeyList;
                 }
             }
 
@@ -844,21 +844,21 @@ namespace hist_mmorpg
             }
 
             // SAVE OBJECTS NOT NEEDING SYNCHING
-            // skill
-            if (skillMasterList.Count > 0)
+            // trait
+            if (traitMasterList.Count > 0)
             {
                 // save to database
                 if (toDatabase)
                 {
-                    foreach (KeyValuePair<string, Skill> thisEntry in skillMasterList)
+                    foreach (KeyValuePair<string, Trait> thisEntry in traitMasterList)
                     {
-                        this.DatabaseWrite_Skill(bucketID, thisEntry.Value);
+                        this.DatabaseWrite_Trait(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
                 else
                 {
-                    Globals_Game.skillMasterList = skillMasterList;
+                    Globals_Game.traitMasterList = traitMasterList;
                 }
             }
 
@@ -1608,8 +1608,8 @@ namespace hist_mmorpg
             try
             {
                 // create empty lists for variable length collections
-                // (skills, myTitles, myNPCs, myOwnedFiefs, myOwnedProvinces, myArmies, mySieges)
-                Tuple<string, int>[] skills = null;
+                // (traits, myTitles, myNPCs, myOwnedFiefs, myOwnedProvinces, myArmies, mySieges)
+                Tuple<string, int>[] traits = null;
                 List<string> myTitles = new List<string>();
                 List<string> myNPCs = new List<string>();
                 List<string> myOwnedFiefs = new List<string>();
@@ -1621,21 +1621,21 @@ namespace hist_mmorpg
                 if (pcData.Length > 30)
                 {
                     // create variables to hold start/end index positions
-                    int skStart, skEnd, tiStart, tiEnd, npcStart, npcEnd, fiStart, fiEnd, prStart, prEnd, arStart, arEnd,
+                    int trStart, trEnd, tiStart, tiEnd, npcStart, npcEnd, fiStart, fiEnd, prStart, prEnd, arStart, arEnd,
                         siStart, siEnd;
-                    skStart = skEnd = tiStart = tiEnd = npcStart = npcEnd = fiStart = fiEnd = prStart = prEnd = arStart
+                    trStart = trEnd = tiStart = tiEnd = npcStart = npcEnd = fiStart = fiEnd = prStart = prEnd = arStart
                         = arEnd = siStart = siEnd = -1;
 
                     // iterate through main list STORING START/END INDEX POSITIONS
                     for (int i = 30; i < pcData.Length; i++)
                     {
-                        if (pcData[i].Equals("skStart"))
+                        if (pcData[i].Equals("trStart"))
                         {
-                            skStart = i;
+                            trStart = i;
                         }
-                        else if (pcData[i].Equals("skEnd"))
+                        else if (pcData[i].Equals("trEnd"))
                         {
-                            skEnd = i;
+                            trEnd = i;
                         }
                         else if (pcData[i].Equals("tiStart"))
                         {
@@ -1688,21 +1688,21 @@ namespace hist_mmorpg
                     }
 
                     // ADD ITEMS to appropriate list
-                    // skills
-                    List<Tuple<string, int>> tempSkills = new List<Tuple<string, int>>();
+                    // traits
+                    List<Tuple<string, int>> tempTraits = new List<Tuple<string, int>>();
 
-                    if ((skStart > -1) && (skEnd > -1))
+                    if ((trStart > -1) && (trEnd > -1))
                     {
-                        // check to ensure all skills have accompanying skill level
-                        if (Utility_Methods.IsOdd(skStart + skEnd))
+                        // check to ensure all traits have accompanying trait level
+                        if (Utility_Methods.IsOdd(trStart + trEnd))
                         {
-                            for (int i = skStart + 1; i < skEnd; i = i + 2)
+                            for (int i = trStart + 1; i < trEnd; i = i + 2)
                             {
-                                Tuple<string, int> thisSkill = new Tuple<string, int>(pcData[i], Convert.ToInt32(pcData[i + 1]));
-                                tempSkills.Add(thisSkill);
+                                Tuple<string, int> thisTrait = new Tuple<string, int>(pcData[i], Convert.ToInt32(pcData[i + 1]));
+                                tempTraits.Add(thisTrait);
                             }
-                            // convert skills list to skills array
-                            skills = tempSkills.ToArray();
+                            // convert traits list to traits array
+                            traits = tempTraits.ToArray();
                         }
                     }
 
@@ -1761,25 +1761,25 @@ namespace hist_mmorpg
                     }
                 }
 
-                // if no skills, try to generate random set
-                if (skills == null)
+                // if no traits, try to generate random set
+                if (traits == null)
                 {
-                    if (Globals_Game.skillMasterList.Count > 2)
+                    if (Globals_Game.traitMasterList.Count > 2)
                     {
-                        Tuple<Skill, int>[] generatedSkills = Utility_Methods.GenerateSkillSet();
+                        Tuple<Trait, int>[] generatedTraits = Utility_Methods.GenerateTraitSet();
 
                         // convert to format for saving to database
-                        skills = new Tuple<String, int>[generatedSkills.Length];
-                        for (int i = 0; i < generatedSkills.Length; i++)
+                        traits = new Tuple<String, int>[generatedTraits.Length];
+                        for (int i = 0; i < generatedTraits.Length; i++)
                         {
-                            skills[i] = new Tuple<string, int>(generatedSkills[i].Item1.skillID, generatedSkills[i].Item2);
+                            traits[i] = new Tuple<string, int>(generatedTraits[i].Item1.id, generatedTraits[i].Item2);
                         }
                     }
 
                     // if can't generate set, create empty set
                     else
                     {
-                        skills = new Tuple<string, int>[0];
+                        traits = new Tuple<string, int>[0];
                     }
                 }
 
@@ -1811,7 +1811,7 @@ namespace hist_mmorpg
                 thisPcSer = new PlayerCharacter_Serialised(pcData[1], pcData[2], pcData[3], dob, Convert.ToBoolean(pcData[6]),
                     pcData[7], Convert.ToBoolean(pcData[8]), Convert.ToDouble(pcData[9]), Convert.ToDouble(pcData[10]),
                     new List<string>(), pcData[11], Convert.ToDouble(pcData[12]), Convert.ToDouble(pcData[13]),
-                    Convert.ToDouble(pcData[14]), Convert.ToDouble(pcData[15]), skills, Convert.ToBoolean(pcData[16]),
+                    Convert.ToDouble(pcData[14]), Convert.ToDouble(pcData[15]), traits, Convert.ToBoolean(pcData[16]),
                     Convert.ToBoolean(pcData[17]), pcData[18], pcData[19], pcData[20], pcData[21], myTitles,
                     pcData[22], Convert.ToBoolean(pcData[23]), Convert.ToUInt32(pcData[24]), myNPCs, myOwnedFiefs,
                     myOwnedProvinces, pcData[25], pcData[26], myArmies, mySieges, ails: new Dictionary<string, Ailment>(),
@@ -1898,27 +1898,27 @@ namespace hist_mmorpg
             try
             {
                 // create empty lists for variable length collections
-                // (skills, myTitles)
-                Tuple<string, int>[] skills = null;
+                // (traits, myTitles)
+                Tuple<string, int>[] traits = null;
                 List<string> myTitles = new List<string>();
 
                 // check to see if any data present for variable length collections
                 if (npcData.Length > 29)
                 {
                     // create variables to hold start/end index positions
-                    int skStart, skEnd, tiStart, tiEnd;
-                    skStart = skEnd = tiStart = tiEnd = -1;
+                    int trStart, trEnd, tiStart, tiEnd;
+                    trStart = trEnd = tiStart = tiEnd = -1;
 
                     // iterate through main list STORING START/END INDEX POSITIONS
                     for (int i = 29; i < npcData.Length; i++)
                     {
-                        if (npcData[i].Equals("skStart"))
+                        if (npcData[i].Equals("trStart"))
                         {
-                            skStart = i;
+                            trStart = i;
                         }
-                        else if (npcData[i].Equals("skEnd"))
+                        else if (npcData[i].Equals("trEnd"))
                         {
-                            skEnd = i;
+                            trEnd = i;
                         }
                         else if (npcData[i].Equals("tiStart"))
                         {
@@ -1931,21 +1931,21 @@ namespace hist_mmorpg
                     }
 
                     // ADD ITEMS to appropriate list
-                    // skills
-                    List<Tuple<string, int>> tempSkills = new List<Tuple<string, int>>();
+                    // traits
+                    List<Tuple<string, int>> tempTraits = new List<Tuple<string, int>>();
 
-                    if ((skStart > -1) && (skEnd > -1))
+                    if ((trStart > -1) && (trEnd > -1))
                     {
-                        // check to ensure all skills have accompanying skill level
-                        if (Utility_Methods.IsOdd(skStart + skEnd))
+                        // check to ensure all traits have accompanying trait level
+                        if (Utility_Methods.IsOdd(trStart + trEnd))
                         {
-                            for (int i = skStart + 1; i < skEnd; i = i + 2)
+                            for (int i = trStart + 1; i < trEnd; i = i + 2)
                             {
-                                Tuple<string, int> thisSkill = new Tuple<string, int>(npcData[i], Convert.ToInt32(npcData[i + 1]));
-                                tempSkills.Add(thisSkill);
+                                Tuple<string, int> thisTrait = new Tuple<string, int>(npcData[i], Convert.ToInt32(npcData[i + 1]));
+                                tempTraits.Add(thisTrait);
                             }
-                            // convert skills list to skills array
-                            skills = tempSkills.ToArray();
+                            // convert traits list to traits array
+                            traits = tempTraits.ToArray();
                         }
                     }
 
@@ -1959,25 +1959,25 @@ namespace hist_mmorpg
                     }
                 }
 
-                // if no skills, try to generate random set
-                if (skills == null)
+                // if no traits, try to generate random set
+                if (traits == null)
                 {
-                    if (Globals_Game.skillMasterList.Count > 2)
+                    if (Globals_Game.traitMasterList.Count > 2)
                     {
-                        Tuple<Skill, int>[] generatedSkills = Utility_Methods.GenerateSkillSet();
+                        Tuple<Trait, int>[] generatedTraits = Utility_Methods.GenerateTraitSet();
 
                         // convert to format for saving to database
-                        skills = new Tuple<String, int>[generatedSkills.Length];
-                        for (int i = 0; i < generatedSkills.Length; i++)
+                        traits = new Tuple<String, int>[generatedTraits.Length];
+                        for (int i = 0; i < generatedTraits.Length; i++)
                         {
-                            skills[i] = new Tuple<string, int>(generatedSkills[i].Item1.skillID, generatedSkills[i].Item2);
+                            traits[i] = new Tuple<string, int>(generatedTraits[i].Item1.id, generatedTraits[i].Item2);
                         }
                     }
 
                     // if can't generate set, create empty set
                     else
                     {
-                        skills = new Tuple<string, int>[0];
+                        traits = new Tuple<string, int>[0];
                     }
                 }
 
@@ -2009,7 +2009,7 @@ namespace hist_mmorpg
                 thisNpcSer = new NonPlayerCharacter_Serialised(npcData[1], npcData[2], npcData[3], dob, Convert.ToBoolean(npcData[6]),
                     npcData[7], Convert.ToBoolean(npcData[8]), Convert.ToDouble(npcData[9]), Convert.ToDouble(npcData[10]),
                     new List<string>(), npcData[11], Convert.ToDouble(npcData[12]), Convert.ToDouble(npcData[13]),
-                    Convert.ToDouble(npcData[14]), Convert.ToDouble(npcData[15]), skills, Convert.ToBoolean(npcData[16]),
+                    Convert.ToDouble(npcData[14]), Convert.ToDouble(npcData[15]), traits, Convert.ToBoolean(npcData[16]),
                     Convert.ToBoolean(npcData[17]), npcData[18], npcData[19], npcData[20], npcData[21], myTitles, npcData[22],
                     Convert.ToUInt32(npcData[23]), Convert.ToBoolean(npcData[24]), Convert.ToBoolean(npcData[25]),
                     ails: new Dictionary<string, Ailment>(), loc: loc, aID: aID, empl: boss);
@@ -2083,14 +2083,14 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Creates a Skill object using data in a string array
+        /// Creates a Trait object using data in a string array
         /// </summary>
-        /// <returns>Skill object</returns>
-        /// <param name="skillData">string[] holding source data</param>
+        /// <returns>Trait object</returns>
+        /// <param name="traitData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Skill ImportFromCSV_Skill(string[] skillData, int lineNum)
+        public Trait ImportFromCSV_Trait(string[] traitData, int lineNum)
         {
-            Skill thisSkill = null;
+            Trait thisTrait = null;
 
             try
             {
@@ -2099,20 +2099,20 @@ namespace hist_mmorpg
                 Dictionary<string, double> effects = new Dictionary<string, double>();
 
                 // check to see if any data present for variable length collections
-                if (skillData.Length > 3)
+                if (traitData.Length > 3)
                 {
                     // create variables to hold start/end index positions
                     int effStart, effEnd;
                     effStart = effEnd = -1;
 
                     // iterate through main list STORING START/END INDEX POSITIONS
-                    for (int i = 3; i < skillData.Length; i++)
+                    for (int i = 3; i < traitData.Length; i++)
                     {
-                        if (skillData[i].Equals("effStart"))
+                        if (traitData[i].Equals("effStart"))
                         {
                             effStart = i;
                         }
-                        else if (skillData[i].Equals("effEnd"))
+                        else if (traitData[i].Equals("effEnd"))
                         {
                             effEnd = i;
                         }
@@ -2127,16 +2127,16 @@ namespace hist_mmorpg
                         {
                             for (int i = effStart + 1; i < effEnd; i = i + 2)
                             {
-                                effects.Add(skillData[i], Convert.ToDouble(skillData[i + 1]));
+                                effects.Add(traitData[i], Convert.ToDouble(traitData[i + 1]));
                             }
                         }
                     }
                 }
 
-                // create Skill object
+                // create Trait object
                 if (effects.Count > 0)
                 {
-                    thisSkill = new Skill(skillData[1], skillData[2], effects);
+                    thisTrait = new Trait(traitData[1], traitData[2], effects);
                 }
             }
             // catch exception that could result from incorrect conversion of string to numeric 
@@ -2204,7 +2204,7 @@ namespace hist_mmorpg
                 }
             }
 
-            return thisSkill;
+            return thisTrait;
         }
 
         /// <summary>
@@ -3456,18 +3456,18 @@ namespace hist_mmorpg
                     NonPlayerCharacter newObject = new NonPlayerCharacter();
                     foreach (KeyValuePair<string, NonPlayerCharacter_Serialised> thisEntry in npcMasterList)
                     {
-                        // if no skills, try to generate random set
-                        if (thisEntry.Value.skills.Length < 2)
+                        // if no traits, try to generate random set
+                        if (thisEntry.Value.traits.Length < 2)
                         {
-                            if (Globals_Game.skillMasterList.Count > 2)
+                            if (Globals_Game.traitMasterList.Count > 2)
                             {
-                                Tuple<Skill, int>[] generatedSkills = Utility_Methods.GenerateSkillSet();
+                                Tuple<Trait, int>[] generatedTraits = Utility_Methods.GenerateTraitSet();
 
                                 // convert to format for saving to database
-                                thisEntry.Value.skills = new Tuple<String, int>[generatedSkills.Length];
-                                for (int i = 0; i < generatedSkills.Length; i++)
+                                thisEntry.Value.traits = new Tuple<String, int>[generatedTraits.Length];
+                                for (int i = 0; i < generatedTraits.Length; i++)
                                 {
-                                    thisEntry.Value.skills[i] = new Tuple<string, int>(generatedSkills[i].Item1.skillID, generatedSkills[i].Item2);
+                                    thisEntry.Value.traits[i] = new Tuple<string, int>(generatedTraits[i].Item1.id, generatedTraits[i].Item2);
                                 }
                             }
                         }
@@ -3498,18 +3498,18 @@ namespace hist_mmorpg
                     PlayerCharacter newObject = new PlayerCharacter();
                     foreach (KeyValuePair<string, PlayerCharacter_Serialised> thisEntry in pcMasterList)
                     {
-                        // if no skills, try to generate random set
-                        if (thisEntry.Value.skills.Length < 2)
+                        // if no traits, try to generate random set
+                        if (thisEntry.Value.traits.Length < 2)
                         {
-                            if (Globals_Game.skillMasterList.Count > 2)
+                            if (Globals_Game.traitMasterList.Count > 2)
                             {
-                                Tuple<Skill, int>[] generatedSkills = Utility_Methods.GenerateSkillSet();
+                                Tuple<Trait, int>[] generatedTraits = Utility_Methods.GenerateTraitSet();
 
                                 // convert to format for saving to database
-                                thisEntry.Value.skills = new Tuple<String, int>[generatedSkills.Length];
-                                for (int i = 0; i < generatedSkills.Length; i++)
+                                thisEntry.Value.traits = new Tuple<String, int>[generatedTraits.Length];
+                                for (int i = 0; i < generatedTraits.Length; i++)
                                 {
-                                    thisEntry.Value.skills[i] = new Tuple<string, int>(generatedSkills[i].Item1.skillID, generatedSkills[i].Item2);
+                                    thisEntry.Value.traits[i] = new Tuple<string, int>(generatedTraits[i].Item1.id, generatedTraits[i].Item2);
                                 }
                             }
                         }

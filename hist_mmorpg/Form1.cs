@@ -193,7 +193,7 @@ namespace hist_mmorpg
             this.SetUpJournalList();
             this.SetUpRoyalGiftsLists();
             this.SetUpProvinceLists();
-            this.SetUpEditSkillEffectList();
+            this.SetUpEditTraitEffectList();
 
             // check if royal & overlord menus should be displayed
             this.InitMenuPermissions();
@@ -344,13 +344,13 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Creates UI display for list of skill effects in the edit skill screen
+        /// Creates UI display for list of trait effects in the edit trait screen
         /// </summary>
-        public void SetUpEditSkillEffectList()
+        public void SetUpEditTraitEffectList()
         {
             // add necessary columns
-            this.adminEditSkillEffsListView.Columns.Add("Effect Name", -2, HorizontalAlignment.Left);
-            this.adminEditSkillEffsListView.Columns.Add("Level", -2, HorizontalAlignment.Left);
+            this.adminEditTraitEffsListView.Columns.Add("Effect Name", -2, HorizontalAlignment.Left);
+            this.adminEditTraitEffsListView.Columns.Add("Level", -2, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -488,16 +488,16 @@ namespace hist_mmorpg
             // create GameClock
             Globals_Game.clock = new GameClock("clock_1", start);
 
-			// create skills
-			// Dictionary of skill effects
+            // create traits
+            // Dictionary of trait effects
             Dictionary<string, double> effectsCommand = new Dictionary<string, double>();
 			effectsCommand.Add("battle", 0.4);
             effectsCommand.Add("siege", 0.4);
 			effectsCommand.Add("npcHire", 0.2);
-			// create skill
-			Skill command = new Skill("skill_1", "Command", effectsCommand);
-			// add to skillsCollection
-			Globals_Game.skillMasterList.Add(command.skillID, command);
+            // create trait
+            Trait command = new Trait("trait_1", "Command", effectsCommand);
+            // add to traitCollection
+			Globals_Game.traitMasterList.Add(command.id, command);
 
             Dictionary<string, double> effectsChivalry = new Dictionary<string, double>();
             effectsChivalry.Add("famExpense", 0.2);
@@ -505,8 +505,8 @@ namespace hist_mmorpg
             effectsChivalry.Add("fiefLoy", 0.2);
             effectsChivalry.Add("npcHire", 0.1);
             effectsChivalry.Add("siege", 0.1);
-            Skill chivalry = new Skill("skill_2", "Chivalry", effectsChivalry);
-            Globals_Game.skillMasterList.Add(chivalry.skillID, chivalry);
+            Trait chivalry = new Trait("trait_2", "Chivalry", effectsChivalry);
+            Globals_Game.traitMasterList.Add(chivalry.id, chivalry);
 
             Dictionary<string, double> effectsAbrasiveness = new Dictionary<string, double>();
 			effectsAbrasiveness.Add("battle", 0.15);
@@ -515,16 +515,16 @@ namespace hist_mmorpg
             effectsAbrasiveness.Add("famExpense", 0.05);
             effectsAbrasiveness.Add("time", 0.05);
             effectsAbrasiveness.Add("siege", -0.1);
-            Skill abrasiveness = new Skill("skill_3", "Abrasiveness", effectsAbrasiveness);
-            Globals_Game.skillMasterList.Add(abrasiveness.skillID, abrasiveness);
+            Trait abrasiveness = new Trait("trait_3", "Abrasiveness", effectsAbrasiveness);
+            Globals_Game.traitMasterList.Add(abrasiveness.id, abrasiveness);
 
             Dictionary<string, double> effectsAccountancy = new Dictionary<string, double>();
             effectsAccountancy.Add("time", 0.1);
             effectsAccountancy.Add("fiefExpense", -0.2);
             effectsAccountancy.Add("famExpense", -0.2);
             effectsAccountancy.Add("fiefLoy", -0.05);
-            Skill accountancy = new Skill("skill_4", "Accountancy", effectsAccountancy);
-            Globals_Game.skillMasterList.Add(accountancy.skillID, accountancy);
+            Trait accountancy = new Trait("trait_4", "Accountancy", effectsAccountancy);
+            Globals_Game.traitMasterList.Add(accountancy.id, accountancy);
 
             Dictionary<string, double> effectsStupidity = new Dictionary<string, double>();
             effectsStupidity.Add("battle", -0.4);
@@ -535,29 +535,29 @@ namespace hist_mmorpg
             effectsStupidity.Add("npcHire", -0.1);
             effectsStupidity.Add("time", -0.1);
             effectsStupidity.Add("siege", -0.4);
-            Skill stupidity = new Skill("skill_5", "Stupidity", effectsStupidity);
-            Globals_Game.skillMasterList.Add(stupidity.skillID, stupidity);
+            Trait stupidity = new Trait("trait_5", "Stupidity", effectsStupidity);
+            Globals_Game.traitMasterList.Add(stupidity.id, stupidity);
 
             Dictionary<string, double> effectsRobust = new Dictionary<string, double>();
             effectsRobust.Add("virility", 0.2);
             effectsRobust.Add("npcHire", 0.05);
             effectsRobust.Add("fiefLoy", 0.05);
             effectsRobust.Add("death", -0.2);
-            Skill robust = new Skill("skill_6", "Robust", effectsRobust);
-            Globals_Game.skillMasterList.Add(robust.skillID, robust);
+            Trait robust = new Trait("trait_6", "Robust", effectsRobust);
+            Globals_Game.traitMasterList.Add(robust.id, robust);
 
             Dictionary<string, double> effectsPious = new Dictionary<string, double>();
             effectsPious.Add("virility", -0.2);
             effectsPious.Add("npcHire", 0.1);
             effectsPious.Add("fiefLoy", 0.1);
             effectsPious.Add("time", -0.1);
-            Skill pious = new Skill("skill_7", "Pious", effectsPious);
-            Globals_Game.skillMasterList.Add(pious.skillID, pious);
+            Trait pious = new Trait("trait_7", "Pious", effectsPious);
+            Globals_Game.traitMasterList.Add(pious.id, pious);
 
-			// add each skillsCollection key to skillsKeys
-            foreach (KeyValuePair<string, Skill> entry in Globals_Game.skillMasterList)
+            // add each traitsCollection key to traitsKeys
+            foreach (KeyValuePair<string, Trait> entry in Globals_Game.traitMasterList)
 			{
-                Globals_Game.skillKeys.Add(entry.Key);
+                Globals_Game.traitKeys.Add(entry.Key);
 			}
 
             // create BaseLanguage & Language objects
@@ -841,29 +841,29 @@ namespace hist_mmorpg
             List<string> mySieges002 = new List<string>();
 
             // create some characters
-            PlayerCharacter myChar1 = new PlayerCharacter("Char_47", "Dave", "Bond", myDob001, true, nationality02, true, 8.50, 9.0, myGoTo1, c1, 90, 0, 7.2, 6.1, Utility_Methods.GenerateSkillSet(), false, false, "Char_47", "Char_403", null, null, false, 13000, myEmployees1, myFiefsOwned1, myProvsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
+            PlayerCharacter myChar1 = new PlayerCharacter("Char_47", "Dave", "Bond", myDob001, true, nationality02, true, 8.50, 9.0, myGoTo1, c1, 90, 0, 7.2, 6.1, Utility_Methods.GenerateTraitSet(), false, false, "Char_47", "Char_403", null, null, false, 13000, myEmployees1, myFiefsOwned1, myProvsOwned1, "ESX02", "ESX02", myTitles001, myArmies001, mySieges001, null, loc: myFief1, pID: "libdab");
             Globals_Game.pcMasterList.Add(myChar1.charID, myChar1);
-            PlayerCharacter myChar2 = new PlayerCharacter("Char_40", "Bave", "Dond", myDob002, true, nationality01, true, 8.50, 6.0, myGoTo2, f1, 90, 0, 5.0, 4.5, Utility_Methods.GenerateSkillSet(), false, false, "Char_40", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, myProvsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
+            PlayerCharacter myChar2 = new PlayerCharacter("Char_40", "Bave", "Dond", myDob002, true, nationality01, true, 8.50, 6.0, myGoTo2, f1, 90, 0, 5.0, 4.5, Utility_Methods.GenerateTraitSet(), false, false, "Char_40", null, null, null, false, 13000, myEmployees2, myFiefsOwned2, myProvsOwned2, "ESR03", "ESR03", myTitles002, myArmies002, mySieges002, null, loc: myFief7, pID: "otherGuy");
             Globals_Game.pcMasterList.Add(myChar2.charID, myChar2);
-            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("Char_401", "Jimmy", "Servant", myDob003, true, nationality02, true, 8.50, 6.0, myGoTo3, c1, 90, 0, 3.3, 6.7, Utility_Methods.GenerateSkillSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
+            NonPlayerCharacter myNPC1 = new NonPlayerCharacter("Char_401", "Jimmy", "Servant", myDob003, true, nationality02, true, 8.50, 6.0, myGoTo3, c1, 90, 0, 3.3, 6.7, Utility_Methods.GenerateTraitSet(), false, false, null, null, null, null, 0, false, false, myTitles003, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myNPC1.charID, myNPC1);
-            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("Char_402", "Johnny", "Servant", myDob004, true, nationality02, true, 8.50, 6.0, myGoTo4, c1, 90, 0, 7.1, 5.2, Utility_Methods.GenerateSkillSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, empl: myChar1.charID, loc: myFief1);
+            NonPlayerCharacter myNPC2 = new NonPlayerCharacter("Char_402", "Johnny", "Servant", myDob004, true, nationality02, true, 8.50, 6.0, myGoTo4, c1, 90, 0, 7.1, 5.2, Utility_Methods.GenerateTraitSet(), false, false, null, null, null, null, 10000, true, false, myTitles004, null, empl: myChar1.charID, loc: myFief1);
             Globals_Game.npcMasterList.Add(myNPC2.charID, myNPC2);
-            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("Char_403", "Harry", "Bailiff", myDob005, true, nationality01, true, 8.50, 6.0, myGoTo5, c1, 90, 0, 7.1, 5.2, Utility_Methods.GenerateSkillSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, empl: myChar2.charID, loc: myFief6);
+            NonPlayerCharacter myNPC3 = new NonPlayerCharacter("Char_403", "Harry", "Bailiff", myDob005, true, nationality01, true, 8.50, 6.0, myGoTo5, c1, 90, 0, 7.1, 5.2, Utility_Methods.GenerateTraitSet(), true, false, null, null, null, null, 10000, false, false, myTitles005, null, empl: myChar2.charID, loc: myFief6);
             Globals_Game.npcMasterList.Add(myNPC3.charID, myNPC3);
-            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("Char_404", "Bev", "Bond", myDob006, false, nationality02, true, 2.50, 9.0, myGoTo6, f1, 90, 0, 4.0, 6.0, Utility_Methods.GenerateSkillSet(), false, false, "Char_47", "Char_47", null, null, 30000, false, false, myTitles006, null, loc: myFief1);
+            NonPlayerCharacter myChar1Wife = new NonPlayerCharacter("Char_404", "Bev", "Bond", myDob006, false, nationality02, true, 2.50, 9.0, myGoTo6, f1, 90, 0, 4.0, 6.0, Utility_Methods.GenerateTraitSet(), false, false, "Char_47", "Char_47", null, null, 30000, false, false, myTitles006, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myChar1Wife.charID, myChar1Wife);
-            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("Char_405", "Horatio", "Dond", myDob007, true, nationality01, true, 8.50, 6.0, myGoTo7, f1, 90, 0, 7.1, 5.2, Utility_Methods.GenerateSkillSet(), true, false, "Char_40", "Char_406", "Char_40", null, 10000, false, true, myTitles007, null, loc: myFief6);
+            NonPlayerCharacter myChar2Son = new NonPlayerCharacter("Char_405", "Horatio", "Dond", myDob007, true, nationality01, true, 8.50, 6.0, myGoTo7, f1, 90, 0, 7.1, 5.2, Utility_Methods.GenerateTraitSet(), true, false, "Char_40", "Char_406", "Char_40", null, 10000, false, true, myTitles007, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2Son.charID, myChar2Son);
-            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("Char_406", "Mave", "Dond", myDob008, false, nationality02, true, 2.50, 9.0, myGoTo8, f1, 90, 0, 4.0, 6.0, Utility_Methods.GenerateSkillSet(), true, false, "Char_40", "Char_405", null, null, 30000, false, false, myTitles008, null, loc: myFief6);
+            NonPlayerCharacter myChar2SonWife = new NonPlayerCharacter("Char_406", "Mave", "Dond", myDob008, false, nationality02, true, 2.50, 9.0, myGoTo8, f1, 90, 0, 4.0, 6.0, Utility_Methods.GenerateTraitSet(), true, false, "Char_40", "Char_405", null, null, 30000, false, false, myTitles008, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2SonWife.charID, myChar2SonWife);
-            NonPlayerCharacter myChar1Son = new NonPlayerCharacter("Char_407", "Rickie", "Bond", myDob009, true, nationality02, true, 2.50, 9.0, myGoTo9, c1, 90, 0, 4.0, 6.0, Utility_Methods.GenerateSkillSet(), true, false, "Char_47", null, "Char_47", "Char_404", 30000, false, true, myTitles009, null, loc: myFief1);
+            NonPlayerCharacter myChar1Son = new NonPlayerCharacter("Char_407", "Rickie", "Bond", myDob009, true, nationality02, true, 2.50, 9.0, myGoTo9, c1, 90, 0, 4.0, 6.0, Utility_Methods.GenerateTraitSet(), true, false, "Char_47", null, "Char_47", "Char_404", 30000, false, true, myTitles009, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myChar1Son.charID, myChar1Son);
-            NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("Char_408", "Elsie", "Bond", myDob010, false, nationality02, true, 2.50, 9.0, myGoTo10, c1, 90, 0, 4.0, 6.0, Utility_Methods.GenerateSkillSet(), true, false, "Char_47", null, "Char_47", "Char_404", 30000, false, false, myTitles010, null, loc: myFief1);
+            NonPlayerCharacter myChar1Daughter = new NonPlayerCharacter("Char_408", "Elsie", "Bond", myDob010, false, nationality02, true, 2.50, 9.0, myGoTo10, c1, 90, 0, 4.0, 6.0, Utility_Methods.GenerateTraitSet(), true, false, "Char_47", null, "Char_47", "Char_404", 30000, false, false, myTitles010, null, loc: myFief1);
             Globals_Game.npcMasterList.Add(myChar1Daughter.charID, myChar1Daughter);
-            NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("Char_409", "Wayne", "Dond", myDob011, true, nationality01, true, 2.50, 9.0, myGoTo11, f1, 90, 0, 4.0, 6.0, Utility_Methods.GenerateSkillSet(), true, false, "Char_40", null, "Char_40", null, 30000, false, false, myTitles011, null, loc: myFief6);
+            NonPlayerCharacter myChar2Son2 = new NonPlayerCharacter("Char_409", "Wayne", "Dond", myDob011, true, nationality01, true, 2.50, 9.0, myGoTo11, f1, 90, 0, 4.0, 6.0, Utility_Methods.GenerateTraitSet(), true, false, "Char_40", null, "Char_40", null, 30000, false, false, myTitles011, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2Son2.charID, myChar2Son2);
-            NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("Char_410", "Esmerelda", "Dond", myDob012, false, nationality01, true, 2.50, 9.0, myGoTo12, f1, 90, 0, 4.0, 6.0, Utility_Methods.GenerateSkillSet(), true, false, "Char_40", null, "Char_40", null, 30000, false, false, myTitles012, null, loc: myFief6);
+            NonPlayerCharacter myChar2Daughter = new NonPlayerCharacter("Char_410", "Esmerelda", "Dond", myDob012, false, nationality01, true, 2.50, 9.0, myGoTo12, f1, 90, 0, 4.0, 6.0, Utility_Methods.GenerateTraitSet(), true, false, "Char_40", null, "Char_40", null, 30000, false, false, myTitles012, null, loc: myFief6);
             Globals_Game.npcMasterList.Add(myChar2Daughter.charID, myChar2Daughter);
 
             /*
@@ -1848,8 +1848,8 @@ namespace hist_mmorpg
                     case "Army":
                         this.refreshArmyEdit();
                         break;
-                    case "Skill":
-                        this.RefreshSkillEdit();
+                    case "Trait":
+                        this.RefreshTraitEdit();
                         break;
                 }
             }
@@ -1993,26 +1993,26 @@ namespace hist_mmorpg
         // ------------------- SYSADMIN
 
         /// <summary>
-        /// Responds to the SelectedIndexChanged event of any of the adminEditSkillEffsListView
+        /// Responds to the SelectedIndexChanged event of any of the adminEditTraitEffsListView
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
-        private void adminEditSkillEffsListView_SelectedIndexChanged(object sender, EventArgs e)
+        private void adminEditTraitEffsListView_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.adminEditSkillEffsListView.SelectedItems.Count > 0)
+            if (this.adminEditTraitEffsListView.SelectedItems.Count > 0)
             {
-                // display selected skill for editing
-                this.adminEditSkillEffTextBox.Text = this.adminEditSkillEffsListView.SelectedItems[0].SubItems[0].Text;
-                this.adminEditSkillEfflvlTextBox.Text = this.adminEditSkillEffsListView.SelectedItems[0].SubItems[1].Text;
+                // display selected trait for editing
+                this.adminEditTraitEffTextBox.Text = this.adminEditTraitEffsListView.SelectedItems[0].SubItems[0].Text;
+                this.adminEditTraitEfflvlTextBox.Text = this.adminEditTraitEffsListView.SelectedItems[0].SubItems[1].Text;
             }
         }
 
         /// <summary>
-        /// Responds to the click event of any of the 'edit skill effects' buttons
+        /// Responds to the click event of any of the 'edit trait effects' buttons
         /// </summary>
         /// <param name="sender">The control object that sent the event args</param>
         /// <param name="e">The event args</param>
-        private void adminEditSkillEffBtn_Click(object sender, EventArgs e)
+        private void adminEditTraitEffBtn_Click(object sender, EventArgs e)
         {
             string effName = null;
             double effLvl = 0;
@@ -2026,17 +2026,17 @@ namespace hist_mmorpg
             {
                 // get effects collection
                 Dictionary<string, double> effects = new Dictionary<string, double>();
-                for (int i = 0; i < this.adminEditSkillEffsListView.Items.Count; i++)
+                for (int i = 0; i < this.adminEditTraitEffsListView.Items.Count; i++)
                 {
-                    effects.Add(this.adminEditSkillEffsListView.Items[i].SubItems[0].Text,
-                        Convert.ToDouble(this.adminEditSkillEffsListView.Items[i].SubItems[1].Text));
+                    effects.Add(this.adminEditTraitEffsListView.Items[i].SubItems[0].Text,
+                        Convert.ToDouble(this.adminEditTraitEffsListView.Items[i].SubItems[1].Text));
                 }
 
                 // get selected effect
-                effName = this.adminEditSkillEffTextBox.Text;
+                effName = this.adminEditTraitEffTextBox.Text;
                 if (!String.IsNullOrWhiteSpace(effName))
                 {
-                    effLvl = Convert.ToDouble(this.adminEditSkillEfflvlTextBox.Text);
+                    effLvl = Convert.ToDouble(this.adminEditTraitEfflvlTextBox.Text);
                 }
 
                 if (effLvl > 0)
@@ -2096,7 +2096,7 @@ namespace hist_mmorpg
 
                     if (effectsChanged)
                     {
-                        this.RefreshSkillEffectsList(effects);
+                        this.RefreshTraitEffectsList(effects);
                         if (Globals_Client.showMessages)
                         {
                             System.Windows.Forms.MessageBox.Show("Effects updated.");
@@ -2157,8 +2157,8 @@ namespace hist_mmorpg
                     success = this.SavePlaceEdit(objectType);
                     break;
 
-                case "Skill":
-                    success = this.SaveSkillEdit();
+                case "Trait":
+                    success = this.SaveTraitEdit();
                     break;
 
                 case "Army":
@@ -2255,12 +2255,12 @@ namespace hist_mmorpg
                     // display edit kingdom panel
                     this.adminEditKingPanel.BringToFront();
                     break;
-                case "Skill":
+                case "Trait":
                     // clear previous data
-                    this.RefreshSkillEdit();
-                    this.adminEditSkillIdTextBox.ReadOnly = true;
-                    // display edit skill panel
-                    this.adminEditSkillPanel.BringToFront();
+                    this.RefreshTraitEdit();
+                    this.adminEditTraitIdTextBox.ReadOnly = true;
+                    // display edit trait panel
+                    this.adminEditTraitPanel.BringToFront();
                     break;
                 case "Army":
                     // clear previous data
@@ -2363,18 +2363,18 @@ namespace hist_mmorpg
                     }
                     break;
 
-                case "Skill":
-                    // get skill
-                    Skill thisSkill = null;
-                    if (Globals_Game.skillMasterList.ContainsKey(this.adminEditTextBox.Text))
+                case "Trait":
+                    // get trait
+                    Trait thisTrait = null;
+                    if (Globals_Game.traitMasterList.ContainsKey(this.adminEditTextBox.Text))
                     {
-                        thisSkill = Globals_Game.skillMasterList[this.adminEditTextBox.Text];
+                        thisTrait = Globals_Game.traitMasterList[this.adminEditTextBox.Text];
                     }
 
-                    // display skill details
-                    if (thisSkill != null)
+                    // display trait details
+                    if (thisTrait != null)
                     {
-                        this.RefreshSkillEdit(thisSkill);
+                        this.RefreshTraitEdit(thisTrait);
                     }
                     break;
 
@@ -2432,8 +2432,8 @@ namespace hist_mmorpg
                     this.RefreshPlaceEdit();
                     break;
 
-                case "Skill":
-                    this.RefreshSkillEdit();
+                case "Trait":
+                    this.RefreshTraitEdit();
                     break;
 
                 case "Army":

@@ -510,7 +510,7 @@ namespace hist_mmorpg
             // get total spend
             uint totalSpend = off + garr + infr + kp;
 
-            // factor in bailiff skills modifier for fief expenses
+            // factor in bailiff traits modifier for fief expenses
             double bailiffModif = 0;
 
             // get bailiff modifier (passing in whether bailiffDaysInFief is sufficient)
@@ -689,15 +689,15 @@ namespace hist_mmorpg
             // 2.5% decrease in family expenses per management level above 1
             famExpMod = (((manRating - 1) * 2.5) / 100) * -1;
 
-            // factor in financial controller skills
+            // factor in financial controller traits
             if (ch != null)
             {
-                double famExpSkillsMod = ch.CalcSkillEffect("famExpense");
+                double famExpTraitsMod = ch.CalcTraitEffect("famExpense");
 
                 // apply to famExpMod
-                if (famExpSkillsMod != 0)
+                if (famExpTraitsMod != 0)
                 {
-                    famExpMod = (famExpMod + famExpSkillsMod);
+                    famExpMod = (famExpMod + famExpTraitsMod);
                 }
             }
 
@@ -791,7 +791,7 @@ namespace hist_mmorpg
             // using next season's expenditure
             fiefExpenses = (int)this.officialsSpendNext + (int)this.infrastructureSpendNext + (int)this.garrisonSpendNext + (int)this.keepSpendNext;
 
-            // factor in bailiff skills modifier for fief expenses
+            // factor in bailiff traits modifier for fief expenses
             double bailiffModif = 0;
 
             // get bailiff modifier (passing in whether bailiffDaysInFief is sufficient)
@@ -806,20 +806,20 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates effect of bailiff skills on fief expenses
+        /// Calculates effect of bailiff traits on fief expenses
         /// </summary>
         /// <returns>double containing fief expenses modifier</returns>
         /// <param name="daysInFiefOK">bool specifying whether bailiff has sufficient days in fief</param>
         public double CalcBailExpModif(bool daysInFiefOK)
         {
-            double expSkillsModifier = 0;
+            double expTraitsModifier = 0;
 
             if ((this.bailiff != null) && (daysInFiefOK))
             {
-                expSkillsModifier = this.bailiff.CalcSkillEffect("fiefExpense");
+                expTraitsModifier = this.bailiff.CalcTraitEffect("fiefExpense");
             }
 
-            return expSkillsModifier;
+            return expTraitsModifier;
         }
         
         /// <summary>
@@ -920,7 +920,7 @@ namespace hist_mmorpg
 
             }
 
-            // if NOT home fief, use bailiff's stats/skills
+            // if NOT home fief, use bailiff's stats/traits
             else
             {
                 if ((this.bailiffDaysInFief >= 30) && (this.bailiff != null))
@@ -929,7 +929,7 @@ namespace hist_mmorpg
                 }
             }
 
-            // factor in skills and stats of financial controller (player/spouse/bailiff)
+            // factor in traits and stats of financial controller (player/spouse/bailiff)
             double famExpModifier = this.CalcFamExpenseMod(thisController);
 
             // apply to family expenses
@@ -1254,14 +1254,14 @@ namespace hist_mmorpg
 
         /// <summary>
         /// Calculates effect of bailiff on fief loyalty level
-        /// Also includes effect of skills
+        /// Also includes effect of traits
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
         /// <param name="daysInFiefOK">bool specifying whether bailiff has sufficient days in fief</param>
         public double CalcBlfLoyAdjusted(bool daysInFiefOK)
         {
             double loyModif = 0;
-            double loySkillModif = 0;
+            double loyTraitModif = 0;
 
             // get bailiff stats (set to auto-bailiff values by default)
             double bailStature = 3;
@@ -1279,10 +1279,10 @@ namespace hist_mmorpg
             // get base bailiff loyalty modifier
             loyModif = this.CalcBaseFiefLoyMod(bailStature, bailMgmt, bailLang);
 
-            // check for skill modifier, passing in daysInFief
-            loySkillModif = this.CalcBailLoySkillMod(daysInFiefOK);
+            // check for trait modifier, passing in daysInFief
+            loyTraitModif = this.CalcBailLoyTraitMod(daysInFiefOK);
 
-            loyModif = loyModif + (loyModif * loySkillModif);
+            loyModif = loyModif + (loyModif * loyTraitModif);
 
             return loyModif;
         }
@@ -1320,20 +1320,20 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Calculates bailiff's skill modifier for fief loyalty
+        /// Calculates bailiff's trait modifier for fief loyalty
         /// </summary>
         /// <returns>double containing fief loyalty modifier</returns>
         /// <param name="daysInFiefOK">bool specifying whether bailiff has sufficient days in fief</param>
-        public double CalcBailLoySkillMod(bool daysInFiefOK)
+        public double CalcBailLoyTraitMod(bool daysInFiefOK)
         {
-            double loySkillsModifier = 0;
+            double loyTraitsModifier = 0;
 
             if ((this.bailiff != null) && (daysInFiefOK))
             {
-                loySkillsModifier = this.bailiff.CalcSkillEffect("fiefLoy");
+                loyTraitsModifier = this.bailiff.CalcTraitEffect("fiefLoy");
             }
 
-            return loySkillsModifier;
+            return loyTraitsModifier;
         }
 
         /// <summary>
@@ -2587,7 +2587,7 @@ namespace hist_mmorpg
             // get army owner
             Character aOwner = a.GetOwner();
 
-            // apply any bonus for leadership skills
+            // apply any bonus for leadership traits
             if (aLeader != null)
             {
                 successChance += aLeader.GetLeadershipValue();

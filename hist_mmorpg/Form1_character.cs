@@ -109,8 +109,8 @@ namespace hist_mmorpg
                 }
                 charText += "\r\n";
 
-                // any death modifiers (from skills)
-                charText += "  (Death modifier from skills: " + ch.CalcSkillEffect("death") + ")\r\n";
+                // any death modifiers (from traits)
+                charText += "  (Death modifier from traits: " + ch.CalcTraitEffect("death") + ")\r\n";
 
                 // virility
                 charText += "Virility: " + ch.virility + "\r\n";
@@ -138,11 +138,11 @@ namespace hist_mmorpg
             // combat rating
             charText += "Combat: " + ch.combat + "\r\n";
 
-            // skills list
-            charText += "Skills:\r\n";
-            for (int i = 0; i < ch.skills.Length; i++)
+            // traits list
+            charText += "Trait:\r\n";
+            for (int i = 0; i < ch.traits.Length; i++)
             {
-                charText += "  - " + ch.skills[i].Item1.name + " (level " + ch.skills[i].Item2 + ")\r\n";
+                charText += "  - " + ch.traits[i].Item1.name + " (level " + ch.traits[i].Item2 + ")\r\n";
             }
 
             // whether inside/outside the keep

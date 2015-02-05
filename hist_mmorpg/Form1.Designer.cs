@@ -49,7 +49,7 @@ namespace hist_mmorpg
             this.provinceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.kingdomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.armyToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.skillToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.traitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.characterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.personalCharacteristicsAndAffairsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fiefToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -419,19 +419,19 @@ namespace hist_mmorpg
             this.adminEditArmyLdrTextBox = new System.Windows.Forms.TextBox();
             this.label74 = new System.Windows.Forms.Label();
             this.adminEditArmyIdTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditSkillPanel = new System.Windows.Forms.Panel();
-            this.adminEditSkillEffsListView = new System.Windows.Forms.ListView();
-            this.adminEditSkillEfflvlTextBox = new System.Windows.Forms.TextBox();
-            this.adminEditSkillEffDelBtn = new System.Windows.Forms.Button();
-            this.adminEditSkillEffAddBtn = new System.Windows.Forms.Button();
-            this.adminEditSkillEffChngBtn = new System.Windows.Forms.Button();
+            this.adminEditTraitPanel = new System.Windows.Forms.Panel();
+            this.adminEditTraitEffsListView = new System.Windows.Forms.ListView();
+            this.adminEditTraitEfflvlTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditTraitEffDelBtn = new System.Windows.Forms.Button();
+            this.adminEditTraitEffAddBtn = new System.Windows.Forms.Button();
+            this.adminEditTraitEffChngBtn = new System.Windows.Forms.Button();
             this.label84 = new System.Windows.Forms.Label();
-            this.adminEditSkillEffTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditTraitEffTextBox = new System.Windows.Forms.TextBox();
             this.label83 = new System.Windows.Forms.Label();
             this.label82 = new System.Windows.Forms.Label();
-            this.adminEditSkillNameTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditTraitNameTextBox = new System.Windows.Forms.TextBox();
             this.label81 = new System.Windows.Forms.Label();
-            this.adminEditSkillIdTextBox = new System.Windows.Forms.TextBox();
+            this.adminEditTraitIdTextBox = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.characterContainer)).BeginInit();
             this.characterContainer.Panel1.SuspendLayout();
@@ -574,7 +574,7 @@ namespace hist_mmorpg
             this.adminEditCharNpcPanel.SuspendLayout();
             this.adminEditCharPcPanel.SuspendLayout();
             this.adminEditArmyPanel.SuspendLayout();
-            this.adminEditSkillPanel.SuspendLayout();
+            this.adminEditTraitPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -672,7 +672,7 @@ namespace hist_mmorpg
             this.characterToolStripMenuItem2,
             this.placeToolStripMenuItem,
             this.armyToolStripMenuItem1,
-            this.skillToolStripMenuItem});
+            this.traitToolStripMenuItem});
             this.editGameObjectToolStripMenuItem.Name = "editGameObjectToolStripMenuItem";
             this.editGameObjectToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.editGameObjectToolStripMenuItem.Text = "Edit Game Object";
@@ -744,13 +744,13 @@ namespace hist_mmorpg
             this.armyToolStripMenuItem1.Text = "Army";
             this.armyToolStripMenuItem1.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
             // 
-            // skillToolStripMenuItem
+            // traitToolStripMenuItem
             // 
-            this.skillToolStripMenuItem.Name = "skillToolStripMenuItem";
-            this.skillToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.skillToolStripMenuItem.Tag = "Skill";
-            this.skillToolStripMenuItem.Text = "Skill";
-            this.skillToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
+            this.traitToolStripMenuItem.Name = "traitToolStripMenuItem";
+            this.traitToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.traitToolStripMenuItem.Tag = "Trait";
+            this.traitToolStripMenuItem.Text = "Trait";
+            this.traitToolStripMenuItem.Click += new System.EventHandler(this.adminEditObjectMenuItem_Click);
             // 
             // characterToolStripMenuItem
             // 
@@ -3386,7 +3386,7 @@ namespace hist_mmorpg
             this.adminEditContainer.Panel2.Controls.Add(this.adminEditPlaceContainer);
             this.adminEditContainer.Panel2.Controls.Add(this.adminEditCharContainer);
             this.adminEditContainer.Panel2.Controls.Add(this.adminEditArmyPanel);
-            this.adminEditContainer.Panel2.Controls.Add(this.adminEditSkillPanel);
+            this.adminEditContainer.Panel2.Controls.Add(this.adminEditTraitPanel);
             this.adminEditContainer.Size = new System.Drawing.Size(935, 711);
             this.adminEditContainer.SplitterDistance = 311;
             this.adminEditContainer.TabIndex = 13;
@@ -4090,7 +4090,7 @@ namespace hist_mmorpg
             this.label41.Name = "label41";
             this.label41.Size = new System.Drawing.Size(105, 13);
             this.label41.TabIndex = 39;
-            this.label41.Text = "Skill 3 (ID and rating)";
+            this.label41.Text = "Trait 3 (ID and rating)";
             // 
             // label40
             // 
@@ -4099,7 +4099,7 @@ namespace hist_mmorpg
             this.label40.Name = "label40";
             this.label40.Size = new System.Drawing.Size(105, 13);
             this.label40.TabIndex = 38;
-            this.label40.Text = "Skill 2 (ID and rating)";
+            this.label40.Text = "Trait 2 (ID and rating)";
             // 
             // label39
             // 
@@ -4108,7 +4108,7 @@ namespace hist_mmorpg
             this.label39.Name = "label39";
             this.label39.Size = new System.Drawing.Size(105, 13);
             this.label39.TabIndex = 37;
-            this.label39.Text = "Skill 1 (ID and rating)";
+            this.label39.Text = "Trait 1 (ID and rating)";
             // 
             // label38
             // 
@@ -4671,77 +4671,77 @@ namespace hist_mmorpg
             this.adminEditArmyIdTextBox.Size = new System.Drawing.Size(137, 20);
             this.adminEditArmyIdTextBox.TabIndex = 25;
             // 
-            // adminEditSkillPanel
+            // adminEditTraitPanel
             // 
-            this.adminEditSkillPanel.Controls.Add(this.adminEditSkillEffsListView);
-            this.adminEditSkillPanel.Controls.Add(this.adminEditSkillEfflvlTextBox);
-            this.adminEditSkillPanel.Controls.Add(this.adminEditSkillEffDelBtn);
-            this.adminEditSkillPanel.Controls.Add(this.adminEditSkillEffAddBtn);
-            this.adminEditSkillPanel.Controls.Add(this.adminEditSkillEffChngBtn);
-            this.adminEditSkillPanel.Controls.Add(this.label84);
-            this.adminEditSkillPanel.Controls.Add(this.adminEditSkillEffTextBox);
-            this.adminEditSkillPanel.Controls.Add(this.label83);
-            this.adminEditSkillPanel.Controls.Add(this.label82);
-            this.adminEditSkillPanel.Controls.Add(this.adminEditSkillNameTextBox);
-            this.adminEditSkillPanel.Controls.Add(this.label81);
-            this.adminEditSkillPanel.Controls.Add(this.adminEditSkillIdTextBox);
-            this.adminEditSkillPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.adminEditSkillPanel.Location = new System.Drawing.Point(0, 0);
-            this.adminEditSkillPanel.Name = "adminEditSkillPanel";
-            this.adminEditSkillPanel.Size = new System.Drawing.Size(620, 711);
-            this.adminEditSkillPanel.TabIndex = 2;
+            this.adminEditTraitPanel.Controls.Add(this.adminEditTraitEffsListView);
+            this.adminEditTraitPanel.Controls.Add(this.adminEditTraitEfflvlTextBox);
+            this.adminEditTraitPanel.Controls.Add(this.adminEditTraitEffDelBtn);
+            this.adminEditTraitPanel.Controls.Add(this.adminEditTraitEffAddBtn);
+            this.adminEditTraitPanel.Controls.Add(this.adminEditTraitEffChngBtn);
+            this.adminEditTraitPanel.Controls.Add(this.label84);
+            this.adminEditTraitPanel.Controls.Add(this.adminEditTraitEffTextBox);
+            this.adminEditTraitPanel.Controls.Add(this.label83);
+            this.adminEditTraitPanel.Controls.Add(this.label82);
+            this.adminEditTraitPanel.Controls.Add(this.adminEditTraitNameTextBox);
+            this.adminEditTraitPanel.Controls.Add(this.label81);
+            this.adminEditTraitPanel.Controls.Add(this.adminEditTraitIdTextBox);
+            this.adminEditTraitPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.adminEditTraitPanel.Location = new System.Drawing.Point(0, 0);
+            this.adminEditTraitPanel.Name = "adminEditTraitPanel";
+            this.adminEditTraitPanel.Size = new System.Drawing.Size(620, 711);
+            this.adminEditTraitPanel.TabIndex = 2;
             // 
-            // adminEditSkillEffsListView
+            // adminEditTraitEffsListView
             // 
-            this.adminEditSkillEffsListView.FullRowSelect = true;
-            this.adminEditSkillEffsListView.Location = new System.Drawing.Point(14, 72);
-            this.adminEditSkillEffsListView.Name = "adminEditSkillEffsListView";
-            this.adminEditSkillEffsListView.Size = new System.Drawing.Size(159, 88);
-            this.adminEditSkillEffsListView.TabIndex = 39;
-            this.adminEditSkillEffsListView.UseCompatibleStateImageBehavior = false;
-            this.adminEditSkillEffsListView.View = System.Windows.Forms.View.Details;
-            this.adminEditSkillEffsListView.SelectedIndexChanged += new System.EventHandler(this.adminEditSkillEffsListView_SelectedIndexChanged);
+            this.adminEditTraitEffsListView.FullRowSelect = true;
+            this.adminEditTraitEffsListView.Location = new System.Drawing.Point(14, 72);
+            this.adminEditTraitEffsListView.Name = "adminEditTraitEffsListView";
+            this.adminEditTraitEffsListView.Size = new System.Drawing.Size(159, 88);
+            this.adminEditTraitEffsListView.TabIndex = 39;
+            this.adminEditTraitEffsListView.UseCompatibleStateImageBehavior = false;
+            this.adminEditTraitEffsListView.View = System.Windows.Forms.View.Details;
+            this.adminEditTraitEffsListView.SelectedIndexChanged += new System.EventHandler(this.adminEditTraitEffsListView_SelectedIndexChanged);
             // 
-            // adminEditSkillEfflvlTextBox
+            // adminEditTraitEfflvlTextBox
             // 
-            this.adminEditSkillEfflvlTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditSkillEfflvlTextBox.Location = new System.Drawing.Point(150, 165);
-            this.adminEditSkillEfflvlTextBox.Name = "adminEditSkillEfflvlTextBox";
-            this.adminEditSkillEfflvlTextBox.Size = new System.Drawing.Size(23, 20);
-            this.adminEditSkillEfflvlTextBox.TabIndex = 38;
+            this.adminEditTraitEfflvlTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditTraitEfflvlTextBox.Location = new System.Drawing.Point(150, 165);
+            this.adminEditTraitEfflvlTextBox.Name = "adminEditTraitEfflvlTextBox";
+            this.adminEditTraitEfflvlTextBox.Size = new System.Drawing.Size(23, 20);
+            this.adminEditTraitEfflvlTextBox.TabIndex = 38;
             // 
-            // adminEditSkillEffDelBtn
+            // adminEditTraitEffDelBtn
             // 
-            this.adminEditSkillEffDelBtn.Location = new System.Drawing.Point(62, 190);
-            this.adminEditSkillEffDelBtn.Name = "adminEditSkillEffDelBtn";
-            this.adminEditSkillEffDelBtn.Size = new System.Drawing.Size(47, 25);
-            this.adminEditSkillEffDelBtn.TabIndex = 37;
-            this.adminEditSkillEffDelBtn.Tag = "delEffect";
-            this.adminEditSkillEffDelBtn.Text = "Delete";
-            this.adminEditSkillEffDelBtn.UseVisualStyleBackColor = true;
-            this.adminEditSkillEffDelBtn.Click += new System.EventHandler(this.adminEditSkillEffBtn_Click);
+            this.adminEditTraitEffDelBtn.Location = new System.Drawing.Point(62, 190);
+            this.adminEditTraitEffDelBtn.Name = "adminEditTraitEffDelBtn";
+            this.adminEditTraitEffDelBtn.Size = new System.Drawing.Size(47, 25);
+            this.adminEditTraitEffDelBtn.TabIndex = 37;
+            this.adminEditTraitEffDelBtn.Tag = "delEffect";
+            this.adminEditTraitEffDelBtn.Text = "Delete";
+            this.adminEditTraitEffDelBtn.UseVisualStyleBackColor = true;
+            this.adminEditTraitEffDelBtn.Click += new System.EventHandler(this.adminEditTraitEffBtn_Click);
             // 
-            // adminEditSkillEffAddBtn
+            // adminEditTraitEffAddBtn
             // 
-            this.adminEditSkillEffAddBtn.Location = new System.Drawing.Point(13, 190);
-            this.adminEditSkillEffAddBtn.Name = "adminEditSkillEffAddBtn";
-            this.adminEditSkillEffAddBtn.Size = new System.Drawing.Size(38, 25);
-            this.adminEditSkillEffAddBtn.TabIndex = 36;
-            this.adminEditSkillEffAddBtn.Tag = "addEffect";
-            this.adminEditSkillEffAddBtn.Text = "Add";
-            this.adminEditSkillEffAddBtn.UseVisualStyleBackColor = true;
-            this.adminEditSkillEffAddBtn.Click += new System.EventHandler(this.adminEditSkillEffBtn_Click);
+            this.adminEditTraitEffAddBtn.Location = new System.Drawing.Point(13, 190);
+            this.adminEditTraitEffAddBtn.Name = "adminEditTraitEffAddBtn";
+            this.adminEditTraitEffAddBtn.Size = new System.Drawing.Size(38, 25);
+            this.adminEditTraitEffAddBtn.TabIndex = 36;
+            this.adminEditTraitEffAddBtn.Tag = "addEffect";
+            this.adminEditTraitEffAddBtn.Text = "Add";
+            this.adminEditTraitEffAddBtn.UseVisualStyleBackColor = true;
+            this.adminEditTraitEffAddBtn.Click += new System.EventHandler(this.adminEditTraitEffBtn_Click);
             // 
-            // adminEditSkillEffChngBtn
+            // adminEditTraitEffChngBtn
             // 
-            this.adminEditSkillEffChngBtn.Location = new System.Drawing.Point(118, 190);
-            this.adminEditSkillEffChngBtn.Name = "adminEditSkillEffChngBtn";
-            this.adminEditSkillEffChngBtn.Size = new System.Drawing.Size(55, 25);
-            this.adminEditSkillEffChngBtn.TabIndex = 35;
-            this.adminEditSkillEffChngBtn.Tag = "chaEffect";
-            this.adminEditSkillEffChngBtn.Text = "Change";
-            this.adminEditSkillEffChngBtn.UseVisualStyleBackColor = true;
-            this.adminEditSkillEffChngBtn.Click += new System.EventHandler(this.adminEditSkillEffBtn_Click);
+            this.adminEditTraitEffChngBtn.Location = new System.Drawing.Point(118, 190);
+            this.adminEditTraitEffChngBtn.Name = "adminEditTraitEffChngBtn";
+            this.adminEditTraitEffChngBtn.Size = new System.Drawing.Size(55, 25);
+            this.adminEditTraitEffChngBtn.TabIndex = 35;
+            this.adminEditTraitEffChngBtn.Tag = "chaEffect";
+            this.adminEditTraitEffChngBtn.Text = "Change";
+            this.adminEditTraitEffChngBtn.UseVisualStyleBackColor = true;
+            this.adminEditTraitEffChngBtn.Click += new System.EventHandler(this.adminEditTraitEffBtn_Click);
             // 
             // label84
             // 
@@ -4752,13 +4752,13 @@ namespace hist_mmorpg
             this.label84.TabIndex = 34;
             this.label84.Text = "Effect To Alter";
             // 
-            // adminEditSkillEffTextBox
+            // adminEditTraitEffTextBox
             // 
-            this.adminEditSkillEffTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditSkillEffTextBox.Location = new System.Drawing.Point(14, 165);
-            this.adminEditSkillEffTextBox.Name = "adminEditSkillEffTextBox";
-            this.adminEditSkillEffTextBox.Size = new System.Drawing.Size(130, 20);
-            this.adminEditSkillEffTextBox.TabIndex = 33;
+            this.adminEditTraitEffTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditTraitEffTextBox.Location = new System.Drawing.Point(14, 165);
+            this.adminEditTraitEffTextBox.Name = "adminEditTraitEffTextBox";
+            this.adminEditTraitEffTextBox.Size = new System.Drawing.Size(130, 20);
+            this.adminEditTraitEffTextBox.TabIndex = 33;
             // 
             // label83
             // 
@@ -4778,13 +4778,13 @@ namespace hist_mmorpg
             this.label82.TabIndex = 30;
             this.label82.Text = "Name";
             // 
-            // adminEditSkillNameTextBox
+            // adminEditTraitNameTextBox
             // 
-            this.adminEditSkillNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditSkillNameTextBox.Location = new System.Drawing.Point(14, 34);
-            this.adminEditSkillNameTextBox.Name = "adminEditSkillNameTextBox";
-            this.adminEditSkillNameTextBox.Size = new System.Drawing.Size(159, 20);
-            this.adminEditSkillNameTextBox.TabIndex = 29;
+            this.adminEditTraitNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditTraitNameTextBox.Location = new System.Drawing.Point(14, 34);
+            this.adminEditTraitNameTextBox.Name = "adminEditTraitNameTextBox";
+            this.adminEditTraitNameTextBox.Size = new System.Drawing.Size(159, 20);
+            this.adminEditTraitNameTextBox.TabIndex = 29;
             // 
             // label81
             // 
@@ -4795,13 +4795,13 @@ namespace hist_mmorpg
             this.label81.TabIndex = 28;
             this.label81.Text = "ID";
             // 
-            // adminEditSkillIdTextBox
+            // adminEditTraitIdTextBox
             // 
-            this.adminEditSkillIdTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.adminEditSkillIdTextBox.Location = new System.Drawing.Point(14, 7);
-            this.adminEditSkillIdTextBox.Name = "adminEditSkillIdTextBox";
-            this.adminEditSkillIdTextBox.Size = new System.Drawing.Size(159, 20);
-            this.adminEditSkillIdTextBox.TabIndex = 27;
+            this.adminEditTraitIdTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.adminEditTraitIdTextBox.Location = new System.Drawing.Point(14, 7);
+            this.adminEditTraitIdTextBox.Name = "adminEditTraitIdTextBox";
+            this.adminEditTraitIdTextBox.Size = new System.Drawing.Size(159, 20);
+            this.adminEditTraitIdTextBox.TabIndex = 27;
             // 
             // Form1
             // 
@@ -5004,8 +5004,8 @@ namespace hist_mmorpg
             this.adminEditCharPcPanel.PerformLayout();
             this.adminEditArmyPanel.ResumeLayout(false);
             this.adminEditArmyPanel.PerformLayout();
-            this.adminEditSkillPanel.ResumeLayout(false);
-            this.adminEditSkillPanel.PerformLayout();
+            this.adminEditTraitPanel.ResumeLayout(false);
+            this.adminEditTraitPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -5370,7 +5370,7 @@ namespace hist_mmorpg
         private System.Windows.Forms.Label label73;
         private System.Windows.Forms.TextBox adminEditKingNatTextBox;
         private System.Windows.Forms.Panel adminEditArmyPanel;
-        private System.Windows.Forms.Panel adminEditSkillPanel;
+        private System.Windows.Forms.Panel adminEditTraitPanel;
         private System.Windows.Forms.Label label76;
         private System.Windows.Forms.Label label75;
         private System.Windows.Forms.TextBox adminEditArmyOwnTextBox;
@@ -5382,24 +5382,24 @@ namespace hist_mmorpg
         private System.Windows.Forms.TextBox adminEditArmyLocTextBox;
         private System.Windows.Forms.TextBox adminEditArmyDaysTextBox;
         private System.Windows.Forms.Label label81;
-        private System.Windows.Forms.TextBox adminEditSkillIdTextBox;
+        private System.Windows.Forms.TextBox adminEditTraitIdTextBox;
         private System.Windows.Forms.CheckBox adminEditArmyMaintCheckBox;
         private System.Windows.Forms.Label label80;
         private System.Windows.Forms.Label label79;
         private System.Windows.Forms.TextBox adminEditArmyAggrTextBox;
         private System.Windows.Forms.TextBox adminEditArmyOddsTextBox;
         private System.Windows.Forms.ToolStripMenuItem armyToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem skillToolStripMenuItem;
-        private System.Windows.Forms.TextBox adminEditSkillEfflvlTextBox;
-        private System.Windows.Forms.Button adminEditSkillEffDelBtn;
-        private System.Windows.Forms.Button adminEditSkillEffAddBtn;
-        private System.Windows.Forms.Button adminEditSkillEffChngBtn;
+        private System.Windows.Forms.ToolStripMenuItem traitToolStripMenuItem;
+        private System.Windows.Forms.TextBox adminEditTraitEfflvlTextBox;
+        private System.Windows.Forms.Button adminEditTraitEffDelBtn;
+        private System.Windows.Forms.Button adminEditTraitEffAddBtn;
+        private System.Windows.Forms.Button adminEditTraitEffChngBtn;
         private System.Windows.Forms.Label label84;
-        private System.Windows.Forms.TextBox adminEditSkillEffTextBox;
+        private System.Windows.Forms.TextBox adminEditTraitEffTextBox;
         private System.Windows.Forms.Label label83;
         private System.Windows.Forms.Label label82;
-        private System.Windows.Forms.TextBox adminEditSkillNameTextBox;
-        private System.Windows.Forms.ListView adminEditSkillEffsListView;
+        private System.Windows.Forms.TextBox adminEditTraitNameTextBox;
+        private System.Windows.Forms.ListView adminEditTraitEffsListView;
         private System.Windows.Forms.CheckBox adminEditCharSexCheckBox;
         private System.Windows.Forms.Label label85;
         private System.Windows.Forms.Button adminEditCancelBtn;
