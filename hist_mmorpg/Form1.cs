@@ -1283,7 +1283,7 @@ namespace hist_mmorpg
                 for (int i = 0; i < disbandedArmies.Count; i++)
                 {
                     // disband army
-                    this.disbandArmy(disbandedArmies[i]);
+                    this.DisbandArmy(disbandedArmies[i]);
                 }
 
                 // clear dissolvedArmies
@@ -1846,7 +1846,7 @@ namespace hist_mmorpg
                         this.RefreshPlaceEdit();
                         break;
                     case "Army":
-                        this.refreshArmyEdit();
+                        this.RefreshArmyEdit();
                         break;
                     case "Trait":
                         this.RefreshTraitEdit();
@@ -2264,7 +2264,7 @@ namespace hist_mmorpg
                     break;
                 case "Army":
                     // clear previous data
-                    this.refreshArmyEdit();
+                    this.RefreshArmyEdit();
                     this.adminEditArmyIdTextBox.ReadOnly = true;
                     // display edit army panel
                     this.adminEditArmyPanel.BringToFront();
@@ -2389,7 +2389,7 @@ namespace hist_mmorpg
                     // display army details
                     if (thisArmy != null)
                     {
-                        this.refreshArmyEdit(thisArmy);
+                        this.RefreshArmyEdit(thisArmy);
                     }
                     break;
 
@@ -2437,7 +2437,7 @@ namespace hist_mmorpg
                     break;
 
                 case "Army":
-                    this.refreshArmyEdit();
+                    this.RefreshArmyEdit();
                     break;
 
                 default:
@@ -2727,7 +2727,7 @@ namespace hist_mmorpg
                             else
                             {
                                 // retreat army 1 hex
-                                this.processRetreat(thisArmy, 1);
+                                this.ProcessRetreat(thisArmy, 1);
                             }
                         }
                     }
@@ -5390,7 +5390,7 @@ namespace hist_mmorpg
             if (Globals_Client.armyToView != null)
             {
                 // disband army
-                this.disbandArmy(Globals_Client.armyToView);
+                this.DisbandArmy(Globals_Client.armyToView);
 
                 // refresh display
                 this.RefreshArmyContainer();

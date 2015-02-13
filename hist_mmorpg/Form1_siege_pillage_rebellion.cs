@@ -363,7 +363,7 @@ namespace hist_mmorpg
             f.industry -= (f.industry * (thisLoss / 100));
 
             // money pillaged (based on GDP)
-            thisLoss = (0.01 * pillageMultiplier);
+            thisLoss = (0.032 * pillageMultiplier);
             // ensure is between 1%-50%
             if (thisLoss < 1)
             {
@@ -1030,7 +1030,6 @@ namespace hist_mmorpg
             double keepDamageModifier = 0.1;
 
             // calculate further damage, based on comparative battle values (up to extra 15%)
-            // uint [] battleValues = this.calculateBattleValue(besiegingArmy, defenderGarrison, Convert.ToInt32(keepLvl));
             // divide attackerBV by defenderBV to get extraDamageMultiplier
             double extraDamageMultiplier = battleValues[0] / battleValues[1];
 
@@ -1064,7 +1063,7 @@ namespace hist_mmorpg
             // 2. ATTACKER
             double attackerCasualtyModifier = 0.01;
             attackerCasualtyModifier = attackerCasualtyModifier * (Convert.ToDouble(battleValues[1]) / battleValues[0]);
-            // for attacker, add effects of keep level, modified by on storm success
+            // for attacker, add effects of keep level, modified by storm success
             if (stormSuccess)
             {
                 attackerCasualtyModifier += (0.005 * besiegedFief.keepLevel);

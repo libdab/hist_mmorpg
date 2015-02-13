@@ -322,7 +322,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <param name="a">The army to retreat</param>
         /// <param name="retreatDistance">The retreat distance</param>
-        public void processRetreat(Army a, int retreatDistance)
+        public void ProcessRetreat(Army a, int retreatDistance)
         {
             // get starting fief
             Fief startingFief = a.GetLocation();
@@ -530,7 +530,7 @@ namespace hist_mmorpg
 
                         if (!battleHasCommenced)
                         {
-                            this.processRetreat(defender, 1);
+                            this.ProcessRetreat(defender, 1);
                         }
                     }
                 }
@@ -548,7 +548,7 @@ namespace hist_mmorpg
 
                 if (!battleHasCommenced)
                 {
-                    this.processRetreat(defender, 1);
+                    this.ProcessRetreat(defender, 1);
                 }
             }
 
@@ -694,7 +694,7 @@ namespace hist_mmorpg
                 {
                     if (retreatDistances[i] > 0)
                     {
-                        this.processRetreat(bothSides[i], retreatDistances[i]);
+                        this.ProcessRetreat(bothSides[i], retreatDistances[i]);
                     }
                 }
 
@@ -928,12 +928,12 @@ namespace hist_mmorpg
                 // process army disbandings (after all other functions completed)
                 if (attackerDisbanded)
                 {
-                    this.disbandArmy(attacker);
+                    this.DisbandArmy(attacker);
                 }
 
                 if (defenderDisbanded)
                 {
-                    this.disbandArmy(defender);
+                    this.DisbandArmy(defender);
                 }
 
             }

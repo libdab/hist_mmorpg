@@ -611,13 +611,13 @@ namespace hist_mmorpg
             this.switchPlayerMenuItem,
             this.murderThisCharacterToolStripMenuItem});
             this.testSeasonalUpdateToolStripMenuItem.Name = "testSeasonalUpdateToolStripMenuItem";
-            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.testSeasonalUpdateToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
             this.testSeasonalUpdateToolStripMenuItem.Text = "Test";
             // 
             // fullToolStripMenuItem
             // 
             this.fullToolStripMenuItem.Name = "fullToolStripMenuItem";
-            this.fullToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.fullToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.fullToolStripMenuItem.Tag = "";
             this.fullToolStripMenuItem.Text = "Seasonal update";
             this.fullToolStripMenuItem.Click += new System.EventHandler(this.testUpdateMenuItem_Click);
@@ -627,7 +627,7 @@ namespace hist_mmorpg
             this.switchPlayerMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.switchPlayerMenuTextBox});
             this.switchPlayerMenuItem.Name = "switchPlayerMenuItem";
-            this.switchPlayerMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.switchPlayerMenuItem.Size = new System.Drawing.Size(187, 22);
             this.switchPlayerMenuItem.Tag = "";
             this.switchPlayerMenuItem.Text = "Switch player to ...";
             this.switchPlayerMenuItem.Click += new System.EventHandler(this.switchPlayerMenuItem_Click);
@@ -642,7 +642,7 @@ namespace hist_mmorpg
             this.murderThisCharacterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.muderCharacterMenuTextBox1});
             this.murderThisCharacterToolStripMenuItem.Name = "murderThisCharacterToolStripMenuItem";
-            this.murderThisCharacterToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.murderThisCharacterToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.murderThisCharacterToolStripMenuItem.Text = "Murder this character";
             this.murderThisCharacterToolStripMenuItem.Click += new System.EventHandler(this.murderThisCharacterToolStripMenuItem_Click);
             // 
@@ -2303,8 +2303,8 @@ namespace hist_mmorpg
             // 
             // armyContainer.Panel1
             // 
-            this.armyContainer.Panel1.Controls.Add(this.armyCombatPanel);
             this.armyContainer.Panel1.Controls.Add(this.armyManagementPanel);
+            this.armyContainer.Panel1.Controls.Add(this.armyCombatPanel);
             // 
             // armyContainer.Panel2
             // 
@@ -4088,7 +4088,7 @@ namespace hist_mmorpg
             this.label41.AutoSize = true;
             this.label41.Location = new System.Drawing.Point(168, 401);
             this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(105, 13);
+            this.label41.Size = new System.Drawing.Size(107, 13);
             this.label41.TabIndex = 39;
             this.label41.Text = "Trait 3 (ID and rating)";
             // 
@@ -4097,7 +4097,7 @@ namespace hist_mmorpg
             this.label40.AutoSize = true;
             this.label40.Location = new System.Drawing.Point(168, 375);
             this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(105, 13);
+            this.label40.Size = new System.Drawing.Size(107, 13);
             this.label40.TabIndex = 38;
             this.label40.Text = "Trait 2 (ID and rating)";
             // 
@@ -4106,7 +4106,7 @@ namespace hist_mmorpg
             this.label39.AutoSize = true;
             this.label39.Location = new System.Drawing.Point(168, 349);
             this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(105, 13);
+            this.label39.Size = new System.Drawing.Size(107, 13);
             this.label39.TabIndex = 37;
             this.label39.Text = "Trait 1 (ID and rating)";
             // 
@@ -4808,11 +4808,11 @@ namespace hist_mmorpg
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 735);
+            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.houseContainer);
             this.Controls.Add(this.meetingPlaceContainer);
             this.Controls.Add(this.royalGiftsContainer);
             this.Controls.Add(this.provinceContainer);
-            this.Controls.Add(this.armyContainer);
             this.Controls.Add(this.fiefsOwnedContainer);
             this.Controls.Add(this.fiefContainer);
             this.Controls.Add(this.travelContainer);

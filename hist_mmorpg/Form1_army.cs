@@ -220,7 +220,7 @@ namespace hist_mmorpg
         /// Disbands the specified army
         /// </summary>
         /// <param name="a">Army to be disbanded</param>
-        public void disbandArmy(Army a)
+        public void DisbandArmy(Army a)
         {
             // carry out functions associated with disband
             a.DisbandArmy();

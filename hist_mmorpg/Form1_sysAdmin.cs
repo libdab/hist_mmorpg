@@ -316,7 +316,7 @@ namespace hist_mmorpg
         /// and clearing any previously displayed data
         /// </summary>
         /// <param name="a">The Army to be displayed</param>
-        public void refreshArmyEdit(Army a = null)
+        public void RefreshArmyEdit(Army a = null)
         {
             // clear previous data
             this.DisableControls(this.adminEditArmyPanel);
