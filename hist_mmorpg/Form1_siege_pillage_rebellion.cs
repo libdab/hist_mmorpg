@@ -162,8 +162,8 @@ namespace hist_mmorpg
                 /* double keepLvl = this.calcStormKeepLevel(s);
                 double successChance = this.calcStormSuccess(keepLvl); */
                 // get battle values for both armies
-                uint[] battleValues = this.CalculateBattleValue(besieger, defenderGarrison, Convert.ToInt32(siegeLocation.keepLevel));
-                double successChance = this.CalcVictoryChance(battleValues[0], battleValues[1]);
+                uint[] battleValues = besieger.CalculateBattleValues(defenderGarrison, Convert.ToInt32(siegeLocation.keepLevel));
+                double successChance = Utility_Methods.CalcVictoryChance(battleValues[0], battleValues[1]);
                 siegeText += "- storm: " + successChance + "\r\n";
 
                 // chance of negotiated success
@@ -1022,8 +1022,8 @@ namespace hist_mmorpg
             string siegeDescription = "";
 
             // get STORM RESULT
-            uint[] battleValues = this.CalculateBattleValue(besiegingArmy, defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel), true);
-            stormSuccess = this.DecideBattleVictory(battleValues[0], battleValues[1]);
+            uint[] battleValues = besiegingArmy.CalculateBattleValues(defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel), true);
+            stormSuccess = Utility_Methods.DecideBattleVictory(battleValues[0], battleValues[1]);
 
             // KEEP DAMAGE
             // base damage to keep level (10%)
@@ -1297,8 +1297,8 @@ namespace hist_mmorpg
             string siegeDescription = "";
 
             // calculate success chance
-            uint[] battleValues = this.CalculateBattleValue(besieger, defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel));
-            double successChance = this.CalcVictoryChance(battleValues[0], battleValues[1]) / 2;
+            uint[] battleValues = besieger.CalculateBattleValues(defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel));
+            double successChance = Utility_Methods.CalcVictoryChance(battleValues[0], battleValues[1]) / 2;
 
             // generate random double 0-100 to see if negotiation a success
             double myRandomDouble = Utility_Methods.GetRandomDouble(100);

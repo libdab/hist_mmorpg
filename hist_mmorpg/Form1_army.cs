@@ -20,6 +20,7 @@ namespace hist_mmorpg
     /// </summary>
     partial class Form1
     {
+        /*
         /// <summary>
         /// Retrieves information for Army display screen
         /// </summary>
@@ -124,7 +125,7 @@ namespace hist_mmorpg
             armyText += "Sally value: " + a.combatOdds + "\r\n\r\n";
 
             return armyText;
-        }
+        } */
 
         /// <summary>
         /// Refreshes main Army display screen
@@ -235,57 +236,9 @@ namespace hist_mmorpg
         /// <param name="observer">The observer</param>
         private void ExamineArmiesInFief(Character observer)
         {
-            bool proceed = true;
-            int reconDays = 0;
+            bool proceed = observer.ChecksBefore_ExamineArmies();
 
-            // check if has minimum days
-            if (observer.days < 1)
-            {
-                proceed = false;
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show(observer.firstName + " " +  observer.familyName + " doesn't have enough days for this operation.");
-                }
-            }
-
-            // has minimum days
-            else
-            {
-                // see how long reconnaissance takes
-                reconDays = Globals_Game.myRand.Next(1, 4);
-
-                // check if runs out of time
-                if (observer.days < reconDays)
-                {
-                    proceed = false;
-
-                    // set days to 0
-                    observer.AdjustDays(observer.days);
-
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("Due to poor execution, " + observer.firstName + " " + observer.familyName + " has run out of time for this operation.");
-                    }
-                }
-
-                else
-                {
-                    // if observer NPC, remove from entourage if necessary
-                    if (observer is NonPlayerCharacter)
-                    {
-                        if ((observer as NonPlayerCharacter).inEntourage)
-                        {
-                            (observer as NonPlayerCharacter).inEntourage = false;
-                        }
-                    }
-
-                    // adjust days for recon
-                    observer.AdjustDays(reconDays);
-                }
-
-            }
-
-            // refresh display
+            // refresh display to show amended observer days
             if (Globals_Client.containerToView == this.armyContainer)
             {
                 this.RefreshArmyContainer(Globals_Client.armyToView);

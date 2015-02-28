@@ -1320,6 +1320,169 @@ namespace hist_mmorpg
             Globals_Game.armyMasterList.Remove(this.armyID);
         }
 
+        /// <summary>
+        /// Retrieves information for Army display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="a">Army for which information is to be displayed</param>
+        public string DisplayArmyData()
+        {
+            string armyText = "";
+            uint[] troopNumbers = this.troops;
+            Fief armyLocation = this.GetLocation();
+
+            // check if is garrison in a siege
+            string siegeID = this.CheckIfSiegeDefenderGarrison();
+            if (String.IsNullOrWhiteSpace(siegeID))
+            {
+                // check if is additional defender in a siege
+                siegeID = this.CheckIfSiegeDefenderAdditional();
+            }
+
+            // if is defender in a siege, indicate
+            if (!String.IsNullOrWhiteSpace(siegeID))
+            {
+                armyText += "NOTE: This army is currently UNDER SIEGE\r\n\r\n";
+            }
+
+            else
+            {
+                // check if is besieger in a siege
+                siegeID = this.CheckIfBesieger();
+
+                // if is besieger in a siege, indicate
+                if (!String.IsNullOrWhiteSpace(siegeID))
+                {
+                    armyText += "NOTE: This army is currently BESIEGING THIS FIEF\r\n\r\n";
+                }
+
+                // check if is siege in fief (but army not involved)
+                else
+                {
+                    if (!String.IsNullOrWhiteSpace(armyLocation.siege))
+                    {
+                        armyText += "NOTE: This fief is currently UNDER SIEGE\r\n\r\n";
+                    }
+                }
+            }
+
+            // ID
+            armyText += "ID: " + this.armyID + "\r\n\r\n";
+
+            // nationality
+            armyText += "Nationality: " + this.GetOwner().nationality.name + "\r\n\r\n";
+
+            // days left
+            armyText += "Days left: " + this.days + "\r\n\r\n";
+
+            // location
+            armyText += "Location: " + armyLocation.name + " (Province: " + armyLocation.province.name + ".  Kingdom: " + armyLocation.province.kingdom.name + ")\r\n\r\n";
+
+            // leader
+            Character armyLeader = this.GetLeader();
+
+            armyText += "Leader: ";
+
+            if (armyLeader == null)
+            {
+                armyText += "THIS ARMY HAS NO LEADER!  You should appoint one as soon as possible.";
+            }
+            else
+            {
+                armyText += armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")";
+            }
+            armyText += "\r\n\r\n";
+
+            // labels for troop types
+            string[] troopTypeLabels = new string[] { " - Knights: ", " - Men-at-Arms: ", " - Light Cavalry: ", " - Longbowmen: ", " - Crossbowmen: ", " - Foot: ", " - Rabble: " };
+
+            // display numbers for each troop type
+            for (int i = 0; i < troopNumbers.Length; i++)
+            {
+                armyText += troopTypeLabels[i] + troopNumbers[i];
+                armyText += "\r\n";
+            }
+            armyText += "   ==================\r\n";
+            armyText += " - TOTAL: " + this.CalcArmySize() + "\r\n\r\n";
+
+            // whether is maintained (and at what cost)
+            if (this.isMaintained)
+            {
+                uint armyCost = this.CalcArmySize() * 500;
+
+                armyText += "This army is currently being maintained (at a cost of £" + armyCost + ")\r\n\r\n";
+            }
+            else
+            {
+                armyText += "This army is NOT currently being maintained\r\n\r\n";
+            }
+
+            // aggression level
+            armyText += "Aggression level: " + this.aggression + "\r\n\r\n";
+
+            // sally value
+            armyText += "Sally value: " + this.combatOdds + "\r\n\r\n";
+
+            return armyText;
+        }
+
+        /// <summary>
+        /// Calculates battle values of both armies participating in a battle or siege
+        /// </summary>
+        /// <remarks>This method should be called by the attacking army</remarks>
+        /// <returns>uint[] containing battle values of attacking & defending armies</returns>
+        /// <param name="attacker">The attacking army</param>
+        /// <param name="defender">The defending army</param>
+        /// <param name="keepLvl">Keep level (if for a keep storm)</param>
+        /// <param name="isSiege">bool indicating if the circumstance is a siege storm</param>
+        public uint[] CalculateBattleValues(Army defender, int keepLvl = 0, bool isSiegeStorm = false)
+        {
+            uint[] battleValues = new uint[2];
+            double attackerLV = 0;
+            double defenderLV = 0;
+
+            // get leaders
+            Character attackerLeader = this.GetLeader();
+            Character defenderLeader = defender.GetLeader();
+
+            // get leadership values for each army leader
+            attackerLV = attackerLeader.GetLeadershipValue(isSiegeStorm);
+
+            // defender may not have leader
+            if (defenderLeader != null)
+            {
+                defenderLV = defenderLeader.GetLeadershipValue(isSiegeStorm);
+            }
+            else
+            {
+                defenderLV = 4;
+            }
+
+            // calculate battle modifier based on LVs
+            // determine highest/lowest of 2 LVs
+            double maxLV = Math.Max(attackerLV, defenderLV);
+            double minLV = Math.Min(attackerLV, defenderLV);
+            double battleModifier = maxLV / minLV;
+
+            // get base combat value for each army
+            uint attackerCV = Convert.ToUInt32(this.CalculateCombatValue());
+            uint defenderCV = Convert.ToUInt32(defender.CalculateCombatValue(keepLvl));
+
+            // apply battle modifer to the army CV corresponding to the highest LV
+            if (attackerLV == maxLV)
+            {
+                attackerCV = Convert.ToUInt32(attackerCV * battleModifier);
+            }
+            else
+            {
+                defenderCV = Convert.ToUInt32(defenderCV * battleModifier);
+            }
+
+            battleValues[0] = attackerCV;
+            battleValues[1] = defenderCV;
+
+            return battleValues;
+        }
 
     }
 }

@@ -3151,6 +3151,65 @@ namespace hist_mmorpg
             return myArmies;
         }
 
+        /// <summary>
+        /// Preforms conditional checks prior to examining armies in a fief
+        /// </summary>
+        /// <returns>bool indicating whether to proceed with examination</returns>
+        public bool ChecksBefore_ExamineArmies()
+        {
+            bool proceed = true;
+            int reconDays = 0;
+
+            // check if has minimum days
+            if (this.days < 1)
+            {
+                proceed = false;
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(this.firstName + " " + this.familyName + " doesn't have enough days for this operation.");
+                }
+            }
+
+            // has minimum days
+            else
+            {
+                // see how long reconnaissance takes
+                reconDays = Globals_Game.myRand.Next(1, 4);
+
+                // check if runs out of time
+                if (this.days < reconDays)
+                {
+                    proceed = false;
+
+                    // set days to 0
+                    this.AdjustDays(this.days);
+
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Due to poor execution, " + this.firstName + " " + this.familyName + " has run out of time for this operation.");
+                    }
+                }
+
+                else
+                {
+                    // if observer NPC, remove from entourage if necessary
+                    if (this is NonPlayerCharacter)
+                    {
+                        if ((this as NonPlayerCharacter).inEntourage)
+                        {
+                            (this as NonPlayerCharacter).inEntourage = false;
+                        }
+                    }
+
+                    // adjust days for recon
+                    this.AdjustDays(reconDays);
+                }
+
+            }
+
+            return proceed;
+        }
+
     }
 
     /// <summary>

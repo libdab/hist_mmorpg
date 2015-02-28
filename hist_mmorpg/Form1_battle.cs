@@ -20,6 +20,7 @@ namespace hist_mmorpg
     /// </summary>
     partial class Form1
     {
+        /*
         /// <summary>
         /// Calculates battle values of both armies participating in a battle or siege
         /// </summary>
@@ -163,7 +164,7 @@ namespace hist_mmorpg
         public double CalcVictoryChance(uint attackerValue, uint defenderValue)
         {
             return (attackerValue / (Convert.ToDouble(attackerValue + defenderValue))) * 100;
-        }
+        } */
 
         /// <summary>
         /// Calculates casualties from a battle for both sides
@@ -496,7 +497,7 @@ namespace hist_mmorpg
             }
 
             // get battle values for both armies
-            battleValues = this.CalculateBattleValue(attacker, defender);
+            battleValues = attacker.CalculateBattleValues(defender);
 
             // check if attacker has managed to bring defender to battle
             // case 1: defending army sallies during siege to attack besieger = battle always occurs
@@ -526,7 +527,7 @@ namespace hist_mmorpg
                     // if not, check for battle
                     else
                     {
-                        battleHasCommenced = this.BringToBattle(battleValues[0], battleValues[1], circumstance);
+                        battleHasCommenced = Utility_Methods.BringToBattle(battleValues[0], battleValues[1], circumstance);
 
                         if (!battleHasCommenced)
                         {
@@ -544,7 +545,7 @@ namespace hist_mmorpg
             // otherwise, check to see if the attacker can bring the defender to battle
             else
             {
-                battleHasCommenced = this.BringToBattle(battleValues[0], battleValues[1], circumstance);
+                battleHasCommenced = Utility_Methods.BringToBattle(battleValues[0], battleValues[1], circumstance);
 
                 if (!battleHasCommenced)
                 {
@@ -556,7 +557,7 @@ namespace hist_mmorpg
             {
                 // WHO HAS WON?
                 // calculate if attacker has won
-                attackerVictorious = this.DecideBattleVictory(battleValues[0], battleValues[1]);
+                attackerVictorious = Utility_Methods.DecideBattleVictory(battleValues[0], battleValues[1]);
 
                 // UPDATE STATURE
                 // get winner and loser
