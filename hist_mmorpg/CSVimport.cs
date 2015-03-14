@@ -1,41 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
+using System.IO;
 using System.Windows.Forms;
-using System.Xml;
 using QuickGraph;
-using CorrugatedIron;
-using CorrugatedIron.Models;
 
 namespace hist_mmorpg
 {
-    /// <summary>
-    /// Partial class for Form1, containing functionality specific to importing from CSV file
-    /// </summary>
-    partial class Form1
+    public static class CSVimport
     {
-        /*
         /// <summary>
         /// Creates game objects necessary for a new game, mainly using data imported from a CSV file
         /// </summary>
         /// <param name="objectDataFile">Name of file containing game object CSV data</param>
         /// <param name="mapDataFile">Name of file containing map CSV data</param>
-        public void NewGameFromCSV(string objectDataFile, string mapDataFile, uint start = 1337)
+        public static void NewGameFromCSV(string objectDataFile, string mapDataFile, uint start = 1337)
         {
             // create GameClock
             Globals_Game.clock = new GameClock("clock_1", start);
 
             // load game objects from CSV
-            this.ImportFromCSV(objectDataFile, synch: true, toDatabase: false);
+            CSVimport.ImportFromCSV(objectDataFile, synch: true, toDatabase: false);
 
             // load/create map from CSV
-            this.CreateMapEdgesFromCSV(mapDataFile, toDatabase: false);
+            CSVimport.CreateMapEdgesFromCSV(mapDataFile, toDatabase: false);
 
             // POPULATE GLOBALS
             // populate Globals_Server.gameTypes
@@ -196,7 +185,7 @@ namespace hist_mmorpg
         /// <param name="bucketID">The name of the database bucket in which to store the game objects</param>
         /// <param name="synch">bool indicating whether or not to synch the game objects' properties</param>
         /// <param name="toDatabase">bool indicating whether or not to save the game objects to database or game</param>
-        public bool ImportFromCSV(string filename, string bucketID = null, bool synch = false, bool toDatabase = true)
+        public static bool ImportFromCSV(string filename, string bucketID = null, bool synch = false, bool toDatabase = true)
         {
             bool inputFileError = false;
             string lineIn;
@@ -274,7 +263,7 @@ namespace hist_mmorpg
                     if (lineParts[0].Equals("fief"))
                     {
                         Fief_Serialised thisFiefSer = null;
-                        thisFiefSer = this.ImportFromCSV_Fief(lineParts, lineNum);
+                        thisFiefSer = CSVimport.ImportFromCSV_Fief(lineParts, lineNum);
 
                         if (thisFiefSer != null)
                         {
@@ -297,7 +286,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("province"))
                     {
                         Province_Serialised thisProvSer = null;
-                        thisProvSer = this.ImportFromCSV_Prov(lineParts, lineNum);
+                        thisProvSer = CSVimport.ImportFromCSV_Prov(lineParts, lineNum);
 
                         if (thisProvSer != null)
                         {
@@ -320,7 +309,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("kingdom"))
                     {
                         Kingdom_Serialised thisKingSer = null;
-                        thisKingSer = this.ImportFromCSV_Kingdom(lineParts, lineNum);
+                        thisKingSer = CSVimport.ImportFromCSV_Kingdom(lineParts, lineNum);
 
                         if (thisKingSer != null)
                         {
@@ -343,7 +332,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("pc"))
                     {
                         PlayerCharacter_Serialised thisPcSer = null;
-                        thisPcSer = this.ImportFromCSV_PC(lineParts, lineNum);
+                        thisPcSer = CSVimport.ImportFromCSV_PC(lineParts, lineNum);
 
                         if (thisPcSer != null)
                         {
@@ -366,7 +355,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("npc"))
                     {
                         NonPlayerCharacter_Serialised thisNpcSer = null;
-                        thisNpcSer = this.importFromCSV_NPC(lineParts, lineNum);
+                        thisNpcSer = CSVimport.importFromCSV_NPC(lineParts, lineNum);
 
                         if (thisNpcSer != null)
                         {
@@ -390,7 +379,7 @@ namespace hist_mmorpg
                     {
                         Trait thisTrait = null;
 
-                        thisTrait = this.ImportFromCSV_Trait(lineParts, lineNum);
+                        thisTrait = CSVimport.ImportFromCSV_Trait(lineParts, lineNum);
 
                         if (thisTrait != null)
                         {
@@ -413,7 +402,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("army"))
                     {
                         Army thisArmy = null;
-                        thisArmy = this.ImportFromCSV_Army(lineParts, lineNum);
+                        thisArmy = CSVimport.ImportFromCSV_Army(lineParts, lineNum);
 
                         if (thisArmy != null)
                         {
@@ -436,7 +425,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("language"))
                     {
                         Language_Serialised thisLangSer = null;
-                        thisLangSer = this.ImportFromCSV_Language(lineParts, lineNum);
+                        thisLangSer = CSVimport.ImportFromCSV_Language(lineParts, lineNum);
 
                         if (thisLangSer != null)
                         {
@@ -459,7 +448,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("baseLanguage"))
                     {
                         BaseLanguage thisBaseLang = null;
-                        thisBaseLang = this.ImportFromCSV_BaseLanguage(lineParts, lineNum);
+                        thisBaseLang = CSVimport.ImportFromCSV_BaseLanguage(lineParts, lineNum);
 
                         if (thisBaseLang != null)
                         {
@@ -482,7 +471,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("nationality"))
                     {
                         Nationality thisNat = null;
-                        thisNat = this.ImportFromCSV_Nationality(lineParts, lineNum);
+                        thisNat = CSVimport.ImportFromCSV_Nationality(lineParts, lineNum);
 
                         if (thisNat != null)
                         {
@@ -506,7 +495,7 @@ namespace hist_mmorpg
                     {
                         Rank thisRank = null;
 
-                        thisRank = this.ImportFromCSV_Rank(lineParts, lineNum);
+                        thisRank = CSVimport.ImportFromCSV_Rank(lineParts, lineNum);
 
                         if (thisRank != null)
                         {
@@ -529,7 +518,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("position"))
                     {
                         Position_Serialised thisPosSer = null;
-                        thisPosSer = this.ImportFromCSV_Position(lineParts, lineNum);
+                        thisPosSer = CSVimport.ImportFromCSV_Position(lineParts, lineNum);
 
                         if (thisPosSer != null)
                         {
@@ -552,7 +541,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("siege"))
                     {
                         Siege thisSiege = null;
-                        thisSiege = this.ImportFromCSV_Siege(lineParts, lineNum);
+                        thisSiege = CSVimport.ImportFromCSV_Siege(lineParts, lineNum);
 
                         if (thisSiege != null)
                         {
@@ -575,7 +564,7 @@ namespace hist_mmorpg
                     else if (lineParts[0].Equals("terrain"))
                     {
                         Terrain thisTerr = null;
-                        thisTerr = this.ImportFromCSV_Terrain(lineParts, lineNum);
+                        thisTerr = CSVimport.ImportFromCSV_Terrain(lineParts, lineNum);
 
                         if (thisTerr != null)
                         {
@@ -626,7 +615,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "fiefKeys", fiefKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "fiefKeys", fiefKeyList);
                 }
 
                 else
@@ -642,7 +631,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "provKeys", provKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "provKeys", provKeyList);
                 }
 
                 else
@@ -658,7 +647,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "kingKeys", kingKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "kingKeys", kingKeyList);
                 }
 
                 else
@@ -674,7 +663,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "pcKeys", pcKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "pcKeys", pcKeyList);
                 }
 
                 else
@@ -690,7 +679,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "npcKeys", npcKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "npcKeys", npcKeyList);
                 }
 
                 else
@@ -706,7 +695,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "traitKeys", traitKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "traitKeys", traitKeyList);
                 }
 
                 else
@@ -722,7 +711,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "armyKeys", armyKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "armyKeys", armyKeyList);
                 }
 
                 else
@@ -738,7 +727,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "langKeys", langKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "langKeys", langKeyList);
                 }
 
                 else
@@ -754,7 +743,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "baseLangKeys", baseLangKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "baseLangKeys", baseLangKeyList);
                 }
 
                 else
@@ -770,7 +759,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "nationalityKeys", natKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "nationalityKeys", natKeyList);
                 }
 
                 else
@@ -786,7 +775,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "rankKeys", rankKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "rankKeys", rankKeyList);
                 }
 
                 else
@@ -802,7 +791,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "positionKeys", posKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "positionKeys", posKeyList);
                 }
 
                 else
@@ -818,7 +807,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "siegeKeys", siegeKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "siegeKeys", siegeKeyList);
                 }
 
                 else
@@ -834,7 +823,7 @@ namespace hist_mmorpg
                 if (toDatabase)
                 {
                     // save keylist to database
-                    this.DatabaseWrite_KeyList(bucketID, "terrKeys", terrKeyList);
+                    DatabaseWrite.DatabaseWrite_KeyList(bucketID, "terrKeys", terrKeyList);
                 }
 
                 else
@@ -853,7 +842,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Trait> thisEntry in traitMasterList)
                     {
-                        this.DatabaseWrite_Trait(bucketID, thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_Trait(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -871,7 +860,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, BaseLanguage> thisEntry in baseLanguageMasterList)
                     {
-                        this.DatabaseWrite_BaseLanguage(bucketID, thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_BaseLanguage(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -889,7 +878,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Nationality> thisEntry in nationalityMasterList)
                     {
-                        this.DatabaseWrite_Nationality(bucketID, thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_Nationality(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -897,7 +886,7 @@ namespace hist_mmorpg
                 {
                     Globals_Game.nationalityMasterList = nationalityMasterList;
                 }
-           }
+            }
 
             // rank
             if (rankMasterList.Count > 0)
@@ -907,7 +896,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<byte, Rank> thisEntry in rankMasterList)
                     {
-                        this.DatabaseWrite_Rank(bucketID, thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_Rank(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -925,7 +914,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Terrain> thisEntry in terrainMasterList)
                     {
-                        this.DatabaseWrite_Terrain(bucketID, thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_Terrain(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -943,7 +932,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Language_Serialised> thisEntry in languageMasterList)
                     {
-                        this.DatabaseWrite_Language(bucketID, ls: thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_Language(bucketID, ls: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -953,7 +942,7 @@ namespace hist_mmorpg
                     foreach (KeyValuePair<string, Language_Serialised> thisEntry in languageMasterList)
                     {
                         // de-serialise 
-                        newObject = this.Language_deserialise(thisEntry.Value);
+                        newObject = DatabaseRead.Language_deserialise(thisEntry.Value);
 
                         // add to Globals_Game masterList
                         Globals_Game.languageMasterList.Add(newObject.id, newObject);
@@ -969,7 +958,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<byte, Position_Serialised> thisEntry in positionMasterList)
                     {
-                        this.DatabaseWrite_Position(bucketID, ps: thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_Position(bucketID, ps: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -979,7 +968,7 @@ namespace hist_mmorpg
                     foreach (KeyValuePair<byte, Position_Serialised> thisEntry in positionMasterList)
                     {
                         // de-serialise 
-                        newObject = this.Position_deserialise(thisEntry.Value);
+                        newObject = DatabaseRead.Position_deserialise(thisEntry.Value);
 
                         // add to Globals_Game masterList
                         Globals_Game.positionMasterList.Add(newObject.id, newObject);
@@ -992,7 +981,7 @@ namespace hist_mmorpg
             if (synch)
             {
                 // pass objects for resynching/saving
-                this.SynchGameObjectCollections(fiefMasterList, pcMasterList, npcMasterList, provinceMasterList,
+                CSVimport.SynchGameObjectCollections(fiefMasterList, pcMasterList, npcMasterList, provinceMasterList,
                     kingdomMasterList, siegeMasterList, armyMasterList, bucketID, toDatabase);
             }
 
@@ -1007,7 +996,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, Army> thisEntry in armyMasterList)
                         {
-                            this.DatabaseWrite_Army(bucketID, thisEntry.Value);
+                            DatabaseWrite.DatabaseWrite_Army(bucketID, thisEntry.Value);
                         }
                     }
                     // save to game
@@ -1025,7 +1014,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, Siege> thisEntry in siegeMasterList)
                         {
-                            this.DatabaseWrite_Siege(bucketID, thisEntry.Value);
+                            DatabaseWrite.DatabaseWrite_Siege(bucketID, thisEntry.Value);
                         }
                     }
                     // save to game
@@ -1043,7 +1032,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, NonPlayerCharacter_Serialised> thisEntry in npcMasterList)
                         {
-                            this.DatabaseWrite_NPC(bucketID, npcs: thisEntry.Value);
+                            DatabaseWrite.DatabaseWrite_NPC(bucketID, npcs: thisEntry.Value);
                         }
                     }
                     // save to game
@@ -1053,7 +1042,7 @@ namespace hist_mmorpg
                         foreach (KeyValuePair<string, NonPlayerCharacter_Serialised> thisEntry in npcMasterList)
                         {
                             // de-serialise 
-                            newObject = this.NPC_deserialise(thisEntry.Value);
+                            newObject = DatabaseRead.NPC_deserialise(thisEntry.Value);
 
                             // add to Globals_Game masterList
                             Globals_Game.npcMasterList.Add(newObject.charID, newObject);
@@ -1069,7 +1058,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, PlayerCharacter_Serialised> thisEntry in pcMasterList)
                         {
-                            this.DatabaseWrite_PC(bucketID, pcs: thisEntry.Value);
+                            DatabaseWrite.DatabaseWrite_PC(bucketID, pcs: thisEntry.Value);
                         }
                     }
                     // save to game
@@ -1079,7 +1068,7 @@ namespace hist_mmorpg
                         foreach (KeyValuePair<string, PlayerCharacter_Serialised> thisEntry in pcMasterList)
                         {
                             // de-serialise 
-                            newObject = this.PC_deserialise(thisEntry.Value);
+                            newObject = DatabaseRead.PC_deserialise(thisEntry.Value);
 
                             // add to Globals_Game masterList
                             Globals_Game.pcMasterList.Add(newObject.charID, newObject);
@@ -1095,7 +1084,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, Kingdom_Serialised> thisEntry in kingdomMasterList)
                         {
-                            this.DatabaseWrite_Kingdom(bucketID, ks: thisEntry.Value);
+                            DatabaseWrite.DatabaseWrite_Kingdom(bucketID, ks: thisEntry.Value);
                         }
                     }
                     // save to game
@@ -1105,7 +1094,7 @@ namespace hist_mmorpg
                         foreach (KeyValuePair<string, Kingdom_Serialised> thisEntry in kingdomMasterList)
                         {
                             // de-serialise 
-                            newObject = this.Kingdom_deserialise(thisEntry.Value);
+                            newObject = DatabaseRead.Kingdom_deserialise(thisEntry.Value);
 
                             // add to Globals_Game masterList
                             Globals_Game.kingdomMasterList.Add(newObject.id, newObject);
@@ -1121,7 +1110,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, Province_Serialised> thisEntry in provinceMasterList)
                         {
-                            this.DatabaseWrite_Province(bucketID, ps: thisEntry.Value);
+                            DatabaseWrite.DatabaseWrite_Province(bucketID, ps: thisEntry.Value);
                         }
                     }
                     // save to game
@@ -1131,7 +1120,7 @@ namespace hist_mmorpg
                         foreach (KeyValuePair<string, Province_Serialised> thisEntry in provinceMasterList)
                         {
                             // de-serialise 
-                            newObject = this.Province_deserialise(thisEntry.Value);
+                            newObject = DatabaseRead.Province_deserialise(thisEntry.Value);
 
                             // add to Globals_Game masterList
                             Globals_Game.provinceMasterList.Add(newObject.id, newObject);
@@ -1147,7 +1136,7 @@ namespace hist_mmorpg
                     {
                         foreach (KeyValuePair<string, Fief_Serialised> thisEntry in fiefMasterList)
                         {
-                            this.DatabaseWrite_Fief(bucketID, fs: thisEntry.Value);
+                            DatabaseWrite.DatabaseWrite_Fief(bucketID, fs: thisEntry.Value);
                         }
                     }
                     // save to game
@@ -1157,7 +1146,7 @@ namespace hist_mmorpg
                         foreach (KeyValuePair<string, Fief_Serialised> thisEntry in fiefMasterList)
                         {
                             // de-serialise 
-                            newObject = this.Fief_deserialise(thisEntry.Value);
+                            newObject = DatabaseRead.Fief_deserialise(thisEntry.Value);
 
                             // add to Globals_Game masterList
                             Globals_Game.fiefMasterList.Add(newObject.id, newObject);
@@ -1174,7 +1163,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>Fief_Serialised object</returns>
         /// <param name="fiefData">string[] holding source data</param>
-        public Fief_Serialised ImportFromCSV_Fief(string[] fiefData, int lineNum)
+        public static Fief_Serialised ImportFromCSV_Fief(string[] fiefData, int lineNum)
         {
             Fief_Serialised thisFiefSer = null;
 
@@ -1394,7 +1383,7 @@ namespace hist_mmorpg
         /// <returns>Province_Serialised object</returns>
         /// <param name="provData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Province_Serialised ImportFromCSV_Prov(string[] provData, int lineNum)
+        public static Province_Serialised ImportFromCSV_Prov(string[] provData, int lineNum)
         {
             Province_Serialised thisProvSer = null;
 
@@ -1500,7 +1489,7 @@ namespace hist_mmorpg
         /// <returns>Kingdom_Serialised object</returns>
         /// <param name="kingData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Kingdom_Serialised ImportFromCSV_Kingdom(string[] kingData, int lineNum)
+        public static Kingdom_Serialised ImportFromCSV_Kingdom(string[] kingData, int lineNum)
         {
             Kingdom_Serialised thisKingSer = null;
 
@@ -1602,7 +1591,7 @@ namespace hist_mmorpg
         /// <returns>PlayerCharacter_Serialised object</returns>
         /// <param name="pcData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public PlayerCharacter_Serialised ImportFromCSV_PC(string[] pcData, int lineNum)
+        public static PlayerCharacter_Serialised ImportFromCSV_PC(string[] pcData, int lineNum)
         {
             PlayerCharacter_Serialised thisPcSer = null;
 
@@ -1892,7 +1881,7 @@ namespace hist_mmorpg
         /// <returns>NonPlayerCharacter_Serialised object</returns>
         /// <param name="npcData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public NonPlayerCharacter_Serialised importFromCSV_NPC(string[] npcData, int lineNum)
+        public static NonPlayerCharacter_Serialised importFromCSV_NPC(string[] npcData, int lineNum)
         {
             NonPlayerCharacter_Serialised thisNpcSer = null;
 
@@ -2089,7 +2078,7 @@ namespace hist_mmorpg
         /// <returns>Trait object</returns>
         /// <param name="traitData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Trait ImportFromCSV_Trait(string[] traitData, int lineNum)
+        public static Trait ImportFromCSV_Trait(string[] traitData, int lineNum)
         {
             Trait thisTrait = null;
 
@@ -2214,7 +2203,7 @@ namespace hist_mmorpg
         /// <returns>Army object</returns>
         /// <param name="armyData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Army ImportFromCSV_Army(string[] armyData, int lineNum)
+        public static Army ImportFromCSV_Army(string[] armyData, int lineNum)
         {
             Army thisArmy = null;
 
@@ -2325,7 +2314,7 @@ namespace hist_mmorpg
         /// <returns>Language_Serialised object</returns>
         /// <param name="langData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Language_Serialised ImportFromCSV_Language(string[] langData, int lineNum)
+        public static Language_Serialised ImportFromCSV_Language(string[] langData, int lineNum)
         {
             Language_Serialised thisLangSer = null;
 
@@ -2413,7 +2402,7 @@ namespace hist_mmorpg
         /// <returns>BaseLanguage object</returns>
         /// <param name="baseLangData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public BaseLanguage ImportFromCSV_BaseLanguage(string[] baseLangData, int lineNum)
+        public static BaseLanguage ImportFromCSV_BaseLanguage(string[] baseLangData, int lineNum)
         {
             BaseLanguage thisBaseLang = null;
 
@@ -2501,7 +2490,7 @@ namespace hist_mmorpg
         /// <returns>Nationality object</returns>
         /// <param name="natData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Nationality ImportFromCSV_Nationality(string[] natData, int lineNum)
+        public static Nationality ImportFromCSV_Nationality(string[] natData, int lineNum)
         {
             Nationality thisNat = null;
 
@@ -2589,7 +2578,7 @@ namespace hist_mmorpg
         /// <returns>Rank object</returns>
         /// <param name="rankData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Rank ImportFromCSV_Rank(string[] rankData, int lineNum)
+        public static Rank ImportFromCSV_Rank(string[] rankData, int lineNum)
         {
             Rank thisRank = null;
 
@@ -2716,7 +2705,7 @@ namespace hist_mmorpg
         /// <returns>Position_Serialised object</returns>
         /// <param name="posData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Position_Serialised ImportFromCSV_Position(string[] posData, int lineNum)
+        public static Position_Serialised ImportFromCSV_Position(string[] posData, int lineNum)
         {
             Position_Serialised thisPosSer = null;
 
@@ -2843,7 +2832,7 @@ namespace hist_mmorpg
         /// <returns>Siege object</returns>
         /// <param name="siegeData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Siege ImportFromCSV_Siege(string[] siegeData, int lineNum)
+        public static Siege ImportFromCSV_Siege(string[] siegeData, int lineNum)
         {
             Siege thisSiege = null;
 
@@ -2971,7 +2960,7 @@ namespace hist_mmorpg
         /// <returns>Terrain object</returns>
         /// <param name="terrData">string[] holding source data</param>
         /// <param name="lineNum">Line number in source file</param>
-        public Terrain ImportFromCSV_Terrain(string[] terrData, int lineNum)
+        public static Terrain ImportFromCSV_Terrain(string[] terrData, int lineNum)
         {
             Terrain thisTerr = null;
 
@@ -2981,7 +2970,7 @@ namespace hist_mmorpg
                 {
                     throw new InvalidDataException("Incorrect number of data parts for Terrain object.");
                 }
-                
+
                 // create Terrain object
                 thisTerr = new Terrain(terrData[1], terrData[2], Convert.ToDouble(terrData[3]));
             }
@@ -3065,7 +3054,7 @@ namespace hist_mmorpg
         /// <param name="armyMasterList">Army objects</param>
         /// <param name="bucketID">The name of the database bucket in which to store the game objects</param>
         /// <param name="toDatabase">bool indicating whether or not to save the game objects to database or game</param>
-        public void SynchGameObjectCollections(Dictionary<string, Fief_Serialised> fiefMasterList, Dictionary<string,
+        public static void SynchGameObjectCollections(Dictionary<string, Fief_Serialised> fiefMasterList, Dictionary<string,
             PlayerCharacter_Serialised> pcMasterList, Dictionary<string, NonPlayerCharacter_Serialised> npcMasterList,
             Dictionary<string, Province_Serialised> provinceMasterList, Dictionary<string, Kingdom_Serialised> kingdomMasterList,
             Dictionary<string, Siege> siegeMasterList, Dictionary<string, Army> armyMasterList, string bucketID, bool toDatabase = true)
@@ -3106,14 +3095,14 @@ namespace hist_mmorpg
                         thisOwner = pcMasterList[fiefEntry.Value.owner];
                     }
 
-					// put fief in owner's ownedFiefs
-					if (thisOwner != null)
-					{
-						if (!thisOwner.ownedFiefs.Contains(fiefEntry.Key))
-						{
-							thisOwner.ownedFiefs.Add(fiefEntry.Key);
-						}
-					}
+                    // put fief in owner's ownedFiefs
+                    if (thisOwner != null)
+                    {
+                        if (!thisOwner.ownedFiefs.Contains(fiefEntry.Key))
+                        {
+                            thisOwner.ownedFiefs.Add(fiefEntry.Key);
+                        }
+                    }
                 }
             }
 
@@ -3412,7 +3401,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Army> thisEntry in armyMasterList)
                     {
-                        this.DatabaseWrite_Army(bucketID, thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_Army(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3430,7 +3419,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Siege> thisEntry in siegeMasterList)
                     {
-                        this.DatabaseWrite_Siege(bucketID, thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_Siege(bucketID, thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3448,7 +3437,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, NonPlayerCharacter_Serialised> thisEntry in npcMasterList)
                     {
-                        this.DatabaseWrite_NPC(bucketID, npcs: thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_NPC(bucketID, npcs: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3474,7 +3463,7 @@ namespace hist_mmorpg
                         }
 
                         // de-serialise 
-                        newObject = this.NPC_deserialise(thisEntry.Value);
+                        newObject = DatabaseRead.NPC_deserialise(thisEntry.Value);
 
                         // add to Globals_Game masterList
                         Globals_Game.npcMasterList.Add(newObject.charID, newObject);
@@ -3490,7 +3479,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, PlayerCharacter_Serialised> thisEntry in pcMasterList)
                     {
-                        this.DatabaseWrite_PC(bucketID, pcs: thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_PC(bucketID, pcs: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3516,7 +3505,7 @@ namespace hist_mmorpg
                         }
 
                         // de-serialise 
-                        newObject = this.PC_deserialise(thisEntry.Value);
+                        newObject = DatabaseRead.PC_deserialise(thisEntry.Value);
 
                         // add to Globals_Game masterList
                         Globals_Game.pcMasterList.Add(newObject.charID, newObject);
@@ -3532,7 +3521,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Kingdom_Serialised> thisEntry in kingdomMasterList)
                     {
-                        this.DatabaseWrite_Kingdom(bucketID, ks: thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_Kingdom(bucketID, ks: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3542,7 +3531,7 @@ namespace hist_mmorpg
                     foreach (KeyValuePair<string, Kingdom_Serialised> thisEntry in kingdomMasterList)
                     {
                         // de-serialise 
-                        newObject = this.Kingdom_deserialise(thisEntry.Value);
+                        newObject = DatabaseRead.Kingdom_deserialise(thisEntry.Value);
 
                         // add to Globals_Game masterList
                         Globals_Game.kingdomMasterList.Add(newObject.id, newObject);
@@ -3558,7 +3547,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Province_Serialised> thisEntry in provinceMasterList)
                     {
-                        this.DatabaseWrite_Province(bucketID, ps: thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_Province(bucketID, ps: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3568,7 +3557,7 @@ namespace hist_mmorpg
                     foreach (KeyValuePair<string, Province_Serialised> thisEntry in provinceMasterList)
                     {
                         // de-serialise 
-                        newObject = this.Province_deserialise(thisEntry.Value);
+                        newObject = DatabaseRead.Province_deserialise(thisEntry.Value);
 
                         // add to Globals_Game masterList
                         Globals_Game.provinceMasterList.Add(newObject.id, newObject);
@@ -3584,7 +3573,7 @@ namespace hist_mmorpg
                 {
                     foreach (KeyValuePair<string, Fief_Serialised> thisEntry in fiefMasterList)
                     {
-                        this.DatabaseWrite_Fief(bucketID, fs: thisEntry.Value);
+                        DatabaseWrite.DatabaseWrite_Fief(bucketID, fs: thisEntry.Value);
                     }
                 }
                 // save to game
@@ -3594,7 +3583,7 @@ namespace hist_mmorpg
                     foreach (KeyValuePair<string, Fief_Serialised> thisEntry in fiefMasterList)
                     {
                         // de-serialise 
-                        newObject = this.Fief_deserialise(thisEntry.Value);
+                        newObject = DatabaseRead.Fief_deserialise(thisEntry.Value);
 
                         // add to Globals_Game masterList
                         Globals_Game.fiefMasterList.Add(newObject.id, newObject);
@@ -3611,7 +3600,7 @@ namespace hist_mmorpg
         /// <param name="filename">The name of the CSV file</param>
         /// <param name="bucketID">The name of the database bucket in which to store the game objects</param>
         /// <param name="toDatabase">bool indicating whether or not to save the game objects to database or game</param>
-        public bool CreateMapEdgesFromCSV(string filename, string bucketID = null, bool toDatabase = true)
+        public static bool CreateMapEdgesFromCSV(string filename, string bucketID = null, bool toDatabase = true)
         {
             bool success = true;
             List<TaggedEdge<string, string>> mapEdges = new List<TaggedEdge<string, string>>();
@@ -3684,18 +3673,18 @@ namespace hist_mmorpg
             // create list of map edges from array
             if (customLinks.Count > 0)
             {
-                mapEdges = this.CreateMapEdgesList(mapHexes, customLinks: customLinks);
+                mapEdges = CSVimport.CreateMapEdgesList(mapHexes, customLinks: customLinks);
             }
             else
             {
-                mapEdges = this.CreateMapEdgesList(mapHexes);
+                mapEdges = CSVimport.CreateMapEdgesList(mapHexes);
             }
 
             // SAVE TO DATABASE OR CREATE MAP FOR NEW GAME
             if (toDatabase)
             {
                 // save to database
-                this.DatabaseWrite_MapEdges(bucketID, edges: mapEdges);
+                DatabaseWrite.DatabaseWrite_MapEdges(bucketID, edges: mapEdges);
             }
 
             else
@@ -3703,7 +3692,7 @@ namespace hist_mmorpg
                 HexMapGraph newMap = new HexMapGraph();
 
                 // creat map edges array from list
-                TaggedEdge<Fief, string>[] edgesArray = this.EdgeCollection_deserialise(mapEdges);
+                TaggedEdge<Fief, string>[] edgesArray = DatabaseRead.EdgeCollection_deserialise(mapEdges);
 
                 // create map from edges array
                 newMap = new HexMapGraph("map_1", edgesArray);
@@ -3721,7 +3710,7 @@ namespace hist_mmorpg
         /// <returns>List containing map edges</returns>
         /// <param name="mapArray">string[,] containing main map data</param>
         /// <param name="customLinks">List(string) containing custom hex links (optional)</param>
-        public List<TaggedEdge<string, string>> CreateMapEdgesList(string[,] mapArray, List<string[]> customLinks = null)
+        public static List<TaggedEdge<string, string>> CreateMapEdgesList(string[,] mapArray, List<string[]> customLinks = null)
         {
             List<TaggedEdge<string, string>> edgesOut = new List<TaggedEdge<string, string>>();
             TaggedEdge<string, string> thisEdge = null;
@@ -3821,6 +3810,6 @@ namespace hist_mmorpg
             }
 
             return edgesOut;
-        } */
+        }
     }
 }

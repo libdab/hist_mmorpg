@@ -20,6 +20,7 @@ namespace hist_mmorpg
     /// </summary>
     public partial class Form1 : Form, Game_Observer
     {
+        /*
 		/// <summary>
 		/// Holds target RiakCluster 
 		/// </summary>
@@ -28,6 +29,7 @@ namespace hist_mmorpg
         /// Holds RiakClient to communicate with RiakCluster
 		/// </summary>
 		RiakClient rClient;
+         */
 
         /// <summary>
         /// Constructor for Form1
@@ -41,8 +43,8 @@ namespace hist_mmorpg
             InitializeComponent();
 
 			// initialise Riak elements
-			rCluster = (RiakCluster)RiakCluster.FromConfig("riakConfig");
-			rClient = (RiakClient)rCluster.CreateClient();
+			Globals_Server.rCluster = (RiakCluster)RiakCluster.FromConfig("riakConfig");
+            Globals_Server.rClient = (RiakClient)Globals_Server.rCluster.CreateClient();
 
             // initialise game objects
             this.InitGameObjects("Char_158", gameID: "fromCSV", objectDataFile: "gameObjects.csv", mapDataFile: "map.csv",
@@ -80,7 +82,7 @@ namespace hist_mmorpg
             if (Globals_Game.loadFromDatabase)
 			{
 				// load objects
-				this.DatabaseRead (gameID);
+                DatabaseRead.DatabaseReadAll(gameID);
 
                 dataLoaded = true;
 			}
@@ -91,7 +93,7 @@ namespace hist_mmorpg
                 if (!String.IsNullOrWhiteSpace(objectDataFile))
                 {
                     // load objects
-                    this.NewGameFromCSV(objectDataFile, mapDataFile, start);
+                    CSVimport.NewGameFromCSV(objectDataFile, mapDataFile, start);
 
                     // initialise Globals_Game.victoryData
                     this.SynchroniseVictoryData();
@@ -1283,7 +1285,8 @@ namespace hist_mmorpg
                 for (int i = 0; i < disbandedArmies.Count; i++)
                 {
                     // disband army
-                    this.DisbandArmy(disbandedArmies[i]);
+                    disbandedArmies[i].DisbandArmy();
+                    disbandedArmies[i] = null;
                 }
 
                 // clear dissolvedArmies
@@ -1603,7 +1606,10 @@ namespace hist_mmorpg
                         if (proceed)
                         {
                             // run childbirth procedure
-                            this.GiveBirth(mummy, daddy);
+                            mummy.GiveBirth(daddy);
+
+                            // refresh household display
+                            this.RefreshHouseholdDisplay();
                         }
 
                         // add entry to list for removal
@@ -1730,7 +1736,7 @@ namespace hist_mmorpg
                     // write to database if necessary
                     if (Globals_Game.writeToDatabase)
                     {
-                        this.DatabaseWrite("fromCSV");
+                        DatabaseWrite.DatabaseWriteAll("fromCSV");
                     }
                     break;
 
@@ -2727,7 +2733,7 @@ namespace hist_mmorpg
                             else
                             {
                                 // retreat army 1 hex
-                                this.ProcessRetreat(thisArmy, 1);
+                                thisArmy.ProcessRetreat(1);
                             }
                         }
                     }
@@ -3420,9 +3426,11 @@ namespace hist_mmorpg
             if (targetFief != null)
             {
                 // get travel cost
-                double travelCost = this.getTravelCost(Globals_Client.myPlayerCharacter.location, targetFief, Globals_Client.myPlayerCharacter.armyID);
+                double travelCost = Globals_Client.myPlayerCharacter.location.getTravelCost(targetFief, Globals_Client.myPlayerCharacter.armyID);
+
                 // attempt to move player to target fief
-                success = this.MoveCharacter(Globals_Client.myPlayerCharacter, targetFief, travelCost);
+                success = Globals_Client.myPlayerCharacter.MoveCharacter(targetFief, travelCost);
+
                 // if move successfull, refresh travel display
                 if (success)
                 {
@@ -4799,7 +4807,7 @@ namespace hist_mmorpg
                 Character mySpouse = Globals_Client.charToView.GetSpouse();
 
                 // perform standard checks
-                if (this.ChecksBeforePregnancyAttempt(Globals_Client.charToView))
+                if (Birth.ChecksBeforePregnancyAttempt(Globals_Client.charToView))
                 {
                     // ensure are both in/out of keep
                     mySpouse.inKeep = Globals_Client.charToView.inKeep;
@@ -4825,7 +4833,7 @@ namespace hist_mmorpg
         private void familyGetSpousePregBtn_Click(object sender, EventArgs e)
         {
             // perform standard checks
-            if (this.ChecksBeforePregnancyAttempt(Globals_Client.myPlayerCharacter))
+            if (Birth.ChecksBeforePregnancyAttempt(Globals_Client.myPlayerCharacter))
             {
                 // get spouse
                 Character mySpouse = Globals_Client.myPlayerCharacter.GetSpouse();
@@ -5390,7 +5398,8 @@ namespace hist_mmorpg
             if (Globals_Client.armyToView != null)
             {
                 // disband army
-                this.DisbandArmy(Globals_Client.armyToView);
+                Globals_Client.armyToView.DisbandArmy();
+                Globals_Client.armyToView = null;
 
                 // refresh display
                 this.RefreshArmyContainer();

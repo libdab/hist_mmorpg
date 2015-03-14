@@ -1523,7 +1523,10 @@ namespace hist_mmorpg
             if (proceed)
             {
                 // let slip the dogs of war
-                parent.GiveBattle(attacker, defender);
+                Battle.GiveBattle(attacker, defender);
+
+                // refresh parent screen
+                parent.RefreshCurrentScreen();
             }
 
             // close form

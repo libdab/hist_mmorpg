@@ -1,33 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using System.Xml;
-using QuickGraph;
-using CorrugatedIron;
-using CorrugatedIron.Models;
 
 namespace hist_mmorpg
 {
-    /// <summary>
-    /// Partial class for Form1, containing functionality specific to pregnancy and childbirth
-    /// </summary>
-    partial class Form1
+    public static class Birth
     {
-        /*
         /// <summary>
         /// Generates a new NPC based on parents' statistics
         /// </summary>
         /// <returns>NonPlayerCharacter or null</returns>
         /// <param name="mummy">The new NPC's mother</param>
         /// <param name="daddy">The new NPC's father</param>
-        public NonPlayerCharacter GenerateNewNPC(NonPlayerCharacter mummy, Character daddy)
+        public static NonPlayerCharacter GenerateNewNPC(Character mummy, Character daddy)
         {
             NonPlayerCharacter newNPC = new NonPlayerCharacter();
 
@@ -40,15 +26,15 @@ namespace hist_mmorpg
             // date of birth
             newNPC.birthDate = new Tuple<uint, byte>(Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason);
             // sex
-            newNPC.isMale = this.GenerateSex();
+            newNPC.isMale = Birth.GenerateSex();
             // nationality
             newNPC.nationality = daddy.nationality;
             // whether is alive
             newNPC.isAlive = true;
             // maxHealth
-            newNPC.maxHealth = this.GenerateKeyCharacteristics(mummy.maxHealth, daddy.maxHealth);
+            newNPC.maxHealth = Birth.GenerateKeyCharacteristics(mummy.maxHealth, daddy.maxHealth);
             // virility
-            newNPC.virility = this.GenerateKeyCharacteristics(mummy.virility, daddy.virility);
+            newNPC.virility = Birth.GenerateKeyCharacteristics(mummy.virility, daddy.virility);
             // goTo queue
             newNPC.goTo = new Queue<Fief>();
             // language
@@ -58,11 +44,11 @@ namespace hist_mmorpg
             // stature modifier
             newNPC.statureModifier = 0;
             // management
-            newNPC.management = this.GenerateKeyCharacteristics(mummy.management, daddy.management);
+            newNPC.management = Birth.GenerateKeyCharacteristics(mummy.management, daddy.management);
             // combat
-            newNPC.combat = this.GenerateKeyCharacteristics(mummy.combat, daddy.combat);
+            newNPC.combat = Birth.GenerateKeyCharacteristics(mummy.combat, daddy.combat);
             // traits
-            newNPC.traits = this.GenerateTraitSetFromParents(mummy.traits, daddy.traits, newNPC.isMale);
+            newNPC.traits = Birth.GenerateTraitSetFromParents(mummy.traits, daddy.traits, newNPC.isMale);
             // if in keep
             newNPC.inKeep = mummy.inKeep;
             // if pregnant
@@ -103,7 +89,7 @@ namespace hist_mmorpg
         /// Generates a random sex for a Character
         /// </summary>
         /// <returns>bool indicating whether is male</returns>
-        public bool GenerateSex()
+        public static bool GenerateSex()
         {
             bool isMale = false;
 
@@ -122,7 +108,7 @@ namespace hist_mmorpg
         /// <returns>Double containing characteristic stat</returns>
         /// <param name="mummyStat">The mother's characteristic stat</param>
         /// <param name="daddyStat">The father's characteristic stat</param>
-        public Double GenerateKeyCharacteristics(Double mummyStat, Double daddyStat)
+        public static Double GenerateKeyCharacteristics(Double mummyStat, Double daddyStat)
         {
             Double newStat = 0;
 
@@ -182,7 +168,7 @@ namespace hist_mmorpg
         /// <param name="mummyTraits">The mother's traits</param>
         /// <param name="daddyTraits">The father's traits</param>
         /// <param name="isMale">Whether character is a male</param>
-        public Tuple<Trait, int>[] GenerateTraitSetFromParents(Tuple<Trait, int>[] mummyTraits, Tuple<Trait, int>[] daddyTraits, bool isMale)
+        public static Tuple<Trait, int>[] GenerateTraitSetFromParents(Tuple<Trait, int>[] mummyTraits, Tuple<Trait, int>[] daddyTraits, bool isMale)
         {
             // store all unique traitKeys from both parents
             List<string> uniqueTraitKeys = new List<string>();
@@ -213,7 +199,7 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>bool indicating whether or not to proceed with pregnancy attempt</returns>
         /// <param name="husband">The husband</param>
-        public bool ChecksBeforePregnancyAttempt(Character husband)
+        public static bool ChecksBeforePregnancyAttempt(Character husband)
         {
             bool proceed = true;
 
@@ -319,135 +305,5 @@ namespace hist_mmorpg
             return proceed;
         }
 
-        /// <summary>
-        /// Performs childbirth procedure
-        /// </summary>
-        /// <returns>Boolean indicating character death occurrence</returns>
-        /// <param name="mummy">The new NPC's mother</param>
-        /// <param name="daddy">The new NPC's father</param>
-        public void GiveBirth(NonPlayerCharacter mummy, Character daddy)
-        {
-            string description = "";
-
-            // get head of family
-            PlayerCharacter thisHeadOfFamily = daddy.GetHeadOfFamily();
-
-            // generate new NPC (baby)
-            NonPlayerCharacter weeBairn = Birth.GenerateNewNPC(mummy, daddy);
-
-            // check for baby being stillborn
-            bool isStillborn = weeBairn.CheckForDeath(true, false, false);
-
-            if (!isStillborn)
-            {
-                // add baby to npcMasterList
-                Globals_Game.npcMasterList.Add(weeBairn.charID, weeBairn);
-
-                // set baby's location
-                weeBairn.location = mummy.location;
-                weeBairn.location.charactersInFief.Add(weeBairn);
-
-                // add baby to family
-                Globals_Client.myPlayerCharacter.myNPCs.Add(weeBairn);
-            }
-            else
-            {
-                weeBairn.isAlive = false;
-            }
-
-            // check for mother dying during childbirth
-            bool mummyDied = mummy.CheckForDeath(true, true, isStillborn);
-
-            // construct and send JOURNAL ENTRY
-
-            // personae
-            string[] childbirthPersonae = new string[] { thisHeadOfFamily.charID + "|headOfFamily", mummy.charID + "|mother", daddy.charID + "|father", weeBairn.charID + "|child" };
-
-            // description
-            description += "On this day of Our Lord " + mummy.firstName + " " + mummy.familyName;
-            description += ", wife of " + daddy.firstName + " " + daddy.familyName + ", went into labour.";
-
-            // mother and baby alive
-            if ((!isStillborn) && (!mummyDied))
-            {
-                description += " Both the mother and her newborn ";
-                if (weeBairn.isMale)
-                {
-                    description += "son";
-                }
-                else
-                {
-                    description += "daughter";
-                }
-                description += " are doing well and " + thisHeadOfFamily.firstName + " " + thisHeadOfFamily.familyName;
-                description += " is delighted to welcome a new member into his family.";
-            }
-
-            // baby OK, mother dead
-            if ((!isStillborn) && (mummyDied))
-            {
-                description += " The baby ";
-                if (weeBairn.isMale)
-                {
-                    description += "boy";
-                }
-                else
-                {
-                    description += "girl";
-                }
-                description += " is doing well but sadly the mother died during childbirth. ";
-                description += thisHeadOfFamily.firstName + " " + thisHeadOfFamily.familyName;
-                description += " welcomes the new member into his family.";
-            }
-
-            // mother OK, baby dead
-            if ((isStillborn) && (!mummyDied))
-            {
-                description += " The mother is doing well but sadly her newborn ";
-                if (weeBairn.isMale)
-                {
-                    description += "son";
-                }
-                else
-                {
-                    description += "daughter";
-                }
-                description += " died during childbirth.";
-            }
-
-            // both mother and baby died
-            if ((isStillborn) && (mummyDied))
-            {
-                description += " Tragically, both the mother and her newborn ";
-                if (weeBairn.isMale)
-                {
-                    description += "son";
-                }
-                else
-                {
-                    description += "daughter";
-                }
-                description += " died of complications during the childbirth.";
-            }
-
-            // put together new journal entry
-            JournalEntry childbirth = new JournalEntry(Globals_Game.GetNextJournalEntryID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, childbirthPersonae, "birth", descr: description);
-
-            // add new journal entry to pastEvents
-            Globals_Game.AddPastEvent(childbirth);
-
-            // if appropriate, process mother's death
-            if (mummyDied)
-            {
-                mummy.ProcessDeath("childbirth");
-            }
-
-
-            // display message
-            if (Globals_Client.showMessages)
-            {
-                System.Windows.Forms.MessageBox.Show(description);
-            }
-        } */
     }
 }

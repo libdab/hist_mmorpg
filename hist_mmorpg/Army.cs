@@ -1484,5 +1484,65 @@ namespace hist_mmorpg
             return battleValues;
         }
 
+        /// <summary>
+        /// Process the retreat of the army
+        /// </summary>
+        /// <param name="retreatDistance">The retreat distance</param>
+        public void ProcessRetreat(int retreatDistance)
+        {
+            // get starting fief
+            Fief startingFief = this.GetLocation();
+
+            // get army leader
+            Character thisLeader = this.GetLeader();
+
+            // get army owner
+            PlayerCharacter thisOwner = this.GetOwner();
+
+            // for each hex in retreatDistance, process retreat
+            for (int i = 0; i < retreatDistance; i++)
+            {
+                // get current location
+                Fief from = this.GetLocation();
+
+                // get fief to retreat to
+                Fief target = Globals_Game.gameMap.chooseRandomHex(from, true, thisOwner, startingFief);
+
+                if (target != null)
+                {
+                    // get travel cost
+                    double travelCost = from.getTravelCost(target);
+
+                    // check for army leader (defender may not have had one)
+                    if (thisLeader != null)
+                    {
+                        // ensure leader has enough days (retreats are immune to running out of days)
+                        if (thisLeader.days < travelCost)
+                        {
+                            thisLeader.AdjustDays(thisLeader.days - travelCost);
+                        }
+
+                        // perform retreat
+                        bool success = thisLeader.MoveCharacter(target, travelCost, false);
+                    }
+
+                    // if no leader
+                    else
+                    {
+                        // ensure army has enough days (retreats are immune to running out of days)
+                        if (this.days < travelCost)
+                        {
+                            this.days = travelCost;
+                        }
+
+                        // perform retreat
+                        this.MoveWithoutLeader(target, travelCost);
+                    }
+                }
+
+            }
+
+        }
+
     }
 }

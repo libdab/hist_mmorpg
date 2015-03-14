@@ -21,6 +21,34 @@ namespace hist_mmorpg
     partial class Form1
     {
         /// <summary>
+        /// Moves an NPC without a boss one hex in a random direction
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="npc">NPC to move</param>
+        public bool RandomMoveNPC(NonPlayerCharacter npc)
+        {
+            bool success = false;
+
+            // generate random int 0-6 to see if moves
+            int randomInt = Globals_Game.myRand.Next(7);
+
+            if (randomInt > 0)
+            {
+                // get a destination
+                Fief target = Globals_Game.gameMap.chooseRandomHex(npc.location);
+
+                // get travel cost
+                double travelCost = npc.location.getTravelCost(target);
+
+                // perform move
+                success = npc.MoveCharacter(target, travelCost);
+            }
+
+            return success;
+        }
+
+        /*
+        /// <summary>
         /// Moves character to target fief
         /// </summary>
         /// <returns>bool indicating success</returns>
@@ -89,33 +117,6 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Moves an NPC without a boss one hex in a random direction
-        /// </summary>
-        /// <returns>bool indicating success</returns>
-        /// <param name="npc">NPC to move</param>
-        public bool RandomMoveNPC(NonPlayerCharacter npc)
-        {
-            bool success = false;
-
-            // generate random int 0-6 to see if moves
-            int randomInt = Globals_Game.myRand.Next(7);
-
-            if (randomInt > 0)
-            {
-                // get a destination
-                Fief target = Globals_Game.gameMap.chooseRandomHex(npc.location);
-
-                // get travel cost
-                double travelCost = this.getTravelCost(npc.location, target);
-
-                // perform move
-                success = this.MoveCharacter(npc, target, travelCost);
-            }
-
-            return success;
-        }
-
-        /// <summary>
         /// Gets travel cost (in days) to move to a fief
         /// </summary>
         /// <returns>double containing travel cost</returns>
@@ -137,7 +138,7 @@ namespace hist_mmorpg
             }
 
             return cost;
-        }
+        } */
 
         /// <summary>
         /// Refreshes travel display screen
@@ -165,7 +166,7 @@ namespace hist_mmorpg
                     travelBtns[i].Text = directions[i] + " FIEF:\r\n\r\n";
                     travelBtns[i].Text += target.name + " (" + target.id + ")\r\n";
                     travelBtns[i].Text += target.province.name + ", " + target.province.kingdom.name + "\r\n\r\n";
-                    travelBtns[i].Text += "Cost: " + this.getTravelCost(thisFief, target);
+                    travelBtns[i].Text += "Cost: " + thisFief.getTravelCost(target);
                 }
                 else
                 {
@@ -262,9 +263,9 @@ namespace hist_mmorpg
             for (int i = 0; i < steps; i++)
             {
                 // get travel cost
-                travelCost = this.getTravelCost(ch.location, ch.goTo.Peek(), ch.armyID);
+                travelCost = ch.location.getTravelCost(ch.goTo.Peek(), ch.armyID);
                 // attempt to move character
-                success = this.MoveCharacter(ch, ch.goTo.Peek(), travelCost);
+                success = ch.MoveCharacter(ch.goTo.Peek(), travelCost);
                 // if move successfull, remove fief from goTo queue
                 if (success)
                 {

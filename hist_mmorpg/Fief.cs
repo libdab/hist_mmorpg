@@ -2620,7 +2620,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Attempts to quell the rebellion in the specified fief using the specified army
+        /// Attempts to quell the rebellion in the fief using the specified army
         /// </summary>
         /// <returns>bool indicating quell success or failure</returns>
         /// <param name="a">The army trying to quell the rebellion</param>
@@ -2697,6 +2697,30 @@ namespace hist_mmorpg
 
             return quellSuccessful;
         }
+
+        /// <summary>
+        /// Gets travel cost (in days) to move to a nieghbouring fief
+        /// </summary>
+        /// <returns>double containing travel cost</returns>
+        /// <param name="target">Target fief</param>
+        public double getTravelCost(Fief target, string armyID = null)
+        {
+            double cost = 0;
+            // calculate base travel cost based on terrain for both fiefs
+            cost = (this.terrain.travelCost + target.terrain.travelCost) / 2;
+
+            // apply season modifier
+            cost = cost * Globals_Game.clock.CalcSeasonTravMod();
+
+            // if necessary, apply army modifier
+            if (!String.IsNullOrWhiteSpace(armyID))
+            {
+                cost = cost * Globals_Game.armyMasterList[armyID].CalcMovementModifier();
+            }
+
+            return cost;
+        }
+
     }
 
 	/// <summary>

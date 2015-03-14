@@ -163,7 +163,7 @@ namespace hist_mmorpg
                 double successChance = this.calcStormSuccess(keepLvl); */
                 // get battle values for both armies
                 uint[] battleValues = besieger.CalculateBattleValues(defenderGarrison, Convert.ToInt32(siegeLocation.keepLevel));
-                double successChance = Utility_Methods.CalcVictoryChance(battleValues[0], battleValues[1]);
+                double successChance = Battle.CalcVictoryChance(battleValues[0], battleValues[1]);
                 siegeText += "- storm: " + successChance + "\r\n";
 
                 // chance of negotiated success
@@ -652,7 +652,7 @@ namespace hist_mmorpg
                 fiefArmy = this.CreateDefendingArmy(f);
 
                 // give battle and get result
-                pillageCancelled = this.GiveBattle(fiefArmy, a, circumstance: "pillage");
+                pillageCancelled = Battle.GiveBattle(fiefArmy, a, circumstance: "pillage");
 
                 if (pillageCancelled)
                 {
@@ -1023,7 +1023,7 @@ namespace hist_mmorpg
 
             // get STORM RESULT
             uint[] battleValues = besiegingArmy.CalculateBattleValues(defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel), true);
-            stormSuccess = Utility_Methods.DecideBattleVictory(battleValues[0], battleValues[1]);
+            stormSuccess = Battle.DecideBattleVictory(battleValues[0], battleValues[1]);
 
             // KEEP DAMAGE
             // base damage to keep level (10%)
@@ -1298,7 +1298,7 @@ namespace hist_mmorpg
 
             // calculate success chance
             uint[] battleValues = besieger.CalculateBattleValues(defenderGarrison, Convert.ToInt32(besiegedFief.keepLevel));
-            double successChance = Utility_Methods.CalcVictoryChance(battleValues[0], battleValues[1]) / 2;
+            double successChance = Battle.CalcVictoryChance(battleValues[0], battleValues[1]) / 2;
 
             // generate random double 0-100 to see if negotiation a success
             double myRandomDouble = Utility_Methods.GetRandomDouble(100);
@@ -1392,13 +1392,13 @@ namespace hist_mmorpg
                 if (defenderAdditional.aggression > 0)
                 {
                     // get odds
-                    int battleOdds = this.GetBattleOdds(defenderAdditional, besieger);
+                    int battleOdds = Battle.GetBattleOdds(defenderAdditional, besieger);
 
                     // if odds OK, give battle
                     if (battleOdds >= defenderAdditional.combatOdds)
                     {
                         // process battle and apply results, if required
-                        siegeRaised = this.GiveBattle(defenderAdditional, besieger, circumstance: "siege");
+                        siegeRaised = Battle.GiveBattle(defenderAdditional, besieger, circumstance: "siege");
 
                         // check for disbandment of defenderAdditional and remove from siege if necessary
                         if (!siegeRaised)

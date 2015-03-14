@@ -2400,79 +2400,157 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
-        public virtual bool MoveCharacter(Fief target, double cost)
+        /// <param name="siegeCheck">bool indicating whether to check whether the move would end a siege</param>
+        public bool ChecksBeforeMove(Fief target, double cost, bool siegeCheck = true)
         {
-            bool success = false;
+            bool proceedWithMove = true;
 
-            if (Globals_Client.showMessages)
+            // check to see if character is leading a besieging army
+            if (siegeCheck)
             {
-                // check to see if character has fiefs in their goTo queue
-                // (i.e. they have a pre-planned move)
-                if (this.goTo.Count > 0)
+                Army myArmy = this.GetArmy();
+                if (myArmy != null)
                 {
-                    // check to see if this fief is the next planned destination
-                    if (target != this.goTo.Peek())
+                    string thisSiegeID = myArmy.CheckIfBesieger();
+                    if (!String.IsNullOrWhiteSpace(thisSiegeID))
                     {
-                        // if not the next planned destination, give choice to continue or cancel
-                        DialogResult dialogResult = MessageBox.Show("This move will clear your stored destination list.  Click 'OK' to proceed.", "Proceed with move?", MessageBoxButtons.OKCancel);
+                        // give player fair warning of consequences to siege
+                        DialogResult dialogResult = MessageBox.Show("Your army is currently besieging this fief.  Moving will end the siege.\r\nClick 'OK' to proceed.", "Proceed with move?", MessageBoxButtons.OKCancel);
 
-                        // if choose to cancel, return
+                        // if choose to cancel
                         if (dialogResult == DialogResult.Cancel)
                         {
                             if (Globals_Client.showMessages)
                             {
                                 System.Windows.Forms.MessageBox.Show("Move cancelled.");
                             }
-                            return success;
+
+                            proceedWithMove = false;
                         }
-                        // if choose to proceed, clear entries from goTo
+
+                        // if choose to proceed
                         else
                         {
-                            this.goTo.Clear();
+                            // end the siege
+                            Siege thisSiege = Globals_Game.siegeMasterList[thisSiegeID];
+                            if (Globals_Client.showMessages)
+                            {
+                                System.Windows.Forms.MessageBox.Show("Siege (" + thisSiegeID + ") ended.");
+                            }
+
+                            // construct event description to be passed into siegeEnd
+                            string siegeDescription = "On this day of Our Lord the forces of ";
+                            siegeDescription += thisSiege.GetBesiegingPlayer().firstName + " " + thisSiege.GetBesiegingPlayer().familyName;
+                            siegeDescription += " have chosen to abandon the siege of " + thisSiege.GetFief().name;
+                            siegeDescription += ". " + thisSiege.GetDefendingPlayer().firstName + " " + thisSiege.GetDefendingPlayer().familyName;
+                            siegeDescription += " retains ownership of the fief.";
+
+                            // end siege and set to null
+                            thisSiege.SiegeEnd(false, siegeDescription);
+                            thisSiege = null;
                         }
+
                     }
                 }
             }
 
-            // ensure have enough days left to allow for move
-            if (this.days >= cost)
+            if (proceedWithMove)
             {
-                // remove character from current fief's character list
-                this.location.RemoveCharacter(this);
-                // set location to target fief
-                this.location = target;
-                // add character to target fief's character list
-                this.location.AddCharacter(this);
-                // arrives outside keep
-                this.inKeep = false;
-                // deduct move cost from days left
-                if (this is PlayerCharacter)
+                // check for sufficient days
+                if (this.days < cost)
                 {
-                    (this as PlayerCharacter).AdjustDays(cost);
+                    // if target fief not in character's goTo queue, add it
+                    if (this.goTo.Count == 0)
+                    {
+                        this.goTo.Enqueue(target);
+                    }
+
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show("I'm afraid you've run out of days.\r\nYour journey will continue next season.");
+                    }
+
+                    proceedWithMove = false;
                 }
-                else
-                {
-                    this.AdjustDays(cost);
-                }
-                // check if has accompanying army, if so move it
-                if (!String.IsNullOrWhiteSpace(this.armyID))
-                {
-                    this.GetArmy().MoveArmy();
-                }
-                success = true;
             }
 
-            else
-            {
-                // if target fief not in character's goTo queue, add it
-                if (this.goTo.Count == 0)
-                {
-                    this.goTo.Enqueue(target);
-                }
+            return proceedWithMove;
+        }
 
+        /// <summary>
+        /// Moves character to target fief
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        /// <param name="target">Target fief</param>
+        /// <param name="cost">Travel cost (days)</param>
+        /// <param name="siegeCheck">bool indicating whether to check whether the move would end a siege</param>
+        public virtual bool MoveCharacter(Fief target, double cost, bool siegeCheck = true)
+        {
+            bool success = this.ChecksBeforeMove(target, cost, siegeCheck);
+
+            if (success)
+            {
                 if (Globals_Client.showMessages)
                 {
-                    System.Windows.Forms.MessageBox.Show("I'm afraid you've run out of days.\r\nYour journey will continue next season.");
+                    // check to see if character has fiefs in their goTo queue
+                    // (i.e. they have a pre-planned move)
+                    if (this.goTo.Count > 0)
+                    {
+                        // check to see if this fief is the next planned destination
+                        if (target != this.goTo.Peek())
+                        {
+                            // if not the next planned destination, give choice to continue or cancel
+                            DialogResult dialogResult = MessageBox.Show("This move will clear your stored destination list.  Click 'OK' to proceed.", "Proceed with move?", MessageBoxButtons.OKCancel);
+
+                            // if choose to cancel, return
+                            if (dialogResult == DialogResult.Cancel)
+                            {
+                                if (Globals_Client.showMessages)
+                                {
+                                    System.Windows.Forms.MessageBox.Show("Move cancelled.");
+                                }
+
+                                success = false;
+                            }
+
+                            // if choose to proceed, clear entries from goTo
+                            else
+                            {
+                                this.goTo.Clear();
+                            }
+                        }
+                    }
+                }
+
+                if (success)
+                {
+                    // remove character from current fief's character list
+                    this.location.RemoveCharacter(this);
+
+                    // set location to target fief
+                    this.location = target;
+
+                    // add character to target fief's character list
+                    this.location.AddCharacter(this);
+
+                    // arrives outside keep
+                    this.inKeep = false;
+
+                    // deduct move cost from days left
+                    if (this is PlayerCharacter)
+                    {
+                        (this as PlayerCharacter).AdjustDays(cost);
+                    }
+                    else
+                    {
+                        this.AdjustDays(cost);
+                    }
+
+                    // check if has accompanying army, if so move it
+                    if (!String.IsNullOrWhiteSpace(this.armyID))
+                    {
+                        this.GetArmy().MoveArmy();
+                    }
                 }
             }
 
@@ -2695,6 +2773,136 @@ namespace hist_mmorpg
             }
 
             return success;
+        }
+
+        /// <summary>
+        /// Performs childbirth procedure
+        /// </summary>
+        /// <returns>Boolean indicating character death occurrence</returns>
+        /// <param name="daddy">The new NPC's father</param>
+        public void GiveBirth(Character daddy)
+        {
+            string description = "";
+
+            // get head of family
+            PlayerCharacter thisHeadOfFamily = daddy.GetHeadOfFamily();
+
+            // generate new NPC (baby)
+            NonPlayerCharacter weeBairn = Birth.GenerateNewNPC(this, daddy);
+
+            // check for baby being stillborn
+            bool isStillborn = weeBairn.CheckForDeath(true, false, false);
+
+            if (!isStillborn)
+            {
+                // add baby to npcMasterList
+                Globals_Game.npcMasterList.Add(weeBairn.charID, weeBairn);
+
+                // set baby's location
+                weeBairn.location = this.location;
+                weeBairn.location.charactersInFief.Add(weeBairn);
+
+                // add baby to family
+                Globals_Client.myPlayerCharacter.myNPCs.Add(weeBairn);
+            }
+            else
+            {
+                weeBairn.isAlive = false;
+            }
+
+            // check for mother dying during childbirth
+            bool mummyDied = this.CheckForDeath(true, true, isStillborn);
+
+            // construct and send JOURNAL ENTRY
+
+            // personae
+            string[] childbirthPersonae = new string[] { thisHeadOfFamily.charID + "|headOfFamily", this.charID + "|mother", daddy.charID + "|father", weeBairn.charID + "|child" };
+
+            // description
+            description += "On this day of Our Lord " + this.firstName + " " + this.familyName;
+            description += ", wife of " + daddy.firstName + " " + daddy.familyName + ", went into labour.";
+
+            // mother and baby alive
+            if ((!isStillborn) && (!mummyDied))
+            {
+                description += " Both the mother and her newborn ";
+                if (weeBairn.isMale)
+                {
+                    description += "son";
+                }
+                else
+                {
+                    description += "daughter";
+                }
+                description += " are doing well and " + thisHeadOfFamily.firstName + " " + thisHeadOfFamily.familyName;
+                description += " is delighted to welcome a new member into his family.";
+            }
+
+            // baby OK, mother dead
+            if ((!isStillborn) && (mummyDied))
+            {
+                description += " The baby ";
+                if (weeBairn.isMale)
+                {
+                    description += "boy";
+                }
+                else
+                {
+                    description += "girl";
+                }
+                description += " is doing well but sadly the mother died during childbirth. ";
+                description += thisHeadOfFamily.firstName + " " + thisHeadOfFamily.familyName;
+                description += " welcomes the new member into his family.";
+            }
+
+            // mother OK, baby dead
+            if ((isStillborn) && (!mummyDied))
+            {
+                description += " The mother is doing well but sadly her newborn ";
+                if (weeBairn.isMale)
+                {
+                    description += "son";
+                }
+                else
+                {
+                    description += "daughter";
+                }
+                description += " died during childbirth.";
+            }
+
+            // both mother and baby died
+            if ((isStillborn) && (mummyDied))
+            {
+                description += " Tragically, both the mother and her newborn ";
+                if (weeBairn.isMale)
+                {
+                    description += "son";
+                }
+                else
+                {
+                    description += "daughter";
+                }
+                description += " died of complications during the childbirth.";
+            }
+
+            // put together new journal entry
+            JournalEntry childbirth = new JournalEntry(Globals_Game.GetNextJournalEntryID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, childbirthPersonae, "birth", descr: description);
+
+            // add new journal entry to pastEvents
+            Globals_Game.AddPastEvent(childbirth);
+
+            // if appropriate, process mother's death
+            if (mummyDied)
+            {
+                this.ProcessDeath("childbirth");
+            }
+
+
+            // display message
+            if (Globals_Client.showMessages)
+            {
+                System.Windows.Forms.MessageBox.Show(description);
+            }
         }
 
         /// <summary>
@@ -3210,6 +3418,336 @@ namespace hist_mmorpg
             return proceed;
         }
 
+        /// <summary>
+        /// Retrieves information for Character display
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="showFullDetails">bool indicating whether to display full character details</param>
+        /// <param name="showTitles">bool indicating whether to display character's titles</param>
+        public string DisplayCharacter(bool showFullDetails, bool showTitles)
+        {
+            string charText = "";
+
+            // check to see if is army leader
+            if (!String.IsNullOrWhiteSpace(this.armyID))
+            {
+                charText += "NOTE: This character is currently LEADING AN ARMY (" + this.armyID + ")\r\n\r\n";
+            }
+
+            // check to see if is under siege
+            if (!String.IsNullOrWhiteSpace(this.location.siege))
+            {
+                if (this.inKeep)
+                {
+                    charText += "NOTE: This character is located in a KEEP UNDER SIEGE\r\n\r\n";
+                }
+            }
+
+            // character ID
+            charText += "Character ID: " + this.charID + "\r\n";
+
+            // player ID
+            if (this is PlayerCharacter)
+            {
+                if (!String.IsNullOrWhiteSpace((this as PlayerCharacter).playerID))
+                {
+                    charText += "Player ID: " + (this as PlayerCharacter).playerID + "\r\n";
+                }
+            }
+
+            // name
+            charText += "Name: " + this.firstName + " " + this.familyName + "\r\n";
+
+            // age
+            charText += "Age: " + this.CalcAge() + "\r\n";
+
+            // sex
+            charText += "Sex: ";
+            if (this.isMale)
+            {
+                charText += "Male";
+            }
+            else
+            {
+                charText += "Female";
+            }
+            charText += "\r\n";
+
+            // nationality
+            charText += "Nationality: " + this.nationality.name + "\r\n";
+
+            if (this is PlayerCharacter)
+            {
+                // home fief
+                Fief homeFief = (this as PlayerCharacter).GetHomeFief();
+                charText += "Home fief: " + homeFief.name + " (" + homeFief.id + ")\r\n";
+
+                // ancestral home fief
+                Fief ancHomeFief = (this as PlayerCharacter).GetAncestralHome();
+                charText += "Ancestral Home fief: " + ancHomeFief.name + " (" + ancHomeFief.id + ")\r\n";
+            }
+
+            if (showFullDetails)
+            {
+                // health (& max. health)
+                charText += "Health: ";
+                if (!this.isAlive)
+                {
+                    charText += "You're Dead!";
+                }
+                else
+                {
+                    charText += this.CalculateHealth() + " (max. health: " + this.maxHealth + ")";
+                }
+                charText += "\r\n";
+
+                // any death modifiers (from traits)
+                charText += "  (Death modifier from traits: " + this.CalcTraitEffect("death") + ")\r\n";
+
+                // virility
+                charText += "Virility: " + this.virility + "\r\n";
+            }
+
+            // location
+            charText += "Current location: " + this.location.name + " (" + this.location.province.name + ")\r\n";
+
+            // language
+            charText += "Language: " + this.language.GetName() + "\r\n";
+
+            if (showFullDetails)
+            {
+                // days left
+                charText += "Days remaining: " + this.days + "\r\n";
+            }
+
+            // stature
+            charText += "Stature: " + this.CalculateStature() + "\r\n";
+            charText += "  (base stature: " + this.CalculateStature(false) + " | modifier: " + this.statureModifier + ")\r\n";
+
+            // management rating
+            charText += "Management: " + this.management + "\r\n";
+
+            // combat rating
+            charText += "Combat: " + this.combat + "\r\n";
+
+            // traits list
+            charText += "Trait:\r\n";
+            for (int i = 0; i < this.traits.Length; i++)
+            {
+                charText += "  - " + this.traits[i].Item1.name + " (level " + this.traits[i].Item2 + ")\r\n";
+            }
+
+            // whether inside/outside the keep
+            charText += "You are ";
+            if (this.inKeep)
+            {
+                charText += "inside";
+            }
+            else
+            {
+                charText += "outside";
+            }
+            charText += " the keep\r\n";
+
+            // marital status
+            NonPlayerCharacter thisSpouse = null;
+            charText += "You are ";
+            if (!String.IsNullOrWhiteSpace(this.spouse))
+            {
+                // get spouse
+                if (Globals_Game.npcMasterList.ContainsKey(this.spouse))
+                {
+                    thisSpouse = Globals_Game.npcMasterList[this.spouse];
+                }
+
+                if (thisSpouse != null)
+                {
+                    charText += "happily married to " + thisSpouse.firstName + " " + thisSpouse.familyName;
+                    charText += " (ID: " + this.spouse + ").";
+                }
+                else
+                {
+                    charText += "apparently married (but your spouse cannot be identified).";
+                }
+            }
+            else
+            {
+                charText += "not married.";
+            }
+            charText += "\r\n";
+
+            // if pregnant
+            if (!this.isMale)
+            {
+                charText += "You are ";
+                if (!this.isPregnant)
+                {
+                    charText += "not ";
+                }
+                charText += "pregnant\r\n";
+            }
+
+            // if spouse pregnant
+            else
+            {
+                if (thisSpouse != null)
+                {
+                    if (thisSpouse.isPregnant)
+                    {
+                        charText += "Your spouse is pregnant (congratulations!)\r\n";
+                    }
+                    else
+                    {
+                        charText += "Your spouse is not pregnant\r\n";
+                    }
+                }
+            }
+
+            // engaged
+            charText += "You are ";
+            if (!String.IsNullOrWhiteSpace(this.fiancee))
+            {
+                charText += "engaged to be married to ID " + this.fiancee;
+            }
+            else
+            {
+                charText += "not engaged to be married";
+            }
+            charText += "\r\n";
+
+            // father
+            charText += "Father's ID: ";
+            if (!String.IsNullOrWhiteSpace(this.father))
+            {
+                charText += this.father;
+            }
+            else
+            {
+                charText += "N/A";
+            }
+            charText += "\r\n";
+
+            // mother
+            charText += "Mother's ID: ";
+            if (!String.IsNullOrWhiteSpace(this.mother))
+            {
+                charText += this.mother;
+            }
+            else
+            {
+                charText += "N/A";
+            }
+            charText += "\r\n";
+
+            // head of family
+            charText += "Head of family's ID: ";
+            if (!String.IsNullOrWhiteSpace(this.familyID))
+            {
+                charText += this.familyID;
+            }
+            else
+            {
+                charText += "N/A";
+            }
+            charText += "\r\n";
+
+            // gather additional information for PC/NPC
+            bool isPC = this is PlayerCharacter;
+            if (isPC)
+            {
+                if (showFullDetails)
+                {
+                    charText += (this as PlayerCharacter).DisplayPlayerCharacter();
+                }
+            }
+            else
+            {
+                charText += (this as NonPlayerCharacter).DisplayNonPlayerCharacter();
+            }
+
+
+            // if TITLES are to be shown
+            if (showTitles)
+            {
+                charText += "\r\n\r\n------------------ TITLES ------------------\r\n\r\n";
+
+                // kingdoms
+                foreach (string titleEntry in this.myTitles)
+                {
+                    // get kingdom
+                    Place thisPlace = null;
+
+                    if (Globals_Game.kingdomMasterList.ContainsKey(titleEntry))
+                    {
+                        thisPlace = Globals_Game.kingdomMasterList[titleEntry];
+                    }
+
+                    if (thisPlace != null)
+                    {
+                        // get correct title
+                        charText += thisPlace.rank.GetName(this.language).ToUpper() + " (rank " + thisPlace.rank.id + ") of ";
+                        // get kingdom details
+                        charText += thisPlace.name + " (" + titleEntry + ")\r\n";
+                    }
+                }
+                charText += "\r\n";
+
+                // provinces
+                charText += "PROVINCES:\r\n";
+                int provCount = 0;
+                foreach (string titleEntry in this.myTitles)
+                {
+                    // get province
+                    Place thisPlace = null;
+
+                    if (Globals_Game.provinceMasterList.ContainsKey(titleEntry))
+                    {
+                        thisPlace = Globals_Game.provinceMasterList[titleEntry];
+                    }
+
+                    if (thisPlace != null)
+                    {
+                        // get correct title
+                        charText += thisPlace.rank.GetName(this.language) + " (rank " + thisPlace.rank.id + ") of ";
+
+                        // get province details
+                        charText += thisPlace.name + " (" + titleEntry + ")\r\n";
+
+                        provCount++;
+                    }
+                }
+                if (provCount < 1)
+                {
+                    charText += "None\r\n";
+                }
+                charText += "\r\n";
+
+                // fiefs
+                // provinces
+                charText += "FIEFS:\r\n";
+                foreach (string titleEntry in this.myTitles)
+                {
+                    // get fief
+                    Place thisPlace = null;
+
+                    if (Globals_Game.fiefMasterList.ContainsKey(titleEntry))
+                    {
+                        thisPlace = Globals_Game.fiefMasterList[titleEntry];
+                    }
+
+                    if (thisPlace != null)
+                    {
+                        // get correct title
+                        charText += thisPlace.rank.GetName((thisPlace as Fief).language) + " (rank " + thisPlace.rank.id + ") of ";
+                        // get fief details
+                        charText += thisPlace.name + " (" + titleEntry + ")\r\n";
+                    }
+                }
+            }
+
+            return charText;
+        }
+
     }
 
     /// <summary>
@@ -3385,6 +3923,54 @@ namespace hist_mmorpg
             this.playerID = pc.playerID;
             this.myArmies = pc.myArmies;
             this.mySieges = pc.mySieges;
+        }
+
+        /// <summary>
+        /// Retrieves PlayerCharacter-specific information for Character display 
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        public string DisplayPlayerCharacter()
+        {
+            string pcText = "";
+
+            // whether outlawed
+            pcText += "You are ";
+            if (!this.outlawed)
+            {
+                pcText += "not ";
+            }
+            pcText += "outlawed\r\n";
+
+            // purse
+            pcText += "Purse: " + this.purse + "\r\n";
+
+            // employees
+            pcText += "Family and employees:\r\n";
+            for (int i = 0; i < this.myNPCs.Count; i++)
+            {
+                pcText += "  - " + this.myNPCs[i].firstName + " " + this.myNPCs[i].familyName;
+                if (this.myNPCs[i].inEntourage)
+                {
+                    pcText += " (travelling companion)";
+                }
+                pcText += "\r\n";
+            }
+
+            // owned fiefs
+            pcText += "Fiefs owned:\r\n";
+            for (int i = 0; i < this.ownedFiefs.Count; i++)
+            {
+                pcText += "  - " + this.ownedFiefs[i].name + "\r\n";
+            }
+
+            // owned provinces
+            pcText += "Provinces owned:\r\n";
+            for (int i = 0; i < this.ownedProvinces.Count; i++)
+            {
+                pcText += "  - " + this.ownedProvinces[i].name + "\r\n";
+            }
+
+            return pcText;
         }
 
         /// <summary>
@@ -3936,7 +4522,8 @@ namespace hist_mmorpg
         /// <returns>bool indicating success</returns>
         /// <param name="target">Target fief</param>
         /// <param name="cost">Travel cost (days)</param>
-        public override bool MoveCharacter(Fief target, double cost)
+        /// <param name="siegeCheck">bool indicating whether to check whether the move would end a siege</param>
+        public override bool MoveCharacter(Fief target, double cost, bool siegeCheck = true)
         {
 
             // use base method to move PlayerCharacter
@@ -4731,6 +5318,30 @@ namespace hist_mmorpg
             return totalFunds;
         }
 
+        /// <summary>
+        /// Elects a new leader from NPCs accompanying an army (upon death of PC leader)
+        /// </summary>
+        /// <returns>The new leader</returns>
+        public NonPlayerCharacter ElectNewArmyLeader()
+        {
+            NonPlayerCharacter newLeader = null;
+
+            double highestRating = 0;
+
+            foreach (NonPlayerCharacter candidate in this.myNPCs)
+            {
+                double armyLeaderRating = candidate.CalcArmyLeadershipRating();
+
+                if (armyLeaderRating > highestRating)
+                {
+                    highestRating = armyLeaderRating;
+                    newLeader = candidate;
+                }
+            }
+
+            return newLeader;
+        }
+
     }
 
     /// <summary>
@@ -4837,6 +5448,44 @@ namespace hist_mmorpg
             this.inEntourage = false;
             this.lastOffer = new Dictionary<string,uint>();
             this.isHeir = false;
+        }
+
+        /// <summary>
+        /// Retrieves NonPlayerCharacter-specific information for Character display
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        public string DisplayNonPlayerCharacter()
+        {
+            string npcText = "";
+
+            // boss
+            if (!String.IsNullOrWhiteSpace(this.employer))
+            {
+                npcText += "Hired by (ID): " + this.employer + "\r\n";
+            }
+
+            // estimated salary level (if character is male)
+            if (this.isMale)
+            {
+                npcText += "Potential salary: " + this.CalcSalary(Globals_Client.myPlayerCharacter) + "\r\n";
+
+                // most recent salary offer from player (if any)
+                npcText += "Last offer from this PC: ";
+                if (this.lastOffer.ContainsKey(Globals_Client.myPlayerCharacter.charID))
+                {
+                    npcText += this.lastOffer[Globals_Client.myPlayerCharacter.charID];
+                }
+                else
+                {
+                    npcText += "N/A";
+                }
+                npcText += "\r\n";
+
+                // current salary
+                npcText += "Current salary: " + this.salary + "\r\n";
+            }
+
+            return npcText;
         }
 
         /// <summary>

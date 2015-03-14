@@ -1,92 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using System.Xml;
-using QuickGraph;
-using CorrugatedIron;
-using CorrugatedIron.Models;
 
 namespace hist_mmorpg
 {
-    /// <summary>
-    /// Partial class for Form1, containing functionality specific to battle
-    /// </summary>
-    partial class Form1
+    public static class Battle
     {
-        /*
         /// <summary>
-        /// Calculates battle values of both armies participating in a battle or siege
-        /// </summary>
-        /// <returns>uint[] containing battle values of attacking & defending armies</returns>
-        /// <param name="attacker">The attacking army</param>
-        /// <param name="defender">The defending army</param>
-        /// <param name="keepLvl">Keep level (if for a keep storm)</param>
-        /// <param name="isSiege">bool indicating if the circumstance is a siege storm</param>
-        public uint[] CalculateBattleValue(Army attacker, Army defender, int keepLvl = 0, bool isSiegeStorm = false)
-        {
-            uint[] battleValues = new uint[2];
-            double attackerLV = 0;
-            double defenderLV = 0;
-
-            // get leaders
-            Character attackerLeader = attacker.GetLeader();
-            Character defenderLeader = defender.GetLeader();
-
-            // get leadership values for each army leader
-            attackerLV = attackerLeader.GetLeadershipValue(isSiegeStorm);
-
-            // defender may not have leader
-            if (defenderLeader != null)
-            {
-                defenderLV = defenderLeader.GetLeadershipValue(isSiegeStorm);
-            }
-            else
-            {
-                defenderLV = 4;
-            }
-
-            // calculate battle modifier based on LVs
-            // determine highest/lowest of 2 LVs
-            double maxLV = Math.Max(attackerLV, defenderLV);
-            double minLV = Math.Min(attackerLV, defenderLV);
-            double battleModifier = maxLV / minLV;
-
-            // get base combat value for each army
-            uint attackerCV = Convert.ToUInt32(attacker.CalculateCombatValue());
-            uint defenderCV = Convert.ToUInt32(defender.CalculateCombatValue(keepLvl));
-
-            // apply battle modifer to the army CV corresponding to the highest LV
-            if (attackerLV == maxLV)
-            {
-                attackerCV = Convert.ToUInt32(attackerCV * battleModifier);
-            }
-            else
-            {
-                defenderCV = Convert.ToUInt32(defenderCV * battleModifier);
-            }
-
-            battleValues[0] = attackerCV;
-            battleValues[1] = defenderCV;
-
-            return battleValues;
-        }
-
-        /// <summary>
-        /// Calculates whether the attacking army is able to successfully bring
-        /// the defending army to battle
+        /// Calculates whether the attacking army is able to successfully bring the defending army to battle
         /// </summary>
         /// <returns>bool indicating whether battle has commenced</returns>
         /// <param name="attackerValue">uint containing attacking army battle value</param>
         /// <param name="defenderValue">uint containing defending army battle value</param>
         /// <param name="circumstance">string indicating circumstance of battle</param>
-        public bool BringToBattle(uint attackerValue, uint defenderValue, string circumstance = "battle")
+        public static bool BringToBattle(uint attackerValue, uint defenderValue, string circumstance = "battle")
         {
             bool battleHasCommenced = false;
             double[] combatOdds = Globals_Server.battleProbabilities["odds"];
@@ -136,12 +64,12 @@ namespace hist_mmorpg
         /// <returns>bool indicating whether attacking army is victorious</returns>
         /// <param name="attackerValue">uint containing attacking army battle value</param>
         /// <param name="defenderValue">uint containing defending army battle value</param>
-        public bool DecideBattleVictory(uint attackerValue, uint defenderValue)
+        public static bool DecideBattleVictory(uint attackerValue, uint defenderValue)
         {
             bool attackerVictorious = false;
 
             // calculate chance of victory
-            double attackerVictoryChance = this.CalcVictoryChance(attackerValue, defenderValue);
+            double attackerVictoryChance = Battle.CalcVictoryChance(attackerValue, defenderValue);
 
             // generate random percentage
             int randomPercentage = Globals_Game.myRand.Next(101);
@@ -161,7 +89,7 @@ namespace hist_mmorpg
         /// <returns>double containing percentage chance of victory</returns>
         /// <param name="attackerValue">uint containing attacking army battle value</param>
         /// <param name="defenderValue">uint containing defending army battle value</param>
-        public double CalcVictoryChance(uint attackerValue, uint defenderValue)
+        public static double CalcVictoryChance(uint attackerValue, uint defenderValue)
         {
             return (attackerValue / (Convert.ToDouble(attackerValue + defenderValue))) * 100;
         }
@@ -175,7 +103,7 @@ namespace hist_mmorpg
         /// <param name="attackerValue">uint containing attacking army battle value</param>
         /// <param name="defenderValue">uint containing defending army battle value</param>
         /// <param name="attackerVictorious">bool indicating whether attacking army was victorious</param>
-        public double[] CalculateBattleCasualties(uint attackerTroops, uint defenderTroops, uint attackerValue, uint defenderValue, bool attackerVictorious)
+        public static double[] CalculateBattleCasualties(uint attackerTroops, uint defenderTroops, uint attackerValue, uint defenderValue, bool attackerVictorious)
         {
             double[] battleCasualties = new double[2];
             double largeArmyModifier = 0;
@@ -190,7 +118,7 @@ namespace hist_mmorpg
 
             // determine base casualty rate for army with smallest battle value
             double smallestModifier = Utility_Methods.GetRandomDouble(highCasualtyRate, min: 0.1);
-            
+
             // determine if army with largest battle value won
             if (maxBV == attackerValue)
             {
@@ -273,7 +201,7 @@ namespace hist_mmorpg
         /// <param name="aCasualties">The attacking army casualty modifier</param>
         /// <param name="dCasualties">The defending army casualty modifier</param>
         /// <param name="attackerVictorious">bool indicating if attacking army was victorious</param>
-        public int[] CheckForRetreat(Army attacker, Army defender, double aCasualties, double dCasualties, bool attackerVictorious)
+        public static int[] CheckForRetreat(Army attacker, Army defender, double aCasualties, double dCasualties, bool attackerVictorious)
         {
             bool[] hasRetreated = { false, false };
             int[] retreatDistance = { 0, 0 };
@@ -319,99 +247,13 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Processes the retreat of an army
-        /// </summary>
-        /// <param name="a">The army to retreat</param>
-        /// <param name="retreatDistance">The retreat distance</param>
-        public void ProcessRetreat(Army a, int retreatDistance)
-        {
-            // get starting fief
-            Fief startingFief = a.GetLocation();
-
-            // get army leader
-            Character thisLeader = a.GetLeader();
-
-            // get army owner
-            PlayerCharacter thisOwner = a.GetOwner();
-
-            // for each hex in retreatDistance, process retreat
-            for (int i = 0; i < retreatDistance; i++)
-            {
-                // get current location
-                Fief from = a.GetLocation();
-
-                // get fief to retreat to
-                Fief target = Globals_Game.gameMap.chooseRandomHex(from, true, thisOwner, startingFief);
-
-                if (target != null)
-                {
-                    // get travel cost
-                    double travelCost = from.getTravelCost(target);
-
-                    // check for army leader (defender may not have had one)
-                    if (thisLeader != null)
-                    {
-                        // ensure leader has enough days (retreats are immune to running out of days)
-                        if (thisLeader.days < travelCost)
-                        {
-                            thisLeader.AdjustDays(thisLeader.days - travelCost);
-                        }
-
-                        // perform retreat
-                        bool success = thisLeader.MoveCharacter(target, travelCost, false);
-                    }
-
-                    // if no leader
-                    else
-                    {
-                        // ensure army has enough days (retreats are immune to running out of days)
-                        if (a.days < travelCost)
-                        {
-                            a.days = travelCost;
-                        }
-
-                        // perform retreat
-                        a.MoveWithoutLeader(target, travelCost);
-                    }
-                }
-
-            }
-
-        }
-
-        /// <summary>
-        /// Elects a new leader from NPCs accompanying an army (upon death of PC leader)
-        /// </summary>
-        /// <returns>The new leader</returns>
-        /// <param name="attacker">List<NonPlayerCharacter> containing candidates for the post</param>
-        public NonPlayerCharacter ElectNewArmyLeader(List<NonPlayerCharacter> candidates)
-        {
-            NonPlayerCharacter newLeader = null;
-
-            double highestRating = 0;
-
-            foreach (NonPlayerCharacter candidate in candidates)
-            {
-                double armyLeaderRating = candidate.CalcArmyLeadershipRating();
-
-                if (armyLeaderRating > highestRating)
-                {
-                    highestRating = armyLeaderRating;
-                    newLeader = candidate;
-                }
-            }
-
-            return newLeader;
-        }
-
-        /// <summary>
         /// Calculates rough battle odds between two armies (i.e ratio of attacking army combat
         /// value to defending army combat value).  NOTE: does not involve leadership values
         /// </summary>
         /// <returns>int containing battle odds</returns>
         /// <param name="attacker">The attacking army</param>
         /// <param name="defender">The defending army</param>
-        public int GetBattleOdds(Army attacker, Army defender)
+        public static int GetBattleOdds(Army attacker, Army defender)
         {
             double battleOdds = 0;
 
@@ -434,7 +276,7 @@ namespace hist_mmorpg
         /// <param name="attacker">The attacking army</param>
         /// <param name="defender">The defending army</param>
         /// <param name="circumstance">string indicating circumstance of battle</param>
-        public bool GiveBattle(Army attacker, Army defender, string circumstance = "battle")
+        public static bool GiveBattle(Army attacker, Army defender, string circumstance = "battle")
         {
             string toDisplay = "";
             string siegeDescription = "";
@@ -945,12 +787,14 @@ namespace hist_mmorpg
                 // process army disbandings (after all other functions completed)
                 if (attackerDisbanded)
                 {
-                    this.DisbandArmy(attacker);
+                    attacker.DisbandArmy();
+                    attacker = null;
                 }
 
                 if (defenderDisbanded)
                 {
-                    this.DisbandArmy(defender);
+                    defender.DisbandArmy();
+                    defender = null;
                 }
 
             }
@@ -1019,7 +863,8 @@ namespace hist_mmorpg
             // end siege if appropriate
             if (siegeRaised)
             {
-                this.SiegeEnd(thisSiege, false, siegeDescription);
+                thisSiege.SiegeEnd(false, siegeDescription);
+                thisSiege = null;
 
                 // ensure if siege raised correct value returned to Form1.siegeReductionRound method
                 if (circumstance.Equals("siege"))
@@ -1038,11 +883,9 @@ namespace hist_mmorpg
                 attackerLeader.ProcessDeath("injury");
             }
 
-            // refresh screen
-            this.RefreshCurrentScreen();
-
             return attackerVictorious;
 
-        } */
+        }
+
     }
 }

@@ -125,6 +125,19 @@ namespace hist_mmorpg
             armyText += "Sally value: " + a.combatOdds + "\r\n\r\n";
 
             return armyText;
+        }
+
+        /// <summary>
+        /// Disbands the specified army
+        /// </summary>
+        /// <param name="a">Army to be disbanded</param>
+        public void DisbandArmy(Army a)
+        {
+            // carry out functions associated with disband
+            a.DisbandArmy();
+
+            // set army to null
+            a = null;
         } */
 
         /// <summary>
@@ -215,19 +228,6 @@ namespace hist_mmorpg
             }
 
             this.armyListView.Focus();
-        }
-
-        /// <summary>
-        /// Disbands the specified army
-        /// </summary>
-        /// <param name="a">Army to be disbanded</param>
-        public void DisbandArmy(Army a)
-        {
-            // carry out functions associated with disband
-            a.DisbandArmy();
-
-            // set army to null
-            a = null;
         }
 
         /// <summary>

@@ -72,7 +72,12 @@
   <ItemGroup>
     <Compile Include="Ailment.cs" />
     <Compile Include="Army.cs" />
+    <Compile Include="Battle.cs" />
+    <Compile Include="Birth.cs" />
     <Compile Include="Character.cs" />
+    <Compile Include="CSVimport.cs" />
+    <Compile Include="DatabaseRead.cs" />
+    <Compile Include="DatabaseWrite.cs" />
     <Compile Include="Fief.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
