@@ -3748,6 +3748,412 @@ namespace hist_mmorpg
             return charText;
         }
 
+        /// <summary>
+        /// Allows a character to propose marriage between himself and a female family member of another player
+        /// </summary>
+        /// <returns>bool indicating whether proposal was processed successfully</returns>
+        /// <param name="bride">The prospective bride</param>
+        public bool ProposeMarriage(Character bride)
+        {
+            bool success = false;
+
+            // get interested parties
+            PlayerCharacter headOfFamilyGroom = this.GetHeadOfFamily();
+            PlayerCharacter headOfFamilyBride = bride.GetHeadOfFamily();
+
+            if ((headOfFamilyGroom != null) && (headOfFamilyBride != null))
+            {
+                // ID
+                uint proposalID = Globals_Game.GetNextJournalEntryID();
+
+                // date
+                uint year = Globals_Game.clock.currentYear;
+                byte season = Globals_Game.clock.currentSeason;
+
+                // personae
+                string headOfFamilyGroomEntry = headOfFamilyGroom.charID + "|headOfFamilyGroom";
+                string headOfFamilyBrideEntry = headOfFamilyBride.charID + "|headOfFamilyBride";
+                string groomEntry = this.charID + "|groom";
+                string brideEntry = bride.charID + "|bride";
+                string[] myProposalPersonae = new string[] { headOfFamilyGroomEntry, headOfFamilyBrideEntry, brideEntry, groomEntry };
+
+
+                // description
+                string description = "On this day of Our Lord a proposal has been made by ";
+                description += headOfFamilyGroom.firstName + " " + headOfFamilyGroom.familyName + " to ";
+                description += headOfFamilyBride.firstName + " " + headOfFamilyBride.familyName + " that ";
+                if (headOfFamilyGroomEntry.Equals(groomEntry))
+                {
+                    description += "he";
+                }
+                else
+                {
+                    description += this.firstName + " " + this.familyName;
+                }
+                description += " be betrothed to " + bride.firstName + " " + bride.familyName;
+
+                // create and send a proposal (journal entry)
+                JournalEntry myProposal = new JournalEntry(proposalID, year, season, myProposalPersonae, "proposalMade", descr: description);
+                success = Globals_Game.AddPastEvent(myProposal);
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Moves character one hex in a random direction
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+        public bool RandomMoveNPC()
+        {
+            bool success = false;
+
+            // generate random int 0-6 to see if moves
+            int randomInt = Globals_Game.myRand.Next(7);
+
+            if (randomInt > 0)
+            {
+                // get a destination
+                Fief target = Globals_Game.gameMap.chooseRandomHex(this.location);
+
+                // get travel cost
+                double travelCost = this.location.getTravelCost(target);
+
+                // perform move
+                success = this.MoveCharacter(target, travelCost);
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Moves character sequentially through fiefs stored in goTo queue
+        /// </summary>
+        /// <returns>bool indicating success</returns>
+       public bool CharacterMultiMove()
+        {
+            bool success = false;
+            double travelCost = 0;
+            int steps = this.goTo.Count;
+
+            for (int i = 0; i < steps; i++)
+            {
+                // get travel cost
+                travelCost = this.location.getTravelCost(this.goTo.Peek(), this.armyID);
+                // attempt to move character
+                success = this.MoveCharacter(this.goTo.Peek(), travelCost);
+                // if move successfull, remove fief from goTo queue
+                if (success)
+                {
+                    this.goTo.Dequeue();
+                }
+                // if not successfull, exit loop
+                else
+                {
+                    break;
+                }
+            }
+
+            if (this == Globals_Client.myPlayerCharacter)
+            {
+                // if player has moved, indicate success
+                if (this.goTo.Count < steps)
+                {
+                    success = true;
+                }
+            }
+
+            return success;
+
+        }
+
+       /// <summary>
+       /// Allows the character to remain in their current location for the specified
+       /// number of days, incrementing bailiffDaysInFief if appropriate
+       /// </summary>
+       /// <returns>bool indicating success</returns>
+       /// <param name="campDays">Number of days to camp</param>
+       public bool CampWaitHere(byte campDays)
+       {
+           bool proceed = true;
+           // get army
+           Army thisArmy = null;
+           thisArmy = this.GetArmy();
+           // get siege
+           Siege thisSiege = null;
+           if (thisArmy != null)
+           {
+               thisSiege = thisArmy.GetSiege();
+           }
+
+           // check has enough days available
+           if (this.days < (Double)campDays)
+           {
+               campDays = Convert.ToByte(Math.Truncate(this.days));
+               DialogResult dialogResult = MessageBox.Show("You only have " + campDays + " available.  Click 'OK' to proceed.", "Proceed with camp?", MessageBoxButtons.OKCancel);
+
+               // if choose to cancel
+               if (dialogResult == DialogResult.Cancel)
+               {
+                   proceed = false;
+                   if (Globals_Client.showMessages)
+                   {
+                       System.Windows.Forms.MessageBox.Show("You decide not to camp after all.");
+                   }
+               }
+           }
+
+           if (proceed)
+           {
+               // check if player's entourage needs to camp
+               bool entourageCamp = false;
+
+               // if character is player, camp entourage
+               if (this is PlayerCharacter)
+               {
+                   entourageCamp = true;
+               }
+
+               // if character NOT player
+               else
+               {
+                   // if is in entourage, remove prior to camping
+                   if ((this as NonPlayerCharacter).inEntourage)
+                   {
+                       if (Globals_Client.showMessages)
+                       {
+                           System.Windows.Forms.MessageBox.Show(this.firstName + " " + this.familyName + " has been removed from your entourage.");
+                       }
+                       Globals_Client.myPlayerCharacter.RemoveFromEntourage((this as NonPlayerCharacter));
+                   }
+               }
+
+               // check for siege
+               // uses different method to adjust days of all objects involved and apply attrition)
+               if (thisSiege != null)
+               {
+                   thisSiege.SyncSiegeDays(this.days - campDays);
+               }
+
+               // if no siege
+               else
+               {
+                   // adjust character's days
+                   if (this is PlayerCharacter)
+                   {
+                       (this as PlayerCharacter).AdjustDays(campDays);
+                   }
+                   else
+                   {
+                       this.AdjustDays(campDays);
+                   }
+
+                   // inform player
+                   if (Globals_Client.showMessages)
+                   {
+                       System.Windows.Forms.MessageBox.Show(this.firstName + " " + this.familyName + " remains in " + this.location.name + " for " + campDays + " days.");
+                   }
+
+                   // check if character is army leader, if so check for army attrition
+                   if (thisArmy != null)
+                   {
+                       // number of attrition checks
+                       byte attritionChecks = 0;
+                       attritionChecks = Convert.ToByte(campDays / 7);
+                       // total attrition
+                       uint totalAttrition = 0;
+
+                       for (int i = 0; i < attritionChecks; i++)
+                       {
+                           // calculate attrition
+                           double attritionModifer = thisArmy.CalcAttrition();
+                           // apply attrition
+                           if (attritionModifer > 0)
+                           {
+                               totalAttrition += thisArmy.ApplyTroopLosses(attritionModifer);
+                           }
+                       }
+
+                       // inform player
+                       if (totalAttrition > 0)
+                       {
+                           if (Globals_Client.showMessages)
+                           {
+                               System.Windows.Forms.MessageBox.Show("Army (" + thisArmy.armyID + ") lost " + totalAttrition + " troops due to attrition.");
+                           }
+                       }
+                   }
+               }
+
+               // keep track of bailiffDaysInFief before any possible increment
+               Double bailiffDaysBefore = this.location.bailiffDaysInFief;
+
+               // keep track of identity of bailiff
+               Character myBailiff = null;
+
+               // check if character is bailiff of this fief
+               if (this.location.bailiff == this)
+               {
+                   myBailiff = this;
+               }
+
+               // if character not bailiff, if appropriate, check to see if anyone in entourage is
+               else if (entourageCamp)
+               {
+                   // if player is bailiff
+                   if (Globals_Client.myPlayerCharacter == this.location.bailiff)
+                   {
+                       myBailiff = Globals_Client.myPlayerCharacter;
+                   }
+                   // if not, check for bailiff in entourage
+                   else
+                   {
+                       for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
+                       {
+                           if (Globals_Client.myPlayerCharacter.myNPCs[i].inEntourage)
+                           {
+                               if (Globals_Client.myPlayerCharacter.myNPCs[i] != this)
+                               {
+                                   if (Globals_Client.myPlayerCharacter.myNPCs[i] == this.location.bailiff)
+                                   {
+                                       myBailiff = Globals_Client.myPlayerCharacter.myNPCs[i];
+                                   }
+                               }
+                           }
+                       }
+                   }
+
+               }
+
+               // if bailiff identified as someone who camped
+               if (myBailiff != null)
+               {
+                   // increment bailiffDaysInFief
+                   this.location.bailiffDaysInFief += campDays;
+                   // if necessary, display message to player
+                   if (this.location.bailiffDaysInFief >= 30)
+                   {
+                       // don't display this message if min bailiffDaysInFief was already achieved
+                       if (!(bailiffDaysBefore >= 30))
+                       {
+                           if (Globals_Client.showMessages)
+                           {
+                               System.Windows.Forms.MessageBox.Show(myBailiff.firstName + " " + myBailiff.familyName + " has fulfilled his bailiff duties in " + this.location.name + ".");
+                           }
+                       }
+                   }
+               }
+           }
+
+           return proceed;
+       }
+
+       /// <summary>
+       /// Allows the character to be moved along a specific route by using direction codes
+       /// </summary>
+       /// <param name="directions">string[] containing list of sequential directions to follow</param>
+       public void TakeThisRoute(string[] directions)
+       {
+           bool proceed;
+           Fief source = null;
+           Fief target = null;
+           Queue<Fief> route = new Queue<Fief>();
+
+           // remove from entourage, if necessary
+           if (this is NonPlayerCharacter)
+           {
+               if ((this as NonPlayerCharacter).inEntourage)
+               {
+                   (this as NonPlayerCharacter).inEntourage = false;
+               }
+           }
+
+           // convert to Queue of fiefs
+           for (int i = 0; i < directions.Length; i++)
+           {
+               // source for first move is character's current location
+               if (i == 0)
+               {
+                   source = this.location;
+               }
+               // source for all other moves is the previous target fief
+               else
+               {
+                   source = target;
+               }
+
+               // get the target fief
+               target = Globals_Game.gameMap.GetFief(source, directions[i].ToUpper());
+
+               // if target successfully acquired, add to queue
+               if (target != null)
+               {
+                   route.Enqueue(target);
+               }
+               // if no target acquired, display message and break
+               else
+               {
+                   if (Globals_Client.showMessages)
+                   {
+                       System.Windows.Forms.MessageBox.Show("Invalid movement instruction encountered.  Movement will halt at the last correct destination: " + source.name + " (" + source.id + ")");
+                   }
+                   break;
+               }
+
+           }
+
+           // if there are any fiefs in the queue, overwrite the character's goTo queue
+           // then process by calling characterMultiMove
+           if (route.Count > 0)
+           {
+               this.goTo = route;
+               proceed = this.CharacterMultiMove();
+           }
+       }
+       /// <summary>
+       /// Moves the character to a specified fief using the shortest path
+       /// </summary>
+       /// <param name="fiefID">String containing the ID of the target fief</param>
+       public void MoveTo(string fiefID)
+       {
+           // remove from entourage, if necessary
+           if (this is NonPlayerCharacter)
+           {
+               if ((this as NonPlayerCharacter).inEntourage)
+               {
+                   (this as NonPlayerCharacter).inEntourage = false;
+               }
+           }
+
+           // check for existence of fief
+           if (Globals_Game.fiefMasterList.ContainsKey(fiefID))
+           {
+               // retrieves target fief
+               Fief target = Globals_Game.fiefMasterList[fiefID];
+
+               // obtains goTo queue for shortest path to target
+               this.goTo = Globals_Game.gameMap.GetShortestPath(this.location, target);
+
+               // if retrieve valid path
+               if (this.goTo.Count > 0)
+               {
+                   // perform move
+                   this.CharacterMultiMove();
+               }
+
+           }
+
+           // if target fief not found
+           else
+           {
+               if (Globals_Client.showMessages)
+               {
+                   System.Windows.Forms.MessageBox.Show("Target fief not identified.  Please ensure fiefID is valid.");
+               }
+           }
+
+       }
+
     }
 
     /// <summary>

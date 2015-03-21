@@ -20,6 +20,7 @@ namespace hist_mmorpg
     /// </summary>
     partial class Form1
     {
+        /*
         /// <summary>
         /// Allows a character to propose marriage between himself, or a male family member,
         /// and a female family member of another player
@@ -72,7 +73,7 @@ namespace hist_mmorpg
             }
 
             return success;
-        }
+        } */
 
         /// <summary>
         /// Allows a character to reply to a marriage proposal

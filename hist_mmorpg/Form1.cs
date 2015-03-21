@@ -1210,13 +1210,13 @@ namespace hist_mmorpg
                         // random move if has no boss and is not family member
                         if ((String.IsNullOrWhiteSpace(npcEntry.Value.employer)) && (String.IsNullOrWhiteSpace(npcEntry.Value.familyID)))
                         {
-                            this.RandomMoveNPC(npcEntry.Value);
+                            npcEntry.Value.RandomMoveNPC();
                         }
 
                         // finish previously started multi-hex move if necessary
                         if (npcEntry.Value.goTo.Count > 0)
                         {
-                            this.CharacterMultiMove(npcEntry.Value);
+                            npcEntry.Value.CharacterMultiMove();
                         }
                     }
                 }
@@ -1240,7 +1240,7 @@ namespace hist_mmorpg
                         // finish previously started multi-hex move if necessary
                         if (pcEntry.Value.goTo.Count > 0)
                         {
-                            this.CharacterMultiMove(pcEntry.Value);
+                            pcEntry.Value.CharacterMultiMove();
                         }
                     }
                 }
@@ -3877,7 +3877,7 @@ namespace hist_mmorpg
                             // if checks OK, process proposal
                             if (proceed)
                             {
-                                this.ProposeMarriage(bride, groom);
+                                groom.ProposeMarriage(bride);
                             }
                         }
 
@@ -4006,7 +4006,7 @@ namespace hist_mmorpg
                         // if checks OK, process proposal
                         if (proceed)
                         {
-                            this.ProposeMarriage(bride, groom);
+                            groom.ProposeMarriage(bride);
 
                             // refresh screen
                             this.RefreshCurrentScreen();

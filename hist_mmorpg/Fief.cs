@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace hist_mmorpg
 {
@@ -2719,6 +2720,499 @@ namespace hist_mmorpg
             }
 
             return cost;
+        }
+
+        /// <summary>
+        /// Retrieves general information for Fief display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        /// <param name="isOwner">bool indicating if fief owned by player</param>
+        public string DisplayFiefGeneralData(bool isOwner)
+        {
+            string fiefText = "";
+
+            // ID
+            fiefText += "ID: " + this.id + "\r\n";
+
+            // name (& province name)
+            fiefText += "Name: " + this.name + " (Province: " + this.province.name + ".  Kingdom: " + this.province.kingdom.name + ")\r\n";
+
+            // rank
+            fiefText += "Title (rank): ";
+            fiefText += this.rank.GetName(this.language) + " (" + this.rank.id + ")\r\n";
+
+            // population
+            fiefText += "Population: " + this.population + "\r\n";
+
+            // fields
+            fiefText += "Fields level: " + this.fields + "\r\n";
+
+            // industry
+            fiefText += "Industry level: " + this.industry + "\r\n";
+
+            // owner's ID
+            fiefText += "Owner (ID): " + this.owner.charID + "\r\n";
+
+            // ancestral owner's ID
+            fiefText += "Ancestral owner (ID): " + this.ancestralOwner.charID + "\r\n";
+
+            // title holder's ID
+            fiefText += "Title holder (ID): " + this.titleHolder + "\r\n";
+
+            // bailiff's ID
+            fiefText += "Bailiff (ID): ";
+            if (this.bailiff != null)
+            {
+                fiefText += this.bailiff.charID;
+            }
+            else
+            {
+                fiefText += "auto-bailiff";
+            }
+            fiefText += "\r\n";
+
+            // no. of troops (only if owned)
+            if (isOwner)
+            {
+                fiefText += "Garrison: " + Convert.ToInt32(this.keyStatsCurrent[4] / 1000) + " troops\r\n";
+                fiefText += "Militia: Up to " + this.CalcMaxTroops() + " troops are available for call up in this fief\r\n";
+            }
+
+            // fief status
+            fiefText += "Status: ";
+            // if under siege, replace status with siege
+            if (!String.IsNullOrWhiteSpace(this.siege))
+            {
+                fiefText += "UNDER SIEGE!";
+            }
+            else
+            {
+                switch (this.status)
+                {
+                    case 'U':
+                        fiefText += "Unrest";
+                        break;
+                    case 'R':
+                        fiefText += "Rebellion!";
+                        break;
+                    default:
+                        fiefText += "Calm";
+                        break;
+                }
+            }
+
+            fiefText += "\r\n";
+
+            // language
+            fiefText += "Language: " + this.language.GetName() + "\r\n";
+
+            // terrain type
+            fiefText += "Terrain: " + this.terrain.description + "\r\n";
+
+            // barred nationalities
+            fiefText += "Barred nationalities: ";
+            if (this.barredNationalities.Count > 0)
+            {
+                // get last entry
+                string lastNatID = this.barredNationalities.Last();
+
+                foreach (string natID in this.barredNationalities)
+                {
+                    // get nationality
+                    Nationality thisNat = null;
+                    if (Globals_Game.nationalityMasterList.ContainsKey(natID))
+                    {
+                        thisNat = Globals_Game.nationalityMasterList[natID];
+                    }
+
+                    if (thisNat != null)
+                    {
+                        fiefText += thisNat.name;
+
+                        if (!natID.Equals(lastNatID))
+                        {
+                            fiefText += ", ";
+                        }
+                    }
+                }
+            }
+            else
+            {
+                fiefText += "None";
+            }
+            fiefText += "\r\n";
+
+            // barred characters
+            fiefText += "Barred characters: ";
+            if (this.barredCharacters.Count > 0)
+            {
+                // get last entry
+                string lastCharID = this.barredCharacters.Last();
+
+                foreach (string charID in this.barredCharacters)
+                {
+                    // get nationality
+                    Character thisChar = null;
+                    if (Globals_Game.npcMasterList.ContainsKey(charID))
+                    {
+                        thisChar = Globals_Game.npcMasterList[charID];
+                    }
+                    else if (Globals_Game.pcMasterList.ContainsKey(charID))
+                    {
+                        thisChar = Globals_Game.pcMasterList[charID];
+                    }
+
+                    if (thisChar != null)
+                    {
+                        fiefText += thisChar.firstName + " " + thisChar.familyName;
+
+                        if (!charID.Equals(lastCharID))
+                        {
+                            fiefText += ", ";
+                        }
+                    }
+                }
+            }
+            else
+            {
+                fiefText += "None";
+            }
+            fiefText += "\r\n";
+
+            return fiefText;
+        }
+
+
+        /// <summary>
+        /// Retrieves previous season's key information for Fief display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        public string DisplayFiefKeyStatsPrev()
+        {
+            bool displayData = true;
+
+            string fiefText = "PREVIOUS SEASON\r\n=================\r\n\r\n";
+
+            // if under siege, check to see if display data (based on siege start date)
+            if (!String.IsNullOrWhiteSpace(this.siege))
+            {
+                Siege thisSiege = this.GetSiege();
+                displayData = this.CheckToShowFinancialData(-1, thisSiege);
+            }
+
+            // if not OK to display data, show message
+            if (!displayData)
+            {
+                fiefText += "CURRENTLY UNAVAILABLE - due to siege\r\n";
+            }
+            // if is OK, display as normal
+            else
+            {
+                // loyalty
+                fiefText += "Loyalty: " + this.keyStatsPrevious[0] + "\r\n\r\n";
+
+                // GDP
+                fiefText += "GDP: " + this.keyStatsPrevious[1] + "\r\n\r\n";
+
+                // tax rate
+                fiefText += "Tax rate: " + this.keyStatsPrevious[2] + "%\r\n\r\n";
+
+                // officials spend
+                fiefText += "Officials expenditure: " + this.keyStatsPrevious[3] + "\r\n\r\n";
+
+                // garrison spend
+                fiefText += "Garrison expenditure: " + this.keyStatsPrevious[4] + "\r\n\r\n";
+
+                // infrastructure spend
+                fiefText += "Infrastructure expenditure: " + this.keyStatsPrevious[5] + "\r\n\r\n";
+
+                // keep spend
+                fiefText += "Keep expenditure: " + this.keyStatsPrevious[6] + "\r\n";
+                // keep level
+                fiefText += "   (Keep level: " + this.keyStatsPrevious[7] + ")\r\n\r\n";
+
+                // income
+                fiefText += "Income: " + this.keyStatsPrevious[8] + "\r\n\r\n";
+
+                // family expenses
+                fiefText += "Family expenses: " + this.keyStatsPrevious[9] + "\r\n\r\n";
+
+                // total expenses
+                fiefText += "Total fief expenses: " + this.keyStatsPrevious[10] + "\r\n\r\n";
+
+                // overlord taxes
+                fiefText += "Overlord taxes: " + this.keyStatsPrevious[11] + "\r\n";
+                // overlord tax rate
+                fiefText += "   (tax rate: " + this.keyStatsPrevious[12] + "%)\r\n\r\n";
+
+                // surplus
+                fiefText += "Bottom line: " + this.keyStatsPrevious[13];
+            }
+
+            return fiefText;
+        }
+
+        /// <summary>
+        /// Retrieves current season's key information for Fief display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        public string DisplayFiefKeyStatsCurr()
+        {
+            bool displayData = true;
+
+            string fiefText = "CURRENT SEASON\r\n=================\r\n\r\n";
+
+            // if under siege, check to see if display data (based on siege start date)
+            if (!String.IsNullOrWhiteSpace(this.siege))
+            {
+                Siege thisSiege = this.GetSiege();
+                displayData = this.CheckToShowFinancialData(0, thisSiege);
+            }
+
+            // if not OK to display data, show message
+            if (!displayData)
+            {
+                fiefText += "CURRENTLY UNAVAILABLE - due to siege\r\n";
+            }
+            // if is OK, display as normal
+            else
+            {
+                // loyalty
+                fiefText += "Loyalty: " + this.keyStatsCurrent[0] + "\r\n\r\n";
+
+                // GDP
+                fiefText += "GDP: " + this.keyStatsCurrent[1] + "\r\n\r\n";
+
+                // tax rate
+                fiefText += "Tax rate: " + this.keyStatsCurrent[2] + "%\r\n\r\n";
+
+                // officials spend
+                fiefText += "Officials expenditure: " + this.keyStatsCurrent[3] + "\r\n\r\n";
+
+                // garrison spend
+                fiefText += "Garrison expenditure: " + this.keyStatsCurrent[4] + "\r\n\r\n";
+
+                // infrastructure spend
+                fiefText += "Infrastructure expenditure: " + this.keyStatsCurrent[5] + "\r\n\r\n";
+
+                // keep spend
+                fiefText += "Keep expenditure: " + this.keyStatsCurrent[6] + "\r\n";
+                // keep level
+                fiefText += "   (Keep level: " + this.keyStatsCurrent[7] + ")\r\n\r\n";
+
+                // income
+                fiefText += "Income: " + this.keyStatsCurrent[8] + "\r\n\r\n";
+
+                // family expenses
+                fiefText += "Family expenses: " + this.keyStatsCurrent[9] + "\r\n\r\n";
+
+                // total expenses
+                fiefText += "Total fief expenses: " + this.keyStatsCurrent[10] + "\r\n\r\n";
+
+                // overlord taxes
+                fiefText += "Overlord taxes: " + this.keyStatsCurrent[11] + "\r\n";
+                // overlord tax rate
+                fiefText += "   (tax rate: " + this.keyStatsCurrent[12] + "%)\r\n\r\n";
+
+                // surplus
+                fiefText += "Bottom line: " + this.keyStatsCurrent[13];
+            }
+
+            return fiefText;
+        }
+
+        /// <summary>
+        /// Retrieves next season's key information for Fief display screen
+        /// </summary>
+        /// <returns>String containing information to display</returns>
+        public string DisplayFiefKeyStatsNext()
+        {
+            string fiefText = "NEXT SEASON (ESTIMATE)\r\n========================\r\n\r\n";
+
+            // if under siege, don't display data
+            if (!String.IsNullOrWhiteSpace(this.siege))
+            {
+                fiefText += "CURRENTLY UNAVAILABLE - due to siege\r\n";
+            }
+
+            // if NOT under siege
+            else
+            {
+                // loyalty
+                fiefText += "Loyalty: " + this.CalcNewLoyalty() + "\r\n";
+                // various loyalty modifiers
+                fiefText += "  (including Officials spend loyalty modifier: " + this.CalcOffLoyMod() + ")\r\n";
+                fiefText += "  (including Garrison spend loyalty modifier: " + this.CalcGarrLoyMod() + ")\r\n";
+                fiefText += "  (including Bailiff loyalty modifier: " + this.CalcBlfLoyAdjusted(this.bailiffDaysInFief >= 30) + ")\r\n";
+                fiefText += "    (which itself may include a Bailiff fiefLoy traits modifier: " + this.CalcBailLoyTraitMod(this.bailiffDaysInFief >= 30) + ")\r\n\r\n";
+
+                // GDP
+                fiefText += "GDP: " + this.CalcNewGDP() + "\r\n\r\n";
+
+                // tax rate
+                fiefText += "Tax rate: " + this.taxRateNext + "%\r\n\r\n";
+
+                // officials expenditure
+                fiefText += "Officials expenditure: " + this.officialsSpendNext + "\r\n\r\n";
+
+                // Garrison expenditure
+                fiefText += "Garrison expenditure: " + this.garrisonSpendNext + "\r\n\r\n";
+
+                // Infrastructure expenditure
+                fiefText += "Infrastructure expenditure: " + this.infrastructureSpendNext + "\r\n\r\n";
+
+                // keep expenditure
+                fiefText += "Keep expenditure: " + this.keepSpendNext + "\r\n";
+                // keep level
+                fiefText += "   (keep level: " + this.CalcNewKeepLevel() + ")\r\n\r\n";
+
+                // income
+                fiefText += "Income: " + this.CalcNewIncome() + "\r\n";
+                // various income modifiers
+                fiefText += "  (including Bailiff income modifier: " + this.CalcBlfIncMod(this.bailiffDaysInFief >= 30) + ")\r\n";
+                fiefText += "  (including Officials spend income modifier: " + this.CalcOffIncMod() + ")\r\n\r\n";
+
+                // family expenses
+                fiefText += "Family expenses  (may include a famExpense modifier): " + this.CalcFamilyExpenses();
+                fiefText += "\r\n\r\n";
+
+                // total expenses (fief and family)
+                fiefText += "Total fief expenses  (may include expenses modifiers): " + (this.CalcNewExpenses() + this.CalcFamilyExpenses());
+                fiefText += "\r\n\r\n";
+
+                // overlord taxes
+                fiefText += "Overlord taxes: " + this.CalcNewOlordTaxes() + "\r\n";
+                // overlord tax rate
+                fiefText += "   (tax rate: " + this.province.taxRate + "%)\r\n\r\n";
+
+                // bottom line
+                fiefText += "Bottom line: " + this.CalcNewBottomLine();
+            }
+
+            return fiefText;
+        }
+
+        /// <summary>
+        /// Checks to see if display of financial data for the specified financial period
+        /// is permitted due to ongoing siege
+        /// </summary>
+        /// <returns>bool indicating whether display is permitted</returns>
+        /// <param name="target">int indicating desired financial period relative to current season</param>
+        /// <param name="s">The siege</param>
+        public bool CheckToShowFinancialData(int relativeSeason, Siege s)
+        {
+            bool displayData = true;
+
+            uint financialPeriodYear = this.GetFinancialYear(relativeSeason);
+            if (financialPeriodYear > s.startYear)
+            {
+                displayData = false;
+            }
+            else if (financialPeriodYear == s.startYear)
+            {
+                byte financialPeriodSeason = this.GetFinancialSeason(relativeSeason);
+                if (financialPeriodSeason > s.startSeason)
+                {
+                    displayData = false;
+                }
+            }
+
+            return displayData;
+        }
+
+        /// <summary>
+        /// Gets the year for the specified financial period
+        /// </summary>
+        /// <returns>The year</returns>
+        /// <param name="target">int indicating desired financial period relative to current season</param>
+        public uint GetFinancialYear(int relativeSeason)
+        {
+            uint financialYear = 0;
+            uint thisYear = Globals_Game.clock.currentYear;
+
+            switch (relativeSeason)
+            {
+                case (-1):
+                    if (Globals_Game.clock.currentSeason == 0)
+                    {
+                        financialYear = thisYear - 1;
+                    }
+                    else
+                    {
+                        financialYear = thisYear;
+                    }
+                    break;
+                case (1):
+                    if (Globals_Game.clock.currentSeason == 4)
+                    {
+                        financialYear = thisYear + 1;
+                    }
+                    else
+                    {
+                        financialYear = thisYear;
+                    }
+                    break;
+                default:
+                    financialYear = thisYear;
+                    break;
+            }
+
+            return financialYear;
+        }
+
+        /// <summary>
+        /// Gets the season for the specified financial period
+        /// </summary>
+        /// <returns>The season</returns>
+        /// <param name="target">int indicating desired financial period relative to current season</param>
+        public byte GetFinancialSeason(int relativeSeason)
+        {
+            byte financialSeason = 0;
+            byte thisSeason = Globals_Game.clock.currentSeason;
+
+            switch (relativeSeason)
+            {
+                case (-1):
+                    if (thisSeason == 0)
+                    {
+                        financialSeason = 4;
+                    }
+                    else
+                    {
+                        financialSeason = thisSeason;
+                        financialSeason--;
+                    }
+                    break;
+                case (1):
+                    if (thisSeason == 4)
+                    {
+                        financialSeason = 0;
+                    }
+                    else
+                    {
+                        financialSeason = thisSeason;
+                        financialSeason++;
+                    }
+                    break;
+                default:
+                    financialSeason = thisSeason;
+                    break;
+            }
+
+            return financialSeason;
+        }
+        /// <summary>
+        /// Transfers funds between the fief treasury and another fief's treasury
+        /// </summary>
+        /// <param name="to">The Fief to which funds are to be transferred</param>
+        /// <param name="amount">How much to be transferred</param>
+        public void TreasuryTransfer(Fief to, int amount)
+        {
+            // subtract from source treasury
+            this.treasury = this.treasury - amount;
+
+            // add to target treasury
+            to.treasury = to.treasury + amount;
         }
 
     }

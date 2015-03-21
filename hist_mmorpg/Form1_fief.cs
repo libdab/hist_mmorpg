@@ -73,6 +73,7 @@ namespace hist_mmorpg
             }
         }
 
+        /*
         /// <summary>
         /// Retrieves general information for Fief display screen
         /// </summary>
@@ -444,7 +445,7 @@ namespace hist_mmorpg
             }
 
             return fiefText;
-        }
+        } */
 
         /// <summary>
         /// Refreshes main Fief display screen
@@ -477,7 +478,7 @@ namespace hist_mmorpg
             }
 
             // refresh main fief TextBox with updated info
-            this.fiefTextBox.Text = this.DisplayFiefGeneralData(Globals_Client.fiefToView, isOwner);
+            this.fiefTextBox.Text = Globals_Client.fiefToView.DisplayFiefGeneralData(isOwner);
 
             // ensure textboxes aren't interactive
             this.fiefTextBox.ReadOnly = true;
@@ -522,9 +523,9 @@ namespace hist_mmorpg
                     this.viewBailiffBtn.Enabled = true;
 
                     // allow financial data TextBoxes to show appropriate data
-                    this.fiefPrevKeyStatsTextBox.Text = this.DisplayFiefKeyStatsPrev(Globals_Client.fiefToView);
-                    this.fiefCurrKeyStatsTextBox.Text = this.DisplayFiefKeyStatsCurr(Globals_Client.fiefToView);
-                    this.fiefNextKeyStatsTextBox.Text = this.DisplayFiefKeyStatsNext(Globals_Client.fiefToView);
+                    this.fiefPrevKeyStatsTextBox.Text = Globals_Client.fiefToView.DisplayFiefKeyStatsPrev();
+                    this.fiefCurrKeyStatsTextBox.Text = Globals_Client.fiefToView.DisplayFiefKeyStatsCurr();
+                    this.fiefNextKeyStatsTextBox.Text = Globals_Client.fiefToView.DisplayFiefKeyStatsNext();
                 }
 
                 // if NOT under siege, enable usual controls
@@ -570,9 +571,9 @@ namespace hist_mmorpg
                     this.adjOffSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.officialsSpendNext);
                     this.adjustKeepSpendTextBox.Text = Convert.ToString(Globals_Client.fiefToView.keepSpendNext);
                     this.adjustTaxTextBox.Text = Convert.ToString(Globals_Client.fiefToView.taxRateNext);
-                    this.fiefPrevKeyStatsTextBox.Text = this.DisplayFiefKeyStatsPrev(Globals_Client.fiefToView);
-                    this.fiefCurrKeyStatsTextBox.Text = this.DisplayFiefKeyStatsCurr(Globals_Client.fiefToView);
-                    this.fiefNextKeyStatsTextBox.Text = this.DisplayFiefKeyStatsNext(Globals_Client.fiefToView);
+                    this.fiefPrevKeyStatsTextBox.Text = Globals_Client.fiefToView.DisplayFiefKeyStatsPrev();
+                    this.fiefCurrKeyStatsTextBox.Text = Globals_Client.fiefToView.DisplayFiefKeyStatsCurr();
+                    this.fiefNextKeyStatsTextBox.Text = Globals_Client.fiefToView.DisplayFiefKeyStatsNext();
 
                     // display home treasury
                     this.fiefHomeTreasTextBox.Text = homeTreasury.ToString();
@@ -622,16 +623,14 @@ namespace hist_mmorpg
         /// <param name="amount">How much to be transferred</param>
         public void TreasuryTransfer(Fief from, Fief to, int amount)
         {
-            // subtract from source treasury
-            from.treasury = from.treasury - amount;
-
-            // add to target treasury
-            to.treasury = to.treasury + amount;
+            // conduct transfer
+            from.TreasuryTransfer(to, amount);
 
             // refresh fief display
             this.RefreshCurrentScreen();
         }
 
+        /*
         /// <summary>
         /// Checks to see if display of financial data for the specified financial period
         /// is permitted due to ongoing siege
@@ -740,6 +739,6 @@ namespace hist_mmorpg
             }
 
             return financialSeason;
-        }
+        } */
     }
 }

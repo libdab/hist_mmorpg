@@ -20,6 +20,7 @@ namespace hist_mmorpg
     /// </summary>
     partial class Form1
     {
+        /*
         /// <summary>
         /// Moves an NPC without a boss one hex in a random direction
         /// </summary>
@@ -47,7 +48,6 @@ namespace hist_mmorpg
             return success;
         }
 
-        /*
         /// <summary>
         /// Moves character to target fief
         /// </summary>
@@ -249,6 +249,7 @@ namespace hist_mmorpg
 
         }
 
+        /*
         /// <summary>
         /// Moves character to the target fief, through intervening fiefs (stored in goTo queue)
         /// </summary>
@@ -289,7 +290,7 @@ namespace hist_mmorpg
 
             return success;
 
-        }
+        } */
 
         /// <summary>
         /// Moves a character to a specified fief using the shortest path
@@ -302,70 +303,31 @@ namespace hist_mmorpg
             if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
             {
                 myTextBox = this.meetingPlaceMoveToTextBox;
-                if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
-                {
-                    Globals_Client.myPlayerCharacter.RemoveFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
-                }
             }
             else if (whichScreen.Equals("house"))
             {
                 myTextBox = this.houseMoveToTextBox;
-                if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
-                {
-                    Globals_Client.myPlayerCharacter.RemoveFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
-                }
             }
             else if (whichScreen.Equals("travel"))
             {
                 myTextBox = this.travelMoveToTextBox;
             }
 
-            // check for existence of fief
-            if (Globals_Game.fiefMasterList.ContainsKey(myTextBox.Text.ToUpper()))
+            // perform move
+            Globals_Client.charToView.MoveTo(myTextBox.Text.ToUpper());
+
+            // refresh appropriate screen
+            if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
             {
-                // retrieves target fief
-                Fief target = Globals_Game.fiefMasterList[myTextBox.Text.ToUpper()];
-
-                // obtains goTo queue for shortest path to target
-                Globals_Client.charToView.goTo = Globals_Game.gameMap.GetShortestPath(Globals_Client.charToView.location, target);
-
-                // if retrieve valid path
-                if (Globals_Client.charToView.goTo.Count > 0)
-                {
-                    // if character is NPC, check entourage and remove if necessary
-                    if (!whichScreen.Equals("travel"))
-                    {
-                        if (Globals_Client.myPlayerCharacter.myNPCs.Contains(Globals_Client.charToView))
-                        {
-                            (Globals_Client.charToView as NonPlayerCharacter).inEntourage = false;
-                        }
-                    }
-
-                    // perform move
-                    this.CharacterMultiMove(Globals_Client.charToView);
-                }
-
-                // refresh appropriate screen
-                if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
-                {
-                    this.RefreshMeetingPlaceDisplay(whichScreen); ;
-                }
-                else if (whichScreen.Equals("house"))
-                {
-                    this.RefreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
-                }
-                else if (whichScreen.Equals("travel"))
-                {
-                    this.RefreshTravelContainer();
-                }
-
+                this.RefreshMeetingPlaceDisplay(whichScreen); ;
             }
-            else
+            else if (whichScreen.Equals("house"))
             {
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("Target fief ID not found.  Please ensure fiefID is valid.");
-                }
+                this.RefreshHouseholdDisplay((Globals_Client.charToView as NonPlayerCharacter));
+            }
+            else if (whichScreen.Equals("travel"))
+            {
+                this.RefreshTravelContainer();
             }
 
         }
@@ -378,175 +340,8 @@ namespace hist_mmorpg
         /// <param name="campDays">Number of days to camp</param>
         public void CampWaitHere(Character ch, byte campDays)
         {
-            bool proceed = true;
-            // get army
-            Army thisArmy = null;
-            thisArmy = ch.GetArmy();
-            // get siege
-            Siege thisSiege = null;
-            if (thisArmy != null)
-            {
-                thisSiege = thisArmy.GetSiege();
-            }
-
-            // check has enough days available
-            if (ch.days < (Double)campDays)
-            {
-                campDays = Convert.ToByte(Math.Truncate(ch.days));
-                DialogResult dialogResult = MessageBox.Show("You only have " + campDays + " available.  Click 'OK' to proceed.", "Proceed with camp?", MessageBoxButtons.OKCancel);
-
-                // if choose to cancel
-                if (dialogResult == DialogResult.Cancel)
-                {
-                    proceed = false;
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("You decide not to camp after all.");
-                    }
-                }
-            }
-
-            if (proceed)
-            {
-                // check if player's entourage needs to camp
-                bool entourageCamp = false;
-
-                // if character is player, camp entourage
-                if (ch is PlayerCharacter)
-                {
-                    entourageCamp = true;
-                }
-
-                // if character NOT player
-                else
-                {
-                    // if is in entourage, remove prior to camping
-                    if ((ch as NonPlayerCharacter).inEntourage)
-                    {
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " has been removed from your entourage.");
-                        }
-                        Globals_Client.myPlayerCharacter.RemoveFromEntourage((ch as NonPlayerCharacter));
-                    }
-                }
-
-                // check for siege
-                // uses different method to adjust days of all objects involved and apply attrition)
-                if (thisSiege != null)
-                {
-                    thisSiege.SyncSiegeDays(ch.days - campDays);
-                }
-
-                // if no siege
-                else
-                {
-                    // adjust character's days
-                    if (ch is PlayerCharacter)
-                    {
-                        (ch as PlayerCharacter).AdjustDays(campDays);
-                    }
-                    else
-                    {
-                        ch.AdjustDays(campDays);
-                    }
-
-                    // inform player
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show(ch.firstName + " " + ch.familyName + " remains in " + ch.location.name + " for " + campDays + " days.");
-                    }
-
-                    // check if character is army leader, if so check for army attrition
-                    if (thisArmy != null)
-                    {
-                        // number of attrition checks
-                        byte attritionChecks = 0;
-                        attritionChecks = Convert.ToByte(campDays / 7);
-                        // total attrition
-                        uint totalAttrition = 0;
-
-                        for (int i = 0; i < attritionChecks; i++)
-                        {
-                            // calculate attrition
-                            double attritionModifer = thisArmy.CalcAttrition();
-                            // apply attrition
-                            if (attritionModifer > 0)
-                            {
-                                totalAttrition += thisArmy.ApplyTroopLosses(attritionModifer);
-                            }
-                        }
-
-                        // inform player
-                        if (totalAttrition > 0)
-                        {
-                            if (Globals_Client.showMessages)
-                            {
-                                System.Windows.Forms.MessageBox.Show("Army (" + thisArmy.armyID + ") lost " + totalAttrition + " troops due to attrition.");
-                            }
-                        }
-                    }
-                }
-
-                // keep track of bailiffDaysInFief before any possible increment
-                Double bailiffDaysBefore = ch.location.bailiffDaysInFief;
-
-                // keep track of identity of bailiff
-                Character myBailiff = null;
-
-                // check if character is bailiff of this fief
-                if (ch.location.bailiff == ch)
-                {
-                    myBailiff = ch;
-                }
-
-                // if character not bailiff, if appropriate, check to see if anyone in entourage is
-                else if (entourageCamp)
-                {
-                    // if player is bailiff
-                    if (Globals_Client.myPlayerCharacter == ch.location.bailiff)
-                    {
-                        myBailiff = Globals_Client.myPlayerCharacter;
-                    }
-                    // if not, check for bailiff in entourage
-                    else
-                    {
-                        for (int i = 0; i < Globals_Client.myPlayerCharacter.myNPCs.Count; i++)
-                        {
-                            if (Globals_Client.myPlayerCharacter.myNPCs[i].inEntourage)
-                            {
-                                if (Globals_Client.myPlayerCharacter.myNPCs[i] != ch)
-                                {
-                                    if (Globals_Client.myPlayerCharacter.myNPCs[i] == ch.location.bailiff)
-                                    {
-                                        myBailiff = Globals_Client.myPlayerCharacter.myNPCs[i];
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                }
-
-                // if bailiff identified as someone who camped
-                if (myBailiff != null)
-                {
-                    // increment bailiffDaysInFief
-                    ch.location.bailiffDaysInFief += campDays;
-                    // if necessary, display message to player
-                    if (ch.location.bailiffDaysInFief >= 30)
-                    {
-                        // don't display this message if min bailiffDaysInFief was already achieved
-                        if (!(bailiffDaysBefore >= 30))
-                        {
-                            if (Globals_Client.showMessages)
-                            {
-                                System.Windows.Forms.MessageBox.Show(myBailiff.firstName + " " + myBailiff.familyName + " has fulfilled his bailiff duties in " + ch.location.name + ".");
-                            }
-                        }
-                    }
-                }
-            }
+            // perform camp
+            bool proceed = ch.CampWaitHere(campDays);
 
             // refresh display
             if (proceed)
@@ -569,28 +364,15 @@ namespace hist_mmorpg
         /// <param name="whichScreen">String indicating on which screen the movement command occurred</param>
         public void TakeThisRoute(string whichScreen)
         {
-            bool proceed;
-            Fief source = null;
-            Fief target = null;
-            Queue<Fief> route = new Queue<Fief>();
-
-            // get appropriate TextBox and remove from entourage, if necessary
+            // get appropriate TextBox
             TextBox myTextBox = null;
             if ((whichScreen.Equals("tavern")) || (whichScreen.Equals("outsideKeep")) || (whichScreen.Equals("court")))
             {
                 myTextBox = this.meetingPlaceRouteTextBox;
-                if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
-                {
-                    Globals_Client.myPlayerCharacter.RemoveFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
-                }
             }
             else if (whichScreen.Equals("house"))
             {
                 myTextBox = this.houseRouteTextBox;
-                if ((Globals_Client.charToView as NonPlayerCharacter).inEntourage)
-                {
-                    Globals_Client.myPlayerCharacter.RemoveFromEntourage(Globals_Client.charToView as NonPlayerCharacter);
-                }
             }
             else if (whichScreen.Equals("travel"))
             {
@@ -600,47 +382,8 @@ namespace hist_mmorpg
             // get list of directions
             string[] directions = myTextBox.Text.Split(',').ToArray<string>();
 
-            // convert to Queue of fiefs
-            for (int i = 0; i < directions.Length; i++)
-            {
-                // source for first move is character's current location
-                if (i == 0)
-                {
-                    source = Globals_Client.charToView.location;
-                }
-                // source for all other moves is the previous target fief
-                else
-                {
-                    source = target;
-                }
-
-                // get the target fief
-                target = Globals_Game.gameMap.GetFief(source, directions[i].ToUpper());
-
-                // if target successfully acquired, add to queue
-                if (target != null)
-                {
-                    route.Enqueue(target);
-                }
-                // if no target acquired, display message and break
-                else
-                {
-                    if (Globals_Client.showMessages)
-                    {
-                        System.Windows.Forms.MessageBox.Show("Invalid movement instruction encountered.  Movement will halt at the last correct destination: " + source.name + " (" + source.id + ")");
-                    }
-                    break;
-                }
-
-            }
-
-            // if there are any fiefs in the queue, overwrite the character's goTo queue
-            // then process by calling characterMultiMove
-            if (route.Count > 0)
-            {
-                Globals_Client.charToView.goTo = route;
-                proceed = this.CharacterMultiMove(Globals_Client.charToView);
-            }
+            // perform movement
+            Globals_Client.charToView.TakeThisRoute(directions);
 
             // refresh appropriate screen
             this.RefreshCurrentScreen();
