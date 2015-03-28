@@ -20,6 +20,7 @@ namespace hist_mmorpg
     /// </summary>
     partial class Form1
     {
+        /*
         /// <summary>
         /// Retrieves information for Siege display screen
         /// </summary>
@@ -159,8 +160,6 @@ namespace hist_mmorpg
             {
                 siegeText += "Chance of success in next round:\r\n";
                 // chance of storm success
-                /* double keepLvl = this.calcStormKeepLevel(s);
-                double successChance = this.calcStormSuccess(keepLvl); */
                 // get battle values for both armies
                 uint[] battleValues = besieger.CalculateBattleValues(defenderGarrison, Convert.ToInt32(siegeLocation.keepLevel));
                 double successChance = Battle.CalcVictoryChance(battleValues[0], battleValues[1]);
@@ -171,7 +170,7 @@ namespace hist_mmorpg
             }
 
             return siegeText;
-        }
+        } */
 
         /// <summary>
         /// Refreshes main Siege display screen
@@ -239,6 +238,7 @@ namespace hist_mmorpg
             this.siegeListView.Focus();
         }
 
+        /*
         /// <summary>
         /// Calculates the outcome of the pillage of a fief by an army
         /// </summary>
@@ -649,7 +649,7 @@ namespace hist_mmorpg
             if (bailiffPresent)
             {
                 // create temporary army for battle
-                fiefArmy = this.CreateDefendingArmy(f);
+                fiefArmy = f.CreateDefendingArmy();
 
                 // give battle and get result
                 pillageCancelled = Battle.GiveBattle(fiefArmy, a, circumstance: "pillage");
@@ -680,7 +680,7 @@ namespace hist_mmorpg
             if (!pillageCancelled)
             {
                 // process pillage
-                this.ProcessPillage(f, a);
+                Pillage.ProcessPillage(f, a);
             }
 
         }
@@ -881,8 +881,9 @@ namespace hist_mmorpg
             }
 
             return proceed;
-        }
+        } */
 
+        /*
         /// <summary>
         /// Implements conditional checks prior to a siege operation
         /// </summary>
@@ -914,7 +915,7 @@ namespace hist_mmorpg
             }
 
             return proceed;
-        }
+        } */
 
         /// <summary>
         /// Ends the specified siege
@@ -934,41 +935,7 @@ namespace hist_mmorpg
             this.RefreshCurrentScreen();
         }
 
-        /// <summary>
-        /// Calculates the percentage chance of successfully storming a keep, based on keep level
-        /// </summary>
-        /// <returns>double containing precentage chance of success</returns>
-        /// <param name="keepLvl">The keep level</param>
-        public double CalcStormSuccess(double keepLvl)
-        {
-            double stormFailurePercent = 0;
-
-            for (int i = 0; i <= keepLvl; i++)
-            {
-                if (i == 0)
-                {
-                    stormFailurePercent = 5;
-                }
-                else if (i == 1)
-                {
-                    stormFailurePercent = 70;
-                }
-                else
-                {
-                    stormFailurePercent = stormFailurePercent + (stormFailurePercent * (0.08 * (1 / (keepLvl - 1))));
-                }
-
-                // ensure is always slight chance of success
-                if (stormFailurePercent > 99)
-                {
-                    stormFailurePercent = 99;
-                }
-            }
-
-            // return success % (inverse of stormFailurePercent)
-            return 100 - stormFailurePercent;
-        }
-
+        /*
         /// <summary>
         /// Processes the storming of the keep by attacking forces in a siege
         /// </summary>
@@ -1114,7 +1081,7 @@ namespace hist_mmorpg
             if (stormSuccess)
             {
                 // pillage fief
-                this.ProcessPillage(besiegedFief, besiegingArmy);
+                Pillage.ProcessPillage(besiegedFief, besiegingArmy);
 
                 // CAPTIVES
                 // identify captives - fief owner, his family, and any PCs of enemy nationality
@@ -1369,7 +1336,7 @@ namespace hist_mmorpg
             this.RefreshCurrentScreen();
 
             return negotiateSuccess;
-        }
+        } */
 
         /// <summary>
         /// Processes a single reduction round of a siege
@@ -1378,173 +1345,13 @@ namespace hist_mmorpg
         /// <param name="type">The type of round - storm, negotiate, reduction (default)</param>
         public void SiegeReductionRound(Siege s, string type = "reduction")
         {
-            bool siegeRaised = false;
-            Fief besiegedFief = s.GetFief();
-            Army besieger = s.GetBesiegingArmy();
-            Army defenderGarrison = s.GetDefenderGarrison();
-            Army defenderAdditional = null;
+            // conduct reduction round
+            s.SiegeReductionRound(type);
 
-            // check for sallying army
-            if (!String.IsNullOrWhiteSpace(s.defenderAdditional))
-            {
-                defenderAdditional = s.GetDefenderAdditional();
-
-                if (defenderAdditional.aggression > 0)
-                {
-                    // get odds
-                    int battleOdds = Battle.GetBattleOdds(defenderAdditional, besieger);
-
-                    // if odds OK, give battle
-                    if (battleOdds >= defenderAdditional.combatOdds)
-                    {
-                        // process battle and apply results, if required
-                        siegeRaised = Battle.GiveBattle(defenderAdditional, besieger, circumstance: "siege");
-
-                        // check for disbandment of defenderAdditional and remove from siege if necessary
-                        if (!siegeRaised)
-                        {
-                            if (!besiegedFief.armies.Contains(s.defenderAdditional))
-                            {
-                                defenderAdditional = null;
-                            }
-                        }
-
-                    }
-                }
-            }
-
-            if (siegeRaised)
-            {
-                // NOTE: if sally was success, siege is ended in Form1.giveBattle
-                if (Globals_Client.showMessages)
-                {
-                    System.Windows.Forms.MessageBox.Show("The defenders have successfully raised the siege!");
-                }
-            }
-
-            else
-            {
-                Character defenderLeader = defenderGarrison.GetLeader();
-                Character attackerLeader = besieger.GetLeader();
-
-                // process results of siege round
-                // reduce keep level by 8%
-                double originalKeepLvl = besiegedFief.keepLevel;
-                besiegedFief.keepLevel = (besiegedFief.keepLevel * 0.92);
-
-                // apply combat losses to defenderGarrison
-                // NOTE: attrition for both sides is calculated in siege.syncDays
-
-                double combatLosses = 0.01;
-                uint troopsLost = defenderGarrison.ApplyTroopLosses(combatLosses);
-
-                // check for death of defending PCs/NPCs
-                if (defenderLeader != null)
-                {
-                    bool characterDead = false;
-
-                    // if defenderLeader is PC, check for casualties amongst entourage
-                    if (defenderLeader is PlayerCharacter)
-                    {
-                        for (int i = 0; i < (defenderLeader as PlayerCharacter).myNPCs.Count; i++)
-                        {
-                            NonPlayerCharacter thisNPC = (defenderLeader as PlayerCharacter).myNPCs[i];
-                            characterDead = thisNPC.CalculateCombatInjury(combatLosses);
-
-                            if (characterDead)
-                            {
-                                // process death
-                                (defenderLeader as PlayerCharacter).myNPCs[i].ProcessDeath("injury");
-                            }
-                        }
-                    }
-
-                    // check defenderLeader
-                    characterDead = defenderLeader.CalculateCombatInjury(combatLosses);
-
-                    if (characterDead)
-                    {
-                        // remove as leader
-                        defenderGarrison.leader = null;
-
-                        // process death
-                        defenderLeader.ProcessDeath("injury");
-                    }
-                }
-
-                // update total days (NOTE: siege.days will be updated in syncDays)
-                s.totalDays += 10;
-
-                // synchronise days
-                s.SyncSiegeDays(s.days - 10);
-
-                if (type.Equals("reduction"))
-                {
-                    // UPDATE SIEGE LOSSES
-                    s.totalCasualtiesDefender += Convert.ToInt32(troopsLost);
-
-                    // =================== construct and send JOURNAL ENTRY
-                    // ID
-                    uint entryID = Globals_Game.GetNextJournalEntryID();
-
-                    // personae
-                    List<string> tempPersonae = new List<string>();
-                    tempPersonae.Add(s.GetDefendingPlayer().charID + "|fiefOwner");
-                    tempPersonae.Add(s.GetBesiegingPlayer().charID + "|attackerOwner");
-                    if (attackerLeader != null)
-                    {
-                        tempPersonae.Add(attackerLeader.charID + "|attackerLeader");
-                    }
-                    if (defenderLeader != null)
-                    {
-                        tempPersonae.Add(defenderLeader.charID + "|defenderGarrisonLeader");
-                    }
-                    // get additional defending leader
-                    Character addDefendLeader = null;
-                    if (defenderAdditional != null)
-                    {
-                        addDefendLeader = defenderAdditional.GetLeader();
-                        if (addDefendLeader != null)
-                        {
-                            tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
-                        }
-                    }
-                    string[] siegePersonae = tempPersonae.ToArray();
-
-                    // location
-                    string siegeLocation = s.GetFief().id;
-
-                    // use popup text as description
-                    string siegeDescription = "On this day of Our Lord the siege of " + s.GetFief().name + " by ";
-                    siegeDescription += s.GetBesiegingPlayer().firstName + " " + s.GetBesiegingPlayer().familyName;
-                    siegeDescription += " continued.  The besieged garrison lost a total of " + troopsLost + " troops, ";
-                    siegeDescription += " and the keep level was reduced from " + originalKeepLvl + " to ";
-                    siegeDescription += besiegedFief.keepLevel + ".";
-
-                    // put together new journal entry
-                    JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siegeReduction", loc: siegeLocation, descr: siegeDescription);
-
-                    // add new journal entry to pastEvents
-                    Globals_Game.AddPastEvent(siegeResult);
-                }
-
-                if (type.Equals("storm"))
-                {
-                    this.SiegeStormRound(s, troopsLost, originalKeepLvl);
-                }
-                else if (type.Equals("negotiation"))
-                {
-                    this.SiegeNegotiationRound(s, troopsLost, originalKeepLvl);
-                }
-            }
-
-            if (type.Equals("reduction"))
-            {
-                // refresh screen
-                this.RefreshCurrentScreen();
-            }
-
+            // refresh screen
+            this.RefreshCurrentScreen();
         }
+
         /// <summary>
         /// Allows an attacking army to lay siege to an enemy fief
         /// </summary>
@@ -1552,124 +1359,8 @@ namespace hist_mmorpg
         /// <param name="target">The fief to be besieged</param>
         public void SiegeStart(Army attacker, Fief target)
         {
-            Army defenderGarrison = null;
-            Army defenderAdditional = null;
-
-            // check for existence of army in keep
-            for (int i = 0; i < target.armies.Count; i++)
-            {
-                // get army
-                Army armyInFief = Globals_Game.armyMasterList[target.armies[i]];
-
-                // check is in keep
-                Character armyLeader = armyInFief.GetLeader();
-                if (armyLeader != null)
-                {
-                    if (armyLeader.inKeep)
-                    {
-                        // check owner is same as that of fief (i.e. can help in siege)
-                        if (armyInFief.GetOwner() == target.owner)
-                        {
-                            defenderAdditional = armyInFief;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // create defending force
-            defenderGarrison = this.CreateDefendingArmy(target);
-
-            // get the minumum days of all army objects involved
-            double minDays = Math.Min(attacker.days, defenderGarrison.days);
-            if (defenderAdditional != null)
-            {
-                minDays = Math.Min(minDays, defenderAdditional.days);
-            }
-
-            // get defenderAdditional ID, or null if no defenderAdditional
-            string defAddID = null;
-            if (defenderAdditional != null)
-            {
-                defAddID = defenderAdditional.armyID;
-            }
-
-            // create siege object
-            Siege mySiege = new Siege(Globals_Game.GetNextSiegeID(), Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, attacker.GetOwner().charID, target.owner.charID, attacker.armyID, defenderGarrison.armyID, target.id, minDays, target.keepLevel, defAdd: defAddID);
-
-            // add to master list
-            Globals_Game.siegeMasterList.Add(mySiege.siegeID, mySiege);
-
-            // add to siege owners
-            mySiege.GetBesiegingPlayer().mySieges.Add(mySiege.siegeID);
-            mySiege.GetDefendingPlayer().mySieges.Add(mySiege.siegeID);
-
-            // add to fief
-            target.siege = mySiege.siegeID;
-
-            // reduce expenditures in fief, except for garrison
-            target.infrastructureSpendNext = 0;
-            target.keepSpendNext = 0;
-            target.officialsSpendNext = 0;
-
-            // update days (NOTE: siege.days will be updated in syncDays)
-            mySiege.totalDays++;
-
-            // sychronise days
-            mySiege.SyncSiegeDays(mySiege.days - 1);
-
-            // =================== construct and send JOURNAL ENTRY
-            // ID
-            uint entryID = Globals_Game.GetNextJournalEntryID();
-
-            // personae
-            List<string> tempPersonae = new List<string>();
-            tempPersonae.Add("all|all");
-            tempPersonae.Add(mySiege.GetDefendingPlayer().charID + "|fiefOwner");
-            tempPersonae.Add(mySiege.GetBesiegingPlayer().charID + "|attackerOwner");
-            tempPersonae.Add(attacker.GetLeader().charID + "|attackerLeader");
-            // get defenderLeader
-            Character defenderLeader = defenderGarrison.GetLeader();
-            if (defenderLeader != null)
-            {
-                tempPersonae.Add(defenderLeader.charID + "|defenderGarrisonLeader");
-            }
-            // get additional defending leader
-            Character addDefendLeader = null;
-            if (defenderAdditional != null)
-            {
-                addDefendLeader = defenderAdditional.GetLeader();
-                if (addDefendLeader != null)
-                {
-                    tempPersonae.Add(addDefendLeader.charID + "|defenderAdditionalLeader");
-                }
-            }
-            string[] siegePersonae = tempPersonae.ToArray();
-
-            // location
-            string siegeLocation = mySiege.GetFief().id;
-
-            // description
-            string siegeDescription = "On this day of Our Lord the forces of ";
-            siegeDescription += mySiege.GetBesiegingPlayer().firstName + " " + mySiege.GetBesiegingPlayer().familyName;
-            siegeDescription += ", led by " + attacker.GetLeader().firstName + " " + attacker.GetLeader().familyName;
-            siegeDescription += " laid siege to the keep of " + mySiege.GetFief().name;
-            siegeDescription += ", owned by " + mySiege.GetDefendingPlayer().firstName + " " + mySiege.GetDefendingPlayer().familyName;
-            if (defenderLeader != null)
-            {
-                siegeDescription += ". The defending garrison is led by " + defenderLeader.firstName + " " + defenderLeader.familyName;
-            }
-            if (addDefendLeader != null)
-            {
-                siegeDescription += ". Additional defending forces are led by " + addDefendLeader.firstName + " " + addDefendLeader.familyName;
-            }
-            siegeDescription += ".";
-
-            // put together new journal entry
-            JournalEntry siegeResult = new JournalEntry(entryID, Globals_Game.clock.currentYear, Globals_Game.clock.currentSeason, siegePersonae, "siege", loc: siegeLocation, descr: siegeDescription);
-
-            // add new journal entry to pastEvents
-            Globals_Game.AddPastEvent(siegeResult);
+            // start siege
+            Siege mySiege = Pillage_Siege.SiegeStart(attacker, target);
 
             // display siege in siege screen
             this.RefreshSiegeContainer(mySiege);

@@ -3215,6 +3215,102 @@ namespace hist_mmorpg
             to.treasury = to.treasury + amount;
         }
 
+        /// <summary>
+        /// Creates a defending army for defence of a fief during pillage or siege
+        /// </summary>
+        /// <returns>The defending army</returns>
+        public Army CreateDefendingArmy()
+        {
+            Army defender = null;
+            Character armyLeader = null;
+            string armyLeaderID = null;
+            double armyLeaderDays = 90;
+
+            // if present in fief, get bailiff and assign as army leader
+            if (this.bailiff != null)
+            {
+                for (int i = 0; i < this.charactersInFief.Count; i++)
+                {
+                    if (this.charactersInFief[i] == this.bailiff)
+                    {
+                        armyLeader = this.bailiff;
+                        armyLeaderID = armyLeader.charID;
+                        armyLeaderDays = armyLeader.days;
+                        break;
+                    }
+                }
+            }
+
+            // gather troops to create army
+            uint garrisonSize = 0;
+            uint militiaSize = 0;
+            uint[] troopsForArmy = new uint[] { 0, 0, 0, 0, 0, 0, 0 };
+            uint[] tempTroops = new uint[] { 0, 0, 0, 0, 0, 0, 0 };
+            uint totalSoFar = 0;
+
+            // get army nationality
+            string thisNationality = this.owner.nationality.natID;
+
+            // get size of fief garrison
+            garrisonSize = Convert.ToUInt32(this.GetGarrisonSize());
+
+            // get size of fief 'militia' responding to emergency
+            militiaSize = Convert.ToUInt32(this.CallUpTroops(minProportion: 0.33, maxProportion: 0.66));
+
+            // get defending troops based on following troop type proportions:
+            // militia = Global_Server.recruitRatios for types 0-4, fill with rabble
+            // garrison = Global_Server.recruitRatios * 2 for types 0-3, fill with foot
+
+            // 1. militia (includes proportion of rabble)
+            for (int i = 0; i < tempTroops.Length; i++)
+            {
+                // work out 'trained' troops numbers
+                if (i < tempTroops.Length - 1)
+                {
+                    tempTroops[i] = Convert.ToUInt32(militiaSize * Globals_Server.recruitRatios[thisNationality][i]);
+                }
+                // fill up with rabble
+                else
+                {
+                    tempTroops[i] = militiaSize - totalSoFar;
+                }
+
+                troopsForArmy[i] += tempTroops[i];
+                totalSoFar += tempTroops[i];
+            }
+
+            // 2. garrison (all 'professional' troops)
+            totalSoFar = 0;
+
+            for (int i = 0; i < tempTroops.Length; i++)
+            {
+                // work out 'trained' troops numbers
+                if (i < tempTroops.Length - 2)
+                {
+                    tempTroops[i] = Convert.ToUInt32(garrisonSize * (Globals_Server.recruitRatios[thisNationality][i] * 2));
+                }
+                // fill up with foot
+                else if (i < tempTroops.Length - 1)
+                {
+                    tempTroops[i] = garrisonSize - totalSoFar;
+                }
+                // no rabble in garrison
+                else
+                {
+                    tempTroops[i] = 0;
+                }
+
+                troopsForArmy[i] += tempTroops[i];
+                totalSoFar += tempTroops[i];
+            }
+
+            // create temporary army for battle/siege
+            defender = new Army("Garrison" + Globals_Game.GetNextArmyID(), armyLeaderID, this.owner.charID, armyLeaderDays, this.id, trp: troopsForArmy);
+            defender.AddArmy();
+
+            return defender;
+        }
+
     }
 
 	/// <summary>

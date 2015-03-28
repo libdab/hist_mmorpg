@@ -2477,7 +2477,7 @@ namespace hist_mmorpg
                 bool playerIsBesieger = (Globals_Client.myPlayerCharacter == besiegingPlayer);
 
                 // display data for selected siege
-                this.siegeTextBox.Text = this.DisplaySiegeData(Globals_Client.siegeToView);
+                this.siegeTextBox.Text = Globals_Client.siegeToView.DisplaySiegeData();
 
                 // if player is besieger
                 if (playerIsBesieger)
@@ -2537,7 +2537,7 @@ namespace hist_mmorpg
                 Fief thisFief = thisArmy.GetLocation();
 
                 // do various checks
-                proceed = this.ChecksBeforePillageSiege(thisArmy, thisFief, "siege");
+                proceed = Pillage_Siege.ChecksBeforePillageSiege(thisArmy, thisFief, "siege");
 
                 // process siege
                 if (proceed)
@@ -2587,7 +2587,7 @@ namespace hist_mmorpg
                 Siege thisSiege = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
 
                 // perform conditional checks here
-                proceed = this.ChecksBeforeSiegeOperation(thisSiege);
+                proceed = thisSiege.ChecksBeforeSiegeOperation();
 
                 if (proceed)
                 {
@@ -2620,7 +2620,7 @@ namespace hist_mmorpg
                 Siege thisSiege = Globals_Game.siegeMasterList[this.siegeListView.SelectedItems[0].SubItems[0].Text];
 
                 // perform conditional checks here
-                proceed = this.ChecksBeforeSiegeOperation(thisSiege, "end");
+                proceed = thisSiege.ChecksBeforeSiegeOperation("end");
 
                 if (proceed)
                 {
@@ -2668,12 +2668,12 @@ namespace hist_mmorpg
                 Fief thisFief = thisArmy.GetLocation();
 
                 // do various checks
-                proceed = this.ChecksBeforePillageSiege(thisArmy, thisFief);
+                proceed = Pillage_Siege.ChecksBeforePillageSiege(thisArmy, thisFief);
 
                 // process pillage
                 if (proceed)
                 {
-                    this.PillageFief(thisArmy, thisFief);
+                    Pillage_Siege.PillageFief(thisArmy, thisFief);
                 }
             }
             else
@@ -2716,7 +2716,7 @@ namespace hist_mmorpg
                     if (thisFief != null)
                     {
                         // do various checks
-                        proceed = this.ChecksBeforePillageSiege(thisArmy, thisFief, circumstance: "quellRebellion");
+                        proceed = Pillage_Siege.ChecksBeforePillageSiege(thisArmy, thisFief, circumstance: "quellRebellion");
 
                         if (proceed)
                         {
@@ -2726,7 +2726,7 @@ namespace hist_mmorpg
                             if (quellSuccess)
                             {
                                 // pillage the fief
-                                this.ProcessPillage(thisFief, thisArmy, "quellRebellion");
+                                Pillage_Siege.ProcessPillage(thisFief, thisArmy, "quellRebellion");
                             }
 
                             // if not successful, retreat army
