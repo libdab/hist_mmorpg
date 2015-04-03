@@ -1688,7 +1688,7 @@ namespace hist_mmorpg
                         if (proceed)
                         {
                             // process marriage
-                            this.ProcessMarriage(jEntry.Value);
+                            jEntry.Value.ProcessMarriage();
 
                             // add entry to list for removal
                             forRemoval.Add(jEntry.Value);
@@ -3872,7 +3872,7 @@ namespace hist_mmorpg
                         else
                         {
                             // carry out conditional checks
-                            proceed = this.ChecksBeforeProposal(bride, groom);
+                            proceed = groom.ChecksBeforeProposal(bride);
 
                             // if checks OK, process proposal
                             if (proceed)
@@ -4001,7 +4001,7 @@ namespace hist_mmorpg
                     else
                     {
                         // carry out conditional checks
-                        proceed = this.ChecksBeforeProposal(bride, groom);
+                        proceed = groom.ChecksBeforeProposal(bride);
 
                         // if checks OK, process proposal
                         if (proceed)

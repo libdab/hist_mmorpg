@@ -3801,6 +3801,137 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Implements conditional checks on the character and his proposed bride prior to a marriage proposal
+        /// </summary>
+        /// <returns>bool indicating whether proposal can proceed</returns>
+        /// <param name="bride">The prospective bride</param>
+        public bool ChecksBeforeProposal(Character bride)
+        {
+            bool proceed = true;
+            string message = "";
+
+            // ============= BRIDE
+            // check is female
+            if (bride.isMale)
+            {
+                message = "You cannot propose to a man!";
+                proceed = false;
+            }
+
+            // check is of age
+            else
+            {
+                if (bride.CalcAge() < 14)
+                {
+                    message = "The prospective bride has yet to come of age.";
+                    proceed = false;
+                }
+
+                else
+                {
+                    // check isn't engaged
+                    if (!String.IsNullOrWhiteSpace(bride.fiancee))
+                    {
+                        message = "The prospective bride is already engaged.";
+                        proceed = false;
+                    }
+
+                    else
+                    {
+                        // check isn't married
+                        if (!String.IsNullOrWhiteSpace(bride.spouse))
+                        {
+                            message = "The prospective bride is already married.";
+                            proceed = false;
+                        }
+                        else
+                        {
+                            // check is family member of player
+                            if ((bride.GetHeadOfFamily() == null) || (String.IsNullOrWhiteSpace(bride.GetHeadOfFamily().playerID)))
+                            {
+                                message = "The prospective bride is not of a suitable family.";
+                                proceed = false;
+                            }
+                            else
+                            {
+                                // ============= GROOM
+                                // check is male
+                                if (!this.isMale)
+                                {
+                                    message = "The proposer must be a man.";
+                                    proceed = false;
+                                }
+                                else
+                                {
+                                    // check is of age
+                                    if (this.CalcAge() < 14)
+                                    {
+                                        message = "The prospective groom has yet to come of age.";
+                                        proceed = false;
+                                    }
+                                    else
+                                    {
+                                        // check is unmarried
+                                        if (!String.IsNullOrWhiteSpace(this.spouse))
+                                        {
+                                            message = "The prospective groom is already married.";
+                                            proceed = false;
+                                        }
+                                        else
+                                        {
+                                            // check isn't engaged
+                                            if (!String.IsNullOrWhiteSpace(this.fiancee))
+                                            {
+                                                message = "The prospective groom is already engaged.";
+                                                proceed = false;
+                                            }
+                                            else
+                                            {
+                                                // check is family member of player OR is player themself
+                                                if (String.IsNullOrWhiteSpace(this.familyID))
+                                                {
+                                                    message = "The prospective groom is not of a suitable family.";
+                                                    proceed = false;
+                                                }
+                                                else
+                                                {
+                                                    // check isn't in family same family as bride
+                                                    if (this.familyID.Equals(bride.familyID))
+                                                    {
+                                                        message = "The prospective bride and groom are in the same family!";
+                                                        proceed = false;
+                                                    }
+                                                }
+
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+
+            if (!proceed)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(message);
+                }
+            }
+
+            return proceed;
+        }
+
+        /// <summary>
         /// Moves character one hex in a random direction
         /// </summary>
         /// <returns>bool indicating success</returns>

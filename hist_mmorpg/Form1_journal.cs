@@ -33,25 +33,8 @@ namespace hist_mmorpg
             uint thisYear = Globals_Game.clock.currentYear;
             byte thisSeason = Globals_Game.clock.currentSeason;
 
-            switch (setScope)
-            {
-                // get entries for current year
-                case "year":
-                    Globals_Client.eventSetToView = Globals_Client.myPastEvents.GetEventsOnDate(yr: thisYear);
-                    break;
-                // get entries for current season
-                case "season":
-                    Globals_Client.eventSetToView = Globals_Client.myPastEvents.GetEventsOnDate(yr: thisYear, seas: thisSeason);
-                    break;
-                // get unread entries
-                case "unread":
-                    Globals_Client.eventSetToView = Globals_Client.myPastEvents.GetUnviewedEntries();
-                    break;
-                // get all entries
-                default:
-                    Globals_Client.eventSetToView = Globals_Client.myPastEvents.GetEventsOnDate();
-                    break;
-            }
+            // get appropriate jEntry set
+            Globals_Client.eventSetToView = Globals_Client.myPastEvents.getJournalEntrySet(setScope, thisYear, thisSeason);
 
             // get max index position
             Globals_Client.jEntryMax = Globals_Client.eventSetToView.Count - 1;

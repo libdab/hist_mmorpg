@@ -83,117 +83,8 @@ namespace hist_mmorpg
         /// <param name="proposalAccepted">bool indicating whether proposal accepted</param>
         public bool ReplyToProposal(JournalEntry jEntry, bool proposalAccepted)
         {
-            bool success = true;
-
-            // get interested parties
-            PlayerCharacter headOfFamilyBride = null;
-            PlayerCharacter headOfFamilyGroom = null;
-            Character bride = null;
-            Character groom = null;
-
-            for (int i = 0; i < jEntry.personae.Length; i++)
-            {
-                string thisPersonae = jEntry.personae[i];
-                string[] thisPersonaeSplit = thisPersonae.Split('|');
-
-                switch (thisPersonaeSplit[1])
-                {
-                    case "headOfFamilyBride":
-                        headOfFamilyBride = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
-                        break;
-                    case "headOfFamilyGroom":
-                        headOfFamilyGroom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
-                        break;
-                    case "bride":
-                        bride = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
-                        break;
-                    case "groom":
-                        if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
-                        {
-                            groom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
-                        }
-                        else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
-                        {
-                            groom = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            // ID
-            uint replyID = Globals_Game.GetNextJournalEntryID();
-
-            // date
-            uint year = Globals_Game.clock.currentYear;
-            byte season = Globals_Game.clock.currentSeason;
-
-            // personae
-            List<string> tempPersonae = new List<string>();
-            tempPersonae.Add(headOfFamilyBride.charID + "|headOfFamilyBride");
-            tempPersonae.Add(headOfFamilyGroom.charID + "|headOfFamilyGroom");
-            tempPersonae.Add(bride.charID + "|bride");
-            tempPersonae.Add(groom.charID + "|groom");
-            if (proposalAccepted)
-            {
-                tempPersonae.Add("all|all");
-            }
-            string[] myReplyPersonae = tempPersonae.ToArray();
-
-            // type
-            string type = "";
-            if (proposalAccepted)
-            {
-                type = "proposalAccepted";
-            }
-            else
-            {
-                type = "proposalRejected";
-            }
-
-            // description
-            string description = "On this day of Our Lord the proposed marriage between ";
-            description += groom.firstName + " " + groom.familyName + " and ";
-            description += bride.firstName + " " + bride.familyName + " has been ";
-            if (proposalAccepted)
-            {
-                description += "ACCEPTED";
-            }
-            else
-            {
-                description += "REJECTED";
-            }
-            description += " by " + headOfFamilyBride.firstName + " " + headOfFamilyBride.familyName + ".";
-            if (proposalAccepted)
-            {
-                description += " Let the bells ring out in celebration!";
-            }
-
-            // create and send a proposal reply (journal entry)
-            JournalEntry myProposalReply = new JournalEntry(replyID, year, season, myReplyPersonae, type, descr: description);
-            success = Globals_Game.AddPastEvent(myProposalReply);
-
-            if (success)
-            {
-                // mark proposal as replied
-                jEntry.description += "\r\n\r\n** You ";
-                if (proposalAccepted)
-                {
-                    jEntry.description += "ACCEPTED ";
-                }
-                else
-                {
-                    jEntry.description += "REJECTED ";
-                }
-                jEntry.description += "this proposal in " + Globals_Game.clock.seasons[season] + ", " + year;
-
-                // if accepted, process engagement
-                if (proposalAccepted)
-                {
-                    this.ProcessEngagement(myProposalReply);
-                }
-            }
+            // process reply
+            bool success = jEntry.ReplyToProposal(proposalAccepted);
 
             // refresh screen
             this.RefreshCurrentScreen();
@@ -201,6 +92,7 @@ namespace hist_mmorpg
             return success;
         }
 
+        /*
         /// <summary>
         /// Processes the actions involved with an engagement
         /// </summary>
@@ -530,6 +422,6 @@ namespace hist_mmorpg
             }
 
             return proceed;
-        }
+        } */
     }
 }
