@@ -1325,11 +1325,41 @@ namespace hist_mmorpg
         /// </summary>
         /// <returns>String containing information to display</returns>
         /// <param name="a">Army for which information is to be displayed</param>
-        public string DisplayArmyData()
+        /// <param name="observer">Character observing the army</param>
+        public string DisplayArmyData(Character observer)
         {
+            bool isMyArmy = false;
             string armyText = "";
             uint[] troopNumbers = this.troops;
+            uint totalTroops = 0;
             Fief armyLocation = this.GetLocation();
+
+            // get owner
+            PlayerCharacter thisOwner = this.GetOwner();
+
+            // check if observer is owner (will effect display of details)
+            if (thisOwner == observer)
+            {
+                isMyArmy = true;
+            }
+
+            // ID
+            armyText += "ID: " + this.armyID + "\r\n\r\n";
+
+            // nationality
+            armyText += "Nationality: " + this.GetOwner().nationality.name + "\r\n\r\n";
+
+            // owner
+            armyText += "Owner: " + thisOwner.firstName + " " + thisOwner.familyName + " (" + thisOwner.charID + ")\r\n\r\n";
+
+            if (isMyArmy)
+            {
+                // days left
+                armyText += "Days left: " + this.days + "\r\n\r\n";
+            }
+
+            // location
+            armyText += "Location: " + armyLocation.name + " (Province: " + armyLocation.province.name + ".  Kingdom: " + armyLocation.province.kingdom.name + ")\r\n\r\n";
 
             // check if is garrison in a siege
             string siegeID = this.CheckIfSiegeDefenderGarrison();
@@ -1366,18 +1396,6 @@ namespace hist_mmorpg
                 }
             }
 
-            // ID
-            armyText += "ID: " + this.armyID + "\r\n\r\n";
-
-            // nationality
-            armyText += "Nationality: " + this.GetOwner().nationality.name + "\r\n\r\n";
-
-            // days left
-            armyText += "Days left: " + this.days + "\r\n\r\n";
-
-            // location
-            armyText += "Location: " + armyLocation.name + " (Province: " + armyLocation.province.name + ".  Kingdom: " + armyLocation.province.kingdom.name + ")\r\n\r\n";
-
             // leader
             Character armyLeader = this.GetLeader();
 
@@ -1385,13 +1403,37 @@ namespace hist_mmorpg
 
             if (armyLeader == null)
             {
-                armyText += "THIS ARMY HAS NO LEADER!  You should appoint one as soon as possible.";
+                armyText += "THIS ARMY HAS NO LEADER!";
+
+                if (isMyArmy)
+                {
+                    armyText += "  You should appoint one as soon as possible.";
+                }
             }
             else
             {
                 armyText += armyLeader.firstName + " " + armyLeader.familyName + " (" + armyLeader.charID + ")";
             }
             armyText += "\r\n\r\n";
+
+            // get troop numbers
+            if (isMyArmy)
+            {
+                // actual troop numbers if is player's army
+                troopNumbers = this.troops;
+            }
+            else
+            {
+                // estimated troop numbers if is NOT player's army
+                troopNumbers = this.GetTroopsEstimate(observer);
+            }
+
+            armyText += "Troop numbers";
+            if (!isMyArmy)
+            {
+                armyText += " (ESTIMATE)";
+            }
+            armyText += ":\r\n";
 
             // labels for troop types
             string[] troopTypeLabels = new string[] { " - Knights: ", " - Men-at-Arms: ", " - Light Cavalry: ", " - Longbowmen: ", " - Crossbowmen: ", " - Foot: ", " - Rabble: " };
@@ -1400,28 +1442,34 @@ namespace hist_mmorpg
             for (int i = 0; i < troopNumbers.Length; i++)
             {
                 armyText += troopTypeLabels[i] + troopNumbers[i];
+                totalTroops += troopNumbers[i];
                 armyText += "\r\n";
             }
+
+            // display total
             armyText += "   ==================\r\n";
-            armyText += " - TOTAL: " + this.CalcArmySize() + "\r\n\r\n";
+            armyText += " - TOTAL: " + totalTroops + "\r\n\r\n";
 
-            // whether is maintained (and at what cost)
-            if (this.isMaintained)
+            if (isMyArmy)
             {
-                uint armyCost = this.CalcArmySize() * 500;
+                // whether is maintained (and at what cost)
+                if (this.isMaintained)
+                {
+                    uint armyCost = this.CalcArmySize() * 500;
 
-                armyText += "This army is currently being maintained (at a cost of £" + armyCost + ")\r\n\r\n";
+                    armyText += "This army is currently being maintained (at a cost of £" + armyCost + ")\r\n\r\n";
+                }
+                else
+                {
+                    armyText += "This army is NOT currently being maintained\r\n\r\n";
+                }
+
+                // aggression level
+                armyText += "Aggression level: " + this.aggression + "\r\n\r\n";
+
+                // sally value
+                armyText += "Sally value: " + this.combatOdds + "\r\n\r\n";
             }
-            else
-            {
-                armyText += "This army is NOT currently being maintained\r\n\r\n";
-            }
-
-            // aggression level
-            armyText += "Aggression level: " + this.aggression + "\r\n\r\n";
-
-            // sally value
-            armyText += "Sally value: " + this.combatOdds + "\r\n\r\n";
 
             return armyText;
         }

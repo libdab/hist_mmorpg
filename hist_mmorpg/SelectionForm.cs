@@ -392,6 +392,7 @@ namespace hist_mmorpg
             }
         }
 
+        /*
         /// <summary>
         /// Retrieves army details for display
         /// </summary>
@@ -471,7 +472,7 @@ namespace hist_mmorpg
             armyText += " - TOTAL: " + totalTroops + "\r\n\r\n";
 
             return armyText;
-        }
+        } */
 
         /// <summary>
         /// Retrieves character details for display
@@ -1401,7 +1402,8 @@ namespace hist_mmorpg
 
                 // get details
                 Army otherArmy = Globals_Game.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
-                textToDisplay += this.DisplayArmy(otherArmy);
+                // textToDisplay += this.DisplayArmy(otherArmy);
+                textToDisplay += otherArmy.DisplayArmyData(observer);
 
                 // display details
                 this.armiesTextBox.Text = textToDisplay;

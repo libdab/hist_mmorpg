@@ -3493,7 +3493,7 @@ namespace hist_mmorpg
                 charText += "Health: ";
                 if (!this.isAlive)
                 {
-                    charText += "You're Dead!";
+                    charText += "Oops - Dead!";
                 }
                 else
                 {
@@ -3749,7 +3749,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-        /// Allows a character to propose marriage between himself and a female family member of another player
+        /// Allows a character to propose marriage between himself and a female family member of another player 
         /// </summary>
         /// <returns>bool indicating whether proposal was processed successfully</returns>
         /// <param name="bride">The prospective bride</param>

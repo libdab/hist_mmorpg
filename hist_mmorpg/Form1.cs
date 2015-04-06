@@ -5054,7 +5054,7 @@ namespace hist_mmorpg
             if (Globals_Client.armyToView != null)
             {
                 // display data for selected army
-                this.armyTextBox.Text = Globals_Client.armyToView.DisplayArmyData();
+                this.armyTextBox.Text = Globals_Client.armyToView.DisplayArmyData(Globals_Client.myPlayerCharacter);
 
                 // check if is defender in a siege
                 string siegeID = Globals_Client.armyToView.CheckIfSiegeDefenderGarrison();
