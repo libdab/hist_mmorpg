@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace hist_mmorpg 
 {
     /// <summary>
-    /// Class storing data on army
+    /// Class storing data on army 
     /// </summary>
     public class Army 
     {

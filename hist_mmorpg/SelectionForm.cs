@@ -10,7 +10,7 @@ using System.Windows.Forms;
 namespace hist_mmorpg
 {
     /// <summary>
-    /// User interface component for selecting and passing data back to Form1
+    /// User interface component for selecting and passing data back to Form1 
     /// </summary>
     public partial class SelectionForm : Form
     {
