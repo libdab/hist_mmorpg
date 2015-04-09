@@ -3424,7 +3424,8 @@ namespace hist_mmorpg
         /// <returns>String containing information to display</returns>
         /// <param name="showFullDetails">bool indicating whether to display full character details</param>
         /// <param name="showTitles">bool indicating whether to display character's titles</param>
-        public string DisplayCharacter(bool showFullDetails, bool showTitles)
+        /// <param name="observer">Character who is viewing this character's information</param>
+        public string DisplayCharacter(bool showFullDetails, bool showTitles, Character observer)
         {
             string charText = "";
 
@@ -3462,6 +3463,7 @@ namespace hist_mmorpg
             charText += "Age: " + this.CalcAge() + "\r\n";
 
             // sex
+
             charText += "Sex: ";
             if (this.isMale)
             {
@@ -3476,7 +3478,7 @@ namespace hist_mmorpg
             // nationality
             charText += "Nationality: " + this.nationality.name + "\r\n";
 
-            if (this is PlayerCharacter)
+            if ((this is PlayerCharacter) && (showFullDetails))
             {
                 // home fief
                 Fief homeFief = (this as PlayerCharacter).GetHomeFief();
@@ -3487,24 +3489,21 @@ namespace hist_mmorpg
                 charText += "Ancestral Home fief: " + ancHomeFief.name + " (" + ancHomeFief.id + ")\r\n";
             }
 
+            // health (& max. health)
+            charText += "Health: ";
+            if (!this.isAlive)
+            {
+                charText += "Oops - Dead!";
+            }
+            else
+            {
+                charText += this.CalculateHealth() + " (max. health: " + this.maxHealth + ")";
+            }
+            charText += "\r\n";
+
+            // virility
             if (showFullDetails)
             {
-                // health (& max. health)
-                charText += "Health: ";
-                if (!this.isAlive)
-                {
-                    charText += "Oops - Dead!";
-                }
-                else
-                {
-                    charText += this.CalculateHealth() + " (max. health: " + this.maxHealth + ")";
-                }
-                charText += "\r\n";
-
-                // any death modifiers (from traits)
-                charText += "  (Death modifier from traits: " + this.CalcTraitEffect("death") + ")\r\n";
-
-                // virility
                 charText += "Virility: " + this.virility + "\r\n";
             }
 
@@ -3514,11 +3513,8 @@ namespace hist_mmorpg
             // language
             charText += "Language: " + this.language.GetName() + "\r\n";
 
-            if (showFullDetails)
-            {
-                // days left
-                charText += "Days remaining: " + this.days + "\r\n";
-            }
+            // days left
+            charText += "Days remaining: " + this.days + "\r\n";
 
             // stature
             charText += "Stature: " + this.CalculateStature() + "\r\n";
@@ -3538,118 +3534,120 @@ namespace hist_mmorpg
             }
 
             // whether inside/outside the keep
-            charText += "You are ";
             if (this.inKeep)
             {
-                charText += "inside";
+                charText += "Inside";
             }
             else
             {
-                charText += "outside";
+                charText += "Outside";
             }
             charText += " the keep\r\n";
 
-            // marital status
-            NonPlayerCharacter thisSpouse = null;
-            charText += "You are ";
-            if (!String.IsNullOrWhiteSpace(this.spouse))
+            if (showFullDetails)
             {
-                // get spouse
-                if (Globals_Game.npcMasterList.ContainsKey(this.spouse))
+                // marital status
+                NonPlayerCharacter thisSpouse = null;
+                charText += "Marital status: ";
+                if (!String.IsNullOrWhiteSpace(this.spouse))
                 {
-                    thisSpouse = Globals_Game.npcMasterList[this.spouse];
-                }
-
-                if (thisSpouse != null)
-                {
-                    charText += "happily married to " + thisSpouse.firstName + " " + thisSpouse.familyName;
-                    charText += " (ID: " + this.spouse + ").";
-                }
-                else
-                {
-                    charText += "apparently married (but your spouse cannot be identified).";
-                }
-            }
-            else
-            {
-                charText += "not married.";
-            }
-            charText += "\r\n";
-
-            // if pregnant
-            if (!this.isMale)
-            {
-                charText += "You are ";
-                if (!this.isPregnant)
-                {
-                    charText += "not ";
-                }
-                charText += "pregnant\r\n";
-            }
-
-            // if spouse pregnant
-            else
-            {
-                if (thisSpouse != null)
-                {
-                    if (thisSpouse.isPregnant)
+                    // get spouse
+                    if (Globals_Game.npcMasterList.ContainsKey(this.spouse))
                     {
-                        charText += "Your spouse is pregnant (congratulations!)\r\n";
+                        thisSpouse = Globals_Game.npcMasterList[this.spouse];
+                    }
+
+                    if (thisSpouse != null)
+                    {
+                        charText += "happily married to " + thisSpouse.firstName + " " + thisSpouse.familyName;
+                        charText += " (ID: " + this.spouse + ").";
                     }
                     else
                     {
-                        charText += "Your spouse is not pregnant\r\n";
+                        charText += "apparently married (but your spouse cannot be identified).";
                     }
                 }
-            }
+                else
+                {
+                    charText += "not married.";
+                }
+                charText += "\r\n";
 
-            // engaged
-            charText += "You are ";
-            if (!String.IsNullOrWhiteSpace(this.fiancee))
-            {
-                charText += "engaged to be married to ID " + this.fiancee;
-            }
-            else
-            {
-                charText += "not engaged to be married";
-            }
-            charText += "\r\n";
+                // if pregnant
+                if (!this.isMale)
+                {
+                    charText += "Pregnancy status: ";
+                    if (!this.isPregnant)
+                    {
+                        charText += "not ";
+                    }
+                    charText += "pregnant\r\n";
+                }
 
-            // father
-            charText += "Father's ID: ";
-            if (!String.IsNullOrWhiteSpace(this.father))
-            {
-                charText += this.father;
-            }
-            else
-            {
-                charText += "N/A";
-            }
-            charText += "\r\n";
+                // if spouse pregnant
+                else
+                {
+                    if (thisSpouse != null)
+                    {
+                        if (thisSpouse.isPregnant)
+                        {
+                            charText += "Your spouse is pregnant (congratulations!)\r\n";
+                        }
+                        else
+                        {
+                            charText += "Your spouse is not pregnant\r\n";
+                        }
+                    }
+                }
 
-            // mother
-            charText += "Mother's ID: ";
-            if (!String.IsNullOrWhiteSpace(this.mother))
-            {
-                charText += this.mother;
-            }
-            else
-            {
-                charText += "N/A";
-            }
-            charText += "\r\n";
+                // engaged
+                charText += "You are ";
+                if (!String.IsNullOrWhiteSpace(this.fiancee))
+                {
+                    charText += "engaged to be married to ID " + this.fiancee;
+                }
+                else
+                {
+                    charText += "not engaged to be married";
+                }
+                charText += "\r\n";
 
-            // head of family
-            charText += "Head of family's ID: ";
-            if (!String.IsNullOrWhiteSpace(this.familyID))
-            {
-                charText += this.familyID;
+                // father
+                charText += "Father's ID: ";
+                if (!String.IsNullOrWhiteSpace(this.father))
+                {
+                    charText += this.father;
+                }
+                else
+                {
+                    charText += "N/A";
+                }
+                charText += "\r\n";
+
+                // mother
+                charText += "Mother's ID: ";
+                if (!String.IsNullOrWhiteSpace(this.mother))
+                {
+                    charText += this.mother;
+                }
+                else
+                {
+                    charText += "N/A";
+                }
+                charText += "\r\n";
+
+                // head of family
+                charText += "Head of family's ID: ";
+                if (!String.IsNullOrWhiteSpace(this.familyID))
+                {
+                    charText += this.familyID;
+                }
+                else
+                {
+                    charText += "N/A";
+                }
+                charText += "\r\n";
             }
-            else
-            {
-                charText += "N/A";
-            }
-            charText += "\r\n";
 
             // gather additional information for PC/NPC
             bool isPC = this is PlayerCharacter;
@@ -3662,7 +3660,7 @@ namespace hist_mmorpg
             }
             else
             {
-                charText += (this as NonPlayerCharacter).DisplayNonPlayerCharacter();
+                charText += (this as NonPlayerCharacter).DisplayNonPlayerCharacter(observer);
             }
 
 
@@ -5991,35 +5989,40 @@ namespace hist_mmorpg
         /// Retrieves NonPlayerCharacter-specific information for Character display
         /// </summary>
         /// <returns>String containing information to display</returns>
-        public string DisplayNonPlayerCharacter()
+        /// <param name="observer">Character who is viewing this character's information</param>
+        public string DisplayNonPlayerCharacter(Character observer)
         {
             string npcText = "";
 
             // boss
             if (!String.IsNullOrWhiteSpace(this.employer))
             {
-                npcText += "Hired by (ID): " + this.employer + "\r\n";
+                npcText += "Employer (ID): " + this.employer + "\r\n";
             }
 
-            // estimated salary level (if character is male)
-            if (this.isMale)
+            // salary-related information
+            if (observer is PlayerCharacter)
             {
-                npcText += "Potential salary: " + this.CalcSalary(Globals_Client.myPlayerCharacter) + "\r\n";
-
-                // most recent salary offer from player (if any)
-                npcText += "Last offer from this PC: ";
-                if (this.lastOffer.ContainsKey(Globals_Client.myPlayerCharacter.charID))
+                // estimated salary level (if character is male)
+                if (this.isMale)
                 {
-                    npcText += this.lastOffer[Globals_Client.myPlayerCharacter.charID];
-                }
-                else
-                {
-                    npcText += "N/A";
-                }
-                npcText += "\r\n";
+                    npcText += "Potential salary: " + this.CalcSalary(observer as PlayerCharacter) + "\r\n";
 
-                // current salary
-                npcText += "Current salary: " + this.salary + "\r\n";
+                    // most recent salary offer from player (if any)
+                    npcText += "Last offer from this PC: ";
+                    if (this.lastOffer.ContainsKey(observer.charID))
+                    {
+                        npcText += this.lastOffer[observer.charID];
+                    }
+                    else
+                    {
+                        npcText += "N/A";
+                    }
+                    npcText += "\r\n";
+
+                    // current salary
+                    npcText += "Current salary: " + this.salary + "\r\n";
+                }
             }
 
             return npcText;

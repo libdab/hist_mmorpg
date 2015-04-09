@@ -113,18 +113,22 @@ namespace hist_mmorpg
         /// Retrieves information for Character display screen
         /// </summary>
         /// <returns>String containing information to display</returns>
-        /// <param name="ch">Character whose information is to be displayed</param>
-        public string DisplayCharacter(Character ch)
+        /// <param name="observed">Character whose information is to be displayed</param>
+        /// <param name="observer">Character who is viewing this character's information</param>
+        public string DisplayCharacter(Character observed, Character observer)
         {
             bool isMyNPC = false;
 
             // check if is in player's myNPCs
-            if (Globals_Client.myPlayerCharacter.myNPCs.Contains((ch as NonPlayerCharacter)) || (ch == Globals_Client.myPlayerCharacter))
+            if (observer is PlayerCharacter)
             {
-                isMyNPC = true;
+                if ((observer as PlayerCharacter).myNPCs.Contains((observed as NonPlayerCharacter)) || (observed == Globals_Client.myPlayerCharacter))
+                {
+                    isMyNPC = true;
+                }
             }
 
-            string charText = ch.DisplayCharacter(isMyNPC, this.characterTitlesCheckBox.Checked);
+            string charText = observed.DisplayCharacter(isMyNPC, this.characterTitlesCheckBox.Checked, observer);
 
             return charText;
         }
@@ -143,7 +147,7 @@ namespace hist_mmorpg
 
             // refresh Character display TextBox
             this.characterTextBox.ReadOnly = true;
-            this.characterTextBox.Text = this.DisplayCharacter(ch);
+            this.characterTextBox.Text = this.DisplayCharacter(ch, Globals_Client.myPlayerCharacter);
 
             // clear previous entries in Camp TextBox
             this.travelCampDaysTextBox.Text = "";

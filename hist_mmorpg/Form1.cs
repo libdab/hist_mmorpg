@@ -3661,7 +3661,7 @@ namespace hist_mmorpg
             {
                 Globals_Client.charToView = charToDisplay;
                 string textToDisplay = "";
-                textToDisplay += this.DisplayCharacter(charToDisplay);
+                textToDisplay += this.DisplayCharacter(charToDisplay, Globals_Client.myPlayerCharacter);
                 this.meetingPlaceCharDisplayTextBox.ReadOnly = true;
                 this.meetingPlaceCharDisplayTextBox.Text = textToDisplay;
             }
@@ -4172,7 +4172,7 @@ namespace hist_mmorpg
             if (charToDisplay != null)
             {
                 Globals_Client.charToView = charToDisplay;
-                this.houseCharTextBox.Text = this.DisplayCharacter(charToDisplay);
+                this.houseCharTextBox.Text = this.DisplayCharacter(charToDisplay, Globals_Client.myPlayerCharacter);
                 this.houseCharTextBox.ReadOnly = true;
 
                 // see if is in entourage to set text of entourage button

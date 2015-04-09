@@ -384,7 +384,7 @@ namespace hist_mmorpg
                     this.chooseNpcBtn.Enabled = true;
 
                     // get details
-                    textToDisplay += this.DisplayCharacter(charToDisplay);
+                    textToDisplay += charToDisplay.DisplayCharacter(false, false, Globals_Client.myPlayerCharacter);
 
                     // display details
                     this.npcDetailsTextBox.Text = textToDisplay;
@@ -472,7 +472,7 @@ namespace hist_mmorpg
             armyText += " - TOTAL: " + totalTroops + "\r\n\r\n";
 
             return armyText;
-        } */
+        }
 
         /// <summary>
         /// Retrieves character details for display
@@ -564,7 +564,7 @@ namespace hist_mmorpg
             npcText += "Current salary: " + npc.salary + "\r\n";
 
             return npcText;
-        }
+        } */
 
         /// <summary>
         /// Responds to the click event of the chooseNpcBtn button, assigning a character to
