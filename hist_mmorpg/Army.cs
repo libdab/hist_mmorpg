@@ -1592,5 +1592,259 @@ namespace hist_mmorpg
 
         }
 
+        /// <summary>
+        /// Processes the addition of one or more detachments to the army
+        /// </summary>
+        /// <param name="detachments">The detachments to add</param>
+        public void ProcessPickups(ListView.CheckedListViewItemCollection detachments)
+        {
+            bool proceed = true;
+            bool adjustDays = true;
+            double daysTaken = 0;
+            double minDays = 0;
+            bool displayNotAllMsg = false;
+            uint[] totTroopsToAdd = new uint[] { 0, 0, 0, 0, 0, 0, 0 };
+            string toDisplay = "";
+
+            // set minDays to thisArmy.days (as default value)
+            minDays = this.days;
+
+            // get leader and owner
+            Character myLeader = this.GetLeader();
+            PlayerCharacter myOwner = this.GetOwner();
+
+            // check have minimum days necessary for transfer
+            if (this.days < 10)
+            {
+                if (Globals_Client.showMessages)
+                {
+                    toDisplay = "You don't have enough days left for this transfer.";
+                    System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                }
+                proceed = false;
+                adjustDays = false;
+            }
+            else
+            {
+                // calculate time taken for transfer
+                daysTaken = Globals_Game.myRand.Next(10, 31);
+
+                // check if have enough days for transfer in this instance
+                if (daysTaken > this.days)
+                {
+                    daysTaken = this.days;
+                    if (Globals_Client.showMessages)
+                    {
+                        toDisplay = "Poor organisation means that you have run out of days for this transfer.\r\nTry again next season.";
+                        System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                    }
+                    proceed = false;
+                }
+                else
+                {
+                    // make sure collecting army is owned by recipient or donator
+                    foreach (ListViewItem item in detachments)
+                    {
+                        // get donating player
+                        PlayerCharacter pcFrom = null;
+                        if (Globals_Game.pcMasterList.ContainsKey(item.SubItems[9].Text))
+                        {
+                            pcFrom = Globals_Game.pcMasterList[item.SubItems[9].Text];
+                        }
+
+                        // get donating player
+                        PlayerCharacter pcFor = null;
+                        if (Globals_Game.pcMasterList.ContainsKey(item.SubItems[10].Text))
+                        {
+                            pcFor = Globals_Game.pcMasterList[item.SubItems[10].Text];
+                        }
+
+                        // check for appropriate collecting player
+                        if ((myOwner != pcFrom) && (myOwner != pcFor))
+                        {
+                            if (Globals_Client.showMessages)
+                            {
+                                toDisplay = "You are not permitted to collect at least one of the selected detachments.";
+                                System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                            }
+                            proceed = false;
+                            adjustDays = false;
+                        }
+                    }
+                }
+            }
+
+            if (proceed)
+            {
+                // get fief
+                Fief thisFief = this.GetLocation();
+
+                // check for minimum days
+                foreach (ListViewItem item in detachments)
+                {
+                    double thisDays = Convert.ToDouble(item.SubItems[8].Text);
+
+                    // check if detachment has enough days for transfer in this instance
+                    // if not, flag display of message at end of process, but do nothing else
+                    if (thisDays < daysTaken)
+                    {
+                        displayNotAllMsg = true;
+                        toDisplay = "At least one detachment could not be added due to poor organisation.";
+                    }
+                    else
+                    {
+                        if (thisDays < minDays)
+                        {
+                            minDays = thisDays;
+                        }
+                    }
+                }
+
+                foreach (ListViewItem item in detachments)
+                {
+                    double thisDays = Convert.ToDouble(item.SubItems[8].Text);
+
+                    // get numbers of each type to add
+                    uint[] thisTroops = new uint[] { Convert.ToUInt32(item.SubItems[1].Text), Convert.ToUInt32(item.SubItems[2].Text),
+                            Convert.ToUInt32(item.SubItems[3].Text), Convert.ToUInt32(item.SubItems[4].Text),
+                            Convert.ToUInt32(item.SubItems[5].Text), Convert.ToUInt32(item.SubItems[6].Text),
+                            Convert.ToUInt32(item.SubItems[7].Text) };
+
+                    // if does have enough days, proceed
+                    if (thisDays >= daysTaken)
+                    {
+                        // create temporary army to check attrition
+                        Army tempArmy = new Army(Globals_Game.GetNextArmyID(), null, item.SubItems[9].Text,
+                            thisDays, this.location, trp: thisTroops);
+
+                        // compare days to minDays, apply attrition if necessary
+                        // then add to troopsToAdd
+                        if (thisDays > minDays)
+                        {
+                            // check for attrition (to bring it down to minDays)
+                            byte attritionChecks = 0;
+                            attritionChecks = Convert.ToByte((thisDays - minDays) / 7);
+                            double attritionModifier = 0;
+
+                            for (int i = 0; i < attritionChecks; i++)
+                            {
+                                attritionModifier = tempArmy.CalcAttrition();
+
+                                // apply attrition
+                                if (attritionModifier > 0)
+                                {
+                                    tempArmy.ApplyTroopLosses(attritionModifier);
+                                }
+                            }
+                        }
+
+                        for (int i = 0; i < totTroopsToAdd.Length; i++)
+                        {
+                            totTroopsToAdd[i] += tempArmy.troops[i];
+                        }
+
+                        // remove detachment from fief
+                        thisFief.troopTransfers.Remove(item.SubItems[0].Text);
+
+                        // nullify tempArmy
+                        tempArmy = null;
+                    }
+
+                }
+
+            }
+
+            if (adjustDays)
+            {
+                if (this.days == minDays)
+                {
+                    // add troops to army (this could be 0)
+                    for (int i = 0; i < this.troops.Length; i++)
+                    {
+                        this.troops[i] += totTroopsToAdd[i];
+                    }
+
+                    // adjust days
+                    myLeader.AdjustDays(daysTaken);
+
+                    // calculate attrition for army
+                    byte attritionChecks = Convert.ToByte(daysTaken / 7);
+                    double attritionModifier = 0;
+
+                    for (int i = 0; i < attritionChecks; i++)
+                    {
+                        attritionModifier = this.CalcAttrition();
+                        if (attritionModifier > 0)
+                        {
+                            this.ApplyTroopLosses(attritionModifier);
+                        }
+                    }
+                }
+                else
+                {
+                    // any days army has had to 'wait' should go towards days taken
+                    // for the transfer (daysTaken)
+                    double differenceToMin = (this.days - minDays);
+                    if (differenceToMin >= daysTaken)
+                    {
+                        daysTaken = 0;
+                    }
+                    else
+                    {
+                        daysTaken = daysTaken - differenceToMin;
+                    }
+
+                    // adjust days
+                    myLeader.AdjustDays(differenceToMin);
+
+                    // calculate attrition for army (to bring it down to minDays)
+                    byte attritionChecks = Convert.ToByte(differenceToMin / 7);
+                    double attritionModifier = 0;
+
+                    for (int i = 0; i < attritionChecks; i++)
+                    {
+                        attritionModifier = this.CalcAttrition();
+                        if (attritionModifier > 0)
+                        {
+                            this.ApplyTroopLosses(attritionModifier);
+                        }
+                    }
+
+                    // add troops to army
+                    for (int i = 0; i < this.troops.Length; i++)
+                    {
+                        this.troops[i] += totTroopsToAdd[i];
+                    }
+
+                    // check if are any remaining days taken for the transfer (daysTaken) 
+                    if (daysTaken > 0)
+                    {
+                        // adjust days
+                        myLeader.AdjustDays(daysTaken);
+
+                        // calculate attrition for army for days taken for transfer
+                        attritionChecks = Convert.ToByte(daysTaken / 7);
+
+                        for (int i = 0; i < attritionChecks; i++)
+                        {
+                            attritionModifier = this.CalcAttrition();
+                            if (attritionModifier > 0)
+                            {
+                                this.ApplyTroopLosses(attritionModifier);
+                            }
+                        }
+                    }
+                }
+
+                // if not all selected detachments could be picked up (not enough days), show message
+                if (displayNotAllMsg)
+                {
+                    if (Globals_Client.showMessages)
+                    {
+                        System.Windows.Forms.MessageBox.Show(toDisplay);
+                    }
+                }
+            }
+        }
     }
 }
