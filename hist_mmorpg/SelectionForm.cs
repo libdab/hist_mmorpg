@@ -997,19 +997,8 @@ namespace hist_mmorpg
                 // ensure can't bar self
                 if (thisCharacter != Globals_Client.myPlayerCharacter)
                 {
-                    // add ID to barred characters
-                    Globals_Client.fiefToView.barredCharacters.Add(thisCharacter.charID);
-
-                    // check if is currently in keep of barring fief, and remove if necessary
-                    if ((thisCharacter.inKeep) && (thisCharacter.location == Globals_Client.fiefToView))
-                    {
-                        thisCharacter.inKeep = false;
-                        if (Globals_Client.showMessages)
-                        {
-                            System.Windows.Forms.MessageBox.Show(thisCharacter.firstName + " " + thisCharacter.familyName + " has been ejected from the keep.");
-                        }
-
-                    }
+                    // bar character
+                    Globals_Client.fiefToView.BarCharacter(thisCharacter);
 
                     // refresh display
                     this.RefreshBarredDisplay();
@@ -1042,18 +1031,28 @@ namespace hist_mmorpg
                 if (Globals_Game.pcMasterList.ContainsKey(this.barredCharsListView.SelectedItems[0].SubItems[1].Text))
                 {
                     // remove ID from barred characters
-                    Globals_Client.fiefToView.barredCharacters.Remove(this.barredCharsListView.SelectedItems[0].SubItems[1].Text);
+                    Globals_Client.fiefToView.UnbarCharacter(this.barredCharsListView.SelectedItems[0].SubItems[1].Text);
+
                     // refresh display
                     this.RefreshBarredDisplay();
+
+                    // refresh the parent's fief container
+                    this.parent.RefreshFiefContainer(Globals_Client.fiefToView);
                 }
-                // if selected character is in pcMasterList
+
+                // if selected character is in npcMasterList
                 else if (Globals_Game.npcMasterList.ContainsKey(this.barredCharsListView.SelectedItems[0].SubItems[1].Text))
                 {
                     // remove ID from barred characters
-                    Globals_Client.fiefToView.barredCharacters.Remove(this.barredCharsListView.SelectedItems[0].SubItems[1].Text);
+                    Globals_Client.fiefToView.UnbarCharacter(this.barredCharsListView.SelectedItems[0].SubItems[1].Text);
+
                     // refresh display
                     this.RefreshBarredDisplay();
+
+                    // refresh the parent's fief container
+                    this.parent.RefreshFiefContainer(Globals_Client.fiefToView);
                 }
+
                 // if selected character not found
                 else
                 {
@@ -1155,9 +1154,10 @@ namespace hist_mmorpg
                 // set textbox to read only
                 this.armiesTextBox.ReadOnly = true;
 
-                // get details
+                // get army
                 Army otherArmy = Globals_Game.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
-                // textToDisplay += this.DisplayArmy(otherArmy);
+
+                // get details
                 textToDisplay += otherArmy.DisplayArmyData(observer);
 
                 // display details
@@ -1209,7 +1209,7 @@ namespace hist_mmorpg
                 defender = Globals_Game.armyMasterList[this.armiesListView.SelectedItems[0].SubItems[0].Text];
             }
 
-            // check the observer is leading an army
+            // check for null army objects
             if (attacker == null)
             {
                 if (Globals_Client.showMessages)
@@ -1232,43 +1232,6 @@ namespace hist_mmorpg
                     }
                 }
 
-                else
-                {
-                    // check if attacking army is besieging a keep
-                    string siegeID = attacker.CheckIfBesieger();
-                    if (!String.IsNullOrWhiteSpace(siegeID))
-                    {
-                        // display warning and get decision
-                        DialogResult dialogResult = MessageBox.Show("Your army is besieging a keep and this action would end the siege.\r\nClick 'OK' to proceed.", "Proceed with attack?", MessageBoxButtons.OKCancel);
-
-                        // if choose to cancel
-                        if (dialogResult == DialogResult.Cancel)
-                        {
-                            if (Globals_Client.showMessages)
-                            {
-                                toDisplay = "Attack cancelled.";
-                                System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
-                                proceed = false;
-                            }
-                        }
-
-                        // if choose to proceed
-                        else
-                        {
-                            Siege thisSiege = null;
-                            thisSiege = Globals_Game.siegeMasterList[siegeID];
-
-                            // construct event description to be passed into siegeEnd
-                            string siegeDescription = "On this day of Our Lord the forces of ";
-                            siegeDescription += thisSiege.GetBesiegingPlayer().firstName + " " + thisSiege.GetBesiegingPlayer().familyName;
-                            siegeDescription += " have chosen to abandon the siege of " + thisSiege.GetFief().name;
-                            siegeDescription += ". " + thisSiege.GetDefendingPlayer().firstName + " " + thisSiege.GetDefendingPlayer().familyName;
-                            siegeDescription += " retains ownership of the fief.";
-
-                            parent.SiegeEnd(thisSiege, false, siegeDescription);
-                        }
-                    }
-                }
             }
 
             if (proceed)
@@ -1411,10 +1374,7 @@ namespace hist_mmorpg
                 // check to make sure aren't barring the fief's own nataionality
                 if (!(Globals_Client.fiefToView.owner.nationality.natID == natID))
                 {
-                    if (!Globals_Client.fiefToView.barredNationalities.Contains(natID))
-                    {
-                        Globals_Client.fiefToView.barredNationalities.Add(natID);
-                    }
+                    Globals_Client.fiefToView.BarNationality(natID);
                 }
                 else
                 {
@@ -1431,7 +1391,7 @@ namespace hist_mmorpg
             {
                 if (Globals_Client.fiefToView.barredNationalities.Contains(natID))
                 {
-                    Globals_Client.fiefToView.barredNationalities.Remove(natID);
+                    Globals_Client.fiefToView.UnbarNationality(natID);
                 }
             }
 

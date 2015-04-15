@@ -3311,6 +3311,115 @@ namespace hist_mmorpg
             return defender;
         }
 
+        /// <summary>
+        /// Bars a Character from the keep
+        /// </summary>
+        /// <returns>Bool indicating success</returns>
+        /// <param name="toBeBarred">The Character to be barred</param>
+        public bool BarCharacter(Character toBeBarred)
+        {
+            bool success = true;
+
+            // add ID to barred characters
+            this.barredCharacters.Add(toBeBarred.charID);
+
+            // check if is currently in keep of barring fief, and remove if necessary
+            if ((toBeBarred.inKeep) && (toBeBarred.location == this))
+            {
+                toBeBarred.inKeep = false;
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(toBeBarred.firstName + " " + toBeBarred.familyName + " has been ejected from the keep in " + this.name + ".");
+                }
+
+            }
+
+            // check for success
+            if (!this.barredCharacters.Contains(toBeBarred.charID))
+            {
+                success = false;
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Unbars a Character
+        /// </summary>
+        /// <returns>Bool indicating success</returns>
+        /// <param name="toBeUnbarred">ID of Character to be unbarred</param>
+        public bool UnbarCharacter(string toBeUnbarred)
+        {
+            bool success = true;
+
+            // check for empty string
+            if (!String.IsNullOrWhiteSpace(toBeUnbarred))
+            {
+                // remove ID from barred characters
+                if (this.barredCharacters.Contains(toBeUnbarred))
+                {
+                    this.barredCharacters.Remove(toBeUnbarred);
+                }
+
+                // check for success
+                if (this.barredCharacters.Contains(toBeUnbarred))
+                {
+                    success = false;
+                }
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Bars a Nationality from entering the keep
+        /// </summary>
+        /// <returns>Bool indicating success</returns>
+        /// <param name="toBeBarred">The ID of the Nationality to be barred</param>
+        public bool BarNationality(string toBeBarred)
+        {
+            bool success = true;
+
+            // add ID to barred nationalities
+            this.barredNationalities.Add(toBeBarred);
+
+            // check for success
+            if (!this.barredNationalities.Contains(toBeBarred))
+            {
+                success = false;
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Unbars a Nationality from entering the keep
+        /// </summary>
+        /// <returns>Bool indicating success</returns>
+        /// <param name="toBeUnbarred">The ID of the Nationality to be unbarred</param>
+        public bool UnbarNationality(string toBeUnbarred)
+        {
+            bool success = true;
+
+            // check for empty string
+            if (!String.IsNullOrWhiteSpace(toBeUnbarred))
+            {
+                // remove ID from barred nationalities
+                if (this.barredNationalities.Contains(toBeUnbarred))
+                {
+                    this.barredNationalities.Remove(toBeUnbarred);
+                }
+
+                // check for success
+                if (this.barredNationalities.Contains(toBeUnbarred))
+                {
+                    success = false;
+                }
+            }
+
+            return success;
+        }
+
     }
 
 	/// <summary>

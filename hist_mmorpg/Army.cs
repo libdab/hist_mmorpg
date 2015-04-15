@@ -1201,7 +1201,7 @@ namespace hist_mmorpg
             }
             else
             {
-                // SIEGE INVOLVEMENT
+                // SIEGE INVOLVEMENT (DEFENDER)
                 // check if defending army is the garrison in a siege
                 string siegeID = targetArmy.CheckIfSiegeDefenderGarrison();
                 if (!String.IsNullOrWhiteSpace(siegeID))
@@ -1261,6 +1261,45 @@ namespace hist_mmorpg
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            if (proceed)
+            {
+                // SIEGE INVOLVEMENT (BESIEGER)
+                // check if attacking army is besieging a keep
+                string siegeID = this.CheckIfBesieger();
+                if (!String.IsNullOrWhiteSpace(siegeID))
+                {
+                    // display warning and get decision
+                    DialogResult dialogResult = MessageBox.Show("Your army is besieging a keep and this action would end the siege.\r\nClick 'OK' to proceed.", "Proceed with attack?", MessageBoxButtons.OKCancel);
+
+                    // if choose to cancel
+                    if (dialogResult == DialogResult.Cancel)
+                    {
+                        if (Globals_Client.showMessages)
+                        {
+                            toDisplay = "Attack cancelled.";
+                            System.Windows.Forms.MessageBox.Show(toDisplay, "OPERATION CANCELLED");
+                            proceed = false;
+                        }
+                    }
+
+                    // if choose to proceed
+                    else
+                    {
+                        Siege thisSiege = null;
+                        thisSiege = Globals_Game.siegeMasterList[siegeID];
+
+                        // construct event description to be passed into siegeEnd
+                        string siegeDescription = "On this day of Our Lord the forces of ";
+                        siegeDescription += thisSiege.GetBesiegingPlayer().firstName + " " + thisSiege.GetBesiegingPlayer().familyName;
+                        siegeDescription += " have chosen to abandon the siege of " + thisSiege.GetFief().name;
+                        siegeDescription += ". " + thisSiege.GetDefendingPlayer().firstName + " " + thisSiege.GetDefendingPlayer().familyName;
+                        siegeDescription += " retains ownership of the fief.";
+
+                        thisSiege.SiegeEnd(false, siegeDescription);
                     }
                 }
             }
