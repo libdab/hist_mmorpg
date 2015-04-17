@@ -482,7 +482,7 @@ namespace hist_mmorpg
         }
 
         /// <summary>
-		/// Creates some game objects from code (temporary)
+		/// Creates some game objects from code (temporary, for testing)
 		/// </summary>
         /// <param name="start">Start year</param>
         public void LoadFromCode(uint start = 1337)
@@ -1316,15 +1316,17 @@ namespace hist_mmorpg
             {
                 for (int i = 0; i < dissolvedSieges.Count; i++ )
                 {
+                    /*
                     // construct event description to be passed into siegeEnd
                     string siegeDescription = "On this day of Our Lord the forces of ";
                     siegeDescription += dissolvedSieges[i].GetBesiegingPlayer().firstName + " " + dissolvedSieges[i].GetBesiegingPlayer().familyName;
                     siegeDescription += " have been forced to abandon the siege of " + dissolvedSieges[i].GetFief().name;
                     siegeDescription += " due to the poor condition of their troops. The ownership of this fief is retained by ";
                     siegeDescription += dissolvedSieges[i].GetDefendingPlayer().firstName + " " + dissolvedSieges[i].GetDefendingPlayer().familyName + ".";
+                    */
 
                     // dismantle siege
-                    this.SiegeEnd(dissolvedSieges[i], false, siegeDescription);
+                    this.SiegeEnd(dissolvedSieges[i], false);
                 }
 
                 // clear dissolvedSieges
@@ -1334,7 +1336,11 @@ namespace hist_mmorpg
             // ADVANCE SEASON AND YEAR
             Globals_Game.clock.AdvanceSeason();
 
-            //UPDATE AND GET SCORES for individual point game
+            // CHECK FOR VICTORY / END GAME
+            bool gameEnded = Globals_Game.CheckForVictory();
+
+            /*
+            // update and get scores for individual point game
             SortedList<double, string> currentScores = new SortedList<double,string>();
             if (Globals_Game.gameType == 0)
             {
@@ -1450,12 +1456,13 @@ namespace hist_mmorpg
                 {
                     System.Windows.Forms.MessageBox.Show(gameResults);
                 }
-            }
+            } */
 
-            if (!((endDateReached) || (absoluteVictory)))
+            if (!gameEnded)
             {
                 // CHECK SCHEDULED EVENTS
-                List<JournalEntry> entriesForRemoval = this.ProcessScheduledEvents();
+                List<JournalEntry> entriesForRemoval = Globals_Game.ProcessScheduledEvents();
+
                 // remove processed events from Globals_Game.scheduledEvents
                 for (int i = 0; i < entriesForRemoval.Count; i++)
                 {
@@ -1479,6 +1486,7 @@ namespace hist_mmorpg
             this.RefreshCurrentScreen();
         }
 
+        /*
         /// <summary>
         /// Checks for a historical team victory (victory depends on whether the English own any French fiefs)
         /// </summary>
@@ -1700,7 +1708,7 @@ namespace hist_mmorpg
 
             return forRemoval;
 
-        }
+        } */
 
         // ------------------- EXIT/CLOSE
 

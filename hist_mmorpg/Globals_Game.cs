@@ -733,6 +733,357 @@ namespace hist_mmorpg
         }
 
         /// <summary>
+        /// Checks for victory / end game
+        /// </summary>
+        /// <returns>bool indicating game end (victory achieved)</returns>
+        public static bool CheckForVictory()
+        {
+            bool gameEnded = false;
+
+            SortedList<double, string> currentScores = new SortedList<double, string>();
+            if (Globals_Game.gameType == 0)
+            {
+                //update scores
+                foreach (KeyValuePair<string, VictoryData> scoresEntry in Globals_Game.victoryData)
+                {
+                    scoresEntry.Value.UpdateData();
+                }
+
+                // get scores
+                currentScores = Globals_Game.GetCurrentScores();
+            }
+
+            // CHECK FOR END GAME
+            string gameResults = "";
+            bool endDateReached = false;
+            bool absoluteVictory = false;
+            Kingdom victor = null;
+
+            // absolute victory (all fiefs owned by one kingdom)
+            victor = Globals_Game.CheckTeamAbsoluteVictory();
+            if (victor != null)
+            {
+                absoluteVictory = true;
+                gameResults += "The kingdom of " + victor.name + " under the valiant leadership of ";
+                gameResults += victor.owner.firstName + " " + victor.owner.familyName;
+                gameResults += " is victorious, having taken all fiefs under its control.";
+            }
+
+            // if no absolute victory
+            else
+            {
+                // check if game end date reached
+                if (Globals_Game.GetGameEndDate() == Globals_Game.clock.currentYear)
+                {
+                    endDateReached = true;
+                }
+            }
+
+            // individual points game
+            if (Globals_Game.gameType == 0)
+            {
+                if ((endDateReached) || (absoluteVictory))
+                {
+                    // get top scorer (ID)
+                    string topScorer = currentScores.Last().Value;
+
+                    foreach (KeyValuePair<double, string> scoresEntry in currentScores.Reverse())
+                    {
+                        // get PC
+                        PlayerCharacter thisPC = Globals_Game.pcMasterList[Globals_Game.victoryData[scoresEntry.Value].playerCharacterID];
+
+                        if (absoluteVictory)
+                        {
+                            gameResults += "\r\n\r\n";
+                        }
+
+                        // check for top scorer
+                        if (thisPC.playerID.Equals(topScorer))
+                        {
+                            gameResults += "The individual winner is " + thisPC.firstName + " " + thisPC.familyName + " (player: " + thisPC.playerID + ")";
+                            gameResults += " with a score of " + scoresEntry.Key + ".\r\n\r\nThe rest of the scores are:\r\n";
+                        }
+
+                        else
+                        {
+                            gameResults += thisPC.firstName + " " + thisPC.familyName + " (player: " + thisPC.playerID + ")";
+                            gameResults += " with a score of " + scoresEntry.Key + ".\r\n";
+                        }
+                    }
+                }
+            }
+
+            // individual position game
+            else if (Globals_Game.gameType == 1)
+            {
+                if ((endDateReached) || (absoluteVictory))
+                {
+                    if (absoluteVictory)
+                    {
+                        gameResults += "\r\n\r\n";
+                    }
+
+                    gameResults += "The individual winners are ";
+                    gameResults += Globals_Game.kingOne.firstName + " " + Globals_Game.kingOne.familyName + " (King of Kingdom One)";
+                    gameResults += " and " + Globals_Game.kingTwo.firstName + " " + Globals_Game.kingTwo.familyName + " (King of Kingdom Two).";
+                }
+            }
+
+            // team historical game
+            else if (Globals_Game.gameType == 2)
+            {
+                if ((endDateReached) && (!absoluteVictory))
+                {
+                    victor = Globals_Game.CheckTeamHistoricalVictory();
+                    gameResults += "The kingdom of " + victor.name + " under the valiant leadership of ";
+                    gameResults += victor.owner.firstName + " " + victor.owner.familyName + " is victorious.";
+                    if (victor.nationality.natID.Equals("Fr"))
+                    {
+                        gameResults += "  It has managed to eject the English from its sovereign territory.";
+                    }
+                    else if (victor.nationality.natID.Equals("Eng"))
+                    {
+                        gameResults += "  It has managed to retain control of at least one fief in French sovereign territory.";
+                    }
+                }
+            }
+
+            // announce winners
+            if ((endDateReached) || (absoluteVictory))
+            {
+                if (Globals_Client.showMessages)
+                {
+                    System.Windows.Forms.MessageBox.Show(gameResults);
+                }
+
+                gameEnded = true;
+            }
+
+            return gameEnded;
+        }
+
+        /// <summary>
+        /// Checks for a historical team victory (victory depends on whether the English own any French fiefs)
+        /// </summary>
+        /// <remarks>Very early test version - not properly functional</remarks>
+        /// <returns>Kingdom object belonging to victor</returns>
+        public static Kingdom CheckTeamHistoricalVictory()
+        {
+            Kingdom victor = null;
+
+            // get France and England
+            Kingdom france = Globals_Game.kingdomMasterList["Fr"];
+            Kingdom england = Globals_Game.kingdomMasterList["Eng"];
+
+            // set France as victor by default
+            victor = france;
+
+            // check each French fief for enemy occupation
+            foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
+            {
+                if (fiefEntry.Value.GetRightfulKingdom() == france)
+                {
+                    if (fiefEntry.Value.GetCurrentKingdom() == england)
+                    {
+                        victor = england;
+                    }
+                }
+            }
+
+            return victor;
+        }
+
+        /// <summary>
+        /// Checks for absolute victory (all fiefs owned by one kingdom)
+        /// </summary>
+        /// <returns>Kingdom object belonging to victor</returns>
+        public static Kingdom CheckTeamAbsoluteVictory()
+        {
+            Kingdom victor = null;
+            int fiefCount = 0;
+
+            // iterate through kingdoms
+            foreach (KeyValuePair<string, Kingdom> kingdomEntry in Globals_Game.kingdomMasterList)
+            {
+                // reset fiefCount
+                fiefCount = 0;
+
+                // iterate through fiefs, checking if owned by this kingdom
+                foreach (KeyValuePair<string, Fief> fiefEntry in Globals_Game.fiefMasterList)
+                {
+                    if (fiefEntry.Value.GetCurrentKingdom() == kingdomEntry.Value)
+                    {
+                        // if owned by this kingdom, increment count
+                        fiefCount++;
+                    }
+                }
+
+                // check if kingdom owns all fiefs
+                if (fiefCount == Globals_Game.fiefMasterList.Count)
+                {
+                    victor = kingdomEntry.Value;
+                    break;
+                }
+            }
+
+            return victor;
+        }
+
+        /// <summary>
+        /// Iterates through the scheduledEvents journal, implementing the appropriate actions
+        /// </summary>
+        /// <returns>List<JournalEntry> containing journal entries to be removed</returns>
+        public static List<JournalEntry> ProcessScheduledEvents()
+        {
+            List<JournalEntry> forRemoval = new List<JournalEntry>();
+            bool proceed = true;
+
+            // iterate through scheduled events
+            foreach (KeyValuePair<uint, JournalEntry> jEntry in Globals_Game.scheduledEvents.entries)
+            {
+                proceed = true;
+
+                if ((jEntry.Value.year == Globals_Game.clock.currentYear) && (jEntry.Value.season == Globals_Game.clock.currentSeason))
+                {
+                    //BIRTH
+                    if ((jEntry.Value.type).ToLower().Equals("birth"))
+                    {
+                        // get parents
+                        NonPlayerCharacter mummy = null;
+                        Character daddy = null;
+                        for (int i = 0; i < jEntry.Value.personae.Length; i++)
+                        {
+                            string thisPersonae = jEntry.Value.personae[i];
+                            string[] thisPersonaeSplit = thisPersonae.Split('|');
+
+                            if (thisPersonaeSplit.Length > 1)
+                            {
+                                switch (thisPersonaeSplit[1])
+                                {
+                                    case "mother":
+                                        mummy = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
+                                        break;
+                                    case "father":
+                                        if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                        {
+                                            daddy = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
+                                        }
+                                        else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                        {
+                                            daddy = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+
+                        // do conditional checks
+                        // death of mother or father
+                        if ((!mummy.isAlive) || (!daddy.isAlive))
+                        {
+                            proceed = false;
+                        }
+
+
+                        if (proceed)
+                        {
+                            // run childbirth procedure
+                            mummy.GiveBirth(daddy);
+                        }
+
+                        // add entry to list for removal
+                        forRemoval.Add(jEntry.Value);
+                    }
+
+                    // MARRIAGE
+                    else if ((jEntry.Value.type).ToLower().Equals("marriage"))
+                    {
+                        // get bride and groom
+                        Character bride = null;
+                        Character groom = null;
+
+                        for (int i = 0; i < jEntry.Value.personae.Length; i++)
+                        {
+                            string thisPersonae = jEntry.Value.personae[i];
+                            string[] thisPersonaeSplit = thisPersonae.Split('|');
+
+                            switch (thisPersonaeSplit[1])
+                            {
+                                case "bride":
+                                    bride = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
+                                    break;
+                                case "groom":
+                                    if (Globals_Game.pcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                    {
+                                        groom = Globals_Game.pcMasterList[thisPersonaeSplit[0]];
+                                    }
+                                    else if (Globals_Game.npcMasterList.ContainsKey(thisPersonaeSplit[0]))
+                                    {
+                                        groom = Globals_Game.npcMasterList[thisPersonaeSplit[0]];
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        // CONDITIONAL CHECKS
+                        // death of bride or groom
+                        if ((!bride.isAlive) || (!groom.isAlive))
+                        {
+                            proceed = false;
+
+                            // add entry to list for removal
+                            forRemoval.Add(jEntry.Value);
+                        }
+
+                        // separated by siege
+                        else
+                        {
+                            // if are in different fiefs OR in same fief but not both in keep
+                            if ((bride.location != groom.location)
+                                || ((bride.location == groom.location) && (bride.inKeep != groom.inKeep)))
+                            {
+                                // if there's a siege in the fief where the character is in the keep
+                                if (((!String.IsNullOrWhiteSpace(bride.location.siege)) && (bride.inKeep))
+                                    || ((!String.IsNullOrWhiteSpace(groom.location.siege)) && (groom.inKeep)))
+                                {
+                                    proceed = false;
+
+                                    // postpone marriage until next season
+                                    if (jEntry.Value.season == 3)
+                                    {
+                                        jEntry.Value.season = 0;
+                                        jEntry.Value.year++;
+                                    }
+                                    else
+                                    {
+                                        jEntry.Value.season++;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (proceed)
+                        {
+                            // process marriage
+                            jEntry.Value.ProcessMarriage();
+
+                            // add entry to list for removal
+                            forRemoval.Add(jEntry.Value);
+                        }
+
+                    }
+                }
+            }
+
+            return forRemoval;
+
+        }
+
+        /// <summary>
         /// Adds an observer (Form1 object) to the list of registered observers
         /// </summary>
         /// <param name="obs">Observer to be added</param>

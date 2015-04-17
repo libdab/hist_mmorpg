@@ -923,7 +923,7 @@ namespace hist_mmorpg
         /// <param name="s">Siege to be ended</param>
         /// <param name="siegeSuccessful">bool indicating whether the siege was successful</param>
         /// <param name="s">String containing circumstances under which the siege ended</param>
-        public void SiegeEnd(Siege s, bool siegeSuccessful, string circumstance)
+        public void SiegeEnd(Siege s, bool siegeSuccessful, string circumstance = null)
         {
             // carry out functions associated with siege end
             s.SiegeEnd(siegeSuccessful, circumstance);

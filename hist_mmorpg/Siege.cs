@@ -597,11 +597,11 @@ namespace hist_mmorpg
 
             // description
             string siegeDescription = "";
-            if (circumstance == null)
+            if (String.IsNullOrWhiteSpace(circumstance))
             {
                 siegeDescription = "On this day of Our Lord the forces of ";
                 siegeDescription += besiegingPlayer.firstName + " " + besiegingPlayer.familyName;
-                siegeDescription += " abandoned the siege of " + besiegedFief.name;
+                siegeDescription += " have been forced to abandon the siege of " + besiegedFief.name;
                 siegeDescription += ". The ownership of this fief is retained by ";
                 siegeDescription += defendingPlayer.firstName + " " + defendingPlayer.familyName + ".";
             }
